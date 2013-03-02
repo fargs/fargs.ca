@@ -9,9 +9,17 @@
 <div class="container">
     <div style="margin-top: 20px"></div>
     <ul class="breadcrumb">
-        <li><a href="/Blog">Blog</a><span class="divider">/</span></li>
+        <li><a href="@Url.Content("~/Blog")">Blog</a><span class="divider"></span></li>
         <li class="active">@Model.Title</li>
     </ul>
+    <div>
+        <ul>
+            @foreach (var item in @Model.Tags)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    </div>
     <div>
         @{
             if (Model != null)

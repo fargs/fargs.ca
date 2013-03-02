@@ -1,4 +1,8 @@
-﻿@{
+﻿@using Fargs.Web.Models;
+
+@model IEnumerable<Post>
+
+@{
     ViewBag.Title = "Blog";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -6,6 +10,12 @@
 <h2>Blog</h2>
 
 <h3>Posts</h3>
-<ul>
-    <li><a href="blog/post/setting-up-my-personal-website">Setting up my personal website</a></li>
-</ul>
+<div>
+    <ul>
+        @foreach (var item in @Model)
+        {
+            var url = System.IO.Path.Combine(Url.Content("~/blog/post/"), item.Name);
+            <li><a href="@url">@item.Title</a></li>
+        }
+    </ul>
+</div>

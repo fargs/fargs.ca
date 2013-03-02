@@ -204,7 +204,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="App_Data\setting-up-my-personal-website.md" />
-    <Content Include="App_Data\setting-up-my-personal-website.js" />
+    <Content Include="App_Data\index.js" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />

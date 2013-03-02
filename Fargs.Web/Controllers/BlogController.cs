@@ -12,12 +12,11 @@ namespace Fargs.Web.Controllers
 {
     public class BlogController : Controller
     {
-        //
-        // GET: /Blog/
 
         public ActionResult Index()
         {
-            return View();
+            var posts = this.LoadIndex();
+            return View(posts);
         }
 
         public ActionResult Post(string id)
@@ -26,35 +25,47 @@ namespace Fargs.Web.Controllers
             {
                 return View();
             }
-            var model = new Post();
-            this.Load(this.HttpContext.Server.MapPath("~/App_Data"), id.ToLower(), ref model);
+
+            var post = this.LoadPost(id.ToLower());
 
             // If a view does not exist, use the default view
             ViewEngineResult viewResult = ViewEngines.Engines.FindView(ControllerContext, id, null);
             if (viewResult.View == null)
             {
-                return View("Default", model);
+                return View("Default", post);
             }
 
             // Otherwise, return the view
-            return View(id, model);
+            return View(id, post);
         }
 
-        private void Load(string folderPath, string name, ref Post model)
+        private IEnumerable<Post> LoadIndex()
         {
-            var mp = this.ConstructMetadataPath(folderPath, name);
-            using (io.StreamReader reader = io.File.OpenText(mp))
+            // load metadata
+            IEnumerable<Post> posts = null;
+            using (io.StreamReader reader = io.File.OpenText(ConstructMetadataPath()))
             {
-                JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-                model.Title = o.Value<string>("Title");
+                var s = new Newtonsoft.Json.JsonSerializer();
+                posts = s.Deserialize<IEnumerable<Post>>(new JsonTextReader(reader));
             }
-
-            io.File.ReadAllText(this.ConstructContentPath(folderPath, name));
-            model.Body = io.File.ReadAllText(this.ConstructContentPath(folderPath, name));
+            return posts;
         }
 
-        private string ConstructContentPath(string folderPath, string name)
+        private Post LoadPost(string name)
         {
+            var index = this.LoadIndex();
+            var post = index.Single(c => c.Name == name);
+
+            // load content
+            var path = this.ConstructContentPath(name);
+            io.File.ReadAllText(path);
+            post.Body = io.File.ReadAllText(path);
+            return post;
+        }
+
+        private string ConstructContentPath(string name)
+        {
+            var folderPath = ConstructFolderPath();
             var filePath = io.Path.Combine(folderPath, name) + ".md";
             if (!io.File.Exists(filePath))
             {
@@ -63,14 +74,20 @@ namespace Fargs.Web.Controllers
             return filePath;
         }
 
-        private string ConstructMetadataPath(string folderPath, string name)
+        private string ConstructMetadataPath()
         {
-            var filePath = io.Path.Combine(folderPath, name) + ".js";
+            var folderPath = ConstructFolderPath();
+            var filePath = io.Path.Combine(folderPath, "index") + ".js";
             if (!io.File.Exists(filePath))
             {
                 throw new System.IO.IOException("The file must have a .js extension");
             }
             return filePath;
+        }
+
+        private string ConstructFolderPath()
+        {
+            return this.HttpContext.Server.MapPath("~/App_Data");
         }
 
     }

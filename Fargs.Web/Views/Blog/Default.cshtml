@@ -1,0 +1,23 @@
+﻿@using Fargs.Web.Library.Extensions
+
+@model Fargs.Web.Models.Post
+
+@{
+    ViewBag.Title = @Model.Title;
+}
+
+<div class="container">
+    <div style="margin-top: 20px"></div>
+    <ul class="breadcrumb">
+        <li><a href="/Blog">Blog</a><span class="divider">/</span></li>
+        <li class="active">@Model.Title</li>
+    </ul>
+    <div>
+        @{
+            if (Model != null)
+            {
+            @Html.Markdown(Model.Body)
+            }   
+        }
+    </div>
+</div>

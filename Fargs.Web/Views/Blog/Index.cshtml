@@ -10,12 +10,33 @@
 <h2>Blog</h2>
 
 <h3>Posts</h3>
-<div>
-    <ul>
+<td>
+    <table class="table">
         @foreach (var item in @Model)
         {
             var url = System.IO.Path.Combine(Url.Content("~/blog/post/"), item.Name);
-            <li><a href="@url">@item.Title</a></li>
+            <tr class="row">
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <td class="span2">
+                        <img src="@Url.Content("~/Content/img/test.png")" />
+                    </td> 
+                    <td class="span7">
+                        <a href="@url">@item.Title</a>
+                    </td>  
+                }
+                else
+                {
+                    <td class="span9">
+                        <a href="@url">@item.Title</a>
+                    </td>
+                }
+
+                <td class="span3">
+                    @item.PublishedDate.GetDateTimeFormats()[6]<br />
+                    @item.Author
+                </td>
+            </tr>
         }
-    </ul>
-</div>
+    </table>
+    </div>

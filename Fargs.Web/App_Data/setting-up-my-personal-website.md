@@ -1,8 +1,5 @@
 #Setting Up My Personal Website
 
-Les Farago  
-2013-03-02
-
 This is where I am going to write about setting up my website on azure and github and how the asp.net mvc project is structure for creating this post.
 
 ##Blog

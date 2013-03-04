@@ -7,6 +7,8 @@ using io = System.IO;
 using Fargs.Web.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.WindowsAzure.Storage;
+using System.Configuration;
 
 namespace Fargs.Web.Controllers
 {
@@ -15,6 +17,7 @@ namespace Fargs.Web.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.ImageContainer = this.GetImageContainer();
             var posts = this.LoadIndex();
             return View(posts);
         }
@@ -83,6 +86,21 @@ namespace Fargs.Web.Controllers
                 throw new System.IO.IOException("The file must have a .js extension");
             }
             return filePath;
+        }
+
+        private string GetImageContainer()
+        {
+            // Connect to the cloud storage account
+            var cs = ConfigurationManager.ConnectionStrings["StorageConnection"].ConnectionString;
+            var storage = CloudStorageAccount.Parse(cs);
+
+            // Get a client object for the blob storage
+            var blobClient = storage.CreateCloudBlobClient();
+
+            // Get a reference to the blob container
+            var blobImageContainer = blobClient.GetContainerReference("images");
+
+            return blobImageContainer.Uri.ToString();
         }
 
         private string ConstructFolderPath()

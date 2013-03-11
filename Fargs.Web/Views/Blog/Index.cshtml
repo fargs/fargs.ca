@@ -18,24 +18,31 @@
                 @if (!string.IsNullOrEmpty(item.ImageName))
                 {
                     <td class="span3">
-                        <img src="@System.IO.Path.Combine(ViewBag.ImageContainer, item.ImageName)" />
-                        <div class="muted">
-                            <small>Image courtesy of @item.ImageCreatedBy / @item.ImageProvidedBy</small>
-                        </div>
+                        <img src="@System.IO.Path.Combine(ViewBag.ImageContainer, item.ImageName)" title="Image courtesy of @item.ImageCreatedBy / @item.ImageProvidedBy" />
                     </td>
                     <td class="span9">
-                        <a href="@url"><h3>@item.Title</h3></a>
+                        <a href="@url">
+                            <h3>@item.Title</h3>
+                        </a>
                         <p>
                             @item.Abstract
                         </p>
-                        <div class="muted">
-                            <small>Authored by <em>@item.Author</em> on <em>@item.PublishedDate.GetDateTimeFormats()[6]</em></small>
+                        <div class="row muted">
+                            <span class="span6">
+                                <small>Authored by @item.Author on @item.PublishedDate.GetDateTimeFormats()[7]</small>
+                            </span>
+                            <span class="span2">
+                                <span class="pull-right">
+                                    <i class="icon-comment"></i>&nbsp;<small>@{ this.Write(item.Comments == null ? 0 : item.Comments.Count()); }
+                                        comments</small>
+                                </span>
+                            </span>
                         </div>
                     </td>  
                 }
                 else
                 {
-                    <td class="span9">
+                    <td class="span12">
                         <a href="@url">@item.Title</a>
                     </td>
                 }

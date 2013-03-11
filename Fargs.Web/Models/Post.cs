@@ -19,5 +19,6 @@ namespace Fargs.Web.Models
         public string Abstract { get; set; }
 
         public IEnumerable<string> Tags { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
     }
 }

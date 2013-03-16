@@ -12,6 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{266270
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4B520C2-46FC-4319-87E1-9CD7AFBC3E03}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Users\faragol.RI3218LT14\AppData\Local\Microsoft\VisualStudio\11.0\Extensions\ab4yjl2r.2y5\schemas\WE-Palette.css = ..\..\..\Users\faragol.RI3218LT14\AppData\Local\Microsoft\VisualStudio\11.0\Extensions\ab4yjl2r.2y5\schemas\WE-Palette.css
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

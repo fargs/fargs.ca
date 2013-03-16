@@ -30,11 +30,15 @@
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar">Profile</span>
+                        <span class="icon-bar">Portfolio</span>
                         <span class="icon-bar">Blog</span>
                     </a>
                     <div class="nav-collapse collapse">
                         <a class="brand" href="@Url.Content("~/")">fargs.ca</a>
                         <ul class="nav">
+                            <li><a href="@Url.Content("~/Profile")"><i class="icon-user"></i>&nbsp;Profile</a></li>
+                            <li><a href="@Url.Content("~/Portfolio")"><i class="icon-briefcase"></i>&nbsp;Portfolio</a></li>
                             <li><a href="@Url.Content("~/blog")"><i class="icon-book"></i>&nbsp;Blog</a></li>
                         </ul>
                     </div>

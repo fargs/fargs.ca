@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Fargs.Web.Models
 {
-    public class Resume
+    public class Profile
     {
         public string Title { get; set; }
         public List<Job> Jobs { get; set; }

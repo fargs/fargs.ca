@@ -6,28 +6,29 @@
     ViewBag.Title = @Model.Title;
 }
 
-<div class="row">
-    <div class="span12">
-        <ul class="breadcrumb">
-            <li><a href="@Url.Content("~/Blog")">Blog</a><span class="divider">/</span></li>
-            <li class="active">@Model.Title</li>
-        </ul>
-        <div>
-            <em>Tags</em>
-            <ul>
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <ul class="breadcrumb">
+                <li><a href="@Url.Content("~/Blog")">Blog</a><span class="divider">/</span></li>
+                <li class="active">@Model.Title</li>
+            </ul>
+            <div>
                 @foreach (var item in @Model.Tags)
                 {
-                    <li>@item</li>
+                    <span class="label">
+                        @item
+                    </span>
                 }
-            </ul>
-        </div>
-        <div>
-            @{
-                if (Model != null)
-                {
-                @Html.Markdown(Model.Body)
-                }   
-            }
+            </div>
+            <div>
+                @{
+                    if (Model != null)
+                    {
+                    @Html.Markdown(Model.Body)
+                    }   
+                }
+            </div>
         </div>
     </div>
 </div>

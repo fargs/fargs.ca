@@ -22,7 +22,7 @@ namespace Fargs.Web.Controllers
             var jobs = new List<Job>();
             jobs.Add(job);
 
-            var resume = new Resume()
+            var resume = new Profile()
             {
                 Title = "Resume",
                 Jobs = jobs

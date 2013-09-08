@@ -162,8 +162,11 @@
     <Compile Include="Library\Helpers\GravatarHtmlHelper.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Job.cs" />
+    <Compile Include="Models\Portfolio.cs" />
     <Compile Include="Models\Post.cs" />
-    <Compile Include="Models\Resume.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\Software.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +176,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\custom.css" />
+    <Content Include="Content\images\compass_logo.png" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -246,6 +250,8 @@
     <Content Include="App_Data\go-to-the-source.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="App_Data\business-plan.md" />
+    <Content Include="App_Data\where-to-store-my-content.md" />
     <None Include="Properties\PublishProfiles\fargs - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\fargs - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
@@ -292,8 +298,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Blog\Default.cshtml" />
     <Content Include="Views\Blog\Index.cshtml" />
-    <Content Include="Views\Resume\Index.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Portfolio\Index.cshtml" />
+    <Content Include="Views\Portfolio\RandomizedControlledTrials.cshtml" />
+    <Content Include="Views\Portfolio\EpidemiologyStudies.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

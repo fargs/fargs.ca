@@ -196,6 +196,9 @@
     <Content Include="Content\custom.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\images\compass_logo.png" />
+    <Content Include="Content\images\ID-10014231.jpg" />
+    <Content Include="Content\images\ID-10058783.jpg" />
+    <Content Include="Content\images\ID-10062025.jpg" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />

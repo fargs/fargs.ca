@@ -39,7 +39,7 @@
                 @if (!string.IsNullOrEmpty(item.ImageName))
                 {
                     <td class="span3">
-                        <img src="@System.IO.Path.Combine(ViewBag.ImageContainer, item.ImageName)" title="Image courtesy of @item.ImageCreatedBy / @item.ImageProvidedBy" />
+                        <img src="@System.IO.Path.Combine(Url.Content("~/Content/images/"), item.ImageName)" title="Image courtesy of @item.ImageCreatedBy / @item.ImageProvidedBy" />
                     </td>
                     <td class="span9">
                         <a href="@url">

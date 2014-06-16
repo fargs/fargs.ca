@@ -15,7 +15,6 @@
     ImageName: "ID-10014231.jpg",
     ImageCreatedBy: "jscreationzs",
     ImageProvidedBy: "freedigitalphotos.net",
-    ImageUrl: "power_button.jpg",
     PublishedDate: "2013-03-01",
     Tags: ["blogs", "development"],
     Abstract: "This is where I am going to write about setting up my website on azure and github and how the asp.net mvc project is structure for creating this post."
@@ -23,10 +22,9 @@
     Name: "where-to-store-my-content",
     Title: "Where To Store My Content",
     Author: "Les Farago",
-    ImageName: "ID-10014231.jpg",
-    ImageCreatedBy: "jscreationzs",
+    ImageName: "ID-10058783.jpg",
+    ImageCreatedBy: "jannoon028",
     ImageProvidedBy: "freedigitalphotos.net",
-    ImageUrl: "power_button.jpg",
     PublishedDate: "2013-06-29",
     Tags: ["blogs", "development"],
     Abstract: "I have files, like this one, where I write a narrative of some sort. I like to write these documents using text editors like MS Word or Markdown."

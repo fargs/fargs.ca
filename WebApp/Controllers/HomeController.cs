@@ -26,5 +26,10 @@ namespace WebApp.Controllers
 
             return View();
         }
+
+        public ActionResult ReleaseHistory()
+        {
+            return View();
+        }
     }
 }

@@ -38,7 +38,16 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Orvosi Medical</p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; @DateTime.Now.Year - Orvosi Medical</p>
+                    </div>
+                    <div class="col-md-6 pull-right">
+                        <a href="~/Home/ReleaseHistory">Release History</a>
+                    </div>
+                </div>
+            </div>
         </footer>
     </div>
 

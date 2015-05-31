@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ServiceController : Controller
     {
-        // GET: Service
         public ActionResult Index()
         {
             return View();

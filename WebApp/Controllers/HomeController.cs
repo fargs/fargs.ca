@@ -15,6 +15,18 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult Index1()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult Index2()
+        {
+            return View();
+        }
+
         public ActionResult About()
         {
             return View();

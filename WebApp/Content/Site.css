@@ -32,9 +32,8 @@ textarea {
 }
 
 .myjumbotron {
-    background-color: #510B16;
-    /*background-image: url('images/Orvosi-Banners-clouds.png');*/
-    color: #F2F2F2;
+    background-color: #C57165;
+    color: #fff;
     padding: 18px 60px 18px 60px;
     margin-bottom: 10px;
 }

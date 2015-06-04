@@ -295,12 +295,17 @@
     <Content Include="Views\Home\ReleaseHistory.cshtml" />
     <Content Include="Views\Home\Index2.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_SidebarLayout.cshtml" />
+    <Content Include="Views\Home\_ServiceOverview1.cshtml" />
+    <Content Include="Views\Home\_ServiceOverview2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <PropertyGroup>

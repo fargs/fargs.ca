@@ -32,11 +32,31 @@ textarea {
 }
 
 .myjumbotron {
-    background-color: #677171;
+    background-color: #510B16;
     /*background-image: url('images/Orvosi-Banners-clouds.png');*/
     color: #F2F2F2;
     padding: 18px 60px 18px 60px;
     margin-bottom: 10px;
 }
 
-
+/* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  .sidebar-nav .navbar ul:not {
+    display: block;
+  }
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+  .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}

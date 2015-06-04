@@ -220,10 +220,16 @@
     <Content Include="Content\images\Orvosi-Banners-01.png" />
     <Content Include="Content\images\Orvosi-Banners-Gray.png" />
     <Content Include="Content\images\sm-Orvosi-Gradient-Colour.png" />
+    <Content Include="Content\images\sm-Orvosi-Solid-White.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\images\xs-logo-inverse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\images\xs-Orvosi-Gradient-Colour.png" />
+    <Content Include="Content\images\xs-Orvosi-Solid-White.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

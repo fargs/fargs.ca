@@ -17,11 +17,11 @@
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
+/*input,
 select,
 textarea {
     max-width: 280px;
-}
+}*/
 
 .navbar{
     margin-bottom:0;
@@ -31,6 +31,22 @@ textarea {
     padding: 30px 0px 10px 0px;
 }
 
+.table-editable > tbody > tr > td {
+    padding: 0;
+}
+
+.table-editable > tbody > tr > td > span {
+    display: block;
+    overflow: hidden;
+}
+
+.table-editable > tbody > tr > td > span > input {
+    width: 100%;
+    border: 0;
+    text-overflow: ellipsis;
+    padding: 5px;
+    margin: 0;
+}
 .myjumbotron {
     background-color: #C57165;
     color: #fff;

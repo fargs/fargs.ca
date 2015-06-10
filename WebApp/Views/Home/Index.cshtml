@@ -8,11 +8,21 @@
         <img src="@Url.Content("~/Content/images/xs-Orvosi-Gradient-Colour.png")" alt="logo" class="center-block visible-xs-block" />
     </div>
 </div>
+
 <div class="row">
-    <div class="col-xs-12">
-        <ul>
-            <li><a href="@Url.Content("~/Home/Index1")">Home Page Version 1 (little text with Registration Form)</a></li>
-            <li><a href="@Url.Content("~/Home/Index2")">Home Page Version 2 (more text with link to Registration Form)</a></li>
-        </ul>
+    <div class="col-md-7">
+        <div class="h1 hidden-xs">Started by doctors to service doctors</div>
+        <div class="lead">
+            We can make IME work for you. Learn how we can help increase your earnings and decrease your workload.
+        </div>
+        <div class="h3 hidden-xs">Register now to see how it works &raquo;</div>
+    </div>
+    <div class="col-md-offset-1 col-md-3">
+        @Html.Partial("_RegisterPartial")
     </div>
 </div>
+
+@if (HttpContext.Current.User.IsInRole("Admin"))
+{
+    @Html.Partial("_ServiceOverview")
+}

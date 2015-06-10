@@ -434,10 +434,22 @@
     <Content Include="Content\bootstrap\js\transition.js" />
     <Content Include="Content\bootstrap\package.js" />
     <Content Include="Content\bootstrap\test-infra\requirements.txt" />
+    <Content Include="Content\images\ADMIN IMAGE1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\images\ASP-NET-Banners-01.png" />
     <Content Include="Content\images\ASP-NET-Banners-02.png" />
     <Content Include="Content\images\Banner-01-Azure.png" />
     <Content Include="Content\images\Banner-02-VS.png" />
+    <Content Include="Content\images\CONCIERGE IMAGE.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\images\INTAKE IMAGE.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\images\INVOICE IMAGE.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\images\logo-banner.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -453,6 +465,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\images\logo_icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\images\MED IMAGE.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\images\Orvosi-Banners-01.png" />
@@ -641,7 +656,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index1.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -667,11 +682,8 @@
     <Content Include="Views\Shared\_RegisterPartial.cshtml" />
     <Content Include="Views\Service\Index.cshtml" />
     <Content Include="Views\Home\ReleaseHistory.cshtml" />
-    <Content Include="Views\Home\Index2.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_SidebarLayout.cshtml" />
-    <Content Include="Views\Home\_ServiceOverview1.cshtml" />
-    <Content Include="Views\Home\_ServiceOverview2.cshtml" />
+    <Content Include="Views\Home\_ServiceOverview.cshtml" />
     <Content Include="Views\Role\Index.cshtml" />
     <Content Include="Views\Role\Index_js.cshtml" />
   </ItemGroup>

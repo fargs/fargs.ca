@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Microsoft.AspNet.Identity
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -10,19 +11,35 @@
 </div>
 
 <div class="row">
-    <div class="col-md-7">
-        <div class="h1 hidden-xs">Started by doctors to service doctors</div>
+    <div class="col-md-6">
+        <div class="h1 hidden-xs">Time is money.</div>
+        <div class="h1 hidden-xs">Fill your day with more of both.</div>
         <div class="lead">
-            We can make IME work for you. Learn how we can help increase your earnings and decrease your workload.
+            IMEs are rewarding but time consuming for physicians who choose to perform them. Orvosi Medical can help you use your IME time more efficiently, therefore more productively.
         </div>
+        @if (!Request.IsAuthenticated)
+        {
         <div class="h3 hidden-xs">Register now to see how it works &raquo;</div>
+        }
     </div>
-    <div class="col-md-offset-1 col-md-3">
+@if (!Request.IsAuthenticated) { 
+    <div class="col-md-offset-1 col-md-5">
         @Html.Partial("_RegisterPartial")
     </div>
+}
+else
+{
+    <div class="col-md-offset-1 col-md-5">
+        <h1>Welcome @(User.Identity.GetUserName())!</h1>
+        <div>
+            Your next assessment is in 2 days at 9am.
+        </div>
+    </div>
+}
 </div>
 
 @if (HttpContext.Current.User.IsInRole("Admin"))
 {
+    <hr />
     @Html.Partial("_ServiceOverview")
 }

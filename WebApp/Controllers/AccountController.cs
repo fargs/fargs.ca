@@ -12,7 +12,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -429,7 +429,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            AuthenticationManager.SignOut();
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
         }
 

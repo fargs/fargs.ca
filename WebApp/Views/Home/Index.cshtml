@@ -13,13 +13,13 @@
 <div class="row">
     <div class="col-md-6">
         <div class="h1 hidden-xs">Time is money.</div>
-        <div class="h1 hidden-xs">Fill your day with more of both.</div>
+        <div class="h2 hidden-xs">Fill your day with more of both.</div>
         <div class="lead">
             IMEs are rewarding but time consuming for physicians who choose to perform them. Orvosi Medical can help you use your IME time more efficiently, therefore more productively.
         </div>
         @if (!Request.IsAuthenticated)
         {
-        <div class="h3 hidden-xs">Register now to see how it works &raquo;</div>
+        <div class="h4 hidden-xs">Register now to see how it works &raquo;</div>
         }
     </div>
 @if (!Request.IsAuthenticated) { 
@@ -30,7 +30,7 @@
 else
 {
     <div class="col-md-offset-1 col-md-5">
-        <h1>Welcome @(User.Identity.GetUserName())!</h1>
+        <h3>Welcome @(User.Identity.GetUserName())!</h3>
         <div>
             Your next assessment is in 2 days at 9am.
         </div>

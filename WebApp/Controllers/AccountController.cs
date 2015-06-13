@@ -87,6 +87,8 @@ namespace WebApp.Controllers
                 return View(model);
             }
 
+            Session["salt"] = "salt";
+
             // Require the user to have a confirmed email before they can log on.
             var user = await UserManager.FindByNameAsync(model.Email);
             if (user != null)

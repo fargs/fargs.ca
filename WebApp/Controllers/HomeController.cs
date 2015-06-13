@@ -7,6 +7,7 @@ using System.Web.Mvc;
 namespace WebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [RequireHttps]
     public class HomeController : Controller
     {
         [AllowAnonymous]

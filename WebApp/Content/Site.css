@@ -1,20 +1,20 @@
-﻿body {
+﻿/*body {
     /*padding-top: 50px;*/
     padding-bottom: 20px;
-}
+}*/
 
 /* Set padding to keep content from hitting the edges */
-.body-content {
+/*.body-content {
     padding-left: 15px;
     padding-right: 15px;
-}
+}*/
 
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
-.dl-horizontal dt {
+/*.dl-horizontal dt {
     white-space: normal;
-}
+}*/
 
 /* Set width on the form input elements since they're 100% wide by default */
 /*input,
@@ -23,13 +23,13 @@ textarea {
     max-width: 280px;
 }*/
 
-.navbar{
+/*.navbar{
     margin-bottom:0;
-}
+}*/
 
-.about-header {
+/*.about-header {
     padding: 30px 0px 10px 0px;
-}
+}*/
 
 .table-editable > tbody > tr > td {
     padding: 0;
@@ -47,14 +47,16 @@ textarea {
     padding: 5px;
     margin: 0;
 }
-.myjumbotron {
+
+/*.myjumbotron {
     background-color: #C57165;
     color: #fff;
     padding: 18px 60px 18px 60px;
     margin-bottom: 10px;
-}
+}*/
 
 /* make sidebar nav vertical */ 
+/*
 @media (min-width: 768px) {
   .sidebar-nav .navbar .navbar-collapse {
     padding: 0;
@@ -74,4 +76,4 @@ textarea {
     padding-top: 12px;
     padding-bottom: 12px;
   }
-}
+}*/

@@ -1,0 +1,90 @@
+﻿@using WebApp.Library;
+@model WebApp.Models.User.IndexViewModel
+
+<script type="text/javascript">
+    // Generate client side model from server object
+
+    var User = function(data) {
+        ko.mapping.fromJS(data, {}, this);
+
+        this.hasFocus = ko.observable(false);
+        this.hasFocus.subscribe(function(newValue) {
+            if (!newValue && this.Name.hasChanged(1)) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/User/Update")',
+                    data: ko.toJSON({
+                        id: User.Id,
+                        name: User.Name
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        self.Description = ko.observable(result.data.Name); // can't use self.Description(result.data.Description) because we want to set the version back to 1, otherwise you will not be able to set the value back to its original because of the hasChanged check.
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                });
+            }
+        }, this);
+    };
+
+    // Add computed values
+    var UserMapping = {
+        create: function(options) {
+            return new User(options.data);
+        },
+        key: function(data) {
+            return ko.utils.unwrapObservable(data.Id);
+        }
+    };
+
+    var vm = function() {
+        self = this;
+
+        self.newName = ko.observable();
+
+        self.Users = ko.mapping.fromJS(@Html.Raw(Model.Users.ToJson()), UserMapping);
+
+        self.Remove = function(challenge) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/User/Remove")',
+                data: ko.toJSON({
+                    id: User.Id
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    self.Users.mappedRemove({ UserID: result });
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            });
+        };
+
+        self.Insert = function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/User/Insert")',
+                data: ko.toJSON({
+                    name: self.newName()
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    ko.mapping.fromJS(result.list, UserMapping, self.Users);
+                    self.newName('');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            });
+        };
+    };
+
+    $(document).ready(function () {
+        ko.applyBindings(
+            new vm()
+        );
+    });
+</script>

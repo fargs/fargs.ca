@@ -1,0 +1,53 @@
+﻿@model WebApp.Models.User.IndexViewModel
+
+<h2>Users</h2>
+
+<form data-bind="submit: Insert">
+    <div class="form-group">
+        <label for="newName">Name</label>
+        <input type="text" class="form-control" id="newName" data-bind="value: newName" />
+    </div>
+    <button type="submit" class="btn btn-default">Add</button>
+</form>
+
+<div style="padding-top: 20px;">
+    <table class="table table-condensed table-bordered table-editable">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Access Failed Count</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: Users">
+            <tr>
+                <td style="vertical-align: middle">
+                    <span>
+                        <input type="text" data-bind="textInput: UserName, hasfocus: hasFocus" />
+                    </span>
+                </td>
+                <td style="vertical-align: middle">
+                    <span>
+                        <input type="text" data-bind="textInput: Email" />
+                    </span>
+                </td>
+                <td style="vertical-align: middle">
+                    <span>
+                        <input type="text" data-bind="textInput: AccessFailedCount" />
+                    </span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <a role="button" data-bind="click: $parent.Remove"><i class="glyphicon glyphicon-remove"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@section Scripts{
+
+    @Scripts.Render("~/bundles/knockout")
+
+    @Html.Partial("Index_js", Model)
+
+}

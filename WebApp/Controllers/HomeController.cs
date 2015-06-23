@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Super Admin, Doctor, Intake Coordinator, Admin")]
     [RequireHttps]
     public class HomeController : Controller
     {

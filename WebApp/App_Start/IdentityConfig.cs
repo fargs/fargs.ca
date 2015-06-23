@@ -14,51 +14,11 @@ using WebApp.Models;
 using SendGrid;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace WebApp
 {
-    public class EmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            // Plug in your email service here to send an email.
-            var myMessage = new SendGridMessage();
-            myMessage.AddTo(message.Destination);
-            myMessage.From = new MailAddress("security@orvosi.ca");
-            myMessage.Subject = message.Subject;
-            myMessage.Text = message.Body;
-            myMessage.Html = message.Body;
-
-            var credentials = new NetworkCredential(
-                       "azure_e3100298ff81eedb95c12995d3ea5ed8@azure.com",
-                       "HS3hMWlzd6b9RQF"
-                       );
-
-            // Create a Web transport for sending email.
-            var transportWeb = new Web(credentials);
-
-            // Send the email.
-            if (transportWeb != null)
-            {
-                return transportWeb.DeliverAsync(myMessage);
-            }
-            else
-            {
-                //Trace.TraceError("Failed to create Web transport.");
-                return Task.FromResult(0);
-            }
-        }
-    }
-
-    public class SmsService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            // Plug in your SMS service here to send a text message.
-            return Task.FromResult(0);
-        }
-    }
-
+ 
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
@@ -67,7 +27,7 @@ namespace WebApp
         {
         }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
+        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
@@ -103,15 +63,32 @@ namespace WebApp
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            manager.EmailService = new EmailService();
+            manager.EmailService = GetEmailService();
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
-                manager.UserTokenProvider = 
+                manager.UserTokenProvider =
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
+        }
+
+        private static IIdentityMessageService GetEmailService()
+        {
+            try
+            {
+                // not in debug mode and not local request => we are in production
+                if (!HttpContext.Current.IsDebuggingEnabled && !HttpContext.Current.Request.IsLocal)
+                {
+                    return new SendGridEmailService();
+                }
+            }
+            catch (Exception)
+            {
+                // Catching exceptions for cases if there is no Http request available
+            }
+            return new LocalEmailService();
         }
     }
 
@@ -144,7 +121,20 @@ namespace WebApp
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
         {
             var roleStore = new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>());
+            roleStore.Context.Configuration.LazyLoadingEnabled = true;
             return new ApplicationRoleManager(roleStore);
+        }
+
+        public void Reload(IdentityRole role)
+        {
+            var store = (this.Store as RoleStore<IdentityRole>);
+            store.Context.Entry(role).Reload();
+        }
+
+        public void ReloadUserRole(IdentityUserRole role)
+        {
+            var store = (this.Store as RoleStore<IdentityRole>);
+            store.Context.Entry(role).Reload();
         }
     }
 

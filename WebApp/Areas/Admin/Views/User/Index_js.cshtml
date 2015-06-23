@@ -1,10 +1,10 @@
 ﻿@using WebApp.Library;
-@model WebApp.Models.Role.IndexViewModel
+@model WebApp.Areas.Admin.Models.User.IndexViewModel
 
 <script type="text/javascript">
     // Generate client side model from server object
 
-    var Role = function(data) {
+    var User = function(data) {
         ko.mapping.fromJS(data, {}, this);
 
         this.hasFocus = ko.observable(false);
@@ -12,10 +12,10 @@
             if (!newValue && this.Name.hasChanged(1)) {
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Content("~/Role/Update")',
+                    url: '@Url.Content("~/User/Update")',
                     data: ko.toJSON({
-                        id: role.Id,
-                        name: role.Name
+                        id: User.Id,
+                        name: User.Name
                     }),
                     contentType: "application/json; charset=utf-8",
                     success: function (result) {
@@ -30,9 +30,9 @@
     };
 
     // Add computed values
-    var roleMapping = {
+    var UserMapping = {
         create: function(options) {
-            return new Role(options.data);
+            return new User(options.data);
         },
         key: function(data) {
             return ko.utils.unwrapObservable(data.Id);
@@ -44,35 +44,30 @@
 
         self.newName = ko.observable();
 
-        self.Roles = ko.mapping.fromJS(@Html.Raw(Model.Roles.ToJson()), roleMapping);
+        self.Users = ko.mapping.fromJS(@Html.Raw(Model.Users.ToJson()), UserMapping);
 
-        self.Remove = function(challenge) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Role/Remove")',
-                data: ko.toJSON({
-                    id: role.Id
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    self.Challenges.mappedRemove({ ChallengeID: result });
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
+        self.Remove = function(record) {
+            var url = '@Url.Content("~/Admin/User/Delete")';
+            $.post(
+                url,
+                {
+                    id: record.Id()
                 }
+            ).done(function (response) {
+                //$("#AssignUsersList").html(response);
             });
         };
 
         self.Insert = function () {
             $.ajax({
                 type: "POST",
-                url: '@Url.Content("~/Role/Insert")',
+                url: '@Url.Content("~/User/Insert")',
                 data: ko.toJSON({
                     name: self.newName()
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    ko.mapping.fromJS(result.list, roleMapping, self.Roles);
+                    ko.mapping.fromJS(result.list, UserMapping, self.Users);
                     self.newName('');
                 },
                 error: function (err) {
@@ -83,8 +78,34 @@
     };
 
     $(document).ready(function () {
-        ko.applyBindings(
-            new vm()
-        );
+
+        var self = this;
+
+        $('#UserTableRows').on('click', '#DeleteButton', function (e) {
+            console.log(this.name + ' ' + this.value);
+            var url = '@Url.Content("~/Admin/User/Delete")';
+            $.post(
+                url,
+                {
+                    id: this.attributes['data-userid'].value
+                }
+            ).done(function (response) {
+                $("#UserTableRows").html(response);
+            });
+        });
+
+        $('#UserTableRows').on('blur', 'input[type=date]', function (e) {
+            console.log(this.name + ' ' + this.value);
+            var url = '@Url.Content("~/Admin/User/Update")';
+            $.post(
+                url,
+                {
+                    id: this.attributes['data-userid'].value,
+                    lockoutEndDateUtc: this.value
+                }
+            ).done(function (response) {
+                $("#UserTableRows").html(response);
+            });
+        });
     });
 </script>

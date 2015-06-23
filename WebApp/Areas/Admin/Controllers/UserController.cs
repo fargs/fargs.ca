@@ -6,10 +6,12 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
 using WebApp.Models;
+using System.Threading.Tasks;
+using m = WebApp.Areas.Admin.Models.User;
 
-namespace WebApp.Controllers
+namespace WebApp.Areas.Admin.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
@@ -66,11 +68,42 @@ namespace WebApp.Controllers
         // GET: User
         public ActionResult Index()
         {
-            var vm = new Models.User.IndexViewModel()
+            var vm = GetIndexViewModel();
+            return View(vm);
+        }
+
+        public async Task<ActionResult> Delete(string id)
+        {
+            var user = await this.UserManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User to be deleted does not exist");
+            }
+            await this.UserManager.DeleteAsync(user);
+            var vm = GetIndexViewModel();
+            return PartialView("~/Areas/Admin/Views/User/_UserTableRows.cshtml", vm);
+        }
+
+        public async Task<ActionResult> Update(string id, DateTime lockoutEndDateUtc)
+        {
+            var user = await this.UserManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User to be deleted does not exist");
+            }
+            user.LockoutEndDateUtc = lockoutEndDateUtc;
+            await this.UserManager.UpdateAsync(user);
+            var vm = GetIndexViewModel();
+            return PartialView("~/Areas/Admin/Views/User/_UserTableRows.cshtml", vm);
+        }
+
+        private m.IndexViewModel GetIndexViewModel()
+        {
+            var vm = new m.IndexViewModel()
             {
                 Users = GetList()
             };
-            return View(vm);
+            return vm;
         }
 
         private List<ApplicationUser> GetList()

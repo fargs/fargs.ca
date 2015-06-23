@@ -10,7 +10,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize()]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;

@@ -6,10 +6,11 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
+using WebApp.Areas.Admin.Models.Role;
 
-namespace WebApp.Controllers
+namespace WebApp.Areas.Admin.Controllers
 {
-    public class RoleController : Controller
+    public class RoleController : BaseController
     {
 
         private ApplicationSignInManager _signInManager;
@@ -66,7 +67,7 @@ namespace WebApp.Controllers
         // GET: Role
         public ActionResult Index()
         {
-            var vm = new Models.Role.IndexViewModel()
+            var vm = new IndexViewModel()
             {
                 Roles = GetList()
             };
@@ -107,9 +108,85 @@ namespace WebApp.Controllers
             return Json(vm, JsonRequestBehavior.AllowGet);
         }
 
-        private List<IdentityRole> GetList()
+        [HttpGet]
+        public async Task<ActionResult> AssignUsers(string id)
         {
-            return this.RoleManager.Roles.ToList();
+            var vm = await GetAssignUsersViewModel(id);
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<PartialViewResult> AssignUser (string roleID, string userID, bool isAssigned)
+        {
+            var role = await this.RoleManager.FindByIdAsync(roleID);
+            var userRole = role.Users.SingleOrDefault(c => c.RoleId == roleID && c.UserId == userID);
+
+            if (isAssigned)
+            {
+                if (userRole != null)
+                {
+                    throw new Exception("User role assignment being added already exists.");
+                }
+                userRole = new IdentityUserRole() { UserId = userID, RoleId = roleID };
+                role.Users.Add(userRole);
+            }
+            else if (!isAssigned)
+            {
+                if (userRole == null)
+                {
+                    throw new Exception("User role assignment to remove does not exist.");
+                }
+                role.Users.Remove(userRole);
+            }
+            else
+            {
+                throw new Exception("isAssigned parameter was not set correctly.");
+            }
+            
+            await this.RoleManager.UpdateAsync(role);
+
+            var vm = await GetAssignUsersViewModel(roleID);
+
+            return PartialView("~/Areas/Admin/Views/Role/_AssignUsersList.cshtml", vm);
+        }
+
+        private List<Role> GetList()
+        {
+            var list = this.RoleManager.Roles.Select(c => new Role() {
+                Id = c.Id,
+                Name = c.Name,
+                UserCount = c.Users.Count
+            }).ToList();
+            return list;
+        }
+
+        private async Task<AssignUsersViewModel> GetAssignUsersViewModel(string roleID)
+        {
+            var vm = new AssignUsersViewModel();
+
+            var role = await this.RoleManager.FindByIdAsync(roleID);
+            vm.RoleId = role.Id;
+            vm.RoleName = role.Name;
+            vm.Users = this.UserManager.Users.Select(c => new User()
+            {
+                UserId = c.Id,
+                UserName = c.UserName,
+                DisplayName = "",
+                Email = c.Email
+            }).ToList();
+
+            foreach (var ur in role.Users)
+            {
+                foreach (var user in vm.Users)
+                {
+                    if (ur.UserId == user.UserId)
+                    {
+                        user.IsAssigned = true;
+                        continue;
+                    }
+                }
+            }
+            return vm;
         }
 
         protected override void Dispose(bool disposing)

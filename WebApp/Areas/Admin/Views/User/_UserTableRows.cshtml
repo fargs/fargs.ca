@@ -1,0 +1,34 @@
+﻿@model WebApp.Areas.Admin.Models.User.IndexViewModel
+@foreach (var item in Model.Users)
+{
+<tr>
+    <td style="vertical-align: middle">
+        <span>
+            <input type="text" name="UserName" value="@item.UserName">
+        </span>
+    </td>
+    <td style="vertical-align: middle">
+        <span>
+            <input type="text" name="Email" value="@item.Email"/>
+        </span>
+    </td>
+    <td style="vertical-align: middle">
+        <span>
+            <input type="checkbox" name="LockoutEnabled" checked="@item.LockoutEnabled" />
+        </span>
+    </td>
+    <td style="vertical-align: middle">
+        <span>
+            <input type="date" name="LockoutEndDateUtc" data-userid="@item.Id" value="@(item.LockoutEndDateUtc.HasValue ? item.LockoutEndDateUtc.Value.GetDateTimeFormats('d')[5] : string.Empty)"  />
+        </span>
+    </td>
+    <td style="vertical-align: middle">
+        <span>
+            <input type="text" name="AccessFailedCount" value="@item.AccessFailedCount" />
+        </span>
+    </td>
+    <td style="text-align: center; vertical-align: middle;">
+        <a id="DeleteButton" data-userid="@item.Id" role="button"><i class="glyphicon glyphicon-remove"></i></a>
+    </td>
+</tr>
+}

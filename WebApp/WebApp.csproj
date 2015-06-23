@@ -226,29 +226,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\EmailConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\SmsConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin\Models\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Process\Controllers\HomeController.cs" />
     <Compile Include="Areas\Process\ProcessAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
     <Compile Include="Controllers\ServiceController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Library\ActionResults.cs" />
     <Compile Include="Library\Extensions.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Role\IndexViewModel.cs" />
-    <Compile Include="Models\User\IndexViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\Role\IndexViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\User\IndexViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -682,13 +689,14 @@
     <Content Include="Content\bootstrap\test-infra\uncached-npm-install.sh" />
     <Content Include="Content\bootstrap\_config.yml" />
     <Content Include="package.json" />
-    <Content Include="client_secret.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Areas\Process\Views\web.config" />
     <Content Include="Areas\Process\Views\Home\Index.cshtml" />
-    <Content Include="orvosi-3fbc42670b5a.p12" />
-    <Content Include="orvosi-a6c366a5c691.json" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\AssignUsers.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\AssignUsers_js.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\_AssignUsersList.cshtml" />
+    <Content Include="Areas\Admin\Views\User\_UserTableRows.cshtml" />
     <None Include="Properties\PublishProfiles\orvosi.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -711,12 +719,6 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -752,15 +754,17 @@
     <Content Include="Views\Home\ReleaseHistory.cshtml" />
     <Content Include="Views\Shared\_SidebarLayout.cshtml" />
     <Content Include="Views\Home\_ServiceOverview.cshtml" />
-    <Content Include="Views\Role\Index.cshtml" />
-    <Content Include="Views\Role\Index_js.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\Index_js.cshtml" />
     <Content Include="Views\Home\Services.cshtml" />
     <Content Include="Views\Calendar\Index.cshtml" />
-    <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\User\Index_js.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index_js.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Views\Shared\" />
+    <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Process\Models\" />
     <Folder Include="Areas\Process\Views\Shared\" />
   </ItemGroup>

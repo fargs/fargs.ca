@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize()]
     public class ServiceController : Controller
     {
         public ActionResult Index()

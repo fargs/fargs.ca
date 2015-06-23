@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using WebApp.Models;
+using System.Configuration;
 
 namespace WebApp
 {
@@ -61,8 +62,8 @@ namespace WebApp
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = "372324544138-dcaj5t6vdrnge7802948tdfenspm1mim.apps.googleusercontent.com",
-                ClientSecret = "pAmix2eB_0nPZAinXf2WSWF2"
+                ClientId = ConfigurationManager.AppSettings["GoogleClientID"],
+                ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"]
             });
         }
     }

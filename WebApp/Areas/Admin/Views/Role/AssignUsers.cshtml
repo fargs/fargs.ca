@@ -1,0 +1,26 @@
+﻿@model WebApp.Areas.Admin.Models.Role.AssignUsersViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>@Model.RoleName</h2>
+
+<div id="AssignUsers" style="padding-top: 20px;">
+    <table class="table table-condensed table-bordered table-editable">
+        <thead>
+            <tr>
+                <th class="col-sm-1"></th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody id="AssignUsersList">
+            @Html.Partial("_AssignUsersList", Model)
+        </tbody>
+    </table>
+</div>
+@section Scripts{
+
+    @*@Scripts.Render("~/bundles/knockout")*@
+
+    @Html.Partial("AssignUsers_js", Model)
+
+}

@@ -237,8 +237,18 @@
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin\Models\Role\AssignUsersViewModel.cs" />
+    <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
+    <Compile Include="Areas\Assessments\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Dashboard\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Dashboard\DashboardAreaRegistration.cs" />
+    <Compile Include="Areas\Developers\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Developers\DevelopersAreaRegistration.cs" />
+    <Compile Include="Areas\Invoices\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Invoices\InvoicesAreaRegistration.cs" />
     <Compile Include="Areas\Process\Controllers\HomeController.cs" />
     <Compile Include="Areas\Process\ProcessAreaRegistration.cs" />
+    <Compile Include="Areas\Scheduling\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Scheduling\SchedulingAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -260,6 +270,12 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\img\banner-bg.jpg" />
+    <Content Include="Content\img\dog.png" />
+    <Content Include="Content\img\intro-bg.jpg" />
+    <Content Include="Content\img\ipad.png" />
+    <Content Include="Content\img\phones.png" />
+    <Content Include="Content\landing-page.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap\.gitattributes" />
     <Content Include="Content\bootstrap\.gitignore" />
@@ -697,6 +713,18 @@
     <Content Include="Areas\Admin\Views\Role\AssignUsers_js.cshtml" />
     <Content Include="Areas\Admin\Views\Role\_AssignUsersList.cshtml" />
     <Content Include="Areas\Admin\Views\User\_UserTableRows.cshtml" />
+    <Content Include="Areas\Developers\Views\web.config" />
+    <Content Include="Areas\Developers\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Developers\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Developers\Views\Home\Design.cshtml" />
+    <Content Include="Areas\Assessments\Views\web.config" />
+    <Content Include="Areas\Assessments\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Dashboard\Views\web.config" />
+    <Content Include="Areas\Dashboard\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Scheduling\Views\web.config" />
+    <Content Include="Areas\Scheduling\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Invoices\Views\web.config" />
+    <Content Include="Areas\Invoices\Views\Home\Index.cshtml" />
     <None Include="Properties\PublishProfiles\orvosi.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -723,7 +751,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -760,13 +787,24 @@
     <Content Include="Views\Calendar\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index_js.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Portal\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
+    <Folder Include="Areas\Assessments\Models\" />
+    <Folder Include="Areas\Assessments\Views\Shared\" />
+    <Folder Include="Areas\Dashboard\Models\" />
+    <Folder Include="Areas\Dashboard\Views\Shared\" />
+    <Folder Include="Areas\Developers\Models\" />
+    <Folder Include="Areas\Invoices\Models\" />
+    <Folder Include="Areas\Invoices\Views\Shared\" />
     <Folder Include="Areas\Process\Models\" />
     <Folder Include="Areas\Process\Views\Shared\" />
+    <Folder Include="Areas\Scheduling\Models\" />
+    <Folder Include="Areas\Scheduling\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

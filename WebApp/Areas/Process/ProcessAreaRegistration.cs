@@ -17,7 +17,7 @@ namespace WebApp.Areas.Process
             context.MapRoute(
                 "Process_default",
                 "Process/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

@@ -1,45 +1,179 @@
 ﻿@using Microsoft.AspNet.Identity
 @{
-    ViewBag.Title = "Home Page";
+    Layout = "";
 }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="row">
-    <div class="col-md-12">
-        <img src="@Url.Content("~/Content/images/sm-Orvosi-Gradient-Colour.png")" alt="logo" class="center-block hidden-xs" />
-        <img src="@Url.Content("~/Content/images/xs-Orvosi-Gradient-Colour.png")" alt="logo" class="center-block visible-xs-block" />
-    </div>
-</div>
+    <title>Orvosi Medical</title>
+    @Styles.Render("~/Content/landing")
+    @Scripts.Render("~/bundles/modernizr")
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="h1 hidden-xs">Time is money.</div>
-        <div class="h2 hidden-xs">Fill your day with more of both.</div>
-        <div class="lead">
-            IMEs are rewarding but time consuming for physicians who choose to perform them. Orvosi Medical can help you use your IME time more efficiently, therefore more productively.
+</head>
+<body>
+    <a name="home"></a>
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>Orvosi</h1>
+                        <hr class="intro-divider">
+                        @if (Request.IsAuthenticated)
+                        {
+                            <h3>Welcome @(User.Identity.GetUserName())!</h3>
+                            <br />
+                            <ul class="list-inline intro-social-buttons">
+                                <li>
+                                    <a href="~/Dashboard" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i><span class="network-name">Go To Your Portal</span></a>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <h3>Time is money. Fill your day with more of both.</h3>
+                            <br />
+                            <ul class="list-inline intro-social-buttons">
+                                <li>
+                                    <a href="~/Account/Login" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Login</span></a>
+                                </li>
+                                <li>
+                                    <a href="~/Account/Register" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Register</span></a>
+                                </li>
+                            </ul>
+                        }
+                        <a href="#services" class="btn btn-success btn-lg"><span class="network-name">Tell Me More</span></a>
+                    </div>
+                </div>
+            </div>
         </div>
-        @if (!Request.IsAuthenticated)
-        {
-        <div class="h4 hidden-xs">Register now to see how it works &raquo;</div>
-        }
+        <!-- /.container -->
     </div>
-@if (!Request.IsAuthenticated) { 
-    <div class="col-md-offset-1 col-md-5">
-        @Html.Partial("_RegisterPartial")
-    </div>
-}
-else
-{
-    <div class="col-md-offset-1 col-md-5">
-        <h3>Welcome @(User.Identity.GetUserName())!</h3>
-        <div>
-            Your next assessment is in 2 days at 9am.
+    <!-- /.intro-header -->
+    <!-- Page Content -->
+    <a name="services"></a>
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Administration<br>Manage less, work more</h2>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae dignissim justo, ut lacinia metus. Suspendisse dapibus velit a purus porttitor, ac auctor nunc sagittis. Quisque tristique sapien nec fermentum tincidunt. Duis sit amet leo vulputate quam vulputate fringilla. Sed a varius arcu, id sagittis magna.</p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="~/Content/img/ipad.png" alt="">
+                </div>
+            </div>
         </div>
+        <!-- /.container -->
     </div>
-}
-</div>
+    <!-- /.content-section-a -->
+    <div class="content-section-b">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Intake Associates<br>Talk less, examine more</h2>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae dignissim justo, ut lacinia metus. Suspendisse dapibus velit a purus porttitor, ac auctor nunc sagittis. Quisque tristique sapien nec fermentum tincidunt. Duis sit amet leo vulputate quam vulputate fringilla. Sed a varius arcu, id sagittis magna.</p>
+                </div>
+                <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+                    <img class="img-responsive" src="~/Content/img/dog.png" alt="">
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-section-b -->
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Invoicing<br>Type less, track more</h2>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae dignissim justo, ut lacinia metus. Suspendisse dapibus velit a purus porttitor, ac auctor nunc sagittis. Quisque tristique sapien nec fermentum tincidunt. Duis sit amet leo vulputate quam vulputate fringilla. Sed a varius arcu, id sagittis magna.</p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="~/Content/img/phones.png" alt="">
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-section-a -->
+    <a name="contact"></a>
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2>Connect with Orvosi</h2>
+                </div>
+                @if (Request.IsAuthenticated)
+                {
+                    <div class="col-lg-6">
+                        <ul class="list-inline intro-social-buttons">
+                            <li class="pull-right">
+                                <a href="~/Dashboard" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Go To Your Portal</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                <div class="col-lg-6">
+                    <ul class="list-inline banner-social-buttons">
+                        <li>
+                            <a href="~/Account/Login" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Login</span></a>
+                        </li>
+                        <li>
+                            <a href="~/Account/Register" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Register</span></a>
+                        </li>
+                        <li>
+                            <a href="~/Home/Contact" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Contact</span></a>
+                        </li>
+                    </ul>
+                </div>
+                }
+            </div>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.banner -->
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <p class="copyright text-muted small">Copyright &copy; @DateTime.Now.Year. All Rights Reserved</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-@if (HttpContext.Current.User.IsInRole("Admin"))
-{
-    <hr />
-    @Html.Partial("_ServiceOverview")
-}
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script>
+        $(function () {
+            $('a[href*=#]:not([href=#])').click(function () {
+                if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                    var target = $(this.hash);
+                    target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                    if (target.length) {
+                        $('html,body').animate({
+                            scrollTop: target.offset().top
+                        }, 1000);
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,22 +1,22 @@
 ﻿using System.Web.Mvc;
 
-namespace WebApp.Areas.Admin
+namespace WebApp.Areas.Invoices
 {
-    public class AdminAreaRegistration : AreaRegistration 
+    public class InvoicesAreaRegistration : AreaRegistration 
     {
         public override string AreaName 
         {
             get 
             {
-                return "Admin";
+                return "Invoices";
             }
         }
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
             context.MapRoute(
-                "Admin_default",
-                "Admin/{controller}/{action}/{id}",
+                "Invoices_default",
+                "Invoices/{controller}/{action}/{id}",
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

@@ -1,22 +1,22 @@
 ﻿using System.Web.Mvc;
 
-namespace WebApp.Areas.Admin
+namespace WebApp.Areas.Scheduling
 {
-    public class AdminAreaRegistration : AreaRegistration 
+    public class SchedulingAreaRegistration : AreaRegistration 
     {
         public override string AreaName 
         {
             get 
             {
-                return "Admin";
+                return "Scheduling";
             }
         }
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
             context.MapRoute(
-                "Admin_default",
-                "Admin/{controller}/{action}/{id}",
+                "Scheduling_default",
+                "Scheduling/{controller}/{action}/{id}",
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

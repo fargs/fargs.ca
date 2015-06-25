@@ -17,7 +17,7 @@ namespace WebApp.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Index1()
+        public ActionResult Portal()
         {
             return View();
         }
@@ -28,11 +28,13 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult About()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult Contact()
         {
             return View();

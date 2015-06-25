@@ -30,6 +30,10 @@ namespace WebApp
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/landing").Include(
+                      "~/Content/bootstrap.css",
+                      "~/Content/landing-page.css"));
         }
     }
 }

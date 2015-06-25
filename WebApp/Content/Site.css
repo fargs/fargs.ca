@@ -1,8 +1,16 @@
 ﻿/*body {
-    /*padding-top: 50px;*/
+    padding-top: 50px;
     padding-bottom: 20px;
-}*/
-
+    color: #2e2e2e;
+    background:
+		linear-gradient(#294980, #294980) no-repeat,
+		url("images/bg-body.png") no-repeat top center,
+		#efefef;
+	background-size:
+		100% 26px,
+		auto;
+}
+*/
 /* Set padding to keep content from hitting the edges */
 /*.body-content {
     padding-left: 15px;

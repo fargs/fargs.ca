@@ -1,0 +1,40 @@
+﻿<root>
+  <row
+    Id="1"
+    EntityTypeID="1"
+    EntityID="1"
+    ConfigurationTypeID="1"
+    ConfigValue="2"
+    DatePart="m" />
+  <row
+    Id="2"
+    EntityTypeID="1"
+    EntityID="1"
+    ConfigurationTypeID="2"
+    ConfigValue="10"
+    DatePart="m" />
+  <row
+    Id="3"
+    EntityTypeID="1"
+    EntityID="1"
+    ConfigurationTypeID="1"
+    ConfigValue="0"
+    DatePart="m"
+    Sequence="2" />
+  <row
+    Id="4"
+    EntityTypeID="1"
+    EntityID="1"
+    ConfigurationTypeID="1"
+    ConfigValue="0"
+    DatePart="m"
+    Sequence="3" />
+  <row
+    Id="5"
+    EntityTypeID="1"
+    EntityID="1"
+    ConfigurationTypeID="1"
+    ConfigValue="0"
+    DatePart="m"
+    Sequence="4" />
+</root>

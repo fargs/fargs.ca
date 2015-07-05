@@ -1,0 +1,46 @@
+﻿<root>
+  <row
+    Id="0538a347-fddc-4f03-97b1-a1e816e888ed"
+    Email="lesliefarago@gmail.com"
+    EmailConfirmed="1"
+    PasswordHash="AIiSrF9UikA+4G8u7KdOXRcSXVxvHWsAbaK5FwhNyybTBrUhgYAYaxSwc13TU9SEHw=="
+    SecurityStamp="bb1f8b74-e9a4-4c24-b4f9-f6f13ed13ff6"
+    PhoneNumberConfirmed="0"
+    TwoFactorEnabled="0"
+    LockoutEnabled="1"
+    AccessFailedCount="0"
+    UserName="lesliefarago@gmail.com" />
+  <row
+    Id="491841d0-dd83-482a-b710-476397e03e96"
+    Email="stenace@gmail.com"
+    EmailConfirmed="0"
+    PasswordHash="AJkpSRahjMyojeOme0jZXNyTQisjk5qCK9ofRofq5Dm3iPSZLKQQYFTH8cGLLyJNKw=="
+    SecurityStamp="1a8e8284-3e9b-4bc6-8b80-a6e5f90168e0"
+    PhoneNumberConfirmed="0"
+    TwoFactorEnabled="0"
+    LockoutEndDateUtc="2015-06-22T00:00:00"
+    LockoutEnabled="1"
+    AccessFailedCount="0"
+    UserName="stenace@gmail.com" />
+  <row
+    Id="5b92cd8b-a500-428f-88a2-ad14e0a23624"
+    Email="lesliefarago@hotmail.com"
+    EmailConfirmed="1"
+    PasswordHash="AKHk74KgvKs/AB9cku8C96KBfQoJECetXKl3ZLwoonNgVzQhfj0ff4k3a3q3Eb4Lpw=="
+    SecurityStamp="d74768cc-c403-4a72-8ea3-8d4d375a526d"
+    PhoneNumberConfirmed="0"
+    TwoFactorEnabled="0"
+    LockoutEnabled="1"
+    AccessFailedCount="0"
+    UserName="lesliefarago@hotmail.com" />
+  <row
+    Id="e62ebead-c270-4711-81cb-2cbd6b8031ad"
+    Email="lfarago@orvosi.ca"
+    EmailConfirmed="0"
+    SecurityStamp="3134f817-b80c-4dbe-809a-8665efd614aa"
+    PhoneNumberConfirmed="0"
+    TwoFactorEnabled="0"
+    LockoutEnabled="1"
+    AccessFailedCount="0"
+    UserName="lfarago@orvosi.ca" />
+</root>

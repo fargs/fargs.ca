@@ -1,0 +1,52 @@
+﻿<root>
+  <row
+    Id="1"
+    Name="Assessment booked"
+    ResponsibleRoleId="7b930663-b091-44ca-924c-d8b11a1ee7ea"
+    IsBillable="0" />
+  <row
+    Id="2"
+    Name="Intake coordinator assigned"
+    ResponsibleRoleId="9eab89c0-225c-4027-9f42-cc35e5656b14"
+    IsBillable="0" />
+  <row
+    Id="3"
+    Name="Med briefs received"
+    ResponsibleRoleId="7b930663-b091-44ca-924c-d8b11a1ee7ea"
+    IsBillable="0" />
+  <row
+    Id="4"
+    Name="Med briefs reviewed by Intake Coordinator"
+    ResponsibleRoleId="9dd582a0-cf86-4fc0-8894-477266068c12"
+    IsBillable="0" />
+  <row
+    Id="5"
+    Name="Med briefs reviewed by Doctor"
+    ResponsibleRoleId="8359141f-e423-4e48-8925-4624ba86245a"
+    IsBillable="0" />
+  <row
+    Id="6"
+    Name="Consent form received"
+    ResponsibleRoleId="9eab89c0-225c-4027-9f42-cc35e5656b14"
+    IsBillable="0" />
+  <row
+    Id="7"
+    Name="Reminder sent to claimant"
+    ResponsibleRoleId="9eab89c0-225c-4027-9f42-cc35e5656b14"
+    IsBillable="0" />
+  <row
+    Id="8"
+    Name="Report drafted and sent for review"
+    ResponsibleRoleId="9dd582a0-cf86-4fc0-8894-477266068c12"
+    IsBillable="0" />
+  <row
+    Id="9"
+    Name="Report submitted"
+    ResponsibleRoleId="8359141f-e423-4e48-8925-4624ba86245a"
+    IsBillable="0" />
+  <row
+    Id="10"
+    Name="Final report confirmation received"
+    ResponsibleRoleId="9eab89c0-225c-4027-9f42-cc35e5656b14"
+    IsBillable="0" />
+</root>

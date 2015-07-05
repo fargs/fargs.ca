@@ -1,0 +1,11 @@
+﻿<root>
+  <row
+    SourceID="1"
+    Name="Web" />
+  <row
+    SourceID="2"
+    Name="Mobile" />
+  <row
+    SourceID="3"
+    Name="Manual" />
+</root>

@@ -1,0 +1,10 @@
+﻿<root>
+  <row
+    Id="1"
+    Name="Doctor Recruitment Plan"
+    ShortName="DR" />
+  <row
+    Id="2"
+    Name="Assessment Plan"
+    ShortName="DCP" />
+</root>

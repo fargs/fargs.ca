@@ -1,0 +1,169 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #> 
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".sql" #>
+--This file is auto-generated, any changes made to it will be overwritten when it's regenerated
+--Read the readme.md for more information
+
+
+<#
+	var dataSet = (this.Host.ResolveParameterValue("","","DataSet"));
+	Console.WriteLine(dataSet);
+	var auditColumns = (this.Host.ResolveParameterValue("","","AuditColumns").ToLower()=="true");
+	Environment = this.Host.ResolveParameterValue("","","Environment").ToLower();
+	var rootFolder = this.Host.ResolvePath("./");
+	var staticDataFolder = System.IO.Path.Combine(rootFolder, dataSet);
+	var staticDataFilePath = System.IO.Path.Combine(rootFolder, dataSet + ".txt");
+	var tables = System.IO.File.ReadLines(staticDataFilePath);
+
+	//Look for environment specific tables and add them to the list as well if found
+	tables = tables.Union(tables.Select(t=>t+"."+Environment).Where(t=>System.IO.File.Exists(staticDataFolder+t)));
+	
+	foreach(var table in tables){
+	
+		var name = GetSafeIdentifier(table);
+		Console.WriteLine("Generating import script for {0}",name);
+
+		var filePath = System.IO.Path.Combine(staticDataFolder,table);
+		var root = System.Xml.Linq.XDocument.Load(filePath).Element("root");
+
+		if (root.HasElements){
+			var id = GetSafeIdentifier(root.Elements().First().Attributes().First().Name.ToString());
+			var columns = root.Elements().SelectMany(e=>e.Attributes().Select(a => GetSafeIdentifier(a.Name.ToString()))).Distinct();//look through all the elements to find attributes, in case some are defined only in later elements
+	#>
+--########################################################
+--########### <#=name#>
+--########################################################
+	--Turn off the output of how many rows affected so output window isn't crowded
+	SET NOCOUNT ON
+	PRINT 'Updating table <#=name#>'
+
+	IF OBJECT_ID('tempdb..#RawData') IS NOT NULL DROP TABLE #RawData
+	GO
+
+	/*
+	Create a temporary table to load the source data
+	This uses a select into from the destination table to create the temp table for the source.
+	This resolves an issue where server colations are different between environments.
+	This ensure the collation of the destination table is used for the temp table.
+	WHERE 1=2 is used to return 0 records.
+	*/
+	SELECT 
+		<#=string.Join(",\r\n\t\t", columns.Select(a=>a))#>
+	INTO #RawData
+	FROM (
+		SELECT 
+			<#=string.Join(",\r\n\t\t\t", columns.Select(a=>a))#>
+		FROM <#=name#> 
+		WHERE 1=2
+	) t
+	GO
+
+	/* 
+	Because the temp table is now created using a SELECT INTO it can be created with IDENTITY fields. 
+	Turn on IDENTITY INSERT if they exist and turn it back off after you are done.
+	*/
+	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'<#=name#>'), 'TableHasIdentity')) = 1)
+		SET IDENTITY_INSERT #RawData ON
+	GO
+
+	--This is the data from the file at time of script generation
+<#
+		foreach(var node in root.Elements()){
+			#>
+INSERT INTO #RawData (<#=string.Join(", ", node.Attributes().Select(a=>GetSafeIdentifier(a.Name.ToString())))#>) VALUES (<#=string.Join(", ", node.Attributes().Select(a=>EscapeString(a.Value)))#>)
+<#
+        }
+		#>
+
+	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'<#=name#>'), 'TableHasIdentity')) = 1)
+		SET IDENTITY_INSERT #RawData OFF
+	GO
+
+	PRINT CONVERT(NVARCHAR(MAX),@@ROWCOUNT) + ' rows affected'
+	GO
+	
+	
+	DECLARE @CounterInProject INT,
+			@CounterIdentical INT,
+			@CounterUpdated INT,
+			@CounterNew INT
+
+	SELECT @CounterInProject = COUNT(*) FROM #RawData
+
+	--This table keeps track of which rows in the source have already been checked/added or updated
+	DECLARE @IdenticalRecordIDs TABLE(ID NVARCHAR(128))
+	
+	--Ignore any rows that are equal
+	INSERT INTO @IdenticalRecordIDs
+	SELECT s.<#=id#> 
+	FROM #RawData s
+	LEFT JOIN <#=name#> d ON d.<#=id#> = s.<#=id#>
+	WHERE <#=string.Join(" AND ",  columns.Skip(1).Select(a=>string.Format("d.{0} = s.{0}",a)))#>
+
+
+	SELECT @CounterIdentical = COUNT(*) FROM @IdenticalRecordIDs
+
+
+	--Update any rows that already exist
+	UPDATE <#=name#> SET <#=string.Join(", ", columns.Skip(1).Select(a=>string.Format("{0} = s.{0}",a)))#>
+	<#if (auditColumns){#>
+	, ModifiedDate = GETDATE()
+	, ModifiedUser = SUSER_NAME()
+	<#}#>
+	OUTPUT Inserted.<#=id#> INTO @IdenticalRecordIDs
+	FROM #RawData s
+	LEFT JOIN <#=name#> d ON s.<#=id#> = d.<#=id#> 
+	WHERE s.<#=id#> NOT IN (SELECT id FROM @IdenticalRecordIDs)
+
+
+	SELECT @CounterUpdated = COUNT(*) - @CounterIdentical FROM @IdenticalRecordIDs
+
+
+	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'<#=name#>'), 'TableHasIdentity')) = 1)
+		SET IDENTITY_INSERT <#=name#> ON
+
+	--Insert any new rows
+	INSERT INTO <#=name#> (<#=string.Join(", ",columns)#>
+	<#if (auditColumns){#>, ModifiedDate, ModifiedUser<#}#>
+	)
+	OUTPUT Inserted.<#=id#> INTO @IdenticalRecordIDs
+	SELECT <#=string.Join(", ",columns)#>
+	<#if (auditColumns){#>, GETDATE(), SUSER_NAME()<#}#>
+	FROM #RawData
+	WHERE <#=id#> NOT IN (SELECT id FROM @IdenticalRecordIDs)
+
+	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'<#=name#>'), 'TableHasIdentity')) = 1)
+		SET IDENTITY_INSERT <#=name#> OFF
+
+	SELECT @CounterNew = COUNT(*) - @CounterIdentical - @CounterUpdated FROM @IdenticalRecordIDs
+
+	PRINT 'Records in Project: '+ CONVERT(NVARCHAR(MAX),@CounterInProject)
+	PRINT 'Identical Records: '+ CONVERT(NVARCHAR(MAX),@CounterIdentical)
+	PRINT 'Updated Records: '+ CONVERT(NVARCHAR(MAX),@CounterUpdated)
+	PRINT 'New Records: '+ CONVERT(NVARCHAR(MAX),@CounterNew)
+
+	GO
+<#		}
+	}
+#>
+
+<#+
+	static string Environment;
+	public static string EscapeString(string value)
+	{
+		return string.Format("'{0}'",value.Replace("'","''"));
+	}
+	public static string GetSafeIdentifier(string identifier)
+	{
+		if (identifier.EndsWith(Environment))
+			identifier = identifier.Substring(0,identifier.Length-Environment.Length);
+		return string.Join(".",identifier.Split('.').Select(n=>String.Format("[{0}]",n)));
+	}
+
+
+#>

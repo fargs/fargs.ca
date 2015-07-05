@@ -11,8 +11,17 @@
     [LockoutEnabled]       BIT            NOT NULL,
     [AccessFailedCount]    INT            NOT NULL,
     [UserName]             NVARCHAR (256) NOT NULL,
+    [Title]                NVARCHAR (50)  NULL,
+    [FirstName]            NVARCHAR (128) NULL,
+    [LastName]             NVARCHAR (128) NULL,
+    [ModifiedDate]         DATETIME       CONSTRAINT [DF_AspNetUsers_ModifiedDate] DEFAULT (getdate()) NULL,
+    [ModifiedUser]         NVARCHAR (256) CONSTRAINT [DF_AspNetUsers_ModifiedUser] DEFAULT (suser_name()) NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
+
+
 
 
 GO

@@ -13,13 +13,16 @@ namespace WebApp.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
+            if (this.Request.IsAuthenticated)
+                return RedirectToAction("Index", "Home", new { area = "Dashboard" });
+
             return View();
         }
 
         [AllowAnonymous]
-        public ActionResult Portal()
+        public ActionResult Landing()
         {
-            return View();
+            return View("Index");
         }
 
         [AllowAnonymous]

@@ -1,0 +1,10 @@
+﻿<root>
+  <row
+    LoginProvider="Google"
+    ProviderKey="100551808610732833937"
+    UserId="5b92cd8b-a500-428f-88a2-ad14e0a23624" />
+  <row
+    LoginProvider="Google"
+    ProviderKey="114524886465863552780"
+    UserId="e62ebead-c270-4711-81cb-2cbd6b8031ad" />
+</root>

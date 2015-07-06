@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
-using WebApp.Models;
 using System.Threading.Tasks;
 using m = WebApp.Areas.Admin.Models.User;
 
@@ -106,9 +105,34 @@ namespace WebApp.Areas.Admin.Controllers
             return vm;
         }
 
-        private List<ApplicationUser> GetList()
+        private List<m.User> GetList()
         {
-            return this.UserManager.Users.ToList();
+            var result = new List<m.User>();
+            foreach (var item in this.UserManager.Users.ToList())
+            {
+                string roleId = string.Empty;
+                if (item.Roles.Count > 0)
+                    roleId = item.Roles.First().RoleId;
+                else
+                    roleId = string.Empty;
+
+                var obj = new m.User();
+                obj.Id = item.Id;
+                obj.DisplayName = item.DisplayName;
+                obj.UserName = item.UserName;
+                obj.Email = item.Email;
+                obj.LockoutEnabled = item.LockoutEnabled;
+                obj.LockoutEndDateUtc = item.LockoutEndDateUtc;
+                obj.AccessFailedCount = item.AccessFailedCount;
+                if (item.Roles.Count > 0)
+                    obj.RoleName = this.RoleManager.Roles.SingleOrDefault(c => c.Id == roleId).Name;
+                else
+                    obj.RoleName = string.Empty;
+
+                result.Add(obj);
+
+            }
+            return result;
         }
 
         protected override void Dispose(bool disposing)

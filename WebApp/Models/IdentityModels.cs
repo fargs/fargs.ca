@@ -16,6 +16,27 @@ namespace WebApp.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Title { get; set; }
+
+        public string DisplayName
+        {
+            get
+            {
+                string s = string.Empty;
+                if (this.Title == string.Empty)
+                {
+                    s = string.Format("{1} {2}", this.FirstName, this.LastName);
+                }
+                else
+                {
+                    s = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
+                }
+                return s;
+            }
+        }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

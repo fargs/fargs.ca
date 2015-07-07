@@ -1,0 +1,79 @@
+﻿<root>
+  <row
+    Id="7"
+    Name="Accident Benefit Physiatry Assessment"
+    Code="AB        "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="8"
+    Name="Long Term Disability Physiatry Assessment"
+    Code="LTD       "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="9"
+    Name="Catastrophic Physiatry Assessment"
+    Code="CAT       "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="10"
+    Name="Defence Medical Physiatry Assessment"
+    Code="DM        "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="11"
+    Name="Plaintiff Medical Physiatry Assessment"
+    Code="PM        "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="12"
+    Name="Medlegal Physiatry Assessment (uncategorized)"
+    Code="ML        "
+    IsAddOn="0"
+    ServiceCategoryId="5"
+    ServicePortfolioId="2" />
+  <row
+    Id="13"
+    Name="Teleconference"
+    Code="TELE      "
+    IsAddOn="0"
+    ServiceCategoryId="6"
+    ServicePortfolioId="2" />
+  <row
+    Id="14"
+    Name="Intact File"
+    Code="INTC      "
+    IsAddOn="1"
+    ServiceCategoryId="7"
+    ServicePortfolioId="2" />
+  <row
+    Id="15"
+    Name="TD Bodily Injury File"
+    Code="TDBI      "
+    IsAddOn="1"
+    ServiceCategoryId="7"
+    ServicePortfolioId="2" />
+  <row
+    Id="16"
+    Name="Paper Review"
+    Code="PR        "
+    IsAddOn="1"
+    ServiceCategoryId="7"
+    ServicePortfolioId="2" />
+  <row
+    Id="17"
+    Name="Addendum"
+    Code="ADD       "
+    IsAddOn="1"
+    ServiceCategoryId="7"
+    ServicePortfolioId="2" />
+</root>

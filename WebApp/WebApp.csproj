@@ -788,7 +788,6 @@
     <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index_js.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Portal\Index.cshtml" />
     <Content Include="Views\Home\_ServiceOverviewPublic.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,20 @@
+﻿<root>
+  <row
+    Id="1"
+    ServiceId="7"
+    TaskId="3"
+    IsBillable="0"
+    Sequence="1" />
+  <row
+    Id="2"
+    ServiceId="7"
+    TaskId="11"
+    IsBillable="0"
+    Sequence="2" />
+  <row
+    Id="3"
+    ServiceId="7"
+    TaskId="9"
+    IsBillable="0"
+    Sequence="3" />
+</root>

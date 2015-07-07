@@ -1,0 +1,8 @@
+﻿<root>
+  <row
+    Id="1"
+    DoctorId="e62ebead-c270-4711-81cb-2cbd6b8031ad"
+    ServiceId="7"
+    CompanyId="2"
+    Rate="1000.00" />
+</root>

@@ -1,0 +1,46 @@
+﻿<root>
+  <row
+    Id="1"
+    Hours="0.00"
+    Code="X" />
+  <row
+    Id="2"
+    Hours="0.50"
+    Code="A" />
+  <row
+    Id="3"
+    Hours="1.00"
+    Code="B" />
+  <row
+    Id="4"
+    Hours="1.50"
+    Code="C" />
+  <row
+    Id="5"
+    Hours="2.00"
+    Code="D" />
+  <row
+    Id="6"
+    Hours="2.50"
+    Code="E" />
+  <row
+    Id="7"
+    Hours="3.00"
+    Code="F" />
+  <row
+    Id="8"
+    Hours="3.50"
+    Code="G" />
+  <row
+    Id="9"
+    Hours="4.00"
+    Code="H" />
+  <row
+    Id="10"
+    Hours="4.50"
+    Code="I" />
+  <row
+    Id="11"
+    Hours="5.00"
+    Code="J" />
+</root>

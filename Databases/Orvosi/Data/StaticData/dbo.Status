@@ -1,0 +1,11 @@
+﻿<root>
+  <row
+    Id="1"
+    Name="Not Started" />
+  <row
+    Id="2"
+    Name="In Progress" />
+  <row
+    Id="3"
+    Name="Completed" />
+</root>

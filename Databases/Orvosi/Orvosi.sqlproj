@@ -59,6 +59,18 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="API\" />
+    <Folder Include="API\Views\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="Security\" />
+    <Folder Include="Data" />
+    <Folder Include="Data\ConfigData" />
+    <Folder Include="Data\StaticData" />
+    <Folder Include="Data\TestData" />
+    <Folder Include="Private\" />
+    <Folder Include="Private\Views\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -67,8 +79,84 @@
     <Build Include="dbo\Tables\AspNetUserClaims.sql" />
     <Build Include="dbo\Tables\AspNetRoles.sql" />
     <Build Include="dbo\Tables\__MigrationHistory.sql" />
+    <Build Include="dbo\Tables\Timeframe.sql" />
+    <Build Include="dbo\Tables\Time.sql" />
+    <Build Include="dbo\Tables\SignatureLog.sql" />
+    <Build Include="dbo\Tables\Sequence.sql" />
+    <Build Include="dbo\Tables\RoleLevel.sql" />
+    <Build Include="dbo\Tables\Person.sql" />
+    <Build Include="dbo\Tables\EntityType.sql" />
+    <Build Include="dbo\Tables\Country.sql" />
+    <Build Include="dbo\Tables\ConfigurationType.sql" />
+    <Build Include="dbo\Tables\Configuration.sql" />
+    <Build Include="dbo\Tables\Company.sql" />
+    <Build Include="dbo\Tables\AssessmentPlan.sql" />
+    <Build Include="dbo\Tables\AddressType.sql" />
+    <Build Include="dbo\Tables\Address.sql" />
+    <Build Include="dbo\Views\DoctorCapacityPlan_Default.sql" />
+    <Build Include="API\Views\DoctorRecruitmentPlan.sql" />
+    <Build Include="dbo\Functions\FormatNumber.sql" />
+    <Build Include="dbo\Stored Procedures\SetTimeframe.sql" />
+    <Build Include="dbo\Stored Procedures\RunSimulation.sql" />
+    <Build Include="Security\Private.sql" />
+    <Build Include="Security\API.sql" />
+    <Build Include="dbo\Tables\Task.sql" />
+    <Build Include="dbo\Tables\Process.sql" />
+    <Build Include="dbo\Functions\fn_Timeframe.sql" />
+    <Build Include="dbo\Functions\CalculateYearlyPay.sql" />
+    <Build Include="dbo\Functions\CalculateWeeklyPay.sql" />
+    <Build Include="dbo\Functions\CalculateBiWeeklyPay.sql" />
+    <None Include="Data\Script.Data.PostDeployment.Config.sql" />
+    <None Include="Data\Script.Data.PostDeployment.Static.sql" />
+    <None Include="Data\Script.Data.PostDeployment.Test.sql" />
+    <Build Include="dbo\Tables\Source.sql" />
+    <Build Include="dbo\Tables\Province.sql" />
+    <Build Include="dbo\Tables\ErrorLevel.sql" />
+    <Build Include="dbo\Tables\Status.sql" />
+    <Build Include="dbo\Tables\ServiceTask.sql" />
+    <Build Include="dbo\Tables\ServicePortfolio.sql" />
+    <Build Include="dbo\Tables\ServiceCategory.sql" />
+    <Build Include="dbo\Tables\ServiceCatalogue.sql" />
+    <Build Include="dbo\Tables\Service.sql" />
+    <Build Include="dbo\Tables\JobTask.sql" />
+    <Build Include="dbo\Tables\Job.sql" />
+    <Build Include="dbo\Tables\File.sql" />
+    <Build Include="dbo\Tables\CancellationType.sql" />
+    <Build Include="dbo\Tables\BillableHourCategory.sql" />
+    <Build Include="Private\Views\ProfitMargin.sql" />
+    <Build Include="Private\Views\JobTask.sql" />
+    <Build Include="Private\Views\Job.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />
+    <None Include="Orvosi.local.publish.xml" />
+    <None Include="local-to-project.scmp" />
+    <None Include="Data\StaticData\dbo.ErrorLevel" />
+    <None Include="Data\StaticData\dbo.Source" />
+    <None Include="Data\ConfigData.txt" />
+    <None Include="Data\Export_Data.ps1" />
+    <None Include="Data\Script.Data.PostDeployment.tt" />
+    <None Include="Data\StaticData.txt" />
+    <None Include="Data\TestData.txt" />
+    <None Include="OrvosiTest.local.publish.xml" />
+    <None Include="Data\ConfigData\dbo.AspNetUserClaims" />
+    <None Include="Data\ConfigData\dbo.AspNetUserLogins" />
+    <None Include="Data\ConfigData\dbo.AspNetUserRoles" />
+    <None Include="Data\ConfigData\dbo.AspNetUsers" />
+    <None Include="Data\ConfigData\dbo.Company" />
+    <None Include="Data\ConfigData\dbo.Configuration" />
+    <None Include="Data\ConfigData\dbo.Process" />
+    <None Include="Data\ConfigData\dbo.Task" />
+    <None Include="Data\StaticData\dbo.AddressType" />
+    <None Include="Data\StaticData\dbo.AspNetRoles" />
+    <None Include="Data\StaticData\dbo.ConfigurationType" />
+    <None Include="Data\StaticData\dbo.Country" />
+    <None Include="Data\StaticData\dbo.EntityType" />
+    <None Include="Data\StaticData\dbo.Province" />
+    <None Include="Data\StaticData\dbo.Sequence" />
+    <None Include="Data\StaticData\dbo.Time" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,17 @@
+﻿<root>
+  <row
+    Id="1"
+    Name="Late Cancellation"
+    Description="Doc review still gets paid but Intake does not."
+    Code="LC        " />
+  <row
+    Id="2"
+    Name="No Show"
+    Description="Doc review still gets paid, and intake gets 0.5 hours "
+    Code="NS        " />
+  <row
+    Id="3"
+    Name="Cancellation"
+    Description="Neither Doc Review or Intake get paid.  Doc Review may appeal this in certain cases."
+    Code="C         " />
+</root>

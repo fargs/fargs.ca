@@ -3,8 +3,11 @@
     UserId="0538a347-fddc-4f03-97b1-a1e816e888ed"
     RoleId="7fab67dd-286b-492f-865a-0cb0ce1261ce" />
   <row
+    UserId="491841d0-dd83-482a-b710-476397e03e96"
+    RoleId="9eab89c0-225c-4027-9f42-cc35e5656b14" />
+  <row
     UserId="5b92cd8b-a500-428f-88a2-ad14e0a23624"
-    RoleId="7fab67dd-286b-492f-865a-0cb0ce1261ce" />
+    RoleId="9dd582a0-cf86-4fc0-8894-477266068c12" />
   <row
     UserId="e62ebead-c270-4711-81cb-2cbd6b8031ad"
     RoleId="8359141f-e423-4e48-8925-4624ba86245a" />

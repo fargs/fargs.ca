@@ -9,7 +9,10 @@
     TwoFactorEnabled="0"
     LockoutEnabled="1"
     AccessFailedCount="0"
-    UserName="lesliefarago@gmail.com" />
+    UserName="lesliefarago@gmail.com"
+    FirstName="Leslie"
+    LastName="Farago"
+    RoleLevelId="2" />
   <row
     Id="491841d0-dd83-482a-b710-476397e03e96"
     Email="stenace@gmail.com"
@@ -21,7 +24,10 @@
     LockoutEndDateUtc="2015-06-22T00:00:00"
     LockoutEnabled="1"
     AccessFailedCount="0"
-    UserName="stenace@gmail.com" />
+    UserName="stenace@gmail.com"
+    FirstName="Sabrina"
+    LastName="Tenace"
+    RoleLevelId="3" />
   <row
     Id="5b92cd8b-a500-428f-88a2-ad14e0a23624"
     Email="lesliefarago@hotmail.com"
@@ -32,7 +38,10 @@
     TwoFactorEnabled="0"
     LockoutEnabled="1"
     AccessFailedCount="0"
-    UserName="lesliefarago@hotmail.com" />
+    UserName="lesliefarago@hotmail.com"
+    Title="Mr."
+    FirstName="Les"
+    RoleLevelId="4" />
   <row
     Id="e62ebead-c270-4711-81cb-2cbd6b8031ad"
     Email="lfarago@orvosi.ca"
@@ -42,5 +51,9 @@
     TwoFactorEnabled="0"
     LockoutEnabled="1"
     AccessFailedCount="0"
-    UserName="lfarago@orvosi.ca" />
+    UserName="lfarago@orvosi.ca"
+    Title="Dr."
+    FirstName="Sabrina"
+    LastName="Farago"
+    RoleLevelId="5" />
 </root>

@@ -1,0 +1,8 @@
+﻿<root>
+  <row
+    Id="1"
+    Name="Orvosi" />
+  <row
+    Id="2"
+    Name="Physiatrist" />
+</root>

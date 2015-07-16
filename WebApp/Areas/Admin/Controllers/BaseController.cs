@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    //[Authorize(Roles = "Super Admin")]
     public class BaseController : Controller
     {
     }

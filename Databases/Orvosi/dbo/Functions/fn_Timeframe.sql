@@ -6,6 +6,8 @@
 CREATE FUNCTION [dbo].[fn_Timeframe] 
 (
 	@DatePart nvarchar(10) = 'd'
+	, @StartDate date
+	, @EndDate date
 )
 RETURNS 
 @Timeframe TABLE 
@@ -23,9 +25,9 @@ RETURNS
 AS
 BEGIN
 
-	DECLARE @StartDate date, @EndDate date
-	SET @StartDate = '2015-07-01'
-	SET @EndDate = '2017-12-31'
+	--DECLARE @StartDate date, @EndDate date
+	--SET @StartDate = '2015-07-01'
+	--SET @EndDate = '2017-12-31'
 	
 	IF (@DatePart = 'd') BEGIN
 		INSERT INTO @Timeframe (PK_Date, [Sequence], [Year], [Month], Month_Of_Year, Day_Of_Month, Week_Of_Year, Day_Of_Week)

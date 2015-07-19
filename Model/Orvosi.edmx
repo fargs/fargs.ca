@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Job">
+          <Key>
+            <PropertyRef Name="JobId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="RoleName" />
+            <PropertyRef Name="Status" />
+          </Key>
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="257" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="256" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DueDate" Type="date" />
+          <Property Name="StartTime" Type="time" Precision="7" />
+          <Property Name="EndTime" Type="time" Precision="7" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <Function Name="GetPhysicianGoogleAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="id" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="fn_Timeframe" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DatePart" Type="nvarchar" Mode="In" />
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <Parameter Name="EndDate" Type="date" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="PK_Date" Type="date" />
+                <Property Name="Sequence" Type="int" />
+                <Property Name="Year" Type="smallint" />
+                <Property Name="Month" Type="nvarchar" MaxLength="50" />
+                <Property Name="Month_Of_Year" Type="smallint" />
+                <Property Name="Day_Of_Month" Type="smallint" />
+                <Property Name="Week_Of_Year" Type="smallint" />
+                <Property Name="Day_Of_Week" Type="smallint" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="fn_Weekdays" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="PK_Date" Type="date" />
+                <Property Name="Sequence" Type="int" />
+                <Property Name="Year" Type="smallint" />
+                <Property Name="Month" Type="nvarchar" MaxLength="50" />
+                <Property Name="Month_Of_Year" Type="smallint" />
+                <Property Name="Day_Of_Month" Type="smallint" />
+                <Property Name="Week_Of_Year" Type="smallint" />
+                <Property Name="Day_Of_Week" Type="smallint" />
+                <Property Name="Day_Of_Week_Name" Type="nvarchar" MaxLength="50" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <EntityContainer Name="OrvosiModelStoreContainer">
+          <EntitySet Name="Job" EntityType="Self.Job" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Job].[JobId] AS [JobId], 
+    [Job].[UserId] AS [UserId], 
+    [Job].[UserName] AS [UserName], 
+    [Job].[FullName] AS [FullName], 
+    [Job].[RoleName] AS [RoleName], 
+    [Job].[FileName] AS [FileName], 
+    [Job].[CompanyName] AS [CompanyName], 
+    [Job].[ParentCompanyName] AS [ParentCompanyName], 
+    [Job].[DueDate] AS [DueDate], 
+    [Job].[StartTime] AS [StartTime], 
+    [Job].[EndTime] AS [EndTime], 
+    [Job].[Price] AS [Price], 
+    [Job].[Status] AS [Status]
+    FROM [API].[Job] AS [Job]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OrvosiModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="OrvosiEntities" annotation:LazyLoadingEnabled="true" >
+          <FunctionImport Name="fn_Weekdays" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Weekdays_Result)">
+          <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="Jobs" EntityType="OrvosiModel.Job" />
+          <FunctionImport Name="fn_Timeframe" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Timeframe_Result)">
+            <Parameter Name="DatePart" Mode="In" Type="String" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="GetPhysicianGoogleAccount" ReturnType="Collection(OrvosiModel.GetPhysicianGoogleAccount_Result)">
+          <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="fn_Weekdays_Result">
+          <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
+          <Property Type="Int32" Name="Sequence" Nullable="true" />
+          <Property Type="Int16" Name="Year" Nullable="true" />
+          <Property Type="String" Name="Month" Nullable="true" MaxLength="50" />
+          <Property Type="Int16" Name="Month_Of_Year" Nullable="true" />
+          <Property Type="Int16" Name="Day_Of_Month" Nullable="true" />
+          <Property Type="Int16" Name="Week_Of_Year" Nullable="true" />
+          <Property Type="Int16" Name="Day_Of_Week" Nullable="true" />
+          <Property Type="String" Name="Day_Of_Week_Name" Nullable="true" MaxLength="50" />
+        </ComplexType>
+        <EntityType Name="Job">
+          <Key>
+            <PropertyRef Name="JobId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="RoleName" />
+            <PropertyRef Name="Status" />
+          </Key>
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FullName" Type="String" MaxLength="257" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FileName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DueDate" Type="DateTime" Precision="0" />
+          <Property Name="StartTime" Type="Time" Precision="7" />
+          <Property Name="EndTime" Type="Time" Precision="7" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="fn_Timeframe_Result">
+          <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
+          <Property Type="Int32" Name="Sequence" Nullable="true" />
+          <Property Type="Int16" Name="Year" Nullable="true" />
+          <Property Type="String" Name="Month" Nullable="true" MaxLength="50" />
+          <Property Type="Int16" Name="Month_Of_Year" Nullable="true" />
+          <Property Type="Int16" Name="Day_Of_Month" Nullable="true" />
+          <Property Type="Int16" Name="Week_Of_Year" Nullable="true" />
+          <Property Type="Int16" Name="Day_Of_Week" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetPhysicianGoogleAccount_Result">
+          <Property Type="String" Name="Id" Nullable="false" MaxLength="128" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="256" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Title" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="LastName" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="EmployeeId" Nullable="true" MaxLength="50" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OrvosiModelStoreContainer" CdmEntityContainer="OrvosiEntities" >
+          <FunctionImportMapping FunctionImportName="fn_Weekdays" FunctionName="OrvosiModel.Store.fn_Weekdays">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.fn_Weekdays_Result">
+                <ScalarProperty Name="PK_Date" ColumnName="PK_Date" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Month_Of_Year" ColumnName="Month_Of_Year" />
+                <ScalarProperty Name="Day_Of_Month" ColumnName="Day_Of_Month" />
+                <ScalarProperty Name="Week_Of_Year" ColumnName="Week_Of_Year" />
+                <ScalarProperty Name="Day_Of_Week" ColumnName="Day_Of_Week" />
+                <ScalarProperty Name="Day_Of_Week_Name" ColumnName="Day_Of_Week_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Jobs">
+            <EntityTypeMapping TypeName="OrvosiModel.Job">
+              <MappingFragment StoreEntitySet="Job">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="ParentCompanyName" ColumnName="ParentCompanyName" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="fn_Timeframe" FunctionName="OrvosiModel.Store.fn_Timeframe">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.fn_Timeframe_Result">
+                <ScalarProperty Name="PK_Date" ColumnName="PK_Date" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Month_Of_Year" ColumnName="Month_Of_Year" />
+                <ScalarProperty Name="Day_Of_Month" ColumnName="Day_Of_Month" />
+                <ScalarProperty Name="Week_Of_Year" ColumnName="Week_Of_Year" />
+                <ScalarProperty Name="Day_Of_Week" ColumnName="Day_Of_Week" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetPhysicianGoogleAccount" FunctionName="OrvosiModel.Store.GetPhysicianGoogleAccount">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetPhysicianGoogleAccount_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

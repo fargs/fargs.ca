@@ -252,6 +252,7 @@
     <Compile Include="Areas\Scheduling\SchedulingAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -262,6 +263,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Library\ActionResults.cs" />
+    <Compile Include="Library\Google\Authentication.cs" />
     <Compile Include="Library\Extensions.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Appointment\Index.cs" />
@@ -797,6 +799,12 @@
     <Content Include="Areas\Invoices\Views\web.config" />
     <Content Include="Areas\Invoices\Views\Home\Index.cshtml" />
     <Content Include="Views\Appointment\Book.cshtml" />
+    <Content Include="orvosi-3fbc42670b5a.p12">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lfarago-test-050e46b99179.p12">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\PublishProfiles\orvosi.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -883,6 +891,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\_ServiceOverviewPublic.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
+    <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

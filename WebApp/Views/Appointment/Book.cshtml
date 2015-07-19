@@ -29,10 +29,10 @@
     </div>
     <div class="form-group">
         <label for="Physician">Physician</label>
-        <select class="form-control" name="Physician">
+        <select id="physician" class="form-control" name="Physician">
             <option></option>
-            <option value="E3F80FDC-3127-49B1-A84D-154688F6730E">Dr. Zeeshan Waseem</option>
-            <option value="45D296D0-4895-41FF-96DE-47DF8B8D8A77">Dr. Aria Waseem</option>
+            <option value="e62ebead-c270-4711-81cb-2cbd6b8031ad">Dr. Leslie Farago</option>
+            <option value="5303e7b6-bd1c-4668-9b10-a15acc4a80b8">Dr. Anna Waseem</option>
         </select>
     </div>
     <div class="form-group">
@@ -99,6 +99,12 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            var physicianId = null;
+
+            $('#physician').on('change', function (e) {
+                physicianId = $('#physician').find(":selected").val();
+            });
+
             $('#availability').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -109,44 +115,44 @@
                 selectable: true,
                 minTime: 7,
                 maxTime: 21,
-                events: [
-				{
-				    title: 'All Day Event',
-				    start: '2014-06-01'
-				},
-				{
-				    title: 'Long Event',
-				    start: '2014-06-07',
-				    end: '2014-06-10'
-				},
-				{
-				    id: 999,
-				    title: 'Repeating Event',
-				    start: '2014-06-09T16:00:00'
-				},
-				{
-				    id: 999,
-				    title: 'Repeating Event',
-				    start: '2014-06-16T16:00:00'
-				},
-				{
-				    title: 'Meeting',
-				    start: '2014-06-12T10:30:00',
-				    end: '2014-06-12T12:30:00'
-				},
-				{
-				    title: 'Lunch',
-				    start: '2014-06-12T12:00:00'
-				},
-				{
-				    title: 'Birthday Party',
-				    start: '2014-06-13T07:00:00'
-				},
-				{
-				    title: 'Click for Google',
-				    url: 'http://google.com/',
-				    start: '2014-06-28'
-				}
+                eventSources: [
+                    [{
+                        title: 'event1',
+                        start: '2015-07-19'
+                    },
+                    {
+                        title: 'event2',
+                        start: '2015-07-18',
+                        end: '2010-01-07'
+                    },
+                    {
+                        title: 'event3',
+                        start: '2015-07-20T12:30:00',
+                        allDay: false // will make the time show
+                    }],
+                    function (start, end, callback) {
+                        if (physicianId != null) {
+                            $.ajax({
+                                url: '@Url.Content("~/Calendar/GetAvailability/")' + physicianId,
+                                dataType: 'json',
+                                //data: {
+                                //    // our hypothetical feed requires UNIX timestamps
+                                //    start: start,
+                                //    end: end
+                                //},
+                                success: function (doc) {
+                                    var events = [];
+                                    $(doc).find('event').each(function () {
+                                        events.push({
+                                            title: $(this).attr('title'),
+                                            start: $(this).attr('start') // will be parsed
+                                        });
+                                    });
+                                    callback(events);
+                                }
+                            });
+                        }
+                    }
                 ]
             });
 
@@ -163,6 +169,6 @@
             //    }
             //});
         });
-        
+
     </script>
 }

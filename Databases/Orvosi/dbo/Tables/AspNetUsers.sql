@@ -15,10 +15,13 @@
     [FirstName]            NVARCHAR (128) NULL,
     [LastName]             NVARCHAR (128) NULL,
     [RoleLevelId]          SMALLINT       NULL,
+    [EmployeeId]           NVARCHAR (50)  NULL,
     [ModifiedDate]         DATETIME       CONSTRAINT [DF_AspNetUsers_ModifiedDate] DEFAULT (getdate()) NULL,
     [ModifiedUser]         NVARCHAR (256) CONSTRAINT [DF_AspNetUsers_ModifiedUser] DEFAULT (suser_name()) NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

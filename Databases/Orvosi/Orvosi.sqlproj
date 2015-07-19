@@ -71,6 +71,7 @@
     <Folder Include="Data\TestData" />
     <Folder Include="Private\" />
     <Folder Include="Private\Views\" />
+    <Folder Include="API\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -126,6 +127,13 @@
     <Build Include="Private\Views\ProfitMargin.sql" />
     <Build Include="Private\Views\JobTask.sql" />
     <Build Include="Private\Views\Job.sql" />
+    <Build Include="dbo\Tables\Physician.sql" />
+    <Build Include="dbo\Views\ServiceModel.sql" />
+    <Build Include="dbo\Views\SchemaTableColumn.sql" />
+    <Build Include="API\Views\ListPhysicianGoogleAccounts.sql" />
+    <Build Include="API\Views\Job.sql" />
+    <Build Include="dbo\Stored Procedures\CodeGenerationHelpers.sql" />
+    <Build Include="API\Stored Procedures\GetPhysicianGoogleAccount.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />
@@ -158,5 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>

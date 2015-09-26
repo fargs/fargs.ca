@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Doctor, Intake Coordinator, Admin")]
+    [Authorize(Roles = "Super Admin, Physician, Intake Coordinator, Admin")]
     [RequireHttps]
     public class HomeController : Controller
     {
@@ -14,7 +14,7 @@ namespace WebApp.Controllers
         public ActionResult Index()
         {
             if (this.Request.IsAuthenticated)
-                return RedirectToAction("Index", "Home", new { area = "Dashboard" });
+                return RedirectToAction("Index", "Dashboard");
 
             return View();
         }

@@ -32,7 +32,7 @@
         <select id="physician" class="form-control" name="Physician">
             <option></option>
             <option value="e62ebead-c270-4711-81cb-2cbd6b8031ad">Dr. Leslie Farago</option>
-            <option value="5303e7b6-bd1c-4668-9b10-a15acc4a80b8">Dr. Anna Waseem</option>
+            <option value="c1cc5280-246b-49e4-96a3-d48ae828aea8">Dr. Anna Waseem</option>
         </select>
     </div>
     <div class="form-group">
@@ -44,7 +44,7 @@
         </div>
     </div>
     <div class="form-group">
-        <div id="availability" class="collapse"></div>
+        <div id="availability"></div>
     </div>
 </form>
 <h3>Documents</h3>
@@ -99,10 +99,19 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            var fc = $.fullCalendar;
+            var formatDate = fc.formatDate;
+            var parseISO8601 = fc.parseISO8601;
+            var addDays = fc.addDays;
+            var applyAll = fc.applyAll;
+
             var physicianId = null;
 
             $('#physician').on('change', function (e) {
                 physicianId = $('#physician').find(":selected").val();
+                if ($('#availability').fullCalendar) {
+                    $('#availability').fullCalendar('refetchEvents');
+                }
             });
 
             $('#availability').fullCalendar({
@@ -115,45 +124,58 @@
                 selectable: true,
                 minTime: 7,
                 maxTime: 21,
-                eventSources: [
-                    [{
-                        title: 'event1',
-                        start: '2015-07-19'
-                    },
-                    {
-                        title: 'event2',
-                        start: '2015-07-18',
-                        end: '2010-01-07'
-                    },
-                    {
-                        title: 'event3',
-                        start: '2015-07-20T12:30:00',
-                        allDay: false // will make the time show
-                    }],
-                    function (start, end, callback) {
-                        if (physicianId != null) {
-                            $.ajax({
-                                url: '@Url.Content("~/Calendar/GetAvailability/")' + physicianId,
-                                dataType: 'json',
-                                //data: {
-                                //    // our hypothetical feed requires UNIX timestamps
-                                //    start: start,
-                                //    end: end
-                                //},
-                                success: function (doc) {
-                                    var events = [];
-                                    $(doc).find('event').each(function () {
-                                        events.push({
-                                            title: $(this).attr('title'),
-                                            start: $(this).attr('start') // will be parsed
-                                        });
+                events: function (start, end, callback) {
+                    if (physicianId != null) {
+                        $.ajax({
+                            url: '@Url.Content("~/Calendar/GetAvailability/")',
+                            dataType: 'json',
+                            data: {
+                                // our hypothetical feed requires UNIX timestamps
+                                id: physicianId,
+                                start: start.toISOString(),
+                                end: end.toISOString()
+                            },
+                            success: function (result) {
+                                var events = [];
+                                $.each(result.data.Items, function (i, entry) {
+                                    var startStr = entry.Start.DateTimeRaw;
+                                    var start = parseISO8601(startStr, true);
+                                    var end = parseISO8601(entry.End.DateTimeRaw, true);
+                                    var allDay = startStr.indexOf('T') == -1;
+                                    var url;
+                                    //$.each(entry.link, function (i, link) {
+                                    //    if (link.type == 'text/html') {
+                                    //        url = link.href;
+                                    //        if (ctz) {
+                                    //            url += (url.indexOf('?') == -1 ? '?' : '&') + 'ctz=' + ctz;
+                                    //        }
+                                    //    }
+                                    //});
+                                    if (allDay) {
+                                        addDays(end, -1); // make inclusive
+                                    }
+                                    events.push({
+                                        id: entry.ICalUID,
+                                        title: entry.Summary,
+                                        url: url,
+                                        start: start,
+                                        end: end,
+                                        allDay: allDay,
+                                        location: entry.Location,
+                                        description: entry.Description
                                     });
-                                    callback(events);
+                                });
+                                var args = [events].concat(Array.prototype.slice.call(arguments, 1));
+                                var res = applyAll(callback, this, args);
+                                if ($.isArray(res)) {
+                                    return res;
                                 }
-                            });
-                        }
+                                //return events;
+                                callback(events);
+                            }
+                        });
                     }
-                ]
+                }
             });
 
             $('#availability').on('shown.bs.collapse', function () {

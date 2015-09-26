@@ -22,7 +22,7 @@ namespace WebApp.Controllers
     {
         Model.OrvosiEntities db = new Model.OrvosiEntities();
 
-        public ActionResult GetAvailability(string id)
+        public ActionResult GetAvailability(string id, DateTime start, DateTime end)
         {
             //TODO: We could abstract the calendar provider to allow physicians to use calendars outside of orvosi's google apps
             // Get the physician google apps account
@@ -52,7 +52,8 @@ namespace WebApp.Controllers
 
             // Define parameters of request.
             EventsResource.ListRequest request = service.Events.List("primary");
-            request.TimeMin = DateTime.Now.AddDays(-7);
+            request.TimeMin = start;
+            request.TimeMax = end;
             request.ShowDeleted = false;
             request.SingleEvents = true;
             request.MaxResults = 10;

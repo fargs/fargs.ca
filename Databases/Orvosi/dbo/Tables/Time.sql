@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Time] (
-    [Id]                         BIGINT         IDENTITY (1, 1) NOT NULL,
+    [Id]                         BIGINT         NOT NULL,
     [PK_Date]                    DATETIME       NOT NULL,
     [Date_Name]                  NVARCHAR (50)  NULL,
     [Year]                       DATETIME       NULL,
@@ -60,11 +60,10 @@
     [ISO_8601_Day_Of_Week_Name]  NVARCHAR (50)  NULL,
     [ISO_8601_Week_Of_Year]      INT            NULL,
     [ISO_8601_Week_Of_Year_Name] NVARCHAR (50)  NULL,
-    [Sortable_Year]              AS             (datepart(year,[PK_Date])),
-    [Sortable_Month]             AS             ((([dbo].[FormatNumber](CONVERT([varchar],datepart(month,[PK_Date]),(0)),'00')+' (')+datename(month,[PK_Date]))+')'),
-    [ModifiedDate]               DATETIME       CONSTRAINT [DF_Time_ModifiedDate] DEFAULT (getdate()) NOT NULL,
-    [ModifiedUser]               NVARCHAR (256) CONSTRAINT [DF_Time_ModifiedUser] DEFAULT (suser_name()) NULL,
-    CONSTRAINT [PK_Time] PRIMARY KEY CLUSTERED ([Id] ASC)
+    [Sortable_Year]              INT            NULL,
+    [Sortable_Month]             NVARCHAR (133) NULL,
+    [ModifiedDate]               DATETIME       NOT NULL,
+    [ModifiedUser]               NVARCHAR (256) NULL
 );
 
 
@@ -72,7 +71,8 @@
 
 
 
+
+
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Time]
-    ON [dbo].[Time]([PK_Date] ASC);
+
 

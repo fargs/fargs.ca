@@ -134,6 +134,8 @@
     <Build Include="API\Views\Job.sql" />
     <Build Include="dbo\Stored Procedures\CodeGenerationHelpers.sql" />
     <Build Include="API\Stored Procedures\GetPhysicianGoogleAccount.sql" />
+    <Build Include="dbo\Tables\Date.sql" />
+    <Build Include="dbo\Functions\fn_Weekdays.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

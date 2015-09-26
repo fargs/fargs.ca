@@ -240,8 +240,6 @@
     <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
     <Compile Include="Areas\Assessments\Controllers\HomeController.cs" />
     <Compile Include="Areas\Assessments\Models\Home\IndexViewModel.cs" />
-    <Compile Include="Areas\Dashboard\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Dashboard\DashboardAreaRegistration.cs" />
     <Compile Include="Areas\Developers\Controllers\HomeController.cs" />
     <Compile Include="Areas\Developers\DevelopersAreaRegistration.cs" />
     <Compile Include="Areas\Invoices\Controllers\HomeController.cs" />
@@ -252,8 +250,10 @@
     <Compile Include="Areas\Scheduling\SchedulingAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\AvailabilityController.cs" />
     <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
@@ -267,6 +267,7 @@
     <Compile Include="Library\Extensions.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Appointment\Index.cs" />
+    <Compile Include="Models\Availability\Index.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Areas\Admin\Models\Role\IndexViewModel.cs" />
@@ -792,8 +793,6 @@
     <Content Include="Areas\Developers\Views\Home\Design.cshtml" />
     <Content Include="Areas\Assessments\Views\web.config" />
     <Content Include="Areas\Assessments\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Dashboard\Views\web.config" />
-    <Content Include="Areas\Dashboard\Views\Home\Index.cshtml" />
     <Content Include="Areas\Scheduling\Views\web.config" />
     <Content Include="Areas\Scheduling\Views\Home\Index.cshtml" />
     <Content Include="Areas\Invoices\Views\web.config" />
@@ -891,6 +890,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\_ServiceOverviewPublic.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Availability\Index.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>
@@ -898,8 +899,6 @@
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Assessments\Views\Shared\" />
-    <Folder Include="Areas\Dashboard\Models\" />
-    <Folder Include="Areas\Dashboard\Views\Shared\" />
     <Folder Include="Areas\Developers\Models\" />
     <Folder Include="Areas\Invoices\Models\" />
     <Folder Include="Areas\Invoices\Views\Shared\" />

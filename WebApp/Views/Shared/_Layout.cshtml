@@ -25,8 +25,9 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Files", "", "Assessments", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Appointments", "", "Appointment", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Cases", "", "Assessments", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Calendar", "", "Appointment", new { area = "" }, null)</li>
+                        @*<li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>*@
                         <li>@Html.ActionLink("Invoices", "", "Invoices", new { area = "" }, null)</li>
                         @*<li>@Html.ActionLink("Process", "Index", "Home", new { area = "Process" }, null)</li>
                         <li>@Html.ActionLink("Admin", "Index", "Home", new { area = "Admin" }, null)</li>*@

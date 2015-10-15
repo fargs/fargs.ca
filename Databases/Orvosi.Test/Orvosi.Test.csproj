@@ -60,11 +60,6 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="AccountManagement.resx">
-      <DependentUpon>AccountManagement.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

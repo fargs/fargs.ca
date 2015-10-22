@@ -3,37 +3,64 @@
     ViewBag.Title = "Register";
 }
 
-<h2>@ViewBag.Title.</h2>
-
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@section instructions 
 {
+    Submit a request an Orvosi account.
+}
+
+<form method="post" action="~/Account/Register" role="form">
     @Html.AntiForgeryToken()
-    <h4>Create a new account.</h4>
+    <h4>Request an account</h4>
     <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-        </div>
+        <label for="FirstName" class="control-label">First Name</label>
+        <input type="text" class="form-control" name="FirstName" id="FirstName" />
+        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        </div>
+        <label for="LastName" class="control-label">Last Name</label>
+        <input type="text" class="form-control" name="LastName" id="LastName" />
+        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" checked name="IsPhysician" data-toggle="collapse" data-target="#CompanyNameFormGroup"> Are you a physician?
+        </label>
+    </div>
+    <div class="form-group collapse" id="CompanyNameFormGroup">
+        <label for="CompanyName" class="control-label">What company do you work for?</label>
+        <input type="text" class="form-control" name="CompanyName" id="CompanyName" />
+        @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        </div>
+        <label for="Email" class="control-label">Email</label>
+        <input type="text" class="form-control" name="Email" id="Email" />
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
-        </div>
+        <label for="Password" class="control-label">Password</label>
+        <input type="password" class="form-control" name="Password" id="Password" />
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
     </div>
+    <div class="form-group">
+        <label for="ConfirmPassword" class="control-label">Confirm Password</label>
+        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" />
+        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+
+@section footer
+{
+<div class="col-md-6">
+    <a href="~/Account/Login"><small>Already registered?</small></a>
+</div>
+<div class="col-md-6 text-right">
+    <a href="~/Account/Help#Registration"><small>Need Help?</small></a>
+</div>
 }
 
 @section Scripts {

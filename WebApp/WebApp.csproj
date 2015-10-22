@@ -257,6 +257,7 @@
     <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
@@ -333,7 +334,6 @@
     <Content Include="Content\images\logo-inverse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\images\logo-small.jpg" />
     <Content Include="Content\images\logo-small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -348,7 +348,7 @@
     </Content>
     <Content Include="Content\images\Orvosi-Banners-01.png" />
     <Content Include="Content\images\Orvosi-Banners-Gray.png" />
-    <Content Include="Content\images\sm-Orvosi-Gradient-Colour.png" />
+    <Content Include="Content\images\logo-sm.png" />
     <Content Include="Content\images\sm-Orvosi-Solid-White.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -631,6 +631,9 @@
     <Content Include="Views\Availability\Index.cshtml" />
     <Content Include="Views\Account\_Layout.cshtml" />
     <Content Include="Views\Account\_ViewStart.cshtml" />
+    <Content Include="Views\Home\_Layout.cshtml" />
+    <Content Include="Views\Home\_ViewStart.cshtml" />
+    <Content Include="Views\Account\RegisterConfirmation.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>
@@ -645,7 +648,6 @@
     <Folder Include="Areas\Process\Views\Shared\" />
     <Folder Include="Areas\Scheduling\Models\" />
     <Folder Include="Areas\Scheduling\Views\Shared\" />
-    <Folder Include="ViewModels\" />
     <Folder Include="Views\Assessment\" />
   </ItemGroup>
   <ItemGroup>

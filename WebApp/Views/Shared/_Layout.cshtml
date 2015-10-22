@@ -17,8 +17,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @*<a href="@Url.Content("~")"><img src="@Url.Content("~/Content/images/logo-small.png")" class="navbar-brand" /></a>*@
-                <a class="navbar-brand topnav" href="@Url.Content("~")">Orvosi Inc</a>
+                <a href="~/" class="navbar-brand top-nav"><div class="image-logo-icon"></div></a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -37,45 +36,28 @@
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container well body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <span class="copyright">Orvosi &copy; 2015</span>
-                    </div>
-                    <div class="col-md-4">
-                        <ul class="list-inline social-buttons">
-                            <li>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-linkedin"></i></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4">
-                        <ul class="list-inline quicklinks">
-                            <li>
-                                <a href="#">Privacy Policy</a>
-                            </li>
-                            <li>
-                                <a href="#">Terms of Use</a>
-                            </li>
-                            <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, null)</li>
-                        </ul>
-                    </div>
+    </div>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="copyright text-muted small">Orvosi Inc. &copy; @DateTime.Now.Year. All Rights Reserved</p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <ul class="list-inline quicklinks small">
+                        <li>
+                            <a href="#">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#">Terms of Use</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </footer>
-    </div>
-
+        </div>
+    </footer>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

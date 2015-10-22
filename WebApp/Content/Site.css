@@ -31,9 +31,9 @@ textarea {
     max-width: 280px;
 }*/
 
-/*.navbar{
+.navbar{
     margin-bottom:0;
-}*/
+}
 
 /*.about-header {
     padding: 30px 0px 10px 0px;
@@ -97,6 +97,20 @@ textarea {
     margin-top: 10%;
 }
 
+.body-content {
+    background-color: white;
+}
+
+.image-logo-icon {
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAUCAYAAABiS3YzAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAoxJREFUOE+9lM9rE0EUx7dVW6VVwVpLVdLs7swkBuwl2iQ7s10xFUpPKhSl6MFaBXsVpCc9iRfx4E2Qgh4Eg0ptm539oQQPevKkhuJVT+L/YHyzeZvGpnX10i88dpn35rPvvXmz2rbLJaTX45lZn9NFaaeGK7lcD7r+XxVnsN/j9KYv6Jpvswa8199axAyszGGvmDtQc0Z2Y2iyag476AlyGzL7pmCxtUNjU7Efikf3wLau5u5N5HIy6wn6sx0WAQX77go2H5azA+/s7HA7WNn7knHo6ehQH2L+UJdnkRAy+gGgXxHMpnVpm3MVJ9ePMVCJs9MdI/skwqWTSQecFF2oAkPWtVKkR6RF1rwS+epZZh16eVEB0N2hxh2tOzyZHQi5ISQ3T60W0oXGxjb43DgXAcEgaBECutG1pdRhVYXBFVRa1Mb+rsvjZKEFtcgtWNq6+ajKtLajahknFNQVxFGZo6spKPlZCyr0CVxOVDBOj0WZqhaU0iO4DKWfGe2DQ/ocQS3yKZww9qMrUWqsYqgvzDwua5paiLME6CtVFroSVYPJcC065QqjvAJ9dSdJb+QIBCvDSNRcTiXM6WvJ6XlYTuzpx3x+F5Q/BZNyXRmcy8ySldmLbhh8QealoMvK4P0lBBXQtanUSLmciUDQaxGUs6te0SToburLdK4HvnQ3BkvBnixzI4XuDlXH9ePSZnNRhhE46mdndZDhoOTkUQvMycNQ6MwfY7pvp8DUk+kBAOH/cCUu2y+x03+7KFoosgy+/LwJpS+q3HwAH7vfblKY9wB6o5klO/tPf6wQegWHtgSbH28EtoyzBbjzM+o/gNuSBRlMAvTyKhqALsXvyuCyXHhT0IcwfDukab8BpEYpCJUmHywAAAAASUVORK5CYII=) no-repeat;
+  width: 51px; /* Width of new image */
+  height: 50px; /* Height of new image */
+  padding-left: 51px; /* Equal to width of new image */
+}
+
 .image-logo-md {
   display: block;
   -moz-box-sizing: border-box;
@@ -116,3 +130,5 @@ textarea {
   height: 116px; /* Height of new image */
   padding-left: 363px; /* Equal to width of new image */
 }
+
+

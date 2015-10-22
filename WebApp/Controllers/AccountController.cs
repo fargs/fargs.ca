@@ -183,7 +183,13 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName =  model.FirstName,
+                    LastName = model.LastName
+                };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -192,15 +198,14 @@ namespace WebApp.Controllers
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+                    //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
 
                     // Uncomment to debug locally 
-                    TempData["ViewBagLink"] = callbackUrl;
+                    //TempData["ViewBagLink"] = callbackUrl;
 
                     //  Uncomment the following line to prevent log in until the user is confirmed.
-                    ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
-                                    + "before you can log in.";
-                    return View("Info");
+                    //ViewBag.Message = "Check your email and confirm your account, you must be confirmed before you can log in.";
+                    return RedirectToAction("RegisterConfirmation");
 
                     //  Comment the following line to prevent log in until the user is confirmed.
                     //return RedirectToAction("Index", "Home");
@@ -210,6 +215,12 @@ namespace WebApp.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult RegisterConfirmation()
+        {
+            return View();
         }
 
         //

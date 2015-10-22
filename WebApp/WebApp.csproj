@@ -631,6 +631,7 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Availability\Index.cshtml" />
     <Content Include="Views\Account\_Layout.cshtml" />
+    <Content Include="Views\Account\_ViewStart.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

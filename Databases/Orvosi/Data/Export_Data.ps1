@@ -1,6 +1,6 @@
 ﻿Param(
 	$DBName = "Orvosi",
-	$Server = "localhost"
+	$Server = "(localdb)\mssqllocaldb"
 )
 
 function Create-SQLScript
@@ -116,7 +116,7 @@ $settings.IndentChars = '  '
 $settings.NewLineChars = [System.Environment]::NewLine
 $settings.OmitXmlDeclaration = $true
 
-#Export Static Data to StaticData folder
+<#Export Static Data to StaticData folder
 Get-Content ((Join-Path -path $Deploy_Dir.FullName -childpath "StaticData.txt")) | ForEach-Object {
 
     Export-TableData $_ $StaticData_Dir.FullName
@@ -135,7 +135,7 @@ Get-Content ((Join-Path -path $Deploy_Dir.FullName -childpath "TestData.txt")) |
 
     Export-TableData $_ $TestData_Dir.FullName
 }
-
+#>
 Create-SQLScript $SqlT4_File.FullName
 
 

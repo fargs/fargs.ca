@@ -4,48 +4,42 @@
     ViewBag.Title = "Log in";
 }
 
-<div class="row">
-    <div class="col-md-6 col-md-offset-3">
-        <div class="row well" style="background-color: white; margin-top: 50px">
-            <div class="col-md-4" style="vertical-align: middle">
-                <div class="image-logo-md"></div>
-            </div>
-            <div class="col-md-8" style="border-left: 1px solid #d4d4d4">
-                <section id="loginForm">
-                    <form method="post" action="~/Account/Login?@ViewBag.ReturnUrl" role="form">
-                        @Html.AntiForgeryToken()
-                        <div class="form-group">
-                            <label for="Email" class="control-label">Email</label>
-                            <input type="text" class="form-control" name="Email" id="Email" />
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            <label for="Password" class="control-label">Password</label>
-                            <input type="password" class="form-control" name="Password" id="Password" />
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"> Remember me?
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Log in" class="btn btn-primary" />
-                        </div>
-                    </form>
-                </section>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <a href="~/Account/ForgotPassword"><small>Forgot your password?</small></a>
-            </div>
-            <div class="col-md-6 text-right">
-                <a href="~/Account/Help#ForgotPassword"><small>Need Help?</small></a>
-            </div>
-        </div>
+@section instructions 
+{
+<span>Enter your email and password to log in.</span>
+}
+
+<form method="post" action="~/Account/Login?@ViewBag.ReturnUrl" role="form">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="Email" class="control-label">Email</label>
+        <input type="text" class="form-control" name="Email" id="Email" />
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
-</div>
+    <div class="form-group">
+        <label for="Password" class="control-label">Password</label>
+        <input type="password" class="form-control" name="Password" id="Password" />
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox"> Remember me?
+        </label>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Log in" class="btn btn-primary" />
+    </div>
+</form>
+
+@section footer 
+{
+    <div class="col-md-6">
+        <a href="~/Account/ForgotPassword"><small>Forgot your password?</small></a>
+    </div>
+    <div class="col-md-6 text-right">
+        <a href="~/Account/Help#ForgotPassword"><small>Need Help?</small></a>
+    </div>
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

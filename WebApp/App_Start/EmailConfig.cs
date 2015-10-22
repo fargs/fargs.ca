@@ -42,7 +42,7 @@ namespace WebApp
 
     public class LocalEmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
             // Plug in your email service here to send an email.
             var client = new SmtpClient
@@ -61,9 +61,7 @@ namespace WebApp
                 IsBodyHtml = true,
             };
 
-            client.Send(mail);
-
-            return Task.FromResult(0);
+            await client.SendMailAsync(mail);
         }
     }
 }

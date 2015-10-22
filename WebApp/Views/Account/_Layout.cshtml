@@ -10,7 +10,22 @@
 </head>
 <body>
     <div class="container body-content">
-        @RenderBody()
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="row well" style="background-color: white; margin-top: 50px">
+                    <div class="col-md-4" style="vertical-align: middle">
+                        <div class="image-logo-md"></div>
+                        <div class="help-block">@RenderSection("instructions", required: false)</div>
+                    </div>
+                    <div class="col-md-8" style="border-left: 1px solid #d4d4d4">
+                        @RenderBody()
+                    </div>
+                </div>
+                <div class="row">
+                    @RenderSection("footer", required: true)
+                </div>
+            </div>
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")

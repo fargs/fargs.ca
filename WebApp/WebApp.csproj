@@ -309,7 +309,6 @@
     <Content Include="Content\jQuery.FileUpload\css\jquery.fileupload.css" />
     <Content Include="Content\jQuery.FileUpload\img\loading.gif" />
     <Content Include="Content\jQuery.FileUpload\img\progressbar.gif" />
-    <Content Include="Content\landing-page.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\images\ADMIN IMAGE1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using WebApp.Models;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers
@@ -14,11 +15,13 @@ namespace WebApp.Controllers
     {
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
+        private ApplicationDbContext _db;
 
         public async Task<ActionResult> Index()
         {
             _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             _roleManager = HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+            _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var model = new DashboardViewModel();
             model.UserDisplayName = user.DisplayName;
@@ -26,6 +29,11 @@ namespace WebApp.Controllers
             {
                 var roleId = user.Roles.First().RoleId;
                 model.UserRoleName = _roleManager.Roles.SingleOrDefault(c => c.Id == roleId).Name;
+            }
+            var company = _db.Companies.SingleOrDefault(c => c.Id == user.CompanyId);
+            if (company != null)
+            {
+                model.UserCompanyDisplayName = company.Name;
             }
             return View(model);
         }

@@ -188,7 +188,8 @@ namespace WebApp.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     FirstName =  model.FirstName,
-                    LastName = model.LastName
+                    LastName = model.LastName,
+                    CompanyName = model.CompanyName
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

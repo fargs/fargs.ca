@@ -3,6 +3,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace WebApp.Models
 {
@@ -17,12 +21,12 @@ namespace WebApp.Models
             return userIdentity;
         }
 
+        public Nullable<short> CompanyId { get; set; }
+        public string CompanyName { get; set; }
         public string EmployeeId { get; set; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
-
         public string DisplayName
         {
             get
@@ -46,11 +50,20 @@ namespace WebApp.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+            
         }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Company> Companies { get; set; }
     }
 }

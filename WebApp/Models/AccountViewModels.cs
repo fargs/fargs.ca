@@ -72,7 +72,6 @@ namespace WebApp.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Required]
         [Display(Name = "Are you a physician")]
         public string IsPhysician { get; set; }
 

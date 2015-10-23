@@ -5,6 +5,16 @@
 <h2>@ViewBag.Title.</h2>
 <div>
     <p>
-        Thank you for confirming your email. Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+        Thank you for confirming your email.
     </p>
+<p>Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</p>
 </div>
+
+@section footer {
+<div class="col-md-6">
+    <a href="~/Account/Login"><small>Login</small></a>
+</div>
+<div class="col-md-6 text-right">
+    <a href="~/Account/Help#ConfirmEmail"><small>Need Help?</small></a>
+</div>
+}

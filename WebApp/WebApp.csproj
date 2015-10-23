@@ -542,7 +542,7 @@
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\orvosi.pubxml" />
+    <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

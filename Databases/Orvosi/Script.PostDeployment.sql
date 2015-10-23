@@ -13,16 +13,3 @@ Post-Deployment Script Template
 :r .\Data\Script.Data.PostDeployment.Static.sql
 :r .\Data\Script.Data.PostDeployment.Config.sql
 :r .\Data\Script.Data.PostDeployment.Test.sql
-
--- =================================================
--- Create User as DBO template for Windows Azure SQL Database
--- =================================================
--- For login orvosi_webagent, create a user in the database
-CREATE USER [orvosi-webagent]
-	FOR LOGIN [orvosi-webagent]
-	WITH DEFAULT_SCHEMA = dbo
-GO
-
--- Add user to the database owner role
-EXEC sp_addrolemember N'db_owner', N'orvosi-webagent'
-GO

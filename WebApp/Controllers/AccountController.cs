@@ -98,9 +98,9 @@ namespace WebApp.Controllers
                     string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
                     // Uncomment to debug locally  
-                    // ViewBag.Link = callbackUrl;
+                    ViewBag.Link = callbackUrl;
 
-                    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    ViewBag.errorMessage = "You must have a confirmed email to log on. A confirmation email has been re-sent to your account.";
                     return View("Error");
                 }
             }

@@ -257,6 +257,7 @@
     <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -635,6 +636,8 @@
     <Content Include="Views\Home\_Layout.cshtml" />
     <Content Include="Views\Home\_ViewStart.cshtml" />
     <Content Include="Views\Account\RegisterConfirmation.cshtml" />
+    <Content Include="Views\Diagnostics\Index.cshtml" />
+    <Content Include="Views\Diagnostics\SendEmail.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

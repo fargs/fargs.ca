@@ -1,5 +1,5 @@
-﻿@using Microsoft.AspNet.Identity
-@if (Request.IsAuthenticated)
+﻿@model WebApp.ViewModels.LoginPartialViewModel
+@if (Model.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
@@ -7,10 +7,10 @@
         
 <ul class="nav navbar-nav navbar-right">
     <li>
-        @Html.ActionLink(User.Identity.GetUserName(), "Index", "Manage", routeValues: new { area = "" }, htmlAttributes: new { title = "Manage" })
+        @Html.ActionLink(Model.UserDisplayName, "Index", "Manage", routeValues: new { area = "" }, htmlAttributes: new { title = "Manage" })
     </li>
     <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    <li><a href="@Url.Content("~/Admin")"><i class="glyphicon glyphicon-cog"></i></a></li>
+    <li><a href='@Url.Content("~/Admin")'><i class="glyphicon glyphicon-cog"></i></a></li>
 </ul>
     }
 }

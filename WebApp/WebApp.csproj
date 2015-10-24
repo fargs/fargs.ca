@@ -258,6 +258,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="ViewModels\LoginPartialViewModel.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />

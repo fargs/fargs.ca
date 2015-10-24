@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using WebApp.Models;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -114,6 +115,7 @@ namespace WebApp.Controllers
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
+                //TODO: Remove the send code on login failure
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
@@ -121,6 +123,20 @@ namespace WebApp.Controllers
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
             }
+        }
+
+        [ChildActionOnly]
+        [AllowAnonymous]
+        public ActionResult _LoginPartial()
+        {
+            var model = new LoginPartialViewModel();
+            model.IsAuthenticated = User.Identity.IsAuthenticated;
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = UserManager.FindByName(User.Identity.Name);
+                model.UserDisplayName = user.DisplayName;
+            }
+            return PartialView(model);
         }
 
         //

@@ -34,6 +34,7 @@ namespace WebApp.Controllers
             if (company != null)
             {
                 model.UserCompanyDisplayName = company.Name;
+                model.UserCompanyLogoCssClass = company.LogoCssClass;
             }
             return View(model);
         }

@@ -4,6 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Model.UserDisplayName</h2>
+@if (string.IsNullOrEmpty(Model.UserCompanyLogoCssClass))
+{
+    <div class="@Model.UserCompanyLogoCssClass"></div>
+}
+else
+{
+    <h2>@Model.UserCompanyDisplayName</h2>
+}
 <p class="help-block text-danger">@Model.UserRoleName</p>
 <p class="help-block text-danger">@Model.UserCompanyDisplayName</p>   

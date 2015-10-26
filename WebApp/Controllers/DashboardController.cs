@@ -17,7 +17,7 @@ namespace WebApp.Controllers
         private ApplicationRoleManager _roleManager;
         private ApplicationDbContext _db;
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string schedulingProcess = "ByPhysician")
         {
             _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             _roleManager = HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
@@ -25,6 +25,7 @@ namespace WebApp.Controllers
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var model = new DashboardViewModel();
             model.UserDisplayName = user.DisplayName;
+            model.SchedulingProcess = schedulingProcess;
             if (user.Roles.Count > 0)
             {
                 var roleId = user.Roles.First().RoleId;
@@ -36,7 +37,17 @@ namespace WebApp.Controllers
                 model.UserCompanyDisplayName = company.Name;
                 model.UserCompanyLogoCssClass = company.LogoCssClass;
             }
+            if (model.SchedulingProcess == "ByTime")
+            {
+                model.BookingPageName = company.MasterBookingPageByTime;
+            }
+            else
+            {
+                model.BookingPageName = company.MasterBookingPageByPhysician;
+            }
             return View(model);
         }
+
+        
     }
 }

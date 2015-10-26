@@ -544,6 +544,7 @@
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap-custom\mixins\two-column-layout.less" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -639,6 +640,7 @@
     <Content Include="Views\Account\RegisterConfirmation.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Diagnostics\SendEmail.cshtml" />
+    <Content Include="Views\Dashboard\Scheduler.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

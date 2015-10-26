@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="navbar">
-        <div class="container-fluid">
+        <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
@@ -23,8 +23,8 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        @*<li>@Html.ActionLink("Cases", "", "Assessments", new { area = "" }, null)</li>
+                        @*<li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Cases", "", "Assessments", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Calendar", "", "Appointment", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Invoices", "", "Invoices", new { area = "" }, null)</li>
@@ -32,15 +32,15 @@
                         <li>@Html.ActionLink("Admin", "Index", "Home", new { area = "Admin" }, null)</li>*@
                     }
                 </ul>
-                @Html.Action("_LoginPartial", "Account")
+                @Html.Action("_LoginPartial", "Account", new { area = "" })
             </div>
         </div>
     </div>
-    <div class="container-fluid well body-content">
+    <div class="container well body-content">
         @RenderBody()
     </div>
     <footer>
-        <div class="container-fluid">
+        <div class="container">
             <div class="row">
                 <div class="col-md-6">
                     <p class="copyright text-muted small">Orvosi Inc. &copy; @DateTime.Now.Year. All Rights Reserved</p>

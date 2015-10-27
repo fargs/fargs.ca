@@ -238,6 +238,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CompanyController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin\Models\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
@@ -258,6 +259,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Models\CompanyAspNetUsers.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
@@ -645,6 +647,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Views\Company\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Assessments\Views\Shared\" />
@@ -668,6 +671,9 @@
       <Project>{57efe4ba-d313-4e8a-93e4-7e3d9443103b}</Project>
       <Name>Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

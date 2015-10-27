@@ -12,5 +12,6 @@ namespace WebApp.Models
         public string LogoCssClass { get; set; }
         public string MasterBookingPageByTime { get; set; }
         public string MasterBookingPageByPhysician { get; set; }
+        public string MasterBookingPageTeleconference { get; set; }
     }
 }

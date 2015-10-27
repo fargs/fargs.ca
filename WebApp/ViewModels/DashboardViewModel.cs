@@ -8,6 +8,7 @@
         public string UserCompanyLogoCssClass { get; set; }
         public string SchedulingProcess { get; set; }
         public string BookingPageName { get; set; }
+        public string Instructions { get; set; }
         public DashboardViewModel()
         {
         }

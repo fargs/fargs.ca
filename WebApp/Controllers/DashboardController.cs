@@ -36,14 +36,22 @@ namespace WebApp.Controllers
             {
                 model.UserCompanyDisplayName = company.Name;
                 model.UserCompanyLogoCssClass = company.LogoCssClass;
-            }
-            if (model.SchedulingProcess == "ByTime")
-            {
-                model.BookingPageName = company.MasterBookingPageByTime;
-            }
-            else
-            {
-                model.BookingPageName = company.MasterBookingPageByPhysician;
+
+                if (model.SchedulingProcess == "ByTime")
+                {
+                    model.BookingPageName = company.MasterBookingPageByTime;
+                    model.Instructions = "Pick your file, pick your time, and we will find you a physician";
+                }
+                else if (model.SchedulingProcess == "Teleconference")
+                {
+                    model.BookingPageName = company.MasterBookingPageTeleconference;
+                    model.Instructions = "If you do not see your physician they do not have set hours. Please click here to submit your request.";
+                }
+                else if (model.SchedulingProcess == "ByPhysician")
+                {
+                    model.BookingPageName = company.MasterBookingPageByPhysician;
+                    model.Instructions = "Pick your file, pick your physician, then pick your time";
+                }
             }
             return View(model);
         }

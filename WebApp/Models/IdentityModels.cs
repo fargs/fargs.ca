@@ -65,5 +65,7 @@ namespace WebApp.Models
         }
 
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceCatalogue> ServiceCatalogue { get; set; }
     }
 }

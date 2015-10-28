@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Company] (
-    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [Id]           SMALLINT            IDENTITY (1, 1) NOT NULL,
     [Name]         NVARCHAR (128) NULL,
     [ParentId]     INT            NULL,
 	[LogoCssClass] NVARCHAR(50)   NULL, 

@@ -30,7 +30,8 @@ namespace WebApp
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+                      "~/Scripts/respond.js",
+                      "~/Scripts/toastr.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/fullcalendar").Include(
                       "~/Scripts/moment.min.js",
@@ -38,6 +39,7 @@ namespace WebApp
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap-custom/bootstrap.css",
+                      "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/fullcalendar.css",
                       "~/Content/Site.css"));

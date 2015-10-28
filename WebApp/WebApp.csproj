@@ -259,7 +259,13 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="Models\CompanyAspNetUsers.cs" />
+    <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\Service.cs" />
+    <Compile Include="Models\ServiceCatalogue.cs" />
+    <Compile Include="Models\ServiceCategory.cs" />
+    <Compile Include="Models\ServicePortfolio.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
@@ -424,6 +430,8 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="Content\toastr.css" />
+    <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -460,6 +468,8 @@
     <Content Include="Areas\Scheduling\Views\Home\Index.cshtml" />
     <Content Include="Areas\Invoices\Views\web.config" />
     <Content Include="Areas\Invoices\Views\Home\Index.cshtml" />
+    <Content Include="Scripts\toastr.js" />
+    <Content Include="Scripts\toastr.min.js" />
     <Content Include="Views\Appointment\Book.cshtml" />
     <Content Include="orvosi-3fbc42670b5a.p12">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -542,11 +552,14 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap-custom\mixins\two-column-layout.less" />
+    <Content Include="Content\toastr.scss" />
+    <Content Include="Content\toastr.less" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -642,13 +655,17 @@
     <Content Include="Views\Account\RegisterConfirmation.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Diagnostics\SendEmail.cshtml" />
-    <Content Include="Views\Dashboard\Scheduler.cshtml" />
+    <Content Include="Views\Dashboard\_SpecialRequestForm.cshtml" />
+    <Content Include="Views\Dashboard\_Layout.cshtml" />
+    <Content Include="Views\Dashboard\_ViewStart.cshtml" />
+    <Content Include="Views\Dashboard\_ScheduleOnceForm.cshtml" />
+    <Content Include="Views\Dashboard\_ScheduleOnceForm_js.cshtml" />
+    <Content Include="Views\Dashboard\_SpecialRequestForm_js.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Views\Company\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Assessments\Views\Shared\" />
     <Folder Include="Areas\Developers\Models\" />
@@ -658,6 +675,7 @@
     <Folder Include="Areas\Process\Views\Shared\" />
     <Folder Include="Areas\Scheduling\Models\" />
     <Folder Include="Areas\Scheduling\Views\Shared\" />
+    <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Views\Assessment\" />
   </ItemGroup>
   <ItemGroup>

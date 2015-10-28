@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Models;
-using WebApp.ViewModels;
+using vm = WebApp.ViewModels;
+using enums = WebApp.Models.Enums;
 
 namespace WebApp.Controllers
 {
@@ -17,15 +18,17 @@ namespace WebApp.Controllers
         private ApplicationRoleManager _roleManager;
         private ApplicationDbContext _db;
 
+        // MVC
         public async Task<ActionResult> Index(string schedulingProcess = "ByPhysician")
         {
             _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             _roleManager = HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
             _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var model = new DashboardViewModel();
+            var model = new vm.DashboardViewModel();
             model.UserDisplayName = user.DisplayName;
             model.SchedulingProcess = schedulingProcess;
+            model.Physicians = GetPhysicians();
             if (user.Roles.Count > 0)
             {
                 var roleId = user.Roles.First().RoleId;
@@ -40,22 +43,56 @@ namespace WebApp.Controllers
                 if (model.SchedulingProcess == "ByTime")
                 {
                     model.BookingPageName = company.MasterBookingPageByTime;
-                    model.Instructions = "Pick your file, pick your time, and we will find you a physician";
                 }
                 else if (model.SchedulingProcess == "Teleconference")
                 {
                     model.BookingPageName = company.MasterBookingPageTeleconference;
-                    model.Instructions = "If you do not see your physician they do not have set hours. Please click here to submit your request.";
                 }
                 else if (model.SchedulingProcess == "ByPhysician")
                 {
                     model.BookingPageName = company.MasterBookingPageByPhysician;
-                    model.Instructions = "Pick your file, pick your physician, then pick your time";
+                }
+                else if (model.SchedulingProcess == "SpecialRequest")
+                {
+                    model.BookingPageName = null;
                 }
             }
             return View(model);
         }
 
-        
+        // API
+        [HttpGet]
+        public JsonResult GetServiceCatalogue(string id)
+        {
+            _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+
+            var list = from sc in _db.ServiceCatalogue
+                       join s in _db.Services on sc.ServiceId equals s.Id
+                       where sc.PhysicianId == id
+                       select new vm.Service { Id = s.Id, Name = s.Name };
+            return Json(list.ToList(), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult SubmitSpecialRequest(SpecialRequestFormViewModel vm)
+        {
+            var result = new
+            {
+                success = true,
+                message = "Request submitted successfully"
+            };
+            return Json(result);
+        }
+
+        private IEnumerable<ViewModels.Physician> GetPhysicians()
+        {
+            var role = _roleManager.Roles.SingleOrDefault(r => r.Id == enums.Roles.Physician);
+            var users = _userManager.Users.Where(u => u.Roles.Any(r => r.RoleId == role.Id));
+            return users.Select(u => new ViewModels.Physician()
+            {
+                Id = u.Id,
+                DisplayName = u.FirstName
+            });
+        }
     }
 }

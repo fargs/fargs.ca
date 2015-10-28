@@ -1,0 +1,31 @@
+﻿@model WebApp.ViewModels.DashboardViewModel
+
+<h3>Special Request</h3>
+<form id="SpecialRequestForm" method="post" action='@Url.Content("~/Dashboard/SubmitSpecialRequest")' role="form">
+    <div class="form-group">
+        <label for="PhysicianId" class="control-label">Select a physician</label>
+        <select class="form-control" name="PhysicianId" id="PhysicianId">
+            <option></option>
+            @foreach (var item in Model.Physicians)
+            {
+                <option value="@item.Id">@item.DisplayName</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="ServiceId" class="control-label">Select a file type</label>
+        <select class="form-control" name="ServiceId" id="ServiceId">
+            <option></option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="Timeframe" class="control-label">When are you hoping to book the appointment?</label>
+        <div class="help-block">Describe the timeframe in your own words. Eg. any date in November, must be in the morning of 2015-OCT-01.</div>
+        <input type="text" class="form-control" name="Timeframe" id="Timeframe"/>
+    </div>
+    <div class="form-group">
+        <label for="AdditionalNotes" class="control-label">Additional Notes</label>
+        <textarea rows="3" class="form-control" name="AdditionalNotes" id="AdditionalNotes"></textarea>
+    </div>
+    <button class="btn btn-primary" id="submit">Submit</button>
+</form>

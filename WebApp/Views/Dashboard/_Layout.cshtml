@@ -1,0 +1,71 @@
+﻿@model WebApp.ViewModels.DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@functions
+{
+    string GetButtonState(string id)
+    {
+        if (Model.SchedulingProcess == "ByPhysician" && id == "ByPhysician"
+                || Model.SchedulingProcess == "ByTime" && id == "ByTime"
+                || Model.SchedulingProcess == "Teleconference" && id == "Teleconference"
+                || Model.SchedulingProcess == "SpecialRequest" && id == "SpecialRequest")
+        {
+            return "active";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+}
+
+<div class="col-md-3">
+    <div class="img-thumbnail @Model.UserCompanyLogoCssClass"></div>
+    <div class="page-header">
+        <h1>@Model.UserCompanyDisplayName</h1>
+    </div>
+    <div class="text-muted">
+        <small>
+            We only show specialties and file types that are available. If it doesn't show up, there are no physicians available of that speciality or who have agreed to do that file type.
+            <br /><br />
+            Sincerely,
+            <br />
+            Orvosi Medical Management
+        </small>
+    </div>
+</div>
+<div class="col-md-9">
+    <div class="btn-group" role="group" aria-label="Scheduling process" style="padding-bottom:1em;">
+        <a href="~/Dashboard/Index?schedulingProcess=ByPhysician" class='btn btn-default @GetButtonState("ByPhysician")'>By Physician</a>
+        <a href="~/Dashboard/Index?schedulingProcess=ByTime" class='btn btn-default @GetButtonState("ByTime")'>By Time</a>
+        <a href="~/Dashboard/Index?schedulingProcess=Teleconference" class='btn btn-default @GetButtonState("Teleconference")'>Teleconference</a>
+    </div>
+    <a href="~/Dashboard/Index?schedulingProcess=SpecialRequest" class='btn btn-default pull-right @GetButtonState("SpecialRequest")'>Special Request</a>
+    <div class="alert alert-warning alert-dismissable">
+        @if (Model.SchedulingProcess == "ByPhysician")
+        {
+            <span>Pick your specialty, pick your file, pick your physician, then pick your time.</span>
+        }
+        else if (Model.SchedulingProcess == "ByTime")
+        {
+            <span>Pick your specialty, pick your file, pick your time, and we will find you a physician</span>
+        }
+        else if (Model.SchedulingProcess == "Teleconference")
+        {
+            <span><i></i>If you do not see your physician, they do not have set hours. Please click <a href="~/Appointment/Book">here</a> request a teleconference.</span>
+        }
+        else if (Model.SchedulingProcess == "SpecialRequest")
+        {
+            <span><i></i>Please submit a special request and we will follow up with you.</span>
+        }
+    </div>
+    @RenderBody()
+</div>
+
+@section scripts
+{
+    @RenderSection("scripts", false)    
+}

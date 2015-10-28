@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ServiceCatalogue] (
     [Id]           SMALLINT        IDENTITY (1, 1) NOT NULL,
-    [DoctorId]     NVARCHAR (128)  NULL,
+    [PhysicianId]     NVARCHAR (128)  NULL,
     [ServiceId]    SMALLINT        NULL,
     [CompanyId]    SMALLINT        NULL,
     [Rate]         DECIMAL (18, 2) NULL,

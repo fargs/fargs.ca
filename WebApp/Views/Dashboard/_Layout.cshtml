@@ -29,7 +29,7 @@
     </div>
     <div class="text-muted">
         <small>
-            We only show specialties and file types that are available. If it doesn't show up, there are no physicians available of that speciality or who have agreed to do that file type.
+            Welcome to your personalized IME scheduling page. Use our scheduling tools to find the right physician for your evaluation at the right time.
             <br /><br />
             Sincerely,
             <br />
@@ -55,7 +55,7 @@
         }
         else if (Model.SchedulingProcess == "Teleconference")
         {
-            <span><i></i>If you do not see your physician, they do not have set hours. Please click <a href="~/Appointment/Book">here</a> request a teleconference.</span>
+            <span><i></i>If you do not see your physician, they do not have set hours. Please click <a href="~/Dashboard/Index?schedulingProcess=SpecialRequest">here</a> request a teleconference.</span>
         }
         else if (Model.SchedulingProcess == "SpecialRequest")
         {

@@ -52,5 +52,11 @@ namespace WebApp.Controllers
         {
             return View();
         }
+
+        [AllowAnonymous]
+        public ActionResult TestHelper()
+        {
+            return View();
+        }
     }
 }

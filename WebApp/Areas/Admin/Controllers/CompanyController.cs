@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class CompanyController : Controller
+    public class CompanyController : BaseController
     {
         // GET: Admin/Company
         public ActionResult Index()

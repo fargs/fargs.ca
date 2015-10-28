@@ -743,13 +743,13 @@ INSERT INTO #RawData ([Id], [Name], [ResponsibleRoleId], [IsBillable], [Sequence
 	*/
 	SELECT 
 		[Id],
-		[DoctorId],
+		[PhysicianId],
 		[CompanyId]
 	INTO #RawData
 	FROM (
 		SELECT 
 			[Id],
-			[DoctorId],
+			[PhysicianId],
 			[CompanyId]
 		FROM [dbo].[File] 
 		WHERE 1=2
@@ -765,7 +765,7 @@ INSERT INTO #RawData ([Id], [Name], [ResponsibleRoleId], [IsBillable], [Sequence
 	GO
 
 	--This is the data from the file at time of script generation
-INSERT INTO #RawData ([Id], [DoctorId], [CompanyId]) VALUES ('1', 'E62EBEAD-C270-4711-81CB-2CBD6B8031AD', '2')
+INSERT INTO #RawData ([Id], [PhysicianId], [CompanyId]) VALUES ('1', 'E62EBEAD-C270-4711-81CB-2CBD6B8031AD', '2')
 
 	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'[dbo].[File]'), 'TableHasIdentity')) = 1)
 		SET IDENTITY_INSERT #RawData OFF
@@ -790,14 +790,14 @@ INSERT INTO #RawData ([Id], [DoctorId], [CompanyId]) VALUES ('1', 'E62EBEAD-C270
 	SELECT s.[Id] 
 	FROM #RawData s
 	LEFT JOIN [dbo].[File] d ON d.[Id] = s.[Id]
-	WHERE d.[DoctorId] = s.[DoctorId] AND d.[CompanyId] = s.[CompanyId]
+	WHERE d.[PhysicianId] = s.[PhysicianId] AND d.[CompanyId] = s.[CompanyId]
 
 
 	SELECT @CounterIdentical = COUNT(*) FROM @IdenticalRecordIDs
 
 
 	--Update any rows that already exist
-	UPDATE [dbo].[File] SET [DoctorId] = s.[DoctorId], [CompanyId] = s.[CompanyId]
+	UPDATE [dbo].[File] SET [PhysicianId] = s.[PhysicianId], [CompanyId] = s.[CompanyId]
 		, ModifiedDate = GETDATE()
 	, ModifiedUser = SUSER_NAME()
 		OUTPUT Inserted.[Id] INTO @IdenticalRecordIDs
@@ -813,10 +813,10 @@ INSERT INTO #RawData ([Id], [DoctorId], [CompanyId]) VALUES ('1', 'E62EBEAD-C270
 		SET IDENTITY_INSERT [dbo].[File] ON
 
 	--Insert any new rows
-	INSERT INTO [dbo].[File] ([Id], [DoctorId], [CompanyId]
+	INSERT INTO [dbo].[File] ([Id], [PhysicianId], [CompanyId]
 	, ModifiedDate, ModifiedUser	)
 	OUTPUT Inserted.[Id] INTO @IdenticalRecordIDs
-	SELECT [Id], [DoctorId], [CompanyId]
+	SELECT [Id], [PhysicianId], [CompanyId]
 	, GETDATE(), SUSER_NAME()	FROM #RawData
 	WHERE [Id] NOT IN (SELECT id FROM @IdenticalRecordIDs)
 
@@ -1091,7 +1091,7 @@ INSERT INTO #RawData ([Id], [TaskId], [JobId], [DurationFromDueDateInDays], [Res
 	*/
 	SELECT 
 		[Id],
-		[DoctorId],
+		[PhysicianId],
 		[ServiceId],
 		[CompanyId],
 		[Rate]
@@ -1099,7 +1099,7 @@ INSERT INTO #RawData ([Id], [TaskId], [JobId], [DurationFromDueDateInDays], [Res
 	FROM (
 		SELECT 
 			[Id],
-			[DoctorId],
+			[PhysicianId],
 			[ServiceId],
 			[CompanyId],
 			[Rate]
@@ -1117,7 +1117,7 @@ INSERT INTO #RawData ([Id], [TaskId], [JobId], [DurationFromDueDateInDays], [Res
 	GO
 
 	--This is the data from the file at time of script generation
-INSERT INTO #RawData ([Id], [DoctorId], [ServiceId], [CompanyId], [Rate]) VALUES ('1', 'e62ebead-c270-4711-81cb-2cbd6b8031ad', '7', '2', '1000.00')
+INSERT INTO #RawData ([Id], [PhysicianId], [ServiceId], [CompanyId], [Rate]) VALUES ('1', 'e62ebead-c270-4711-81cb-2cbd6b8031ad', '7', '2', '1000.00')
 
 	IF ((SELECT OBJECTPROPERTY( OBJECT_ID(N'[dbo].[ServiceCatalogue]'), 'TableHasIdentity')) = 1)
 		SET IDENTITY_INSERT #RawData OFF
@@ -1142,14 +1142,14 @@ INSERT INTO #RawData ([Id], [DoctorId], [ServiceId], [CompanyId], [Rate]) VALUES
 	SELECT s.[Id] 
 	FROM #RawData s
 	LEFT JOIN [dbo].[ServiceCatalogue] d ON d.[Id] = s.[Id]
-	WHERE d.[DoctorId] = s.[DoctorId] AND d.[ServiceId] = s.[ServiceId] AND d.[CompanyId] = s.[CompanyId] AND d.[Rate] = s.[Rate]
+	WHERE d.[PhysicianId] = s.[PhysicianId] AND d.[ServiceId] = s.[ServiceId] AND d.[CompanyId] = s.[CompanyId] AND d.[Rate] = s.[Rate]
 
 
 	SELECT @CounterIdentical = COUNT(*) FROM @IdenticalRecordIDs
 
 
 	--Update any rows that already exist
-	UPDATE [dbo].[ServiceCatalogue] SET [DoctorId] = s.[DoctorId], [ServiceId] = s.[ServiceId], [CompanyId] = s.[CompanyId], [Rate] = s.[Rate]
+	UPDATE [dbo].[ServiceCatalogue] SET [PhysicianId] = s.[PhysicianId], [ServiceId] = s.[ServiceId], [CompanyId] = s.[CompanyId], [Rate] = s.[Rate]
 		, ModifiedDate = GETDATE()
 	, ModifiedUser = SUSER_NAME()
 		OUTPUT Inserted.[Id] INTO @IdenticalRecordIDs
@@ -1165,10 +1165,10 @@ INSERT INTO #RawData ([Id], [DoctorId], [ServiceId], [CompanyId], [Rate]) VALUES
 		SET IDENTITY_INSERT [dbo].[ServiceCatalogue] ON
 
 	--Insert any new rows
-	INSERT INTO [dbo].[ServiceCatalogue] ([Id], [DoctorId], [ServiceId], [CompanyId], [Rate]
+	INSERT INTO [dbo].[ServiceCatalogue] ([Id], [PhysicianId], [ServiceId], [CompanyId], [Rate]
 	, ModifiedDate, ModifiedUser	)
 	OUTPUT Inserted.[Id] INTO @IdenticalRecordIDs
-	SELECT [Id], [DoctorId], [ServiceId], [CompanyId], [Rate]
+	SELECT [Id], [PhysicianId], [ServiceId], [CompanyId], [Rate]
 	, GETDATE(), SUSER_NAME()	FROM #RawData
 	WHERE [Id] NOT IN (SELECT id FROM @IdenticalRecordIDs)
 

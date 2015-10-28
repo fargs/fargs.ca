@@ -18,7 +18,7 @@ SELECT
 FROM dbo.AspNetUsers u
 INNER JOIN dbo.AspNetUserRoles ur ON u.Id = ur.UserId
 INNER JOIN dbo.AspNetRoles r ON ur.RoleId = r.Id
-INNER JOIN dbo.[File] f ON u.Id = f.DoctorId
+INNER JOIN dbo.[File] f ON u.Id = f.PhysicianId
 INNER JOIN dbo.Company c ON f.CompanyId = c.Id
 INNER JOIN dbo.Company pc ON c.ParentId = pc.Id
 INNER JOIN dbo.Job j ON j.FileId = f.Id

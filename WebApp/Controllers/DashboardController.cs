@@ -66,10 +66,15 @@ namespace WebApp.Controllers
         {
             _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
 
-            var list = from sc in _db.ServiceCatalogue
-                       join s in _db.Services on sc.ServiceId equals s.Id
-                       where sc.PhysicianId == id
-                       select new vm.Service { Id = s.Id, Name = s.Name };
+            //var list = from sc in _db.ServiceCatalogue
+            //           join s in _db.Services on sc.ServiceId equals s.Id
+            //           where sc.PhysicianId == id
+            //           select new vm.Service { Id = s.Id, Name = s.Name };
+            var list = _db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
+            {
+                Id = c.Id,
+                Name = c.Name
+            });
             return Json(list.ToList(), JsonRequestBehavior.AllowGet);
         }
 
@@ -87,11 +92,11 @@ namespace WebApp.Controllers
         private IEnumerable<ViewModels.Physician> GetPhysicians()
         {
             var role = _roleManager.Roles.SingleOrDefault(r => r.Id == enums.Roles.Physician);
-            var users = _userManager.Users.Where(u => u.Roles.Any(r => r.RoleId == role.Id));
+            var users = _userManager.Users.Where(u => u.Roles.Any(r => r.RoleId == role.Id)).ToList();
             return users.Select(u => new ViewModels.Physician()
             {
                 Id = u.Id,
-                DisplayName = u.FirstName
+                DisplayName = u.DisplayName
             });
         }
     }

@@ -308,8 +308,10 @@
     <Content Include="Content\fullcalendar.print.css" />
     <Content Include="Content\images\DIME.png" />
     <Content Include="Content\images\DIME_lg.png" />
+    <Content Include="Content\images\IMA Logo.png" />
     <Content Include="Content\images\jfennell.png" />
     <Content Include="Content\images\logo_md.png" />
+    <Content Include="Content\images\SOMA Logo.png" />
     <Content Include="Content\img\banner-bg.jpg" />
     <Content Include="Content\img\dog.png" />
     <Content Include="Content\img\intro-bg.jpg" />
@@ -661,6 +663,7 @@
     <Content Include="Views\Dashboard\_ScheduleOnceForm.cshtml" />
     <Content Include="Views\Dashboard\_ScheduleOnceForm_js.cshtml" />
     <Content Include="Views\Dashboard\_SpecialRequestForm_js.cshtml" />
+    <Content Include="Views\Home\TestHelper.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

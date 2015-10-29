@@ -79,8 +79,12 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public JsonResult SubmitSpecialRequest(SpecialRequestFormViewModel vm)
+        public JsonResult SubmitSpecialRequest(SpecialRequestFormViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return Json(model);
+            }
             var result = new
             {
                 success = true,

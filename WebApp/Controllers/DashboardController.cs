@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Claims;
 using WebApp.Models;
 using vm = WebApp.ViewModels;
 using enums = WebApp.Models.Enums;
@@ -21,20 +22,22 @@ namespace WebApp.Controllers
         // MVC
         public async Task<ActionResult> Index(string schedulingProcess = "ByPhysician")
         {
+            var identity = (User.Identity as ClaimsIdentity);
             _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             _roleManager = HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+
             _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var model = new vm.DashboardViewModel();
+
+            model.UserRoleName = identity.FindFirst(ClaimTypes.Role).Value;
             model.UserDisplayName = user.DisplayName;
             model.SchedulingProcess = schedulingProcess;
             model.Physicians = GetPhysicians();
-            if (user.Roles.Count > 0)
-            {
-                var roleId = user.Roles.First().RoleId;
-                model.UserRoleName = _roleManager.Roles.SingleOrDefault(c => c.Id == roleId).Name;
-            }
-            var company = _db.Companies.SingleOrDefault(c => c.Id == user.CompanyId);
+            
+
+            var company = _db.Companies.FirstOrDefault(c => c.Id == user.CompanyId);
             if (company != null)
             {
                 model.UserCompanyDisplayName = company.Name;

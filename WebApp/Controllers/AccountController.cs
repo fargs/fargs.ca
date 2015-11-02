@@ -130,11 +130,12 @@ namespace WebApp.Controllers
         public ActionResult _LoginPartial()
         {
             var model = new LoginPartialViewModel();
-            model.IsAuthenticated = User.Identity.IsAuthenticated;
-            if (User.Identity.IsAuthenticated)
+            var cp = (User.Identity as ClaimsIdentity);
+            model.IsAuthenticated = cp.IsAuthenticated;
+            if (model.IsAuthenticated)
             {
-                var user = UserManager.FindByName(User.Identity.Name);
-                model.UserDisplayName = user.DisplayName;
+                model.UserDisplayName = cp.FindFirst("DisplayName").Value;
+                model.RoleName = cp.FindFirst(ClaimTypes.Role).Value;
             }
             return PartialView(model);
         }

@@ -8,6 +8,7 @@
 
         public bool IsAuthenticated { get; set; }
         public string UserDisplayName { get; set; }
+        public string RoleName { get; set; }
         public string ProfilePicture { get; set; }
     }
 }

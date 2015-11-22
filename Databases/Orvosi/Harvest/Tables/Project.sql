@@ -1,0 +1,28 @@
+﻿CREATE TABLE [Harvest].[Project] (
+    [Id]                               BIGINT          IDENTITY (1, 1) NOT NULL,
+    [UpdatedAt]                        DATETIME        NOT NULL,
+    [CreatedAt]                        DATETIME        NOT NULL,
+    [ClientId]                         BIGINT          NOT NULL,
+    [Name]                             NVARCHAR (MAX)  NULL,
+    [Code]                             NVARCHAR (MAX)  NULL,
+    [Active]                           BIT             NOT NULL,
+    [Billable]                         BIT             NOT NULL,
+    [BillBy]                           INT             NOT NULL,
+    [HourlyRate]                       DECIMAL (18, 2) NULL,
+    [Budget]                           DECIMAL (18, 2) NULL,
+    [BudgetBy]                         INT             NOT NULL,
+    [NotifyWhenOverBudget]             BIT             NOT NULL,
+    [OverBudgetNotificationPercentage] DECIMAL (18, 2) NOT NULL,
+    [OverBudgetNotifiedAt]             DATETIME        NULL,
+    [ShowBudgetToAll]                  BIT             NOT NULL,
+    [Estimate]                         DECIMAL (18, 2) NULL,
+    [EstimateBy]                       INT             NOT NULL,
+    [Notes]                            NVARCHAR (MAX)  NULL,
+    [HintEarliestRecordAt]             DATETIME        NULL,
+    [HintLatestRecordAt]               DATETIME        NULL,
+    [CostBudget]                       DECIMAL (18, 2) NULL,
+    [CostBudgetIncludeExpenses]        BIT             NOT NULL,
+    [Client]                           NVARCHAR (MAX)  NULL,
+    CONSTRAINT [PK_Harvest.Project] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

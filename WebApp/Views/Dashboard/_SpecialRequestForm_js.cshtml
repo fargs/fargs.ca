@@ -28,11 +28,13 @@
         form.bind('submit', function (e) {
             e.preventDefault();
             $.post(form.attr('action'), form.serialize(), function (data, status) {
+                // reset the form
                 physician.val('');
                 service.val('');
                 $('#Timeframe').val('')
                 $('#AdditionalNotes').val('')
-                toastr.info(data, 'Success');
+                // display a success message
+                toastr.info("Your request was submitted successfully. A case coordinator will follow up with you shortly", 'Success');
                 console.log(data, status);
             });
         });

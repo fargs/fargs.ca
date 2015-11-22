@@ -43,11 +43,12 @@ namespace WebApp.Controllers
                 model.UserCompanyDisplayName = company.Name;
                 model.UserCompanyLogoCssClass = company.LogoCssClass;
 
-                if (model.SchedulingProcess == "ByTime")
-                {
-                    model.BookingPageName = company.MasterBookingPageByTime;
-                }
-                else if (model.SchedulingProcess == "Teleconference")
+                //if (model.SchedulingProcess == "ByTime")
+                //{
+                //    model.BookingPageName = company.MasterBookingPageByTime;
+                //}
+                //else 
+                if (model.SchedulingProcess == "Teleconference")
                 {
                     model.BookingPageName = company.MasterBookingPageTeleconference;
                 }
@@ -88,6 +89,9 @@ namespace WebApp.Controllers
             {
                 return Json(model);
             }
+
+            // send an email
+
             var result = new
             {
                 success = true,

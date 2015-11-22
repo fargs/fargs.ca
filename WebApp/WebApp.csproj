@@ -246,8 +246,6 @@
     <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
     <Compile Include="Areas\Assessments\Controllers\HomeController.cs" />
     <Compile Include="Areas\Assessments\Models\Home\IndexViewModel.cs" />
-    <Compile Include="Areas\Coordinator\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Coordinator\CoordinatorAreaRegistration.cs" />
     <Compile Include="Areas\Developers\Controllers\HomeController.cs" />
     <Compile Include="Areas\Developers\DevelopersAreaRegistration.cs" />
     <Compile Include="Areas\Invoices\Controllers\HomeController.cs" />
@@ -263,7 +261,6 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
-    <Compile Include="Library\ApplicationClaimsIdentity.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Appointment\Index.cs" />
     <Compile Include="Models\Availability\Index.cs" />
@@ -271,10 +268,6 @@
     <Compile Include="Models\CompanyAspNetUsers.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\Interfaces\IAuditable.cs" />
-    <Compile Include="Models\Interfaces\INotification.cs" />
-    <Compile Include="Models\Interfaces\IPersonSubscription.cs" />
-    <Compile Include="Models\Interfaces\ISignable.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\ServiceCatalogue.cs" />
@@ -565,8 +558,7 @@
     <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Coordinator\Views\web.config" />
-    <Content Include="Areas\Coordinator\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Company\Index.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -679,12 +671,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\Views\Company\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Assessments\Views\Shared\" />
-    <Folder Include="Areas\Coordinator\App\" />
-    <Folder Include="Areas\Coordinator\Models\" />
-    <Folder Include="Areas\Coordinator\Views\Shared\" />
     <Folder Include="Areas\Developers\Models\" />
     <Folder Include="Areas\Invoices\Models\" />
     <Folder Include="Areas\Invoices\Views\Shared\" />

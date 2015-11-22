@@ -11,9 +11,17 @@
 
 <form method="post" action="~/Account/Login?@ViewBag.ReturnUrl" role="form">
     @Html.AntiForgeryToken()
+    @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+    {
+        <div class="alert well-sm alert-danger">
+            <a class="close" data-dismiss="alert">&times;</a>
+            @Html.ValidationSummary(true, "Errors: ")
+        </div>
+    }
     <div class="form-group">
         <label for="Email" class="control-label">Email</label>
-        <input type="text" class="form-control" name="Email" id="Email" />
+        @Html.TextBox("Email", "", new { @class = "form-control"})
+        @*<input type="text" class="form-control" name="Email" id="Email" />*@
         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">

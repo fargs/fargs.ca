@@ -72,6 +72,9 @@
     <Folder Include="Private\" />
     <Folder Include="Private\Views\" />
     <Folder Include="API\Stored Procedures\" />
+    <Folder Include="Snapshots" />
+    <Folder Include="Harvest\" />
+    <Folder Include="Harvest\Tables\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -127,7 +130,26 @@
     <Build Include="Private\Views\ProfitMargin.sql" />
     <Build Include="Private\Views\JobTask.sql" />
     <Build Include="Private\Views\Job.sql" />
-    <Build Include="dbo\Tables\CompanyAspNetUsers.sql" />
+    <Build Include="dbo\Tables\DocumentType.sql" />
+    <Build Include="dbo\Tables\Document.sql" />
+    <Build Include="Harvest\Tables\TaskAssignment.sql" />
+    <Build Include="Harvest\Tables\Task.sql" />
+    <Build Include="Harvest\Tables\Project.sql" />
+    <Build Include="Harvest\Tables\DayEntry.sql" />
+    <Build Include="Harvest\Tables\Client.sql" />
+    <Build Include="Harvest\Tables\__MigrationHistory.sql" />
+    <Build Include="Harvest\Tables\User.sql" />
+    <Build Include="Harvest\Tables\UserAssignment.sql" />
+    <Build Include="dbo\Views\SchemaTableColumn.sql" />
+    <Build Include="API\Views\Service.sql" />
+    <Build Include="API\Views\Person.sql" />
+    <Build Include="API\Views\Job.sql" />
+    <Build Include="API\Views\Company.sql" />
+    <Build Include="dbo\Functions\GetPrice.sql" />
+    <Build Include="dbo\Functions\GetDisplayName.sql" />
+    <Build Include="dbo\Stored Procedures\CodeGenerationHelpers.sql" />
+    <Build Include="API\Stored Procedures\Job_Insert.sql" />
+    <Build Include="Security\Harvest.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />
@@ -158,6 +180,7 @@
     <None Include="Data\StaticData\dbo.Sequence" />
     <None Include="Data\StaticData\dbo.Time" />
     <None Include="Orvosi.localdb.publish.xml" />
+    <None Include="Snapshots\Orvosi_20151121_16-25-17.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
@@ -168,8 +191,5 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="Orvosi.refactorlog" />
   </ItemGroup>
 </Project>

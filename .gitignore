@@ -195,7 +195,6 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 /secrets
-/Databases
 /Web
 /Auth/scripts
 /Api

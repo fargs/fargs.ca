@@ -19,6 +19,8 @@ namespace WebApp.Models
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
             userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
+            userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
+            userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id));
 
             return userIdentity;
         }
@@ -53,7 +55,7 @@ namespace WebApp.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
-            
+
         }
 
         public static ApplicationDbContext Create()
@@ -70,5 +72,6 @@ namespace WebApp.Models
         public DbSet<Company> Companies { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<ServiceCatalogue> ServiceCatalogue { get; set; }
+        public DbSet<SpecialRequest> SpecialRequests { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace WebApp.ViewModels
 {
@@ -11,11 +12,15 @@ namespace WebApp.ViewModels
         public string SchedulingProcess { get; set; }
         public string BookingPageName { get; set; }
         public string Instructions { get; set; }
-        public IEnumerable<Physician> Physicians { get; set; }
-        public Physician Physician { get; set; }
+        public SelectList Physicians { get; set; }
+        public SelectListItem Physician { get; set; }
+        public SelectList Services { get; set; }
+        public SelectListItem Service { get; set; }
+        public string UserEmail { get; set; }
+        public byte ActionState { get; set; }
+
         public DashboardViewModel()
         {
-            Physicians = new List<Physician>();
         }
     }
 

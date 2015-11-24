@@ -23,7 +23,9 @@
 }
 
 <div class="col-md-3">
-    <div class="img-thumbnail @Model.UserCompanyLogoCssClass"></div>
+    <div class="img-thumbnail">
+        <div class="@Model.UserCompanyLogoCssClass"></div>
+    </div>
     <div class="page-header">
         <h1>@Model.UserCompanyDisplayName</h1>
     </div>
@@ -39,12 +41,12 @@
 </div>
 <div class="col-md-9">
     <div class="btn-group" role="group" aria-label="Scheduling process" style="padding-bottom:1em;">
-        <a href="~/Dashboard/Index?schedulingProcess=ByPhysician" class='btn btn-default @GetButtonState("ByPhysician")'>By Physician</a>
+        <a href="~/Dashboard/Index?schedulingProcess=ByPhysician" class='btn btn-default @GetButtonState("ByPhysician")'>Physician Availability</a>
         @*<a href="~/Dashboard/Index?schedulingProcess=ByTime" class='btn btn-default @GetButtonState("ByTime")'>By Time</a>*@
-        <a href="~/Dashboard/Index?schedulingProcess=Teleconference" class='btn btn-default @GetButtonState("Teleconference")'>Teleconference</a>
+        @*<a href="~/Dashboard/Index?schedulingProcess=Teleconference" class='btn btn-default @GetButtonState("Teleconference")'>Teleconference</a>*@
     </div>
     <a href="~/Dashboard/Index?schedulingProcess=SpecialRequest" class='btn btn-default pull-right @GetButtonState("SpecialRequest")'>Special Request</a>
-    <div class="alert alert-warning alert-dismissable">
+    @*<div class="alert alert-warning alert-dismissable">
         @if (Model.SchedulingProcess == "ByPhysician")
         {
             <span>Pick your specialty, pick your file, pick your physician, then pick your time.</span>
@@ -61,7 +63,7 @@
         {
             <span><i></i>Please submit a special request and we will follow up with you.</span>
         }
-    </div>
+    </div>*@
     @RenderBody()
 </div>
 

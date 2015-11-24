@@ -150,6 +150,10 @@
     <Build Include="dbo\Stored Procedures\CodeGenerationHelpers.sql" />
     <Build Include="API\Stored Procedures\Job_Insert.sql" />
     <Build Include="Security\Harvest.sql" />
+    <Build Include="dbo\Tables\SpecialRequest.sql" />
+    <Build Include="API\Views\SpecialRequest.sql" />
+    <Build Include="API\Stored Procedures\SpecialRequest_Update.sql" />
+    <Build Include="API\Stored Procedures\SpecialRequest_Insert.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

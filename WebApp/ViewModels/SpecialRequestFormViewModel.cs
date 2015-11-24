@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApp.Controllers
+namespace WebApp.ViewModels
 {
     public class SpecialRequestFormViewModel
     {
@@ -13,5 +13,7 @@ namespace WebApp.Controllers
         public string Timeframe { get; set; }
         [Required]
         public string AdditionalNotes { get; set; }
+
+        public byte ActionState { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace Model
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Job> Jobs { get; set; }
+        public virtual DbSet<SpecialRequest> SpecialRequests { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -64,6 +64,68 @@ namespace Model
                 new ObjectParameter("id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPhysicianGoogleAccount_Result>("GetPhysicianGoogleAccount", idParameter);
+        }
+    
+        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUser)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(int));
+    
+            var timeframeParameter = timeframe != null ?
+                new ObjectParameter("Timeframe", timeframe) :
+                new ObjectParameter("Timeframe", typeof(string));
+    
+            var additionalNotesParameter = additionalNotes != null ?
+                new ObjectParameter("AdditionalNotes", additionalNotes) :
+                new ObjectParameter("AdditionalNotes", typeof(string));
+    
+            var modifiedDateParameter = modifiedDate.HasValue ?
+                new ObjectParameter("ModifiedDate", modifiedDate) :
+                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserParameter);
+        }
+    
+        public virtual int SpecialRequest_Update(Nullable<short> id, string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(int));
+    
+            var timeframeParameter = timeframe != null ?
+                new ObjectParameter("Timeframe", timeframe) :
+                new ObjectParameter("Timeframe", typeof(string));
+    
+            var additionalNotesParameter = additionalNotes != null ?
+                new ObjectParameter("AdditionalNotes", additionalNotes) :
+                new ObjectParameter("AdditionalNotes", typeof(string));
+    
+            var modifiedDateParameter = modifiedDate.HasValue ?
+                new ObjectParameter("ModifiedDate", modifiedDate) :
+                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Update", idParameter, physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserParameter);
         }
     }
 }

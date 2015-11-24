@@ -41,6 +41,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.9.0.26011, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.9.0\lib\net40\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -273,6 +277,7 @@
     <Compile Include="Models\ServiceCatalogue.cs" />
     <Compile Include="Models\ServiceCategory.cs" />
     <Compile Include="Models\ServicePortfolio.cs" />
+    <Compile Include="Models\SpecialRequest.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
@@ -308,11 +313,23 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\fullcalendar.css" />
     <Content Include="Content\fullcalendar.print.css" />
+    <Content Include="Content\images\Company Branding\logo-dime-md.png" />
+    <Content Include="Content\images\Company Branding\logo-ima-md.png" />
+    <Content Include="Content\images\Company Branding\logo-scm-md.jpg" />
+    <Content Include="Content\images\Company Branding\logo-seiden-md.png" />
+    <Content Include="Content\images\Company Branding\logo-soma-md.png" />
     <Content Include="Content\images\DIME.png" />
     <Content Include="Content\images\DIME_lg.png" />
     <Content Include="Content\images\IMA Logo.png" />
     <Content Include="Content\images\jfennell.png" />
     <Content Include="Content\images\logo_md.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-icon.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-lg.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-md-inverse.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-md.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-sm.png" />
+    <Content Include="Content\images\Orvosi Branding\logo-orvosi-xs.png" />
+    <Content Include="Content\images\Physician Branding\logo-jfennell-md.png" />
     <Content Include="Content\images\SOMA Logo.png" />
     <Content Include="Content\img\banner-bg.jpg" />
     <Content Include="Content\img\dog.png" />
@@ -565,6 +582,7 @@
     </Content>
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
+    <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />

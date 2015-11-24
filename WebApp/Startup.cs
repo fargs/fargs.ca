@@ -1,5 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using WebApp.Models;
+using WebApp.ViewModels;
 
 [assembly: OwinStartupAttribute(typeof(WebApp.Startup))]
 namespace WebApp
@@ -8,8 +10,9 @@ namespace WebApp
     {
         public void Configuration(IAppBuilder app)
         {
-
             ConfigureAuth(app);
+
+            AutoMapper.Mapper.CreateMap<SpecialRequestFormViewModel, SpecialRequest>();
         }
     }
 }

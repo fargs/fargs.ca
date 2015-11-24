@@ -10,6 +10,6 @@ Post-Deployment Script Template
 --------------------------------------------------------------------------------------
 */
 
-:r .\Data\Script.Data.PostDeployment.Static.sql
-:r .\Data\Script.Data.PostDeployment.Config.sql
-:r .\Data\Script.Data.PostDeployment.Test.sql
+--:r .\Data\Script.Data.PostDeployment.Static.sql
+--:r .\Data\Script.Data.PostDeployment.Config.sql
+--:r .\Data\Script.Data.PostDeployment.Test.sql

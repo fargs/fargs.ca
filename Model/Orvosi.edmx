@@ -7,30 +7,41 @@
     <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="Job">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="SpecialRequest">
           <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="RoleName" />
-            <PropertyRef Name="Status" />
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
           </Key>
-          <Property Name="JobId" Type="int" Nullable="false" />
-          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="FullName" Type="nvarchar" MaxLength="257" />
-          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="FileName" Type="nvarchar" MaxLength="256" />
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
-          <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
-          <Property Name="DueDate" Type="date" />
-          <Property Name="StartTime" Type="time" Precision="7" />
-          <Property Name="EndTime" Type="time" Precision="7" />
-          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
-          <Property Name="Status" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceId" Type="int" />
+          <Property Name="Timeframe" Type="nvarchar" MaxLength="128" />
+          <Property Name="AdditionalNotes" Type="nvarchar" MaxLength="2000" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="ServiceName" Type="nvarchar" MaxLength="128" />
         </EntityType>
-        <Function Name="GetPhysicianGoogleAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="id" Type="nvarchar" Mode="In" />
+        <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ServiceId" Type="int" Mode="In" />
+          <Parameter Name="Timeframe" Type="nvarchar" Mode="In" />
+          <Parameter Name="AdditionalNotes" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedDate" Type="datetime" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SpecialRequest_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ServiceId" Type="int" Mode="In" />
+          <Parameter Name="Timeframe" Type="nvarchar" Mode="In" />
+          <Parameter Name="AdditionalNotes" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedDate" Type="datetime" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="fn_Timeframe" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="DatePart" Type="nvarchar" Mode="In" />
@@ -51,41 +62,20 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
             </CollectionType>
           </ReturnType>
         </Function>
-        <Function Name="fn_Weekdays" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="StartDate" Type="date" Mode="In" />
-          <ReturnType>
-            <CollectionType>
-              <RowType>
-                <Property Name="PK_Date" Type="date" />
-                <Property Name="Sequence" Type="int" />
-                <Property Name="Year" Type="smallint" />
-                <Property Name="Month" Type="nvarchar" MaxLength="50" />
-                <Property Name="Month_Of_Year" Type="smallint" />
-                <Property Name="Day_Of_Month" Type="smallint" />
-                <Property Name="Week_Of_Year" Type="smallint" />
-                <Property Name="Day_Of_Week" Type="smallint" />
-                <Property Name="Day_Of_Week_Name" Type="nvarchar" MaxLength="50" />
-              </RowType>
-            </CollectionType>
-          </ReturnType>
-        </Function>
         <EntityContainer Name="OrvosiModelStoreContainer">
-          <EntitySet Name="Job" EntityType="Self.Job" store:Type="Views" store:Schema="API">
+          <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
-    [Job].[JobId] AS [JobId], 
-    [Job].[UserId] AS [UserId], 
-    [Job].[UserName] AS [UserName], 
-    [Job].[FullName] AS [FullName], 
-    [Job].[RoleName] AS [RoleName], 
-    [Job].[FileName] AS [FileName], 
-    [Job].[CompanyName] AS [CompanyName], 
-    [Job].[ParentCompanyName] AS [ParentCompanyName], 
-    [Job].[DueDate] AS [DueDate], 
-    [Job].[StartTime] AS [StartTime], 
-    [Job].[EndTime] AS [EndTime], 
-    [Job].[Price] AS [Price], 
-    [Job].[Status] AS [Status]
-    FROM [API].[Job] AS [Job]</DefiningQuery>
+    [SpecialRequest].[Id] AS [Id], 
+    [SpecialRequest].[ObjectGuid] AS [ObjectGuid], 
+    [SpecialRequest].[PhysicianId] AS [PhysicianId], 
+    [SpecialRequest].[ServiceId] AS [ServiceId], 
+    [SpecialRequest].[Timeframe] AS [Timeframe], 
+    [SpecialRequest].[AdditionalNotes] AS [AdditionalNotes], 
+    [SpecialRequest].[ModifiedDate] AS [ModifiedDate], 
+    [SpecialRequest].[ModifiedUser] AS [ModifiedUser], 
+    [SpecialRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [SpecialRequest].[ServiceName] AS [ServiceName]
+    FROM [API].[SpecialRequest] AS [SpecialRequest]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -96,7 +86,6 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
           <FunctionImport Name="fn_Weekdays" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Weekdays_Result)">
           <Parameter Name="StartDate" Mode="In" Type="DateTime" />
           </FunctionImport>
-          <EntitySet Name="Jobs" EntityType="OrvosiModel.Job" />
           <FunctionImport Name="fn_Timeframe" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Timeframe_Result)">
             <Parameter Name="DatePart" Mode="In" Type="String" />
             <Parameter Name="StartDate" Mode="In" Type="DateTime" />
@@ -104,6 +93,24 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
           </FunctionImport>
           <FunctionImport Name="GetPhysicianGoogleAccount" ReturnType="Collection(OrvosiModel.GetPhysicianGoogleAccount_Result)">
           <Parameter Name="id" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="SpecialRequests" EntityType="OrvosiModel.SpecialRequest" />
+          <FunctionImport Name="SpecialRequest_Insert">
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="ServiceId" Mode="In" Type="Int32" />
+            <Parameter Name="Timeframe" Mode="In" Type="String" />
+            <Parameter Name="AdditionalNotes" Mode="In" Type="String" />
+            <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SpecialRequest_Update">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="ServiceId" Mode="In" Type="Int32" />
+            <Parameter Name="Timeframe" Mode="In" Type="String" />
+            <Parameter Name="AdditionalNotes" Mode="In" Type="String" />
+            <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
@@ -117,28 +124,6 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
           <Property Type="Int16" Name="Day_Of_Week" Nullable="true" />
           <Property Type="String" Name="Day_Of_Week_Name" Nullable="true" MaxLength="50" />
         </ComplexType>
-        <EntityType Name="Job">
-          <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="RoleName" />
-            <PropertyRef Name="Status" />
-          </Key>
-          <Property Name="JobId" Type="Int32" Nullable="false" />
-          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="FullName" Type="String" MaxLength="257" FixedLength="false" Unicode="true" />
-          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="FileName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="DueDate" Type="DateTime" Precision="0" />
-          <Property Name="StartTime" Type="Time" Precision="7" />
-          <Property Name="EndTime" Type="Time" Precision="7" />
-          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="Status" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-        </EntityType>
         <ComplexType Name="fn_Timeframe_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
           <Property Type="Int32" Name="Sequence" Nullable="true" />
@@ -158,46 +143,29 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
           <Property Type="String" Name="LastName" Nullable="true" MaxLength="128" />
           <Property Type="String" Name="EmployeeId" Nullable="true" MaxLength="50" />
         </ComplexType>
+        <EntityType Name="SpecialRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" />
+          <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceId" Type="Int32" />
+          <Property Name="Timeframe" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="AdditionalNotes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="OrvosiModelStoreContainer" CdmEntityContainer="OrvosiEntities" >
-          <FunctionImportMapping FunctionImportName="fn_Weekdays" FunctionName="OrvosiModel.Store.fn_Weekdays">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OrvosiModel.fn_Weekdays_Result">
-                <ScalarProperty Name="PK_Date" ColumnName="PK_Date" />
-                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="Month" ColumnName="Month" />
-                <ScalarProperty Name="Month_Of_Year" ColumnName="Month_Of_Year" />
-                <ScalarProperty Name="Day_Of_Month" ColumnName="Day_Of_Month" />
-                <ScalarProperty Name="Week_Of_Year" ColumnName="Week_Of_Year" />
-                <ScalarProperty Name="Day_Of_Week" ColumnName="Day_Of_Week" />
-                <ScalarProperty Name="Day_Of_Week_Name" ColumnName="Day_Of_Week_Name" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <EntitySetMapping Name="Jobs">
-            <EntityTypeMapping TypeName="OrvosiModel.Job">
-              <MappingFragment StoreEntitySet="Job">
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
-                <ScalarProperty Name="ParentCompanyName" ColumnName="ParentCompanyName" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="FileName" ColumnName="FileName" />
-                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
-                <ScalarProperty Name="FullName" ColumnName="FullName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="JobId" ColumnName="JobId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="fn_Timeframe" FunctionName="OrvosiModel.Store.fn_Timeframe">
             <ResultMapping>
               <ComplexTypeMapping TypeName="OrvosiModel.fn_Timeframe_Result">
@@ -212,19 +180,24 @@ warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key define
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetPhysicianGoogleAccount" FunctionName="OrvosiModel.Store.GetPhysicianGoogleAccount">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OrvosiModel.GetPhysicianGoogleAccount_Result">
+          <EntitySetMapping Name="SpecialRequests">
+            <EntityTypeMapping TypeName="OrvosiModel.SpecialRequest">
+              <MappingFragment StoreEntitySet="SpecialRequest">
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="AdditionalNotes" ColumnName="AdditionalNotes" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SpecialRequest_Insert" FunctionName="OrvosiModel.Store.SpecialRequest_Insert" />
+          <FunctionImportMapping FunctionImportName="SpecialRequest_Update" FunctionName="OrvosiModel.Store.SpecialRequest_Update" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

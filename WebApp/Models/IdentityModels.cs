@@ -37,7 +37,7 @@ namespace WebApp.Models
             get
             {
                 string s = string.Empty;
-                if (this.Title == string.Empty)
+                if (string.IsNullOrEmpty(this.Title))
                 {
                     s = string.Format("{1} {2}", this.FirstName, this.LastName);
                 }

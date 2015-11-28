@@ -10,7 +10,8 @@ SELECT
 	,s.[Timeframe]
 	,s.[AdditionalNotes]
 	,s.[ModifiedDate]
-	,s.[ModifiedUser]
+	,s.[ModifiedUserName]
+	,s.[ModifiedUserId]
 	,PhysicianDisplayName = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
 	,ServiceName = sv.Name
 FROM dbo.[SpecialRequest] s

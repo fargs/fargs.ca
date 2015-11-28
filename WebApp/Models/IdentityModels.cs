@@ -31,7 +31,7 @@ namespace WebApp.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
-
+        public Nullable<DateTime> LastActivationDate { get; set; }
         public string DisplayName
         {
             get

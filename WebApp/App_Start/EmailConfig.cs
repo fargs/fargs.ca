@@ -1,23 +1,113 @@
 ﻿using Microsoft.AspNet.Identity;
 using SendGrid;
 using System.Configuration;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Web;
+using WebApp.Models.Enums;
 
 namespace WebApp
 {
 
     public class MessagingService
     {
-        public static IEmailService GetService()
+        public IEmailService service;
+        private string _templateFolder;
+        private string _logoPath;
+
+        public MessagingService(string templateFolder, string host)
         {
+            _templateFolder = templateFolder;
+            _logoPath = host + "/Content/images/OrvosiBranding/logo-orvosi-md.png";
             // not in debug mode and not local request => we are in production
+            service = MessagingService.CreateService();
+        }
+
+        private static IEmailService CreateService()
+        {
             if (ConfigurationManager.AppSettings["MailSystem"] == "SendGrid")
             {
                 return new SendGridEmailService();
             }
             return new LocalEmailService();
+            
+        }
+
+        public static IEmailService GetService()
+        {
+            return CreateService();
+        }
+
+        public async Task<bool> SendActivationEmail(string email, string userName, string callbackUrl, string role)
+        {
+            var message = new MailMessage();
+            message.To.Add(email);
+            message.From = new MailAddress("support@orvosi.ca");
+            message.Subject = "Orvosi - Confidential Account Activation";
+            message.IsBodyHtml = true;
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+
+            var templatePath = string.Empty;
+            switch (role)
+            {
+                case Roles.Physician:
+                    templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
+                    break;
+                case Roles.Company:
+                    templatePath = Path.Combine(_templateFolder, "CompanyAccountActivation.html");
+                    break;
+                default:
+                    throw new System.Exception("Role activation not currently supported");
+            }
+
+            StreamReader sr = File.OpenText(templatePath);
+            while (sr.Peek() >= 0)
+            {
+                message.Body += sr.ReadLine().Replace("%URL%", callbackUrl).Replace("%USERNAME%", userName).Replace("%logo%", _logoPath);
+            }
+            sr.Close();
+
+            await service.SendAsync(message);
+            return true;
+        }
+
+        public async Task<bool> SendResetPasswordEmail(string email, string userName, string callbackUrl)
+        {
+            var message = new MailMessage();
+            message.To.Add(email);
+            message.From = new MailAddress("support@orvosi.ca");
+            message.Subject = "Orvosi - Confidential Password Reset";
+            message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+
+            var templatePath = Path.Combine(_templateFolder, "ResetPassword.html");
+
+
+            StreamReader sr = File.OpenText(templatePath);
+            while (sr.Peek() >= 0)
+            {
+                message.Body += sr.ReadLine().Replace("%URL%", callbackUrl).Replace("%USERNAME%", userName).Replace("%logo%", _logoPath);
+            }
+            sr.Close();
+
+            await service.SendAsync(message);
+            return true;
+        }
+
+        public async Task<bool> SendTestEmail(string email)
+        {
+            var message = new MailMessage();
+
+            message.To.Add(email);
+            message.From = new MailAddress("support@orvosi.ca");
+            message.Subject = "Orvosi - Test Email";
+            message.IsBodyHtml = true;
+            message.Body = "<h1>Hello World</h1>";
+
+            await service.SendAsync(message);
+            return true;
         }
 
         public interface IEmailService
@@ -31,13 +121,13 @@ namespace WebApp
             {
                 // Plug in your email service here to send an email.
                 var myMessage = new SendGridMessage();
+                
                 foreach (var item in message.To)
                 {
                     myMessage.AddTo(item.Address);
                 }
-                myMessage.From = new MailAddress("security@orvosi.ca");
+                myMessage.From = new MailAddress("support@orvosi.ca", "Orvosi Support");
                 myMessage.Subject = message.Subject;
-                myMessage.Text = message.Body;
                 myMessage.Html = message.Body;
 
                 var credentials = new NetworkCredential(
@@ -47,7 +137,7 @@ namespace WebApp
 
                 // Create a Web transport for sending email.
                 var transportWeb = new Web(credentials);
-
+                
                 // Send the email.
                 if (transportWeb != null)
                 {
@@ -84,9 +174,9 @@ namespace WebApp
             // Plug in your email service here to send an email.
             var myMessage = new SendGridMessage();
             myMessage.AddTo(message.Destination);
-            myMessage.From = new MailAddress("security@orvosi.ca");
+            myMessage.From = new MailAddress("support@orvosi.ca", "Orvosi Support");
             myMessage.Subject = message.Subject;
-            myMessage.Text = message.Body;
+            //myMessage.Text = message.Body;
             myMessage.Html = message.Body;
 
             var credentials = new NetworkCredential(

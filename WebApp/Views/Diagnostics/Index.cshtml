@@ -5,9 +5,16 @@
 <h2>Diagnostics</h2>
 
 <form method="post" action="~/Diagnostics/SendEmail" role="form">
-    <input type="text" name="to" placeholder="To Address" />
-    <button type="submit">Send Test Email</button>
+    <input type="text" name="to" placeholder="To Address" class="form-control" />
+    <button type="submit" class="btn btn-primary">Send Test Email</button>
 </form>
-
-
-
+<br />
+<form method="post" action="~/Diagnostics/SendActivationEmail" role="form">
+    <input type="text" name="email" placeholder="User Email Address" class="form-control" />
+    <button type="submit" class="btn btn-primary">Send Activation Email</button>
+</form>
+<br />
+<form method="post" action="~/Diagnostics/SendResetPasswordEmail" role="form">
+    <input type="text" name="email" placeholder="User Email Address" class="form-control" />
+    <button type="submit" class="btn btn-primary">Send Reset Password Email</button>
+</form>

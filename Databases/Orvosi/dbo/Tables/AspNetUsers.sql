@@ -16,12 +16,15 @@
     [LastName]             NVARCHAR (128) NULL,
     [RoleLevelId]          SMALLINT       NULL,
     [EmployeeId]           NVARCHAR (50)  NULL,
-	[CompanyId]			   SMALLINT		  NULL,
-	[CompanyName]          NVARCHAR (200) NULL, 
+    [CompanyId]            SMALLINT       NULL,
+    [CompanyName]          NVARCHAR (200) NULL,
     [ModifiedDate]         DATETIME       CONSTRAINT [DF_AspNetUsers_ModifiedDate] DEFAULT (getdate()) NULL,
     [ModifiedUser]         NVARCHAR (256) CONSTRAINT [DF_AspNetUsers_ModifiedUser] DEFAULT (suser_name()) NULL,
+    [LastActivationDate]   DATETIME       NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

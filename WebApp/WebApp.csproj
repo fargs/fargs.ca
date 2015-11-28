@@ -323,12 +323,12 @@
     <Content Include="Content\images\IMA Logo.png" />
     <Content Include="Content\images\jfennell.png" />
     <Content Include="Content\images\logo_md.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-icon.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-lg.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-md-inverse.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-md.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-sm.png" />
-    <Content Include="Content\images\Orvosi Branding\logo-orvosi-xs.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-icon.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-lg.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-md-inverse.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-md.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-sm.png" />
+    <Content Include="Content\images\OrvosiBranding\logo-orvosi-xs.png" />
     <Content Include="Content\images\Physician Branding\logo-jfennell-md.png" />
     <Content Include="Content\images\SOMA Logo.png" />
     <Content Include="Content\img\banner-bg.jpg" />
@@ -624,6 +624,8 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
+    <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

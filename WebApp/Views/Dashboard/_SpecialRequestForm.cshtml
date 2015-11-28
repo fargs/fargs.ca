@@ -6,7 +6,7 @@
     @Html.AntiForgeryToken()
     <div class="form-group">
         <label for="PhysicianId" class="control-label">Select a physician</label>
-        @Html.DropDownList("PhysicianId", Model.Physicians, "Select a physician", new { @class="form-control" })
+        @Html.DropDownList("PhysicianId", Model.Physicians, "Any physician", new { @class="form-control" })
         @*<select class="form-control" name="PhysicianId" id="PhysicianId">
             <option></option>
             @foreach (var item in Model.Physicians)
@@ -17,7 +17,7 @@
     </div>
     <div class="form-group">
         <label for="ServiceId" class="control-label">Select a file type</label>
-        @Html.DropDownList("ServiceId", Model.Services, "Select a service", new { @class = "form-control" })
+        @Html.DropDownList("ServiceId", Model.Services, "Any service", new { @class = "form-control" })
         @*<select class="form-control" name="ServiceId" id="ServiceId">
             <option></option>
         </select>*@

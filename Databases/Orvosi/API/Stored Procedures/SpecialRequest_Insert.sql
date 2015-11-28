@@ -5,7 +5,8 @@ CREATE PROC [API].[SpecialRequest_Insert]
 	,@Timeframe nvarchar(128)
 	,@AdditionalNotes nvarchar(2000)
 	,@ModifiedDate datetime
-	,@ModifiedUser nvarchar(100)
+	,@ModifiedUserName nvarchar(128)
+	,@ModifiedUserId nvarchar(128)
 AS
 	
 	INSERT INTO dbo.SpecialRequest (
@@ -14,12 +15,14 @@ AS
 		,[Timeframe]
 		,[AdditionalNotes]
 		,[ModifiedDate]
-		,[ModifiedUser]
+		,[ModifiedUserName]
+		,[ModifiedUserId]
 	) VALUES (
 		 @PhysicianId
 		,@ServiceId
 		,@Timeframe
 		,@AdditionalNotes
 		,@ModifiedDate
-		,@ModifiedUser
+		,@ModifiedUserName
+		,@ModifiedUserId
 	)

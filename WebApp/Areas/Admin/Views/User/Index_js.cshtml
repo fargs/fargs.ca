@@ -81,6 +81,43 @@
 
         var self = this;
 
+
+        $('#UserTableRows').on('click', '#SendActivationEmailButton', function(e) {
+            var url = '@Url.Content("~/Admin/User/SendActivationEmail")';
+            $.post(
+                url,
+                {
+                    userId: this.attributes['data-userid'].value
+                }
+            ).done(function (response) {
+                if (response.success == true) {
+                    // display a success message
+                    toastr.info("Activation email has been sent. They will be prompted to reset their password.", 'Success');
+                }
+                else {
+                    toastr.info(response.message, 'Errors');
+                }
+            });
+        });
+
+        $('#UserTableRows').on('click', '#ResetPasswordButton', function(e) {
+            var url = '@Url.Content("~/Admin/User/ResetPassword")';
+            $.post(
+                url,
+                {
+                    userId: this.attributes['data-userid'].value
+                }
+            ).done(function (response) {
+                if (response.success == true) {
+                    // display a success message
+                    toastr.info("Reset Password email has been sent. They will be prompted to reset their password.", 'Success');
+                }
+                else {
+                    toastr.info(response.message, 'Errors');
+                }
+            });
+        });
+
         $('#UserTableRows').on('click', '#DeleteButton', function (e) {
             console.log(this.name + ' ' + this.value);
             var url = '@Url.Content("~/Admin/User/Delete")';

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading.Tasks;
 using m = WebApp.Areas.Admin.Models.User;
+using WebApp.Models.Enums;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -133,6 +133,40 @@ namespace WebApp.Areas.Admin.Controllers
 
             }
             return result;
+        }
+
+        public async Task<ActionResult> SendActivationEmail(string userId)
+        {
+            var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var user = await userManager.FindByIdAsync(userId);
+            string code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
+            var callbackUrl = Url.Action("ResetPassword", "Account", new { area="", userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+            var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
+            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Roles.Company);
+
+            return Json(new
+            {
+                success = true,
+                message = "Email was sent successfully"
+            });
+        }
+
+        public async Task<ActionResult> ResetPassword(string userId)
+        {
+            var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var user = await userManager.FindByIdAsync(userId);
+            string code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
+            var callbackUrl = Url.Action("ResetPassword", "Account", new { area="", userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+            var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
+            await messenger.SendResetPasswordEmail(user.Email, user.UserName, callbackUrl);
+
+            return Json(new
+            {
+                success = true,
+                message = "Email was sent successfully"
+            });
         }
 
         protected override void Dispose(bool disposing)

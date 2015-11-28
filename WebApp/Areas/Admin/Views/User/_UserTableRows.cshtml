@@ -2,6 +2,21 @@
 @foreach (var item in Model.Users)
 {
 <tr>
+    <td style="text-align: center; vertical-align: middle;">
+        <ul class="nav nav-pills nav-condensed">
+            <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                    <i class="glyphicon glyphicon-menu-hamburger"></i>
+                </a>
+                <ul class="dropdown-menu nav-uncondensed" role="menu">
+                    <li role="presentation"><a data-bind="attr: {href: UserUrl}">Users</a></li>
+                    <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
+                    <li role="presentation"><a id="ResetPasswordButton" data-userid="@item.Id" role="button">Reset Password</a></li>
+                    <li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>
+                </ul>
+            </li>
+        </ul>
+    </td>
     <td style="vertical-align: middle">
         <span>
             <input type="text" name="DisplayName" value="@item.DisplayName">
@@ -21,24 +36,6 @@
         <span>
             <input type="text" name="Email" value="@item.Email"/>
         </span>
-    </td>
-    <td style="vertical-align: middle">
-        <span>
-            <input type="checkbox" name="LockoutEnabled" checked="@item.LockoutEnabled" />
-        </span>
-    </td>
-    <td style="vertical-align: middle">
-        <span>
-            <input type="date" name="LockoutEndDateUtc" data-userid="@item.Id" value="@(item.LockoutEndDateUtc.HasValue ? item.LockoutEndDateUtc.Value.GetDateTimeFormats('d')[5] : string.Empty)"  />
-        </span>
-    </td>
-    <td style="vertical-align: middle">
-        <span>
-            <input type="text" name="AccessFailedCount" value="@item.AccessFailedCount" />
-        </span>
-    </td>
-    <td style="text-align: center; vertical-align: middle;">
-        <a id="DeleteButton" data-userid="@item.Id" role="button"><i class="glyphicon glyphicon-remove"></i></a>
     </td>
 </tr>
 }

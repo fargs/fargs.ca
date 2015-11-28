@@ -6,7 +6,8 @@ CREATE PROC [API].[SpecialRequest_Update]
 	,@Timeframe nvarchar(128)
 	,@AdditionalNotes nvarchar(2000)
 	,@ModifiedDate datetime
-	,@ModifiedUser nvarchar(100)
+	,@ModifiedUserName nvarchar(128)
+	,@ModifiedUserId nvarchar(128)
 AS
 	
 	UPDATE dbo.SpecialRequest 
@@ -15,5 +16,6 @@ AS
 		,[Timeframe] = @Timeframe
 		,[AdditionalNotes] = @AdditionalNotes
 		,[ModifiedDate] = @ModifiedDate
-		,[ModifiedUser] = @ModifiedUser
+		,[ModifiedUserName] = @ModifiedUserName 
+		,[ModifiedUserId] = @ModifiedUserId 
 	WHERE [Id] = @Id

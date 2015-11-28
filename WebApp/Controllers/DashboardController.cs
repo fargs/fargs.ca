@@ -113,7 +113,7 @@ namespace WebApp.Controllers
             {
                 // the current user that is submitting the special request (someone from the company typcially)
                 var from = identity.FindFirst(ClaimTypes.Email).Value;
-                var to = "scheduling@orvosi.ca";
+                var to = "support@orvosi.ca";
                 // Get the physician selected
                 _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
                 var physician = await _userManager.FindByIdAsync(model.PhysicianId);

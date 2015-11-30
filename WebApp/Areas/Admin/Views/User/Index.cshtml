@@ -1,23 +1,39 @@
-﻿@model WebApp.Areas.Admin.Models.User.IndexViewModel
+﻿@model WebApp.Areas.Admin.ViewModels.ListViewModel
 
 <h2>Users</h2>
 
-<div style="padding-top: 20px;">
-    <table class="table table-condensed table-bordered table-editable">
-        <thead>
-            <tr>
-                <th style="text-align: center; vertical-align: middle;"><i class="glyphicon glyphicon-menu-hamburger"></i></th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>User Name</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody id="UserTableRows">
-            @Html.Partial("_UserTableRows", Model)
-        </tbody>
-    </table>
-</div>
+@foreach (var item in Model.Users)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <span class="h4 pull-left">@item.DisplayName</span>
+            <nav>
+                <ul class="nav nav-pills nav-condensed">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-hamburger"></i>
+                        </a>
+                        <ul class="dropdown-menu nav-uncondensed" role="menu">
+                            <li role="presentation">@Html.ActionLink("Edit", "Edit", "User", new { area="Admin", id = item.Id }, new { })</li>
+                            <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
+                            <li role="presentation"><a id="ResetPasswordButton" data-userid="@item.Id" role="button">Reset Password</a></li>
+                            @*<li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>*@
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div><strong>User Name:</strong> @item.UserName</div>
+            <div><strong>Email:</strong> @item.Email <span class="@(item.EmailConfirmed == true ? "label label-success" : "label label-warning")">@(item.EmailConfirmed == true ? "Confirmed" : "Pending")</span></div>
+            <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0}) {1}", item.CompanyName, string.IsNullOrEmpty(item.CompanyNameSubmitted) ? string.Empty : string.Format(" -- (submitted as {0})", item.CompanyNameSubmitted)) : string.Empty)</div>
+        </div>
+    </div>
+    <hr />
+}
+
 @section Scripts{
 
     @*@Scripts.Render("~/bundles/knockout")*@

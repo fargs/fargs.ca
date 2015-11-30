@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebApp.Areas.Admin.Models.Role
+namespace WebApp.Areas.Admin.ViewModels.Role
 {
     public class IndexViewModel
     {

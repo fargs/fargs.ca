@@ -5,8 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;
-using m = WebApp.Areas.Admin.Models.User;
+using WebApp.Areas.Admin.ViewModels;
 using WebApp.Models.Enums;
+using WebApp.Models;
+using Microsoft.AspNet.Identity;
+using AutoMapper;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -15,10 +18,12 @@ namespace WebApp.Areas.Admin.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
+        private ApplicationDbContext _db;
 
         public UserController()
         {
-
+            Mapper.CreateMap<ApplicationUser, User>();
+            Mapper.CreateMap<User, ApplicationUser>();
         }
 
         public UserController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ApplicationRoleManager roleManager)
@@ -64,10 +69,24 @@ namespace WebApp.Areas.Admin.Controllers
             }
         }
 
+        public ApplicationDbContext Db
+        {
+            get
+            {
+                return _db ?? HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+            }
+            private set
+            {
+                _db = value;
+            }
+        }
         // GET: User
         public ActionResult Index()
         {
-            var vm = GetIndexViewModel();
+            var vm = new ListViewModel()
+            {
+                Users = GetList()
+            };
             return View(vm);
         }
 
@@ -79,60 +98,60 @@ namespace WebApp.Areas.Admin.Controllers
                 throw new Exception("User to be deleted does not exist");
             }
             await this.UserManager.DeleteAsync(user);
-            var vm = GetIndexViewModel();
-            return PartialView("~/Areas/Admin/Views/User/_UserTableRows.cshtml", vm);
+            return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> Update(string id, DateTime lockoutEndDateUtc)
+        public async Task<ActionResult> Edit(string id)
         {
-            var user = await this.UserManager.FindByIdAsync(id);
-            if (user == null)
+            var m = await this.UserManager.FindByIdAsync(id);
+            if (m == null)
             {
-                throw new Exception("User to be deleted does not exist");
+                throw new Exception("User does not exist");
             }
-            user.LockoutEndDateUtc = lockoutEndDateUtc;
-            await this.UserManager.UpdateAsync(user);
-            var vm = GetIndexViewModel();
-            return PartialView("~/Areas/Admin/Views/User/_UserTableRows.cshtml", vm);
-        }
 
-        private m.IndexViewModel GetIndexViewModel()
-        {
-            var vm = new m.IndexViewModel()
+            var user = GetDetail(m);
+            var companies = Db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
+            //companies.Insert(0, new SelectListItem() { Text = "Select a company", Value = "" });
+
+            var vm = new DetailViewModel()
             {
-                Users = GetList()
+                User = user,
+                Companies = new SelectList(companies, "Value", "Text", user.CompanyId)
             };
-            return vm;
+            return View(vm);
         }
 
-        private List<m.User> GetList()
+        [HttpPost]
+        public async Task<ActionResult> Edit(User user)
         {
-            var result = new List<m.User>();
-            foreach (var item in this.UserManager.Users.ToList())
+            if (!ModelState.IsValid)
             {
-                string roleId = string.Empty;
-                if (item.Roles.Count > 0)
-                    roleId = item.Roles.First().RoleId;
-                else
-                    roleId = string.Empty;
-
-                var obj = new m.User();
-                obj.Id = item.Id;
-                obj.DisplayName = item.DisplayName;
-                obj.UserName = item.UserName;
-                obj.Email = item.Email;
-                obj.LockoutEnabled = item.LockoutEnabled;
-                obj.LockoutEndDateUtc = item.LockoutEndDateUtc;
-                obj.AccessFailedCount = item.AccessFailedCount;
-                if (item.Roles.Count > 0)
-                    obj.RoleName = this.RoleManager.Roles.SingleOrDefault(c => c.Id == roleId).Name;
-                else
-                    obj.RoleName = string.Empty;
-
-                result.Add(obj);
-
+                var vm = new DetailViewModel()
+                {
+                    User = user
+                };
+                return View(vm);
             }
-            return result;
+            
+            var m = await this.UserManager.FindByIdAsync(user.Id);
+            if (m == null)
+            {
+                throw new Exception("User does not exist");
+            }
+
+            Mapper.Map(user, m);
+
+            //if (m.CompanyId == 0)
+            //{
+            //    m.CompanyId = null;
+            //}
+            IdentityResult result = await this.UserManager.UpdateAsync(m);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index");
+            }
+            AddErrors(result);
+            return View();
         }
 
         public async Task<ActionResult> SendActivationEmail(string userId)
@@ -169,6 +188,53 @@ namespace WebApp.Areas.Admin.Controllers
             });
         }
 
+        private List<User> GetList()
+        {
+            var result = new List<User>();
+            foreach (var item in this.UserManager.Users.ToList())
+            {
+                var obj = GetDetail(item);
+                result.Add(obj);
+
+            }
+            return result;
+        }
+
+        private User GetDetail(ApplicationUser item)
+        {
+            // Auto map properties
+            var obj = Mapper.Map<User>(item);
+
+            // Set properties we not will not be mapped automatically.
+            // TODO: See if this could be configured in AutoMapper configuration.
+            string roleId = string.Empty;
+            if (item.Roles.Count > 0)
+                roleId = item.Roles.First().RoleId;
+            else
+                roleId = string.Empty;
+
+            if (item.Roles.Count > 0)
+                obj.RoleName = this.RoleManager.Roles.SingleOrDefault(c => c.Id == roleId).Name;
+            else
+                obj.RoleName = string.Empty;
+
+            obj.CompanyNameSubmitted = item.CompanyName;
+            if (item.CompanyId.HasValue)
+                obj.CompanyName = Db.Companies.Single(c => c.Id == item.CompanyId).Name;
+            else
+                obj.CompanyName = string.Empty;
+
+            return obj;
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -190,10 +256,16 @@ namespace WebApp.Areas.Admin.Controllers
                     _roleManager.Dispose();
                     _roleManager = null;
                 }
+
+                if (_db != null)
+                {
+                    _db.Dispose();
+                    _db = null;
+                }
+
             }
 
             base.Dispose(disposing);
         }
-
     }
 }

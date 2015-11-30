@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using AutoMapper;
+using Microsoft.Owin;
 using Owin;
 using WebApp.Models;
 using WebApp.ViewModels;
@@ -12,7 +13,7 @@ namespace WebApp
         {
             ConfigureAuth(app);
 
-            AutoMapper.Mapper.CreateMap<SpecialRequestFormViewModel, SpecialRequest>();
+            Mapper.CreateMap<SpecialRequestFormViewModel, SpecialRequest>();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
-using WebApp.Areas.Admin.Models.Role;
+using WebApp.Areas.Admin.ViewModels.Role;
 
 namespace WebApp.Areas.Admin.Controllers
 {

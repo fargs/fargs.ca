@@ -1,7 +1,7 @@
-﻿@model WebApp.Areas.Admin.Models.User.IndexViewModel
+﻿@model WebApp.Areas.Admin.ViewModels.ListViewModel
 @foreach (var item in Model.Users)
 {
-<tr>
+@*<tr>
     <td style="text-align: center; vertical-align: middle;">
         <ul class="nav nav-pills nav-condensed">
             <li role="presentation" class="dropdown">
@@ -36,6 +36,29 @@
         <span>
             <input type="text" name="Email" value="@item.Email"/>
         </span>
+    </td>
+</tr>*@
+<tr>
+    <td>
+        <ul class="nav nav-pills nav-condensed">
+            <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                    <i class="glyphicon glyphicon-menu-hamburger"></i>
+                </a>
+                <ul class="dropdown-menu nav-uncondensed" role="menu">
+                    <li role="presentation"><a data-bind="attr: {href: UserUrl}">Users</a></li>
+                    <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
+                    <li role="presentation"><a id="ResetPasswordButton" data-userid="@item.Id" role="button">Reset Password</a></li>
+                    <li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>
+                </ul>
+            </li>
+        </ul>
+    </td>
+    <td>
+        <span class="h4">@item.DisplayName</span>
+        <div><strong>UserName:</strong> @item.UserName</div>
+        <div><strong>Email:</strong> @item.Email (@item.EmailConfirmed)</div>
+        <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0})", item.CompanyName) : string.Empty )</div>
     </td>
 </tr>
 }

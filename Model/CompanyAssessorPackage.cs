@@ -14,11 +14,11 @@ namespace Model
     
     public partial class CompanyAssessorPackage
     {
-        public short Id { get; set; }
-        public string Name { get; set; }
         public Nullable<System.Guid> CompanyObjectGuid { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
         public string CompanyName { get; set; }
+        public short DocumentTemplateId { get; set; }
+        public string DocumentTemplateName { get; set; }
     }
 }

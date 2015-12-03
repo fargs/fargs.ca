@@ -24,5 +24,8 @@ namespace Model
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
         public string ParentName { get; set; }
+        public Nullable<System.Guid> ObjectGuid { get; set; }
+        public bool IsParent { get; set; }
+        public string Code { get; set; }
     }
 }

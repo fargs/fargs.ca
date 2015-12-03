@@ -1,11 +1,12 @@
 ﻿
 
 
+
 CREATE VIEW [API].[CompanyAssessorPackage]
 AS
 SELECT 
-	 d.[Id]
-	,d.[Name]
+	 DocumentTemplateId = d.[Id]
+	,DocumentTemplateName = d.[Name]
 	,CompanyObjectGuid = d.[OwnedByObjectGuid]
 	,d.[ModifiedDate]
 	,d.[ModifiedUser]

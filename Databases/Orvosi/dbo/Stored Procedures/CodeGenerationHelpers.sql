@@ -1,37 +1,33 @@
 ﻿
 CREATE PROC [dbo].[CodeGenerationHelpers]
+	 @TableName NVARCHAR(128)
+	,@SchemaName NVARCHAR(128)
 AS
 
 -- Parameters
 SELECT 
-	',@' + ColumnName + ' ' + CASE WHEN DataType IN ('nvarchar', 'varchar') THEN DataType + '(' + CONVERT(VARCHAR(50), [MaxLength]) + ')' ELSE DataType END
+	[Parameters] = ',@' + ColumnName + ' ' + CASE WHEN DataType IN ('nvarchar', 'varchar') THEN DataType + '(' + CONVERT(VARCHAR(50), [MaxLength]) + ')' ELSE DataType END
 FROM [dbo].[SchemaTableColumn]
-WHERE TableName = 'SpecialRequest'
+WHERE TableName = @TableName AND SchemaName = @SchemaName
 ORDER BY OrdinalPosition
 
 -- Select Columns
 SELECT 
-	',[' + ColumnName + ']'
+	[Select] = ',[' + ColumnName + ']'
 FROM [dbo].[SchemaTableColumn]
-WHERE TableName = 'SpecialRequest'
+WHERE TableName = @TableName AND SchemaName = @SchemaName
 ORDER BY OrdinalPosition
 
--- Parameter List
+-- Insert List
 SELECT 
-	',@' + ColumnName
+	[Insert] = ',@' + ColumnName
 FROM [dbo].[SchemaTableColumn]
-WHERE TableName = 'SpecialRequest'
+WHERE TableName = @TableName AND SchemaName = @SchemaName
 ORDER BY OrdinalPosition
 
 -- Update
 SELECT 
-	',[' + ColumnName + '] = @' + ColumnName
+	[Update] = ',[' + ColumnName + '] = @' + ColumnName
 FROM [dbo].[SchemaTableColumn]
-WHERE TableName = 'SpecialRequest'
-ORDER BY OrdinalPosition
-
-SELECT 
-	',[' + ColumnName + '] ' + CASE WHEN DataType IN ('nvarchar', 'varchar') THEN DataType + '(' + CONVERT(VARCHAR(50), [MaxLength]) + ')' ELSE DataType END
-FROM [dbo].[SchemaTableColumn]
-WHERE TableName = 'SpecialRequest'
+WHERE TableName = @TableName AND SchemaName = @SchemaName
 ORDER BY OrdinalPosition

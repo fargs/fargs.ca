@@ -2,10 +2,12 @@
 
 
 
+
+
 CREATE VIEW [dbo].[SchemaTableColumn]
 AS
-SELECT object_id AS ObjectID
-	, column_id AS ColumnID
+SELECT c.TableObjectId AS ObjectID
+	, ColumnId AS ColumnID
 	, TABLE_SCHEMA AS SchemaName
 	, TABLE_NAME AS TableName
 	, COLUMN_NAME AS ColumnName
@@ -16,19 +18,10 @@ SELECT object_id AS ObjectID
 	, NUMERIC_PRECISION AS NumericPrecision
 	, NUMERIC_SCALE AS NumericScale
 	, ORDINAL_POSITION AS OrdinalPosition
-	--, [MS_Description] AS ColumnDescription
-	--, [cst_Metadata], [cst_MigrationAggregate], [cst_FormPageID], [cst_LookupID], [cst_RegExMessage], [cst_RegEx], [cst_DisplayText_en], [cst_DisplayText_fr]
-FROM         (
-	SELECT cols.object_id, cols.column_id, ic.TABLE_NAME, ic.COLUMN_NAME, ic.DATA_TYPE, ic.COLUMN_DEFAULT, 
-		ic.TABLE_SCHEMA, ic.CHARACTER_MAXIMUM_LENGTH, ic.IS_NULLABLE, ic.NUMERIC_PRECISION, ic.NUMERIC_SCALE, ic.ORDINAL_POSITION
-        --,CAST(ex.name AS VARCHAR(1000)) AS ext_prop_name, CAST(ex.value AS VARCHAR(1000)) AS ext_prop_value
-	FROM sys.columns cols 
-	LEFT OUTER JOIN INFORMATION_SCHEMA.COLUMNS ic ON OBJECT_NAME(object_id) = ic.TABLE_NAME AND cols.[name] = ic.COLUMN_NAME 
-	--LEFT OUTER JOIN sys.extended_properties ex ON ex.major_id = cols.object_id AND ex.minor_id = cols.column_id
-) p 
-WHERE TABLE_NAME IS NOT NULL
---PIVOT (
---	MIN(ext_prop_value) 
---	FOR ext_prop_name 
---	IN ([cst_Metadata], [cst_MigrationAggregate], [cst_FormPageID], [MS_Description], [cst_LookupID], [cst_RegExMessage], [cst_RegEx], [cst_DisplayText_en], [cst_DisplayText_fr])
---) AS pt
+FROM (
+	SELECT TableObjectId = t.object_id, TableName = t.name, SchemaId = s.SCHEMA_ID, SchemaName = s.name, ColumnName = c.name, ColumnId = c.column_id
+	FROM sys.tables t
+	LEFT JOIN sys.schemas s ON t.schema_id = s.schema_id
+	LEFT JOIN sys.columns c ON c.object_id = t.object_id
+) c
+LEFT OUTER JOIN INFORMATION_SCHEMA.COLUMNS ic ON c.TableName = ic.TABLE_NAME AND c.ColumnName = ic.COLUMN_NAME AND ic.TABLE_SCHEMA = c.SchemaName

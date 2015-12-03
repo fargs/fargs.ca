@@ -77,7 +77,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPhysicianGoogleAccount_Result>("GetPhysicianGoogleAccount", idParameter);
         }
     
-        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUser)
+        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUserName, string modifiedUserId)
         {
             var physicianIdParameter = physicianId != null ?
                 new ObjectParameter("PhysicianId", physicianId) :
@@ -99,14 +99,18 @@ namespace Model
                 new ObjectParameter("ModifiedDate", modifiedDate) :
                 new ObjectParameter("ModifiedDate", typeof(System.DateTime));
     
-            var modifiedUserParameter = modifiedUser != null ?
-                new ObjectParameter("ModifiedUser", modifiedUser) :
-                new ObjectParameter("ModifiedUser", typeof(string));
+            var modifiedUserNameParameter = modifiedUserName != null ?
+                new ObjectParameter("ModifiedUserName", modifiedUserName) :
+                new ObjectParameter("ModifiedUserName", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserParameter);
+            var modifiedUserIdParameter = modifiedUserId != null ?
+                new ObjectParameter("ModifiedUserId", modifiedUserId) :
+                new ObjectParameter("ModifiedUserId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserNameParameter, modifiedUserIdParameter);
         }
     
-        public virtual int SpecialRequest_Update(Nullable<short> id, string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUser)
+        public virtual int SpecialRequest_Update(Nullable<short> id, string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUserName, string modifiedUserId)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -132,11 +136,15 @@ namespace Model
                 new ObjectParameter("ModifiedDate", modifiedDate) :
                 new ObjectParameter("ModifiedDate", typeof(System.DateTime));
     
-            var modifiedUserParameter = modifiedUser != null ?
-                new ObjectParameter("ModifiedUser", modifiedUser) :
-                new ObjectParameter("ModifiedUser", typeof(string));
+            var modifiedUserNameParameter = modifiedUserName != null ?
+                new ObjectParameter("ModifiedUserName", modifiedUserName) :
+                new ObjectParameter("ModifiedUserName", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Update", idParameter, physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserParameter);
+            var modifiedUserIdParameter = modifiedUserId != null ?
+                new ObjectParameter("ModifiedUserId", modifiedUserId) :
+                new ObjectParameter("ModifiedUserId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Update", idParameter, physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserNameParameter, modifiedUserIdParameter);
         }
     
         public virtual int AspNetUsers_Update(string id, string email, Nullable<bool> emailConfirmed, string phoneNumber, Nullable<bool> phoneNumberConfirmed, Nullable<bool> twoFactorEnabled, Nullable<System.DateTime> lockoutEndDateUtc, Nullable<bool> lockoutEnabled, Nullable<int> accessFailedCount, string userName, string title, string firstName, string lastName, string employeeId, Nullable<short> companyId, string companyName, string modifiedUser, Nullable<System.DateTime> lastActivationDate, Nullable<bool> isTestRecord)
@@ -382,6 +390,96 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Service_Update", idParameter, objectGuidParameter, nameParameter, descriptionParameter, codeParameter, priceParameter, serviceCategoryIdParameter, servicePortfolioIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Company_Insert(string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var codeParameter = code != null ?
+                new ObjectParameter("Code", code) :
+                new ObjectParameter("Code", typeof(string));
+    
+            var isParentParameter = isParent.HasValue ?
+                new ObjectParameter("IsParent", isParent) :
+                new ObjectParameter("IsParent", typeof(bool));
+    
+            var parentIdParameter = parentId.HasValue ?
+                new ObjectParameter("ParentId", parentId) :
+                new ObjectParameter("ParentId", typeof(int));
+    
+            var logoCssClassParameter = logoCssClass != null ?
+                new ObjectParameter("LogoCssClass", logoCssClass) :
+                new ObjectParameter("LogoCssClass", typeof(string));
+    
+            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
+                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
+                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+    
+            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
+                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
+                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+    
+            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
+                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
+                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Insert", nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Company_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var codeParameter = code != null ?
+                new ObjectParameter("Code", code) :
+                new ObjectParameter("Code", typeof(string));
+    
+            var isParentParameter = isParent.HasValue ?
+                new ObjectParameter("IsParent", isParent) :
+                new ObjectParameter("IsParent", typeof(bool));
+    
+            var parentIdParameter = parentId.HasValue ?
+                new ObjectParameter("ParentId", parentId) :
+                new ObjectParameter("ParentId", typeof(int));
+    
+            var logoCssClassParameter = logoCssClass != null ?
+                new ObjectParameter("LogoCssClass", logoCssClass) :
+                new ObjectParameter("LogoCssClass", typeof(string));
+    
+            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
+                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
+                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+    
+            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
+                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
+                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+    
+            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
+                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
+                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
         }
     }
 }

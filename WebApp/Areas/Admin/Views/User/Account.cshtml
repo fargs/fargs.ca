@@ -49,6 +49,13 @@
             <h3>Scopes</h3>
 
             <div class="form-group">
+                @Html.LabelFor(model => model.Account.CompanySubmittedName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <p class="form-control-static">@Model.Account.CompanySubmittedName</p>
+                </div>
+            </div>
+
+            <div class="form-group">
                 @Html.LabelFor(model => model.Account.CompanyId, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.DropDownListFor(model => model.Account.CompanyId, Model.Companies, string.Empty, new { @class = "form-control" })

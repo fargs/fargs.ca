@@ -583,6 +583,8 @@
     <Content Include="Areas\Admin\Views\Service\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Company\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Company\Edit.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

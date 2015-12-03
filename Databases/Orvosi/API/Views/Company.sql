@@ -1,11 +1,16 @@
 ﻿
 
+
+
 CREATE VIEW [API].[Company]
 AS
 
 SELECT 
 	 c.[Id]
+	,c.ObjectGuid
 	,c.[Name]
+	,c.[Code]
+	,c.[IsParent]
 	,c.[ParentId]
 	,c.[LogoCssClass]
 	,c.[MasterBookingPageByPhysician]

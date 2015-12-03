@@ -96,12 +96,12 @@ namespace WebApp.Controllers
             {
                 if (!await UserManager.IsEmailConfirmedAsync(user.Id))
                 {
-                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
+                    //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
                     // Uncomment to debug locally  
-                    ViewBag.Link = callbackUrl;
+                    //ViewBag.Link = callbackUrl;
 
-                    ViewBag.errorMessage = "You must have a confirmed email to log on. A confirmation email has been re-sent to your account.";
+                    ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
                     return View("Error");
                 }
             }

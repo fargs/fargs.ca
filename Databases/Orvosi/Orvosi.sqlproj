@@ -154,6 +154,31 @@
     <Build Include="API\Views\SpecialRequest.sql" />
     <Build Include="API\Stored Procedures\SpecialRequest_Update.sql" />
     <Build Include="API\Stored Procedures\SpecialRequest_Insert.sql" />
+    <Build Include="dbo\Tables\RoleCategory.sql" />
+    <Build Include="dbo\Tables\PriceCategory.sql" />
+    <Build Include="dbo\Tables\Price.sql" />
+    <Build Include="dbo\Tables\PhysicianCompany.sql" />
+    <Build Include="dbo\Tables\LookupItem.sql" />
+    <Build Include="dbo\Tables\Lookup.sql" />
+    <Build Include="Private\Views\Document.sql" />
+    <Build Include="API\Views\User.sql" />
+    <Build Include="API\Views\ServicePortfolio.sql" />
+    <Build Include="API\Views\ServiceCategory.sql" />
+    <Build Include="API\Views\Profile.sql" />
+    <Build Include="API\Views\PhysicianDocument.sql" />
+    <Build Include="API\Views\PhysicianCompany.sql" />
+    <Build Include="API\Views\PhysicianAssessorPackage.sql" />
+    <Build Include="API\Views\Physician.sql" />
+    <Build Include="API\Views\Entity.sql" />
+    <Build Include="API\Views\CompanyAssessorPackage.sql" />
+    <Build Include="API\Views\Account.sql" />
+    <Build Include="API\Stored Procedures\Service_Update.sql" />
+    <Build Include="API\Stored Procedures\Service_Insert.sql" />
+    <Build Include="API\Stored Procedures\Profile_Update.sql" />
+    <Build Include="API\Stored Procedures\AspNetUsers_Update.sql" />
+    <Build Include="API\Stored Procedures\Account_Update.sql" />
+    <Build Include="dbo\Tables\Organization.sql" />
+    <Build Include="dbo\Tables\DocumentTemplate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

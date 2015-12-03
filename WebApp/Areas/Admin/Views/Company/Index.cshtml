@@ -1,7 +1,52 @@
-﻿
-@{
-    ViewBag.Title = "Index";
-}
+﻿@using Model.Enums
+@using WebApp.Library.Extensions.Model
+@using WebApp.Library.Helpers
+@model WebApp.Areas.Admin.ViewModels.CompanyViewModels.IndexViewModel
 
 <h2>Companies</h2>
 
+<ul class="nav nav-tabs">
+    @Html.MenuLink("Companies", "Index", "Company", "Admin", null)
+    @Html.MenuLink("ExamWorks", "Index", "Company", "Admin", ParentCompanies.Examworks)
+    @Html.MenuLink("SCM", "Index", "Company", "Admin", ParentCompanies.SCM)
+</ul>
+<div class="margin-top: 20px">
+    &nbsp;
+</div>
+
+@foreach (var item in Model.Companies)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <span class="h4 pull-left">@item.Name</span>
+            <nav>
+                <ul class="nav nav-pills nav-condensed">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-hamburger"></i>
+                        </a>
+                        <ul class="dropdown-menu nav-uncondensed" role="menu">
+                            <li role="presentation">@Html.ActionLink("Services", "Services", "Company", new { area = "Admin", id = item.Id }, new { })</li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @foreach (var contact in Model.CompanyContacts.Where(c => c.CompanyId == item.Id))
+                {
+                <div class="pull-left panel panel-default">
+                    <div class="panel-body">
+                        <span class="label label-info">@contact.RoleName</span><br />
+                        <strong>@contact.DisplayName</strong><br />
+                        <abbr title="Email">E:</abbr> @contact.Email<br />
+                        <abbr title="Phone">P:</abbr> @contact.PhoneNumber
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <hr />
+}

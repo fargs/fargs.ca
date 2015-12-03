@@ -32,6 +32,7 @@ namespace WebApp.Models
         public string LastName { get; set; }
         public string Title { get; set; }
         public Nullable<DateTime> LastActivationDate { get; set; }
+        public bool IsTestRecord { get; set; }
         public string DisplayName
         {
             get
@@ -68,10 +69,5 @@ namespace WebApp.Models
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             base.OnModelCreating(modelBuilder);
         }
-
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<ServiceCatalogue> ServiceCatalogue { get; set; }
-        public DbSet<SpecialRequest> SpecialRequests { get; set; }
     }
 }

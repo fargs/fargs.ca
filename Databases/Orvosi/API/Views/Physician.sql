@@ -1,0 +1,9 @@
+﻿
+
+
+
+CREATE VIEW [API].[Physician]
+AS
+SELECT *
+FROM API.[User]
+WHERE RoleId = '8359141f-e423-4e48-8925-4624ba86245a'

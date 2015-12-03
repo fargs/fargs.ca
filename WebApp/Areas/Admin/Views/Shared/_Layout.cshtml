@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Model.Enums
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -23,9 +24,10 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Users", "", "User", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = RoleCategory.Physician }, null)</li>
                         <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>
                         <li>@Html.ActionLink("Companies", "", "Company", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = ServicePortfolios.Physician }, null)</li>
                     }
                 </ul>
                 @Html.Action("_LoginPartial", "Account", new { area = "" })
@@ -35,7 +37,7 @@
     <div class="container body-content">
         @RenderBody()
     </div>
-    <footer>
+    <footer style="margin-top: 40px">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">

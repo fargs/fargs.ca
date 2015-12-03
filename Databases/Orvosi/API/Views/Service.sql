@@ -1,13 +1,15 @@
 ﻿
+
 CREATE VIEW [API].[Service]
 AS
+
 SELECT 
 	s.[Id]
+	,s.[ObjectGuid]
 	,s.[Name]
 	,s.[Description]
 	,s.[Code]
-	,s.[Price]
-	,s.[IsAddOn]
+	,DefaultPrice = p.[Price]
 	,s.[ServiceCategoryId]
 	,s.[ServicePortfolioId]
 	,s.[ModifiedDate]
@@ -17,3 +19,4 @@ SELECT
 FROM dbo.[Service] s
 LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
 LEFT JOIN dbo.ServicePortfolio sp ON s.ServicePortfolioId = sp.Id
+LEFT JOIN dbo.Price p ON s.ObjectGuid = p.ObjectGuid

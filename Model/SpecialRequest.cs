@@ -21,7 +21,8 @@ namespace Model
         public string Timeframe { get; set; }
         public string AdditionalNotes { get; set; }
         public System.DateTime ModifiedDate { get; set; }
-        public string ModifiedUser { get; set; }
+        public string ModifiedUserName { get; set; }
+        public string ModifiedUserId { get; set; }
         public string PhysicianDisplayName { get; set; }
         public string ServiceName { get; set; }
     }

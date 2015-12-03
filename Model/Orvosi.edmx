@@ -6,14 +6,223 @@
     <edmx:StorageModels>
     <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Orvosi.API.Job' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Orvosi.API.Account' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EmailConfirmed" />
+            <PropertyRef Name="PhoneNumberConfirmed" />
+            <PropertyRef Name="TwoFactorEnabled" />
+            <PropertyRef Name="LockoutEnabled" />
+            <PropertyRef Name="AccessFailedCount" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="IsTestRecord" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="CompanyId" Type="smallint" />
+          <Property Name="CompanySubmittedName" Type="nvarchar" MaxLength="200" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="IsTestRecord" Type="bit" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastActivationDate" Type="datetime" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Company">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="128" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
+          <Property Name="MasterBookingPageByPhysician" Type="nvarchar" MaxLength="50" />
+          <Property Name="MasterBookingPageByTime" Type="nvarchar" MaxLength="50" />
+          <Property Name="MasterBookingPageTeleconference" Type="nvarchar" MaxLength="50" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="ParentName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.CompanyAssessorPackage' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="CompanyAssessorPackage">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CompanyObjectGuid" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianAssessorPackage' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianAssessorPackage">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PhysicianId" Type="uniqueidentifier" />
+          <Property Name="CompanyId" Type="smallint" />
+          <Property Name="DocumentTemplateId" Type="smallint" />
+          <Property Name="EffectiveDate" Type="datetime" />
+          <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="Path" Type="nvarchar" MaxLength="2000" />
+          <Property Name="Extension" Type="nchar" MaxLength="10" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="DocumentTemplateName" Type="nvarchar" MaxLength="128" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianCompany">
+          <Key>
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="CompanyId" />
+            <PropertyRef Name="RelationshipStatusId" />
+          </Key>
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CompanyId" Type="smallint" Nullable="false" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="RelationshipStatusId" Type="tinyint" Nullable="false" />
+          <Property Name="RelationshipStatusName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianDocument' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PhysicianId" Type="uniqueidentifier" />
+          <Property Name="DocumentTemplateId" Type="smallint" />
+          <Property Name="EffectiveDate" Type="datetime" />
+          <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="Path" Type="nvarchar" MaxLength="2000" />
+          <Property Name="Extension" Type="nchar" MaxLength="10" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="DocumentTemplateName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Profile' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Profile">
+          <Key>
+            <PropertyRef Name="Id" />
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="EmployeeId" Type="nvarchar" MaxLength="50" />
+          <Property Name="CompanyId" Type="smallint" />
+          <Property Name="CompanySubmittedName" Type="nvarchar" MaxLength="200" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="IsTestRecord" Type="bit" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Service' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="Id" />
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" />
+          <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Code" Type="nchar" MaxLength="10" />
+          <Property Name="DefaultPrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceCategoryId" Type="smallint" />
+          <Property Name="ServicePortfolioId" Type="smallint" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.ServiceCategory' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ServiceCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ModifiedDate" />
+          </Key>
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.ServicePortfolio' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ServicePortfolio">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ModifiedDate" />
+          </Key>
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="SpecialRequest">
           <Key>
             <PropertyRef Name="Id" />
             <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ModifiedUserName" />
+            <PropertyRef Name="ModifiedUserId" />
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -22,10 +231,120 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           <Property Name="Timeframe" Type="nvarchar" MaxLength="128" />
           <Property Name="AdditionalNotes" Type="nvarchar" MaxLength="2000" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ModifiedUserName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ModifiedUserId" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
           <Property Name="ServiceName" Type="nvarchar" MaxLength="128" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EmailConfirmed" />
+            <PropertyRef Name="PhoneNumberConfirmed" />
+            <PropertyRef Name="TwoFactorEnabled" />
+            <PropertyRef Name="LockoutEnabled" />
+            <PropertyRef Name="AccessFailedCount" />
+            <PropertyRef Name="UserName" />
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="EmployeeId" Type="nvarchar" MaxLength="50" />
+          <Property Name="CompanyId" Type="smallint" />
+          <Property Name="CompanySubmittedName" Type="nvarchar" MaxLength="200" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="LastActivationDate" Type="datetime" />
+          <Property Name="IsTestRecord" Type="bit" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="RoleCategoryId" Type="tinyint" />
+          <Property Name="RoleCategoryName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <Function Name="Account_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="EmailConfirmed" Type="bit" Mode="In" />
+          <Parameter Name="PhoneNumber" Type="nvarchar" Mode="In" />
+          <Parameter Name="PhoneNumberConfirmed" Type="bit" Mode="In" />
+          <Parameter Name="TwoFactorEnabled" Type="bit" Mode="In" />
+          <Parameter Name="LockoutEndDateUtc" Type="datetime" Mode="In" />
+          <Parameter Name="LockoutEnabled" Type="bit" Mode="In" />
+          <Parameter Name="AccessFailedCount" Type="int" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+          <Parameter Name="LastActivationDate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="AspNetUsers_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="nvarchar" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+          <Parameter Name="EmailConfirmed" Type="bit" Mode="In" />
+          <Parameter Name="PhoneNumber" Type="nvarchar" Mode="In" />
+          <Parameter Name="PhoneNumberConfirmed" Type="bit" Mode="In" />
+          <Parameter Name="TwoFactorEnabled" Type="bit" Mode="In" />
+          <Parameter Name="LockoutEndDateUtc" Type="datetime" Mode="In" />
+          <Parameter Name="LockoutEnabled" Type="bit" Mode="In" />
+          <Parameter Name="AccessFailedCount" Type="int" Mode="In" />
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Title" Type="nvarchar" Mode="In" />
+          <Parameter Name="FirstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="LastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="EmployeeId" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="CompanyName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+          <Parameter Name="LastActivationDate" Type="datetime" Mode="In" />
+          <Parameter Name="IsTestRecord" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="Profile_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="nvarchar" Mode="In" />
+          <Parameter Name="Title" Type="nvarchar" Mode="In" />
+          <Parameter Name="FirstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="LastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="EmployeeId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsTestRecord" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="Service_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Description" Type="nvarchar" Mode="In" />
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="ServiceCategoryId" Type="smallint" Mode="In" />
+          <Parameter Name="ServicePortfolioId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Service_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+          <Parameter Name="ObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Description" Type="nvarchar" Mode="In" />
+          <Parameter Name="Code" Type="nvarchar" Mode="In" />
+          <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="ServiceCategoryId" Type="smallint" Mode="In" />
+          <Parameter Name="ServicePortfolioId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
           <Parameter Name="ServiceId" Type="int" Mode="In" />
@@ -63,6 +382,154 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           </ReturnType>
         </Function>
         <EntityContainer Name="OrvosiModelStoreContainer">
+          <EntitySet Name="Account" EntityType="Self.Account" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Account].[Id] AS [Id], 
+    [Account].[Email] AS [Email], 
+    [Account].[EmailConfirmed] AS [EmailConfirmed], 
+    [Account].[PhoneNumber] AS [PhoneNumber], 
+    [Account].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed], 
+    [Account].[TwoFactorEnabled] AS [TwoFactorEnabled], 
+    [Account].[LockoutEndDateUtc] AS [LockoutEndDateUtc], 
+    [Account].[LockoutEnabled] AS [LockoutEnabled], 
+    [Account].[AccessFailedCount] AS [AccessFailedCount], 
+    [Account].[UserName] AS [UserName], 
+    [Account].[DisplayName] AS [DisplayName], 
+    [Account].[CompanyId] AS [CompanyId], 
+    [Account].[CompanySubmittedName] AS [CompanySubmittedName], 
+    [Account].[ModifiedDate] AS [ModifiedDate], 
+    [Account].[ModifiedUser] AS [ModifiedUser], 
+    [Account].[IsTestRecord] AS [IsTestRecord], 
+    [Account].[RoleId] AS [RoleId], 
+    [Account].[RoleName] AS [RoleName], 
+    [Account].[CompanyName] AS [CompanyName], 
+    [Account].[LastActivationDate] AS [LastActivationDate]
+    FROM [API].[Account] AS [Account]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Company" EntityType="Self.Company" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Company].[Id] AS [Id], 
+    [Company].[Name] AS [Name], 
+    [Company].[ParentId] AS [ParentId], 
+    [Company].[LogoCssClass] AS [LogoCssClass], 
+    [Company].[MasterBookingPageByPhysician] AS [MasterBookingPageByPhysician], 
+    [Company].[MasterBookingPageByTime] AS [MasterBookingPageByTime], 
+    [Company].[MasterBookingPageTeleconference] AS [MasterBookingPageTeleconference], 
+    [Company].[ModifiedDate] AS [ModifiedDate], 
+    [Company].[ModifiedUser] AS [ModifiedUser], 
+    [Company].[ParentName] AS [ParentName]
+    FROM [API].[Company] AS [Company]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="CompanyAssessorPackage" EntityType="Self.CompanyAssessorPackage" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [CompanyAssessorPackage].[Id] AS [Id], 
+    [CompanyAssessorPackage].[Name] AS [Name], 
+    [CompanyAssessorPackage].[CompanyObjectGuid] AS [CompanyObjectGuid], 
+    [CompanyAssessorPackage].[ModifiedDate] AS [ModifiedDate], 
+    [CompanyAssessorPackage].[ModifiedUser] AS [ModifiedUser], 
+    [CompanyAssessorPackage].[CompanyName] AS [CompanyName]
+    FROM [API].[CompanyAssessorPackage] AS [CompanyAssessorPackage]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PhysicianAssessorPackage" EntityType="Self.PhysicianAssessorPackage" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [PhysicianAssessorPackage].[Id] AS [Id], 
+    [PhysicianAssessorPackage].[ObjectGuid] AS [ObjectGuid], 
+    [PhysicianAssessorPackage].[PhysicianId] AS [PhysicianId], 
+    [PhysicianAssessorPackage].[CompanyId] AS [CompanyId], 
+    [PhysicianAssessorPackage].[DocumentTemplateId] AS [DocumentTemplateId], 
+    [PhysicianAssessorPackage].[EffectiveDate] AS [EffectiveDate], 
+    [PhysicianAssessorPackage].[ExpiryDate] AS [ExpiryDate], 
+    [PhysicianAssessorPackage].[Path] AS [Path], 
+    [PhysicianAssessorPackage].[Extension] AS [Extension], 
+    [PhysicianAssessorPackage].[Name] AS [Name], 
+    [PhysicianAssessorPackage].[ModifiedUser] AS [ModifiedUser], 
+    [PhysicianAssessorPackage].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [PhysicianAssessorPackage].[DocumentTemplateName] AS [DocumentTemplateName], 
+    [PhysicianAssessorPackage].[CompanyName] AS [CompanyName]
+    FROM [API].[PhysicianAssessorPackage] AS [PhysicianAssessorPackage]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [PhysicianCompany].[PhysicianId] AS [PhysicianId], 
+    [PhysicianCompany].[CompanyId] AS [CompanyId], 
+    [PhysicianCompany].[CompanyName] AS [CompanyName], 
+    [PhysicianCompany].[LogoCssClass] AS [LogoCssClass], 
+    [PhysicianCompany].[ParentId] AS [ParentId], 
+    [PhysicianCompany].[ParentCompanyName] AS [ParentCompanyName], 
+    [PhysicianCompany].[RelationshipStatusId] AS [RelationshipStatusId], 
+    [PhysicianCompany].[RelationshipStatusName] AS [RelationshipStatusName]
+    FROM [API].[PhysicianCompany] AS [PhysicianCompany]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PhysicianDocument" EntityType="Self.PhysicianDocument" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [PhysicianDocument].[Id] AS [Id], 
+    [PhysicianDocument].[ObjectGuid] AS [ObjectGuid], 
+    [PhysicianDocument].[PhysicianId] AS [PhysicianId], 
+    [PhysicianDocument].[DocumentTemplateId] AS [DocumentTemplateId], 
+    [PhysicianDocument].[EffectiveDate] AS [EffectiveDate], 
+    [PhysicianDocument].[ExpiryDate] AS [ExpiryDate], 
+    [PhysicianDocument].[Path] AS [Path], 
+    [PhysicianDocument].[Extension] AS [Extension], 
+    [PhysicianDocument].[Name] AS [Name], 
+    [PhysicianDocument].[ModifiedUser] AS [ModifiedUser], 
+    [PhysicianDocument].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [PhysicianDocument].[DocumentTemplateName] AS [DocumentTemplateName]
+    FROM [API].[PhysicianDocument] AS [PhysicianDocument]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Profile" EntityType="Self.Profile" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Profile].[Id] AS [Id], 
+    [Profile].[Email] AS [Email], 
+    [Profile].[PhoneNumber] AS [PhoneNumber], 
+    [Profile].[Title] AS [Title], 
+    [Profile].[FirstName] AS [FirstName], 
+    [Profile].[LastName] AS [LastName], 
+    [Profile].[DisplayName] AS [DisplayName], 
+    [Profile].[EmployeeId] AS [EmployeeId], 
+    [Profile].[CompanyId] AS [CompanyId], 
+    [Profile].[CompanySubmittedName] AS [CompanySubmittedName], 
+    [Profile].[ModifiedDate] AS [ModifiedDate], 
+    [Profile].[ModifiedUser] AS [ModifiedUser], 
+    [Profile].[IsTestRecord] AS [IsTestRecord], 
+    [Profile].[RoleId] AS [RoleId], 
+    [Profile].[RoleName] AS [RoleName], 
+    [Profile].[CompanyName] AS [CompanyName]
+    FROM [API].[Profile] AS [Profile]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Service" EntityType="Self.Service" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Service].[Id] AS [Id], 
+    [Service].[ObjectGuid] AS [ObjectGuid], 
+    [Service].[Name] AS [Name], 
+    [Service].[Description] AS [Description], 
+    [Service].[Code] AS [Code], 
+    [Service].[DefaultPrice] AS [DefaultPrice], 
+    [Service].[ServiceCategoryId] AS [ServiceCategoryId], 
+    [Service].[ServicePortfolioId] AS [ServicePortfolioId], 
+    [Service].[ModifiedDate] AS [ModifiedDate], 
+    [Service].[ModifiedUser] AS [ModifiedUser], 
+    [Service].[ServiceCategoryName] AS [ServiceCategoryName], 
+    [Service].[ServicePortfolioName] AS [ServicePortfolioName]
+    FROM [API].[Service] AS [Service]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ServiceCategory" EntityType="Self.ServiceCategory" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [ServiceCategory].[Id] AS [Id], 
+    [ServiceCategory].[Name] AS [Name], 
+    [ServiceCategory].[Description] AS [Description], 
+    [ServiceCategory].[ModifiedUser] AS [ModifiedUser], 
+    [ServiceCategory].[ModifiedDate] AS [ModifiedDate]
+    FROM [API].[ServiceCategory] AS [ServiceCategory]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ServicePortfolio" EntityType="Self.ServicePortfolio" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [ServicePortfolio].[Id] AS [Id], 
+    [ServicePortfolio].[Name] AS [Name], 
+    [ServicePortfolio].[Description] AS [Description], 
+    [ServicePortfolio].[ModifiedUser] AS [ModifiedUser], 
+    [ServicePortfolio].[ModifiedDate] AS [ModifiedDate]
+    FROM [API].[ServicePortfolio] AS [ServicePortfolio]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [SpecialRequest].[Id] AS [Id], 
@@ -72,10 +539,43 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
     [SpecialRequest].[Timeframe] AS [Timeframe], 
     [SpecialRequest].[AdditionalNotes] AS [AdditionalNotes], 
     [SpecialRequest].[ModifiedDate] AS [ModifiedDate], 
-    [SpecialRequest].[ModifiedUser] AS [ModifiedUser], 
+    [SpecialRequest].[ModifiedUserName] AS [ModifiedUserName], 
+    [SpecialRequest].[ModifiedUserId] AS [ModifiedUserId], 
     [SpecialRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
     [SpecialRequest].[ServiceName] AS [ServiceName]
     FROM [API].[SpecialRequest] AS [SpecialRequest]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="User" EntityType="Self.User" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [User].[Id] AS [Id], 
+    [User].[Email] AS [Email], 
+    [User].[EmailConfirmed] AS [EmailConfirmed], 
+    [User].[PasswordHash] AS [PasswordHash], 
+    [User].[SecurityStamp] AS [SecurityStamp], 
+    [User].[PhoneNumber] AS [PhoneNumber], 
+    [User].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed], 
+    [User].[TwoFactorEnabled] AS [TwoFactorEnabled], 
+    [User].[LockoutEndDateUtc] AS [LockoutEndDateUtc], 
+    [User].[LockoutEnabled] AS [LockoutEnabled], 
+    [User].[AccessFailedCount] AS [AccessFailedCount], 
+    [User].[UserName] AS [UserName], 
+    [User].[Title] AS [Title], 
+    [User].[FirstName] AS [FirstName], 
+    [User].[LastName] AS [LastName], 
+    [User].[DisplayName] AS [DisplayName], 
+    [User].[EmployeeId] AS [EmployeeId], 
+    [User].[CompanyId] AS [CompanyId], 
+    [User].[CompanySubmittedName] AS [CompanySubmittedName], 
+    [User].[ModifiedDate] AS [ModifiedDate], 
+    [User].[ModifiedUser] AS [ModifiedUser], 
+    [User].[LastActivationDate] AS [LastActivationDate], 
+    [User].[IsTestRecord] AS [IsTestRecord], 
+    [User].[RoleId] AS [RoleId], 
+    [User].[RoleName] AS [RoleName], 
+    [User].[CompanyName] AS [CompanyName], 
+    [User].[RoleCategoryId] AS [RoleCategoryId], 
+    [User].[RoleCategoryName] AS [RoleCategoryName]
+    FROM [API].[User] AS [User]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -94,7 +594,6 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           <FunctionImport Name="GetPhysicianGoogleAccount" ReturnType="Collection(OrvosiModel.GetPhysicianGoogleAccount_Result)">
           <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="SpecialRequests" EntityType="OrvosiModel.SpecialRequest" />
           <FunctionImport Name="SpecialRequest_Insert">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
             <Parameter Name="ServiceId" Mode="In" Type="Int32" />
@@ -110,6 +609,83 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
             <Parameter Name="Timeframe" Mode="In" Type="String" />
             <Parameter Name="AdditionalNotes" Mode="In" Type="String" />
             <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="CompanyAssessorPackages" EntityType="OrvosiModel.CompanyAssessorPackage" />
+          <EntitySet Name="PhysicianAssessorPackages" EntityType="OrvosiModel.PhysicianAssessorPackage" />
+          <EntitySet Name="PhysicianDocuments" EntityType="OrvosiModel.PhysicianDocument" />
+          <EntitySet Name="Companies" EntityType="OrvosiModel.Company" />
+          <EntitySet Name="PhysicianCompanies" EntityType="OrvosiModel.PhysicianCompany" />
+          <FunctionImport Name="AspNetUsers_Update">
+            <Parameter Name="Id" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="EmailConfirmed" Mode="In" Type="Boolean" />
+            <Parameter Name="PhoneNumber" Mode="In" Type="String" />
+            <Parameter Name="PhoneNumberConfirmed" Mode="In" Type="Boolean" />
+            <Parameter Name="TwoFactorEnabled" Mode="In" Type="Boolean" />
+            <Parameter Name="LockoutEndDateUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="LockoutEnabled" Mode="In" Type="Boolean" />
+            <Parameter Name="AccessFailedCount" Mode="In" Type="Int32" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Title" Mode="In" Type="String" />
+            <Parameter Name="FirstName" Mode="In" Type="String" />
+            <Parameter Name="LastName" Mode="In" Type="String" />
+            <Parameter Name="EmployeeId" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="CompanyName" Mode="In" Type="String" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+            <Parameter Name="LastActivationDate" Mode="In" Type="DateTime" />
+            <Parameter Name="IsTestRecord" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="Account_Update">
+            <Parameter Name="Id" Mode="In" Type="String" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="EmailConfirmed" Mode="In" Type="Boolean" />
+            <Parameter Name="PhoneNumber" Mode="In" Type="String" />
+            <Parameter Name="PhoneNumberConfirmed" Mode="In" Type="Boolean" />
+            <Parameter Name="TwoFactorEnabled" Mode="In" Type="Boolean" />
+            <Parameter Name="LockoutEndDateUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="LockoutEnabled" Mode="In" Type="Boolean" />
+            <Parameter Name="AccessFailedCount" Mode="In" Type="Int32" />
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+            <Parameter Name="LastActivationDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="Profile_Update">
+            <Parameter Name="Id" Mode="In" Type="String" />
+            <Parameter Name="Title" Mode="In" Type="String" />
+            <Parameter Name="FirstName" Mode="In" Type="String" />
+            <Parameter Name="LastName" Mode="In" Type="String" />
+            <Parameter Name="EmployeeId" Mode="In" Type="String" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+            <Parameter Name="IsTestRecord" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <EntitySet Name="Users" EntityType="OrvosiModel.User" />
+          <EntitySet Name="Profiles" EntityType="OrvosiModel.Profile" />
+          <EntitySet Name="Accounts" EntityType="OrvosiModel.Account" />
+          <EntitySet Name="SpecialRequests" EntityType="OrvosiModel.SpecialRequest" />
+          <EntitySet Name="Services" EntityType="OrvosiModel.Service" />
+          <EntitySet Name="ServiceCategories" EntityType="OrvosiModel.ServiceCategory" />
+          <EntitySet Name="ServicePortfolios" EntityType="OrvosiModel.ServicePortfolio" />
+          <FunctionImport Name="Service_Insert">
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="Code" Mode="In" Type="String" />
+            <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="ServiceCategoryId" Mode="In" Type="Int16" />
+            <Parameter Name="ServicePortfolioId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Service_Update">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="ObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="Code" Mode="In" Type="String" />
+            <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="ServiceCategoryId" Mode="In" Type="Int16" />
+            <Parameter Name="ServicePortfolioId" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
@@ -143,11 +719,192 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           <Property Type="String" Name="LastName" Nullable="true" MaxLength="128" />
           <Property Type="String" Name="EmployeeId" Nullable="true" MaxLength="50" />
         </ComplexType>
-        <EntityType Name="SpecialRequest">
+        <EntityType Name="CompanyAssessorPackage">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyObjectGuid" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhysicianAssessorPackage">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="PhysicianId" Type="Guid" />
+          <Property Name="CompanyId" Type="Int16" />
+          <Property Name="DocumentTemplateId" Type="Int16" />
+          <Property Name="EffectiveDate" Type="DateTime" Precision="3" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentTemplateName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhysicianDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="PhysicianId" Type="Guid" />
+          <Property Name="DocumentTemplateId" Type="Int16" />
+          <Property Name="EffectiveDate" Type="DateTime" Precision="3" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentTemplateName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Company">
           <Key>
             <PropertyRef Name="Id" />
             <PropertyRef Name="ModifiedDate" />
             <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MasterBookingPageByPhysician" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MasterBookingPageByTime" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MasterBookingPageTeleconference" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ParentName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhysicianCompany">
+          <Key>
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="CompanyId" />
+            <PropertyRef Name="RelationshipStatusId" />
+          </Key>
+          <Property Name="PhysicianId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyId" Type="Int16" Nullable="false" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RelationshipStatusId" Type="Byte" Nullable="false" />
+          <Property Name="RelationshipStatusName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EmailConfirmed" />
+            <PropertyRef Name="PhoneNumberConfirmed" />
+            <PropertyRef Name="TwoFactorEnabled" />
+            <PropertyRef Name="LockoutEnabled" />
+            <PropertyRef Name="AccessFailedCount" />
+            <PropertyRef Name="UserName" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyId" Type="Int16" />
+          <Property Name="CompanySubmittedName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" Nullable="false" />
+          <Property Name="ModifiedUser" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastActivationDate" Type="DateTime" Precision="3" />
+          <Property Name="IsTestRecord" Type="Boolean" Nullable="false" />
+          <Property Name="RoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RoleCategoryId" Type="Byte" />
+          <Property Name="RoleCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Profile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyId" Type="Int16" />
+          <Property Name="CompanySubmittedName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="IsTestRecord" Type="Boolean" Nullable="false" />
+          <Property Name="RoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="PhoneNumberConfirmed" />
+            <PropertyRef Name="TwoFactorEnabled" />
+            <PropertyRef Name="LockoutEnabled" />
+            <PropertyRef Name="AccessFailedCount" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="IsTestRecord" />
+            <PropertyRef Name="EmailConfirmed" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyId" Type="Int16" />
+          <Property Name="CompanySubmittedName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="IsTestRecord" Type="Boolean" Nullable="false" />
+          <Property Name="RoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="LastActivationDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="SpecialRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUserName" />
+            <PropertyRef Name="ModifiedUserId" />
           </Key>
           <Property Name="Id" Type="Int16" Nullable="false" />
           <Property Name="ObjectGuid" Type="Guid" />
@@ -156,9 +913,53 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           <Property Name="Timeframe" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="AdditionalNotes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUserName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="ServiceName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="DefaultPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceCategoryId" Type="Int16" />
+          <Property Name="ServicePortfolioId" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServicePortfolioName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ServiceCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ModifiedDate" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ServicePortfolio">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ModifiedDate" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -180,12 +981,212 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SpecialRequest_Insert" FunctionName="OrvosiModel.Store.SpecialRequest_Insert" />
+          <FunctionImportMapping FunctionImportName="SpecialRequest_Update" FunctionName="OrvosiModel.Store.SpecialRequest_Update" />
+          <EntitySetMapping Name="CompanyAssessorPackages">
+            <EntityTypeMapping TypeName="OrvosiModel.CompanyAssessorPackage">
+              <MappingFragment StoreEntitySet="CompanyAssessorPackage">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CompanyObjectGuid" ColumnName="CompanyObjectGuid" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianAssessorPackages">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianAssessorPackage">
+              <MappingFragment StoreEntitySet="PhysicianAssessorPackage">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="DocumentTemplateName" ColumnName="DocumentTemplateName" />
+                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Extension" ColumnName="Extension" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="DocumentTemplateId" ColumnName="DocumentTemplateId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianDocuments">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianDocument">
+              <MappingFragment StoreEntitySet="PhysicianDocument">
+                <ScalarProperty Name="DocumentTemplateName" ColumnName="DocumentTemplateName" />
+                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Extension" ColumnName="Extension" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="DocumentTemplateId" ColumnName="DocumentTemplateId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Companies">
+            <EntityTypeMapping TypeName="OrvosiModel.Company">
+              <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ParentName" ColumnName="ParentName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="MasterBookingPageTeleconference" ColumnName="MasterBookingPageTeleconference" />
+                <ScalarProperty Name="MasterBookingPageByTime" ColumnName="MasterBookingPageByTime" />
+                <ScalarProperty Name="MasterBookingPageByPhysician" ColumnName="MasterBookingPageByPhysician" />
+                <ScalarProperty Name="LogoCssClass" ColumnName="LogoCssClass" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianCompanies">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianCompany">
+              <MappingFragment StoreEntitySet="PhysicianCompany">
+                <ScalarProperty Name="RelationshipStatusName" ColumnName="RelationshipStatusName" />
+                <ScalarProperty Name="RelationshipStatusId" ColumnName="RelationshipStatusId" />
+                <ScalarProperty Name="ParentCompanyName" ColumnName="ParentCompanyName" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="LogoCssClass" ColumnName="LogoCssClass" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="AspNetUsers_Update" FunctionName="OrvosiModel.Store.AspNetUsers_Update" />
+          <FunctionImportMapping FunctionImportName="Account_Update" FunctionName="OrvosiModel.Store.Account_Update" />
+          <FunctionImportMapping FunctionImportName="Profile_Update" FunctionName="OrvosiModel.Store.Profile_Update" />
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="OrvosiModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="RoleCategoryName" ColumnName="RoleCategoryName" />
+                <ScalarProperty Name="RoleCategoryId" ColumnName="RoleCategoryId" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="IsTestRecord" ColumnName="IsTestRecord" />
+                <ScalarProperty Name="LastActivationDate" ColumnName="LastActivationDate" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CompanySubmittedName" ColumnName="CompanySubmittedName" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Profiles">
+            <EntityTypeMapping TypeName="OrvosiModel.Profile">
+              <MappingFragment StoreEntitySet="Profile">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="IsTestRecord" ColumnName="IsTestRecord" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CompanySubmittedName" ColumnName="CompanySubmittedName" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.Profile">
+              <ModificationFunctionMapping>
+                <UpdateFunction FunctionName="OrvosiModel.Store.Profile_Update">
+                  <ScalarProperty Name="IsTestRecord" ParameterName="IsTestRecord" Version="Current" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="EmployeeId" ParameterName="EmployeeId" Version="Current" />
+                  <ScalarProperty Name="LastName" ParameterName="LastName" Version="Current" />
+                  <ScalarProperty Name="FirstName" ParameterName="FirstName" Version="Current" />
+                  <ScalarProperty Name="Title" ParameterName="Title" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="OrvosiModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="LastActivationDate" ColumnName="LastActivationDate" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="IsTestRecord" ColumnName="IsTestRecord" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CompanySubmittedName" ColumnName="CompanySubmittedName" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.Account">
+              <ModificationFunctionMapping>
+                <UpdateFunction FunctionName="OrvosiModel.Store.Account_Update">
+                  <ScalarProperty Name="LastActivationDate" ParameterName="LastActivationDate" Version="Current" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="CompanyId" ParameterName="CompanyId" Version="Current" />
+                  <ScalarProperty Name="UserName" ParameterName="UserName" Version="Current" />
+                  <ScalarProperty Name="AccessFailedCount" ParameterName="AccessFailedCount" Version="Current" />
+                  <ScalarProperty Name="LockoutEnabled" ParameterName="LockoutEnabled" Version="Current" />
+                  <ScalarProperty Name="LockoutEndDateUtc" ParameterName="LockoutEndDateUtc" Version="Current" />
+                  <ScalarProperty Name="TwoFactorEnabled" ParameterName="TwoFactorEnabled" Version="Current" />
+                  <ScalarProperty Name="PhoneNumberConfirmed" ParameterName="PhoneNumberConfirmed" Version="Current" />
+                  <ScalarProperty Name="PhoneNumber" ParameterName="PhoneNumber" Version="Current" />
+                  <ScalarProperty Name="EmailConfirmed" ParameterName="EmailConfirmed" Version="Current" />
+                  <ScalarProperty Name="Email" ParameterName="Email" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="SpecialRequests">
             <EntityTypeMapping TypeName="OrvosiModel.SpecialRequest">
               <MappingFragment StoreEntitySet="SpecialRequest">
                 <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
                 <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
-                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedUserId" ColumnName="ModifiedUserId" />
+                <ScalarProperty Name="ModifiedUserName" ColumnName="ModifiedUserName" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="AdditionalNotes" ColumnName="AdditionalNotes" />
                 <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
@@ -196,8 +1197,72 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="SpecialRequest_Insert" FunctionName="OrvosiModel.Store.SpecialRequest_Insert" />
-          <FunctionImportMapping FunctionImportName="SpecialRequest_Update" FunctionName="OrvosiModel.Store.SpecialRequest_Update" />
+          <EntitySetMapping Name="Services">
+            <EntityTypeMapping TypeName="OrvosiModel.Service">
+              <MappingFragment StoreEntitySet="Service">
+                <ScalarProperty Name="ServicePortfolioName" ColumnName="ServicePortfolioName" />
+                <ScalarProperty Name="ServiceCategoryName" ColumnName="ServiceCategoryName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ServicePortfolioId" ColumnName="ServicePortfolioId" />
+                <ScalarProperty Name="ServiceCategoryId" ColumnName="ServiceCategoryId" />
+                <ScalarProperty Name="DefaultPrice" ColumnName="DefaultPrice" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.Service">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.Service_Insert">
+                  <ScalarProperty Name="DefaultPrice" ParameterName="Price" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="ServicePortfolioId" ParameterName="ServicePortfolioId" />
+                  <ScalarProperty Name="ServiceCategoryId" ParameterName="ServiceCategoryId" />
+                  <ScalarProperty Name="Code" ParameterName="Code" />
+                  <ScalarProperty Name="Description" ParameterName="Description" />
+                  <ScalarProperty Name="Name" ParameterName="Name" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OrvosiModel.Store.Service_Update">
+                  <ScalarProperty Name="DefaultPrice" ParameterName="Price" Version="Current" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="ServicePortfolioId" ParameterName="ServicePortfolioId" Version="Current" />
+                  <ScalarProperty Name="ServiceCategoryId" ParameterName="ServiceCategoryId" Version="Current" />
+                  <ScalarProperty Name="Code" ParameterName="Code" Version="Current" />
+                  <ScalarProperty Name="Description" ParameterName="Description" Version="Current" />
+                  <ScalarProperty Name="Name" ParameterName="Name" Version="Current" />
+                  <ScalarProperty Name="ObjectGuid" ParameterName="ObjectGuid" Version="Original" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Original" />
+                </UpdateFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServiceCategories">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceCategory">
+              <MappingFragment StoreEntitySet="ServiceCategory">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServicePortfolios">
+            <EntityTypeMapping TypeName="OrvosiModel.ServicePortfolio">
+              <MappingFragment StoreEntitySet="ServicePortfolio">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Service_Insert" FunctionName="OrvosiModel.Store.Service_Insert" />
+          <FunctionImportMapping FunctionImportName="Service_Update" FunctionName="OrvosiModel.Store.Service_Update" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

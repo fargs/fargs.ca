@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using Model.Enums;
+using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin
 {
@@ -14,6 +15,7 @@ namespace WebApp.Areas.Admin
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
+
             context.MapRoute(
                 "Admin_default",
                 "Admin/{controller}/{action}/{id}",

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.Owin;
+using Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace WebApp.Controllers
             var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
-            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Models.Enums.Roles.Company);
+            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Roles.Company);
 
             return PartialView("SendEmail");
         }

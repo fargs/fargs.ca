@@ -5,8 +5,10 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using Model;
+using Model.Enums;
 
-namespace WebApp.Library
+namespace WebApp.Library.Extensions
 {
     public static class Extensions
     {
@@ -16,6 +18,32 @@ namespace WebApp.Library
             var jw = new StringWriter();
             js.Serialize(jw, obj);
             return jw.ToString();
+        }
+    }
+}
+
+namespace WebApp.Library.Extensions.Model
+{
+    public static class Extensions
+    {
+        public static bool IsPhysician(this User obj)
+        {
+            return obj.RoleId == Roles.Physician ? true : false;
+        }
+
+        public static bool IsCompanyAdmin(this User obj)
+        {
+            return obj.RoleId == Roles.Company ? true : false;
+        }
+
+        public static bool IsExamWorksCompany(this PhysicianCompany obj)
+        {
+            return obj.ParentId == ParentCompanies.Examworks ? true : false;
+        }
+
+        public static bool IsScmCompany(this PhysicianCompany obj)
+        {
+            return obj.ParentId == ParentCompanies.SCM ? true : false;
         }
     }
 }

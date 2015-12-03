@@ -14,15 +14,18 @@
     [Title]                NVARCHAR (50)  NULL,
     [FirstName]            NVARCHAR (128) NULL,
     [LastName]             NVARCHAR (128) NULL,
-    [RoleLevelId]          SMALLINT       NULL,
     [EmployeeId]           NVARCHAR (50)  NULL,
     [CompanyId]            SMALLINT       NULL,
     [CompanyName]          NVARCHAR (200) NULL,
-    [ModifiedDate]         DATETIME       CONSTRAINT [DF_AspNetUsers_ModifiedDate] DEFAULT (getdate()) NULL,
-    [ModifiedUser]         NVARCHAR (256) CONSTRAINT [DF_AspNetUsers_ModifiedUser] DEFAULT (suser_name()) NULL,
+    [ModifiedDate]         DATETIME       CONSTRAINT [DF_AspNetUsers_ModifiedDate] DEFAULT (getdate()) NOT NULL,
+    [ModifiedUser]         NVARCHAR (256) CONSTRAINT [DF_AspNetUsers_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     [LastActivationDate]   DATETIME       NULL,
+    [IsTestRecord]         BIT            CONSTRAINT [DF_AspNetUsers_IsTestRecord] DEFAULT ((0)) NOT NULL,
+    [RoleLevelId] TINYINT NULL, 
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

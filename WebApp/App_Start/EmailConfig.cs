@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
-using WebApp.Models.Enums;
+using Model.Enums;
 
 namespace WebApp
 {

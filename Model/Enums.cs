@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebApp.Models.Enums
+namespace Model.Enums
 {
     public static class Roles
     {
@@ -17,5 +17,24 @@ namespace WebApp.Models.Enums
         public const byte Saved = 1;
         public const byte HasErrors = 2;
         public const byte HasWarnings = 3;
+    }
+
+    public static class RoleCategory
+    {
+        public const byte Physician = 1;
+        public const byte Company = 2;
+        public const byte Staff = 3;
+    }
+
+    public static class ParentCompanies
+    {
+        public const byte Examworks = 1;
+        public const byte SCM = 10;
+    }
+
+    public static class ServicePortfolios
+    {
+        public const byte Orvosi = 1;
+        public const byte Physician = 2;
     }
 }

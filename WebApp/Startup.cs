@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Owin;
 using Owin;
-using WebApp.Models;
+using Model;
 using WebApp.ViewModels;
 
 [assembly: OwinStartupAttribute(typeof(WebApp.Startup))]

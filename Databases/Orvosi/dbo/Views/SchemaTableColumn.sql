@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [dbo].[SchemaTableColumn]
 AS
 SELECT object_id AS ObjectID
@@ -25,6 +26,7 @@ FROM         (
 	LEFT OUTER JOIN INFORMATION_SCHEMA.COLUMNS ic ON OBJECT_NAME(object_id) = ic.TABLE_NAME AND cols.[name] = ic.COLUMN_NAME 
 	--LEFT OUTER JOIN sys.extended_properties ex ON ex.major_id = cols.object_id AND ex.minor_id = cols.column_id
 ) p 
+WHERE TABLE_NAME IS NOT NULL
 --PIVOT (
 --	MIN(ext_prop_value) 
 --	FOR ext_prop_name 

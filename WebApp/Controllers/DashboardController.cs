@@ -8,9 +8,10 @@ using System.Web.Mvc;
 using System.Security.Claims;
 using WebApp.Models;
 using vm = WebApp.ViewModels;
-using enums = WebApp.Models.Enums;
 using System.Net.Mail;
 using System.Text;
+using Model;
+using Model.Enums;
 
 namespace WebApp.Controllers
 {
@@ -38,30 +39,33 @@ namespace WebApp.Controllers
             model.SchedulingProcess = schedulingProcess;
             model.Physicians = GetPhysicians();
             model.Services = GetServices();
-            
-            var company = _db.Companies.FirstOrDefault(c => c.Id == user.CompanyId);
-            if (company != null)
-            {
-                model.UserCompanyDisplayName = company.Name;
-                model.UserCompanyLogoCssClass = company.LogoCssClass;
 
-                //if (model.SchedulingProcess == "ByTime")
-                //{
-                //    model.BookingPageName = company.MasterBookingPageByTime;
-                //}
-                //else 
-                //if (model.SchedulingProcess == "Teleconference")
-                //{
-                //    model.BookingPageName = company.MasterBookingPageTeleconference;
-                //}
-                //else 
-                if (model.SchedulingProcess == "ByPhysician")
+            using (var db = new OrvosiEntities())
+            {
+                var company = db.Companies.FirstOrDefault(c => c.Id == user.CompanyId);
+                if (company != null)
                 {
-                    model.BookingPageName = company.MasterBookingPageByPhysician;
-                }
-                else if (model.SchedulingProcess == "SpecialRequest")
-                {
-                    model.BookingPageName = null;
+                    model.UserCompanyDisplayName = company.Name;
+                    model.UserCompanyLogoCssClass = company.LogoCssClass;
+
+                    //if (model.SchedulingProcess == "ByTime")
+                    //{
+                    //    model.BookingPageName = company.MasterBookingPageByTime;
+                    //}
+                    //else 
+                    //if (model.SchedulingProcess == "Teleconference")
+                    //{
+                    //    model.BookingPageName = company.MasterBookingPageTeleconference;
+                    //}
+                    //else 
+                    if (model.SchedulingProcess == "ByPhysician")
+                    {
+                        model.BookingPageName = company.MasterBookingPageByPhysician;
+                    }
+                    else if (model.SchedulingProcess == "SpecialRequest")
+                    {
+                        model.BookingPageName = null;
+                    }
                 }
             }
             return View(model);
@@ -71,18 +75,15 @@ namespace WebApp.Controllers
         [HttpGet]
         public JsonResult GetServiceCatalogue(string id)
         {
-            _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
-
-            //var list = from sc in _db.ServiceCatalogue
-            //           join s in _db.Services on sc.ServiceId equals s.Id
-            //           where sc.PhysicianId == id
-            //           select new vm.Service { Id = s.Id, Name = s.Name };
-            var list = _db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
+            using (var db = new OrvosiEntities())
             {
-                Id = c.Id,
-                Name = c.Name
-            });
-            return Json(list.ToList(), JsonRequestBehavior.AllowGet);
+                var list = db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                });
+                return Json(list.ToList(), JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]
@@ -98,18 +99,19 @@ namespace WebApp.Controllers
                 });
             }
 
+            var db = new OrvosiEntities();
+
             var identity = (User.Identity as ClaimsIdentity);
             // save the record to the database
-            _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
 
             var specialRequest = AutoMapper.Mapper.Map<SpecialRequest>(model);
             specialRequest.ModifiedUserName = identity.Name;
             specialRequest.ModifiedUserId = identity.FindFirst(ClaimTypes.Sid).Value;
 
-            _db.SpecialRequests.Add(specialRequest);
+            db.SpecialRequests.Add(specialRequest);
             model.ActionState = (byte)await _db.SaveChangesAsync();
 
-            if (model.ActionState == enums.ActionStates.Saved)
+            if (model.ActionState == ActionStates.Saved)
             {
                 // the current user that is submitting the special request (someone from the company typcially)
                 var from = identity.FindFirst(ClaimTypes.Email).Value;
@@ -128,7 +130,7 @@ namespace WebApp.Controllers
                 b.AppendLine(string.Format("Physician Email: {0}", physician.Email));
                 b.AppendLine();
                 b.AppendLine("REQUEST");
-                var service = _db.Services.SingleOrDefault(c => c.Id == model.ServiceId);
+                var service = db.Services.SingleOrDefault(c => c.Id == model.ServiceId);
                 if (service != null)
                 {
                     b.AppendLine(string.Format("Service: {0}", "<Not Set>"));
@@ -159,7 +161,7 @@ namespace WebApp.Controllers
         private SelectList GetPhysicians()
         {
             var users = _userManager.Users
-                .Where(u => u.Roles.Any(r => r.RoleId == enums.Roles.Physician)).ToList();
+                .Where(u => u.Roles.Any(r => r.RoleId == Roles.Physician)).ToList();
             var physicians = users
                 .Select(u => new SelectListItem() { Value = u.Id, Text = u.DisplayName })
                 .ToList();
@@ -168,11 +170,14 @@ namespace WebApp.Controllers
 
         private SelectList GetServices()
         {
-            var services = _db.Services
-                .Where(s => s.ServiceCategoryId == 5)
-                .Select(u => new SelectListItem() { Value = u.Id.ToString(), Text = u.Name })
-                .ToList();
-            return new SelectList(services, "Value", "Text");
+            using (var db = new OrvosiEntities())
+            {
+                var services = db.Services
+                    .Where(s => s.ServiceCategoryId == 5)
+                    .Select(u => new SelectListItem() { Value = u.Id.ToString(), Text = u.Name })
+                    .ToList();
+                return new SelectList(services, "Value", "Text");
+            }
         }
     }
 }

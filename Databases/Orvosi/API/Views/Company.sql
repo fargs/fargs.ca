@@ -1,14 +1,18 @@
 ﻿
+
 CREATE VIEW [API].[Company]
 AS
+
 SELECT 
-	Id = ISNULL([Id], 0)
-	,[Name]
-	,[ParentId]
-	,[LogoCssClass]
-	,[MasterBookingPageByPhysician]
-	,[MasterBookingPageByTime]
-	,[MasterBookingPageTeleconference]
-	,[ModifiedDate] = NULLIF([ModifiedDate], -1)
-	,[ModifiedUser] = NULLIF([ModifiedUser], -1)
+	 c.[Id]
+	,c.[Name]
+	,c.[ParentId]
+	,c.[LogoCssClass]
+	,c.[MasterBookingPageByPhysician]
+	,c.[MasterBookingPageByTime]
+	,c.[MasterBookingPageTeleconference]
+	,c.[ModifiedDate]
+	,c.[ModifiedUser]
+	,ParentName = p.Name
 FROM dbo.Company c
+LEFT JOIN dbo.Company p ON c.ParentId = p.Id

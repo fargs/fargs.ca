@@ -1,7 +1,18 @@
-﻿@model WebApp.Areas.Admin.ViewModels.ListViewModel
+﻿@using WebApp.Library.Extensions.Model
+@using WebApp.Library.Helpers
+@using Model.Enums
+@model WebApp.Areas.Admin.ViewModels.ListViewModel
 
 <h2>Users</h2>
 
+<ul class="nav nav-tabs">
+    @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategory.Physician)
+    @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategory.Company)
+    @Html.MenuLink("Staff", "Index", "User", "Admin", RoleCategory.Staff)
+</ul>
+<div class="margin-top: 20px">
+    &nbsp;
+</div>
 @foreach (var item in Model.Users)
 {
     <div class="row">
@@ -14,7 +25,12 @@
                             <i class="glyphicon glyphicon-menu-hamburger"></i>
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
-                            <li role="presentation">@Html.ActionLink("Edit", "Edit", "User", new { area="Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Profile", "Profile", "User", new { area="Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Account", "Account", "User", new { area = "Admin", id = item.Id }, new { })</li>
+                            @if (item.IsPhysician())
+                            {
+                                <li role="presentation">@Html.ActionLink("Companies", "Companies", "User", new { area = "Admin", userId = item.Id }, new { })</li>
+                            }
                             <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
                             <li role="presentation"><a id="ResetPasswordButton" data-userid="@item.Id" role="button">Reset Password</a></li>
                             @*<li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>*@
@@ -28,7 +44,8 @@
         <div class="col-md-12">
             <div><strong>User Name:</strong> @item.UserName</div>
             <div><strong>Email:</strong> @item.Email <span class="@(item.EmailConfirmed == true ? "label label-success" : "label label-warning")">@(item.EmailConfirmed == true ? "Confirmed" : "Pending")</span></div>
-            <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0}) {1}", item.CompanyName, string.IsNullOrEmpty(item.CompanyNameSubmitted) ? string.Empty : string.Format(" -- (submitted as {0})", item.CompanyNameSubmitted)) : string.Empty)</div>
+            <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0}) {1}", item.CompanyName, string.IsNullOrEmpty(item.CompanySubmittedName) ? string.Empty : string.Format(" -- (submitted as {0})", item.CompanySubmittedName)) : string.Empty)</div>
+            <div><span class="@(item.IsTestRecord == true ? "label label-warning" : "")">@(item.IsTestRecord == true ? "Test Record" : "")</span></div>
         </div>
     </div>
     <hr />

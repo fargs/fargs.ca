@@ -248,6 +248,8 @@
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
     <Compile Include="Areas\Admin\Controllers\CompanyController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
+    <Compile Include="Areas\Admin\ViewModels\CompanyViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
     <Compile Include="Areas\Assessments\Controllers\HomeController.cs" />
@@ -267,19 +269,12 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Library\Helpers.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Appointment\Index.cs" />
     <Compile Include="Models\Availability\Index.cs" />
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\CompanyAspNetUsers.cs" />
-    <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Service.cs" />
-    <Compile Include="Models\ServiceCatalogue.cs" />
-    <Compile Include="Models\ServiceCategory.cs" />
-    <Compile Include="Models\ServicePortfolio.cs" />
-    <Compile Include="Models\SpecialRequest.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
@@ -579,6 +574,15 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Company\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\User\AssessorPackages.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Account.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Profile.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Companies.cshtml" />
+    <Content Include="Areas\Admin\Views\Service\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Service\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Service\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Service\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Service\Index.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -661,7 +665,6 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_RegisterPartial.cshtml" />
-    <Content Include="Views\Service\Index.cshtml" />
     <Content Include="Views\Home\ReleaseHistory.cshtml" />
     <Content Include="Views\Shared\_SidebarLayout.cshtml" />
     <Content Include="Views\Home\_ServiceOverview.cshtml" />
@@ -694,7 +697,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\ViewModels\User\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Assessments\Views\Shared\" />
     <Folder Include="Areas\Developers\Models\" />

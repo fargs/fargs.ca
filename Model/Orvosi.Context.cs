@@ -27,7 +27,18 @@ namespace Model
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<CompanyAssessorPackage> CompanyAssessorPackages { get; set; }
+        public virtual DbSet<PhysicianAssessorPackage> PhysicianAssessorPackages { get; set; }
+        public virtual DbSet<PhysicianDocument> PhysicianDocuments { get; set; }
+        public virtual DbSet<Company> Companies { get; set; }
+        public virtual DbSet<PhysicianCompany> PhysicianCompanies { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<SpecialRequest> SpecialRequests { get; set; }
+        public virtual DbSet<Service> Services { get; set; }
+        public virtual DbSet<ServiceCategory> ServiceCategories { get; set; }
+        public virtual DbSet<ServicePortfolio> ServicePortfolios { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -126,6 +137,251 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Update", idParameter, physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserParameter);
+        }
+    
+        public virtual int AspNetUsers_Update(string id, string email, Nullable<bool> emailConfirmed, string phoneNumber, Nullable<bool> phoneNumberConfirmed, Nullable<bool> twoFactorEnabled, Nullable<System.DateTime> lockoutEndDateUtc, Nullable<bool> lockoutEnabled, Nullable<int> accessFailedCount, string userName, string title, string firstName, string lastName, string employeeId, Nullable<short> companyId, string companyName, string modifiedUser, Nullable<System.DateTime> lastActivationDate, Nullable<bool> isTestRecord)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var emailConfirmedParameter = emailConfirmed.HasValue ?
+                new ObjectParameter("EmailConfirmed", emailConfirmed) :
+                new ObjectParameter("EmailConfirmed", typeof(bool));
+    
+            var phoneNumberParameter = phoneNumber != null ?
+                new ObjectParameter("PhoneNumber", phoneNumber) :
+                new ObjectParameter("PhoneNumber", typeof(string));
+    
+            var phoneNumberConfirmedParameter = phoneNumberConfirmed.HasValue ?
+                new ObjectParameter("PhoneNumberConfirmed", phoneNumberConfirmed) :
+                new ObjectParameter("PhoneNumberConfirmed", typeof(bool));
+    
+            var twoFactorEnabledParameter = twoFactorEnabled.HasValue ?
+                new ObjectParameter("TwoFactorEnabled", twoFactorEnabled) :
+                new ObjectParameter("TwoFactorEnabled", typeof(bool));
+    
+            var lockoutEndDateUtcParameter = lockoutEndDateUtc.HasValue ?
+                new ObjectParameter("LockoutEndDateUtc", lockoutEndDateUtc) :
+                new ObjectParameter("LockoutEndDateUtc", typeof(System.DateTime));
+    
+            var lockoutEnabledParameter = lockoutEnabled.HasValue ?
+                new ObjectParameter("LockoutEnabled", lockoutEnabled) :
+                new ObjectParameter("LockoutEnabled", typeof(bool));
+    
+            var accessFailedCountParameter = accessFailedCount.HasValue ?
+                new ObjectParameter("AccessFailedCount", accessFailedCount) :
+                new ObjectParameter("AccessFailedCount", typeof(int));
+    
+            var userNameParameter = userName != null ?
+                new ObjectParameter("UserName", userName) :
+                new ObjectParameter("UserName", typeof(string));
+    
+            var titleParameter = title != null ?
+                new ObjectParameter("Title", title) :
+                new ObjectParameter("Title", typeof(string));
+    
+            var firstNameParameter = firstName != null ?
+                new ObjectParameter("FirstName", firstName) :
+                new ObjectParameter("FirstName", typeof(string));
+    
+            var lastNameParameter = lastName != null ?
+                new ObjectParameter("LastName", lastName) :
+                new ObjectParameter("LastName", typeof(string));
+    
+            var employeeIdParameter = employeeId != null ?
+                new ObjectParameter("EmployeeId", employeeId) :
+                new ObjectParameter("EmployeeId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var companyNameParameter = companyName != null ?
+                new ObjectParameter("CompanyName", companyName) :
+                new ObjectParameter("CompanyName", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var lastActivationDateParameter = lastActivationDate.HasValue ?
+                new ObjectParameter("LastActivationDate", lastActivationDate) :
+                new ObjectParameter("LastActivationDate", typeof(System.DateTime));
+    
+            var isTestRecordParameter = isTestRecord.HasValue ?
+                new ObjectParameter("IsTestRecord", isTestRecord) :
+                new ObjectParameter("IsTestRecord", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AspNetUsers_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, titleParameter, firstNameParameter, lastNameParameter, employeeIdParameter, companyIdParameter, companyNameParameter, modifiedUserParameter, lastActivationDateParameter, isTestRecordParameter);
+        }
+    
+        public virtual int Account_Update(string id, string email, Nullable<bool> emailConfirmed, string phoneNumber, Nullable<bool> phoneNumberConfirmed, Nullable<bool> twoFactorEnabled, Nullable<System.DateTime> lockoutEndDateUtc, Nullable<bool> lockoutEnabled, Nullable<int> accessFailedCount, string userName, Nullable<short> companyId, string modifiedUser, Nullable<System.DateTime> lastActivationDate)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var emailConfirmedParameter = emailConfirmed.HasValue ?
+                new ObjectParameter("EmailConfirmed", emailConfirmed) :
+                new ObjectParameter("EmailConfirmed", typeof(bool));
+    
+            var phoneNumberParameter = phoneNumber != null ?
+                new ObjectParameter("PhoneNumber", phoneNumber) :
+                new ObjectParameter("PhoneNumber", typeof(string));
+    
+            var phoneNumberConfirmedParameter = phoneNumberConfirmed.HasValue ?
+                new ObjectParameter("PhoneNumberConfirmed", phoneNumberConfirmed) :
+                new ObjectParameter("PhoneNumberConfirmed", typeof(bool));
+    
+            var twoFactorEnabledParameter = twoFactorEnabled.HasValue ?
+                new ObjectParameter("TwoFactorEnabled", twoFactorEnabled) :
+                new ObjectParameter("TwoFactorEnabled", typeof(bool));
+    
+            var lockoutEndDateUtcParameter = lockoutEndDateUtc.HasValue ?
+                new ObjectParameter("LockoutEndDateUtc", lockoutEndDateUtc) :
+                new ObjectParameter("LockoutEndDateUtc", typeof(System.DateTime));
+    
+            var lockoutEnabledParameter = lockoutEnabled.HasValue ?
+                new ObjectParameter("LockoutEnabled", lockoutEnabled) :
+                new ObjectParameter("LockoutEnabled", typeof(bool));
+    
+            var accessFailedCountParameter = accessFailedCount.HasValue ?
+                new ObjectParameter("AccessFailedCount", accessFailedCount) :
+                new ObjectParameter("AccessFailedCount", typeof(int));
+    
+            var userNameParameter = userName != null ?
+                new ObjectParameter("UserName", userName) :
+                new ObjectParameter("UserName", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var lastActivationDateParameter = lastActivationDate.HasValue ?
+                new ObjectParameter("LastActivationDate", lastActivationDate) :
+                new ObjectParameter("LastActivationDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Account_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, companyIdParameter, modifiedUserParameter, lastActivationDateParameter);
+        }
+    
+        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string employeeId, string modifiedUser, Nullable<bool> isTestRecord)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(string));
+    
+            var titleParameter = title != null ?
+                new ObjectParameter("Title", title) :
+                new ObjectParameter("Title", typeof(string));
+    
+            var firstNameParameter = firstName != null ?
+                new ObjectParameter("FirstName", firstName) :
+                new ObjectParameter("FirstName", typeof(string));
+    
+            var lastNameParameter = lastName != null ?
+                new ObjectParameter("LastName", lastName) :
+                new ObjectParameter("LastName", typeof(string));
+    
+            var employeeIdParameter = employeeId != null ?
+                new ObjectParameter("EmployeeId", employeeId) :
+                new ObjectParameter("EmployeeId", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var isTestRecordParameter = isTestRecord.HasValue ?
+                new ObjectParameter("IsTestRecord", isTestRecord) :
+                new ObjectParameter("IsTestRecord", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter);
+        }
+    
+        public virtual int Service_Insert(string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var codeParameter = code != null ?
+                new ObjectParameter("Code", code) :
+                new ObjectParameter("Code", typeof(string));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var serviceCategoryIdParameter = serviceCategoryId.HasValue ?
+                new ObjectParameter("ServiceCategoryId", serviceCategoryId) :
+                new ObjectParameter("ServiceCategoryId", typeof(short));
+    
+            var servicePortfolioIdParameter = servicePortfolioId.HasValue ?
+                new ObjectParameter("ServicePortfolioId", servicePortfolioId) :
+                new ObjectParameter("ServicePortfolioId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Service_Insert", nameParameter, descriptionParameter, codeParameter, priceParameter, serviceCategoryIdParameter, servicePortfolioIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Service_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var codeParameter = code != null ?
+                new ObjectParameter("Code", code) :
+                new ObjectParameter("Code", typeof(string));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var serviceCategoryIdParameter = serviceCategoryId.HasValue ?
+                new ObjectParameter("ServiceCategoryId", serviceCategoryId) :
+                new ObjectParameter("ServiceCategoryId", typeof(short));
+    
+            var servicePortfolioIdParameter = servicePortfolioId.HasValue ?
+                new ObjectParameter("ServicePortfolioId", servicePortfolioId) :
+                new ObjectParameter("ServicePortfolioId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Service_Update", idParameter, objectGuidParameter, nameParameter, descriptionParameter, codeParameter, priceParameter, serviceCategoryIdParameter, servicePortfolioIdParameter, modifiedUserParameter);
         }
     }
 }

@@ -4,11 +4,13 @@ CREATE PROC [API].[SpecialRequest_Insert]
 	,@ServiceId int
 	,@Timeframe nvarchar(128)
 	,@AdditionalNotes nvarchar(2000)
-	,@ModifiedDate datetime
 	,@ModifiedUserName nvarchar(128)
 	,@ModifiedUserId nvarchar(128)
 AS
 	
+	DECLARE @Now DATETIME
+	SET @Now = GETDATE()
+
 	INSERT INTO dbo.SpecialRequest (
 		 [PhysicianId]
 		,[ServiceId]
@@ -22,7 +24,7 @@ AS
 		,@ServiceId
 		,@Timeframe
 		,@AdditionalNotes
-		,@ModifiedDate
+		,@Now
 		,@ModifiedUserName
 		,@ModifiedUserId
 	)

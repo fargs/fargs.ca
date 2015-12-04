@@ -77,7 +77,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPhysicianGoogleAccount_Result>("GetPhysicianGoogleAccount", idParameter);
         }
     
-        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUserName, string modifiedUserId)
+        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, string modifiedUserName, string modifiedUserId)
         {
             var physicianIdParameter = physicianId != null ?
                 new ObjectParameter("PhysicianId", physicianId) :
@@ -95,10 +95,6 @@ namespace Model
                 new ObjectParameter("AdditionalNotes", additionalNotes) :
                 new ObjectParameter("AdditionalNotes", typeof(string));
     
-            var modifiedDateParameter = modifiedDate.HasValue ?
-                new ObjectParameter("ModifiedDate", modifiedDate) :
-                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
-    
             var modifiedUserNameParameter = modifiedUserName != null ?
                 new ObjectParameter("ModifiedUserName", modifiedUserName) :
                 new ObjectParameter("ModifiedUserName", typeof(string));
@@ -107,7 +103,7 @@ namespace Model
                 new ObjectParameter("ModifiedUserId", modifiedUserId) :
                 new ObjectParameter("ModifiedUserId", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserNameParameter, modifiedUserIdParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedUserNameParameter, modifiedUserIdParameter);
         }
     
         public virtual int SpecialRequest_Update(Nullable<short> id, string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUserName, string modifiedUserId)

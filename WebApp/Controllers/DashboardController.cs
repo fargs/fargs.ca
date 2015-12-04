@@ -109,7 +109,7 @@ namespace WebApp.Controllers
             specialRequest.ModifiedUserId = identity.FindFirst(ClaimTypes.Sid).Value;
 
             db.SpecialRequests.Add(specialRequest);
-            model.ActionState = (byte)await _db.SaveChangesAsync();
+            model.ActionState = (byte)await db.SaveChangesAsync();
 
             if (model.ActionState == ActionStates.Saved)
             {

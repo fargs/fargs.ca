@@ -224,9 +224,6 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
         <EntityType Name="SpecialRequest">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUserName" />
-            <PropertyRef Name="ModifiedUserId" />
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -378,7 +375,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="ServiceId" Type="int" Mode="In" />
           <Parameter Name="Timeframe" Type="nvarchar" Mode="In" />
           <Parameter Name="AdditionalNotes" Type="nvarchar" Mode="In" />
-          <Parameter Name="ModifiedDate" Type="datetime" Mode="In" />
           <Parameter Name="ModifiedUserName" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUserId" Type="nvarchar" Mode="In" />
         </Function>
@@ -632,7 +628,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ServiceId" Mode="In" Type="Int32" />
             <Parameter Name="Timeframe" Mode="In" Type="String" />
             <Parameter Name="AdditionalNotes" Mode="In" Type="String" />
-            <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
             <Parameter Name="ModifiedUserName" Mode="In" Type="String" />
             <Parameter Name="ModifiedUserId" Mode="In" Type="String" />
           </FunctionImport>
@@ -962,9 +957,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="SpecialRequest">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUserName" />
-            <PropertyRef Name="ModifiedUserId" />
           </Key>
           <Property Name="Id" Type="Int16" Nullable="false" />
           <Property Name="ObjectGuid" Type="Guid" />
@@ -1289,6 +1281,18 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                 <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.SpecialRequest">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.SpecialRequest_Insert">
+                  <ScalarProperty Name="ModifiedUserId" ParameterName="ModifiedUserId" />
+                  <ScalarProperty Name="ModifiedUserName" ParameterName="ModifiedUserName" />
+                  <ScalarProperty Name="AdditionalNotes" ParameterName="AdditionalNotes" />
+                  <ScalarProperty Name="Timeframe" ParameterName="Timeframe" />
+                  <ScalarProperty Name="ServiceId" ParameterName="ServiceId" />
+                  <ScalarProperty Name="PhysicianId" ParameterName="PhysicianId" />
+                </InsertFunction>
+              </ModificationFunctionMapping>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Services">

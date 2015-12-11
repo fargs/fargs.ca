@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Model.Location>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            Owner
+        </th>
+        <th>
+            Location
+        </th>
+        <th>
+            Building Name
+        </th>
+        <th>
+            Address
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <nav>
+                <ul class="nav nav-pills nav-condensed">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-hamburger"></i>
+                        </a>
+                        <ul class="dropdown-menu nav-uncondensed" role="menu">
+                            <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
+                            <li role="presentation">@Html.ActionLink("Details", "Details", new { id = item.Id })</li>
+                            <li role="separator" class="divider"></li>
+                            <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </td>
+        <td>
+            @item.EntityType<br />
+            <span class="text-muted">@item.EntityDisplayName</span>
+        </td>
+        <td>
+            @item.LocationName
+        </td>
+        <td>
+            @item.Name<br />
+            <span class="text-muted">@item.Attention</span>
+        </td>
+        <td>
+            @item.Address1<br />
+            @if (!string.IsNullOrEmpty(item.Address2))
+            {
+                @item.Address2<br />
+            }
+            @item.City, @item.PostalCode<br />
+            @item.ProvinceName @item.CountryName
+        </td>
+    </tr>
+}
+
+</table>

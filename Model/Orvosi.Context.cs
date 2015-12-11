@@ -39,6 +39,12 @@ namespace Model
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<ServiceCategory> ServiceCategories { get; set; }
         public virtual DbSet<ServicePortfolio> ServicePortfolios { get; set; }
+        public virtual DbSet<ServiceCatalogue> ServiceCatalogues { get; set; }
+        public virtual DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<LookupItem> LookupItems { get; set; }
+        public virtual DbSet<Province> Provinces { get; set; }
+        public virtual DbSet<Entity> Entities { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -476,6 +482,166 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+        }
+    
+        public virtual int ServiceRequest_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
+        }
+    
+        public virtual int ServiceRequest_Insert(string companyReferenceId, Nullable<short> serviceCatalogueId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> assignedTo, Nullable<byte> statusId, Nullable<System.DateTime> dueDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<decimal> price, string modifiedUser)
+        {
+            var companyReferenceIdParameter = companyReferenceId != null ?
+                new ObjectParameter("CompanyReferenceId", companyReferenceId) :
+                new ObjectParameter("CompanyReferenceId", typeof(string));
+    
+            var serviceCatalogueIdParameter = serviceCatalogueId.HasValue ?
+                new ObjectParameter("ServiceCatalogueId", serviceCatalogueId) :
+                new ObjectParameter("ServiceCatalogueId", typeof(short));
+    
+            var harvestProjectIdParameter = harvestProjectId.HasValue ?
+                new ObjectParameter("HarvestProjectId", harvestProjectId) :
+                new ObjectParameter("HarvestProjectId", typeof(long));
+    
+            var titleParameter = title != null ?
+                new ObjectParameter("Title", title) :
+                new ObjectParameter("Title", typeof(string));
+    
+            var bodyParameter = body != null ?
+                new ObjectParameter("Body", body) :
+                new ObjectParameter("Body", typeof(string));
+    
+            var requestedDateParameter = requestedDate.HasValue ?
+                new ObjectParameter("RequestedDate", requestedDate) :
+                new ObjectParameter("RequestedDate", typeof(System.DateTime));
+    
+            var requestedByParameter = requestedBy.HasValue ?
+                new ObjectParameter("RequestedBy", requestedBy) :
+                new ObjectParameter("RequestedBy", typeof(System.Guid));
+    
+            var cancelledDateParameter = cancelledDate.HasValue ?
+                new ObjectParameter("CancelledDate", cancelledDate) :
+                new ObjectParameter("CancelledDate", typeof(System.DateTime));
+    
+            var assignedToParameter = assignedTo.HasValue ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(System.Guid));
+    
+            var statusIdParameter = statusId.HasValue ?
+                new ObjectParameter("StatusId", statusId) :
+                new ObjectParameter("StatusId", typeof(byte));
+    
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
+            var startTimeParameter = startTime.HasValue ?
+                new ObjectParameter("StartTime", startTime) :
+                new ObjectParameter("StartTime", typeof(System.TimeSpan));
+    
+            var endTimeParameter = endTime.HasValue ?
+                new ObjectParameter("EndTime", endTime) :
+                new ObjectParameter("EndTime", typeof(System.TimeSpan));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, serviceCatalogueIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, assignedToParameter, statusIdParameter, dueDateParameter, startTimeParameter, endTimeParameter, priceParameter, modifiedUserParameter);
+        }
+    
+        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, Nullable<short> serviceCatalogueId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> assignedTo, Nullable<byte> statusId, Nullable<System.DateTime> dueDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<decimal> price, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var companyReferenceIdParameter = companyReferenceId != null ?
+                new ObjectParameter("CompanyReferenceId", companyReferenceId) :
+                new ObjectParameter("CompanyReferenceId", typeof(string));
+    
+            var serviceCatalogueIdParameter = serviceCatalogueId.HasValue ?
+                new ObjectParameter("ServiceCatalogueId", serviceCatalogueId) :
+                new ObjectParameter("ServiceCatalogueId", typeof(short));
+    
+            var harvestProjectIdParameter = harvestProjectId.HasValue ?
+                new ObjectParameter("HarvestProjectId", harvestProjectId) :
+                new ObjectParameter("HarvestProjectId", typeof(long));
+    
+            var titleParameter = title != null ?
+                new ObjectParameter("Title", title) :
+                new ObjectParameter("Title", typeof(string));
+    
+            var bodyParameter = body != null ?
+                new ObjectParameter("Body", body) :
+                new ObjectParameter("Body", typeof(string));
+    
+            var requestedDateParameter = requestedDate.HasValue ?
+                new ObjectParameter("RequestedDate", requestedDate) :
+                new ObjectParameter("RequestedDate", typeof(System.DateTime));
+    
+            var requestedByParameter = requestedBy.HasValue ?
+                new ObjectParameter("RequestedBy", requestedBy) :
+                new ObjectParameter("RequestedBy", typeof(System.Guid));
+    
+            var cancelledDateParameter = cancelledDate.HasValue ?
+                new ObjectParameter("CancelledDate", cancelledDate) :
+                new ObjectParameter("CancelledDate", typeof(System.DateTime));
+    
+            var assignedToParameter = assignedTo.HasValue ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(System.Guid));
+    
+            var statusIdParameter = statusId.HasValue ?
+                new ObjectParameter("StatusId", statusId) :
+                new ObjectParameter("StatusId", typeof(byte));
+    
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
+            var startTimeParameter = startTime.HasValue ?
+                new ObjectParameter("StartTime", startTime) :
+                new ObjectParameter("StartTime", typeof(System.TimeSpan));
+    
+            var endTimeParameter = endTime.HasValue ?
+                new ObjectParameter("EndTime", endTime) :
+                new ObjectParameter("EndTime", typeof(System.TimeSpan));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, serviceCatalogueIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, assignedToParameter, statusIdParameter, dueDateParameter, startTimeParameter, endTimeParameter, priceParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Location_Select_PhysicianAndCompany_Result>("Location_Select_PhysicianAndCompany", physicianIdParameter, companyIdParameter);
         }
     }
 }

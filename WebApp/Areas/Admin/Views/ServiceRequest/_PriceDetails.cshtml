@@ -1,0 +1,16 @@
+﻿@model Model.ServiceRequest
+
+<dl>
+    <dt>Service Price</dt>
+    <dd>@Model.DefaultPrice</dd>
+    <dt>Catalogue Override</dt>
+    <dd>@Model.ServiceCataloguePriceOverride</dd>
+    <dt>Request Override</dt>
+    <dd>
+        @Model.ServiceRequestPriceOverride
+        <hr />
+    </dd>
+    <dt>Effective Price</dt>
+    <dd>@Model.EffectivePrice</dd>
+</dl>
+

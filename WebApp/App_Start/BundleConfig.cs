@@ -19,6 +19,9 @@ namespace WebApp
                         "~/Scripts/jQuery.FileUpload/jquery.iframe-transport.js",
                         "~/Scripts/jQuery.FileUpload/jquery.fileupload.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
+                        "~/Scripts/jquery-ui-{version}.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                       "~/Scripts/knockout-3.3.0.js",
                       "~/Scripts/knockout.mapping-latest.js"));
@@ -41,8 +44,11 @@ namespace WebApp
                       "~/Content/bootstrap-custom/bootstrap.css",
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
-                      "~/Content/fullcalendar.css",
+                      "~/Content/themes/base/all.css",
                       "~/Content/Site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
+                      "~/Content/jquery-ui.css"));
 
             bundles.Add(new StyleBundle("~/Content/landing").Include(
                       "~/Content/bootstrap.css",

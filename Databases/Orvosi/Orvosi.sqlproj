@@ -185,6 +185,19 @@
     <Build Include="API\Stored Procedures\TableName_Insert.sql" />
     <Build Include="API\Stored Procedures\Company_Update.sql" />
     <Build Include="API\Stored Procedures\Company_Insert.sql" />
+    <Build Include="dbo\Tables\ServiceRequest.sql" />
+    <Build Include="dbo\Tables\Location.sql" />
+    <Build Include="dbo\Views\SchemaViewColumn.sql" />
+    <Build Include="API\Views\ServiceRequest.sql" />
+    <Build Include="API\Views\ServiceCatalogue.sql" />
+    <Build Include="API\Views\Province.sql" />
+    <Build Include="API\Views\LookupItem.sql" />
+    <Build Include="API\Views\Location.sql" />
+    <Build Include="dbo\Stored Procedures\TruncateHarvest.sql" />
+    <Build Include="API\Stored Procedures\ServiceRequest_Update.sql" />
+    <Build Include="API\Stored Procedures\ServiceRequest_Insert.sql" />
+    <Build Include="API\Stored Procedures\ServiceRequest_Delete.sql" />
+    <Build Include="API\Stored Procedures\Location_Select_PhysicianAndCompany.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

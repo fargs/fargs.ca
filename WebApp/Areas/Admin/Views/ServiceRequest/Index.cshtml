@@ -1,0 +1,97 @@
+﻿@using WebApp.Library.Extensions.Model
+@using WebApp.Library.Helpers
+@using Model.Enums
+@model List<Model.ServiceRequest>
+
+<h2>Service Requests</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<ul class="nav nav-tabs">
+    @Html.MenuLink("Unassigned", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Unassigned)
+    @Html.MenuLink("Open", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Open)
+    @Html.MenuLink("Closed", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Closed)
+</ul>
+<div class="margin-top: 20px">
+    &nbsp;
+</div>
+@foreach (var item in this.Model)
+{
+    <div id="UserTableRows" class="row border-left" style="border-left-color: aqua">
+        <div class="col-md-12" >
+            <nav class="pull-left">
+                <ul class="nav nav-pills nav-condensed">
+                    <li role="presentation" class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <i class="glyphicon glyphicon-menu-hamburger"></i>
+                        </a>
+                        <ul class="dropdown-menu nav-uncondensed" role="menu">
+                            <li role="presentation">@Html.ActionLink("Edit", "Details", "ServiceRequest", new { area="Admin", id = item.Id }, new { })</li>
+                            @*  <li role="presentation">@Html.ActionLink("Account", "Account", "User", new { area = "Admin", id = item.Id }, new { })</li>
+                                <li role="presentation">@Html.ActionLink("Companies", "Companies", "User", new { area = "Admin", userId = item.Id }, new { })</li>
+                                <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
+                                <li role="presentation"><a id="ResetPasswordButton" data-userid="@item.Id" role="button">Reset Password</a></li>
+                                <li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>*@
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <div class="h4 pull-left">@item.Id - @item.PhysicianDisplayName - @item.Title</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <dl class="dl-horizontal">
+                    <dt>Status</dt>
+                    <dd><span class="label label-warning">@item.StatusName</span></dd>
+                    <dt>Service</dt>
+                    <dd>@item.ServiceName</dd>
+                    <dt>Location</dt>
+                    <dd>@item.LocationName</dd>
+                </dl>
+            </div>
+            <div class="col-md-4">
+                <dl class="dl-horizontal">
+                    <dt>Company</dt>
+                    <dd>@item.CompanyName</dd>
+                    <dt>Requested By</dt>
+                    <dd>@item.RequestedByDisplayName</dd>
+                    <dt>Assigned To</dt>
+                    <dd>@item.AssignedToDisplayName</dd>
+                </dl>
+            </div>
+            <div class="col-md-4">
+                <dl class="dl-horizontal">
+                    <dt>Due Date</dt>
+                    <dd>@item.DueDate.Value.GetDateTimeFormats('D')[0]</dd>
+                    <dt>Start Time</dt>
+                    <dd>@item.StartTime</dd>
+                    <dt>End Time</dt>
+                    <dd>@item.EndTime</dd>
+                    @*<dt>Effective Price</dt>
+                    <dd>
+                        <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", item)">
+                            <strong class="text-success">@item.EffectivePrice</strong>
+                        </a>
+                    </dd>*@
+                </dl>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $('document').ready(function () {
+
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+
+            $(function () {
+                $('[data-toggle="popover"]').popover({ html: true })
+            })
+        });
+    </script>
+}

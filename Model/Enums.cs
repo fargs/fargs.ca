@@ -37,4 +37,27 @@ namespace Model.Enums
         public const byte Orvosi = 1;
         public const byte Physician = 2;
     }
+
+    public static class ServiceRequestStatus
+    {
+        public const byte Unassigned = 0;
+        public const byte Open = 10;
+        public const byte Closed = 11;
+    }
+
+    public static class EntityTypes
+    {
+        public const string Company = "COMPANY";
+        public const string Physician = "PHYSICIAN";
+        public const string User = "USER";
+        public const string Service = "SERVICE";
+    }
+
+    public static class Lookups
+    {
+        public const byte RelationshipStatus = 1;
+        public const byte ServiceRequestStatus = 2;
+        public const byte TaskStatus = 3;
+        public const byte LocationAreas = 4;
+    }
 }

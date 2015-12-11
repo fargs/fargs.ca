@@ -101,6 +101,16 @@ textarea {
     
 }
 
+.border-left {
+	padding: 0 0 0 0 !important;
+	height: 100% !important;
+	box-sizing:border-box !important;
+	-moz-box-sizing:border-box !important;
+	-webkit-box-sizing:border-box !important;
+	border-left-width:10px !important;
+	border-left-style: solid !important;
+}
+
 .toast-top-center { 
     top: 12px; 
     left: 50%; 

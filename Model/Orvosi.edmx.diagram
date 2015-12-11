@@ -17,6 +17,12 @@
         <EntityTypeShape EntityType="OrvosiModel.Service" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceCategory" Width="1.5" PointX="9.375" PointY="5.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServicePortfolio" Width="1.5" PointX="9.375" PointY="8.75" />
+        <EntityTypeShape EntityType="OrvosiModel.ServiceCatalogue" Width="1.5" PointX="13.25" PointY="7.625" />
+        <EntityTypeShape EntityType="OrvosiModel.ServiceRequest" Width="1.5" PointX="11.25" PointY="5.125" />
+        <EntityTypeShape EntityType="OrvosiModel.Location" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="OrvosiModel.LookupItem" Width="1.5" PointX="3.375" PointY="13.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Province" Width="1.5" PointX="13.375" PointY="11.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Entity" Width="1.5" PointX="0.75" PointY="13.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

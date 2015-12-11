@@ -1,0 +1,316 @@
+﻿@model Model.ServiceRequest
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Service Request</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Service
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Company</label>
+                    <div class="col-md-10">
+                        @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                        @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Service</label>
+                    <div class="col-md-10">
+                        <select class="form-control disabled" name="ServiceId" id="ServiceId">
+                            <option></option>
+                        </select>
+                        @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Physician</label>
+                    <div class="col-md-10">
+                        <select class="form-control disabled" name="ServiceCatalogueId" id="PhysicianId">
+                            <option></option>
+                        </select>
+                        @Html.ValidationMessage("ServiceCatalogueId", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Location
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Location</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="LocationId" id="LocationId">
+                            <option></option>
+                        </select>
+                        @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Date and Time
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Availability</label>
+                    <div class="col-md-3">
+                        <div id="DueDate"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Morning</h4>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 8:00 am
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 9:00 am
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 10:00 am
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 11:00 am
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Afternoon</h4>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 1:00 pm
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 2:00 pm
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 3:00 pm
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="StartTime"> 4:00 pm
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Case Details
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RequestedBy, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.RequestedBy, new SelectList(ViewBag.Requestors, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.RequestedBy, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Reference Id / Claimant</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.CompanyReferenceId, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CompanyReferenceId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Additional Notes</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" name="Body" rows="3"></textarea>
+                        @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h4 class="text-muted">Internal Use Only</h4>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Price
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Service Price</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static" id="ServicePrice"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Company Override</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static" id="ServiceCataloguePrice"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Request Override</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.ServiceRequestPriceOverride, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ServiceRequestPriceOverride, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Resource Assignments
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AssignedTo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.AssignedTo, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AssignedTo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        $('document').ready(function () {
+            var company = $('#CompanyId');
+            var physician = $('#PhysicianId');
+            var service = $('#ServiceId');
+            var location = $('#LocationId');
+            var servicePrice = $('#ServicePrice');
+            var serviceCataloguePrice = $('#ServiceCataloguePrice');
+            var serviceRequestPrice = $('#ServiceRequestPriceOrverride');
+            var effectivePrice = $('#EffectivePrice');
+            var dueDate = $('#DueDate').datepicker();
+
+            company.change(function (e) {
+                e.preventDefault();
+                // load the physicians
+                $.post(
+                    '@Url.Content("~/admin/servicerequest/services")',// + '?companyId=' + company.val() + '&physicianId=' + physician.val(),
+                    {
+                        companyId: company.val()
+                    },
+                    function (data, status, e) {
+                        physician.children('option:not(:first)').remove();
+                        service.children('option:not(:first)').remove();
+                        $.each(data.services, function (index, object) {
+                            service
+                            .append($("<option></option>")
+                            .attr("Value", object.Value)
+                            .text(object.Text));
+                        });
+                    },
+                    'json'
+                    );
+
+                loadLocations();
+            });
+
+            service.change(function (e) {
+                e.preventDefault();
+                // load the physicians
+                $.post(
+                    '@Url.Content("~/admin/servicerequest/physicians")',// + '?companyId=' + company.val() + '&physicianId=' + physician.val(),
+                    {
+                        companyId: company.val(),
+                        serviceId: service.val()
+                    },
+                    function (data, status, e) {
+                        physician.children('option:not(:first)').remove();
+                        $.each(data.physicians, function (index, object) {
+                            physician
+                            .append($("<option></option>")
+                            .attr("Value", object.Value)
+                            .text(object.Text));
+                        });
+                        servicePrice.text(data.selected.DefaultPrice);
+                    },
+                    'json'
+                    );
+                loadLocations();
+            });
+
+            physician.change(function (e) {
+                e.preventDefault();
+                // load the physicians
+                $.post(
+                    '@Url.Content("~/admin/servicerequest/servicecatalogue")',// + '?companyId=' + company.val() + '&physicianId=' + physician.val(),
+                    {
+                        serviceCatalogueId: physician.val()
+                    },
+                    function (data, status, e) {
+                        serviceCataloguePrice.text(data.ServiceCataloguePriceOverride);
+                    },
+                    'json'
+                    );
+
+                loadLocations();
+            });
+
+            var loadLocations = function () {
+                location.children('option:not(:first)').remove();
+
+                if (company.val() && service.val()) {
+                    $.post(
+                    '@Url.Content("~/admin/servicerequest/locations")',
+                    {
+                        physicianId: physician.val(),
+                        companyId: company.val()
+                    },
+                    function (data, status, e) {
+                        $.each(data, function (index, object) {
+                            location
+                            .append($("<option></option>")
+                            .attr("Value", object.Value)
+                            .text(object.Text));
+                        });
+                    },
+                    'json'
+                    );
+                }
+            }
+
+
+        });
+    </script>
+}

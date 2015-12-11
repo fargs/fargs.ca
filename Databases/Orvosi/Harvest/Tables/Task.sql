@@ -9,9 +9,10 @@
     [Deactivated]       BIT             NOT NULL,
     [Billable]          BIT             NULL,
     [Project_Id]        BIGINT          NULL,
-    CONSTRAINT [PK_Harvest.Task] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Harvest.Task_Harvest.Project_Project_Id] FOREIGN KEY ([Project_Id]) REFERENCES [Harvest].[Project] ([Id])
+    CONSTRAINT [PK_Harvest.Task] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

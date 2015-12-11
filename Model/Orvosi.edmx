@@ -81,6 +81,71 @@ warning 6002: The table/view 'Orvosi.API.CompanyAssessorPackage' does not have a
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Entity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Entity">
+          <Key>
+            <PropertyRef Name="EntityGuid" />
+          </Key>
+          <Property Name="EntityId" Type="nvarchar" MaxLength="128" />
+          <Property Name="EntityGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="EntityType" Type="varchar" MaxLength="9" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Location' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="Id" />
+            
+            
+            
+            
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnerGuid" Type="uniqueidentifier" />
+          <Property Name="EntityId" Type="nvarchar" MaxLength="128" />
+          <Property Name="EntityDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="EntityType" Type="varchar" MaxLength="9" />
+          <Property Name="AddressTypeID" Type="tinyint" Nullable="false" />
+          <Property Name="AddressTypeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="Attention" Type="nvarchar" MaxLength="255" />
+          <Property Name="Address1" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Address2" Type="nvarchar" MaxLength="255" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="CountryID" Type="smallint" Nullable="false" />
+          <Property Name="ProvinceID" Type="smallint" />
+          <Property Name="LocationId" Type="smallint" />
+          <Property Name="ModifiedDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="CountryName" Type="nvarchar" MaxLength="100" />
+          <Property Name="CountryCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="ProvinceName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ProvinceCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="LookupItem">
+          <Key>
+            
+            
+            <PropertyRef Name="ItemId" />
+            
+            
+          </Key>
+          <Property Name="LookupId" Type="smallint" Nullable="false" />
+          <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ItemId" Type="smallint" Nullable="false" />
+          <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ItemValue" Type="smallint" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianAssessorPackage' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="PhysicianAssessorPackage">
           <Key>
@@ -168,6 +233,19 @@ warning 6002: The table/view 'Orvosi.API.Profile' does not have a primary key de
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Province' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Province">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="CountryId" />
+            <PropertyRef Name="ProvinceCode" />
+          </Key>
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CountryId" Type="smallint" Nullable="false" />
+          <Property Name="ProvinceName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ProvinceCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Service' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Service">
           <Key>
@@ -188,6 +266,23 @@ warning 6002: The table/view 'Orvosi.API.Service' does not have a primary key de
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.ServiceCatalogue' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ServiceCatalogue">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ServiceName" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="CompanyId" Type="smallint" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceId" Type="smallint" />
+          <Property Name="ServiceCataloguePriceOverride" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ServicePrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.ServiceCategory' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -220,10 +315,71 @@ warning 6002: The table/view 'Orvosi.API.ServicePortfolio' does not have a prima
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ServiceRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="RequestedDate" />
+            <PropertyRef Name="RequestedBy" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ServiceName" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CompanyReferenceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceCatalogueId" Type="smallint" />
+          <Property Name="HarvestProjectId" Type="bigint" />
+          <Property Name="Title" Type="nvarchar" MaxLength="256" />
+          <Property Name="Body" Type="nvarchar(max)" />
+          <Property Name="AddressId" Type="int" />
+          <Property Name="RequestedDate" Type="datetime" Nullable="false" />
+          <Property Name="RequestedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CancelledDate" Type="datetime" />
+          <Property Name="AssignedTo" Type="uniqueidentifier" />
+          <Property Name="StatusId" Type="tinyint" />
+          <Property Name="DueDate" Type="date" />
+          <Property Name="StartTime" Type="time" Precision="7" />
+          <Property Name="EndTime" Type="time" Precision="7" />
+          <Property Name="ServiceRequestPriceOverride" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ServiceName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DefaultPrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceDefaultPrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceCataloguePriceOverride" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EffectivePrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AssignedToDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="RequestedByDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="StatusName" Type="nvarchar" MaxLength="128" />
+          <Property Name="AddressName" Type="nvarchar" MaxLength="256" />
+          <Property Name="AddressTypeId" Type="tinyint" />
+          <Property Name="AddressTypeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address1" Type="nvarchar" MaxLength="255" />
+          <Property Name="Address2" Type="nvarchar" MaxLength="255" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProvinceId" Type="smallint" />
+          <Property Name="ProvinceName" Type="nvarchar" MaxLength="50" />
+          <Property Name="CountryId" Type="smallint" />
+          <Property Name="CountryName" Type="nvarchar" MaxLength="3" />
+          <Property Name="LocationId" Type="smallint" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="SpecialRequest">
           <Key>
             <PropertyRef Name="Id" />
+            
+            
+            
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -341,6 +497,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="MasterBookingPageTeleconference" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
+        <Function Name="Location_Select_PhysicianAndCompany" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+        </Function>
         <Function Name="Profile_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="nvarchar" Mode="In" />
           <Parameter Name="Title" Type="nvarchar" Mode="In" />
@@ -368,6 +528,45 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Price" Type="decimal" Mode="In" />
           <Parameter Name="ServiceCategoryId" Type="smallint" Mode="In" />
           <Parameter Name="ServicePortfolioId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequest_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="CompanyReferenceId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ServiceCatalogueId" Type="smallint" Mode="In" />
+          <Parameter Name="HarvestProjectId" Type="bigint" Mode="In" />
+          <Parameter Name="Title" Type="nvarchar" Mode="In" />
+          <Parameter Name="Body" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="RequestedDate" Type="datetime" Mode="In" />
+          <Parameter Name="RequestedBy" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CancelledDate" Type="datetime" Mode="In" />
+          <Parameter Name="AssignedTo" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="StatusId" Type="tinyint" Mode="In" />
+          <Parameter Name="DueDate" Type="date" Mode="In" />
+          <Parameter Name="StartTime" Type="time" Mode="In" />
+          <Parameter Name="EndTime" Type="time" Mode="In" />
+          <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequest_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="ObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CompanyReferenceId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ServiceCatalogueId" Type="smallint" Mode="In" />
+          <Parameter Name="HarvestProjectId" Type="bigint" Mode="In" />
+          <Parameter Name="Title" Type="nvarchar" Mode="In" />
+          <Parameter Name="Body" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="RequestedDate" Type="datetime" Mode="In" />
+          <Parameter Name="RequestedBy" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CancelledDate" Type="datetime" Mode="In" />
+          <Parameter Name="AssignedTo" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="StatusId" Type="tinyint" Mode="In" />
+          <Parameter Name="DueDate" Type="date" Mode="In" />
+          <Parameter Name="StartTime" Type="time" Mode="In" />
+          <Parameter Name="EndTime" Type="time" Mode="In" />
+          <Parameter Name="Price" Type="decimal" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -459,6 +658,51 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [CompanyAssessorPackage].[CompanyName] AS [CompanyName]
     FROM [API].[CompanyAssessorPackage] AS [CompanyAssessorPackage]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="Entity" EntityType="Self.Entity" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Entity].[EntityId] AS [EntityId], 
+    [Entity].[EntityGuid] AS [EntityGuid], 
+    [Entity].[DisplayName] AS [DisplayName], 
+    [Entity].[EntityType] AS [EntityType]
+    FROM [API].[Entity] AS [Entity]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Location" EntityType="Self.Location" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Location].[Id] AS [Id], 
+    [Location].[ObjectGuid] AS [ObjectGuid], 
+    [Location].[OwnerGuid] AS [OwnerGuid], 
+    [Location].[EntityId] AS [EntityId], 
+    [Location].[EntityDisplayName] AS [EntityDisplayName], 
+    [Location].[EntityType] AS [EntityType], 
+    [Location].[AddressTypeID] AS [AddressTypeID], 
+    [Location].[AddressTypeName] AS [AddressTypeName], 
+    [Location].[Name] AS [Name], 
+    [Location].[Attention] AS [Attention], 
+    [Location].[Address1] AS [Address1], 
+    [Location].[Address2] AS [Address2], 
+    [Location].[City] AS [City], 
+    [Location].[PostalCode] AS [PostalCode], 
+    [Location].[CountryID] AS [CountryID], 
+    [Location].[ProvinceID] AS [ProvinceID], 
+    [Location].[LocationId] AS [LocationId], 
+    [Location].[ModifiedDate] AS [ModifiedDate], 
+    [Location].[ModifiedUser] AS [ModifiedUser], 
+    [Location].[CountryName] AS [CountryName], 
+    [Location].[CountryCode] AS [CountryCode], 
+    [Location].[ProvinceName] AS [ProvinceName], 
+    [Location].[ProvinceCode] AS [ProvinceCode], 
+    [Location].[LocationName] AS [LocationName]
+    FROM [API].[Location] AS [Location]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="LookupItem" EntityType="Self.LookupItem" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [LookupItem].[LookupId] AS [LookupId], 
+    [LookupItem].[LookupName] AS [LookupName], 
+    [LookupItem].[ItemId] AS [ItemId], 
+    [LookupItem].[ItemText] AS [ItemText], 
+    [LookupItem].[ItemValue] AS [ItemValue]
+    FROM [API].[LookupItem] AS [LookupItem]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="PhysicianAssessorPackage" EntityType="Self.PhysicianAssessorPackage" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [PhysicianAssessorPackage].[Id] AS [Id], 
@@ -525,6 +769,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Profile].[CompanyName] AS [CompanyName]
     FROM [API].[Profile] AS [Profile]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="Province" EntityType="Self.Province" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Province].[Id] AS [Id], 
+    [Province].[CountryId] AS [CountryId], 
+    [Province].[ProvinceName] AS [ProvinceName], 
+    [Province].[ProvinceCode] AS [ProvinceCode]
+    FROM [API].[Province] AS [Province]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="Service" EntityType="Self.Service" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [Service].[Id] AS [Id], 
@@ -540,6 +792,19 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Service].[ServiceCategoryName] AS [ServiceCategoryName], 
     [Service].[ServicePortfolioName] AS [ServicePortfolioName]
     FROM [API].[Service] AS [Service]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ServiceCatalogue" EntityType="Self.ServiceCatalogue" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [ServiceCatalogue].[Id] AS [Id], 
+    [ServiceCatalogue].[CompanyId] AS [CompanyId], 
+    [ServiceCatalogue].[PhysicianId] AS [PhysicianId], 
+    [ServiceCatalogue].[ServiceId] AS [ServiceId], 
+    [ServiceCatalogue].[ServiceCataloguePriceOverride] AS [ServiceCataloguePriceOverride], 
+    [ServiceCatalogue].[ServiceName] AS [ServiceName], 
+    [ServiceCatalogue].[ServicePrice] AS [ServicePrice], 
+    [ServiceCatalogue].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [ServiceCatalogue].[CompanyName] AS [CompanyName]
+    FROM [API].[ServiceCatalogue] AS [ServiceCatalogue]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceCategory" EntityType="Self.ServiceCategory" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -558,6 +823,55 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServicePortfolio].[ModifiedUser] AS [ModifiedUser], 
     [ServicePortfolio].[ModifiedDate] AS [ModifiedDate]
     FROM [API].[ServicePortfolio] AS [ServicePortfolio]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ServiceRequest" EntityType="Self.ServiceRequest" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [ServiceRequest].[Id] AS [Id], 
+    [ServiceRequest].[ObjectGuid] AS [ObjectGuid], 
+    [ServiceRequest].[CompanyReferenceId] AS [CompanyReferenceId], 
+    [ServiceRequest].[ServiceCatalogueId] AS [ServiceCatalogueId], 
+    [ServiceRequest].[HarvestProjectId] AS [HarvestProjectId], 
+    [ServiceRequest].[Title] AS [Title], 
+    [ServiceRequest].[Body] AS [Body], 
+    [ServiceRequest].[AddressId] AS [AddressId], 
+    [ServiceRequest].[RequestedDate] AS [RequestedDate], 
+    [ServiceRequest].[RequestedBy] AS [RequestedBy], 
+    [ServiceRequest].[CancelledDate] AS [CancelledDate], 
+    [ServiceRequest].[AssignedTo] AS [AssignedTo], 
+    [ServiceRequest].[StatusId] AS [StatusId], 
+    [ServiceRequest].[DueDate] AS [DueDate], 
+    [ServiceRequest].[StartTime] AS [StartTime], 
+    [ServiceRequest].[EndTime] AS [EndTime], 
+    [ServiceRequest].[ServiceRequestPriceOverride] AS [ServiceRequestPriceOverride], 
+    [ServiceRequest].[ModifiedDate] AS [ModifiedDate], 
+    [ServiceRequest].[ModifiedUser] AS [ModifiedUser], 
+    [ServiceRequest].[ServiceName] AS [ServiceName], 
+    [ServiceRequest].[ServiceCategoryName] AS [ServiceCategoryName], 
+    [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName], 
+    [ServiceRequest].[DefaultPrice] AS [DefaultPrice], 
+    [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [ServiceRequest].[CompanyName] AS [CompanyName], 
+    [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName], 
+    [ServiceRequest].[ServiceDefaultPrice] AS [ServiceDefaultPrice], 
+    [ServiceRequest].[ServiceCataloguePriceOverride] AS [ServiceCataloguePriceOverride], 
+    [ServiceRequest].[EffectivePrice] AS [EffectivePrice], 
+    [ServiceRequest].[AssignedToDisplayName] AS [AssignedToDisplayName], 
+    [ServiceRequest].[RequestedByDisplayName] AS [RequestedByDisplayName], 
+    [ServiceRequest].[StatusName] AS [StatusName], 
+    [ServiceRequest].[AddressName] AS [AddressName], 
+    [ServiceRequest].[AddressTypeId] AS [AddressTypeId], 
+    [ServiceRequest].[AddressTypeName] AS [AddressTypeName], 
+    [ServiceRequest].[Address1] AS [Address1], 
+    [ServiceRequest].[Address2] AS [Address2], 
+    [ServiceRequest].[City] AS [City], 
+    [ServiceRequest].[PostalCode] AS [PostalCode], 
+    [ServiceRequest].[ProvinceId] AS [ProvinceId], 
+    [ServiceRequest].[ProvinceName] AS [ProvinceName], 
+    [ServiceRequest].[CountryId] AS [CountryId], 
+    [ServiceRequest].[CountryName] AS [CountryName], 
+    [ServiceRequest].[LocationId] AS [LocationId], 
+    [ServiceRequest].[LocationName] AS [LocationName]
+    FROM [API].[ServiceRequest] AS [ServiceRequest]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -742,6 +1056,55 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="MasterBookingPageTeleconference" Mode="In" Type="String" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="ServiceRequest_Delete">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ServiceRequest_Insert">
+            <Parameter Name="CompanyReferenceId" Mode="In" Type="String" />
+            <Parameter Name="ServiceCatalogueId" Mode="In" Type="Int16" />
+            <Parameter Name="HarvestProjectId" Mode="In" Type="Int64" />
+            <Parameter Name="Title" Mode="In" Type="String" />
+            <Parameter Name="Body" Mode="In" Type="String" />
+            <Parameter Name="RequestedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RequestedBy" Mode="In" Type="Guid" />
+            <Parameter Name="CancelledDate" Mode="In" Type="DateTime" />
+            <Parameter Name="AssignedTo" Mode="In" Type="Guid" />
+            <Parameter Name="StatusId" Mode="In" Type="Byte" />
+            <Parameter Name="DueDate" Mode="In" Type="DateTime" />
+            <Parameter Name="StartTime" Mode="In" Type="Time" />
+            <Parameter Name="EndTime" Mode="In" Type="Time" />
+            <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="ServiceRequest_Update">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="ObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="CompanyReferenceId" Mode="In" Type="String" />
+            <Parameter Name="ServiceCatalogueId" Mode="In" Type="Int16" />
+            <Parameter Name="HarvestProjectId" Mode="In" Type="Int64" />
+            <Parameter Name="Title" Mode="In" Type="String" />
+            <Parameter Name="Body" Mode="In" Type="String" />
+            <Parameter Name="RequestedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="RequestedBy" Mode="In" Type="Guid" />
+            <Parameter Name="CancelledDate" Mode="In" Type="DateTime" />
+            <Parameter Name="AssignedTo" Mode="In" Type="Guid" />
+            <Parameter Name="StatusId" Mode="In" Type="Byte" />
+            <Parameter Name="DueDate" Mode="In" Type="DateTime" />
+            <Parameter Name="StartTime" Mode="In" Type="Time" />
+            <Parameter Name="EndTime" Mode="In" Type="Time" />
+            <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="ServiceCatalogues" EntityType="OrvosiModel.ServiceCatalogue" />
+          <EntitySet Name="ServiceRequests" EntityType="OrvosiModel.ServiceRequest" />
+          <EntitySet Name="Locations" EntityType="OrvosiModel.Location" />
+          <EntitySet Name="LookupItems" EntityType="OrvosiModel.LookupItem" />
+          <EntitySet Name="Provinces" EntityType="OrvosiModel.Province" />
+          <FunctionImport Name="Location_Select_PhysicianAndCompany" ReturnType="Collection(OrvosiModel.Location_Select_PhysicianAndCompany_Result)">
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+          </FunctionImport>
+          <EntitySet Name="Entities" EntityType="OrvosiModel.Entity" />
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -1012,6 +1375,143 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ServiceCatalogue">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ServiceName" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="CompanyId" Type="Int16" />
+          <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceId" Type="Int16" />
+          <Property Name="ServiceCataloguePriceOverride" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServicePrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ServiceRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="ObjectGuid" />
+            <PropertyRef Name="RequestedDate" />
+            <PropertyRef Name="RequestedBy" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+            <PropertyRef Name="ServiceName" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="CompanyReferenceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceCatalogueId" Type="Int16" />
+          <Property Name="HarvestProjectId" Type="Int64" />
+          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AddressId" Type="Int32" />
+          <Property Name="RequestedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RequestedBy" Type="Guid" Nullable="false" />
+          <Property Name="CancelledDate" Type="DateTime" Precision="3" />
+          <Property Name="AssignedTo" Type="Guid" />
+          <Property Name="StatusId" Type="Byte" />
+          <Property Name="DueDate" Type="DateTime" Precision="0" />
+          <Property Name="StartTime" Type="Time" Precision="7" />
+          <Property Name="EndTime" Type="Time" Precision="7" />
+          <Property Name="ServiceRequestPriceOverride" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServicePortfolioName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DefaultPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceDefaultPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceCataloguePriceOverride" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EffectivePrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AssignedToDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="RequestedByDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="StatusName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="AddressName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AddressTypeId" Type="Byte" />
+          <Property Name="AddressTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address1" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Address2" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceId" Type="Int16" />
+          <Property Name="ProvinceName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CountryId" Type="Int16" />
+          <Property Name="CountryName" Type="String" MaxLength="3" FixedLength="false" Unicode="true" />
+          <Property Name="LocationId" Type="Int16" />
+          <Property Name="LocationName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="OwnerGuid" Type="Guid" />
+          <Property Name="EntityDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="EntityType" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="AddressTypeID" Type="Byte" Nullable="false" />
+          <Property Name="AddressTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Attention" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Address1" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Address2" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CountryID" Type="Int16" Nullable="false" />
+          <Property Name="ProvinceID" Type="Int16" />
+          <Property Name="LocationId" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CountryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CountryCode" Type="String" MaxLength="3" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LocationName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="EntityId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="LookupItem">
+          <Key>
+            <PropertyRef Name="ItemId" />
+          </Key>
+          <Property Name="LookupId" Type="Int16" Nullable="false" />
+          <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ItemId" Type="Int16" Nullable="false" />
+          <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ItemValue" Type="Int16" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Province">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="CountryId" />
+            <PropertyRef Name="ProvinceCode" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CountryId" Type="Int16" Nullable="false" />
+          <Property Name="ProvinceName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="Location_Select_PhysicianAndCompany_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="EntityType" Nullable="true" MaxLength="9" />
+          <Property Type="String" Name="EntityDisplayName" Nullable="true" MaxLength="210" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="LocationName" Nullable="true" MaxLength="128" />
+        </ComplexType>
+        <EntityType Name="Entity">
+          <Key>
+            <PropertyRef Name="EntityGuid" />
+          </Key>
+          <Property Name="EntityId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="EntityGuid" Type="Guid" Nullable="false" />
+          <Property Name="DisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="EntityType" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1363,6 +1863,190 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="Service_Update" FunctionName="OrvosiModel.Store.Service_Update" />
           <FunctionImportMapping FunctionImportName="Company_Insert" FunctionName="OrvosiModel.Store.Company_Insert" />
           <FunctionImportMapping FunctionImportName="Company_Update" FunctionName="OrvosiModel.Store.Company_Update" />
+          <FunctionImportMapping FunctionImportName="ServiceRequest_Delete" FunctionName="OrvosiModel.Store.ServiceRequest_Delete" />
+          <FunctionImportMapping FunctionImportName="ServiceRequest_Insert" FunctionName="OrvosiModel.Store.ServiceRequest_Insert" />
+          <FunctionImportMapping FunctionImportName="ServiceRequest_Update" FunctionName="OrvosiModel.Store.ServiceRequest_Update" />
+          <EntitySetMapping Name="ServiceCatalogues">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceCatalogue">
+              <MappingFragment StoreEntitySet="ServiceCatalogue">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
+                <ScalarProperty Name="ServicePrice" ColumnName="ServicePrice" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ServiceCataloguePriceOverride" ColumnName="ServiceCataloguePriceOverride" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServiceRequests">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
+              <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="CountryName" ColumnName="CountryName" />
+                <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+                <ScalarProperty Name="ProvinceId" ColumnName="ProvinceId" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="AddressTypeName" ColumnName="AddressTypeName" />
+                <ScalarProperty Name="AddressTypeId" ColumnName="AddressTypeId" />
+                <ScalarProperty Name="AddressName" ColumnName="AddressName" />
+                <ScalarProperty Name="StatusName" ColumnName="StatusName" />
+                <ScalarProperty Name="RequestedByDisplayName" ColumnName="RequestedByDisplayName" />
+                <ScalarProperty Name="AssignedToDisplayName" ColumnName="AssignedToDisplayName" />
+                <ScalarProperty Name="EffectivePrice" ColumnName="EffectivePrice" />
+                <ScalarProperty Name="ServiceCataloguePriceOverride" ColumnName="ServiceCataloguePriceOverride" />
+                <ScalarProperty Name="ServiceDefaultPrice" ColumnName="ServiceDefaultPrice" />
+                <ScalarProperty Name="ParentCompanyName" ColumnName="ParentCompanyName" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
+                <ScalarProperty Name="DefaultPrice" ColumnName="DefaultPrice" />
+                <ScalarProperty Name="ServicePortfolioName" ColumnName="ServicePortfolioName" />
+                <ScalarProperty Name="ServiceCategoryName" ColumnName="ServiceCategoryName" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ServiceRequestPriceOverride" ColumnName="ServiceRequestPriceOverride" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
+                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+                <ScalarProperty Name="CancelledDate" ColumnName="CancelledDate" />
+                <ScalarProperty Name="RequestedBy" ColumnName="RequestedBy" />
+                <ScalarProperty Name="RequestedDate" ColumnName="RequestedDate" />
+                <ScalarProperty Name="AddressId" ColumnName="AddressId" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="HarvestProjectId" ColumnName="HarvestProjectId" />
+                <ScalarProperty Name="ServiceCatalogueId" ColumnName="ServiceCatalogueId" />
+                <ScalarProperty Name="CompanyReferenceId" ColumnName="CompanyReferenceId" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequest_Insert">
+                  <ScalarProperty Name="ServiceRequestPriceOverride" ParameterName="Price" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="EndTime" ParameterName="EndTime" />
+                  <ScalarProperty Name="StartTime" ParameterName="StartTime" />
+                  <ScalarProperty Name="DueDate" ParameterName="DueDate" />
+                  <ScalarProperty Name="StatusId" ParameterName="StatusId" />
+                  <ScalarProperty Name="AssignedTo" ParameterName="AssignedTo" />
+                  <ScalarProperty Name="CancelledDate" ParameterName="CancelledDate" />
+                  <ScalarProperty Name="RequestedBy" ParameterName="RequestedBy" />
+                  <ScalarProperty Name="RequestedDate" ParameterName="RequestedDate" />
+                  <ScalarProperty Name="Body" ParameterName="Body" />
+                  <ScalarProperty Name="Title" ParameterName="Title" />
+                  <ScalarProperty Name="HarvestProjectId" ParameterName="HarvestProjectId" />
+                  <ScalarProperty Name="ServiceCatalogueId" ParameterName="ServiceCatalogueId" />
+                  <ScalarProperty Name="CompanyReferenceId" ParameterName="CompanyReferenceId" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequest_Update">
+                  <ScalarProperty Name="ServiceRequestPriceOverride" ParameterName="Price" Version="Current" />
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="EndTime" ParameterName="EndTime" Version="Current" />
+                  <ScalarProperty Name="StartTime" ParameterName="StartTime" Version="Current" />
+                  <ScalarProperty Name="DueDate" ParameterName="DueDate" Version="Current" />
+                  <ScalarProperty Name="StatusId" ParameterName="StatusId" Version="Current" />
+                  <ScalarProperty Name="AssignedTo" ParameterName="AssignedTo" Version="Current" />
+                  <ScalarProperty Name="CancelledDate" ParameterName="CancelledDate" Version="Current" />
+                  <ScalarProperty Name="RequestedBy" ParameterName="RequestedBy" Version="Current" />
+                  <ScalarProperty Name="RequestedDate" ParameterName="RequestedDate" Version="Current" />
+                  <ScalarProperty Name="Body" ParameterName="Body" Version="Current" />
+                  <ScalarProperty Name="Title" ParameterName="Title" Version="Current" />
+                  <ScalarProperty Name="HarvestProjectId" ParameterName="HarvestProjectId" Version="Current" />
+                  <ScalarProperty Name="ServiceCatalogueId" ParameterName="ServiceCatalogueId" Version="Current" />
+                  <ScalarProperty Name="CompanyReferenceId" ParameterName="CompanyReferenceId" Version="Current" />
+                  <ScalarProperty Name="ObjectGuid" ParameterName="ObjectGuid" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.ServiceRequest_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="OrvosiModel.Location">
+              <MappingFragment StoreEntitySet="Location">
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="ProvinceCode" ColumnName="ProvinceCode" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+                <ScalarProperty Name="CountryCode" ColumnName="CountryCode" />
+                <ScalarProperty Name="CountryName" ColumnName="CountryName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
+                <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Attention" ColumnName="Attention" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="AddressTypeName" ColumnName="AddressTypeName" />
+                <ScalarProperty Name="AddressTypeID" ColumnName="AddressTypeID" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityDisplayName" ColumnName="EntityDisplayName" />
+                <ScalarProperty Name="OwnerGuid" ColumnName="OwnerGuid" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LookupItems">
+            <EntityTypeMapping TypeName="OrvosiModel.LookupItem">
+              <MappingFragment StoreEntitySet="LookupItem">
+                <ScalarProperty Name="ItemValue" ColumnName="ItemValue" />
+                <ScalarProperty Name="ItemText" ColumnName="ItemText" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="LookupName" ColumnName="LookupName" />
+                <ScalarProperty Name="LookupId" ColumnName="LookupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Provinces">
+            <EntityTypeMapping TypeName="OrvosiModel.Province">
+              <MappingFragment StoreEntitySet="Province">
+                <ScalarProperty Name="ProvinceCode" ColumnName="ProvinceCode" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+                <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Location_Select_PhysicianAndCompany" FunctionName="OrvosiModel.Store.Location_Select_PhysicianAndCompany">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.Location_Select_PhysicianAndCompany_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityDisplayName" ColumnName="EntityDisplayName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Entities">
+            <EntityTypeMapping TypeName="OrvosiModel.Entity">
+              <MappingFragment StoreEntitySet="Entity">
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="EntityGuid" ColumnName="EntityGuid" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

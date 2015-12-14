@@ -42,13 +42,14 @@
                         @Html.ValidationMessage("ServiceCatalogueId", "", new { @class = "text-danger" })
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Location
-            </div>
-            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Date</label>
+                    <div class="col-md-10">
+                        <div class="formcontrol">
+                            <div id="DueDate"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="control-label col-md-2">Location</label>
                     <div class="col-md-10">
@@ -62,14 +63,11 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Date and Time
+                Case Details
             </div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label class="control-label col-md-2">Availability</label>
-                    <div class="col-md-3">
-                        <div id="DueDate"></div>
-                    </div>
+                    <label class="control-label col-md-2">Time slot</label>
                     <div class="col-md-2">
                         <h4>Morning</h4>
                         <div class="checkbox">
@@ -117,18 +115,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Case Details
-            </div>
-            <div class="panel-body">
                 <div class="form-group">
-                    @Html.LabelFor(model => model.RequestedBy, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <label class="control-label col-md-2">Requested By</label>
                     <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.RequestedBy, new SelectList(ViewBag.Requestors, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.RequestedBy, "", new { @class = "text-danger" })
+                        <select class="form-control disabled" name="RequestedBy" id="RequestedBy">
+                            <option></option>
+                        </select>
+                        @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -216,6 +209,7 @@
             var physician = $('#PhysicianId');
             var service = $('#ServiceId');
             var location = $('#LocationId');
+            var requestedBy = $('#RequestedBy');
             var servicePrice = $('#ServicePrice');
             var serviceCataloguePrice = $('#ServiceCataloguePrice');
             var serviceRequestPrice = $('#ServiceRequestPriceOrverride');
@@ -226,7 +220,7 @@
                 e.preventDefault();
                 // load the physicians
                 $.post(
-                    '@Url.Content("~/admin/servicerequest/services")',// + '?companyId=' + company.val() + '&physicianId=' + physician.val(),
+                    '@Url.Content("~/admin/servicerequest/services")',
                     {
                         companyId: company.val()
                     },
@@ -241,7 +235,24 @@
                         });
                     },
                     'json'
-                    );
+                );
+
+                $.post(
+                    '@Url.Content("~/admin/servicerequest/requestors")',
+                    {
+                        companyId: company.val()
+                    },
+                    function (data, status, e) {
+                        requestedBy.children('option:not(:first)').remove();
+                        $.each(data.requestors, function (index, object) {
+                            requestedBy
+                            .append($("<option></option>")
+                            .attr("Value", object.Value)
+                            .text(object.Text));
+                        });
+                    },
+                    'json'
+                );
 
                 loadLocations();
             });

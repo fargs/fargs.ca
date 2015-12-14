@@ -174,6 +174,23 @@ namespace WebApp.Areas.Admin.Controllers
             return Json(list);
         }
 
+        [HttpPost]
+        public ActionResult Requestors(short companyId)
+        {
+            var list = db.Users
+                .Where(c => c.CompanyId == companyId)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.DisplayName,
+                    Value = c.Id.ToString()
+                });
+
+            return Json(new
+            {
+                requestors = list
+            });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

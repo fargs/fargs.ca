@@ -24,5 +24,13 @@ namespace Orvosi.Extensions.Test
 
             Assert.AreEqual(prebuilder.ToString(), postbuilder.ToString());
         }
+        
+        [TestMethod]
+        public void DateTimeFormats()
+        {
+            var now = new DateTime(2015, 01, 13, 12, 59, 59);
+            var formatted = now.GetDateTimeFormats('d')[5];
+
+        }
     }
 }

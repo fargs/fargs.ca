@@ -35,10 +35,4 @@ namespace WebApp.Areas.Admin.ViewModels
         public User User { get; set; }
         public List<PhysicianCompany> Companies { get; set; }
     }
-
-    public class AssessorPackagesViewModel : DetailViewModel
-    {
-        public List<PhysicianDocument> PhysicianDocuments { get; set; }
-        public List<PhysicianAssessorPackage> PhysicianAssessorPackages { get; set; }
-    }
 }

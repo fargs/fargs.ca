@@ -12,19 +12,25 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class PhysicianDocument
+    public partial class Document
     {
         public short Id { get; set; }
         public System.Guid ObjectGuid { get; set; }
-        public Nullable<System.Guid> PhysicianId { get; set; }
+        public Nullable<System.Guid> OwnedByObjectGuid { get; set; }
         public Nullable<short> DocumentTemplateId { get; set; }
         public Nullable<System.DateTime> EffectiveDate { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }
+        public byte[] Content { get; set; }
+        public string ContentType { get; set; }
         public string Path { get; set; }
-        public string Extension { get; set; }
         public string Name { get; set; }
+        public string Extension { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
-        public string PhysicianDisplayName { get; set; }
+        public string OwnedByDisplayName { get; set; }
+        public string OwnedByEntityType { get; set; }
         public string DocumentTemplateName { get; set; }
+        public string DocumentTemplateOwnedByDisplayName { get; set; }
+        public string DocumentTemplateOwnedByEntityType { get; set; }
     }
 }

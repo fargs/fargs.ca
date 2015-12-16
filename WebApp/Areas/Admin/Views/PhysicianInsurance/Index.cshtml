@@ -1,0 +1,72 @@
+﻿@model WebApp.Areas.Admin.ViewModels.PhysicianInsuranceViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Insurance";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Insurance for</h2>
+<div class="h3 lead">@Model.User.DisplayName</div>
+
+<p>
+    <a class="btn btn-success" href="~/Admin/PhysicianInsurance/Create/@Model.User.Id"><i class="glyphicon glyphicon-plus"></i></a>
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            Insurer
+        </th>
+        <th>
+            Policy Number
+        </th>
+        <th>
+            Expiry Date
+        </th>
+        <th>
+            Document
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Insurance)
+    {
+        <tr>
+            <td width="50px">
+                <div role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                        <i class="glyphicon glyphicon-menu-hamburger"></i>
+                    </a>
+                    <ul class="dropdown-menu nav-uncondensed" role="menu">
+                        <li role="presentation">@Html.ActionLink("Download", "Download", new { id = item.Id })</li>
+                        <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
+                        <li role="presentation">@Html.ActionLink("Details", "Details", new { id = item.Id })</li>
+                        <li role="separator" class="divider"></li>
+                        <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
+                    </ul>
+                </div>
+            </td>
+            <td>
+                @item.Insurer
+            </td>
+            <td>
+                @item.PolicyNumber
+            </td>
+            <td>
+                @(item.ExpiryDate.HasValue ? item.ExpiryDate.Value.GetDateTimeFormats('d')[0] : string.Empty)
+            </td>
+            <td>
+                @if(item.Content != null && item.Content.Length > 0)
+                {
+                    <a href="~/Admin/Document/Download/@item.DocumentId"><i class="glyphicon glyphicon-download-alt"></i></a>
+                }
+                else
+                {
+                    <span class="text-muted">Upload Pending</span>
+                }
+            </td>
+        </tr>
+    }
+
+</table>
+
+

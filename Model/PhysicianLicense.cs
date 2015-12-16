@@ -12,21 +12,19 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class PhysicianAssessorPackage
+    public partial class PhysicianLicense
     {
         public short Id { get; set; }
-        public System.Guid ObjectGuid { get; set; }
-        public Nullable<System.Guid> PhysicianId { get; set; }
-        public Nullable<short> CompanyId { get; set; }
-        public Nullable<short> DocumentTemplateId { get; set; }
-        public Nullable<System.DateTime> EffectiveDate { get; set; }
+        public string PhysicianId { get; set; }
+        public string CollegeName { get; set; }
+        public string LongName { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }
-        public string Path { get; set; }
-        public string Extension { get; set; }
-        public string Name { get; set; }
+        public string MemberName { get; set; }
+        public string CertificateClass { get; set; }
+        public Nullable<bool> IsPrimary { get; set; }
+        public Nullable<byte> Preference { get; set; }
+        public Nullable<short> DocumentId { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
-        public string PhysicianDisplayName { get; set; }
-        public string DocumentTemplateName { get; set; }
-        public string CompanyName { get; set; }
     }
 }

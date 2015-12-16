@@ -6,8 +6,6 @@
     <edmx:Diagrams>
       <Diagram DiagramId="2a9440802f804d2fb03bf182fded51ae" Name="Diagram1" >
         <EntityTypeShape EntityType="OrvosiModel.CompanyAssessorPackage" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.PhysicianAssessorPackage" Width="1.5" PointX="0.75" PointY="3.75" />
-        <EntityTypeShape EntityType="OrvosiModel.PhysicianDocument" Width="1.5" PointX="2.75" PointY="4.75" />
         <EntityTypeShape EntityType="OrvosiModel.Company" Width="1.5" PointX="7.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="7.375" PointY="4.75" />
         <EntityTypeShape EntityType="OrvosiModel.User" Width="1.5" PointX="5.125" PointY="5.625" />
@@ -23,6 +21,10 @@
         <EntityTypeShape EntityType="OrvosiModel.LookupItem" Width="1.5" PointX="3.375" PointY="13.75" />
         <EntityTypeShape EntityType="OrvosiModel.Province" Width="1.5" PointX="13.375" PointY="11.75" />
         <EntityTypeShape EntityType="OrvosiModel.Entity" Width="1.5" PointX="0.75" PointY="13.75" />
+        <EntityTypeShape EntityType="OrvosiModel.PhysicianLicense" Width="1.5" PointX="7.375" PointY="14.75" />
+        <EntityTypeShape EntityType="OrvosiModel.PhysicianLocation" Width="1.5" PointX="13.375" PointY="14.75" />
+        <EntityTypeShape EntityType="OrvosiModel.PhysicianInsurance" Width="1.5" PointX="15.375" PointY="0.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Document" Width="1.5" PointX="15.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

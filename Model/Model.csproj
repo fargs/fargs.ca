@@ -64,6 +64,9 @@
     <Compile Include="CompanyAssessorPackage.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Document.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entity.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -102,13 +105,16 @@
       <DependentUpon>Orvosi.edmx</DependentUpon>
     </Compile>
     <Compile Include="OrvosiEntities.cs" />
-    <Compile Include="PhysicianAssessorPackage.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="PhysicianCompany.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="PhysicianDocument.cs">
+    <Compile Include="PhysicianInsurance.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PhysicianLicense.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PhysicianLocation.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Profile.cs">

@@ -28,8 +28,6 @@ namespace Model
         }
     
         public virtual DbSet<CompanyAssessorPackage> CompanyAssessorPackages { get; set; }
-        public virtual DbSet<PhysicianAssessorPackage> PhysicianAssessorPackages { get; set; }
-        public virtual DbSet<PhysicianDocument> PhysicianDocuments { get; set; }
         public virtual DbSet<Company> Companies { get; set; }
         public virtual DbSet<PhysicianCompany> PhysicianCompanies { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -45,6 +43,10 @@ namespace Model
         public virtual DbSet<LookupItem> LookupItems { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }
         public virtual DbSet<Entity> Entities { get; set; }
+        public virtual DbSet<PhysicianLicense> PhysicianLicenses { get; set; }
+        public virtual DbSet<PhysicianLocation> PhysicianLocations { get; set; }
+        public virtual DbSet<PhysicianInsurance> PhysicianInsurances { get; set; }
+        public virtual DbSet<Document> Documents { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -642,6 +644,266 @@ namespace Model
                 new ObjectParameter("CompanyId", typeof(short));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Location_Select_PhysicianAndCompany_Result>("Location_Select_PhysicianAndCompany", physicianIdParameter, companyIdParameter);
+        }
+    
+        public virtual int PhysicianInsurance_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PhysicianInsurance_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<PhysicianInsurance> PhysicianInsurance_Insert(string physicianId, string insurer, string policyNumber, Nullable<System.DateTime> expiryDate, Nullable<short> documentId, string modifiedUser)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var insurerParameter = insurer != null ?
+                new ObjectParameter("Insurer", insurer) :
+                new ObjectParameter("Insurer", typeof(string));
+    
+            var policyNumberParameter = policyNumber != null ?
+                new ObjectParameter("PolicyNumber", policyNumber) :
+                new ObjectParameter("PolicyNumber", typeof(string));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var documentIdParameter = documentId.HasValue ?
+                new ObjectParameter("DocumentId", documentId) :
+                new ObjectParameter("DocumentId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PhysicianInsurance>("PhysicianInsurance_Insert", physicianIdParameter, insurerParameter, policyNumberParameter, expiryDateParameter, documentIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<PhysicianInsurance> PhysicianInsurance_Insert(string physicianId, string insurer, string policyNumber, Nullable<System.DateTime> expiryDate, Nullable<short> documentId, string modifiedUser, MergeOption mergeOption)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var insurerParameter = insurer != null ?
+                new ObjectParameter("Insurer", insurer) :
+                new ObjectParameter("Insurer", typeof(string));
+    
+            var policyNumberParameter = policyNumber != null ?
+                new ObjectParameter("PolicyNumber", policyNumber) :
+                new ObjectParameter("PolicyNumber", typeof(string));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var documentIdParameter = documentId.HasValue ?
+                new ObjectParameter("DocumentId", documentId) :
+                new ObjectParameter("DocumentId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PhysicianInsurance>("PhysicianInsurance_Insert", mergeOption, physicianIdParameter, insurerParameter, policyNumberParameter, expiryDateParameter, documentIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int PhysicianInsurance_Update(Nullable<short> id, string physicianId, string insurer, string policyNumber, Nullable<System.DateTime> expiryDate, Nullable<short> documentId, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var insurerParameter = insurer != null ?
+                new ObjectParameter("Insurer", insurer) :
+                new ObjectParameter("Insurer", typeof(string));
+    
+            var policyNumberParameter = policyNumber != null ?
+                new ObjectParameter("PolicyNumber", policyNumber) :
+                new ObjectParameter("PolicyNumber", typeof(string));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var documentIdParameter = documentId.HasValue ?
+                new ObjectParameter("DocumentId", documentId) :
+                new ObjectParameter("DocumentId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PhysicianInsurance_Update", idParameter, physicianIdParameter, insurerParameter, policyNumberParameter, expiryDateParameter, documentIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Document_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Document_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<Document> Document_Insert(Nullable<System.Guid> objectGuid, Nullable<System.Guid> ownedByObjectGuid, Nullable<short> documentTemplateId, Nullable<System.DateTime> effectiveDate, Nullable<System.DateTime> expiryDate, string path, string extension, string name, byte[] content, string contentType, string modifiedUser)
+        {
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var ownedByObjectGuidParameter = ownedByObjectGuid.HasValue ?
+                new ObjectParameter("OwnedByObjectGuid", ownedByObjectGuid) :
+                new ObjectParameter("OwnedByObjectGuid", typeof(System.Guid));
+    
+            var documentTemplateIdParameter = documentTemplateId.HasValue ?
+                new ObjectParameter("DocumentTemplateId", documentTemplateId) :
+                new ObjectParameter("DocumentTemplateId", typeof(short));
+    
+            var effectiveDateParameter = effectiveDate.HasValue ?
+                new ObjectParameter("EffectiveDate", effectiveDate) :
+                new ObjectParameter("EffectiveDate", typeof(System.DateTime));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var pathParameter = path != null ?
+                new ObjectParameter("Path", path) :
+                new ObjectParameter("Path", typeof(string));
+    
+            var extensionParameter = extension != null ?
+                new ObjectParameter("Extension", extension) :
+                new ObjectParameter("Extension", typeof(string));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var contentParameter = content != null ?
+                new ObjectParameter("Content", content) :
+                new ObjectParameter("Content", typeof(byte[]));
+    
+            var contentTypeParameter = contentType != null ?
+                new ObjectParameter("ContentType", contentType) :
+                new ObjectParameter("ContentType", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Document>("Document_Insert", objectGuidParameter, ownedByObjectGuidParameter, documentTemplateIdParameter, effectiveDateParameter, expiryDateParameter, pathParameter, extensionParameter, nameParameter, contentParameter, contentTypeParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<Document> Document_Insert(Nullable<System.Guid> objectGuid, Nullable<System.Guid> ownedByObjectGuid, Nullable<short> documentTemplateId, Nullable<System.DateTime> effectiveDate, Nullable<System.DateTime> expiryDate, string path, string extension, string name, byte[] content, string contentType, string modifiedUser, MergeOption mergeOption)
+        {
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var ownedByObjectGuidParameter = ownedByObjectGuid.HasValue ?
+                new ObjectParameter("OwnedByObjectGuid", ownedByObjectGuid) :
+                new ObjectParameter("OwnedByObjectGuid", typeof(System.Guid));
+    
+            var documentTemplateIdParameter = documentTemplateId.HasValue ?
+                new ObjectParameter("DocumentTemplateId", documentTemplateId) :
+                new ObjectParameter("DocumentTemplateId", typeof(short));
+    
+            var effectiveDateParameter = effectiveDate.HasValue ?
+                new ObjectParameter("EffectiveDate", effectiveDate) :
+                new ObjectParameter("EffectiveDate", typeof(System.DateTime));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var pathParameter = path != null ?
+                new ObjectParameter("Path", path) :
+                new ObjectParameter("Path", typeof(string));
+    
+            var extensionParameter = extension != null ?
+                new ObjectParameter("Extension", extension) :
+                new ObjectParameter("Extension", typeof(string));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var contentParameter = content != null ?
+                new ObjectParameter("Content", content) :
+                new ObjectParameter("Content", typeof(byte[]));
+    
+            var contentTypeParameter = contentType != null ?
+                new ObjectParameter("ContentType", contentType) :
+                new ObjectParameter("ContentType", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Document>("Document_Insert", mergeOption, objectGuidParameter, ownedByObjectGuidParameter, documentTemplateIdParameter, effectiveDateParameter, expiryDateParameter, pathParameter, extensionParameter, nameParameter, contentParameter, contentTypeParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Document_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, Nullable<System.Guid> ownedByObjectGuid, Nullable<short> documentTemplateId, Nullable<System.DateTime> effectiveDate, Nullable<System.DateTime> expiryDate, string path, string extension, string name, byte[] content, string contentType, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var objectGuidParameter = objectGuid.HasValue ?
+                new ObjectParameter("ObjectGuid", objectGuid) :
+                new ObjectParameter("ObjectGuid", typeof(System.Guid));
+    
+            var ownedByObjectGuidParameter = ownedByObjectGuid.HasValue ?
+                new ObjectParameter("OwnedByObjectGuid", ownedByObjectGuid) :
+                new ObjectParameter("OwnedByObjectGuid", typeof(System.Guid));
+    
+            var documentTemplateIdParameter = documentTemplateId.HasValue ?
+                new ObjectParameter("DocumentTemplateId", documentTemplateId) :
+                new ObjectParameter("DocumentTemplateId", typeof(short));
+    
+            var effectiveDateParameter = effectiveDate.HasValue ?
+                new ObjectParameter("EffectiveDate", effectiveDate) :
+                new ObjectParameter("EffectiveDate", typeof(System.DateTime));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var pathParameter = path != null ?
+                new ObjectParameter("Path", path) :
+                new ObjectParameter("Path", typeof(string));
+    
+            var extensionParameter = extension != null ?
+                new ObjectParameter("Extension", extension) :
+                new ObjectParameter("Extension", typeof(string));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var contentParameter = content != null ?
+                new ObjectParameter("Content", content) :
+                new ObjectParameter("Content", typeof(byte[]));
+    
+            var contentTypeParameter = contentType != null ?
+                new ObjectParameter("ContentType", contentType) :
+                new ObjectParameter("ContentType", typeof(string));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Document_Update", idParameter, objectGuidParameter, ownedByObjectGuidParameter, documentTemplateIdParameter, effectiveDateParameter, expiryDateParameter, pathParameter, extensionParameter, nameParameter, contentParameter, contentTypeParameter, modifiedUserParameter);
         }
     }
 }

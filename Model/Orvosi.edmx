@@ -81,9 +81,35 @@ warning 6002: The table/view 'Orvosi.API.CompanyAssessorPackage' does not have a
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Document' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OwnedByObjectGuid" Type="uniqueidentifier" />
+          <Property Name="DocumentTemplateId" Type="smallint" />
+          <Property Name="EffectiveDate" Type="datetime" />
+          <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="Content" Type="varbinary(max)" />
+          <Property Name="ContentType" Type="nvarchar" MaxLength="50" />
+          <Property Name="Path" Type="nvarchar" MaxLength="2000" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="Extension" Type="nchar" MaxLength="10" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="OwnedByDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="OwnedByEntityType" Type="varchar" MaxLength="9" />
+          <Property Name="DocumentTemplateName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DocumentTemplateOwnedByDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="DocumentTemplateOwnedByEntityType" Type="varchar" MaxLength="9" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Entity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Entity">
           <Key>
+            
             <PropertyRef Name="EntityGuid" />
           </Key>
           <Property Name="EntityId" Type="nvarchar" MaxLength="128" />
@@ -147,27 +173,6 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianAssessorPackage' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="PhysicianAssessorPackage">
-          <Key>
-            <PropertyRef Name="Id" />
-            <PropertyRef Name="ObjectGuid" />
-            <PropertyRef Name="ModifiedUser" />
-          </Key>
-          <Property Name="Id" Type="smallint" Nullable="false" />
-          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PhysicianId" Type="uniqueidentifier" />
-          <Property Name="CompanyId" Type="smallint" />
-          <Property Name="DocumentTemplateId" Type="smallint" />
-          <Property Name="EffectiveDate" Type="datetime" />
-          <Property Name="ExpiryDate" Type="datetime" />
-          <Property Name="Path" Type="nvarchar" MaxLength="2000" />
-          <Property Name="Extension" Type="nchar" MaxLength="10" />
-          <Property Name="Name" Type="nvarchar" MaxLength="256" />
-          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
-          <Property Name="DocumentTemplateName" Type="nvarchar" MaxLength="128" />
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
-        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="PhysicianCompany">
@@ -187,24 +192,65 @@ warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a prima
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianDocument' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="PhysicianDocument">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianInsurance' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianInsurance">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="ObjectGuid" />
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="smallint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Insurer" Type="nvarchar" MaxLength="256" />
+          <Property Name="PolicyNumber" Type="nvarchar" MaxLength="128" />
+          <Property Name="ExpiryDate" Type="date" />
+          <Property Name="DocumentId" Type="smallint" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Content" Type="varbinary(max)" />
+          <Property Name="ContentType" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianLicense' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianLicense">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="ModifiedDate" />
             <PropertyRef Name="ModifiedUser" />
           </Key>
-          <Property Name="Id" Type="smallint" Nullable="false" />
-          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="PhysicianId" Type="uniqueidentifier" />
-          <Property Name="DocumentTemplateId" Type="smallint" />
-          <Property Name="EffectiveDate" Type="datetime" />
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CollegeName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LongName" Type="nvarchar" MaxLength="2000" />
           <Property Name="ExpiryDate" Type="datetime" />
-          <Property Name="Path" Type="nvarchar" MaxLength="2000" />
-          <Property Name="Extension" Type="nchar" MaxLength="10" />
-          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="MemberName" Type="nvarchar" MaxLength="256" />
+          <Property Name="CertificateClass" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsPrimary" Type="bit" />
+          <Property Name="Preference" Type="tinyint" />
+          <Property Name="DocumentId" Type="smallint" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
-          <Property Name="DocumentTemplateName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.PhysicianLocation' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PhysicianLocation">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="IsPrimary" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="LocationId" Type="smallint" />
+          <Property Name="IsPrimary" Type="bit" Nullable="false" />
+          <Property Name="Preference" Type="tinyint" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Profile' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -497,9 +543,59 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="MasterBookingPageTeleconference" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
+        <Function Name="Document_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+        </Function>
+        <Function Name="Document_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="ObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="OwnedByObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="DocumentTemplateId" Type="smallint" Mode="In" />
+          <Parameter Name="EffectiveDate" Type="datetime" Mode="In" />
+          <Parameter Name="ExpiryDate" Type="datetime" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="Extension" Type="nvarchar" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Content" Type="varbinary(max)" Mode="In" />
+          <Parameter Name="ContentType" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Document_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+          <Parameter Name="ObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="OwnedByObjectGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="DocumentTemplateId" Type="smallint" Mode="In" />
+          <Parameter Name="EffectiveDate" Type="datetime" Mode="In" />
+          <Parameter Name="ExpiryDate" Type="datetime" Mode="In" />
+          <Parameter Name="Path" Type="nvarchar" Mode="In" />
+          <Parameter Name="Extension" Type="nvarchar" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Content" Type="varbinary(max)" Mode="In" />
+          <Parameter Name="ContentType" Type="nvarchar" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="Location_Select_PhysicianAndCompany" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+        </Function>
+        <Function Name="PhysicianInsurance_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+        </Function>
+        <Function Name="PhysicianInsurance_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="Insurer" Type="nvarchar" Mode="In" />
+          <Parameter Name="PolicyNumber" Type="nvarchar" Mode="In" />
+          <Parameter Name="ExpiryDate" Type="date" Mode="In" />
+          <Parameter Name="DocumentId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="PhysicianInsurance_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="Insurer" Type="nvarchar" Mode="In" />
+          <Parameter Name="PolicyNumber" Type="nvarchar" Mode="In" />
+          <Parameter Name="ExpiryDate" Type="date" Mode="In" />
+          <Parameter Name="DocumentId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="Profile_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="nvarchar" Mode="In" />
@@ -658,6 +754,28 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [CompanyAssessorPackage].[CompanyName] AS [CompanyName]
     FROM [API].[CompanyAssessorPackage] AS [CompanyAssessorPackage]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="Document" EntityType="Self.Document" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Document].[Id] AS [Id], 
+    [Document].[ObjectGuid] AS [ObjectGuid], 
+    [Document].[OwnedByObjectGuid] AS [OwnedByObjectGuid], 
+    [Document].[DocumentTemplateId] AS [DocumentTemplateId], 
+    [Document].[EffectiveDate] AS [EffectiveDate], 
+    [Document].[ExpiryDate] AS [ExpiryDate], 
+    [Document].[Content] AS [Content], 
+    [Document].[ContentType] AS [ContentType], 
+    [Document].[Path] AS [Path], 
+    [Document].[Name] AS [Name], 
+    [Document].[Extension] AS [Extension], 
+    [Document].[ModifiedDate] AS [ModifiedDate], 
+    [Document].[ModifiedUser] AS [ModifiedUser], 
+    [Document].[OwnedByDisplayName] AS [OwnedByDisplayName], 
+    [Document].[OwnedByEntityType] AS [OwnedByEntityType], 
+    [Document].[DocumentTemplateName] AS [DocumentTemplateName], 
+    [Document].[DocumentTemplateOwnedByDisplayName] AS [DocumentTemplateOwnedByDisplayName], 
+    [Document].[DocumentTemplateOwnedByEntityType] AS [DocumentTemplateOwnedByEntityType]
+    FROM [API].[Document] AS [Document]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="Entity" EntityType="Self.Entity" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [Entity].[EntityId] AS [EntityId], 
@@ -703,24 +821,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [LookupItem].[ItemValue] AS [ItemValue]
     FROM [API].[LookupItem] AS [LookupItem]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="PhysicianAssessorPackage" EntityType="Self.PhysicianAssessorPackage" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianAssessorPackage].[Id] AS [Id], 
-    [PhysicianAssessorPackage].[ObjectGuid] AS [ObjectGuid], 
-    [PhysicianAssessorPackage].[PhysicianId] AS [PhysicianId], 
-    [PhysicianAssessorPackage].[CompanyId] AS [CompanyId], 
-    [PhysicianAssessorPackage].[DocumentTemplateId] AS [DocumentTemplateId], 
-    [PhysicianAssessorPackage].[EffectiveDate] AS [EffectiveDate], 
-    [PhysicianAssessorPackage].[ExpiryDate] AS [ExpiryDate], 
-    [PhysicianAssessorPackage].[Path] AS [Path], 
-    [PhysicianAssessorPackage].[Extension] AS [Extension], 
-    [PhysicianAssessorPackage].[Name] AS [Name], 
-    [PhysicianAssessorPackage].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianAssessorPackage].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [PhysicianAssessorPackage].[DocumentTemplateName] AS [DocumentTemplateName], 
-    [PhysicianAssessorPackage].[CompanyName] AS [CompanyName]
-    FROM [API].[PhysicianAssessorPackage] AS [PhysicianAssessorPackage]</DefiningQuery>
-          </EntitySet>
           <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [PhysicianCompany].[PhysicianId] AS [PhysicianId], 
@@ -733,21 +833,46 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [PhysicianCompany].[RelationshipStatusName] AS [RelationshipStatusName]
     FROM [API].[PhysicianCompany] AS [PhysicianCompany]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="PhysicianDocument" EntityType="Self.PhysicianDocument" store:Type="Views" store:Schema="API">
+          <EntitySet Name="PhysicianInsurance" EntityType="Self.PhysicianInsurance" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
-    [PhysicianDocument].[Id] AS [Id], 
-    [PhysicianDocument].[ObjectGuid] AS [ObjectGuid], 
-    [PhysicianDocument].[PhysicianId] AS [PhysicianId], 
-    [PhysicianDocument].[DocumentTemplateId] AS [DocumentTemplateId], 
-    [PhysicianDocument].[EffectiveDate] AS [EffectiveDate], 
-    [PhysicianDocument].[ExpiryDate] AS [ExpiryDate], 
-    [PhysicianDocument].[Path] AS [Path], 
-    [PhysicianDocument].[Extension] AS [Extension], 
-    [PhysicianDocument].[Name] AS [Name], 
-    [PhysicianDocument].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianDocument].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [PhysicianDocument].[DocumentTemplateName] AS [DocumentTemplateName]
-    FROM [API].[PhysicianDocument] AS [PhysicianDocument]</DefiningQuery>
+    [PhysicianInsurance].[Id] AS [Id], 
+    [PhysicianInsurance].[PhysicianId] AS [PhysicianId], 
+    [PhysicianInsurance].[Insurer] AS [Insurer], 
+    [PhysicianInsurance].[PolicyNumber] AS [PolicyNumber], 
+    [PhysicianInsurance].[ExpiryDate] AS [ExpiryDate], 
+    [PhysicianInsurance].[DocumentId] AS [DocumentId], 
+    [PhysicianInsurance].[ModifiedDate] AS [ModifiedDate], 
+    [PhysicianInsurance].[ModifiedUser] AS [ModifiedUser], 
+    [PhysicianInsurance].[Content] AS [Content], 
+    [PhysicianInsurance].[ContentType] AS [ContentType]
+    FROM [API].[PhysicianInsurance] AS [PhysicianInsurance]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PhysicianLicense" EntityType="Self.PhysicianLicense" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [PhysicianLicense].[Id] AS [Id], 
+    [PhysicianLicense].[PhysicianId] AS [PhysicianId], 
+    [PhysicianLicense].[CollegeName] AS [CollegeName], 
+    [PhysicianLicense].[LongName] AS [LongName], 
+    [PhysicianLicense].[ExpiryDate] AS [ExpiryDate], 
+    [PhysicianLicense].[MemberName] AS [MemberName], 
+    [PhysicianLicense].[CertificateClass] AS [CertificateClass], 
+    [PhysicianLicense].[IsPrimary] AS [IsPrimary], 
+    [PhysicianLicense].[Preference] AS [Preference], 
+    [PhysicianLicense].[DocumentId] AS [DocumentId], 
+    [PhysicianLicense].[ModifiedDate] AS [ModifiedDate], 
+    [PhysicianLicense].[ModifiedUser] AS [ModifiedUser]
+    FROM [API].[PhysicianLicense] AS [PhysicianLicense]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PhysicianLocation" EntityType="Self.PhysicianLocation" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [PhysicianLocation].[Id] AS [Id], 
+    [PhysicianLocation].[PhysicianId] AS [PhysicianId], 
+    [PhysicianLocation].[LocationId] AS [LocationId], 
+    [PhysicianLocation].[IsPrimary] AS [IsPrimary], 
+    [PhysicianLocation].[Preference] AS [Preference], 
+    [PhysicianLocation].[ModifiedDate] AS [ModifiedDate], 
+    [PhysicianLocation].[ModifiedUser] AS [ModifiedUser]
+    FROM [API].[PhysicianLocation] AS [PhysicianLocation]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Profile" EntityType="Self.Profile" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -956,8 +1081,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUserId" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="CompanyAssessorPackages" EntityType="OrvosiModel.CompanyAssessorPackage" />
-          <EntitySet Name="PhysicianAssessorPackages" EntityType="OrvosiModel.PhysicianAssessorPackage" />
-          <EntitySet Name="PhysicianDocuments" EntityType="OrvosiModel.PhysicianDocument" />
           <EntitySet Name="Companies" EntityType="OrvosiModel.Company" />
           <EntitySet Name="PhysicianCompanies" EntityType="OrvosiModel.PhysicianCompany" />
           <FunctionImport Name="AspNetUsers_Update">
@@ -1105,6 +1228,60 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="Entities" EntityType="OrvosiModel.Entity" />
+          <EntitySet Name="PhysicianLicenses" EntityType="OrvosiModel.PhysicianLicense" />
+          <EntitySet Name="PhysicianLocations" EntityType="OrvosiModel.PhysicianLocation" />
+          <EntitySet Name="PhysicianInsurances" EntityType="OrvosiModel.PhysicianInsurance" />
+          <FunctionImport Name="PhysicianInsurance_Delete">
+          <Parameter Name="Id" Mode="In" Type="Int16" />
+          </FunctionImport>
+          <FunctionImport Name="PhysicianInsurance_Insert" EntitySet="PhysicianInsurances" ReturnType="Collection(OrvosiModel.PhysicianInsurance)">
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="Insurer" Mode="In" Type="String" />
+            <Parameter Name="PolicyNumber" Mode="In" Type="String" />
+            <Parameter Name="ExpiryDate" Mode="In" Type="DateTime" />
+            <Parameter Name="DocumentId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="PhysicianInsurance_Update">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="Insurer" Mode="In" Type="String" />
+            <Parameter Name="PolicyNumber" Mode="In" Type="String" />
+            <Parameter Name="ExpiryDate" Mode="In" Type="DateTime" />
+            <Parameter Name="DocumentId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Documents" EntityType="OrvosiModel.Document" />
+          <FunctionImport Name="Document_Delete">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+          </FunctionImport>
+          <FunctionImport Name="Document_Insert" EntitySet="Documents" ReturnType="Collection(OrvosiModel.Document)">
+            <Parameter Name="ObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="OwnedByObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="DocumentTemplateId" Mode="In" Type="Int16" />
+            <Parameter Name="EffectiveDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ExpiryDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="Extension" Mode="In" Type="String" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Content" Mode="In" Type="Binary" />
+            <Parameter Name="ContentType" Mode="In" Type="String" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Document_Update">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="ObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="OwnedByObjectGuid" Mode="In" Type="Guid" />
+            <Parameter Name="DocumentTemplateId" Mode="In" Type="Int16" />
+            <Parameter Name="EffectiveDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ExpiryDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="Extension" Mode="In" Type="String" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Content" Mode="In" Type="Binary" />
+            <Parameter Name="ContentType" Mode="In" Type="String" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -1149,46 +1326,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="DocumentTemplateId" Type="Int16" Nullable="false" />
           <Property Name="DocumentTemplateName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="PhysicianAssessorPackage">
-          <Key>
-            <PropertyRef Name="Id" />
-            <PropertyRef Name="ObjectGuid" />
-            <PropertyRef Name="ModifiedUser" />
-          </Key>
-          <Property Name="Id" Type="Int16" Nullable="false" />
-          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
-          <Property Name="PhysicianId" Type="Guid" />
-          <Property Name="CompanyId" Type="Int16" />
-          <Property Name="DocumentTemplateId" Type="Int16" />
-          <Property Name="EffectiveDate" Type="DateTime" Precision="3" />
-          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
-          <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="DocumentTemplateName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="PhysicianDocument">
-          <Key>
-            <PropertyRef Name="Id" />
-            <PropertyRef Name="ObjectGuid" />
-            <PropertyRef Name="ModifiedUser" />
-          </Key>
-          <Property Name="Id" Type="Int16" Nullable="false" />
-          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
-          <Property Name="PhysicianId" Type="Guid" />
-          <Property Name="DocumentTemplateId" Type="Int16" />
-          <Property Name="EffectiveDate" Type="DateTime" Precision="3" />
-          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
-          <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="DocumentTemplateName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Company">
           <Key>
@@ -1513,6 +1650,80 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="DisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="EntityType" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="PhysicianLicense">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PhysicianId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CollegeName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LongName" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="MemberName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CertificateClass" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsPrimary" Type="Boolean" />
+          <Property Name="Preference" Type="Byte" />
+          <Property Name="DocumentId" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhysicianLocation">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="PhysicianId" />
+            <PropertyRef Name="IsPrimary" />
+            <PropertyRef Name="ModifiedDate" />
+            <PropertyRef Name="ModifiedUser" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PhysicianId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LocationId" Type="Int16" />
+          <Property Name="IsPrimary" Type="Boolean" Nullable="false" />
+          <Property Name="Preference" Type="Byte" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PhysicianInsurance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PhysicianId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Insurer" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PolicyNumber" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="DocumentId" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Content" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="ContentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="OwnedByObjectGuid" Type="Guid" />
+          <Property Name="DocumentTemplateId" Type="Int16" />
+          <Property Name="EffectiveDate" Type="DateTime" Precision="3" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <Property Name="Content" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="ContentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="OwnedByDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="OwnedByEntityType" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="DocumentTemplateName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentTemplateOwnedByDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentTemplateOwnedByEntityType" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1545,44 +1756,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CompanyObjectGuid" ColumnName="CompanyObjectGuid" />
                 </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PhysicianAssessorPackages">
-            <EntityTypeMapping TypeName="OrvosiModel.PhysicianAssessorPackage">
-              <MappingFragment StoreEntitySet="PhysicianAssessorPackage">
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="DocumentTemplateName" ColumnName="DocumentTemplateName" />
-                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
-                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Extension" ColumnName="Extension" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
-                <ScalarProperty Name="DocumentTemplateId" ColumnName="DocumentTemplateId" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
-                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PhysicianDocuments">
-            <EntityTypeMapping TypeName="OrvosiModel.PhysicianDocument">
-              <MappingFragment StoreEntitySet="PhysicianDocument">
-                <ScalarProperty Name="DocumentTemplateName" ColumnName="DocumentTemplateName" />
-                <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
-                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Extension" ColumnName="Extension" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
-                <ScalarProperty Name="DocumentTemplateId" ColumnName="DocumentTemplateId" />
-                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
-                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Companies">
@@ -2047,6 +2220,144 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianLicenses">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianLicense">
+              <MappingFragment StoreEntitySet="PhysicianLicense">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="Preference" ColumnName="Preference" />
+                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
+                <ScalarProperty Name="CertificateClass" ColumnName="CertificateClass" />
+                <ScalarProperty Name="MemberName" ColumnName="MemberName" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="LongName" ColumnName="LongName" />
+                <ScalarProperty Name="CollegeName" ColumnName="CollegeName" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianLocations">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianLocation">
+              <MappingFragment StoreEntitySet="PhysicianLocation">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="Preference" ColumnName="Preference" />
+                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PhysicianInsurances">
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianInsurance">
+              <MappingFragment StoreEntitySet="PhysicianInsurance">
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="PolicyNumber" ColumnName="PolicyNumber" />
+                <ScalarProperty Name="Insurer" ColumnName="Insurer" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.PhysicianInsurance">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.PhysicianInsurance_Insert">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="DocumentId" ParameterName="DocumentId" />
+                  <ScalarProperty Name="ExpiryDate" ParameterName="ExpiryDate" />
+                  <ScalarProperty Name="PolicyNumber" ParameterName="PolicyNumber" />
+                  <ScalarProperty Name="Insurer" ParameterName="Insurer" />
+                  <ScalarProperty Name="PhysicianId" ParameterName="PhysicianId" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OrvosiModel.Store.PhysicianInsurance_Update">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="DocumentId" ParameterName="DocumentId" Version="Current" />
+                  <ScalarProperty Name="ExpiryDate" ParameterName="ExpiryDate" Version="Current" />
+                  <ScalarProperty Name="PolicyNumber" ParameterName="PolicyNumber" Version="Current" />
+                  <ScalarProperty Name="Insurer" ParameterName="Insurer" Version="Current" />
+                  <ScalarProperty Name="PhysicianId" ParameterName="PhysicianId" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.PhysicianInsurance_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="PhysicianInsurance_Delete" FunctionName="OrvosiModel.Store.PhysicianInsurance_Delete" />
+          <FunctionImportMapping FunctionImportName="PhysicianInsurance_Insert" FunctionName="OrvosiModel.Store.PhysicianInsurance_Insert">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="PhysicianInsurance_Update" FunctionName="OrvosiModel.Store.PhysicianInsurance_Update" />
+          <EntitySetMapping Name="Documents">
+            <EntityTypeMapping TypeName="OrvosiModel.Document">
+              <MappingFragment StoreEntitySet="Document">
+                <ScalarProperty Name="DocumentTemplateOwnedByEntityType" ColumnName="DocumentTemplateOwnedByEntityType" />
+                <ScalarProperty Name="DocumentTemplateOwnedByDisplayName" ColumnName="DocumentTemplateOwnedByDisplayName" />
+                <ScalarProperty Name="DocumentTemplateName" ColumnName="DocumentTemplateName" />
+                <ScalarProperty Name="OwnedByEntityType" ColumnName="OwnedByEntityType" />
+                <ScalarProperty Name="OwnedByDisplayName" ColumnName="OwnedByDisplayName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="Extension" ColumnName="Extension" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="DocumentTemplateId" ColumnName="DocumentTemplateId" />
+                <ScalarProperty Name="OwnedByObjectGuid" ColumnName="OwnedByObjectGuid" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.Document">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.Document_Insert">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="ContentType" ParameterName="ContentType" />
+                  <ScalarProperty Name="Content" ParameterName="Content" />
+                  <ScalarProperty Name="Name" ParameterName="Name" />
+                  <ScalarProperty Name="Extension" ParameterName="Extension" />
+                  <ScalarProperty Name="Path" ParameterName="Path" />
+                  <ScalarProperty Name="ExpiryDate" ParameterName="ExpiryDate" />
+                  <ScalarProperty Name="EffectiveDate" ParameterName="EffectiveDate" />
+                  <ScalarProperty Name="DocumentTemplateId" ParameterName="DocumentTemplateId" />
+                  <ScalarProperty Name="OwnedByObjectGuid" ParameterName="OwnedByObjectGuid" />
+                  <ScalarProperty Name="ObjectGuid" ParameterName="ObjectGuid" />
+                  <ResultBinding Name="Id" ColumnName="Id" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OrvosiModel.Store.Document_Update">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="ContentType" ParameterName="ContentType" Version="Current" />
+                  <ScalarProperty Name="Content" ParameterName="Content" Version="Current" />
+                  <ScalarProperty Name="Name" ParameterName="Name" Version="Current" />
+                  <ScalarProperty Name="Extension" ParameterName="Extension" Version="Current" />
+                  <ScalarProperty Name="Path" ParameterName="Path" Version="Current" />
+                  <ScalarProperty Name="ExpiryDate" ParameterName="ExpiryDate" Version="Current" />
+                  <ScalarProperty Name="EffectiveDate" ParameterName="EffectiveDate" Version="Current" />
+                  <ScalarProperty Name="DocumentTemplateId" ParameterName="DocumentTemplateId" Version="Current" />
+                  <ScalarProperty Name="OwnedByObjectGuid" ParameterName="OwnedByObjectGuid" Version="Current" />
+                  <ScalarProperty Name="ObjectGuid" ParameterName="ObjectGuid" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.Document_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Document_Delete" FunctionName="OrvosiModel.Store.Document_Delete" />
+          <FunctionImportMapping FunctionImportName="Document_Insert" FunctionName="OrvosiModel.Store.Document_Insert">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Document_Update" FunctionName="OrvosiModel.Store.Document_Update" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

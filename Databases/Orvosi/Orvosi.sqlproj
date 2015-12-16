@@ -160,14 +160,11 @@
     <Build Include="dbo\Tables\PhysicianCompany.sql" />
     <Build Include="dbo\Tables\LookupItem.sql" />
     <Build Include="dbo\Tables\Lookup.sql" />
-    <Build Include="Private\Views\Document.sql" />
     <Build Include="API\Views\User.sql" />
     <Build Include="API\Views\ServicePortfolio.sql" />
     <Build Include="API\Views\ServiceCategory.sql" />
     <Build Include="API\Views\Profile.sql" />
-    <Build Include="API\Views\PhysicianDocument.sql" />
     <Build Include="API\Views\PhysicianCompany.sql" />
-    <Build Include="API\Views\PhysicianAssessorPackage.sql" />
     <Build Include="API\Views\Physician.sql" />
     <Build Include="API\Views\Entity.sql" />
     <Build Include="API\Views\CompanyAssessorPackage.sql" />
@@ -198,6 +195,20 @@
     <Build Include="API\Stored Procedures\ServiceRequest_Insert.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_Delete.sql" />
     <Build Include="API\Stored Procedures\Location_Select_PhysicianAndCompany.sql" />
+    <Build Include="dbo\Tables\PhysicianLocation.sql" />
+    <Build Include="dbo\Tables\PhysicianLicense.sql" />
+    <Build Include="dbo\Tables\PhysicianInsurance.sql" />
+    <Build Include="dbo\Tables\Physician.sql" />
+    <Build Include="API\Views\PhysicianLocation.sql" />
+    <Build Include="API\Views\PhysicianLicense.sql" />
+    <Build Include="API\Views\PhysicianInsurance.sql" />
+    <Build Include="API\Views\Document.sql" />
+    <Build Include="API\Stored Procedures\PhysicianInsurance_Update.sql" />
+    <Build Include="API\Stored Procedures\PhysicianInsurance_Insert.sql" />
+    <Build Include="API\Stored Procedures\PhysicianInsurance_Delete.sql" />
+    <Build Include="API\Stored Procedures\Document_Update.sql" />
+    <Build Include="API\Stored Procedures\Document_Insert.sql" />
+    <Build Include="API\Stored Procedures\Document_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

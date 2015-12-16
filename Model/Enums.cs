@@ -60,4 +60,11 @@ namespace Model.Enums
         public const byte TaskStatus = 3;
         public const byte LocationAreas = 4;
     }
+
+    public static class DocumentTemplates
+    {
+        public const byte CV = 1;
+        public const byte CSPO = 2;
+        public const byte CMPA = 3;
+    }
 }

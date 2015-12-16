@@ -250,10 +250,15 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
     <Compile Include="Areas\Admin\Controllers\CompanyController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DocumentController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin\Controllers\LocationController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PhysicianInsuranceController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PhysicianLicenceController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceRequestController.cs" />
+    <Compile Include="Areas\Admin\ViewModels\PhysicianInsuranceViewModels.cs" />
+    <Compile Include="Areas\Admin\ViewModels\PhysicianLicenceViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\CompanyViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestViewModels.cs" />
@@ -589,6 +594,16 @@
     <Content Include="Areas\Admin\Views\Location\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Location\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Location\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianLicence\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianInsurance\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianInsurance\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Document\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Document\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Document\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Document\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Document\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianInsurance\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianInsurance\Delete.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

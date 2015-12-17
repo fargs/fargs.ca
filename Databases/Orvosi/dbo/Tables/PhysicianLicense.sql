@@ -9,8 +9,12 @@
     [IsPrimary]        BIT             CONSTRAINT [DF__Physician__IsPri__70099B30] DEFAULT ((0)) NULL,
     [Preference]       TINYINT         NULL,
     [DocumentId]       SMALLINT        NULL,
+    [CountryId]        SMALLINT        NULL,
+    [ProvinceId]       SMALLINT        NULL,
     [ModifiedDate]     DATETIME        CONSTRAINT [DF_PhysicianLicense_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]     NVARCHAR (100)  CONSTRAINT [DF_PhysicianLicense_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_PhysicianLicense] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 

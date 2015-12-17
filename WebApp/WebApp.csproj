@@ -604,6 +604,9 @@
     <Content Include="Areas\Admin\Views\Document\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PhysicianInsurance\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\PhysicianInsurance\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianLicence\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianLicence\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\PhysicianLicence\Create.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

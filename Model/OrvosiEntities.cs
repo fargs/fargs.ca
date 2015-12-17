@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Model
 {
@@ -43,5 +42,16 @@ namespace Model
 
             return base.SaveChanges();
         }
+    }
+
+    public class PhysicianLicenseMeta
+    {
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]  // format used by Html.EditorFor
+        public DateTime ExpiryDate;
+    }
+
+    [MetadataType(typeof(PhysicianLicenseMeta))]
+    public partial class PhysicianLicense
+    {
     }
 }

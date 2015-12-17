@@ -209,6 +209,9 @@
     <Build Include="API\Stored Procedures\Document_Update.sql" />
     <Build Include="API\Stored Procedures\Document_Insert.sql" />
     <Build Include="API\Stored Procedures\Document_Delete.sql" />
+    <Build Include="API\Stored Procedures\PhysicianLicense_Update.sql" />
+    <Build Include="API\Stored Procedures\PhysicianLicense_Insert.sql" />
+    <Build Include="API\Stored Procedures\PhysicianLicense_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

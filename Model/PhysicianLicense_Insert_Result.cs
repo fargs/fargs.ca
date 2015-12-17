@@ -10,9 +10,8 @@
 namespace Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class PhysicianLicense
+    public partial class PhysicianLicense_Insert_Result
     {
         public short Id { get; set; }
         public string PhysicianId { get; set; }
@@ -28,11 +27,5 @@ namespace Model
         public string ModifiedUser { get; set; }
         public byte[] Content { get; set; }
         public string ContentType { get; set; }
-        public Nullable<short> CountryId { get; set; }
-        public Nullable<short> ProvinceId { get; set; }
-        public string CountryName { get; set; }
-        public string CountryCode { get; set; }
-        public string ProvinceName { get; set; }
-        public string ProvinceCode { get; set; }
     }
 }

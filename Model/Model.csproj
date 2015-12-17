@@ -114,6 +114,9 @@
     <Compile Include="PhysicianLicense.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="PhysicianLicense_Insert_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="PhysicianLocation.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

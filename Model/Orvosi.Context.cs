@@ -43,10 +43,10 @@ namespace Model
         public virtual DbSet<LookupItem> LookupItems { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }
         public virtual DbSet<Entity> Entities { get; set; }
-        public virtual DbSet<PhysicianLicense> PhysicianLicenses { get; set; }
         public virtual DbSet<PhysicianLocation> PhysicianLocations { get; set; }
         public virtual DbSet<PhysicianInsurance> PhysicianInsurances { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
+        public virtual DbSet<PhysicianLicense> PhysicianLicenses { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -904,6 +904,125 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Document_Update", idParameter, objectGuidParameter, ownedByObjectGuidParameter, documentTemplateIdParameter, effectiveDateParameter, expiryDateParameter, pathParameter, extensionParameter, nameParameter, contentParameter, contentTypeParameter, modifiedUserParameter);
+        }
+    
+        public virtual int PhysicianLicense_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PhysicianLicense_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<PhysicianLicense_Insert_Result> PhysicianLicense_Insert(string physicianId, string collegeName, string longName, Nullable<System.DateTime> expiryDate, string memberName, string certificateClass, Nullable<bool> isPrimary, Nullable<byte> preference, Nullable<short> documentId, Nullable<short> countryId, Nullable<short> provinceId, string modifiedUser)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var collegeNameParameter = collegeName != null ?
+                new ObjectParameter("CollegeName", collegeName) :
+                new ObjectParameter("CollegeName", typeof(string));
+    
+            var longNameParameter = longName != null ?
+                new ObjectParameter("LongName", longName) :
+                new ObjectParameter("LongName", typeof(string));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var memberNameParameter = memberName != null ?
+                new ObjectParameter("MemberName", memberName) :
+                new ObjectParameter("MemberName", typeof(string));
+    
+            var certificateClassParameter = certificateClass != null ?
+                new ObjectParameter("CertificateClass", certificateClass) :
+                new ObjectParameter("CertificateClass", typeof(string));
+    
+            var isPrimaryParameter = isPrimary.HasValue ?
+                new ObjectParameter("IsPrimary", isPrimary) :
+                new ObjectParameter("IsPrimary", typeof(bool));
+    
+            var preferenceParameter = preference.HasValue ?
+                new ObjectParameter("Preference", preference) :
+                new ObjectParameter("Preference", typeof(byte));
+    
+            var documentIdParameter = documentId.HasValue ?
+                new ObjectParameter("DocumentId", documentId) :
+                new ObjectParameter("DocumentId", typeof(short));
+    
+            var countryIdParameter = countryId.HasValue ?
+                new ObjectParameter("CountryId", countryId) :
+                new ObjectParameter("CountryId", typeof(short));
+    
+            var provinceIdParameter = provinceId.HasValue ?
+                new ObjectParameter("ProvinceId", provinceId) :
+                new ObjectParameter("ProvinceId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PhysicianLicense_Insert_Result>("PhysicianLicense_Insert", physicianIdParameter, collegeNameParameter, longNameParameter, expiryDateParameter, memberNameParameter, certificateClassParameter, isPrimaryParameter, preferenceParameter, documentIdParameter, countryIdParameter, provinceIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int PhysicianLicense_Update(Nullable<short> id, string physicianId, string collegeName, string longName, Nullable<System.DateTime> expiryDate, string memberName, string certificateClass, Nullable<bool> isPrimary, Nullable<byte> preference, Nullable<short> documentId, Nullable<short> countryId, Nullable<short> provinceId, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var collegeNameParameter = collegeName != null ?
+                new ObjectParameter("CollegeName", collegeName) :
+                new ObjectParameter("CollegeName", typeof(string));
+    
+            var longNameParameter = longName != null ?
+                new ObjectParameter("LongName", longName) :
+                new ObjectParameter("LongName", typeof(string));
+    
+            var expiryDateParameter = expiryDate.HasValue ?
+                new ObjectParameter("ExpiryDate", expiryDate) :
+                new ObjectParameter("ExpiryDate", typeof(System.DateTime));
+    
+            var memberNameParameter = memberName != null ?
+                new ObjectParameter("MemberName", memberName) :
+                new ObjectParameter("MemberName", typeof(string));
+    
+            var certificateClassParameter = certificateClass != null ?
+                new ObjectParameter("CertificateClass", certificateClass) :
+                new ObjectParameter("CertificateClass", typeof(string));
+    
+            var isPrimaryParameter = isPrimary.HasValue ?
+                new ObjectParameter("IsPrimary", isPrimary) :
+                new ObjectParameter("IsPrimary", typeof(bool));
+    
+            var preferenceParameter = preference.HasValue ?
+                new ObjectParameter("Preference", preference) :
+                new ObjectParameter("Preference", typeof(byte));
+    
+            var documentIdParameter = documentId.HasValue ?
+                new ObjectParameter("DocumentId", documentId) :
+                new ObjectParameter("DocumentId", typeof(short));
+    
+            var countryIdParameter = countryId.HasValue ?
+                new ObjectParameter("CountryId", countryId) :
+                new ObjectParameter("CountryId", typeof(short));
+    
+            var provinceIdParameter = provinceId.HasValue ?
+                new ObjectParameter("ProvinceId", provinceId) :
+                new ObjectParameter("ProvinceId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PhysicianLicense_Update", idParameter, physicianIdParameter, collegeNameParameter, longNameParameter, expiryDateParameter, memberNameParameter, certificateClassParameter, isPrimaryParameter, preferenceParameter, documentIdParameter, countryIdParameter, provinceIdParameter, modifiedUserParameter);
         }
     }
 }

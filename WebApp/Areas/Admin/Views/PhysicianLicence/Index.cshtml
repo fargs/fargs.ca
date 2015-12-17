@@ -9,13 +9,16 @@
 <div class="h3 lead">@Model.User.DisplayName</div>
 
 <p>
-    <a class="btn btn-success" href="~/PhysicianLicence/Create"><i class="glyphicon glyphicon-plus"></i></a>
+    <a class="btn btn-success" href="~/Admin/PhysicianLicence/Create/@Model.User.Id"><i class="glyphicon glyphicon-plus"></i></a>
 </p>
 <table class="table">
     <tr>
         <th></th>
         <th>
             College
+        </th>
+        <th>
+            Province
         </th>
         <th>
             Member Name
@@ -26,44 +29,59 @@
         <th>
             Certificate Class
         </th>
+        <th>
+            Document
+        </th>
     </tr>
 
     @foreach (var item in Model.Licences)
     {
         <tr>
-            <td>
-                <nav>
-                    <ul class="nav nav-pills nav-condensed">
-                        <li role="presentation" class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                                <i class="glyphicon glyphicon-menu-hamburger"></i>
-                            </a>
-                            <ul class="dropdown-menu nav-uncondensed" role="menu">
-                                <li role="presentation">@Html.ActionLink("Download", "Download", new { id = item.Id })</li>
-                                <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
-                                <li role="presentation">@Html.ActionLink("Details", "Details", new { id = item.Id })</li>
-                                <li role="separator" class="divider"></li>
-                                <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
-                            </ul>
-                        </li>
+            <td width="50px">
+                <div role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                        <i class="glyphicon glyphicon-menu-hamburger"></i>
+                    </a>
+                    <ul class="dropdown-menu nav-uncondensed" role="menu">
+                        <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
+                        <li role="separator" class="divider"></li>
+                        <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
                     </ul>
-                </nav>
+                </div>
             </td>
             <td>
                 @item.CollegeName
                 <span class="text-muted">@item.LongName</span>
             </td>
             <td>
+                @item.ProvinceName
+            </td>
+            <td>
                 @item.MemberName
             </td>
             <td>
-                @item.ExpiryDate
+                @(item.ExpiryDate.HasValue ? item.ExpiryDate.Value.GetDateTimeFormats('d')[0] : string.Empty)
             </td>
             <td>
                 @item.CertificateClass
+            </td>
+            <td>
+                @if (item.Content != null && item.Content.Length > 0)
+                {
+                    <a href="~/Admin/Document/Download/@item.DocumentId"><i class="glyphicon glyphicon-download-alt"></i></a>
+                }
+                else
+                {
+                    <span class="text-muted">Upload Pending</span>
+                }
             </td>
         </tr>
     }
 
 </table>
 
+<div class="panel">
+    <div class="panel-body">
+        @Html.ActionLink("Back to List", "Index", "User", new { parentId = HttpUtility.ParseQueryString(Request.UrlReferrer.Query)["parentId"] }, new { @class = "btn btn-default" })
+    </div>
+</div>

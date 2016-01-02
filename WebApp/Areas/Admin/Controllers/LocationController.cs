@@ -45,7 +45,7 @@ namespace WebApp.Areas.Admin.Controllers
                 .Select(c => new SelectListItem()
                 {
                     Text = c.DisplayName,
-                    Value = c.EntityId.ToString()
+                    Value = c.EntityGuid.ToString()
                 }).ToList();
 
             ViewBag.Locations = db.LookupItems
@@ -71,8 +71,10 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,ObjectGuid,AddressTypeID,AddressTypeName,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedDate,ModifiedUser,CountryName,CountryCode,ProvinceName,ProvinceCode,LocationId,LocationName")] Location location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
         {
+            var db = new OrvosiEntities(User.Identity.Name);
+
             if (ModelState.IsValid)
             {
                 db.Locations.Add(location);
@@ -100,7 +102,7 @@ namespace WebApp.Areas.Admin.Controllers
                 .Where(c => c.EntityType == EntityTypes.Company || c.EntityType == EntityTypes.Physician)
                 .Select(c => new SelectListItem() {
                     Text = c.DisplayName,
-                    Value = c.EntityId.ToString()
+                    Value = c.EntityGuid.ToString()
                 }).ToList();
 
             ViewBag.Locations = db.LookupItems
@@ -126,8 +128,9 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,ObjectGuid,AddressTypeID,AddressTypeName,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedDate,ModifiedUser,CountryName,CountryCode,ProvinceName,ProvinceCode,LocationId,LocationName")] Location location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
         {
+            var db = new OrvosiEntities(User.Identity.Name);
             if (ModelState.IsValid)
             {
                 db.Entry(location).State = EntityState.Modified;
@@ -140,6 +143,8 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
+            var db = new OrvosiEntities(User.Identity.Name);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

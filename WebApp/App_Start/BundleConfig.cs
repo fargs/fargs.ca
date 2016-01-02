@@ -32,7 +32,10 @@ namespace WebApp
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
+                      "~/Scripts/bootstrap.min.js",
+                      "~/Scripts/bootstrap-datepicker.min.js",
+                      "~/Scripts/moment.min.js",
+                      "~/Scripts/fullcalendar.min.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/toastr.min.js"));
 
@@ -45,14 +48,16 @@ namespace WebApp
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/themes/base/all.css",
+                      "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
+                      "~/Content/fullcalendar.css",
                       "~/Content/Site.css"));
 
-            bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
-                      "~/Content/jquery-ui.css"));
+            //bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
+            //          "~/Content/jquery-ui.css"));
 
-            bundles.Add(new StyleBundle("~/Content/landing").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/landing-page.css"));
+            //bundles.Add(new StyleBundle("~/Content/landing").Include(
+            //          "~/Content/bootstrap.css",
+            //          "~/Content/landing-page.css"));
         }
     }
 }

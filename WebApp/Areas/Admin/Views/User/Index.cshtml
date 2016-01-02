@@ -31,7 +31,8 @@
                                 <li role="presentation">@Html.ActionLink("Companies", "Companies", "User", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Licences", "Index", "PhysicianLicence", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Insurance", "Index", "PhysicianInsurance", new { area = "Admin", userId = item.Id }, new { })</li>
-                                <li role="presentation">@Html.ActionLink("Locations", "Locations", "User", new { area = "Admin", userId = item.Id }, new { })</li>
+                                <li role="presentation">@Html.ActionLink("Availability", "Index", "Availability", new { area = "Admin", physicianId = item.Id }, new { })</li>
+                                <li role="presentation">@Html.ActionLink("Service Catalogue", "Index", "ServiceCatalogue", new { area = "Admin", physicianId = item.Id }, new { })</li>
                             }
                             <li role="separator" class="divider"></li>
                             <li role="presentation">@Html.ActionLink("Account", "Account", "User", new { area = "Admin", id = item.Id }, new { })</li>

@@ -27,7 +27,7 @@
                             <i class="glyphicon glyphicon-menu-hamburger"></i>
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
-                            <li role="presentation">@Html.ActionLink("Upload Document", "Profile", "User", new { area="Admin", id = item.PhysicianId }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Service Catalogue", "Index", "ServiceCatalogue", new { area="Admin", physicianId = item.PhysicianId, companyId = item.CompanyId }, new { })</li>
                         </ul>
                     </li>
                 </ul>

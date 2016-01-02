@@ -1,18 +1,24 @@
 ﻿
 CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	 @CompanyReferenceId nvarchar(128)
+	,@ClaimantName nvarchar(128)
 	,@ServiceCatalogueId smallint
+	,@AddressId int
 	,@HarvestProjectId bigint
 	,@Title nvarchar(256)
 	,@Body nvarchar(max)
 	,@RequestedDate datetime
 	,@RequestedBy uniqueidentifier
 	,@CancelledDate datetime
-	,@AssignedTo uniqueidentifier
+	,@CaseCoordinatorId uniqueidentifier
+	,@IntakeAssistantId uniqueidentifier
+	,@DocumentReviewerId uniqueidentifier
 	,@StatusId tinyint
-	,@DueDate date
+	,@AvailableSlotId smallint
+	,@AppointmentDate date
 	,@StartTime time
 	,@EndTime time
+	,@DueDate date
 	,@Price decimal(18,2)
 	,@ModifiedUser nvarchar(100)
 AS
@@ -23,36 +29,46 @@ SET @Now = GETDATE()
 INSERT INTO dbo.[ServiceRequest]
 (
 	 [CompanyReferenceId]
+	,[ClaimantName]
 	,[ServiceCatalogueId]
+	,[AddressId]
 	,[HarvestProjectId]
 	,[Title]
 	,[Body]
 	,[RequestedDate]
 	,[RequestedBy]
 	,[CancelledDate]
-	,[AssignedTo]
-	,[StatusId]
-	,[DueDate]
+	,[CaseCoordinatorId]
+	,[IntakeAssistantId]
+	,[DocumentReviewerId]
+	,[AvailableSlotId]
+	,[AppointmentDate]
 	,[StartTime]
 	,[EndTime]
+	,[DueDate]
 	,[Price]
 	,[ModifiedUser]
 )
 VALUES 
 (
 	 @CompanyReferenceId
+	,@ClaimantName
 	,@ServiceCatalogueId
+	,@AddressId
 	,@HarvestProjectId
 	,@Title
 	,@Body
 	,@RequestedDate
 	,@RequestedBy
 	,@CancelledDate
-	,@AssignedTo
-	,@StatusId
-	,@DueDate
+	,@CaseCoordinatorId
+	,@IntakeAssistantId
+	,@DocumentReviewerId
+	,@AvailableSlotId
+	,@AppointmentDate
 	,@StartTime
 	,@EndTime
+	,@DueDate
 	,@Price
 	,@ModifiedUser
 )

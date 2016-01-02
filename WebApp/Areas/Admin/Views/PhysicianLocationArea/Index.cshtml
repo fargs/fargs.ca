@@ -1,0 +1,55 @@
+﻿@model WebApp.Areas.Admin.ViewModels.PhysicianLocationAreasViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Location Areas";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Locations for</h2>
+<div class="h3 lead">@Model.User.DisplayName</div>
+
+<p>
+    <a class="btn btn-success" href="~/Admin/PhysicianLicence/Create/@Model.User.Id"><i class="glyphicon glyphicon-plus"></i></a>
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            Location Area
+        </th>
+        <th>
+            Status
+        </th>
+    </tr>
+
+    @foreach (var item in Model.LocationAreas)
+    {
+        <tr>
+            <td width="50px">
+                <div role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                        <i class="glyphicon glyphicon-menu-hamburger"></i>
+                    </a>
+                    @*<ul class="dropdown-menu nav-uncondensed" role="menu">
+                        <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
+                        <li role="separator" class="divider"></li>
+                        <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
+                    </ul>*@
+                </div>
+            </td>
+            <td>
+                @item.ItemText
+            </td>
+            <td>
+                @*@Model.PhysicianLocationAreas.SingleOrDefault(c => c.LocationId == item.ItemId)*@
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div class="panel">
+    <div class="panel-body">
+        @Html.ActionLink("Back to List", "Index", "User", new { parentId = HttpUtility.ParseQueryString(Request.UrlReferrer.Query)["parentId"] }, new { @class = "btn btn-default" })
+    </div>
+</div>

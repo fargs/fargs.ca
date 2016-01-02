@@ -58,6 +58,12 @@
     <Compile Include="Account.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="AvailableDay.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvailableSlot.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Company.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -80,7 +86,19 @@
     <Compile Include="GetPhysicianGoogleAccount_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetServiceCatalogueMatrix_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetServiceCatalogue_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Location.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LocationArea.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Location_Insert_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Location_Select_PhysicianAndCompany_Result.cs">
@@ -104,7 +122,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Orvosi.edmx</DependentUpon>
     </Compile>
-    <Compile Include="OrvosiEntities.cs" />
+    <Compile Include="Orvosi.Partials\OrvosiEntities.cs" />
+    <Compile Include="Orvosi.Partials\Partials.cs" />
+    <Compile Include="Physician.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="PhysicianCompany.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -117,7 +139,7 @@
     <Compile Include="PhysicianLicense_Insert_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="PhysicianLocation.cs">
+    <Compile Include="PhysicianLocationArea.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Profile.cs">

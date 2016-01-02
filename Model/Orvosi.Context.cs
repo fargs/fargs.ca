@@ -37,16 +37,20 @@ namespace Model
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<ServiceCategory> ServiceCategories { get; set; }
         public virtual DbSet<ServicePortfolio> ServicePortfolios { get; set; }
-        public virtual DbSet<ServiceCatalogue> ServiceCatalogues { get; set; }
         public virtual DbSet<ServiceRequest> ServiceRequests { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<LookupItem> LookupItems { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }
         public virtual DbSet<Entity> Entities { get; set; }
-        public virtual DbSet<PhysicianLocation> PhysicianLocations { get; set; }
         public virtual DbSet<PhysicianInsurance> PhysicianInsurances { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<PhysicianLicense> PhysicianLicenses { get; set; }
+        public virtual DbSet<ServiceCatalogue> ServiceCatalogues { get; set; }
+        public virtual DbSet<LocationArea> LocationAreas { get; set; }
+        public virtual DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; }
+        public virtual DbSet<Physician> Physicians { get; set; }
+        public virtual DbSet<AvailableDay> AvailableDays { get; set; }
+        public virtual DbSet<AvailableSlot> AvailableSlots { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -495,15 +499,23 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, Nullable<short> serviceCatalogueId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> assignedTo, Nullable<byte> statusId, Nullable<System.DateTime> dueDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<decimal> price, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string modifiedUser)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
                 new ObjectParameter("CompanyReferenceId", typeof(string));
     
+            var claimantNameParameter = claimantName != null ?
+                new ObjectParameter("ClaimantName", claimantName) :
+                new ObjectParameter("ClaimantName", typeof(string));
+    
             var serviceCatalogueIdParameter = serviceCatalogueId.HasValue ?
                 new ObjectParameter("ServiceCatalogueId", serviceCatalogueId) :
                 new ObjectParameter("ServiceCatalogueId", typeof(short));
+    
+            var addressIdParameter = addressId.HasValue ?
+                new ObjectParameter("AddressId", addressId) :
+                new ObjectParameter("AddressId", typeof(int));
     
             var harvestProjectIdParameter = harvestProjectId.HasValue ?
                 new ObjectParameter("HarvestProjectId", harvestProjectId) :
@@ -529,17 +541,29 @@ namespace Model
                 new ObjectParameter("CancelledDate", cancelledDate) :
                 new ObjectParameter("CancelledDate", typeof(System.DateTime));
     
-            var assignedToParameter = assignedTo.HasValue ?
-                new ObjectParameter("AssignedTo", assignedTo) :
-                new ObjectParameter("AssignedTo", typeof(System.Guid));
+            var caseCoordinatorIdParameter = caseCoordinatorId.HasValue ?
+                new ObjectParameter("CaseCoordinatorId", caseCoordinatorId) :
+                new ObjectParameter("CaseCoordinatorId", typeof(System.Guid));
+    
+            var intakeAssistantIdParameter = intakeAssistantId.HasValue ?
+                new ObjectParameter("IntakeAssistantId", intakeAssistantId) :
+                new ObjectParameter("IntakeAssistantId", typeof(System.Guid));
+    
+            var documentReviewerIdParameter = documentReviewerId.HasValue ?
+                new ObjectParameter("DocumentReviewerId", documentReviewerId) :
+                new ObjectParameter("DocumentReviewerId", typeof(System.Guid));
     
             var statusIdParameter = statusId.HasValue ?
                 new ObjectParameter("StatusId", statusId) :
                 new ObjectParameter("StatusId", typeof(byte));
     
-            var dueDateParameter = dueDate.HasValue ?
-                new ObjectParameter("DueDate", dueDate) :
-                new ObjectParameter("DueDate", typeof(System.DateTime));
+            var availableSlotIdParameter = availableSlotId.HasValue ?
+                new ObjectParameter("AvailableSlotId", availableSlotId) :
+                new ObjectParameter("AvailableSlotId", typeof(short));
+    
+            var appointmentDateParameter = appointmentDate.HasValue ?
+                new ObjectParameter("AppointmentDate", appointmentDate) :
+                new ObjectParameter("AppointmentDate", typeof(System.DateTime));
     
             var startTimeParameter = startTime.HasValue ?
                 new ObjectParameter("StartTime", startTime) :
@@ -549,6 +573,10 @@ namespace Model
                 new ObjectParameter("EndTime", endTime) :
                 new ObjectParameter("EndTime", typeof(System.TimeSpan));
     
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
             var priceParameter = price.HasValue ?
                 new ObjectParameter("Price", price) :
                 new ObjectParameter("Price", typeof(decimal));
@@ -557,10 +585,10 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, serviceCatalogueIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, assignedToParameter, statusIdParameter, dueDateParameter, startTimeParameter, endTimeParameter, priceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, Nullable<short> serviceCatalogueId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> assignedTo, Nullable<byte> statusId, Nullable<System.DateTime> dueDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<decimal> price, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -574,9 +602,17 @@ namespace Model
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
                 new ObjectParameter("CompanyReferenceId", typeof(string));
     
+            var claimantNameParameter = claimantName != null ?
+                new ObjectParameter("ClaimantName", claimantName) :
+                new ObjectParameter("ClaimantName", typeof(string));
+    
             var serviceCatalogueIdParameter = serviceCatalogueId.HasValue ?
                 new ObjectParameter("ServiceCatalogueId", serviceCatalogueId) :
                 new ObjectParameter("ServiceCatalogueId", typeof(short));
+    
+            var addressIdParameter = addressId.HasValue ?
+                new ObjectParameter("AddressId", addressId) :
+                new ObjectParameter("AddressId", typeof(int));
     
             var harvestProjectIdParameter = harvestProjectId.HasValue ?
                 new ObjectParameter("HarvestProjectId", harvestProjectId) :
@@ -602,17 +638,29 @@ namespace Model
                 new ObjectParameter("CancelledDate", cancelledDate) :
                 new ObjectParameter("CancelledDate", typeof(System.DateTime));
     
-            var assignedToParameter = assignedTo.HasValue ?
-                new ObjectParameter("AssignedTo", assignedTo) :
-                new ObjectParameter("AssignedTo", typeof(System.Guid));
+            var caseCoordinatorIdParameter = caseCoordinatorId.HasValue ?
+                new ObjectParameter("CaseCoordinatorId", caseCoordinatorId) :
+                new ObjectParameter("CaseCoordinatorId", typeof(System.Guid));
+    
+            var intakeAssistantIdParameter = intakeAssistantId.HasValue ?
+                new ObjectParameter("IntakeAssistantId", intakeAssistantId) :
+                new ObjectParameter("IntakeAssistantId", typeof(System.Guid));
+    
+            var documentReviewerIdParameter = documentReviewerId.HasValue ?
+                new ObjectParameter("DocumentReviewerId", documentReviewerId) :
+                new ObjectParameter("DocumentReviewerId", typeof(System.Guid));
     
             var statusIdParameter = statusId.HasValue ?
                 new ObjectParameter("StatusId", statusId) :
                 new ObjectParameter("StatusId", typeof(byte));
     
-            var dueDateParameter = dueDate.HasValue ?
-                new ObjectParameter("DueDate", dueDate) :
-                new ObjectParameter("DueDate", typeof(System.DateTime));
+            var availableSlotIdParameter = availableSlotId.HasValue ?
+                new ObjectParameter("AvailableSlotId", availableSlotId) :
+                new ObjectParameter("AvailableSlotId", typeof(short));
+    
+            var appointmentDateParameter = appointmentDate.HasValue ?
+                new ObjectParameter("AppointmentDate", appointmentDate) :
+                new ObjectParameter("AppointmentDate", typeof(System.DateTime));
     
             var startTimeParameter = startTime.HasValue ?
                 new ObjectParameter("StartTime", startTime) :
@@ -622,6 +670,10 @@ namespace Model
                 new ObjectParameter("EndTime", endTime) :
                 new ObjectParameter("EndTime", typeof(System.TimeSpan));
     
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
             var priceParameter = price.HasValue ?
                 new ObjectParameter("Price", price) :
                 new ObjectParameter("Price", typeof(decimal));
@@ -630,7 +682,7 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, serviceCatalogueIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, assignedToParameter, statusIdParameter, dueDateParameter, startTimeParameter, endTimeParameter, priceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, modifiedUserParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
@@ -1023,6 +1075,147 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PhysicianLicense_Update", idParameter, physicianIdParameter, collegeNameParameter, longNameParameter, expiryDateParameter, memberNameParameter, certificateClassParameter, isPrimaryParameter, preferenceParameter, documentIdParameter, countryIdParameter, provinceIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<GetServiceCatalogueMatrix_Result> GetServiceCatalogueMatrix(string physicianId, Nullable<short> companyId)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogueMatrix_Result>("GetServiceCatalogueMatrix", physicianIdParameter, companyIdParameter);
+        }
+    
+        public virtual ObjectResult<GetServiceCatalogue_Result> GetServiceCatalogue(string physicianId)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogue_Result>("GetServiceCatalogue", physicianIdParameter);
+        }
+    
+        public virtual int Location_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Location_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<Location_Insert_Result> Location_Insert(Nullable<System.Guid> ownerGuid, Nullable<byte> addressTypeID, string name, string attention, string address1, string address2, string city, string postalCode, Nullable<short> countryID, Nullable<short> provinceID, Nullable<short> locationId, string modifiedUser)
+        {
+            var ownerGuidParameter = ownerGuid.HasValue ?
+                new ObjectParameter("OwnerGuid", ownerGuid) :
+                new ObjectParameter("OwnerGuid", typeof(System.Guid));
+    
+            var addressTypeIDParameter = addressTypeID.HasValue ?
+                new ObjectParameter("AddressTypeID", addressTypeID) :
+                new ObjectParameter("AddressTypeID", typeof(byte));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var attentionParameter = attention != null ?
+                new ObjectParameter("Attention", attention) :
+                new ObjectParameter("Attention", typeof(string));
+    
+            var address1Parameter = address1 != null ?
+                new ObjectParameter("Address1", address1) :
+                new ObjectParameter("Address1", typeof(string));
+    
+            var address2Parameter = address2 != null ?
+                new ObjectParameter("Address2", address2) :
+                new ObjectParameter("Address2", typeof(string));
+    
+            var cityParameter = city != null ?
+                new ObjectParameter("City", city) :
+                new ObjectParameter("City", typeof(string));
+    
+            var postalCodeParameter = postalCode != null ?
+                new ObjectParameter("PostalCode", postalCode) :
+                new ObjectParameter("PostalCode", typeof(string));
+    
+            var countryIDParameter = countryID.HasValue ?
+                new ObjectParameter("CountryID", countryID) :
+                new ObjectParameter("CountryID", typeof(short));
+    
+            var provinceIDParameter = provinceID.HasValue ?
+                new ObjectParameter("ProvinceID", provinceID) :
+                new ObjectParameter("ProvinceID", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Location_Insert_Result>("Location_Insert", ownerGuidParameter, addressTypeIDParameter, nameParameter, attentionParameter, address1Parameter, address2Parameter, cityParameter, postalCodeParameter, countryIDParameter, provinceIDParameter, locationIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Location_Update(Nullable<int> id, Nullable<System.Guid> ownerGuid, Nullable<byte> addressTypeID, string name, string attention, string address1, string address2, string city, string postalCode, Nullable<short> countryID, Nullable<short> provinceID, Nullable<short> locationId, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var ownerGuidParameter = ownerGuid.HasValue ?
+                new ObjectParameter("OwnerGuid", ownerGuid) :
+                new ObjectParameter("OwnerGuid", typeof(System.Guid));
+    
+            var addressTypeIDParameter = addressTypeID.HasValue ?
+                new ObjectParameter("AddressTypeID", addressTypeID) :
+                new ObjectParameter("AddressTypeID", typeof(byte));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var attentionParameter = attention != null ?
+                new ObjectParameter("Attention", attention) :
+                new ObjectParameter("Attention", typeof(string));
+    
+            var address1Parameter = address1 != null ?
+                new ObjectParameter("Address1", address1) :
+                new ObjectParameter("Address1", typeof(string));
+    
+            var address2Parameter = address2 != null ?
+                new ObjectParameter("Address2", address2) :
+                new ObjectParameter("Address2", typeof(string));
+    
+            var cityParameter = city != null ?
+                new ObjectParameter("City", city) :
+                new ObjectParameter("City", typeof(string));
+    
+            var postalCodeParameter = postalCode != null ?
+                new ObjectParameter("PostalCode", postalCode) :
+                new ObjectParameter("PostalCode", typeof(string));
+    
+            var countryIDParameter = countryID.HasValue ?
+                new ObjectParameter("CountryID", countryID) :
+                new ObjectParameter("CountryID", typeof(short));
+    
+            var provinceIDParameter = provinceID.HasValue ?
+                new ObjectParameter("ProvinceID", provinceID) :
+                new ObjectParameter("ProvinceID", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Location_Update", idParameter, ownerGuidParameter, addressTypeIDParameter, nameParameter, attentionParameter, address1Parameter, address2Parameter, cityParameter, postalCodeParameter, countryIDParameter, provinceIDParameter, locationIdParameter, modifiedUserParameter);
         }
     }
 }

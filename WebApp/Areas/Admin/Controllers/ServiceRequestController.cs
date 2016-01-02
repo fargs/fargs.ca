@@ -48,21 +48,61 @@ namespace WebApp.Areas.Admin.Controllers
                     Text = c.DisplayName,
                     Value = c.Id.ToString()
                 }).ToList();
+
             return View();
         }
 
         // POST: Admin/ServiceRequest/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(ServiceRequest sr)
         {
             try
             {
-                // TODO: Add insert logic here
+                var obj = new ServiceRequest()
+                {
+                    ServiceCatalogueId = sr.ServiceCatalogueId,
+                    AppointmentDate = sr.AppointmentDate,
+                    AvailableSlotId = sr.AvailableSlotId,
+                    AddressId = sr.AddressId,
+                    CaseCoordinatorId = sr.CaseCoordinatorId,
+                    IntakeAssistantId = sr.IntakeAssistantId,
+                    DocumentReviewerId = sr.DocumentReviewerId,
+                    ClaimantName = sr.ClaimantName,
+                    CompanyReferenceId = sr.CompanyReferenceId,
+                    RequestedBy = sr.RequestedBy,
+                    RequestedDate = sr.RequestedDate,
+                    ModifiedUser = User.Identity.Name,
+                    ServiceName = string.Empty // this should not be needed but edmx is making it non nullable
+                };
+
+                using (var db = new OrvosiEntities(User.Identity.Name))
+                {
+                    db.ServiceRequests.Add(obj);
+                    db.SaveChanges();
+                }
 
                 return RedirectToAction("Index");
             }
             catch
             {
+                ViewBag.Companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
+
+                ViewBag.Requestors = db.Users
+                    .Where(u => u.RoleCategoryId == RoleCategory.Company)
+                    .Select(c => new SelectListItem()
+                    {
+                        Text = c.DisplayName,
+                        Value = c.Id.ToString()
+                    }).ToList();
+
+                ViewBag.Staff = db.Users
+                    .Where(u => u.RoleCategoryId == RoleCategory.Staff)
+                    .Select(c => new SelectListItem()
+                    {
+                        Text = c.DisplayName,
+                        Value = c.Id.ToString()
+                    }).ToList();
+
                 return View();
             }
         }
@@ -111,12 +151,12 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Services(short companyId)
+        public ActionResult Services(string physicianId)
         {
-            var selected = db.Companies.Single(c => c.Id == companyId);
+            var selected = db.Physicians.Single(c => c.Id == physicianId);
 
             var list = db.ServiceCatalogues
-                .Where(c => c.CompanyId == companyId)
+                .Where(c => c.PhysicianId == physicianId)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.ServiceName,
@@ -132,16 +172,16 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Physicians(short companyId, short serviceId)
+        public ActionResult Physicians(short companyId)
         {
-            var selected = db.Services.Single(s => s.Id == serviceId);
+            var selected = db.Companies.Single(c => c.Id == companyId);
 
-            var list = db.ServiceCatalogues
-                .Where(c => c.CompanyId == companyId && c.ServiceId == serviceId)
+            var list = db.PhysicianCompanies
+                .Where(c => c.CompanyId == companyId && (c.RelationshipStatusId == RelationshipStatuses.Active || c.RelationshipStatusId == RelationshipStatuses.InProgress))
                 .Select(c => new SelectListItem()
                 {
                     Text = c.PhysicianDisplayName,
-                    Value = c.Id.ToString()
+                    Value = c.PhysicianId.ToString()
                 })
                 .Distinct().ToList();
 
@@ -188,6 +228,24 @@ namespace WebApp.Areas.Admin.Controllers
             return Json(new
             {
                 requestors = list
+            });
+        }
+
+        [HttpPost]
+        public ActionResult AvailableSlots(string physicianId, DateTime day)
+        {
+            var ad = db.AvailableDays
+                .Single(c => c.PhysicianId == physicianId && c.Day == day)
+                .AvailableSlots.Select(c => new {
+                    Id = c.Id,
+                    StartTime = c.StartTime.ToString(),
+                    Title = c.Title
+                })
+                .ToList();
+            return Json(new
+            {
+                //day = ad,
+                slots = ad
             });
         }
 

@@ -26,7 +26,6 @@ namespace WebApp.Areas.Admin.Controllers
                 throw new Exception("User does not exist");
             }
 
-            // drop down lists
             var licences = db.PhysicianLicenses.Where(p => p.PhysicianId == userId).ToList();
 
             var vm = new IndexViewModel()

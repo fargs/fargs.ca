@@ -14,6 +14,12 @@ namespace Model
     
     public partial class Location
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Location()
+        {
+            this.CountryID = 124;
+        }
+    
         public int Id { get; set; }
         public System.Guid ObjectGuid { get; set; }
         public Nullable<System.Guid> OwnerGuid { get; set; }

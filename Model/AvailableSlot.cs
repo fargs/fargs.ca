@@ -12,14 +12,18 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class PhysicianLocation
+    public partial class AvailableSlot
     {
         public short Id { get; set; }
-        public string PhysicianId { get; set; }
-        public Nullable<short> LocationId { get; set; }
-        public bool IsPrimary { get; set; }
-        public Nullable<byte> Preference { get; set; }
+        public short AvailableDayId { get; set; }
+        public System.TimeSpan StartTime { get; set; }
+        public Nullable<System.TimeSpan> EndTime { get; set; }
+        public Nullable<short> Duration { get; set; }
+        public Nullable<short> ServiceRequestId { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
+        public string Title { get; set; }
+    
+        public virtual AvailableDay AvailableDay { get; set; }
     }
 }

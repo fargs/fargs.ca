@@ -1,8 +1,4 @@
 ﻿
-
-
-
-
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -10,6 +6,7 @@ SELECT
 	 sr.[Id] 
 	,sr.[ObjectGuid]
 	,sr.[CompanyReferenceId]
+	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
 	,sr.[Title]
@@ -18,26 +15,27 @@ SELECT
 	,sr.[RequestedDate]
 	,sr.[RequestedBy]
 	,sr.[CancelledDate]
-	,sr.[AssignedTo]
 	,sr.[StatusId]
+	,sr.[AvailableSlotId]
 	,sr.[DueDate]
-	,sr.[StartTime]
-	,sr.[EndTime]
-	,ServiceRequestPriceOverride = sr.[Price]
+	,sr.CaseCoordinatorId
+	,sr.IntakeAssistantId
+	,sr.DocumentReviewerId
+	,ServiceRequestPrice = sr.[Price]
+	,sr.DocumentFolderLink
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
 	,ServiceName = s.Name
+	,ServiceCode = s.Code
 	,s.ServiceCategoryName
 	,s.ServicePortfolioName
-	,s.DefaultPrice
 	,PhysicianDisplayName = p.DisplayName
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
-	,ServiceDefaultPrice = s.DefaultPrice
-	,ServiceCataloguePriceOverride = sc.Price
+	,ServicePrice = s.DefaultPrice
+	,ServiceCataloguePrice = sc.Price
 	,EffectivePrice = COALESCE(sr.Price, sc.Price, s.DefaultPrice)
-	,AssignedToDisplayName = u.DisplayName
-	,RequestedByDisplayName = rb.DisplayName
+	,RequestedByName = dbo.GetDisplayName(rb.FirstName, rb.LastName, rb.Title)
 	,StatusName = li.[Text]
 	,AddressName = a.Name
 	,AddressTypeId = a.AddressTypeId
@@ -52,12 +50,24 @@ SELECT
 	,CountryName = a.CountryCode
 	,LocationId = a.LocationId
 	,LocationName = a.LocationName
+	,CaseCoordinatorName = dbo.GetDisplayName(cc.FirstName, cc.LastName, cc.Title)
+	,IntakeAssistantName = dbo.GetDisplayName(ia.FirstName, ia.LastName, ia.Title)
+	,DocumentReviewerName = dbo.GetDisplayName(dr.FirstName, dr.LastName, dr.Title)
+	,AppointmentDate = ad.[Day]
+	,sl.StartTime
+	,sl.Duration
+	,sl.EndTime
+	,CalendarEventTitle = CONVERT(nvarchar(10), sr.Id) + ' - ' + s.Code + ' - ' + sr.ClaimantName + ' - ' + c.Name
 FROM dbo.ServiceRequest sr
 LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
 INNER JOIN API.[Service] s ON s.Id = sc.ServiceId
 INNER JOIN API.Physician p ON sc.PhysicianId = p.Id
 LEFT JOIN API.Company c ON sc.CompanyId = c.Id
-LEFT JOIN API.[User] u ON u.Id = sr.AssignedTo
-LEFT JOIN API.[User] rb ON rb.Id = sr.RequestedBy
+LEFT JOIN dbo.[AspNetUsers] cc ON cc.Id = sr.CaseCoordinatorId
+LEFT JOIN dbo.[AspNetUsers] ia ON ia.Id = sr.IntakeAssistantId
+LEFT JOIN dbo.[AspNetUsers] dr ON dr.Id = sr.DocumentReviewerId
+LEFT JOIN dbo.[AspNetUsers] rb ON rb.Id = sr.RequestedBy
 LEFT JOIN dbo.LookupItem li ON li.Id = sr.StatusId
 LEFT JOIN API.[Location] a ON sr.AddressId = a.Id
+LEFT JOIN dbo.AvailableSlot sl ON sr.AvailableSlotId = sl.Id
+LEFT JOIN dbo.AvailableDay ad ON sl.AvailableDayId = ad.Id

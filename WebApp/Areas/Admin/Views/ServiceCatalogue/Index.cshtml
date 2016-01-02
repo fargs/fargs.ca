@@ -1,0 +1,52 @@
+﻿@using Model.Enums
+@model WebApp.Areas.Admin.ViewModels.ServiceCatalogueViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Service Catalogue";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Physician.DisplayName</h2>
+<div class="h3 lead">
+    <span>Service Catalogue</span>
+</div>
+
+<p>
+    <a class="btn btn-success" href="~/Admin/ServiceCatalogue/Create?PhysicianId=@Model.Physician.Id"><i class="glyphicon glyphicon-plus"></i></a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                Service
+            </th>
+            @foreach (var item in Model.LocationAreas)
+            {
+                <th>
+                    @item.ItemText
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Services)
+        {
+            <tr>
+                <td>
+                    <div>@item.Name</div>
+                    @if (item.DefaultPrice != null) { 
+                        <small class="text-muted">Recommended price is @item.DefaultPrice</small>
+                    }
+                </td>
+                @foreach (var service in Model.ServiceCatalogues.Where(c => c.ServiceId == item.Id).OrderBy(c => c.LocationName))
+                {
+                    <td>
+                        <span>@service.ServiceCatalogueItem.Price</span>
+                    </td>
+                }
+            </tr>
+        }
+
+    </tbody>
+</table>

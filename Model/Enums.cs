@@ -67,4 +67,27 @@ namespace Model.Enums
         public const byte CSPO = 2;
         public const byte CMPA = 3;
     }
+
+    public static class ServiceCategories
+    {
+        public const byte IndependentMedicalExam = 5;
+        public const byte MedicalConsultation = 6;
+        public const byte AddOn = 7;
+    }
+
+    public static class PhysicianLocationStatus
+    {
+        public const byte Primary = 24;
+        public const byte WillingToTravel = 25;
+        public const byte UnwillingToTravel = 26;
+    }
+
+    public static class RelationshipStatuses
+    {
+        public const byte Interested = 1;
+        public const byte NotInterested = 2;
+        public const byte InProgress = 3;
+        public const byte Active = 4;
+
+    }
 }

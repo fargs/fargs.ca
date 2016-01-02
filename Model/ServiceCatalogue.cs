@@ -18,10 +18,12 @@ namespace Model
         public Nullable<short> CompanyId { get; set; }
         public string PhysicianId { get; set; }
         public Nullable<short> ServiceId { get; set; }
+        public Nullable<short> LocationId { get; set; }
         public Nullable<decimal> ServiceCataloguePriceOverride { get; set; }
         public string ServiceName { get; set; }
         public Nullable<decimal> ServicePrice { get; set; }
         public string PhysicianDisplayName { get; set; }
         public string CompanyName { get; set; }
+        public string LocationName { get; set; }
     }
 }

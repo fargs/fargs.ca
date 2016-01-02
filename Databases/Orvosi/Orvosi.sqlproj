@@ -199,7 +199,6 @@
     <Build Include="dbo\Tables\PhysicianLicense.sql" />
     <Build Include="dbo\Tables\PhysicianInsurance.sql" />
     <Build Include="dbo\Tables\Physician.sql" />
-    <Build Include="API\Views\PhysicianLocation.sql" />
     <Build Include="API\Views\PhysicianLicense.sql" />
     <Build Include="API\Views\PhysicianInsurance.sql" />
     <Build Include="API\Views\Document.sql" />
@@ -212,6 +211,18 @@
     <Build Include="API\Stored Procedures\PhysicianLicense_Update.sql" />
     <Build Include="API\Stored Procedures\PhysicianLicense_Insert.sql" />
     <Build Include="API\Stored Procedures\PhysicianLicense_Delete.sql" />
+    <Build Include="dbo\Tables\AvailableSlot.sql" />
+    <Build Include="dbo\Tables\AvailableDay.sql" />
+    <Build Include="API\Views\PhysicianLocationArea.sql" />
+    <Build Include="API\Views\LocationArea.sql" />
+    <Build Include="API\Views\AvailableSlot.sql" />
+    <Build Include="API\Views\AvailableDay.sql" />
+    <Build Include="dbo\Functions\LookupId_Location.sql" />
+    <Build Include="API\Stored Procedures\Location_Update.sql" />
+    <Build Include="API\Stored Procedures\Location_Insert.sql" />
+    <Build Include="API\Stored Procedures\Location_Delete.sql" />
+    <Build Include="API\Stored Procedures\GetServiceCatalogueMatrix.sql" />
+    <Build Include="API\Stored Procedures\GetServiceCatalogue.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

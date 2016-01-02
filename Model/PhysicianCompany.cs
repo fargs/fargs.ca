@@ -22,5 +22,6 @@ namespace Model
         public string ParentCompanyName { get; set; }
         public byte RelationshipStatusId { get; set; }
         public string RelationshipStatusName { get; set; }
+        public string PhysicianDisplayName { get; set; }
     }
 }

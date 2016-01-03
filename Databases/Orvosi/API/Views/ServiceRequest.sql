@@ -57,7 +57,7 @@ SELECT
 	,sl.StartTime
 	,sl.Duration
 	,sl.EndTime
-	,CalendarEventTitle = CONVERT(nvarchar(10), sr.Id) + ' - ' + s.Code + ' - ' + sr.ClaimantName + ' - ' + c.Name
+	,CalendarEventTitle = LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4)  + '-' + s.Code + '-' + sr.ClaimantName + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
 FROM dbo.ServiceRequest sr
 LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
 INNER JOIN API.[Service] s ON s.Id = sc.ServiceId

@@ -9,11 +9,15 @@
 <h2>@Model.Physician.DisplayName</h2>
 <div class="h3 lead">
     <span>Service Catalogue</span>
+    @if (Model.Company != null)
+    {
+        <span> for @Model.Company.Name</span>
+    }
 </div>
 
-<p>
+@*<p>
     <a class="btn btn-success" href="~/Admin/ServiceCatalogue/Create?PhysicianId=@Model.Physician.Id"><i class="glyphicon glyphicon-plus"></i></a>
-</p>
+</p>*@
 
 <table class="table table-bordered">
     <thead>
@@ -35,7 +39,8 @@
             <tr>
                 <td>
                     <div>@item.Name</div>
-                    @if (item.DefaultPrice != null) { 
+                    @if (item.DefaultPrice != null)
+                    {
                         <small class="text-muted">Recommended price is @item.DefaultPrice</small>
                     }
                 </td>

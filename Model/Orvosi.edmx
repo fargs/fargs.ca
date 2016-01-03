@@ -291,7 +291,6 @@ warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a prima
           <Key>
             <PropertyRef Name="PhysicianId" />
             <PropertyRef Name="CompanyId" />
-            
           </Key>
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
@@ -300,7 +299,13 @@ warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a prima
           <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
           <Property Name="ParentId" Type="int" />
           <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
-          <Property Name="RelationshipStatusId" Type="tinyint" Nullable="false" />
+          <Property Name="RelationshipStatusId" Type="tinyint" />
+          <Property Name="Id" Type="smallint" />
+          <Property Name="LookupId" Type="smallint" />
+          <Property Name="Text" Type="nvarchar" MaxLength="128" />
+          <Property Name="Value" Type="smallint" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" />
           <Property Name="RelationshipStatusName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
@@ -494,8 +499,6 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
             
             
             
-            
-            
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -506,8 +509,8 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="Title" Type="nvarchar" MaxLength="256" />
           <Property Name="Body" Type="nvarchar(max)" />
           <Property Name="AddressId" Type="int" />
-          <Property Name="RequestedDate" Type="datetime" Nullable="false" />
-          <Property Name="RequestedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RequestedDate" Type="datetime" />
+          <Property Name="RequestedBy" Type="uniqueidentifier" />
           <Property Name="CancelledDate" Type="datetime" />
           <Property Name="StatusId" Type="tinyint" />
           <Property Name="AvailableSlotId" Type="smallint" />
@@ -710,6 +713,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         </Function>
         <Function Name="GetServiceCatalogue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="GetServiceCatalogueForCompany" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
         </Function>
         <Function Name="GetServiceCatalogueMatrix" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
@@ -1127,6 +1134,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [PhysicianCompany].[ParentId] AS [ParentId], 
     [PhysicianCompany].[ParentCompanyName] AS [ParentCompanyName], 
     [PhysicianCompany].[RelationshipStatusId] AS [RelationshipStatusId], 
+    [PhysicianCompany].[Id] AS [Id], 
+    [PhysicianCompany].[LookupId] AS [LookupId], 
+    [PhysicianCompany].[Text] AS [Text], 
+    [PhysicianCompany].[Value] AS [Value], 
+    [PhysicianCompany].[ModifiedDate] AS [ModifiedDate], 
+    [PhysicianCompany].[ModifiedUser] AS [ModifiedUser], 
     [PhysicianCompany].[RelationshipStatusName] AS [RelationshipStatusName]
     FROM [API].[PhysicianCompany] AS [PhysicianCompany]</DefiningQuery>
           </EntitySet>
@@ -1694,6 +1707,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <End Role="AvailableDay" EntitySet="AvailableDays" />
             <End Role="AvailableSlot" EntitySet="AvailableSlots" />
           </AssociationSet>
+          <FunctionImport Name="GetServiceCatalogueForCompany" ReturnType="Collection(OrvosiModel.GetServiceCatalogue_Result)">
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -1768,9 +1785,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="RelationshipStatusId" Type="Byte" Nullable="false" />
+          <Property Name="RelationshipStatusId" Type="Byte" />
           <Property Name="RelationshipStatusName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="PhysicianDisplayName" Type="String" Unicode="true" FixedLength="false" MaxLength="210" />
+          <Property Name="Id" Type="Int16" />
+          <Property Name="LookupId" Type="Int16" />
+          <Property Name="Text" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1931,8 +1954,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="AddressId" Type="Int32" />
-          <Property Name="RequestedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="RequestedBy" Type="Guid" Nullable="false" />
+          <Property Name="RequestedDate" Type="DateTime" Precision="3" />
+          <Property Name="RequestedBy" Type="Guid" />
           <Property Name="CancelledDate" Type="DateTime" Precision="3" />
           <Property Name="StatusId" Type="Byte" />
           <Property Name="DueDate" Type="DateTime" Precision="0" />
@@ -2399,6 +2422,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="PhysicianCompanies">
             <EntityTypeMapping TypeName="OrvosiModel.PhysicianCompany">
               <MappingFragment StoreEntitySet="PhysicianCompany">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="LookupId" ColumnName="LookupId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="PhysicianDisplayName" ColumnName="PhysicianDisplayName" />
                 <ScalarProperty Name="RelationshipStatusName" ColumnName="RelationshipStatusName" />
                 <ScalarProperty Name="RelationshipStatusId" ColumnName="RelationshipStatusId" />
@@ -3221,6 +3250,20 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetServiceCatalogueForCompany" FunctionName="OrvosiModel.Store.GetServiceCatalogueForCompany">
+          <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetServiceCatalogue_Result">
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="ServicePrice" ColumnName="ServicePrice" />
+                <ScalarProperty Name="ServiceCatalogueId" ColumnName="ServiceCatalogueId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ServiceCatalogueData" ColumnName="ServiceCatalogueData" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

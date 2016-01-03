@@ -199,7 +199,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
 
                 // drop down lists
-                var companies = db.PhysicianCompanies.Where(p => p.PhysicianId == userId && p.ParentId == parentId && p.CompanyId != 1 && p.CompanyId != 10).ToList(); // exclude examworks and scm
+                var companies = db.PhysicianCompanies.Where(p => p.PhysicianId == userId && p.ParentId == parentId || p.CompanyId == p.ParentId).ToList(); // exclude examworks and scm
 
                 var vm = new CompaniesViewModel()
                 {

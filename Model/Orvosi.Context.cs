@@ -1217,5 +1217,18 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Location_Update", idParameter, ownerGuidParameter, addressTypeIDParameter, nameParameter, attentionParameter, address1Parameter, address2Parameter, cityParameter, postalCodeParameter, countryIDParameter, provinceIDParameter, locationIdParameter, modifiedUserParameter);
         }
+    
+        public virtual ObjectResult<GetServiceCatalogue_Result> GetServiceCatalogueForCompany(string physicianId, Nullable<short> companyId)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogue_Result>("GetServiceCatalogueForCompany", physicianIdParameter, companyIdParameter);
+        }
     }
 }

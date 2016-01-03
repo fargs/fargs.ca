@@ -1,4 +1,4 @@
-﻿CREATE PROC API.Location_Select_PhysicianAndCompany
+﻿CREATE PROC [API].[Location_Select_PhysicianAndCompany]
 	@PhysicianId nvarchar(128)
 	, @CompanyId smallint
 AS
@@ -10,3 +10,7 @@ UNION
 SELECT l.Id, l.EntityType, l.EntityDisplayName, l.Name, l.LocationName
 FROM API.Location l
 WHERE EntityId = @CompanyId AND EntityType = 'COMPANY'
+UNION
+SELECT l.Id, l.EntityType, l.EntityDisplayName, l.Name, l.LocationName
+FROM API.Location l
+WHERE EntityId = (SELECT ParentId FROM dbo.Company WHERE Id = @CompanyId) AND EntityType = 'COMPANY'

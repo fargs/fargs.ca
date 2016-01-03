@@ -151,16 +151,18 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Services(string physicianId)
+        public ActionResult Services(string physicianId, short companyId, short addressId)
         {
             var selected = db.Physicians.Single(c => c.Id == physicianId);
 
-            var list = db.ServiceCatalogues
-                .Where(c => c.PhysicianId == physicianId)
+            var locationId = db.Locations.Single(c => c.Id == addressId).LocationId;
+
+            var list = db.GetServiceCatalogueForCompany(physicianId, companyId)
+                .Where(c => c.ServiceCatalogueId != null && c.LocationId == locationId)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.ServiceName,
-                    Value = c.ServiceId.ToString()
+                    Value = c.ServiceCatalogueId.ToString()
                 })
                 .Distinct().ToList();
 

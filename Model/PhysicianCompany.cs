@@ -20,8 +20,14 @@ namespace Model
         public string LogoCssClass { get; set; }
         public Nullable<int> ParentId { get; set; }
         public string ParentCompanyName { get; set; }
-        public byte RelationshipStatusId { get; set; }
+        public Nullable<byte> RelationshipStatusId { get; set; }
         public string RelationshipStatusName { get; set; }
         public string PhysicianDisplayName { get; set; }
+        public Nullable<short> Id { get; set; }
+        public Nullable<short> LookupId { get; set; }
+        public string Text { get; set; }
+        public Nullable<short> Value { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public string ModifiedUser { get; set; }
     }
 }

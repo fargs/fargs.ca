@@ -8,8 +8,8 @@
     [Title]              NVARCHAR (256)   NULL,
     [Body]               NVARCHAR (MAX)   NULL,
     [AddressId]          INT              NULL,
-    [RequestedDate]      DATETIME         NOT NULL,
-    [RequestedBy]        UNIQUEIDENTIFIER NOT NULL,
+    [RequestedDate]      DATETIME         NULL,
+    [RequestedBy]        UNIQUEIDENTIFIER NULL,
     [CancelledDate]      DATETIME         NULL,
     [StatusId]           TINYINT          CONSTRAINT [DF_ServiceRequest_StatusId] DEFAULT ((10)) NULL,
     [AvailableSlotId]    SMALLINT         NULL,
@@ -27,6 +27,8 @@
     [ModifiedUser]       NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

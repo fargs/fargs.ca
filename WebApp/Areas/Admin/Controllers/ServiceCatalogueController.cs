@@ -14,7 +14,7 @@ namespace WebApp.Areas.Admin.Controllers
         OrvosiEntities db = new OrvosiEntities();
         
         // GET: Admin/ServiceCatalogue
-        public ActionResult Index(string physicianId)
+        public ActionResult Index(string physicianId, short? companyId)
         {
             var vm = new IndexViewModel();
 
@@ -28,13 +28,21 @@ namespace WebApp.Areas.Admin.Controllers
                 .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician) // Canada
                 .ToList();
 
-            vm.LocationAreas = db.LocationAreas.ToList();
+            vm.LocationAreas = db.LocationAreas.OrderBy(c => c.ItemText).ToList();
 
-            vm.ServiceCatalogues = db.GetServiceCatalogue(physicianId).OrderBy(c => c.LocationName).ToList();
+            if (companyId.HasValue)
+            {
+                vm.Company = db.Companies.Single(c => c.Id == companyId);
+                vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(physicianId, companyId).OrderBy(c => c.LocationName).ToList();
+            }
+            else
+            {
+                vm.ServiceCatalogues = db.GetServiceCatalogue(physicianId).OrderBy(c => c.LocationName).ToList();
+            }
 
             return View(vm);
         }
-
+        
         protected override void Dispose(bool disposing)
         {
             if (disposing)

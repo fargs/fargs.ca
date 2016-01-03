@@ -223,6 +223,7 @@
     <Build Include="API\Stored Procedures\Location_Delete.sql" />
     <Build Include="API\Stored Procedures\GetServiceCatalogueMatrix.sql" />
     <Build Include="API\Stored Procedures\GetServiceCatalogue.sql" />
+    <Build Include="API\Stored Procedures\GetServiceCatalogueForCompany.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

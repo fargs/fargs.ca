@@ -4,6 +4,8 @@
 
 
 
+
+
 CREATE VIEW [API].[PhysicianCompany]
 AS
 WITH FullList
@@ -17,6 +19,8 @@ AS (
 		,PhysicianDisplayName = p.DisplayName
 	FROM API.[Physician] p, API.Company c 
 )
+, Companies
+AS (
 SELECT 
 	  t.PhysicianId
 	 ,t.PhysicianDisplayName
@@ -25,8 +29,16 @@ SELECT
 	 ,t.LogoCssClass
 	 ,t.ParentId
 	 ,t.ParentCompanyName
-	 ,RelationshipStatusId = ISNULL(pc.RelationshipStatusId, 1)
-	 ,RelationshipStatusName = li.[Text]
+	 ,RelationshipStatusId = CONVERT(tinyint, CASE WHEN pc.RelationshipStatusId IS NULL AND parent.RelationshipStatusId IS NULL THEN 1
+			WHEN pc.RelationshipStatusId IS NULL AND parent.RelationshipStatusId IS NOT NULL THEN parent.RelationshipStatusId
+			WHEN pc.RelationshipStatusId IS NOT NULL THEN pc.RelationshipStatusId
+			ELSE 1 
+			END)
 FROM FullList t
 LEFT JOIN dbo.PhysicianCompany pc ON t.CompanyId = pc.CompanyId AND t.PhysicianId = pc.PhysicianId
-LEFT JOIN dbo.LookupItem li ON ISNULL(pc.RelationshipStatusId, 1) = li.Id
+LEFT JOIN dbo.PhysicianCompany parent ON t.ParentId = parent.CompanyId AND t.PhysicianId = parent.PhysicianId
+)
+SELECT *
+	,RelationshipStatusName = li.[Text]
+FROM Companies pc
+LEFT JOIN dbo.LookupItem li ON pc.RelationshipStatusId = li.Id

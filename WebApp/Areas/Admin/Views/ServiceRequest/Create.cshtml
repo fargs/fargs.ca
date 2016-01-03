@@ -290,13 +290,15 @@
                 loadLocations();
             });
 
-            physician.change(function (e) {
+            location.change(function (e) {
                 e.preventDefault();
                 // load the physicians
                 $.post(
                     '@Url.Content("~/admin/servicerequest/services")',// + '?companyId=' + company.val() + '&physicianId=' + physician.val(),
                     {
-                        physicianId: physician.val()
+                        physicianId: physician.val(),
+                        companyId: company.val(),
+                        addressId: location.val()
                     },
                     function (data, status, e) {
                         service.children('option:not(:first)').remove();
@@ -309,7 +311,10 @@
                     },
                     'json'
                 );
+            });
 
+            physician.change(function (e) {
+                e.preventDefault();
                 loadLocations();
             });
 

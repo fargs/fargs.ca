@@ -22,8 +22,8 @@ namespace Model
         public string Title { get; set; }
         public string Body { get; set; }
         public Nullable<int> AddressId { get; set; }
-        public System.DateTime RequestedDate { get; set; }
-        public System.Guid RequestedBy { get; set; }
+        public Nullable<System.DateTime> RequestedDate { get; set; }
+        public Nullable<System.Guid> RequestedBy { get; set; }
         public Nullable<System.DateTime> CancelledDate { get; set; }
         public Nullable<byte> StatusId { get; set; }
         public Nullable<System.DateTime> DueDate { get; set; }

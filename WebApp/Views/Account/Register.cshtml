@@ -11,7 +11,6 @@
 <form method="post" action="~/Account/Register" role="form">
     @Html.AntiForgeryToken()
     <h4>Request an account</h4>
-    <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
         <label for="FirstName" class="control-label">First Name</label>

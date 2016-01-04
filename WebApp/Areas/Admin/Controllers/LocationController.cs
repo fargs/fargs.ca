@@ -12,7 +12,7 @@ using Model.Enums;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class LocationController : Controller
+    public class LocationController : BaseController
     {
         private OrvosiEntities db = new OrvosiEntities();
 

@@ -9,6 +9,7 @@ namespace Model.Enums
     {
         public const string Physician = "8359141f-e423-4e48-8925-4624ba86245a";
         public const string Company = "7b930663-b091-44ca-924c-d8b11a1ee7ea";
+        public const string IntakeAssistant = "9dd582a0-cf86-4fc0-8894-477266068c12";
     }
 
     public static class ActionStates
@@ -24,6 +25,7 @@ namespace Model.Enums
         public const byte Physician = 1;
         public const byte Company = 2;
         public const byte Staff = 3;
+        public const byte Admin = 4;
     }
 
     public static class ParentCompanies

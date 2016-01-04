@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class ServiceRequestController : Controller
+    public class ServiceRequestController : BaseController
     {
         private OrvosiEntities db = new OrvosiEntities();
 

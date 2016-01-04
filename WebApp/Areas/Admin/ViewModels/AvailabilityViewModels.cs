@@ -8,7 +8,7 @@ namespace WebApp.Areas.Admin.ViewModels.AvailabilityViewModels
 {
     public class IndexViewModel
     {
-        public Physician Physician { get; set; }
+        public Model.Physician Physician { get; set; }
         public List<FullCalendarEvent> AvailableDays { get; set; }
     }
 

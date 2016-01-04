@@ -1,20 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity.Owin;
+using Model;
+using System.Linq;
+using Model.Enums;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Physician, Intake Coordinator, Admin")]
+    [Authorize]
     [RequireHttps]
     public class HomeController : Controller
     {
-        [AllowAnonymous]
+        OrvosiEntities db = new OrvosiEntities();
+
         public ActionResult Index()
         {
             if (this.Request.IsAuthenticated)
-                return RedirectToAction("Index", "Dashboard");
+            {
+                var identity = (User.Identity as ClaimsIdentity);
+                var identityId = identity.FindFirst(ClaimTypes.Sid).Value;
+                var user = db.Users.Single(u => u.Id == identityId);
+
+                if (user.RoleCategoryId == RoleCategory.Staff)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Staff" });
+                }
+                else if (user.RoleCategoryId == RoleCategory.Company)
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
+                else if (user.RoleCategoryId == RoleCategory.Physician)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Physicians" });
+                }
+                else if (user.RoleCategoryId == RoleCategory.Admin)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+            }
 
             return View();
         }

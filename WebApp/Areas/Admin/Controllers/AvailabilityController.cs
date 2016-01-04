@@ -8,7 +8,7 @@ using WebApp.Areas.Admin.ViewModels.AvailabilityViewModels;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class AvailabilityController : Controller
+    public class AvailabilityController : BaseController
     {
         OrvosiEntities db = new OrvosiEntities();
 

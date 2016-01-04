@@ -1,22 +1,24 @@
-﻿using System.Web.Mvc;
+﻿using Model.Enums;
+using System.Web.Mvc;
 
-namespace WebApp.Areas.Scheduling
+namespace WebApp.Areas.Physicians
 {
-    public class SchedulingAreaRegistration : AreaRegistration 
+    public class PhysiciansAreaRegistration : AreaRegistration 
     {
         public override string AreaName 
         {
             get 
             {
-                return "Scheduling";
+                return "Physicians";
             }
         }
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
+
             context.MapRoute(
-                "Scheduling_default",
-                "Scheduling/{controller}/{action}/{id}",
+                "Physicians_default",
+                "Physicians/{controller}/{action}/{id}",
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

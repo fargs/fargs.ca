@@ -270,17 +270,14 @@
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestViewModels.cs" />
-    <Compile Include="Areas\Assessments\AssessmentsAreaRegistration.cs" />
-    <Compile Include="Areas\Assessments\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Assessments\Models\Home\IndexViewModel.cs" />
     <Compile Include="Areas\Developers\Controllers\HomeController.cs" />
     <Compile Include="Areas\Developers\DevelopersAreaRegistration.cs" />
-    <Compile Include="Areas\Invoices\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Invoices\InvoicesAreaRegistration.cs" />
-    <Compile Include="Areas\Process\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Process\ProcessAreaRegistration.cs" />
-    <Compile Include="Areas\Scheduling\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Scheduling\SchedulingAreaRegistration.cs" />
+    <Compile Include="Areas\Physicians\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Physicians\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Physicians\PhysiciansAreaRegistration.cs" />
+    <Compile Include="Areas\Staff\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Staff\StaffAreaRegistration.cs" />
+    <Compile Include="Areas\Staff\Controllers\HomeController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\AvailabilityController.cs" />
@@ -483,8 +480,6 @@
     <Content Include="Content\bootstrap-custom\theme.less" />
     <Content Include="Content\bootstrap-custom\variables.less" />
     <Content Include="package.json" />
-    <Content Include="Areas\Process\Views\web.config" />
-    <Content Include="Areas\Process\Views\Home\Index.cshtml" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Role\AssignUsers.cshtml" />
@@ -495,12 +490,6 @@
     <Content Include="Areas\Developers\Views\Home\Index.cshtml" />
     <Content Include="Areas\Developers\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Developers\Views\Home\Design.cshtml" />
-    <Content Include="Areas\Assessments\Views\web.config" />
-    <Content Include="Areas\Assessments\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Scheduling\Views\web.config" />
-    <Content Include="Areas\Scheduling\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Invoices\Views\web.config" />
-    <Content Include="Areas\Invoices\Views\Home\Index.cshtml" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
@@ -695,6 +684,14 @@
     <Content Include="Areas\Admin\Views\ServiceCatalogue\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PhysicianLocationArea\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Availability\Index.cshtml" />
+    <Content Include="Areas\Physicians\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Staff\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Physicians\Views\web.config" />
+    <Content Include="Areas\Physicians\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Staff\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Staff\Views\web.config" />
+    <Content Include="Areas\Physicians\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Staff\Views\Shared\_Layout.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -813,14 +810,9 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
-    <Folder Include="Areas\Assessments\Views\Shared\" />
     <Folder Include="Areas\Developers\Models\" />
-    <Folder Include="Areas\Invoices\Models\" />
-    <Folder Include="Areas\Invoices\Views\Shared\" />
-    <Folder Include="Areas\Process\Models\" />
-    <Folder Include="Areas\Process\Views\Shared\" />
-    <Folder Include="Areas\Scheduling\Models\" />
-    <Folder Include="Areas\Scheduling\Views\Shared\" />
+    <Folder Include="Areas\Physicians\Views\Base\" />
+    <Folder Include="Areas\Staff\Views\Base\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Views\Assessment\" />
   </ItemGroup>

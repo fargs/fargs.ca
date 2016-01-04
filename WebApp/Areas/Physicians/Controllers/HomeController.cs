@@ -4,11 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebApp.Areas.Process.Controllers
+namespace WebApp.Areas.Physicians.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: Process/Home
+        // GET: Physician/Home
         public ActionResult Index()
         {
             return View();

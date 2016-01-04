@@ -9,7 +9,7 @@ using WebApp.Areas.Admin.ViewModels.ServiceCatalogueViewModels;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class ServiceCatalogueController : Controller
+    public class ServiceCatalogueController : BaseController
     {
         OrvosiEntities db = new OrvosiEntities();
         

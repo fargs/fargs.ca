@@ -13,7 +13,7 @@ using System.Data.Entity;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class PhysicianInsuranceController : Controller
+    public class PhysicianInsuranceController : BaseController
     {
         OrvosiEntities db = new OrvosiEntities();
 

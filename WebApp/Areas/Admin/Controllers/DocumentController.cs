@@ -11,7 +11,7 @@ using Model;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class DocumentController : Controller
+    public class DocumentController : BaseController
     {
         private OrvosiEntities db = new OrvosiEntities();
 

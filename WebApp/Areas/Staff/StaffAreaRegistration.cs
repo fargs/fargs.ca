@@ -1,22 +1,24 @@
-﻿using System.Web.Mvc;
+﻿using Model.Enums;
+using System.Web.Mvc;
 
-namespace WebApp.Areas.Invoices
+namespace WebApp.Areas.Staff
 {
-    public class InvoicesAreaRegistration : AreaRegistration 
+    public class StaffAreaRegistration : AreaRegistration 
     {
         public override string AreaName 
         {
             get 
             {
-                return "Invoices";
+                return "Staff";
             }
         }
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
+
             context.MapRoute(
-                "Invoices_default",
-                "Invoices/{controller}/{action}/{id}",
+                "Staff_default",
+                "Staff/{controller}/{action}/{id}",
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

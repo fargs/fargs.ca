@@ -1,1 +1,46 @@
-﻿<h1>Physician Dashboard</h1>
+﻿@using System.Globalization;
+@model WebApp.Areas.Physicians.ViewModels.Home.IndexViewModel
+
+<h1>Dashboard</h1>
+<h4>For @ViewBag.PhysicianName</h4>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">Today</h2>
+    </div>
+    <div class="panel-body">
+        @if (Model.Today.Count == 0)
+        {
+            <div class="text-muted">Nothing is required of you today.</div>
+        }
+        @foreach (var item in Model.Today)
+        {
+            <div>
+                <a class="lead" href="@Url.Content("~/Physicians/Home/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                <div><strong>Documents</strong> - Open <code>Dropbox (Orvosi)/@item.Title</code></div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">Upcoming</h2>
+        <span class="small"> in the Next @ViewBag.LookAhead days</span>
+    </div>
+    <div class="panel-body">
+        @if (Model.Upcoming.Count == 0)
+        {
+            <div class="text-muted">Nothing is planned in the next @ViewBag.LookAhead days.</div>
+        }
+        @foreach (var item in Model.Upcoming)
+        {
+            <div>
+                <a class="lead" href="@Url.Content("~/Physicians/Home/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                <div><strong>Documents</strong> - Open <code>Dropbox (Orvosi)/@item.Title</code></div>
+            </div>
+        }
+    </div>
+</div>

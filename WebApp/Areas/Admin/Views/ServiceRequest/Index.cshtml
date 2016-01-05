@@ -4,21 +4,22 @@
 @model List<Model.ServiceRequest>
 
 <h2>Service Requests</h2>
+
 <p>
-    @Html.ActionLink("Create New", "Create")
+    <a class="btn btn-success" href="~/Admin/ServiceRequest/Create"><i class="glyphicon glyphicon-plus"></i></a>
 </p>
 
-<ul class="nav nav-tabs">
+@*<ul class="nav nav-tabs">
     @Html.MenuLink("Unassigned", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Unassigned)
     @Html.MenuLink("Open", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Open)
     @Html.MenuLink("Closed", "Index", "ServiceRequest", "Admin", ServiceRequestStatus.Closed)
 </ul>
 <div class="margin-top: 20px">
     &nbsp;
-</div>
+</div>*@
 @foreach (var item in this.Model)
 {
-    <div id="UserTableRows" class="row border-left" style="border-left-color: aqua">
+    <div id="UserTableRows" class="row" style="border-left-color: aqua">
         <div class="col-md-12" >
             <nav class="pull-left">
                 <ul class="nav nav-pills nav-condensed">
@@ -52,7 +53,7 @@
                     <dt>Calendar Title</dt>
                     <dd>@item.CalendarEventTitle</dd>
                     <dt>Documents</dt>
-                    <dd><a href="@item.DocumentFolderLink">Open folder</a></dd>
+                    <dd><a href="@item.DocumentFolderLink" target="_blank">Open folder</a></dd>
                 </dl>
             </div>
             <div class="col-md-4">

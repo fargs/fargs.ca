@@ -224,6 +224,7 @@
     <Build Include="API\Stored Procedures\GetServiceCatalogueMatrix.sql" />
     <Build Include="API\Stored Procedures\GetServiceCatalogue.sql" />
     <Build Include="API\Stored Procedures\GetServiceCatalogueForCompany.sql" />
+    <Build Include="dbo\Functions\FormatDateTime.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

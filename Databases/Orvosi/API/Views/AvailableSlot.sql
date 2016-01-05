@@ -1,4 +1,5 @@
-﻿CREATE VIEW API.AvailableSlot
+﻿
+CREATE VIEW [API].[AvailableSlot]
 AS
 SELECT 
 	 a.Id
@@ -6,9 +7,9 @@ SELECT
 	,a.StartTime
 	,a.EndTime
 	,a.Duration
-	,a.ServiceRequestId
 	,a.ModifiedDate
 	,a.ModifiedUser
-	,Title = sr.ServiceName + ' - ' + sr.LocationName + ' - ' + sr.Title
+	,ServiceRequestId = sr.Id
+	,Title = CASE WHEN sr.Id IS NULL THEN 'Available' ELSE ISNULL(sr.ServiceName, '[Service Not Set]') + ' - ' + ISNULL(sr.CompanyName, '[Company Not Set]') + ' - ' + ISNULL(sr.LocationName, '[Location Not Set]') END
 FROM [dbo].[AvailableSlot] a
-LEFT JOIN [API].[ServiceRequest] sr ON a.ServiceRequestId = sr.Id
+LEFT JOIN [API].[ServiceRequest] sr ON sr.AvailableSlotId = a.Id

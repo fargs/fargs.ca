@@ -24,7 +24,7 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Dashboard", "Index", "Dashboard", new { area = "Staff" }, null)</li>
+                        <li>@Html.ActionLink("Dashboard", "Index", "Home", new { area = "Staff", staffId = ViewBag.UserId, lookAhead = 7 }, null)</li>
                     }
                 </ul>
                 @Html.Action("_LoginPartial", "Account", new { area = "" })

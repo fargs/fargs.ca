@@ -23,10 +23,13 @@
     [Price]              DECIMAL (18, 2)  NULL,
     [InvoiceId]          SMALLINT         NULL,
     [DocumentFolderLink] NVARCHAR (2000)  NULL,
+    [CompanyId]          SMALLINT         NULL,
     [ModifiedDate]       DATETIME         CONSTRAINT [DF_ServiceRequest_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]       NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

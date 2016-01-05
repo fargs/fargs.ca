@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         }
 
         // GET: ServiceRequest/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<ActionResult> Details(short? id)
         {
             if (id == null)
             {

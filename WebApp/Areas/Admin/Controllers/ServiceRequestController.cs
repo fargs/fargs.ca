@@ -19,6 +19,7 @@ namespace WebApp.Areas.Admin.Controllers
         {
             var list = await db.ServiceRequests
                 .ToListAsync();
+
             return View(list);
         }
 
@@ -71,6 +72,8 @@ namespace WebApp.Areas.Admin.Controllers
                     CompanyReferenceId = sr.CompanyReferenceId,
                     RequestedBy = sr.RequestedBy,
                     RequestedDate = sr.RequestedDate,
+                    DocumentFolderLink = sr.DocumentFolderLink,
+                    CompanyId = sr.CompanyId,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty // this should not be needed but edmx is making it non nullable
                 };

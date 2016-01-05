@@ -24,7 +24,7 @@ namespace WebApp.Controllers
 
                 if (user.RoleCategoryId == RoleCategory.Staff)
                 {
-                    return RedirectToAction("Index", "Home", new { area = "Staff" });
+                    return RedirectToAction("Index", "Home", new { area = "Staff", staffId = identityId, lookAhead = 7 });
                 }
                 else if (user.RoleCategoryId == RoleCategory.Company)
                 {
@@ -32,7 +32,7 @@ namespace WebApp.Controllers
                 }
                 else if (user.RoleCategoryId == RoleCategory.Physician)
                 {
-                    return RedirectToAction("Index", "Home", new { area = "Physicians" });
+                    return RedirectToAction("Index", "Home", new { area = "Physicians", physicianId = identityId, lookAhead = 7 });
                 }
                 else if (user.RoleCategoryId == RoleCategory.Admin)
                 {

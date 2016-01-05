@@ -72,16 +72,17 @@ warning 6002: The table/view 'Orvosi.API.AvailableSlot' does not have a primary 
             
             
             
+            
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="AvailableDayId" Type="smallint" Nullable="false" />
           <Property Name="StartTime" Type="time" Precision="7" Nullable="false" />
           <Property Name="EndTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
-          <Property Name="ServiceRequestId" Type="smallint" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="518" />
+          <Property Name="ServiceRequestId" Type="int" />
+          <Property Name="Title" Type="nvarchar" MaxLength="390" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -520,12 +521,15 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="DocumentReviewerId" Type="uniqueidentifier" />
           <Property Name="ServiceRequestPrice" Type="decimal" Precision="18" Scale="2" />
           <Property Name="DocumentFolderLink" Type="nvarchar" MaxLength="2000" />
+          <Property Name="CompanyId" Type="smallint" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ServiceId" Type="smallint" />
           <Property Name="ServiceName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ServiceCode" Type="nvarchar" MaxLength="10" />
           <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
+          <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
           <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
@@ -554,7 +558,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="StartTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
           <Property Name="EndTime" Type="time" Precision="7" />
-          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="285" />
+          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="284" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -863,6 +867,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="EndTime" Type="time" Mode="In" />
           <Parameter Name="DueDate" Type="date" Mode="In" />
           <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="ServiceRequest_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -888,6 +894,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="EndTime" Type="time" Mode="In" />
           <Parameter Name="DueDate" Type="date" Mode="In" />
           <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
+          <Parameter Name="CompanyId" Type="smallint" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -974,9 +982,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [AvailableSlot].[StartTime] AS [StartTime], 
     [AvailableSlot].[EndTime] AS [EndTime], 
     [AvailableSlot].[Duration] AS [Duration], 
-    [AvailableSlot].[ServiceRequestId] AS [ServiceRequestId], 
     [AvailableSlot].[ModifiedDate] AS [ModifiedDate], 
     [AvailableSlot].[ModifiedUser] AS [ModifiedUser], 
+    [AvailableSlot].[ServiceRequestId] AS [ServiceRequestId], 
     [AvailableSlot].[Title] AS [Title]
     FROM [API].[AvailableSlot] AS [AvailableSlot]</DefiningQuery>
           </EntitySet>
@@ -1295,12 +1303,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[DocumentReviewerId] AS [DocumentReviewerId], 
     [ServiceRequest].[ServiceRequestPrice] AS [ServiceRequestPrice], 
     [ServiceRequest].[DocumentFolderLink] AS [DocumentFolderLink], 
+    [ServiceRequest].[CompanyId] AS [CompanyId], 
     [ServiceRequest].[ModifiedDate] AS [ModifiedDate], 
     [ServiceRequest].[ModifiedUser] AS [ModifiedUser], 
+    [ServiceRequest].[ServiceId] AS [ServiceId], 
     [ServiceRequest].[ServiceName] AS [ServiceName], 
     [ServiceRequest].[ServiceCode] AS [ServiceCode], 
     [ServiceRequest].[ServiceCategoryName] AS [ServiceCategoryName], 
     [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName], 
+    [ServiceRequest].[PhysicianId] AS [PhysicianId], 
     [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
     [ServiceRequest].[CompanyName] AS [CompanyName], 
     [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName], 
@@ -1537,6 +1548,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="EndTime" Mode="In" Type="Time" />
             <Parameter Name="DueDate" Mode="In" Type="DateTime" />
             <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_Update">
@@ -1562,6 +1575,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="EndTime" Mode="In" Type="Time" />
             <Parameter Name="DueDate" Mode="In" Type="DateTime" />
             <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
+            <Parameter Name="CompanyId" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="ServiceRequests" EntityType="OrvosiModel.ServiceRequest" />
@@ -1998,9 +2013,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="DocumentReviewerName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="AvailableSlotId" Type="Int16" />
           <Property Name="Duration" Type="Int16" />
-          <Property Name="CalendarEventTitle" Type="String" MaxLength="285" FixedLength="false" Unicode="true" />
+          <Property Name="CalendarEventTitle" Type="String" MaxLength="284" FixedLength="false" Unicode="true" />
           <Property Name="DocumentFolderLink" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="ServiceCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceId" Type="Int16" />
+          <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CompanyId" Type="Int16" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -2320,7 +2338,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ServiceRequestId" Type="Int16" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Title" Type="String" MaxLength="518" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="390" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="AvailableDay" Relationship="OrvosiModel.AvailableDayAvailableSlot" FromRole="AvailableSlot" ToRole="AvailableDay" />
         </EntityType>
         <Association Name="AvailableDayAvailableSlot">
@@ -2660,6 +2678,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ServiceCode" ColumnName="ServiceCode" />
                 <ScalarProperty Name="DocumentFolderLink" ColumnName="DocumentFolderLink" />
                 <ScalarProperty Name="CalendarEventTitle" ColumnName="CalendarEventTitle" />
@@ -2720,6 +2741,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <ModificationFunctionMapping>
                 <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequest_Update">
+                  <ScalarProperty Name="CompanyId" ParameterName="CompanyId" Version="Current" />
+                  <ScalarProperty Name="DocumentFolderLink" ParameterName="DocumentFolderLink" Version="Current" />
                   <ScalarProperty Name="AddressId" ParameterName="AddressId" Version="Current" />
                   <ScalarProperty Name="AvailableSlotId" ParameterName="AvailableSlotId" Version="Current" />
                   <ScalarProperty Name="ServiceRequestPrice" ParameterName="Price" Version="Current" />
@@ -2748,6 +2771,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="Id" ParameterName="Id" />
                 </DeleteFunction>
                 <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequest_Insert">
+                  <ScalarProperty Name="CompanyId" ParameterName="CompanyId" />
+                  <ScalarProperty Name="DocumentFolderLink" ParameterName="DocumentFolderLink" />
                   <ScalarProperty Name="AddressId" ParameterName="AddressId" />
                   <ScalarProperty Name="AvailableSlotId" ParameterName="AvailableSlotId" />
                   <ScalarProperty Name="ServiceRequestPrice" ParameterName="Price" />

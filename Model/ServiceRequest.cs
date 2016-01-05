@@ -69,5 +69,8 @@ namespace Model
         public string CalendarEventTitle { get; set; }
         public string DocumentFolderLink { get; set; }
         public string ServiceCode { get; set; }
+        public Nullable<short> ServiceId { get; set; }
+        public string PhysicianId { get; set; }
+        public Nullable<short> CompanyId { get; set; }
     }
 }

@@ -275,9 +275,11 @@
     <Compile Include="Areas\Physicians\Controllers\BaseController.cs" />
     <Compile Include="Areas\Physicians\Controllers\HomeController.cs" />
     <Compile Include="Areas\Physicians\PhysiciansAreaRegistration.cs" />
+    <Compile Include="Areas\Physicians\ViewModels\HomeViewModels.cs" />
     <Compile Include="Areas\Staff\Controllers\BaseController.cs" />
     <Compile Include="Areas\Staff\StaffAreaRegistration.cs" />
     <Compile Include="Areas\Staff\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Staff\ViewModels\HomeViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\AvailabilityController.cs" />
@@ -361,6 +363,7 @@
     <Content Include="Content\images\Company Branding\logo-soma-md.png" />
     <Content Include="Content\images\DIME.png" />
     <Content Include="Content\images\DIME_lg.png" />
+    <Content Include="Content\images\GreenCheckMark.png" />
     <Content Include="Content\images\IMA Logo.png" />
     <Content Include="Content\images\jfennell.png" />
     <Content Include="Content\images\logo_md.png" />
@@ -692,6 +695,8 @@
     <Content Include="Areas\Staff\Views\web.config" />
     <Content Include="Areas\Physicians\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Staff\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Physicians\Views\Home\Details.cshtml" />
+    <Content Include="Areas\Staff\Views\Home\Details.cshtml" />
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -805,6 +810,9 @@
     <Content Include="Views\Dashboard\_ScheduleOnceForm_js.cshtml" />
     <Content Include="Views\Dashboard\_SpecialRequestForm_js.cshtml" />
     <Content Include="Views\Home\TestHelper.cshtml" />
+    <Content Include="Views\ServiceRequest\Details.cshtml" />
+    <Content Include="Views\ServiceRequest\_Layout.cshtml" />
+    <Content Include="Views\ServiceRequest\_ViewStart.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,9 @@
 ﻿
+
+
+
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -9,7 +14,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,sr.[Title]
+	,[Title] = dbo.FormatDateTime(ad.[Day], 'yyyyMMdd') + '-' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + '-' + s.Code + '-' + SUBSTRING(p.Email, 0, CHARINDEX('@', p.Email, 0)) + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -23,12 +28,15 @@ SELECT
 	,sr.DocumentReviewerId
 	,ServiceRequestPrice = sr.[Price]
 	,sr.DocumentFolderLink
+	,CompanyId = ISNULL(sr.CompanyId, sc.CompanyId)
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
+	,sc.ServiceId
 	,ServiceName = s.Name
 	,ServiceCode = s.Code
 	,s.ServiceCategoryName
 	,s.ServicePortfolioName
+	,sc.PhysicianId
 	,PhysicianDisplayName = p.DisplayName
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
@@ -57,12 +65,12 @@ SELECT
 	,sl.StartTime
 	,sl.Duration
 	,sl.EndTime
-	,CalendarEventTitle = LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4)  + '-' + s.Code + '-' + sr.ClaimantName + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
+	,CalendarEventTitle = s.Code + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
 FROM dbo.ServiceRequest sr
 LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
 INNER JOIN API.[Service] s ON s.Id = sc.ServiceId
 INNER JOIN API.Physician p ON sc.PhysicianId = p.Id
-LEFT JOIN API.Company c ON sc.CompanyId = c.Id
+LEFT JOIN API.Company c ON ISNULL(sr.CompanyId, sc.CompanyId) = c.Id
 LEFT JOIN dbo.[AspNetUsers] cc ON cc.Id = sr.CaseCoordinatorId
 LEFT JOIN dbo.[AspNetUsers] ia ON ia.Id = sr.IntakeAssistantId
 LEFT JOIN dbo.[AspNetUsers] dr ON dr.Id = sr.DocumentReviewerId

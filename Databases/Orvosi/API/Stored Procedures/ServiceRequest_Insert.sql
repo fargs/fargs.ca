@@ -20,6 +20,8 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@EndTime time
 	,@DueDate date
 	,@Price decimal(18,2)
+	,@DocumentFolderLink nvarchar(2000)
+	,@CompanyId smallint
 	,@ModifiedUser nvarchar(100)
 AS
 
@@ -47,6 +49,8 @@ INSERT INTO dbo.[ServiceRequest]
 	,[EndTime]
 	,[DueDate]
 	,[Price]
+	,[DocumentFolderLink]
+	,[CompanyId]
 	,[ModifiedUser]
 )
 VALUES 
@@ -70,6 +74,8 @@ VALUES
 	,@EndTime
 	,@DueDate
 	,@Price
+	,@DocumentFolderLink
+	,@CompanyId
 	,@ModifiedUser
 )
 

@@ -232,4 +232,27 @@ textarea {
   padding-left: 140px; /* Equal to width of new image */
 }
 
+.border-left-warning {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: #f0ad4e;
+}
+
+.border-left-success {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: #5cb85c;
+}
+
+.border-left-danger {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: #d9534f;
+}
+
+.border-left-info {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: #5bc0de;
+}
 

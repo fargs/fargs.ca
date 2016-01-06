@@ -507,7 +507,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="ClaimantName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServiceCatalogueId" Type="smallint" />
           <Property Name="HarvestProjectId" Type="bigint" />
-          <Property Name="Title" Type="nvarchar" MaxLength="256" />
+          <Property Name="Title" Type="nvarchar" MaxLength="668" />
           <Property Name="Body" Type="nvarchar(max)" />
           <Property Name="AddressId" Type="int" />
           <Property Name="RequestedDate" Type="datetime" />
@@ -520,8 +520,10 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="IntakeAssistantId" Type="uniqueidentifier" />
           <Property Name="DocumentReviewerId" Type="uniqueidentifier" />
           <Property Name="ServiceRequestPrice" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="2000" />
           <Property Name="DocumentFolderLink" Type="nvarchar" MaxLength="2000" />
           <Property Name="CompanyId" Type="smallint" />
+          <Property Name="IsNoShow" Type="bit" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="ServiceId" Type="smallint" />
@@ -558,7 +560,40 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="StartTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
           <Property Name="EndTime" Type="time" Precision="7" />
-          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="284" />
+          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="150" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ServiceRequestTask">
+          <Key>
+            <PropertyRef Name="Id" />
+            
+            
+            
+            
+            
+            
+            
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ServiceRequestId" Type="int" Nullable="false" />
+          <Property Name="TaskId" Type="smallint" Nullable="false" />
+          <Property Name="TaskName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ResponsibleRoleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ResponsibleRoleName" Type="nvarchar" MaxLength="128" />
+          <Property Name="Sequence" Type="smallint" />
+          <Property Name="AssignedTo" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsBillable" Type="bit" Nullable="false" />
+          <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EstimatedHours" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ActualHours" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CompletedDate" Type="datetime" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="2000" />
+          <Property Name="InvoiceItemId" Type="smallint" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="AssignedToDisplayName" Type="nvarchar" MaxLength="210" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -867,8 +902,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="EndTime" Type="time" Mode="In" />
           <Parameter Name="DueDate" Type="date" Mode="In" />
           <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="Notes" Type="nvarchar" Mode="In" />
           <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="IsNoShow" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="ServiceRequest_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -894,8 +931,48 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="EndTime" Type="time" Mode="In" />
           <Parameter Name="DueDate" Type="date" Mode="In" />
           <Parameter Name="Price" Type="decimal" Mode="In" />
+          <Parameter Name="Notes" Type="nvarchar" Mode="In" />
           <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="IsNoShow" Type="bit" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequestTask_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequestTask_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="ServiceRequestId" Type="int" Mode="In" />
+          <Parameter Name="TaskId" Type="smallint" Mode="In" />
+          <Parameter Name="TaskName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ResponsibleRoleId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ResponsibleRoleName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Sequence" Type="smallint" Mode="In" />
+          <Parameter Name="AssignedTo" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsBillable" Type="bit" Mode="In" />
+          <Parameter Name="HourlyRate" Type="decimal" Mode="In" />
+          <Parameter Name="EstimatedHours" Type="decimal" Mode="In" />
+          <Parameter Name="ActualHours" Type="decimal" Mode="In" />
+          <Parameter Name="CompletedDate" Type="datetime" Mode="In" />
+          <Parameter Name="Notes" Type="nvarchar" Mode="In" />
+          <Parameter Name="InvoiceItemId" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequestTask_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="ServiceRequestId" Type="int" Mode="In" />
+          <Parameter Name="TaskId" Type="smallint" Mode="In" />
+          <Parameter Name="TaskName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ResponsibleRoleId" Type="nvarchar" Mode="In" />
+          <Parameter Name="ResponsibleRoleName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Sequence" Type="smallint" Mode="In" />
+          <Parameter Name="AssignedTo" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsBillable" Type="bit" Mode="In" />
+          <Parameter Name="HourlyRate" Type="decimal" Mode="In" />
+          <Parameter Name="EstimatedHours" Type="decimal" Mode="In" />
+          <Parameter Name="ActualHours" Type="decimal" Mode="In" />
+          <Parameter Name="CompletedDate" Type="datetime" Mode="In" />
+          <Parameter Name="Notes" Type="nvarchar" Mode="In" />
+          <Parameter Name="InvoiceItemId" Type="smallint" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -1302,8 +1379,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[IntakeAssistantId] AS [IntakeAssistantId], 
     [ServiceRequest].[DocumentReviewerId] AS [DocumentReviewerId], 
     [ServiceRequest].[ServiceRequestPrice] AS [ServiceRequestPrice], 
+    [ServiceRequest].[Notes] AS [Notes], 
     [ServiceRequest].[DocumentFolderLink] AS [DocumentFolderLink], 
     [ServiceRequest].[CompanyId] AS [CompanyId], 
+    [ServiceRequest].[IsNoShow] AS [IsNoShow], 
     [ServiceRequest].[ModifiedDate] AS [ModifiedDate], 
     [ServiceRequest].[ModifiedUser] AS [ModifiedUser], 
     [ServiceRequest].[ServiceId] AS [ServiceId], 
@@ -1342,6 +1421,29 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[EndTime] AS [EndTime], 
     [ServiceRequest].[CalendarEventTitle] AS [CalendarEventTitle]
     FROM [API].[ServiceRequest] AS [ServiceRequest]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ServiceRequestTask" EntityType="Self.ServiceRequestTask" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [ServiceRequestTask].[Id] AS [Id], 
+    [ServiceRequestTask].[ObjectGuid] AS [ObjectGuid], 
+    [ServiceRequestTask].[ServiceRequestId] AS [ServiceRequestId], 
+    [ServiceRequestTask].[TaskId] AS [TaskId], 
+    [ServiceRequestTask].[TaskName] AS [TaskName], 
+    [ServiceRequestTask].[ResponsibleRoleId] AS [ResponsibleRoleId], 
+    [ServiceRequestTask].[ResponsibleRoleName] AS [ResponsibleRoleName], 
+    [ServiceRequestTask].[Sequence] AS [Sequence], 
+    [ServiceRequestTask].[AssignedTo] AS [AssignedTo], 
+    [ServiceRequestTask].[IsBillable] AS [IsBillable], 
+    [ServiceRequestTask].[HourlyRate] AS [HourlyRate], 
+    [ServiceRequestTask].[EstimatedHours] AS [EstimatedHours], 
+    [ServiceRequestTask].[ActualHours] AS [ActualHours], 
+    [ServiceRequestTask].[CompletedDate] AS [CompletedDate], 
+    [ServiceRequestTask].[Notes] AS [Notes], 
+    [ServiceRequestTask].[InvoiceItemId] AS [InvoiceItemId], 
+    [ServiceRequestTask].[ModifiedDate] AS [ModifiedDate], 
+    [ServiceRequestTask].[ModifiedUser] AS [ModifiedUser], 
+    [ServiceRequestTask].[AssignedToDisplayName] AS [AssignedToDisplayName]
+    FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -1548,8 +1650,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="EndTime" Mode="In" Type="Time" />
             <Parameter Name="DueDate" Mode="In" Type="DateTime" />
             <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="Notes" Mode="In" Type="String" />
             <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="IsNoShow" Mode="In" Type="Boolean" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_Update">
@@ -1575,8 +1679,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="EndTime" Mode="In" Type="Time" />
             <Parameter Name="DueDate" Mode="In" Type="DateTime" />
             <Parameter Name="Price" Mode="In" Type="Decimal" />
+            <Parameter Name="Notes" Mode="In" Type="String" />
             <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="IsNoShow" Mode="In" Type="Boolean" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="ServiceRequests" EntityType="OrvosiModel.ServiceRequest" />
@@ -1725,6 +1831,45 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImport Name="GetServiceCatalogueForCompany" ReturnType="Collection(OrvosiModel.GetServiceCatalogue_Result)">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+          </FunctionImport>
+          <EntitySet Name="ServiceRequestTasks" EntityType="OrvosiModel.ServiceRequestTask" />
+          <FunctionImport Name="ServiceRequestTask_Delete">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ServiceRequestTask_Insert" ReturnType="Collection(Int32)">
+            <Parameter Name="ServiceRequestId" Mode="In" Type="Int32" />
+            <Parameter Name="TaskId" Mode="In" Type="Int16" />
+            <Parameter Name="TaskName" Mode="In" Type="String" />
+            <Parameter Name="ResponsibleRoleId" Mode="In" Type="String" />
+            <Parameter Name="ResponsibleRoleName" Mode="In" Type="String" />
+            <Parameter Name="Sequence" Mode="In" Type="Int16" />
+            <Parameter Name="AssignedTo" Mode="In" Type="String" />
+            <Parameter Name="IsBillable" Mode="In" Type="Boolean" />
+            <Parameter Name="HourlyRate" Mode="In" Type="Decimal" />
+            <Parameter Name="EstimatedHours" Mode="In" Type="Decimal" />
+            <Parameter Name="ActualHours" Mode="In" Type="Decimal" />
+            <Parameter Name="CompletedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Notes" Mode="In" Type="String" />
+            <Parameter Name="InvoiceItemId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="ServiceRequestTask_Update">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="ServiceRequestId" Mode="In" Type="Int32" />
+            <Parameter Name="TaskId" Mode="In" Type="Int16" />
+            <Parameter Name="TaskName" Mode="In" Type="String" />
+            <Parameter Name="ResponsibleRoleId" Mode="In" Type="String" />
+            <Parameter Name="ResponsibleRoleName" Mode="In" Type="String" />
+            <Parameter Name="Sequence" Mode="In" Type="Int16" />
+            <Parameter Name="AssignedTo" Mode="In" Type="String" />
+            <Parameter Name="IsBillable" Mode="In" Type="Boolean" />
+            <Parameter Name="HourlyRate" Mode="In" Type="Decimal" />
+            <Parameter Name="EstimatedHours" Mode="In" Type="Decimal" />
+            <Parameter Name="ActualHours" Mode="In" Type="Decimal" />
+            <Parameter Name="CompletedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="Notes" Mode="In" Type="String" />
+            <Parameter Name="InvoiceItemId" Mode="In" Type="Int16" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
@@ -1966,7 +2111,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CompanyReferenceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ServiceCatalogueId" Type="Int16" />
           <Property Name="HarvestProjectId" Type="Int64" />
-          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="668" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="AddressId" Type="Int32" />
           <Property Name="RequestedDate" Type="DateTime" Precision="3" />
@@ -2013,12 +2158,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="DocumentReviewerName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="AvailableSlotId" Type="Int16" />
           <Property Name="Duration" Type="Int16" />
-          <Property Name="CalendarEventTitle" Type="String" MaxLength="284" FixedLength="false" Unicode="true" />
+          <Property Name="CalendarEventTitle" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="DocumentFolderLink" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="ServiceCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ServiceId" Type="Int16" />
           <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="CompanyId" Type="Int16" />
+          <Property Name="Notes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="IsNoShow" Type="Boolean" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -2353,6 +2500,30 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ServiceRequestTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
+          <Property Name="ServiceRequestId" Type="Int32" Nullable="false" />
+          <Property Name="TaskId" Type="Int16" Nullable="false" />
+          <Property Name="TaskName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ResponsibleRoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ResponsibleRoleName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Sequence" Type="Int16" />
+          <Property Name="AssignedTo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsBillable" Type="Boolean" Nullable="false" />
+          <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EstimatedHours" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ActualHours" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CompletedDate" Type="DateTime" Precision="3" />
+          <Property Name="Notes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="InvoiceItemId" Type="Int16" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="AssignedToDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2678,6 +2849,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="IsNoShow" ColumnName="IsNoShow" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
@@ -2741,6 +2914,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <ModificationFunctionMapping>
                 <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequest_Update">
+                  <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" Version="Current" />
+                  <ScalarProperty Name="Notes" ParameterName="Notes" Version="Current" />
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" Version="Current" />
                   <ScalarProperty Name="DocumentFolderLink" ParameterName="DocumentFolderLink" Version="Current" />
                   <ScalarProperty Name="AddressId" ParameterName="AddressId" Version="Current" />
@@ -2771,6 +2946,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="Id" ParameterName="Id" />
                 </DeleteFunction>
                 <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequest_Insert">
+                  <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" />
+                  <ScalarProperty Name="Notes" ParameterName="Notes" />
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" />
                   <ScalarProperty Name="DocumentFolderLink" ParameterName="DocumentFolderLink" />
                   <ScalarProperty Name="AddressId" ParameterName="AddressId" />
@@ -3289,6 +3466,76 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="ServiceRequestTasks">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
+              <MappingFragment StoreEntitySet="ServiceRequestTask">
+                <ScalarProperty Name="AssignedToDisplayName" ColumnName="AssignedToDisplayName" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="InvoiceItemId" ColumnName="InvoiceItemId" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+                <ScalarProperty Name="ActualHours" ColumnName="ActualHours" />
+                <ScalarProperty Name="EstimatedHours" ColumnName="EstimatedHours" />
+                <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
+                <ScalarProperty Name="IsBillable" ColumnName="IsBillable" />
+                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="ResponsibleRoleName" ColumnName="ResponsibleRoleName" />
+                <ScalarProperty Name="ResponsibleRoleId" ColumnName="ResponsibleRoleId" />
+                <ScalarProperty Name="TaskName" ColumnName="TaskName" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequestTask_Insert">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="InvoiceItemId" ParameterName="InvoiceItemId" />
+                  <ScalarProperty Name="Notes" ParameterName="Notes" />
+                  <ScalarProperty Name="CompletedDate" ParameterName="CompletedDate" />
+                  <ScalarProperty Name="ActualHours" ParameterName="ActualHours" />
+                  <ScalarProperty Name="EstimatedHours" ParameterName="EstimatedHours" />
+                  <ScalarProperty Name="HourlyRate" ParameterName="HourlyRate" />
+                  <ScalarProperty Name="IsBillable" ParameterName="IsBillable" />
+                  <ScalarProperty Name="AssignedTo" ParameterName="AssignedTo" />
+                  <ScalarProperty Name="Sequence" ParameterName="Sequence" />
+                  <ScalarProperty Name="ResponsibleRoleName" ParameterName="ResponsibleRoleName" />
+                  <ScalarProperty Name="ResponsibleRoleId" ParameterName="ResponsibleRoleId" />
+                  <ScalarProperty Name="TaskName" ParameterName="TaskName" />
+                  <ScalarProperty Name="TaskId" ParameterName="TaskId" />
+                  <ScalarProperty Name="ServiceRequestId" ParameterName="ServiceRequestId" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequestTask_Update">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
+                  <ScalarProperty Name="InvoiceItemId" ParameterName="InvoiceItemId" Version="Current" />
+                  <ScalarProperty Name="Notes" ParameterName="Notes" Version="Current" />
+                  <ScalarProperty Name="CompletedDate" ParameterName="CompletedDate" Version="Current" />
+                  <ScalarProperty Name="ActualHours" ParameterName="ActualHours" Version="Current" />
+                  <ScalarProperty Name="EstimatedHours" ParameterName="EstimatedHours" Version="Current" />
+                  <ScalarProperty Name="HourlyRate" ParameterName="HourlyRate" Version="Current" />
+                  <ScalarProperty Name="IsBillable" ParameterName="IsBillable" Version="Current" />
+                  <ScalarProperty Name="AssignedTo" ParameterName="AssignedTo" Version="Current" />
+                  <ScalarProperty Name="Sequence" ParameterName="Sequence" Version="Current" />
+                  <ScalarProperty Name="ResponsibleRoleName" ParameterName="ResponsibleRoleName" Version="Current" />
+                  <ScalarProperty Name="ResponsibleRoleId" ParameterName="ResponsibleRoleId" Version="Current" />
+                  <ScalarProperty Name="TaskName" ParameterName="TaskName" Version="Current" />
+                  <ScalarProperty Name="TaskId" ParameterName="TaskId" Version="Current" />
+                  <ScalarProperty Name="ServiceRequestId" ParameterName="ServiceRequestId" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.ServiceRequestTask_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ServiceRequestTask_Delete" FunctionName="OrvosiModel.Store.ServiceRequestTask_Delete" />
+          <FunctionImportMapping FunctionImportName="ServiceRequestTask_Insert" FunctionName="OrvosiModel.Store.ServiceRequestTask_Insert" />
+          <FunctionImportMapping FunctionImportName="ServiceRequestTask_Update" FunctionName="OrvosiModel.Store.ServiceRequestTask_Update" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

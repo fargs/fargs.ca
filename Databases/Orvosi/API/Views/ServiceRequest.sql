@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -27,8 +28,10 @@ SELECT
 	,sr.IntakeAssistantId
 	,sr.DocumentReviewerId
 	,ServiceRequestPrice = sr.[Price]
+	,sr.Notes
 	,sr.DocumentFolderLink
 	,CompanyId = ISNULL(sr.CompanyId, sc.CompanyId)
+	,sr.IsNoShow
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
 	,sc.ServiceId

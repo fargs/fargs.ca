@@ -72,5 +72,7 @@ namespace Model
         public Nullable<short> ServiceId { get; set; }
         public string PhysicianId { get; set; }
         public Nullable<short> CompanyId { get; set; }
+        public string Notes { get; set; }
+        public Nullable<bool> IsNoShow { get; set; }
     }
 }

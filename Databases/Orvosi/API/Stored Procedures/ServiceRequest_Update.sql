@@ -22,8 +22,10 @@ CREATE PROCEDURE [API].[ServiceRequest_Update]
 	,@EndTime time
 	,@DueDate date
 	,@Price decimal(18,2)
+	,@Notes nvarchar(128)
 	,@DocumentFolderLink nvarchar(2000)
 	,@CompanyId smallint
+	,@IsNoShow bit
 	,@ModifiedUser nvarchar(100)
 AS
 
@@ -53,6 +55,7 @@ SET
 	,[EndTime] = @EndTime
 	,[DueDate] = @DueDate
 	,[Price] = @Price
+	,[Notes] = @Notes
 	,[DocumentFolderLink] = @DocumentFolderLink
 	,[CompanyId] = @CompanyId
 	,[ModifiedDate] = @Now

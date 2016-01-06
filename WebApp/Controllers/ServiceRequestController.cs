@@ -8,9 +8,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Model;
+using WebApp.ViewModels.ServiceRequestViewModels;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class ServiceRequestController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
@@ -22,18 +24,22 @@ namespace WebApp.Controllers
         }
 
         // GET: ServiceRequest/Details/5
-        public async Task<ActionResult> Details(short? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
-            if (serviceRequest == null)
+
+            var vm = new DetailsViewModel();
+
+            vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).ToList();
+            if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
             }
-            return View(serviceRequest);
+            return View(vm);
         }
 
         // GET: ServiceRequest/Create
@@ -114,6 +120,28 @@ namespace WebApp.Controllers
             db.ServiceRequests.Remove(serviceRequest);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> MarkAsComplete(int? id, decimal? hours, string notes)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(id);
+            if (serviceRequestTask == null)
+            {
+                return HttpNotFound();
+            }
+            serviceRequestTask.CompletedDate = DateTime.UtcNow;
+            serviceRequestTask.ActualHours = hours;
+            serviceRequestTask.Notes = notes;
+            serviceRequestTask.ModifiedDate = DateTime.UtcNow;
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         protected override void Dispose(bool disposing)

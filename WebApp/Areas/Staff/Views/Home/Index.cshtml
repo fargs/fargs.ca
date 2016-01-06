@@ -38,7 +38,7 @@
         @foreach (var item in Model.Today)
         {
             <div>
-                <a class="lead" href="@Url.Content("~/Staff/Home/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
                 <div><strong>@item.ServiceName</strong> for <strong>@item.PhysicianDisplayName</strong> as a <strong>@GetRole(ViewBag.UserId, item.DocumentReviewerId, item.IntakeAssistantId, item.CaseCoordinatorId)</strong></div>
                 <div><strong>Documents</strong> - Open <code>Dropbox (Orvosi)/@item.Title</code></div>
             </div>
@@ -59,7 +59,7 @@
         @foreach (var item in Model.Upcoming)
         {
             <div>
-                <a class="lead" href="@Url.Content("~/Staff/Home/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
                 <div><strong>@item.ServiceName</strong> for <strong>@item.PhysicianDisplayName</strong> as a <strong>@GetRole(ViewBag.UserId, item.DocumentReviewerId, item.IntakeAssistantId, item.CaseCoordinatorId)</strong></div>
                 <div><strong>Documents</strong> - Open <code>Dropbox (Orvosi)/@item.Title</code></div>
             </div>

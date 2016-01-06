@@ -51,6 +51,7 @@ namespace Model
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<AvailableDay> AvailableDays { get; set; }
         public virtual DbSet<AvailableSlot> AvailableSlots { get; set; }
+        public virtual DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -499,7 +500,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string documentFolderLink, Nullable<short> companyId, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isNoShow, string modifiedUser)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
@@ -581,6 +582,10 @@ namespace Model
                 new ObjectParameter("Price", price) :
                 new ObjectParameter("Price", typeof(decimal));
     
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
             var documentFolderLinkParameter = documentFolderLink != null ?
                 new ObjectParameter("DocumentFolderLink", documentFolderLink) :
                 new ObjectParameter("DocumentFolderLink", typeof(string));
@@ -589,14 +594,18 @@ namespace Model
                 new ObjectParameter("CompanyId", companyId) :
                 new ObjectParameter("CompanyId", typeof(short));
     
+            var isNoShowParameter = isNoShow.HasValue ?
+                new ObjectParameter("IsNoShow", isNoShow) :
+                new ObjectParameter("IsNoShow", typeof(bool));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, documentFolderLinkParameter, companyIdParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isNoShowParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string documentFolderLink, Nullable<short> companyId, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<byte> statusId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isNoShow, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -686,6 +695,10 @@ namespace Model
                 new ObjectParameter("Price", price) :
                 new ObjectParameter("Price", typeof(decimal));
     
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
             var documentFolderLinkParameter = documentFolderLink != null ?
                 new ObjectParameter("DocumentFolderLink", documentFolderLink) :
                 new ObjectParameter("DocumentFolderLink", typeof(string));
@@ -694,11 +707,15 @@ namespace Model
                 new ObjectParameter("CompanyId", companyId) :
                 new ObjectParameter("CompanyId", typeof(short));
     
+            var isNoShowParameter = isNoShow.HasValue ?
+                new ObjectParameter("IsNoShow", isNoShow) :
+                new ObjectParameter("IsNoShow", typeof(bool));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, documentFolderLinkParameter, companyIdParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, statusIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isNoShowParameter, modifiedUserParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
@@ -1245,6 +1262,149 @@ namespace Model
                 new ObjectParameter("CompanyId", typeof(short));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogue_Result>("GetServiceCatalogueForCompany", physicianIdParameter, companyIdParameter);
+        }
+    
+        public virtual int ServiceRequestTask_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> ServiceRequestTask_Insert(Nullable<int> serviceRequestId, Nullable<short> taskId, string taskName, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser)
+        {
+            var serviceRequestIdParameter = serviceRequestId.HasValue ?
+                new ObjectParameter("ServiceRequestId", serviceRequestId) :
+                new ObjectParameter("ServiceRequestId", typeof(int));
+    
+            var taskIdParameter = taskId.HasValue ?
+                new ObjectParameter("TaskId", taskId) :
+                new ObjectParameter("TaskId", typeof(short));
+    
+            var taskNameParameter = taskName != null ?
+                new ObjectParameter("TaskName", taskName) :
+                new ObjectParameter("TaskName", typeof(string));
+    
+            var responsibleRoleIdParameter = responsibleRoleId != null ?
+                new ObjectParameter("ResponsibleRoleId", responsibleRoleId) :
+                new ObjectParameter("ResponsibleRoleId", typeof(string));
+    
+            var responsibleRoleNameParameter = responsibleRoleName != null ?
+                new ObjectParameter("ResponsibleRoleName", responsibleRoleName) :
+                new ObjectParameter("ResponsibleRoleName", typeof(string));
+    
+            var sequenceParameter = sequence.HasValue ?
+                new ObjectParameter("Sequence", sequence) :
+                new ObjectParameter("Sequence", typeof(short));
+    
+            var assignedToParameter = assignedTo != null ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(string));
+    
+            var isBillableParameter = isBillable.HasValue ?
+                new ObjectParameter("IsBillable", isBillable) :
+                new ObjectParameter("IsBillable", typeof(bool));
+    
+            var hourlyRateParameter = hourlyRate.HasValue ?
+                new ObjectParameter("HourlyRate", hourlyRate) :
+                new ObjectParameter("HourlyRate", typeof(decimal));
+    
+            var estimatedHoursParameter = estimatedHours.HasValue ?
+                new ObjectParameter("EstimatedHours", estimatedHours) :
+                new ObjectParameter("EstimatedHours", typeof(decimal));
+    
+            var actualHoursParameter = actualHours.HasValue ?
+                new ObjectParameter("ActualHours", actualHours) :
+                new ObjectParameter("ActualHours", typeof(decimal));
+    
+            var completedDateParameter = completedDate.HasValue ?
+                new ObjectParameter("CompletedDate", completedDate) :
+                new ObjectParameter("CompletedDate", typeof(System.DateTime));
+    
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
+            var invoiceItemIdParameter = invoiceItemId.HasValue ?
+                new ObjectParameter("InvoiceItemId", invoiceItemId) :
+                new ObjectParameter("InvoiceItemId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ServiceRequestTask_Insert", serviceRequestIdParameter, taskIdParameter, taskNameParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual int ServiceRequestTask_Update(Nullable<int> id, Nullable<int> serviceRequestId, Nullable<short> taskId, string taskName, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var serviceRequestIdParameter = serviceRequestId.HasValue ?
+                new ObjectParameter("ServiceRequestId", serviceRequestId) :
+                new ObjectParameter("ServiceRequestId", typeof(int));
+    
+            var taskIdParameter = taskId.HasValue ?
+                new ObjectParameter("TaskId", taskId) :
+                new ObjectParameter("TaskId", typeof(short));
+    
+            var taskNameParameter = taskName != null ?
+                new ObjectParameter("TaskName", taskName) :
+                new ObjectParameter("TaskName", typeof(string));
+    
+            var responsibleRoleIdParameter = responsibleRoleId != null ?
+                new ObjectParameter("ResponsibleRoleId", responsibleRoleId) :
+                new ObjectParameter("ResponsibleRoleId", typeof(string));
+    
+            var responsibleRoleNameParameter = responsibleRoleName != null ?
+                new ObjectParameter("ResponsibleRoleName", responsibleRoleName) :
+                new ObjectParameter("ResponsibleRoleName", typeof(string));
+    
+            var sequenceParameter = sequence.HasValue ?
+                new ObjectParameter("Sequence", sequence) :
+                new ObjectParameter("Sequence", typeof(short));
+    
+            var assignedToParameter = assignedTo != null ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(string));
+    
+            var isBillableParameter = isBillable.HasValue ?
+                new ObjectParameter("IsBillable", isBillable) :
+                new ObjectParameter("IsBillable", typeof(bool));
+    
+            var hourlyRateParameter = hourlyRate.HasValue ?
+                new ObjectParameter("HourlyRate", hourlyRate) :
+                new ObjectParameter("HourlyRate", typeof(decimal));
+    
+            var estimatedHoursParameter = estimatedHours.HasValue ?
+                new ObjectParameter("EstimatedHours", estimatedHours) :
+                new ObjectParameter("EstimatedHours", typeof(decimal));
+    
+            var actualHoursParameter = actualHours.HasValue ?
+                new ObjectParameter("ActualHours", actualHours) :
+                new ObjectParameter("ActualHours", typeof(decimal));
+    
+            var completedDateParameter = completedDate.HasValue ?
+                new ObjectParameter("CompletedDate", completedDate) :
+                new ObjectParameter("CompletedDate", typeof(System.DateTime));
+    
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
+            var invoiceItemIdParameter = invoiceItemId.HasValue ?
+                new ObjectParameter("InvoiceItemId", invoiceItemId) :
+                new ObjectParameter("InvoiceItemId", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Update", idParameter, serviceRequestIdParameter, taskIdParameter, taskNameParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
         }
     }
 }

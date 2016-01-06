@@ -164,6 +164,9 @@
     <Compile Include="ServiceRequest.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="ServiceRequestTask.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="SpecialRequest.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

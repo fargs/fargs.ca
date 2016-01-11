@@ -53,5 +53,27 @@ namespace WebApp.Areas.Staff.Controllers
             ViewBag.UserId = user.Id;
             return View(serviceRequest);
         }
+
+        public async Task<ActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var vm = new DetailsViewModel();
+
+            vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).ToList();
+
+            if (vm.ServiceRequest == null)
+            {
+                return HttpNotFound();
+            }
+
+            vm.User = db.Users.Single(c => c.UserName == User.Identity.Name);
+
+            return View(vm);
+        }
     }
 }

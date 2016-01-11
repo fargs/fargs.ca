@@ -5,6 +5,8 @@
 
 
 
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -15,7 +17,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,[Title] = dbo.FormatDateTime(ad.[Day], 'yyyyMMdd') + '-' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + '-' + s.Code + '-' + SUBSTRING(p.Email, 0, CHARINDEX('@', p.Email, 0)) + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
+	,[Title] = dbo.FormatDateTime(ad.[Day], 'yyyyMMdd') + '-' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + '-' + s.Code + '-' + SUBSTRING(p.Email, 0, CHARINDEX('@', p.Email, 0)) + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id) + ' (' + sr.ClaimantName + ') '
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -68,7 +70,7 @@ SELECT
 	,sl.StartTime
 	,sl.Duration
 	,sl.EndTime
-	,CalendarEventTitle = s.Code + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
+	,CalendarEventTitle = '(' + sr.ClaimantName + ') ' + s.Code + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
 FROM dbo.ServiceRequest sr
 LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
 INNER JOIN API.[Service] s ON s.Id = sc.ServiceId

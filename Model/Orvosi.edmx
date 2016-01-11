@@ -50,18 +50,22 @@ warning 6002: The table/view 'Orvosi.API.AvailableDay' does not have a primary k
             
             
             
+            
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Day" Type="date" Nullable="false" />
+          <Property Name="IsPrebook" Type="bit" Nullable="false" />
           <Property Name="CompanyId" Type="smallint" />
           <Property Name="LocationId" Type="smallint" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="CompanyIsParent" Type="bit" />
           <Property Name="LocationName" Type="nvarchar" MaxLength="256" />
           <Property Name="LocationOwnerDisplayName" Type="nvarchar" MaxLength="210" />
           <Property Name="LocationOwnerId" Type="nvarchar" MaxLength="128" />
+          <Property Name="PhysicianName" Type="nvarchar" MaxLength="210" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.AvailableSlot' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -277,14 +281,16 @@ warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key 
           <Property Name="RoleCategoryId" Type="tinyint" />
           <Property Name="RoleCategoryName" Type="nvarchar" MaxLength="128" />
           <Property Name="Designations" Type="nvarchar" MaxLength="128" />
-          <Property Name="LocationAreaId" Type="tinyint" />
-          <Property Name="Specialties" Type="nvarchar" MaxLength="2000" />
-          <Property Name="SubSpecialties" Type="nvarchar" MaxLength="2000" />
+          <Property Name="PrimaryAddressId" Type="smallint" />
+          <Property Name="SpecialtyId" Type="tinyint" />
+          <Property Name="OtherSpecialties" Type="nvarchar" MaxLength="2000" />
           <Property Name="Pediatrics" Type="bit" />
           <Property Name="Adolescents" Type="bit" />
           <Property Name="Adults" Type="bit" />
           <Property Name="Geriatrics" Type="bit" />
-          <Property Name="ItemText" Type="nvarchar" MaxLength="128" />
+          <Property Name="LocationName" Type="nvarchar" MaxLength="128" />
+          <Property Name="AddressName" Type="nvarchar" MaxLength="256" />
+          <Property Name="PrimarySpecialtyName" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -500,6 +506,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
             
             
             
+            
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -523,7 +530,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="Notes" Type="nvarchar" MaxLength="2000" />
           <Property Name="DocumentFolderLink" Type="nvarchar" MaxLength="2000" />
           <Property Name="CompanyId" Type="smallint" />
-          <Property Name="IsNoShow" Type="bit" />
+          <Property Name="IsNoShow" Type="bit" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="ServiceId" Type="smallint" />
@@ -1042,14 +1049,17 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [AvailableDay].[Id] AS [Id], 
     [AvailableDay].[PhysicianId] AS [PhysicianId], 
     [AvailableDay].[Day] AS [Day], 
+    [AvailableDay].[IsPrebook] AS [IsPrebook], 
     [AvailableDay].[CompanyId] AS [CompanyId], 
     [AvailableDay].[LocationId] AS [LocationId], 
     [AvailableDay].[ModifiedDate] AS [ModifiedDate], 
     [AvailableDay].[ModifiedUser] AS [ModifiedUser], 
     [AvailableDay].[CompanyName] AS [CompanyName], 
+    [AvailableDay].[CompanyIsParent] AS [CompanyIsParent], 
     [AvailableDay].[LocationName] AS [LocationName], 
     [AvailableDay].[LocationOwnerDisplayName] AS [LocationOwnerDisplayName], 
-    [AvailableDay].[LocationOwnerId] AS [LocationOwnerId]
+    [AvailableDay].[LocationOwnerId] AS [LocationOwnerId], 
+    [AvailableDay].[PhysicianName] AS [PhysicianName]
     FROM [API].[AvailableDay] AS [AvailableDay]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="AvailableSlot" EntityType="Self.AvailableSlot" store:Type="Views" store:Schema="API">
@@ -1199,14 +1209,16 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Physician].[RoleCategoryId] AS [RoleCategoryId], 
     [Physician].[RoleCategoryName] AS [RoleCategoryName], 
     [Physician].[Designations] AS [Designations], 
-    [Physician].[LocationAreaId] AS [LocationAreaId], 
-    [Physician].[Specialties] AS [Specialties], 
-    [Physician].[SubSpecialties] AS [SubSpecialties], 
+    [Physician].[PrimaryAddressId] AS [PrimaryAddressId], 
+    [Physician].[SpecialtyId] AS [SpecialtyId], 
+    [Physician].[OtherSpecialties] AS [OtherSpecialties], 
     [Physician].[Pediatrics] AS [Pediatrics], 
     [Physician].[Adolescents] AS [Adolescents], 
     [Physician].[Adults] AS [Adults], 
     [Physician].[Geriatrics] AS [Geriatrics], 
-    [Physician].[ItemText] AS [ItemText]
+    [Physician].[LocationName] AS [LocationName], 
+    [Physician].[AddressName] AS [AddressName], 
+    [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName]
     FROM [API].[Physician] AS [Physician]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
@@ -1834,7 +1846,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <EntitySet Name="ServiceRequestTasks" EntityType="OrvosiModel.ServiceRequestTask" />
           <FunctionImport Name="ServiceRequestTask_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int32" />
+          <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequestTask_Insert" ReturnType="Collection(Int32)">
             <Parameter Name="ServiceRequestId" Mode="In" Type="Int32" />
@@ -2165,7 +2177,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="CompanyId" Type="Int16" />
           <Property Name="Notes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="IsNoShow" Type="Boolean" />
+          <Property Name="IsNoShow" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -2421,14 +2433,16 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="RoleCategoryId" Type="Byte" />
           <Property Name="RoleCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Designations" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="LocationAreaId" Type="Byte" />
-          <Property Name="Specialties" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="SubSpecialties" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="Pediatrics" Type="Boolean" />
           <Property Name="Adolescents" Type="Boolean" />
           <Property Name="Adults" Type="Boolean" />
           <Property Name="Geriatrics" Type="Boolean" />
-          <Property Name="ItemText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PrimaryAddressId" Type="Int16" />
+          <Property Name="SpecialtyId" Type="Byte" />
+          <Property Name="OtherSpecialties" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Name="LocationName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="AddressName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PrimarySpecialtyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="AvailableDay">
           <Key>
@@ -2446,6 +2460,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LocationOwnerDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="LocationOwnerId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AvailableSlots" Relationship="OrvosiModel.AvailableDayAvailableSlot" FromRole="AvailableDay" ToRole="AvailableSlot" />
+          <Property Name="PhysicianName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="IsPrebook" Type="Boolean" Nullable="false" />
+          <Property Name="CompanyIsParent" Type="Boolean" />
         </EntityType>
         <ComplexType Name="Location_Insert_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
@@ -2971,6 +2988,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="ServiceCatalogueId" ParameterName="ServiceCatalogueId" />
                   <ScalarProperty Name="ClaimantName" ParameterName="ClaimantName" />
                   <ScalarProperty Name="CompanyReferenceId" ParameterName="CompanyReferenceId" />
+                  <ResultBinding Name="Id" ColumnName="Id" />
                 </InsertFunction>
               </ModificationFunctionMapping>
             </EntityTypeMapping>
@@ -3348,14 +3366,16 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Physicians">
             <EntityTypeMapping TypeName="OrvosiModel.Physician">
               <MappingFragment StoreEntitySet="Physician">
-                <ScalarProperty Name="ItemText" ColumnName="ItemText" />
+                <ScalarProperty Name="PrimarySpecialtyName" ColumnName="PrimarySpecialtyName" />
+                <ScalarProperty Name="AddressName" ColumnName="AddressName" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="OtherSpecialties" ColumnName="OtherSpecialties" />
+                <ScalarProperty Name="SpecialtyId" ColumnName="SpecialtyId" />
+                <ScalarProperty Name="PrimaryAddressId" ColumnName="PrimaryAddressId" />
                 <ScalarProperty Name="Geriatrics" ColumnName="Geriatrics" />
                 <ScalarProperty Name="Adults" ColumnName="Adults" />
                 <ScalarProperty Name="Adolescents" ColumnName="Adolescents" />
                 <ScalarProperty Name="Pediatrics" ColumnName="Pediatrics" />
-                <ScalarProperty Name="SubSpecialties" ColumnName="SubSpecialties" />
-                <ScalarProperty Name="Specialties" ColumnName="Specialties" />
-                <ScalarProperty Name="LocationAreaId" ColumnName="LocationAreaId" />
                 <ScalarProperty Name="Designations" ColumnName="Designations" />
                 <ScalarProperty Name="RoleCategoryName" ColumnName="RoleCategoryName" />
                 <ScalarProperty Name="RoleCategoryId" ColumnName="RoleCategoryId" />
@@ -3391,6 +3411,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="AvailableDays">
             <EntityTypeMapping TypeName="OrvosiModel.AvailableDay">
               <MappingFragment StoreEntitySet="AvailableDay">
+                <ScalarProperty Name="CompanyIsParent" ColumnName="CompanyIsParent" />
+                <ScalarProperty Name="IsPrebook" ColumnName="IsPrebook" />
+                <ScalarProperty Name="PhysicianName" ColumnName="PhysicianName" />
                 <ScalarProperty Name="LocationOwnerId" ColumnName="LocationOwnerId" />
                 <ScalarProperty Name="LocationOwnerDisplayName" ColumnName="LocationOwnerDisplayName" />
                 <ScalarProperty Name="LocationName" ColumnName="LocationName" />

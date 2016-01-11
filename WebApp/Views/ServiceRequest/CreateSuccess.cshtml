@@ -1,0 +1,11 @@
+﻿@model Model.ServiceRequest
+
+<p>
+    Your request was submitted successfully.
+</p>
+
+@Model.Title
+
+<a href="~/ServiceRequest" class="btn btn-primary">Back to List</a>
+<a href="~/ServiceRequest/Edit/@Model.Id#ResourceAssignment" class="btn btn-primary">Assign Resources</a>
+

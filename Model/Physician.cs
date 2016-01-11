@@ -43,13 +43,15 @@ namespace Model
         public Nullable<byte> RoleCategoryId { get; set; }
         public string RoleCategoryName { get; set; }
         public string Designations { get; set; }
-        public Nullable<byte> LocationAreaId { get; set; }
-        public string Specialties { get; set; }
-        public string SubSpecialties { get; set; }
         public Nullable<bool> Pediatrics { get; set; }
         public Nullable<bool> Adolescents { get; set; }
         public Nullable<bool> Adults { get; set; }
         public Nullable<bool> Geriatrics { get; set; }
-        public string ItemText { get; set; }
+        public Nullable<short> PrimaryAddressId { get; set; }
+        public Nullable<byte> SpecialtyId { get; set; }
+        public string OtherSpecialties { get; set; }
+        public string LocationName { get; set; }
+        public string AddressName { get; set; }
+        public string PrimarySpecialtyName { get; set; }
     }
 }

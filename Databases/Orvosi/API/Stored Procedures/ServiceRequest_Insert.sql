@@ -90,13 +90,13 @@ SELECT @Id = SCOPE_IDENTITY();
 
 WITH Assignments 
 AS (
-	SELECT UserId = @CaseCoordinatorId, RoleId = '9eab89c0-225c-4027-9f42-cc35e5656b14'
+	SELECT UserId = @CaseCoordinatorId, RoleId = dbo.RoleId_CaseCoordinator()
 	UNION 
-	SELECT @IntakeAssistantId, RoleId = '9dd582a0-cf86-4fc0-8894-477266068c12'
+	SELECT @IntakeAssistantId, RoleId = dbo.RoleId_IntakeAssistant()
 	UNION 
-	SELECT @DocumentReviewerId, RoleId = '22B5C8AC-2C96-4A74-8057-976914031A7E'
+	SELECT @DocumentReviewerId, RoleId = dbo.RoleId_DocumentReviewer()
 	UNION
-	SELECT PhysicianId, RoleId = '8359141f-e423-4e48-8925-4624ba86245a' FROM dbo.ServiceCatalogue WHERE Id = @ServiceCatalogueId
+	SELECT PhysicianId, RoleId = dbo.RoleId_Physician() FROM dbo.ServiceCatalogue WHERE Id = @ServiceCatalogueId
 )
 INSERT INTO dbo.ServiceRequestTask (
 	 [ServiceRequestId]

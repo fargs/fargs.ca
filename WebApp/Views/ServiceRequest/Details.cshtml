@@ -1,14 +1,33 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
+﻿@using Model.Enums
+@model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
-<h1>Service Request ID @Model.ServiceRequest.Id</h1>
+<p>
+    <a href="~/ServiceRequest" class="btn btn-link">Back To List</a>
+</p>
+
+<h2>Service Request ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName)</span></h2>
 <div class="lead">@Model.ServiceRequest.PhysicianDisplayName</div>
 
-<div class="alert alert-warning">
-    <div class="h4">
-        Status is <div class="label label-warning">@Model.ServiceRequest.StatusName</div>
-    </div>
+<div class="h4">
+    <div class="label @(Model.ServiceRequest.StatusId == ServiceRequestStatus.Closed ? "label-danger" : "label-success")">@Model.ServiceRequest.StatusName</div>
 </div>
-<button class="btn btn-link">Mark as No Show and Close Request</button>
+
+<form action="~/ServiceRequest/ToggleNoShow" method="post">
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id")
+    @if (Model.ServiceRequest.IsNoShow)
+    {
+        <div class="alert alert-danger">
+            <strong>No Show</strong>
+            <span><button class="btn btn-link">Undo</button></span>
+        </div>
+    }
+    else
+    {
+        <button class="btn btn-link">Mark as No Show</button>
+    }
+</form>
+
 <h2>Task Assignments</h2>
 <ul class="list-group">
     @foreach (var item in Model.ServiceRequestTasks)
@@ -19,14 +38,14 @@
             </div>
 
             @if (item.CompletedDate.HasValue)
-                {
+            {
                 <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
                 if (item.Notes != string.Empty)
                 {
                     <h4>Notes</h4>
-                        <div>
-                            @item.Notes
-                        </div>
+                    <div>
+                        @item.Notes
+                    </div>
                 }
             }
             else
@@ -78,8 +97,8 @@
             <dd>@Model.ServiceRequest.CompanyReferenceId</dd>
             <dt>Claimant Name</dt>
             <dd>@Model.ServiceRequest.ClaimantName</dd>
-            <dt>Documents</dt>
-            <dd>Open <code>Dropbox (Orvosi)/@Model.ServiceRequest.Title</code></dd>
+            <dt>Case Folder</dt>
+            <dd><strong>@Model.ServiceRequest.Title</strong></dd>
         </dl>
     </div>
 </div>
@@ -109,7 +128,7 @@
             <dt>End Time</dt>
             <dd>@Model.ServiceRequest.EndTime</dd>
             <dt>Calendar Title</dt>
-            <dd>@Model.ServiceRequest.CalendarEventTitle</dd>
+            <dd><strong>@Model.ServiceRequest.CalendarEventTitle</strong></dd>
             @*<dt>Effective Price</dt>
                 <dd>
                     <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">

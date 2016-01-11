@@ -1,5 +1,6 @@
 ﻿
 
+
 CREATE VIEW [API].[Entity]
 AS
 SELECT EntityId = CONVERT(NVARCHAR(128), Id)
@@ -18,7 +19,8 @@ SELECT Id
 	, Id
 	, dbo.GetDisplayName(FirstName, LastName, Title)
 	, 'PHYSICIAN'
-FROM API.Physician
+FROM API.[User] u
+WHERE u.RoleCategoryId = 1
 UNION
 SELECT Id
 	, Id

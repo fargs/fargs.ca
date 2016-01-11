@@ -17,7 +17,7 @@ namespace WebApp.Areas.Physicians.Controllers
         // GET: Physician/Home
         public ActionResult Index(string physicianId, byte lookAhead)
         {
-            var now = DateTime.Today;
+            var now = DateTime.UtcNow;
             var lookAheadDate = now.AddDays(lookAhead);
             var vm = new IndexViewModel();
             vm.Today = db.ServiceRequests.Where(p => p.PhysicianId == physicianId && p.AppointmentDate == now)
@@ -39,20 +39,26 @@ namespace WebApp.Areas.Physicians.Controllers
             return View(vm);
         }
 
-        public async Task<ActionResult> Details(short? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
-            if (serviceRequest == null)
+
+            var vm = new DetailsViewModel();
+
+            vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).ToList();
+
+            if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
             }
-            var user = db.Users.Single(c => c.UserName == User.Identity.Name);
-            ViewBag.UserId = user.Id;
-            return View(serviceRequest);
+
+            vm.User = db.Users.Single(c => c.UserName == User.Identity.Name);
+
+            return View(vm);
         }
     }
 }

@@ -31,6 +31,9 @@ namespace Model
         public string LocationName { get; set; }
         public string LocationOwnerDisplayName { get; set; }
         public string LocationOwnerId { get; set; }
+        public string PhysicianName { get; set; }
+        public bool IsPrebook { get; set; }
+        public Nullable<bool> CompanyIsParent { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AvailableSlot> AvailableSlots { get; set; }

@@ -25,6 +25,7 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Home", new { area = "Physicians", physicianId = ViewBag.UserId, lookAhead = 7 }, null)</li>
+                        <li>@Html.ActionLink("Requests", "", "ServiceRequest", new { area = "" }, null)</li>
                     }
                 </ul>
                 @Html.Action("_LoginPartial", "Account", new { area = "" })

@@ -230,6 +230,12 @@
     <Build Include="API\Stored Procedures\ServiceRequestTask_Update.sql" />
     <Build Include="API\Stored Procedures\ServiceRequestTask_Insert.sql" />
     <Build Include="API\Stored Procedures\ServiceRequestTask_Delete.sql" />
+    <Build Include="API\Views\Specialty.sql" />
+    <Build Include="dbo\Functions\RoleId_Physician.sql" />
+    <Build Include="dbo\Functions\RoleId_IntakeAssistant.sql" />
+    <Build Include="dbo\Functions\RoleId_DocumentReviewer.sql" />
+    <Build Include="dbo\Functions\RoleId_CaseCoordinator.sql" />
+    <Build Include="dbo\Functions\LookupId_Specialty.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

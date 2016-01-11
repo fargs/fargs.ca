@@ -73,6 +73,6 @@ namespace Model
         public string PhysicianId { get; set; }
         public Nullable<short> CompanyId { get; set; }
         public string Notes { get; set; }
-        public Nullable<bool> IsNoShow { get; set; }
+        public bool IsNoShow { get; set; }
     }
 }

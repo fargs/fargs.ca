@@ -1,0 +1,145 @@
+﻿@using Model.Enums;
+@model WebApp.ViewModels.ServiceRequestViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Service Requests";
+}
+
+<h2>Service Requests</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        @if (User.IsInRole("Super Admin"))
+        {
+            <p>
+                <a class="btn btn-primary" href="~/ServiceRequest/Availability">Create Request</a>
+            </p>
+        }
+        <div class="well well-sm">
+            <form action="@Url.Content("~/ServiceRequest/Index")" method="post">
+                @*<div class="input-group">
+                        <input type="text" class="form-control" name="Search" value="" placeholder="Search for ..." />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                        </span>
+                    </div>*@
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Sort</label>
+                    <select class="form-control" name="FilterArgs.Sort">
+                        <option value="Newest" @(Model.FilterArgs.Sort == "Newest" ? "selected" : string.Empty)>Newest</option>
+                        <option value="Oldest" @(Model.FilterArgs.Sort == "Oldest" ? "selected" : string.Empty)>Oldest</option>
+                    </select>
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Status</label>
+                    @Html.DropDownList("FilterArgs.StatusId", new SelectList(ViewBag.ServiceRequestStatuses, "Value", "Text", Model.FilterArgs.StatusId), new { @class = "form-control" })
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Date Range</label>
+                    <select class="form-control" name="FilterArgs.DateRange">
+                        <option></option>
+                        <option value="@DateRanges.Today" @(Model.FilterArgs.DateRange == DateRanges.Today ? "selected" : string.Empty)>Today</option>
+                        <option value="@DateRanges.Next10Days" @(Model.FilterArgs.DateRange == DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
+                    </select>
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Id(s) (csv)</label>
+                    <input type="text" class="form-control" name="FilterArgs.Ids" value="@Model.FilterArgs.Ids" />
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Claimant / Reference Id</label>
+                    <input type="text" class="form-control" name="FilterArgs.ClaimantName" value="@Model.FilterArgs.ClaimantName" />
+                </div>
+                @if (Model.User.RoleCategoryId == RoleCategory.Staff || Model.User.RoleCategoryId == RoleCategory.Admin)
+                {
+                    <fieldset>
+                        <legend class="small">Staff Only</legend>
+                        <div class="form-group form-group-sm">
+                            <label class="control-label small">Physician</label>
+                            @Html.DropDownList("FilterArgs.PhysicianId", new SelectList(ViewBag.Physicians, "Value", "Text", Model.FilterArgs.PhysicianId), string.Empty, new { @class = "form-control" })
+                        </div>
+                    </fieldset>
+                }
+                @if (Model.User.RoleCategoryId == RoleCategory.Admin)
+                {
+                    <fieldset>
+                        <legend class="small">Admin Only</legend>
+                        <div class="form-group form-group-sm">
+                            <select class="form-control" name="FilterArgs.ShowAll">
+                                <option value="false" @(Model.FilterArgs.ShowAll == false ? "selected" : string.Empty)>Only Mine</option>
+                                <option value="true" @(Model.FilterArgs.ShowAll == true ? "selected" : string.Empty)>Show All</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                }
+                <button class="btn btn-primary">Apply</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>
+                    Id
+                </th>
+                <th>
+                    When
+                </th>
+                <th>
+                    Where
+                </th>
+                <th>
+                    What
+                </th>
+                <th>
+                    Who
+                </th>
+            </tr>
+
+            @foreach (var item in Model.ServiceRequests)
+            {
+                <tr>
+                    <td class="@(item.StatusId == ServiceRequestStatus.Open ? "bordered-left-success" : "bordered-left-warning")">
+                        <div class="btn-group" style="width:100px">
+                            @Html.ActionLink("View", "Details", new { id = item.Id }, new { @class = "btn btn-default" })
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/ServiceRequest/Edit/@item.Id#ResourceAssignment">Assign Resources</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Cancel", "Cancel", new { id = item.Id })</li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td>
+                        <strong>@item.Id</strong>
+                    </td>
+                    <td>
+                        <strong>@item.AppointmentDate.Value.ToString("ddd, MMM dd yyyy")</strong>
+                        <div class="text-muted">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
+                    </td>
+                    <td>
+                        <strong>@item.LocationName</strong>
+                        <div class="text-muted">@item.AddressName</div>
+                    </td>
+                    <td>
+                        <strong>@item.ServiceName</strong>
+                        <div class="text-muted">
+                            @item.CompanyName<br />
+                            @(string.IsNullOrEmpty(item.ClaimantName) ? item.CompanyReferenceId : item.ClaimantName)
+                        </div>
+                    </td>
+                    <td>
+                        @item.CaseCoordinatorName <small class="text-muted">(Case Coordinator)</small><br />
+                        @item.DocumentReviewerName <small class="text-muted">(Document Reviewer)</small><br />
+                        @item.IntakeAssistantName <small class="text-muted">(Intake Assistant)</small><br />
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>

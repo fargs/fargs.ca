@@ -39,8 +39,9 @@
             <div>
                 <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
                 <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                <div><strong>Documents</strong> - Open <code>Dropbox (Orvosi)/@item.Title</code></div>
+                <div><strong>Documents</strong> - Dropbox (Orvosi)/@item.Title</div>
             </div>
+            <p></p>
         }
     </div>
 </div>

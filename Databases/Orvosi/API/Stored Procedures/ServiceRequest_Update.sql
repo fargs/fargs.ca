@@ -58,7 +58,23 @@ SET
 	,[Notes] = @Notes
 	,[DocumentFolderLink] = @DocumentFolderLink
 	,[CompanyId] = @CompanyId
+	,[IsNoShow] = @IsNoShow
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser
 WHERE 
 	Id = @Id
+
+UPDATE dbo.ServiceRequestTask
+SET AssignedTo = @CaseCoordinatorId
+WHERE ResponsibleRoleId = dbo.RoleId_CaseCoordinator()
+	AND ServiceRequestId = @Id
+
+UPDATE dbo.ServiceRequestTask
+SET AssignedTo = @IntakeAssistantId
+WHERE ResponsibleRoleId = dbo.RoleId_IntakeAssistant()
+	AND ServiceRequestId = @Id
+
+UPDATE dbo.ServiceRequestTask
+SET AssignedTo = @DocumentReviewerId
+WHERE ResponsibleRoleId = dbo.RoleId_DocumentReviewer()
+	AND ServiceRequestId = @Id

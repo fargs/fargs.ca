@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 
@@ -10,6 +11,7 @@ namespace Model.Enums
         public const string Physician = "8359141f-e423-4e48-8925-4624ba86245a";
         public const string Company = "7b930663-b091-44ca-924c-d8b11a1ee7ea";
         public const string IntakeAssistant = "9dd582a0-cf86-4fc0-8894-477266068c12";
+        public const string SuperAdmin = "7fab67dd-286b-492f-865a-0cb0ce1261ce";
     }
 
     public static class ActionStates
@@ -61,6 +63,8 @@ namespace Model.Enums
         public const byte ServiceRequestStatus = 2;
         public const byte TaskStatus = 3;
         public const byte LocationAreas = 4;
+        public const byte PhysicianLocationStatus = 5;
+        public const byte Specialties = 6;
     }
 
     public static class DocumentTemplates
@@ -91,5 +95,44 @@ namespace Model.Enums
         public const byte InProgress = 3;
         public const byte Active = 4;
 
+    }
+
+    public static class Specialties
+    {
+        public const byte Physiatry = 27;
+        public const byte Orthopedics = 28;
+        public const byte Neurology = 29;
+    }
+
+    public static class DateRanges
+    {
+        public const byte Today = 1;
+        public const byte ThisWeek = 2;
+        public const byte LastWeek = 3;
+        public const byte ThisMonth = 4;
+        public const byte LastMonth = 5;
+        public const byte Next10Days = 6;
+        public const byte Next10Weeks = 7;
+        public const byte Next20Weeks = 8;
+        public const byte Last10Days = 9;
+
+        public static DateTime[] GetRange(byte RangeType)
+        {
+            DateTime[] range = new DateTime[2];
+            switch (RangeType)
+            {
+                case DateRanges.Today:
+                    range[0] = DateTime.UtcNow;
+                    range[1] = DateTime.UtcNow.AddDays(1);
+                    break;
+                case DateRanges.Next10Days:
+                    range[0] = DateTime.UtcNow;
+                    range[1] = DateTime.UtcNow.AddDays(10);
+                    break;
+                default:
+                    break;
+            }
+            return range;
+        }
     }
 }

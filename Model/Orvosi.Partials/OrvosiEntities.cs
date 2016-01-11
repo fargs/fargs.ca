@@ -48,6 +48,7 @@ namespace Model
             foreach (var item in this.ChangeTracker.Entries())
             {
                 item.Property("ModifiedUser").CurrentValue = username;
+                item.Property("ModifiedDate").CurrentValue = DateTime.UtcNow;
             }
 
             //otherwise set the context info to the username

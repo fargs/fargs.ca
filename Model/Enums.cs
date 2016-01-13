@@ -122,12 +122,12 @@ namespace Model.Enums
             switch (RangeType)
             {
                 case DateRanges.Today:
-                    range[0] = DateTime.UtcNow;
-                    range[1] = DateTime.UtcNow.AddDays(1);
+                    range[0] = DateTime.Today;
+                    range[1] = DateTime.Today.AddDays(1);
                     break;
                 case DateRanges.Next10Days:
-                    range[0] = DateTime.UtcNow;
-                    range[1] = DateTime.UtcNow.AddDays(10);
+                    range[0] = DateTime.Today;
+                    range[1] = DateTime.Today.AddDays(10);
                     break;
                 default:
                     break;

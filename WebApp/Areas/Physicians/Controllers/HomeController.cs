@@ -17,7 +17,7 @@ namespace WebApp.Areas.Physicians.Controllers
         // GET: Physician/Home
         public ActionResult Index(string physicianId, byte lookAhead)
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Today;
             var lookAheadDate = now.AddDays(lookAhead);
             var vm = new IndexViewModel();
             vm.Today = db.ServiceRequests.Where(p => p.PhysicianId == physicianId && p.AppointmentDate == now)

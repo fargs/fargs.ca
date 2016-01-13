@@ -31,7 +31,7 @@ namespace WebApp.Controllers
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
 
             var sr = db.ServiceRequests.AsQueryable<ServiceRequest>();
-                                                                                            
+
             sr = sr.Where(c => c.StatusId == filterArgs.StatusId);
 
             if (filterArgs.DateRange.HasValue)
@@ -124,7 +124,7 @@ namespace WebApp.Controllers
             var vm = new DetailsViewModel();
 
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
-            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).ToList();
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
 
             if (vm.ServiceRequest == null)
             {
@@ -193,58 +193,33 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
-            try
+            var obj = new ServiceRequest()
             {
-                var obj = new ServiceRequest()
-                {
-                    ServiceCatalogueId = serviceCatalogue.Id,
-                    AppointmentDate = sr.AppointmentDate,
-                    AvailableSlotId = sr.AvailableSlotId,
-                    AddressId = location.Id,
-                    CaseCoordinatorId = sr.CaseCoordinatorId,
-                    IntakeAssistantId = sr.IntakeAssistantId,
-                    DocumentReviewerId = sr.DocumentReviewerId,
-                    ClaimantName = sr.ClaimantName,
-                    CompanyReferenceId = sr.CompanyReferenceId,
-                    RequestedBy = sr.RequestedBy,
-                    RequestedDate = sr.RequestedDate,
-                    DocumentFolderLink = sr.DocumentFolderLink,
-                    CompanyId = sr.CompanyId,
-                    ModifiedUser = User.Identity.Name,
-                    ServiceName = string.Empty // this should not be needed but edmx is making it non nullable
-                };
+                ServiceCatalogueId = serviceCatalogue.Id,
+                AppointmentDate = sr.AppointmentDate,
+                AvailableSlotId = sr.AvailableSlotId,
+                AddressId = location.Id,
+                CaseCoordinatorId = sr.CaseCoordinatorId,
+                IntakeAssistantId = sr.IntakeAssistantId,
+                DocumentReviewerId = sr.DocumentReviewerId,
+                ClaimantName = sr.ClaimantName,
+                CompanyReferenceId = sr.CompanyReferenceId,
+                RequestedBy = sr.RequestedBy,
+                RequestedDate = sr.RequestedDate,
+                DocumentFolderLink = sr.DocumentFolderLink,
+                CompanyId = sr.CompanyId,
+                ModifiedUser = User.Identity.Name,
+                ServiceName = string.Empty // this should not be needed but edmx is making it non nullable
+            };
 
-                using (var db = new OrvosiEntities(User.Identity.Name))
-                {
-                    db.ServiceRequests.Add(obj);
-                    await db.SaveChangesAsync();
-                    await db.Entry(obj).ReloadAsync();
-                }
-
-                return View("CreateSuccess", obj);
-            }
-            catch
+            using (var db = new OrvosiEntities(User.Identity.Name))
             {
-                ViewBag.Companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
-
-                ViewBag.Requestors = db.Users
-                    .Where(u => u.RoleCategoryId == RoleCategory.Company)
-                    .Select(c => new SelectListItem()
-                    {
-                        Text = c.DisplayName,
-                        Value = c.Id.ToString()
-                    }).ToList();
-
-                ViewBag.Staff = db.Users
-                    .Where(u => u.RoleCategoryId == RoleCategory.Staff)
-                    .Select(c => new SelectListItem()
-                    {
-                        Text = c.DisplayName,
-                        Value = c.Id.ToString()
-                    }).ToList();
-
-                return View();
+                db.ServiceRequests.Add(obj);
+                await db.SaveChangesAsync();
+                await db.Entry(obj).ReloadAsync();
             }
+
+            return View("CreateSuccess", obj);
         }
 
         // GET: ServiceRequest/Edit/5

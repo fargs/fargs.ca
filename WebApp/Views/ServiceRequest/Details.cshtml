@@ -5,11 +5,11 @@
     <a href="~/ServiceRequest" class="btn btn-link">Back To List</a>
 </p>
 
-<h2>Service Request ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName)</span></h2>
-<div class="lead">@Model.ServiceRequest.PhysicianDisplayName</div>
+<h3>@Model.ServiceRequest.PhysicianDisplayName</h3>
+<div class="lead">Service Request ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName) </span><span class="label @(Model.ServiceRequest.StatusId == ServiceRequestStatus.Closed ? "label-danger" : "label-success")">@Model.ServiceRequest.StatusName</span></div>
 
 <div class="h4">
-    <div class="label @(Model.ServiceRequest.StatusId == ServiceRequestStatus.Closed ? "label-danger" : "label-success")">@Model.ServiceRequest.StatusName</div>
+
 </div>
 
 <form action="~/ServiceRequest/ToggleNoShow" method="post">
@@ -17,18 +17,19 @@
     @Html.Hidden("id")
     @if (Model.ServiceRequest.IsNoShow)
     {
-        <div class="alert alert-danger">
-            <strong>No Show</strong>
+        <div>
+            <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
             <span><button class="btn btn-link">Undo</button></span>
         </div>
     }
     else
     {
-        <button class="btn btn-link">Mark as No Show</button>
+        <button class="btn btn-default">No Show</button>
+        <div class="help-block">Click to flag this case as a "No Show"</div>
     }
 </form>
 
-<h2>Task Assignments</h2>
+<h2>Tasks</h2>
 <ul class="list-group">
     @foreach (var item in Model.ServiceRequestTasks)
     {

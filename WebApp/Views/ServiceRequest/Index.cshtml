@@ -24,11 +24,12 @@
                         </span>
                     </div>*@
                 <div class="form-group form-group-sm">
-                    <label class="control-label small">Sort</label>
-                    <select class="form-control" name="FilterArgs.Sort">
-                        <option value="Newest" @(Model.FilterArgs.Sort == "Newest" ? "selected" : string.Empty)>Newest</option>
-                        <option value="Oldest" @(Model.FilterArgs.Sort == "Oldest" ? "selected" : string.Empty)>Oldest</option>
-                    </select>
+                    <label class="control-label small">Claimant / Reference Id</label>
+                    <input type="text" class="form-control" name="FilterArgs.ClaimantName" value="@Model.FilterArgs.ClaimantName" />
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="control-label small">Id(s) (csv)</label>
+                    <input type="text" class="form-control" name="FilterArgs.Ids" value="@Model.FilterArgs.Ids" />
                 </div>
                 <div class="form-group form-group-sm">
                     <label class="control-label small">Status</label>
@@ -43,12 +44,11 @@
                     </select>
                 </div>
                 <div class="form-group form-group-sm">
-                    <label class="control-label small">Id(s) (csv)</label>
-                    <input type="text" class="form-control" name="FilterArgs.Ids" value="@Model.FilterArgs.Ids" />
-                </div>
-                <div class="form-group form-group-sm">
-                    <label class="control-label small">Claimant / Reference Id</label>
-                    <input type="text" class="form-control" name="FilterArgs.ClaimantName" value="@Model.FilterArgs.ClaimantName" />
+                    <label class="control-label small">Sort</label>
+                    <select class="form-control" name="FilterArgs.Sort">
+                        <option value="Newest" @(Model.FilterArgs.Sort == "Newest" ? "selected" : string.Empty)>Newest</option>
+                        <option value="Oldest" @(Model.FilterArgs.Sort == "Oldest" ? "selected" : string.Empty)>Oldest</option>
+                    </select>
                 </div>
                 @if (Model.User.RoleCategoryId == RoleCategory.Staff || Model.User.RoleCategoryId == RoleCategory.Admin)
                 {

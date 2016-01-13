@@ -51,7 +51,7 @@
             }
             else
             {
-                <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="@(item.CompletedDate.HasValue ? "text-success" : "text-warning")">Mark as complete</a>
+                <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="btn btn-sm btn-default">Done</a>
                 <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
                     <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
                         @Html.AntiForgeryToken()

@@ -219,6 +219,25 @@ namespace WebApp.Controllers
                 await db.Entry(obj).ReloadAsync();
             }
 
+            /*  TODO: Create the calendar event in the physician booking calendar.
+                TITLE will equal the Calendar Title field.
+                WHERE will be populated with the location address.
+                DESCRIPTION will be populated with:
+                    Case Details: 
+                    https://orvosi.ca/servicerequest/details/[id]
+
+                    Case Folder:
+                    [Case Folder Name field]
+
+                NOTE: Invitees will be set with the resources are assigned. Not now.
+
+                TODO: Create the DropBox folder.
+                TITLE will equal the Case Folder Name field.
+                PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
+
+                NOTE: Share permissions will be granted when the resources are assigned.
+            */
+
             return View("CreateSuccess", obj);
         }
 
@@ -244,6 +263,8 @@ namespace WebApp.Controllers
                     Text = c.DisplayName,
                     Value = c.Id.ToString()
                 }).ToListAsync();
+
+            // TODO: Update the calendar and dropbox folder if appropriate.
 
             return View(serviceRequest);
         }

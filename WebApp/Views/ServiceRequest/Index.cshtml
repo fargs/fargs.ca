@@ -9,14 +9,14 @@
 
 <div class="row">
     <div class="col-md-3">
-        @if (User.IsInRole("Super Admin"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Case Coordinator"))
         {
             <p>
                 <a class="btn btn-primary" href="~/ServiceRequest/Availability">Create Request</a>
             </p>
         }
         <div class="well well-sm">
-            <form action="@Url.Content("~/ServiceRequest/Index")" method="post">
+            <form action="@Url.Content("~/ServiceRequest/Index")" method="get">
                 @*<div class="input-group">
                         <input type="text" class="form-control" name="Search" value="" placeholder="Search for ..." />
                         <span class="input-group-btn">

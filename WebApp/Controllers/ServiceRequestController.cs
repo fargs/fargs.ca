@@ -184,6 +184,7 @@ namespace WebApp.Controllers
 
             var serviceCatalogue = await db.ServiceCatalogues
                 .SingleOrDefaultAsync(c => c.PhysicianId == sr.PhysicianId
+                                && c.CompanyId != null // parent id can be null and if these are included, more than one row can be returned.
                                 && (c.CompanyId == sr.CompanyId || c.CompanyId == company.ParentId)
                                 && c.LocationId == location.LocationId
                                 && c.ServiceId == sr.ServiceId);

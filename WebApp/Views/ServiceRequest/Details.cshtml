@@ -2,7 +2,7 @@
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
 <p>
-    <a href="@Request.UrlReferrer.ToString()" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
+    <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
 </p>
 
 <h3>@Model.ServiceRequest.PhysicianDisplayName</h3>

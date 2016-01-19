@@ -7,9 +7,39 @@
 
 
 
+
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
+WITH Tasks
+AS (
+	SELECT ServiceRequestId
+		, TotalTasks = COUNT(TaskId)
+		, ClosedTasks = COUNT(CompletedDate)
+		, OpenTasks = COUNT(CASE WHEN CompletedDate IS NOT NULL THEN NULL ELSE '2000-01-01' END)
+	FROM dbo.ServiceRequestTask t
+	GROUP BY ServiceRequestId
+),
+NextTask
+AS (
+	SELECT *
+	FROM (
+		SELECT t.ServiceRequestId
+			, t.Id
+			, t.TaskName
+			, t.ResponsibleRoleId
+			, t.ResponsibleRoleName
+			, t.AssignedTo
+			, AssignedToName = dbo.GetDisplayName(u.FirstName, u.LastName, u.Title)
+			, RowNum = ROW_NUMBER() OVER(PARTITION BY t.ServiceRequestId ORDER BY t.[Sequence])
+		FROM dbo.ServiceRequestTask t
+		LEFT JOIN dbo.AspNetUsers u ON t.AssignedTo = u.Id
+		WHERE t.CompletedDate IS NULL
+	) t
+	WHERE RowNum = 1
+)
 SELECT
 	 sr.[Id] 
 	,sr.[ObjectGuid]
@@ -34,6 +64,7 @@ SELECT
 	,sr.DocumentFolderLink
 	,CompanyId = ISNULL(sr.CompanyId, sc.CompanyId)
 	,sr.IsNoShow
+	,sr.IsLateCancellation
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
 	,sc.ServiceId
@@ -71,6 +102,13 @@ SELECT
 	,sl.Duration
 	,sl.EndTime
 	,CalendarEventTitle = '(' + sr.ClaimantName + ') ' + s.Code + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
+	,ts.TotalTasks
+	,ts.ClosedTasks
+	,ts.OpenTasks
+	,NextTaskId = nt.Id
+	,NextTaskName = nt.TaskName
+	,NextTaskAssignedTo = nt.AssignedTo
+	,NextTaskAssignedtoName = nt.AssignedToName
 FROM dbo.ServiceRequest sr
 LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
 INNER JOIN API.[Service] s ON s.Id = sc.ServiceId
@@ -84,3 +122,5 @@ LEFT JOIN dbo.LookupItem li ON li.Id = sr.StatusId
 LEFT JOIN API.[Location] a ON sr.AddressId = a.Id
 LEFT JOIN dbo.AvailableSlot sl ON sr.AvailableSlotId = sl.Id
 LEFT JOIN dbo.AvailableDay ad ON sl.AvailableDayId = ad.Id
+LEFT JOIN Tasks ts ON sr.Id = ts.ServiceRequestId
+LEFT JOIN NextTask nt ON sr.Id = nt.ServiceRequestId

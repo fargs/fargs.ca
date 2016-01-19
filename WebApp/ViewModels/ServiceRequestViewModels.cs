@@ -66,6 +66,17 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public bool? ShowAll { get; set; }
     }
 
+    public class CancellationForm
+    {
+        [Required]
+        public int? Id { get; set; }
+        [Required]
+        public DateTime? CancelledDate { get; set; }
+        public string IsLate { get; set; }
+        public string Notes { get; set; }
+
+    }
+
     public class AvailabilityForm
     {
         [Required]

@@ -26,10 +26,13 @@
     [DocumentFolderLink] NVARCHAR (2000)  NULL,
     [CompanyId]          SMALLINT         NULL,
     [IsNoShow]           BIT              CONSTRAINT [DF_ServiceRequest_IsNoShow] DEFAULT ((0)) NOT NULL,
+    [IsLateCancellation] BIT              CONSTRAINT [DF_ServiceRequest_IsLateCancellation] DEFAULT ((0)) NOT NULL,
     [ModifiedDate]       DATETIME         CONSTRAINT [DF_ServiceRequest_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]       NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

@@ -23,6 +23,7 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@Notes nvarchar(2000)
 	,@DocumentFolderLink nvarchar(2000)
 	,@CompanyId smallint
+	,@IsLateCancellation bit
 	,@IsNoShow bit
 	,@ModifiedUser nvarchar(100)
 AS
@@ -54,6 +55,7 @@ INSERT INTO dbo.[ServiceRequest]
 	,[Notes]
 	,[DocumentFolderLink]
 	,[CompanyId]
+	,[IsLateCancellation]
 	,[IsNoShow]
 	,[ModifiedUser]
 )
@@ -81,6 +83,7 @@ VALUES
 	,@Notes
 	,@DocumentFolderLink
 	,@CompanyId
+	,@IsLateCancellation
 	,@IsNoShow
 	,@ModifiedUser
 )

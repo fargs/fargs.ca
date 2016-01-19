@@ -74,5 +74,13 @@ namespace Model
         public Nullable<short> CompanyId { get; set; }
         public string Notes { get; set; }
         public bool IsNoShow { get; set; }
+        public Nullable<int> TotalTasks { get; set; }
+        public Nullable<int> ClosedTasks { get; set; }
+        public Nullable<int> OpenTasks { get; set; }
+        public Nullable<int> NextTaskId { get; set; }
+        public string NextTaskName { get; set; }
+        public string NextTaskAssignedTo { get; set; }
+        public string NextTaskAssignedtoName { get; set; }
+        public bool IsLateCancellation { get; set; }
     }
 }

@@ -310,11 +310,7 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
             await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Roles.Company);
 
-            return Json(new
-            {
-                success = true,
-                message = "Email was sent successfully"
-            });
+            return RedirectToAction("Index", new { parentId = 1 });
         }
 
         public async Task<ActionResult> ResetPassword(string userId)
@@ -327,11 +323,37 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
             await messenger.SendResetPasswordEmail(user.Email, user.UserName, callbackUrl);
 
-            return Json(new
+            return RedirectToAction("Index", new { parentId = 1 });
+        }
+
+        public ActionResult ChangePassword(string id)
+        {
+            var vm = new ViewModels.ChangePasswordViewModel() { UserId = id };
+            return View(vm);
+        }
+
+        //
+        // POST: /Manage/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangePassword(ViewModels.ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
             {
-                success = true,
-                message = "Email was sent successfully"
-            });
+                return View(model);
+            }
+            var result = await UserManager.ChangePasswordAsync(model.UserId, model.OldPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                var user = await UserManager.FindByIdAsync(model.UserId);
+                if (user != null)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                }
+                return RedirectToAction("Index", new { parent = 1 });
+            }
+            AddErrors(result);
+            return View(model);
         }
 
         private void AddErrors(IdentityResult result)

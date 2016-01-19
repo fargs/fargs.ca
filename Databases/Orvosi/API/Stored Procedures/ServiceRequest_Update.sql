@@ -25,6 +25,7 @@ CREATE PROCEDURE [API].[ServiceRequest_Update]
 	,@Notes nvarchar(128)
 	,@DocumentFolderLink nvarchar(2000)
 	,@CompanyId smallint
+	,@IsLateCancellation bit
 	,@IsNoShow bit
 	,@ModifiedUser nvarchar(100)
 AS
@@ -58,6 +59,7 @@ SET
 	,[Notes] = @Notes
 	,[DocumentFolderLink] = @DocumentFolderLink
 	,[CompanyId] = @CompanyId
+	,[IsLateCancellation] = @IsLateCancellation
 	,[IsNoShow] = @IsNoShow
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser

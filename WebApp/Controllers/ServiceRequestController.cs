@@ -23,7 +23,6 @@ namespace WebApp.Controllers
         {
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
-            filterArgs.StatusId = (filterArgs.StatusId ?? ServiceRequestStatus.Open);
 
             var vm = new IndexViewModel();
 
@@ -32,7 +31,10 @@ namespace WebApp.Controllers
 
             var sr = db.ServiceRequests.AsQueryable<ServiceRequest>();
 
-            sr = sr.Where(c => c.StatusId == filterArgs.StatusId);
+            if (filterArgs.StatusId.HasValue)
+            {
+                sr = sr.Where(c => c.StatusId == filterArgs.StatusId);
+            }
 
             if (filterArgs.DateRange.HasValue)
             {
@@ -315,6 +317,54 @@ namespace WebApp.Controllers
             db.ServiceRequests.Remove(serviceRequest);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> Cancel(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
+
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+            // TODO: Update the calendar and dropbox folder if appropriate.
+
+            return View(serviceRequest);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Cancel(CancellationForm form)
+        {
+            if (!form.Id.HasValue)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var serviceRequest = await db.ServiceRequests.FindAsync(form.Id);
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                using (db = new OrvosiEntities(User.Identity.Name))
+                {
+                    serviceRequest.CancelledDate = form.CancelledDate;
+                    serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
+                    serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
+                    serviceRequest.ServiceName = string.Empty; // this should not be needed but edmx is making it non nullable
+                    db.Entry(serviceRequest).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+            }
+            return View(serviceRequest);
         }
 
         [HttpPost]

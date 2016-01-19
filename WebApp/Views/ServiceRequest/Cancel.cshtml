@@ -1,0 +1,97 @@
+﻿@model Model.ServiceRequest
+
+<form action="~/ServiceRequest/Cancel" method="post" class="form-horizontal">
+
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(c => c.Id)
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Physician</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@Model.PhysicianDisplayName</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Company</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@Model.CompanyName</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Claimant</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@Model.ClaimantName</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Appointment Date</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@Model.AppointmentDate.Value.ToLongDateString()</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Start Time</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@Model.AppointmentDate.Value.Add(Model.StartTime.Value).ToShortTimeString()</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Cancelled Date</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="CancelledDatePicker">
+                @Html.TextBoxFor(c => c.CancelledDate, new { @class = "form-control", size = "16" })
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessageFor(c => c.CancelledDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2"></label>
+        <div class="col-md-10">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="IsLate"> Is Late
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Additional Notes</label>
+        <div class="col-md-10">
+            <textarea class="form-control" name="Notes" rows="3"></textarea>
+            @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-push-2 col-md-10">
+            <button class="btn btn-primary">Submit</button>
+            <a href="~/ServiceRequest" class="btn btn-primary">Back To List</a>
+            <a href="~/ServiceRequest/Details/@Model.Id" class="btn btn-primary">Back To Details</a>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $('#CancelledDatePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        });
+
+    </script>
+}

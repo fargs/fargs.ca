@@ -10,15 +10,15 @@ warning 6002: The table/view 'Orvosi.API.Account' does not have a primary key de
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="EmailConfirmed" />
-            <PropertyRef Name="PhoneNumberConfirmed" />
-            <PropertyRef Name="TwoFactorEnabled" />
-            <PropertyRef Name="LockoutEnabled" />
-            <PropertyRef Name="AccessFailedCount" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="IsTestRecord" />
+            
+            
+            
+            
+            
+            
+            
+            
+            
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -209,11 +209,11 @@ warning 6002: The table/view 'Orvosi.API.Location' does not have a primary key d
 warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="LocationArea">
           <Key>
-            <PropertyRef Name="LookupId" />
-            <PropertyRef Name="LookupName" />
+            
+            
             <PropertyRef Name="ItemId" />
-            <PropertyRef Name="ItemText" />
-            <PropertyRef Name="ItemValue" />
+            
+            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -242,15 +242,15 @@ warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key 
         <EntityType Name="Physician">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="EmailConfirmed" />
-            <PropertyRef Name="PhoneNumberConfirmed" />
-            <PropertyRef Name="TwoFactorEnabled" />
-            <PropertyRef Name="LockoutEnabled" />
-            <PropertyRef Name="AccessFailedCount" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="IsTestRecord" />
+            
+            
+            
+            
+            
+            
+            
+            
+            
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -418,8 +418,8 @@ warning 6002: The table/view 'Orvosi.API.Province' does not have a primary key d
         <EntityType Name="Province">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="CountryId" />
-            <PropertyRef Name="ProvinceCode" />
+            
+            
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CountryId" Type="smallint" Nullable="false" />
@@ -487,9 +487,9 @@ warning 6002: The table/view 'Orvosi.API.ServicePortfolio' does not have a prima
         <EntityType Name="ServicePortfolio">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="Name" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="ModifiedDate" />
+            
+            
+            
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -505,8 +505,6 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
             
             
             
-            
-            
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -514,7 +512,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="ClaimantName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServiceCatalogueId" Type="smallint" />
           <Property Name="HarvestProjectId" Type="bigint" />
-          <Property Name="Title" Type="nvarchar" MaxLength="668" />
+          <Property Name="Title" Type="nvarchar" MaxLength="800" />
           <Property Name="Body" Type="nvarchar(max)" />
           <Property Name="AddressId" Type="int" />
           <Property Name="RequestedDate" Type="datetime" />
@@ -531,6 +529,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="DocumentFolderLink" Type="nvarchar" MaxLength="2000" />
           <Property Name="CompanyId" Type="smallint" />
           <Property Name="IsNoShow" Type="bit" Nullable="false" />
+          <Property Name="IsLateCancellation" Type="bit" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="ServiceId" Type="smallint" />
@@ -567,7 +566,14 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="StartTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
           <Property Name="EndTime" Type="time" Precision="7" />
-          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="150" />
+          <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="281" />
+          <Property Name="TotalTasks" Type="int" />
+          <Property Name="ClosedTasks" Type="int" />
+          <Property Name="OpenTasks" Type="int" />
+          <Property Name="NextTaskId" Type="int" />
+          <Property Name="NextTaskName" Type="nvarchar" MaxLength="128" />
+          <Property Name="NextTaskAssignedTo" Type="nvarchar" MaxLength="128" />
+          <Property Name="NextTaskAssignedtoName" Type="nvarchar" MaxLength="210" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -912,6 +918,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Notes" Type="nvarchar" Mode="In" />
           <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="IsLateCancellation" Type="bit" Mode="In" />
           <Parameter Name="IsNoShow" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
@@ -941,6 +948,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Notes" Type="nvarchar" Mode="In" />
           <Parameter Name="DocumentFolderLink" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
+          <Parameter Name="IsLateCancellation" Type="bit" Mode="In" />
           <Parameter Name="IsNoShow" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
@@ -1395,6 +1403,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[DocumentFolderLink] AS [DocumentFolderLink], 
     [ServiceRequest].[CompanyId] AS [CompanyId], 
     [ServiceRequest].[IsNoShow] AS [IsNoShow], 
+    [ServiceRequest].[IsLateCancellation] AS [IsLateCancellation], 
     [ServiceRequest].[ModifiedDate] AS [ModifiedDate], 
     [ServiceRequest].[ModifiedUser] AS [ModifiedUser], 
     [ServiceRequest].[ServiceId] AS [ServiceId], 
@@ -1431,7 +1440,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[StartTime] AS [StartTime], 
     [ServiceRequest].[Duration] AS [Duration], 
     [ServiceRequest].[EndTime] AS [EndTime], 
-    [ServiceRequest].[CalendarEventTitle] AS [CalendarEventTitle]
+    [ServiceRequest].[CalendarEventTitle] AS [CalendarEventTitle], 
+    [ServiceRequest].[TotalTasks] AS [TotalTasks], 
+    [ServiceRequest].[ClosedTasks] AS [ClosedTasks], 
+    [ServiceRequest].[OpenTasks] AS [OpenTasks], 
+    [ServiceRequest].[NextTaskId] AS [NextTaskId], 
+    [ServiceRequest].[NextTaskName] AS [NextTaskName], 
+    [ServiceRequest].[NextTaskAssignedTo] AS [NextTaskAssignedTo], 
+    [ServiceRequest].[NextTaskAssignedtoName] AS [NextTaskAssignedtoName]
     FROM [API].[ServiceRequest] AS [ServiceRequest]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceRequestTask" EntityType="Self.ServiceRequestTask" store:Type="Views" store:Schema="API">
@@ -1665,6 +1681,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Notes" Mode="In" Type="String" />
             <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="IsLateCancellation" Mode="In" Type="Boolean" />
             <Parameter Name="IsNoShow" Mode="In" Type="Boolean" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
@@ -1694,6 +1711,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Notes" Mode="In" Type="String" />
             <Parameter Name="DocumentFolderLink" Mode="In" Type="String" />
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
+            <Parameter Name="IsLateCancellation" Mode="In" Type="Boolean" />
             <Parameter Name="IsNoShow" Mode="In" Type="Boolean" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
@@ -2024,15 +2042,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="PhoneNumberConfirmed" />
-            <PropertyRef Name="TwoFactorEnabled" />
-            <PropertyRef Name="LockoutEnabled" />
-            <PropertyRef Name="AccessFailedCount" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="IsTestRecord" />
-            <PropertyRef Name="EmailConfirmed" />
           </Key>
           <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
@@ -2104,9 +2113,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServicePortfolio">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="Name" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="ModifiedDate" />
           </Key>
           <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -2123,7 +2129,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CompanyReferenceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ServiceCatalogueId" Type="Int16" />
           <Property Name="HarvestProjectId" Type="Int64" />
-          <Property Name="Title" Type="String" MaxLength="668" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="800" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="AddressId" Type="Int32" />
           <Property Name="RequestedDate" Type="DateTime" Precision="3" />
@@ -2170,7 +2176,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="DocumentReviewerName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
           <Property Name="AvailableSlotId" Type="Int16" />
           <Property Name="Duration" Type="Int16" />
-          <Property Name="CalendarEventTitle" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="CalendarEventTitle" Type="String" MaxLength="281" FixedLength="false" Unicode="true" />
           <Property Name="DocumentFolderLink" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="ServiceCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ServiceId" Type="Int16" />
@@ -2178,6 +2184,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CompanyId" Type="Int16" />
           <Property Name="Notes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="IsNoShow" Type="Boolean" Nullable="false" />
+          <Property Name="TotalTasks" Type="Int32" />
+          <Property Name="ClosedTasks" Type="Int32" />
+          <Property Name="OpenTasks" Type="Int32" />
+          <Property Name="NextTaskId" Type="Int32" />
+          <Property Name="NextTaskName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="NextTaskAssignedTo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="NextTaskAssignedtoName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="IsLateCancellation" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -2221,8 +2235,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="Province">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="CountryId" />
-            <PropertyRef Name="ProvinceCode" />
           </Key>
           <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CountryId" Type="Int16" Nullable="false" />
@@ -2359,11 +2371,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         </ComplexType>
         <EntityType Name="LocationArea">
           <Key>
-            <PropertyRef Name="LookupId" />
-            <PropertyRef Name="LookupName" />
             <PropertyRef Name="ItemId" />
-            <PropertyRef Name="ItemText" />
-            <PropertyRef Name="ItemValue" />
           </Key>
           <Property Name="LookupId" Type="Int16" Nullable="false" />
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -2394,15 +2402,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="Physician">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="EmailConfirmed" />
-            <PropertyRef Name="PhoneNumberConfirmed" />
-            <PropertyRef Name="TwoFactorEnabled" />
-            <PropertyRef Name="LockoutEnabled" />
-            <PropertyRef Name="AccessFailedCount" />
-            <PropertyRef Name="UserName" />
-            <PropertyRef Name="ModifiedDate" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="IsTestRecord" />
           </Key>
           <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
@@ -2866,6 +2865,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="IsLateCancellation" ColumnName="IsLateCancellation" />
+                <ScalarProperty Name="NextTaskAssignedtoName" ColumnName="NextTaskAssignedtoName" />
+                <ScalarProperty Name="NextTaskAssignedTo" ColumnName="NextTaskAssignedTo" />
+                <ScalarProperty Name="NextTaskName" ColumnName="NextTaskName" />
+                <ScalarProperty Name="NextTaskId" ColumnName="NextTaskId" />
+                <ScalarProperty Name="OpenTasks" ColumnName="OpenTasks" />
+                <ScalarProperty Name="ClosedTasks" ColumnName="ClosedTasks" />
+                <ScalarProperty Name="TotalTasks" ColumnName="TotalTasks" />
                 <ScalarProperty Name="IsNoShow" ColumnName="IsNoShow" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
@@ -2931,6 +2938,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <ModificationFunctionMapping>
                 <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequest_Update">
+                  <ScalarProperty Name="IsLateCancellation" ParameterName="IsLateCancellation" Version="Current" />
                   <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" Version="Current" />
                   <ScalarProperty Name="Notes" ParameterName="Notes" Version="Current" />
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" Version="Current" />
@@ -2963,6 +2971,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="Id" ParameterName="Id" />
                 </DeleteFunction>
                 <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequest_Insert">
+                  <ScalarProperty Name="IsLateCancellation" ParameterName="IsLateCancellation" />
                   <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" />
                   <ScalarProperty Name="Notes" ParameterName="Notes" />
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" />

@@ -708,6 +708,7 @@
     <Content Include="Areas\Physicians\Views\Home\Details.cshtml" />
     <Content Include="Areas\Staff\Views\Home\Details.cshtml" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -829,6 +830,7 @@
     <Content Include="Views\ServiceRequest\Create.cshtml" />
     <Content Include="Views\ServiceRequest\Availability.cshtml" />
     <Content Include="Views\ServiceRequest\CreateSuccess.cshtml" />
+    <Content Include="Views\ServiceRequest\Cancel.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

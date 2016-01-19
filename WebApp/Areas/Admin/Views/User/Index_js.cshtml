@@ -100,7 +100,7 @@
             });
         });
 
-        $('#UserTableRows').on('click', '#ResetPasswordButton', function(e) {
+        $('#ResetPasswordButton').on('click', function(e) {
             var url = '@Url.Content("~/Admin/User/ResetPassword")';
             $.post(
                 url,

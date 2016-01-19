@@ -81,9 +81,6 @@
             <tr>
                 <th></th>
                 <th>
-                    Id
-                </th>
-                <th>
                     Status
                 </th>
                 <th>
@@ -97,6 +94,9 @@
                 </th>
                 <th>
                     Who
+                </th>
+                <th>
+                    Id
                 </th>
             </tr>
 
@@ -144,9 +144,6 @@
                         </div>
                     </td>
                     <td>
-                        <strong>@item.Id</strong>
-                    </td>
-                    <td>
                         <strong>@item.AppointmentDate.Value.ToString("ddd, MMM dd yyyy")</strong>
                         <div class="text-muted">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
                     </td>
@@ -166,6 +163,9 @@
                         @item.CaseCoordinatorName <small class="text-muted">(Case Coordinator)</small><br />
                         @item.DocumentReviewerName <small class="text-muted">(Document Reviewer)</small><br />
                         @item.IntakeAssistantName <small class="text-muted">(Intake Assistant)</small><br />
+                    </td>
+                    <td>
+                        <strong>@item.Id</strong>
                     </td>
                 </tr>
             }

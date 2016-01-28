@@ -15,7 +15,6 @@ CREATE PROCEDURE [API].[ServiceRequest_Update]
 	,@CaseCoordinatorId uniqueidentifier
 	,@IntakeAssistantId uniqueidentifier
 	,@DocumentReviewerId uniqueidentifier
-	,@StatusId tinyint
 	,@AvailableSlotId smallint
 	,@AppointmentDate date
 	,@StartTime time
@@ -49,7 +48,6 @@ SET
 	,[CaseCoordinatorId] = @CaseCoordinatorId
 	,[IntakeAssistantId] = @IntakeAssistantId
 	,[DocumentReviewerId] = @DocumentReviewerId
-	,[StatusId] = @StatusId
 	,[AvailableSlotId] = @AvailableSlotId
 	,[AppointmentDate] = @AppointmentDate
 	,[StartTime] = @StartTime

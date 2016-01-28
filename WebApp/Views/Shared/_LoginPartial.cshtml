@@ -3,19 +3,18 @@
 {
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-    @Html.AntiForgeryToken()
-        
-<ul class="nav navbar-nav navbar-right">
-    @*<li><a href='@Url.Content("~/Manage/Index")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName</a></li>*@
-    <li><a><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName</a></li>
-    <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
-</ul>
+        @Html.AntiForgeryToken()
+
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href='@Url.Content("~/Manage/Index")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName</a></li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
+        </ul>
     }
 }
 else
 {
-<ul class="nav navbar-nav navbar-right">
-    <li>@Html.ActionLink("Register", "Register", "Account", routeValues: new { area = "" }, htmlAttributes: new { id = "registerLink" })</li>
-    <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { area = "" }, htmlAttributes: new { id = "loginLink" })</li>
-</ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: new { area = "" }, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { area = "" }, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
 }

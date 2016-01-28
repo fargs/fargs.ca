@@ -1,8 +1,8 @@
 ﻿
 CREATE PROCEDURE [API].[ServiceRequestTask_Insert]
 	 @ServiceRequestId int
-	,@TaskId smallint
 	,@TaskName nvarchar(128)
+	,@Guidance nvarchar(1000)
 	,@ResponsibleRoleId nvarchar(128)
 	,@ResponsibleRoleName nvarchar(128)
 	,@Sequence smallint
@@ -23,8 +23,8 @@ SET @Now = GETDATE()
 INSERT INTO dbo.[ServiceRequestTask]
 (
 	 [ServiceRequestId]
-	,[TaskId]
 	,[TaskName]
+	,[Guidance]
 	,[ResponsibleRoleId]
 	,[ResponsibleRoleName]
 	,[Sequence]
@@ -41,8 +41,8 @@ INSERT INTO dbo.[ServiceRequestTask]
 VALUES 
 (
 	 @ServiceRequestId
-	,@TaskId
 	,@TaskName
+	,@Guidance
 	,@ResponsibleRoleId
 	,@ResponsibleRoleName
 	,@Sequence

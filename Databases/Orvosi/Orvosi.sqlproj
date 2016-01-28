@@ -236,6 +236,13 @@
     <Build Include="dbo\Functions\RoleId_DocumentReviewer.sql" />
     <Build Include="dbo\Functions\RoleId_CaseCoordinator.sql" />
     <Build Include="dbo\Functions\LookupId_Specialty.sql" />
+    <Build Include="dbo\Tables\ServiceRequestTemplateTask.sql" />
+    <Build Include="dbo\Tables\ServiceRequestTemplate.sql" />
+    <Build Include="API\Views\ServiceRequestTemplateTask.sql" />
+    <Build Include="API\Views\Task.sql" />
+    <Build Include="API\Views\ServiceRequestCostRollUp.sql" />
+    <Build Include="dbo\Functions\GetServiceStatusId.sql" />
+    <Build Include="dbo\Functions\GetServiceRequestStatusId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

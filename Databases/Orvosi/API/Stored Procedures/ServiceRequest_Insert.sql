@@ -13,7 +13,6 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@CaseCoordinatorId uniqueidentifier
 	,@IntakeAssistantId uniqueidentifier
 	,@DocumentReviewerId uniqueidentifier
-	,@StatusId tinyint
 	,@AvailableSlotId smallint
 	,@AppointmentDate date
 	,@StartTime time
@@ -105,6 +104,9 @@ INSERT INTO dbo.ServiceRequestTask (
 	 [ServiceRequestId]
 	,[TaskId]
 	,[TaskName]
+	,[TaskPhaseId]
+	,[TaskPhaseName]
+	,[Guidance]
 	,[ResponsibleRoleId]
 	,[ResponsibleRoleName]
 	,[Sequence]
@@ -116,23 +118,24 @@ INSERT INTO dbo.ServiceRequestTask (
 	,[ModifiedUser]
 )
 SELECT @Id
-	, st.TaskId
-	, t.Name
-	, t.ResponsibleRoleId
-	, r.Name
-	, t.[Sequence]
-	, t.IsBillable
+	, st.Id
+	, st.TaskName
+	, st.TaskPhaseId
+	, st.TaskPhaseName
+	, st.Guidance
+	, st.ResponsibleRoleId
+	, st.ResponsibleRoleName
+	, st.[Sequence]
+	, st.IsBillable
 	, a.UserId
 	, st.HourlyRate
 	, st.EstimatedHours
 	, @Now
 	, @ModifiedUser
-FROM dbo.[ServiceTask] st
-INNER JOIN dbo.Task t ON st.TaskId = t.Id
-LEFT JOIN dbo.AspNetRoles r ON t.ResponsibleRoleId = r.Id
-LEFT JOIN Assignments a ON t.ResponsibleRoleId = a.RoleId
-WHERE st.ServiceId = (
-	SELECT ServiceId FROM dbo.ServiceCatalogue WHERE Id = @ServiceCatalogueId
+FROM API.[Task] st
+LEFT JOIN Assignments a ON st.ResponsibleRoleId = a.RoleId
+WHERE st.ServiceCategoryId = (
+	SELECT ServiceCategoryId FROM dbo.ServiceCatalogue WHERE Id = @ServiceCatalogueId
 )
 
 SELECT * FROM API.ServiceRequest WHERE Id = @Id

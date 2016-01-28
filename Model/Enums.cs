@@ -9,9 +9,17 @@ namespace Model.Enums
     public static class Roles
     {
         public const string Physician = "8359141f-e423-4e48-8925-4624ba86245a";
+        public const string PhysicianName = "Physician";
         public const string Company = "7b930663-b091-44ca-924c-d8b11a1ee7ea";
+        public const string CompanyName = "Company";
         public const string IntakeAssistant = "9dd582a0-cf86-4fc0-8894-477266068c12";
+        public const string IntakeAssistantName = "Intake Assistant";
+        public const string CaseCoordinator = "9eab89c0-225c-4027-9f42-cc35e5656b14";
+        public const string CaseCoordinatorName = "Case Coordinator";
+        public const string DocumentReviewer = "22B5C8AC-2C96-4A74-8057-976914031A7E";
+        public const string DocumentReviewerName = "Document Reviewer";
         public const string SuperAdmin = "7fab67dd-286b-492f-865a-0cb0ce1261ce";
+        public const string SuperAdminName = "Super Admin";
     }
 
     public static class ActionStates
@@ -44,7 +52,6 @@ namespace Model.Enums
 
     public static class ServiceRequestStatus
     {
-        public const byte Unassigned = 0;
         public const byte Open = 10;
         public const byte Closed = 11;
     }
@@ -102,6 +109,14 @@ namespace Model.Enums
         public const byte Physiatry = 27;
         public const byte Orthopedics = 28;
         public const byte Neurology = 29;
+    }
+
+    public static class ServiceStatus
+    {
+        public const byte LateCancellation = 32;
+        public const byte Cancellation = 31;
+        public const byte NoShow = 30;
+        public const byte Completed = 36;
     }
 
     public static class DateRanges

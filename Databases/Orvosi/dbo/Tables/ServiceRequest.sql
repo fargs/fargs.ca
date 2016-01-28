@@ -11,7 +11,6 @@
     [RequestedDate]      DATETIME         NULL,
     [RequestedBy]        UNIQUEIDENTIFIER NULL,
     [CancelledDate]      DATETIME         NULL,
-    [StatusId]           TINYINT          CONSTRAINT [DF_ServiceRequest_StatusId] DEFAULT ((10)) NULL,
     [AvailableSlotId]    SMALLINT         NULL,
     [AppointmentDate]    DATE             NULL,
     [StartTime]          TIME (7)         NULL,
@@ -31,6 +30,8 @@
     [ModifiedUser]       NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

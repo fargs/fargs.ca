@@ -7,6 +7,8 @@ using System.Linq;
 using System.Web;
 using Model;
 using Model.Enums;
+using System.Security.Principal;
+using System.Security.Claims;
 
 namespace WebApp.Library.Extensions
 {
@@ -18,6 +20,11 @@ namespace WebApp.Library.Extensions
             var jw = new StringWriter();
             js.Serialize(jw, obj);
             return jw.ToString();
+        }
+
+        public static ClaimsIdentity GetClaimsIdentity(this IIdentity obj)
+        {
+            return obj as ClaimsIdentity;
         }
     }
 }

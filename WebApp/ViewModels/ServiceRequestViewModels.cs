@@ -46,6 +46,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public User User { get; set; }
         public ServiceRequest ServiceRequest { get; set; }
         public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
+        public List<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
     }
 
     public class EditViewModel

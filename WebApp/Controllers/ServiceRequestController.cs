@@ -33,7 +33,7 @@ namespace WebApp.Controllers
 
             if (filterArgs.StatusId.HasValue)
             {
-                sr = sr.Where(c => c.StatusId == filterArgs.StatusId);
+                sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
             }
 
             if (filterArgs.DateRange.HasValue)
@@ -125,8 +125,10 @@ namespace WebApp.Controllers
 
             var vm = new DetailsViewModel();
 
+            vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
             vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
+            vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
 
             if (vm.ServiceRequest == null)
             {

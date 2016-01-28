@@ -7,68 +7,79 @@ using System.Web;
 using System.Web.Mvc;
 using System.Security.Claims;
 using WebApp.Models;
-using vm = WebApp.ViewModels;
+using vm = WebApp.ViewModels.DashboardViewModels;
 using System.Net.Mail;
 using System.Text;
 using Model;
 using Model.Enums;
+using WebApp.Library.Extensions;
+using System.Data.Entity;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        private ApplicationUserManager _userManager;
-        private ApplicationRoleManager _roleManager;
-        private ApplicationDbContext _db;
+        OrvosiEntities db = new OrvosiEntities();
 
         // MVC
-        public async Task<ActionResult> Index(string schedulingProcess = "ByPhysician")
+        public async Task<ActionResult> Index(byte lookAhead, string ImpersonateUserId = "")
         {
-            var identity = (User.Identity as ClaimsIdentity);
-            _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            _roleManager = HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
-            _db = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+            var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
 
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var model = new vm.DashboardViewModel();
+            var now = DateTime.Today;
+            var lookAheadDate = now.AddDays(lookAhead);
 
-            model.UserRoleName = identity.FindFirst(ClaimTypes.Role).Value;
-            model.UserEmail = identity.FindFirst(ClaimTypes.Email).Value;
-            model.UserDisplayName = user.DisplayName;
-            model.SchedulingProcess = schedulingProcess;
-            model.Physicians = GetPhysicians();
-            model.Services = GetServices();
+            var query = db.ServiceRequests;
 
-            using (var db = new OrvosiEntities())
+            if (user.RoleId == Roles.Physician)
             {
-                var company = db.Companies.FirstOrDefault(c => c.Id == user.CompanyId);
-                if (company != null)
-                {
-                    model.UserCompanyDisplayName = company.Name;
-                    model.UserCompanyLogoCssClass = company.LogoCssClass;
-
-                    //if (model.SchedulingProcess == "ByTime")
-                    //{
-                    //    model.BookingPageName = company.MasterBookingPageByTime;
-                    //}
-                    //else 
-                    //if (model.SchedulingProcess == "Teleconference")
-                    //{
-                    //    model.BookingPageName = company.MasterBookingPageTeleconference;
-                    //}
-                    //else 
-                    if (model.SchedulingProcess == "ByPhysician")
-                    {
-                        model.BookingPageName = company.MasterBookingPageByPhysician;
-                    }
-                    else if (model.SchedulingProcess == "SpecialRequest")
-                    {
-                        model.BookingPageName = null;
-                    }
-                }
+                query.Where(c => c.PhysicianId == user.Id);
             }
-            return View(model);
+            else if (user.RoleId == Roles.IntakeAssistant)
+            {
+                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
+            }
+            else if (user.RoleId == Roles.IntakeAssistant || user.RoleId == Roles.DocumentReviewer)
+            {
+
+            }
+            else if (user.RoleId == Roles.CaseCoordinator)
+            {
+                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
+            }
+            else if (user.RoleId == Roles.SuperAdmin)
+            {
+                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
+            }
+            else
+            {
+                throw new Exception("User in this role is not supported at this time.");
+            }
+
+            var today = query
+                .Where(c => c.AppointmentDate == DateTime.Today);
+
+            var upcoming = query
+                .Where(p => p.AppointmentDate > now && p.AppointmentDate <= lookAheadDate);
+
+            var vm = new vm.IndexViewModel();
+
+            vm.Today = today
+                .OrderBy(c => c.AppointmentDate)
+                .OrderBy(c => c.StartTime)
+                .ToList();
+
+            vm.Upcoming = upcoming
+                .OrderBy(c => c.AppointmentDate)
+                .OrderBy(c => c.StartTime)
+                .ToList();
+
+            ViewBag.LookAhead = lookAhead;
+            ViewBag.PhysicianName = user.DisplayName;
+            ViewBag.UserId = user.Id;
+
+            return View(vm);
         }
 
         // API

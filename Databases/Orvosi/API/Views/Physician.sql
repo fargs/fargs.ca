@@ -5,10 +5,39 @@
 
 
 
+
 CREATE VIEW [API].[Physician]
 AS
 SELECT 
-	 u.*
+	 u.[Id]
+      ,u.[Email]
+      ,u.[EmailConfirmed]
+      ,u.[PasswordHash]
+      ,u.[SecurityStamp]
+      ,u.[PhoneNumber]
+      ,u.[PhoneNumberConfirmed]
+      ,u.[TwoFactorEnabled]
+      ,u.[LockoutEndDateUtc]
+      ,u.[LockoutEnabled]
+      ,u.[AccessFailedCount]
+      ,u.[UserName]
+      ,u.[Title]
+      ,u.[FirstName]
+      ,u.[LastName]
+      ,u.[DisplayName]
+      ,u.[EmployeeId]
+      ,u.[CompanyId]
+      ,u.[CompanySubmittedName]
+      ,u.[ModifiedDate]
+      ,u.[ModifiedUser]
+      ,u.[LastActivationDate]
+      ,u.[IsTestRecord]
+      ,u.[RoleId]
+      ,u.[RoleName]
+      ,u.[CompanyName]
+      ,u.[RoleCategoryId]
+      ,u.[RoleCategoryName]
+      ,u.[HourlyRate]
 	,p.Designations
 	,p.PrimaryAddressId
 	,p.SpecialtyId

@@ -42,5 +42,6 @@ namespace Model
         public string CompanyName { get; set; }
         public Nullable<byte> RoleCategoryId { get; set; }
         public string RoleCategoryName { get; set; }
+        public Nullable<decimal> HourlyRate { get; set; }
     }
 }

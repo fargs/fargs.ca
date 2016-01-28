@@ -25,7 +25,6 @@ namespace Model
         public Nullable<System.DateTime> RequestedDate { get; set; }
         public Nullable<System.Guid> RequestedBy { get; set; }
         public Nullable<System.DateTime> CancelledDate { get; set; }
-        public Nullable<byte> StatusId { get; set; }
         public Nullable<System.DateTime> DueDate { get; set; }
         public Nullable<System.TimeSpan> StartTime { get; set; }
         public Nullable<System.TimeSpan> EndTime { get; set; }
@@ -38,7 +37,6 @@ namespace Model
         public string CompanyName { get; set; }
         public string ParentCompanyName { get; set; }
         public Nullable<decimal> EffectivePrice { get; set; }
-        public string StatusName { get; set; }
         public string AddressName { get; set; }
         public Nullable<byte> AddressTypeId { get; set; }
         public string AddressTypeName { get; set; }
@@ -77,10 +75,14 @@ namespace Model
         public Nullable<int> TotalTasks { get; set; }
         public Nullable<int> ClosedTasks { get; set; }
         public Nullable<int> OpenTasks { get; set; }
+        public bool IsLateCancellation { get; set; }
         public Nullable<int> NextTaskId { get; set; }
         public string NextTaskName { get; set; }
         public string NextTaskAssignedTo { get; set; }
         public string NextTaskAssignedtoName { get; set; }
-        public bool IsLateCancellation { get; set; }
+        public Nullable<byte> ServiceRequestStatusId { get; set; }
+        public Nullable<byte> ServiceStatusId { get; set; }
+        public string ServiceRequestStatusText { get; set; }
+        public string ServiceStatusText { get; set; }
     }
 }

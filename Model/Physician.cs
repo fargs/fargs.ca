@@ -42,14 +42,15 @@ namespace Model
         public string CompanyName { get; set; }
         public Nullable<byte> RoleCategoryId { get; set; }
         public string RoleCategoryName { get; set; }
+        public Nullable<decimal> HourlyRate { get; set; }
         public string Designations { get; set; }
+        public Nullable<short> PrimaryAddressId { get; set; }
+        public Nullable<byte> SpecialtyId { get; set; }
+        public string OtherSpecialties { get; set; }
         public Nullable<bool> Pediatrics { get; set; }
         public Nullable<bool> Adolescents { get; set; }
         public Nullable<bool> Adults { get; set; }
         public Nullable<bool> Geriatrics { get; set; }
-        public Nullable<short> PrimaryAddressId { get; set; }
-        public Nullable<byte> SpecialtyId { get; set; }
-        public string OtherSpecialties { get; set; }
         public string LocationName { get; set; }
         public string AddressName { get; set; }
         public string PrimarySpecialtyName { get; set; }

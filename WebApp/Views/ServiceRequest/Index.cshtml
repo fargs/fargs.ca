@@ -86,15 +86,15 @@
                 <th>
                     When
                 </th>
-                <th>
-                    Where
-                </th>
+                @*<th>
+                        Where
+                    </th>*@
                 <th>
                     What
                 </th>
-                <th>
-                    Who
-                </th>
+                @*<th>
+                        Who
+                    </th>*@
                 <th>
                     Id
                 </th>
@@ -106,67 +106,75 @@
                     @*<td class="@(item.StatusId == ServiceRequestStatus.Open ? "bordered-left-success" : "bordered-left-warning")">*@
                     <td>
                         <div class="btn-group" style="width:100px">
-                            @Html.ActionLink("View", "Details", new { id = item.Id }, new { @class = "btn btn-default" })
-                            @if (Model.User.RoleCategoryId != RoleCategory.Physician)
+                            @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
                             {
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="~/ServiceRequest/Edit/@item.Id#ResourceAssignment">Assign Resources</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Cancellation", "Cancel", new { id = item.Id })</li>
-                                </ul>
+                                <a href="~/ServiceRequest/Details/@item.Id">View</a>
+                            }
+                            else
+                            {
+                                @Html.ActionLink("View", "Details", new { id = item.Id }, new { @class = "btn btn-default" })
+                                if (Model.User.RoleCategoryId != RoleCategory.Physician)
+                                {
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="~/ServiceRequest/Edit/@item.Id#ResourceAssignment">Assign Resources</a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li>@Html.ActionLink("Cancellation", "Cancel", new { id = item.Id })</li>
+                                    </ul>
+                                }
                             }
                         </div>
                     </td>
-                    <td>
-                        <div class="label label-success">@item.StatusName</div>
-                        @if (item.IsLateCancellation)
-                        {
-                            <div class="label label-danger">Late Cancellation</div>
-                        }
-                        @if (item.IsNoShow)
-                        {
-                            <div class="label label-danger">No Show</div>
-                        }
-                        <div class="clearfix">
-                            <strong>Next Task: </strong>
-                        </div>
-                        <div>
-                            @item.NextTaskName
-                        </div>
-                        <div>
-                            <small class="text-muted">
-                                @item.NextTaskAssignedtoName
-                            </small>
-                        </div>
-                    </td>
-                    <td>
-                        <strong>@item.AppointmentDate.Value.ToString("ddd, MMM dd yyyy")</strong>
-                        <div class="text-muted">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
-                    </td>
-                    <td>
-                        <strong>@item.LocationName</strong>
-                        <div class="text-muted">@item.AddressName</div>
-                    </td>
-                    <td>
-                        <strong>@item.ServiceName</strong>
-                        <div class="text-muted">
-                            @item.CompanyName<br />
-                            @(string.IsNullOrEmpty(item.ClaimantName) ? item.CompanyReferenceId : item.ClaimantName)
-                        </div>
-                    </td>
-                    <td>
-                        <strong>@item.PhysicianDisplayName</strong><br />
-                        @item.CaseCoordinatorName <small class="text-muted">(Case Coordinator)</small><br />
-                        @item.DocumentReviewerName <small class="text-muted">(Document Reviewer)</small><br />
-                        @item.IntakeAssistantName <small class="text-muted">(Intake Assistant)</small><br />
-                    </td>
-                    <td>
-                        <strong>@item.Id</strong>
-                    </td>
+                    @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
+                    {
+                        <td colspan="4">
+                            <div class="text-muted"><strong>Closed</strong> @item.Title</div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <div class="label label-@(item.ServiceStatusId == ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>
+                            <div>
+                                <div class="progress" style="margin-bottom: 0">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="@item.ClosedTasks" aria-valuemin="0" aria-valuemax="@item.TotalTasks" style="width: @(item.ClosedTasks * 100 / item.TotalTasks)%;">
+                                    </div>
+                                </div>
+                                <small class="text-muted">@item.ClosedTasks out of @item.TotalTasks completed</small>
+                            </div>
+                            <div>
+                                <small class="text-muted">Next Task: </small><small><strong>@item.NextTaskName</strong></small>
+                            </div>
+                            <div>
+                                <small class="text-muted">Assigned To: <strong>@(string.IsNullOrEmpty(item.NextTaskAssignedTo) ? "<Not Assigned>" : item.NextTaskAssignedtoName)</strong></small>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>@item.AppointmentDate.Value.ToString("ddd, MMM dd yyyy")</strong>
+                            <div class="text-muted">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
+                            <div class="text-muted">@item.AddressName</div>
+                            <strong>@item.LocationName</strong>
+                        </td>
+                        <td>
+                            <strong>@item.ServiceName</strong>
+                            <div class="text-muted">
+                                @item.CompanyName<br />
+                                @(string.IsNullOrEmpty(item.ClaimantName) ? item.CompanyReferenceId : item.ClaimantName)
+                            </div>
+                        </td>
+                        @*<td>
+                                <strong>@item.PhysicianDisplayName</strong><br />
+                                @item.CaseCoordinatorName <small class="text-muted">(Case Coordinator)</small><br />
+                                @item.DocumentReviewerName <small class="text-muted">(Document Reviewer)</small><br />
+                                @item.IntakeAssistantName <small class="text-muted">(Intake Assistant)</small><br />
+                            </td>*@
+                        <td>
+                            <strong>@item.Id</strong>
+                        </td>
+                    }
                 </tr>
             }
 

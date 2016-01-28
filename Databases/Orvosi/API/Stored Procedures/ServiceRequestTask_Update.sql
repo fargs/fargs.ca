@@ -2,8 +2,8 @@
 CREATE PROCEDURE [API].[ServiceRequestTask_Update]
 	 @Id int
 	,@ServiceRequestId int
-	,@TaskId smallint
 	,@TaskName nvarchar(128)
+	,@Guidance nvarchar(1000)
 	,@ResponsibleRoleId nvarchar(128)
 	,@ResponsibleRoleName nvarchar(128)
 	,@Sequence smallint
@@ -24,8 +24,8 @@ SET @Now = GETDATE()
 UPDATE dbo.[ServiceRequestTask]
 SET
 	 [ServiceRequestId] = @ServiceRequestId
-	,[TaskId] = @TaskId
 	,[TaskName] = @TaskName
+	,[Guidance] = @Guidance
 	,[ResponsibleRoleId] = @ResponsibleRoleId
 	,[ResponsibleRoleName] = @ResponsibleRoleName
 	,[Sequence] = @Sequence

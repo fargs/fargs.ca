@@ -58,7 +58,7 @@ namespace WebApp.Controllers
             var userGuid = new Guid(vm.User.Id);
 
             // if the user is an administrator and the option showAll is true, then show all
-            if (vm.User.RoleId != Roles.SuperAdmin || (vm.User.RoleId == Roles.SuperAdmin && filterArgs.ShowAll == false))
+            if (vm.User.RoleCategoryId != RoleCategory.Admin || (vm.User.RoleCategoryId != RoleCategory.Admin && filterArgs.ShowAll == false))
             {
                 sr = sr.Where(c => c.CaseCoordinatorId == userGuid || c.IntakeAssistantId == userGuid || c.DocumentReviewerId == userGuid || c.PhysicianId == vm.User.Id);
             }

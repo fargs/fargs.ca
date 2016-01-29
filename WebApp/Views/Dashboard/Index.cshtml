@@ -2,67 +2,122 @@
 
 <h1>Dashboard</h1>
 <h4>For @ViewBag.PhysicianName</h4>
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h2 class="panel-title">Today</h2>
-    </div>
-    <div class="panel-body">
-        @if (Model.Today.Count == 0)
-        {
-            <div class="text-muted">Nothing is required of you today.</div>
-        }
-        @foreach (var item in Model.Today)
-        {
-            <div>
-                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                <div><strong>Case Folder: </strong>@item.Title</div>
+<div class="h3 text-muted">Upcoming</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Today</h2>
             </div>
-        }
+            <div class="panel-body">
+                <div class="h1">@Model.Today.Count <span class="lead">IME's</span></div>
+                @foreach (var item in Model.Today)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Tomorrow</h2>
+            </div>
+            <div class="panel-body">
+                <div class="h1">@Model.Tomorrow.Count <span class="lead">IME's</span></div>
+                @foreach (var item in Model.Tomorrow)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Rest of the Week</h2>
+            </div>
+            <div class="panel-body">
+                <div class="h1">@Model.RestOfWeek.Count <span class="lead">IME's</span></div>
+                @foreach (var item in Model.RestOfWeek)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Next Week</h2>
+            </div>
+            <div class="panel-body">
+                <div class="h1">@Model.NextWeek.Count <span class="lead">IME's</span></div> 
+                @foreach (var item in Model.NextWeek)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h2 class="panel-title">Rest of the Week</h2>
-
-    </div>
-    <div class="panel-body">
-        @if (Model.RestOfWeek.Count == 0)
-        {
-            <div class="text-muted">Nothing is planned for the rest of the week.</div>
-        }
-        @foreach (var item in Model.RestOfWeek)
-        {
-            <div>
-                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                <div><strong>Case Folder: </strong>@item.Title</div>
+<div class="h3 text-muted">Open Tasks</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Report Submissions</h2>
             </div>
-            <p></p>
-        }
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h2 class="panel-title">Next Week</h2>
-
-    </div>
-    <div class="panel-body">
-        @if (Model.NextWeek.Count == 0)
-        {
-            <div class="text-muted">Nothing is planned for the rest of the week.</div>
-        }
-        @foreach (var item in Model.NextWeek)
-        {
-            <div>
-                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                <div><strong>Case Folder: </strong>@item.Title</div>
+            <div class="panel-body">
+                <div class="h1">@Model.Today.Count <span class="lead">reports</span></div>
+                @foreach (var item in Model.Today)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
             </div>
-            <p></p>
-        }
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">QA Responses</h2>
+            </div>
+            <div class="panel-body">
+                <div class="h1">@Model.Tomorrow.Count <span class="lead">reports</span></div>
+                @foreach (var item in Model.Tomorrow)
+                {
+                    <div>
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                        <div><strong>Case Folder: </strong>@item.Title</div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>

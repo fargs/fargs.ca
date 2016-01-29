@@ -20,43 +20,31 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Index()
         {
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
+            Guid? userGuid = new Guid(user.Id);
 
             var now = DateTime.Today;
+            var nextDay = now.AddDays(1);
             var endOfWeek = now.GetEndOfWeek();
             var endOfNextWeek = endOfWeek.AddDays(7);
 
             var query = db.ServiceRequests;
 
-            if (user.RoleId == Roles.Physician)
+            if (user.RoleCategoryId != RoleCategory.Admin)
             {
-                query.Where(c => c.PhysicianId == user.Id);
-            }
-            else if (user.RoleId == Roles.IntakeAssistant)
-            {
-                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
-            }
-            else if (user.RoleId == Roles.IntakeAssistant || user.RoleId == Roles.DocumentReviewer)
-            {
-
-            }
-            else if (user.RoleId == Roles.CaseCoordinator)
-            {
-                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
-            }
-            else if (user.RoleId == Roles.SuperAdmin)
-            {
-                query.Where(c => c.IntakeAssistantId.ToString() == user.Id);
-            }
-            else
-            {
-                throw new Exception("User in this role is not supported at this time.");
+                query.Where(c => c.PhysicianId == user.Id
+                    || c.IntakeAssistantId == userGuid
+                    || c.DocumentReviewerId == userGuid
+                    || c.CaseCoordinatorId == userGuid);
             }
 
             var today = query
                 .Where(c => c.AppointmentDate == now);
 
+            var tomorrow = query
+                .Where(c => c.AppointmentDate == nextDay);
+
             var restOfWeek = query
-                .Where(p => p.AppointmentDate > now && p.AppointmentDate <= endOfWeek);
+                .Where(p => p.AppointmentDate > nextDay && p.AppointmentDate <= endOfWeek);
 
             var nextWeek = query
                 .Where(p => p.AppointmentDate > endOfWeek && p.AppointmentDate <= endOfNextWeek);
@@ -68,21 +56,20 @@ namespace WebApp.Controllers
                 .OrderBy(c => c.StartTime)
                 .ToList();
 
-            vm.TodayTotal = vm.Today.Count;
+            vm.Tomorrow = tomorrow
+                .OrderBy(c => c.AppointmentDate)
+                .OrderBy(c => c.StartTime)
+                .ToList();
 
             vm.RestOfWeek = restOfWeek
                 .OrderBy(c => c.AppointmentDate)
                 .OrderBy(c => c.StartTime)
                 .ToList();
 
-            vm.RestOfWeekTotal = vm.RestOfWeek.Count;
-
             vm.NextWeek = nextWeek
                 .OrderBy(c => c.AppointmentDate)
                 .OrderBy(c => c.StartTime)
                 .ToList();
-
-            vm.NextWeekTotal = vm.NextWeek.Count;
 
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;

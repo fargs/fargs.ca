@@ -44,13 +44,11 @@ namespace WebApp
                       "~/Scripts/fullcalendar.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap-custom/bootstrap.css",
+                      "~/Content/bootstrap/bootstrap.css",
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
-                      "~/Content/themes/base/all.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
-                      "~/Content/fullcalendar.css",
-                      "~/Content/Site.css"));
+                      "~/Content/site.css"));
 
             //bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
             //          "~/Content/jquery-ui.css"));

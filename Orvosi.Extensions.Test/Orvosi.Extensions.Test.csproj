@@ -36,6 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -60,6 +64,10 @@
     <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Extensions.csproj">
       <Project>{cbbca8f3-b69a-474c-9d17-90a433c5a3f3}</Project>
       <Name>Orvosi.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebApp\WebApp.csproj">
+      <Project>{6b72176d-e6d3-4caf-9bc0-e281700840a9}</Project>
+      <Name>WebApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
+using System.Globalization;
+using WebApp.Library.Extensions;
 
 namespace Orvosi.Extensions.Test
 {
@@ -31,6 +33,13 @@ namespace Orvosi.Extensions.Test
             var now = new DateTime(2015, 01, 13, 12, 59, 59);
             var formatted = now.GetDateTimeFormats('d')[5];
 
+        }
+
+        [TestMethod]
+        public void RestOfWeek()
+        {
+            var t = DateTime.Now.GetRestOfWeek();
+            var e = t;
         }
     }
 }

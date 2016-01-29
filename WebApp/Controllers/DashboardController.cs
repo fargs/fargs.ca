@@ -1,19 +1,13 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using System.Security.Claims;
-using WebApp.Models;
 using vm = WebApp.ViewModels.DashboardViewModels;
-using System.Net.Mail;
-using System.Text;
 using Model;
 using Model.Enums;
-using WebApp.Library.Extensions;
 using System.Data.Entity;
+using System.Globalization;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -23,12 +17,13 @@ namespace WebApp.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // MVC
-        public async Task<ActionResult> Index(byte lookAhead, string ImpersonateUserId = "")
+        public async Task<ActionResult> Index()
         {
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
 
             var now = DateTime.Today;
-            var lookAheadDate = now.AddDays(lookAhead);
+            var endOfWeek = now.GetEndOfWeek();
+            var endOfNextWeek = endOfWeek.AddDays(7);
 
             var query = db.ServiceRequests;
 
@@ -58,10 +53,13 @@ namespace WebApp.Controllers
             }
 
             var today = query
-                .Where(c => c.AppointmentDate == DateTime.Today);
+                .Where(c => c.AppointmentDate == now);
 
-            var upcoming = query
-                .Where(p => p.AppointmentDate > now && p.AppointmentDate <= lookAheadDate);
+            var restOfWeek = query
+                .Where(p => p.AppointmentDate > now && p.AppointmentDate <= endOfWeek);
+
+            var nextWeek = query
+                .Where(p => p.AppointmentDate > endOfWeek && p.AppointmentDate <= endOfNextWeek);
 
             var vm = new vm.IndexViewModel();
 
@@ -70,12 +68,22 @@ namespace WebApp.Controllers
                 .OrderBy(c => c.StartTime)
                 .ToList();
 
-            vm.Upcoming = upcoming
+            vm.TodayTotal = vm.Today.Count;
+
+            vm.RestOfWeek = restOfWeek
                 .OrderBy(c => c.AppointmentDate)
                 .OrderBy(c => c.StartTime)
                 .ToList();
 
-            ViewBag.LookAhead = lookAhead;
+            vm.RestOfWeekTotal = vm.RestOfWeek.Count;
+
+            vm.NextWeek = nextWeek
+                .OrderBy(c => c.AppointmentDate)
+                .OrderBy(c => c.StartTime)
+                .ToList();
+
+            vm.NextWeekTotal = vm.NextWeek.Count;
+
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;
 
@@ -83,112 +91,90 @@ namespace WebApp.Controllers
         }
 
         // API
-        [HttpGet]
-        public JsonResult GetServiceCatalogue(string id)
-        {
-            using (var db = new OrvosiEntities())
-            {
-                var list = db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
-                {
-                    Id = c.Id,
-                    Name = c.Name
-                });
-                return Json(list.ToList(), JsonRequestBehavior.AllowGet);
-            }
-        }
+        //[HttpGet]
+        //public JsonResult GetServiceCatalogue(string id)
+        //{
+        //    using (var db = new OrvosiEntities())
+        //    {
+        //        var list = db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
+        //        {
+        //            Id = c.Id,
+        //            Name = c.Name
+        //        });
+        //        return Json(list.ToList(), JsonRequestBehavior.AllowGet);
+        //    }
+        //}
 
-        [HttpPost]
-        public async Task<JsonResult> SubmitSpecialRequest(vm.SpecialRequestFormViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    success = false,
-                    model = model,
-                    message = "Errors occurred"
-                });
-            }
+        //[HttpPost]
+        //public async Task<JsonResult> SubmitSpecialRequest(vm.SpecialRequestFormViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return Json(new
+        //        {
+        //            success = false,
+        //            model = model,
+        //            message = "Errors occurred"
+        //        });
+        //    }
 
-            var db = new OrvosiEntities();
+        //    var db = new OrvosiEntities();
 
-            var identity = (User.Identity as ClaimsIdentity);
-            // save the record to the database
+        //    var identity = (User.Identity as ClaimsIdentity);
+        //    // save the record to the database
 
-            var specialRequest = AutoMapper.Mapper.Map<SpecialRequest>(model);
-            specialRequest.ModifiedUserName = identity.Name;
-            specialRequest.ModifiedUserId = identity.FindFirst(ClaimTypes.Sid).Value;
+        //    var specialRequest = AutoMapper.Mapper.Map<SpecialRequest>(model);
+        //    specialRequest.ModifiedUserName = identity.Name;
+        //    specialRequest.ModifiedUserId = identity.FindFirst(ClaimTypes.Sid).Value;
 
-            db.SpecialRequests.Add(specialRequest);
-            model.ActionState = (byte)await db.SaveChangesAsync();
+        //    db.SpecialRequests.Add(specialRequest);
+        //    model.ActionState = (byte)await db.SaveChangesAsync();
 
-            if (model.ActionState == ActionStates.Saved)
-            {
-                // the current user that is submitting the special request (someone from the company typcially)
-                var from = identity.FindFirst(ClaimTypes.Email).Value;
-                var to = "support@orvosi.ca";
-                // Get the physician selected
-                _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                var physician = await _userManager.FindByIdAsync(model.PhysicianId);
-                var subject = string.Format("Special Request - {0}", physician.UserName.Split('@').First().ToString());
-                var b = new StringBuilder();
-                b.AppendLine("REQUESTOR INFO");
-                b.AppendLine(string.Format("Requestor Name: {0}", identity.FindFirst("DisplayName").Value));
-                b.AppendLine(string.Format("Requestor Email: {0}", identity.FindFirst(ClaimTypes.Email).Value));
-                b.AppendLine();
-                b.AppendLine("PHYSICIAN INFO");
-                b.AppendLine(string.Format("Physician Name: {0}", physician.DisplayName));
-                b.AppendLine(string.Format("Physician Email: {0}", physician.Email));
-                b.AppendLine();
-                b.AppendLine("REQUEST");
-                var service = db.Services.SingleOrDefault(c => c.Id == model.ServiceId);
-                if (service != null)
-                {
-                    b.AppendLine(string.Format("Service: {0}", "<Not Set>"));
-                }
-                else
-                {
-                    b.AppendLine(string.Format("Service: {0}", service.Name));
-                }
-                b.AppendLine(string.Format("Timeframe: {0}", model.Timeframe));
-                b.AppendLine("Additional Notes:");
-                b.AppendLine(model.AdditionalNotes);
+        //    if (model.ActionState == ActionStates.Saved)
+        //    {
+        //        // the current user that is submitting the special request (someone from the company typcially)
+        //        var from = identity.FindFirst(ClaimTypes.Email).Value;
+        //        var to = "support@orvosi.ca";
+        //        // Get the physician selected
+        //        _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+        //        var physician = await _userManager.FindByIdAsync(model.PhysicianId);
+        //        var subject = string.Format("Special Request - {0}", physician.UserName.Split('@').First().ToString());
+        //        var b = new StringBuilder();
+        //        b.AppendLine("REQUESTOR INFO");
+        //        b.AppendLine(string.Format("Requestor Name: {0}", identity.FindFirst("DisplayName").Value));
+        //        b.AppendLine(string.Format("Requestor Email: {0}", identity.FindFirst(ClaimTypes.Email).Value));
+        //        b.AppendLine();
+        //        b.AppendLine("PHYSICIAN INFO");
+        //        b.AppendLine(string.Format("Physician Name: {0}", physician.DisplayName));
+        //        b.AppendLine(string.Format("Physician Email: {0}", physician.Email));
+        //        b.AppendLine();
+        //        b.AppendLine("REQUEST");
+        //        var service = db.Services.SingleOrDefault(c => c.Id == model.ServiceId);
+        //        if (service != null)
+        //        {
+        //            b.AppendLine(string.Format("Service: {0}", "<Not Set>"));
+        //        }
+        //        else
+        //        {
+        //            b.AppendLine(string.Format("Service: {0}", service.Name));
+        //        }
+        //        b.AppendLine(string.Format("Timeframe: {0}", model.Timeframe));
+        //        b.AppendLine("Additional Notes:");
+        //        b.AppendLine(model.AdditionalNotes);
 
-                var message = new MailMessage(from, to, subject, b.ToString());
+        //        var message = new MailMessage(from, to, subject, b.ToString());
 
-                var messenger = MessagingService.GetService();
-                await messenger.SendAsync(message);
-            }
+        //        var messenger = MessagingService.GetService();
+        //        await messenger.SendAsync(message);
+        //    }
 
-            var result = new
-            {
-                success = true,
-                model = model,
-                message = "Request submitted successfully"
-            };
-            return Json(result);
-        }
-
-        private SelectList GetPhysicians()
-        {
-            var users = _userManager.Users
-                .Where(u => u.Roles.Any(r => r.RoleId == Roles.Physician)).ToList();
-            var physicians = users
-                .Select(u => new SelectListItem() { Value = u.Id, Text = u.DisplayName })
-                .ToList();
-            return new SelectList(physicians, "Value", "Text");
-        }
-
-        private SelectList GetServices()
-        {
-            using (var db = new OrvosiEntities())
-            {
-                var services = db.Services
-                    .Where(s => s.ServiceCategoryId == 5)
-                    .Select(u => new SelectListItem() { Value = u.Id.ToString(), Text = u.Name })
-                    .ToList();
-                return new SelectList(services, "Value", "Text");
-            }
-        }
+        //    var result = new
+        //    {
+        //        success = true,
+        //        model = model,
+        //        message = "Request submitted successfully"
+        //    };
+        //    return Json(result);
+        //}
     }
 }

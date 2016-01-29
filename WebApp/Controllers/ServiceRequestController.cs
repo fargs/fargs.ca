@@ -137,7 +137,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles = "Staff, Super Admin")]
+        [Authorize(Roles = Model.Enums.Roles.CaseCoordinatorName)]
         // GET: Admin/ServiceRequest/Create
         public async Task<ActionResult> Availability()
         {

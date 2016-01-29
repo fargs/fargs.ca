@@ -30,8 +30,8 @@
 <#
 	string serverName = @"(local)";
 	string databaseName = @"Orvosi";
-	string viewName = @"ServiceRequest";
-	string tableName = @"ServiceRequest";
+	string viewName = @"ServiceRequestTask";
+	string tableName = @"ServiceRequestTask";
 	string ConnectionString = "Data Source=" + serverName + ";Initial Catalog=" + databaseName + ";Integrated Security=True"; 
 	Server server = new Server(serverName);       
 	Database database = new Database(server, databaseName);
@@ -142,7 +142,7 @@
 #>
 IF EXISTS(SELECT * FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE SPECIFIC_SCHEMA = 'API' AND SPECIFIC_NAME = '<#=viewName#>_Insert')
 BEGIN
-	DROP PROCEDURE [API].[<#=viewName#>]
+	DROP PROCEDURE [API].[<#=viewName#>_Insert]
 END
 GO
 

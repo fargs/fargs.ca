@@ -5,6 +5,10 @@
 
 <h2>Users</h2>
 
+<p>
+    <a class="btn btn-success" href="~/Admin/User/Create"><i class="glyphicon glyphicon-plus"></i></a>
+</p>
+
 <ul class="nav nav-tabs">
     @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategory.Physician)
     @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategory.Company)
@@ -25,7 +29,7 @@
                             <i class="glyphicon glyphicon-menu-hamburger"></i>
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
-                            <li role="presentation">@Html.ActionLink("Profile", "Profile", "User", new { area="Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Profile", "UserProfile", "User", new { area="Admin", id = item.Id }, new { })</li>
                             @if (item.IsPhysician())
                             {
                                 <li role="presentation">@Html.ActionLink("Companies", "Companies", "User", new { area = "Admin", userId = item.Id }, new { })</li>

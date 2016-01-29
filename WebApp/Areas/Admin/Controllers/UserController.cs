@@ -99,7 +99,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Profile(string id)
+        public ActionResult UserProfile(string id)
         {
             using (var db = new OrvosiEntities(User.Identity.GetUserId()))
             {
@@ -121,7 +121,7 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Profile(Profile profile)
+        public async Task<ActionResult> UserProfile(Profile profile)
         {
             if (!ModelState.IsValid)
             {

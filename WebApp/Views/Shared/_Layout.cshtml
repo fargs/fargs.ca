@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    <div class="navbar">
+    <div class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -23,7 +23,7 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Dashboard", "", "Home", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Requests", "", "ServiceRequest", new { area = "" }, null)</li>
                     }
                 </ul>
@@ -31,24 +31,24 @@
             </div>
         </div>
     </div>
-    <div class="container well body-content">
+    <div class="container body-content">
         @RenderBody()
     </div>
-    <footer>
+    <footer class="panel-footer">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <p class="copyright text-muted small">Orvosi Inc. &copy; @DateTime.Now.Year. All Rights Reserved</p>
-                </div>
-                <div class="col-md-6 text-right">
-                    <ul class="list-inline quicklinks small">
-                        <li>
-                            <a href="#">Privacy Policy</a>
-                        </li>
-                        <li>
-                            <a href="#">Terms of Use</a>
-                        </li>
-                    </ul>
+                <div class="col-md-12">
+                    <div class="copyright text-muted small pull-left">Orvosi Inc. &copy; @DateTime.Now.Year. All Rights Reserved</div>
+                    <div class="pull-right">
+                        <ul class="list-inline quicklinks small">
+                            <li>
+                                <a href="#">Privacy Policy</a>
+                            </li>
+                            <li>
+                                <a href="#">Terms of Use</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

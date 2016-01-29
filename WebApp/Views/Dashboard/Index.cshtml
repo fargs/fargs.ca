@@ -1,5 +1,4 @@
-﻿@using System.Globalization;
-@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+﻿@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
 <h1>Dashboard</h1>
 <h4>For @ViewBag.PhysicianName</h4>
@@ -26,15 +25,37 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h2 class="panel-title">Upcoming</h2>
-        <span class="small"> in the Next @ViewBag.LookAhead days</span>
+        <h2 class="panel-title">Rest of the Week</h2>
+
     </div>
     <div class="panel-body">
-        @if (Model.Upcoming.Count == 0)
+        @if (Model.RestOfWeek.Count == 0)
         {
-            <div class="text-muted">Nothing is planned in the next @ViewBag.LookAhead days.</div>
+            <div class="text-muted">Nothing is planned for the rest of the week.</div>
         }
-        @foreach (var item in Model.Upcoming)
+        @foreach (var item in Model.RestOfWeek)
+        {
+            <div>
+                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                <div><strong>Case Folder: </strong>@item.Title</div>
+            </div>
+            <p></p>
+        }
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 class="panel-title">Next Week</h2>
+
+    </div>
+    <div class="panel-body">
+        @if (Model.NextWeek.Count == 0)
+        {
+            <div class="text-muted">Nothing is planned for the rest of the week.</div>
+        }
+        @foreach (var item in Model.NextWeek)
         {
             <div>
                 <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>

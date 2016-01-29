@@ -101,6 +101,14 @@ textarea {
     
 }
 
+.panel-footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-top: 20px;
+    height: 100px;
+}
+
 .border-left {
 	padding: 0 0 0 0 !important;
 	height: 100% !important;
@@ -281,4 +289,6 @@ textarea {
   line-height: 1.33;
   border-radius: 35px;
 }
+
+
 

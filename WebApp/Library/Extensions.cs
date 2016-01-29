@@ -9,6 +9,7 @@ using Model;
 using Model.Enums;
 using System.Security.Principal;
 using System.Security.Claims;
+using System.Text;
 
 namespace WebApp.Library.Extensions
 {
@@ -25,6 +26,53 @@ namespace WebApp.Library.Extensions
         public static ClaimsIdentity GetClaimsIdentity(this IIdentity obj)
         {
             return obj as ClaimsIdentity;
+        }
+
+        public static int GetRestOfWeek(this DateTime obj)
+        {
+            int restOfWeek = 0;
+            switch (obj.DayOfWeek)
+            {
+                case DayOfWeek.Sunday:
+                    restOfWeek = 0;
+                    break;
+                case DayOfWeek.Monday:
+                    restOfWeek = 6;
+                    break;
+                case DayOfWeek.Tuesday:
+                    restOfWeek = 5;
+                    break;
+                case DayOfWeek.Wednesday:
+                    restOfWeek = 4;
+                    break;
+                case DayOfWeek.Thursday:
+                    restOfWeek = 3;
+                    break;
+                case DayOfWeek.Friday:
+                    restOfWeek = 2;
+                    break;
+                case DayOfWeek.Saturday:
+                    restOfWeek = 1;
+                    break;
+                default:
+                    restOfWeek = 0;
+                    break;
+            }
+            return restOfWeek;
+        }
+
+        public static DateTime GetEndOfWeek(this DateTime obj)
+        {
+            return obj.AddDays(obj.GetRestOfWeek());
+        }
+
+        public static StringBuilder RemoveLine(this StringBuilder @this, string lineText)
+        {
+            string[] stringSeparators = new string[] { "\r\n" };
+            var arr = @this.ToString().Split(stringSeparators, StringSplitOptions.None).ToList();
+            var index = arr.FindIndex(c => c.Contains(lineText));
+            arr.RemoveAt(index);
+            return @this.Clear().Append(string.Join("\r\n", arr));
         }
     }
 }

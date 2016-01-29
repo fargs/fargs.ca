@@ -269,7 +269,6 @@
     <Compile Include="Areas\Admin\Controllers\PhysicianLocationAreaController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
-    <Compile Include="Areas\Admin\Controllers\ServiceRequestController.cs" />
     <Compile Include="Areas\Admin\ViewModels\PhysicianInsuranceViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\PhysicianLocationAreasViewModels.cs" />
@@ -289,27 +288,21 @@
     <Compile Include="Areas\Staff\Controllers\HomeController.cs" />
     <Compile Include="Areas\Staff\ViewModels\HomeViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\AvailabilityController.cs" />
-    <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Appointment\Index.cs" />
-    <Compile Include="Models\Availability\Index.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
-    <Compile Include="ViewModels\DashboardViewModel.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="ViewModels\DashboardViewModels.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
-    <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -339,8 +332,6 @@
     <Content Include="CodeTemplates\AddView\CSHTML\Edit.tt" />
     <Content Include="CodeTemplates\AddView\CSHTML\Empty.tt" />
     <Content Include="CodeTemplates\AddView\CSHTML\List.tt" />
-    <Content Include="Content\bootstrap-1.1.0.css" />
-    <Content Include="Content\bootstrap-1.1.0.min.css" />
     <Content Include="Content\bootstrap-custom\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -355,7 +346,6 @@
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.min.css" />
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.css" />
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -395,7 +385,6 @@
     <Content Include="Content\jQuery.FileUpload\css\jquery.fileupload.css" />
     <Content Include="Content\jQuery.FileUpload\img\loading.gif" />
     <Content Include="Content\jQuery.FileUpload\img\progressbar.gif" />
-    <Content Include="Content\bootstrap.css" />
     <Content Include="Content\images\ADMIN IMAGE1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -575,7 +564,6 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
-    <Content Include="Views\Appointment\Book.cshtml" />
     <Content Include="orvosi-3fbc42670b5a.p12">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -661,7 +649,6 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Company\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\User\AssessorPackages.cshtml" />
     <Content Include="Areas\Admin\Views\User\Account.cshtml" />
     <Content Include="Areas\Admin\Views\User\Profile.cshtml" />
     <Content Include="Areas\Admin\Views\User\Companies.cshtml" />
@@ -672,10 +659,6 @@
     <Content Include="Areas\Admin\Views\Service\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Company\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Company\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\ServiceRequest\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\ServiceRequest\_PriceDetails.cshtml" />
-    <Content Include="Areas\Admin\Views\ServiceRequest\Create.cshtml" />
-    <Content Include="Areas\Admin\Views\ServiceRequest\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Location\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Location\Delete.cshtml" />
     <Content Include="Areas\Admin\Views\Location\Details.cshtml" />
@@ -719,8 +702,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-custom\orvosi.less" />
     <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
@@ -769,9 +750,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -795,37 +773,21 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_RegisterPartial.cshtml" />
-    <Content Include="Views\Home\ReleaseHistory.cshtml" />
     <Content Include="Views\Shared\_SidebarLayout.cshtml" />
-    <Content Include="Views\Home\_ServiceOverview.cshtml" />
     <Content Include="Areas\Admin\Views\Role\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Role\Index_js.cshtml" />
-    <Content Include="Views\Home\Services.cshtml" />
     <Content Include="Views\Calendar\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index_js.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\_ServiceOverviewPublic.cshtml" />
-    <Content Include="Views\Appointment\Index.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Availability\Index.cshtml" />
     <Content Include="Views\Account\_Layout.cshtml" />
     <Content Include="Views\Account\_ViewStart.cshtml" />
-    <Content Include="Views\Home\_Layout.cshtml" />
-    <Content Include="Views\Home\_ViewStart.cshtml" />
     <Content Include="Views\Account\RegisterConfirmation.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Diagnostics\SendEmail.cshtml" />
-    <Content Include="Views\Dashboard\_SpecialRequestForm.cshtml" />
-    <Content Include="Views\Dashboard\_Layout.cshtml" />
-    <Content Include="Views\Dashboard\_ViewStart.cshtml" />
-    <Content Include="Views\Dashboard\_ScheduleOnceForm.cshtml" />
-    <Content Include="Views\Dashboard\_ScheduleOnceForm_js.cshtml" />
-    <Content Include="Views\Dashboard\_SpecialRequestForm_js.cshtml" />
-    <Content Include="Views\Home\TestHelper.cshtml" />
     <Content Include="Views\ServiceRequest\Details.cshtml" />
-    <Content Include="Views\ServiceRequest\_Layout.cshtml" />
-    <Content Include="Views\ServiceRequest\_ViewStart.cshtml" />
     <Content Include="Views\ServiceRequest\Index.cshtml" />
     <Content Include="Views\ServiceRequest\Create.cshtml" />
     <Content Include="Views\ServiceRequest\Availability.cshtml" />
@@ -840,7 +802,6 @@
     <Folder Include="Areas\Physicians\Views\Base\" />
     <Folder Include="Areas\Staff\Views\Base\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
-    <Folder Include="Views\Assessment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

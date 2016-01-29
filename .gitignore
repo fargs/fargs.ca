@@ -177,6 +177,8 @@ UpgradeLog*.htm
 # SQL Server files
 *.mdf
 *.ldf
+*.generated.sql
+*.scmp
 
 # Business Intelligence projects
 *.rdl.data
@@ -199,3 +201,4 @@ FakesAssemblies/
 /Auth/scripts
 /Api
 /Auth
+*.dacpac

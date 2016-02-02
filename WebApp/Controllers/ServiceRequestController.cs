@@ -137,7 +137,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles = Model.Enums.Roles.CaseCoordinatorName)]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         // GET: Admin/ServiceRequest/Create
         public async Task<ActionResult> Availability()
         {
@@ -147,7 +147,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Staff, Super Admin")]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Availability(AvailabilityForm form)
         {
@@ -178,7 +178,7 @@ namespace WebApp.Controllers
         }
 
         // POST: Admin/ServiceRequest/Create
-        [Authorize(Roles = "Staff, Super Admin")]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         [HttpPost]
         public async Task<ActionResult> Create(ServiceRequest sr)
         {
@@ -246,7 +246,7 @@ namespace WebApp.Controllers
             return View("CreateSuccess", obj);
         }
 
-        // GET: ServiceRequest/Edit/5
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -274,11 +274,11 @@ namespace WebApp.Controllers
             return View(serviceRequest);
         }
 
-        // POST: ServiceRequest/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Edit(ServiceRequest serviceRequest)
         {
             if (ModelState.IsValid)
@@ -295,7 +295,7 @@ namespace WebApp.Controllers
             return View(serviceRequest);
         }
 
-        // GET: ServiceRequest/Delete/5
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -313,6 +313,7 @@ namespace WebApp.Controllers
         // POST: ServiceRequest/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
@@ -520,7 +521,7 @@ namespace WebApp.Controllers
                 }).ToListAsync();
 
             ViewBag.Staff = await db.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Staff)
+                .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.DisplayName,

@@ -14,7 +14,7 @@ namespace WebApp
         public void Configuration(IAppBuilder app)
         {
             //TODO: Check if debug
-            SystemTime.Now = () => new DateTime(2016, 01, 13, 00, 00, 00);
+            //SystemTime.Now = () => new DateTime(2016, 01, 13, 00, 00, 00);
 
             ConfigureAuth(app);
 

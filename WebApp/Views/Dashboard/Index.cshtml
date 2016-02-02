@@ -3,7 +3,7 @@
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
 @*<div class="text-muted">@ViewBag.PhysicianName - Dashboard</div>
-<hr />*@
+    <hr />*@
 
 @*<div class="row">
         @foreach (var item in Model.TaskCards)
@@ -21,12 +21,14 @@
     </div>
     <p></p>*@
 @*<div class="row">
-    <div class="col-md-12">You have <a href="#ThisWeek" data-toggle="collapse" class="h3">@Model.ThisWeekTotal exams</a> scheduled <span class="h3">this week</span>.</div>
-</div>*@
+        <div class="col-md-12">You have <a href="#ThisWeek" data-toggle="collapse" class="h3">@Model.ThisWeekTotal exams</a> scheduled <span class="h3">this week</span>.</div>
+    </div>*@
 
 @if (Model.ThisWeekTotal == 0)
 {
-    <div class="col-md-12">You have <span class="h3">@Model.ThisWeekTotal exams</span> scheduled this week.</div>
+    <div class="row">
+        <div class="col-md-12">You have <span class="h3">@Model.ThisWeekTotal exams</span> scheduled this week.</div>
+    </div>
 }
 <div id="ThisWeek" class="row">
     @foreach (var item in Model.ThisWeekCards)
@@ -76,7 +78,7 @@
         </div>
     }
 </div>
-<div class="row">
+<div class="row" style="padding-top: 10px">
     <div class="col-md-12">You have <a href="#NextWeek" data-toggle="collapse" class="h3">@Model.NextWeekTotal exams</a> scheduled next week.</div>
 </div>
 <div id="NextWeek" class="row collapse">

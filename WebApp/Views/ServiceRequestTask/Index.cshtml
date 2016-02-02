@@ -1,0 +1,11 @@
+﻿@model WebApp.ViewModels.ServiceRequestTaskViewModels.IndexViewModel
+
+<h1>Tasks for</h1>
+<div class="lead">@Model.User.DisplayName</div>
+
+<ul>
+    @foreach (var item in Model.Tasks)
+    {
+        <li>@item.TaskName - @item.ServiceRequestId - @item.ActualHours</li>
+    }
+</ul>

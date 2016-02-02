@@ -243,6 +243,9 @@
     <Build Include="API\Views\ServiceRequestCostRollUp.sql" />
     <Build Include="dbo\Functions\GetServiceStatusId.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatusId.sql" />
+    <Build Include="API\Views\DashboardTaskSummary.sql" />
+    <Build Include="API\Stored Procedures\GetDashboardServiceRequest.sql" />
+    <Build Include="API\Stored Procedures\GetDashboardSchedule.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

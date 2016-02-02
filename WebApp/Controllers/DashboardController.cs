@@ -8,6 +8,8 @@ using Model.Enums;
 using System.Data.Entity;
 using System.Globalization;
 using WebApp.Library.Extensions;
+using WebApp.Library;
+using System.Collections.Generic;
 
 namespace WebApp.Controllers
 {
@@ -22,59 +24,66 @@ namespace WebApp.Controllers
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
             Guid? userGuid = new Guid(user.Id);
 
-            var now = DateTime.Today;
-            var nextDay = now.AddDays(1);
-            var endOfWeek = now.GetEndOfWeek();
-            var endOfNextWeek = endOfWeek.AddDays(7);
+            var requests = db.GetDashboardServiceRequest(SystemTime.Now().Date).ToList();
 
-            var query = db.ServiceRequests;
-
-            if (user.RoleCategoryId != RoleCategory.Admin)
+            if (user.RoleId != Roles.SuperAdmin)
             {
-                query.Where(c => c.PhysicianId == user.Id
-                    || c.IntakeAssistantId == userGuid
-                    || c.DocumentReviewerId == userGuid
-                    || c.CaseCoordinatorId == userGuid);
+                requests = requests.Where(c => c.PhysicianId == user.Id || c.CaseCoordinatorId == userGuid || c.DocumentReviewerId == userGuid || c.IntakeAssistantId == userGuid).ToList();
             }
 
-            var today = query
-                .Where(c => c.AppointmentDate == now);
-
-            var tomorrow = query
-                .Where(c => c.AppointmentDate == nextDay);
-
-            var restOfWeek = query
-                .Where(p => p.AppointmentDate > nextDay && p.AppointmentDate <= endOfWeek);
-
-            var nextWeek = query
-                .Where(p => p.AppointmentDate > endOfWeek && p.AppointmentDate <= endOfNextWeek);
-
             var vm = new vm.IndexViewModel();
+            vm.User = user;
+            vm.ThisWeekCards = GetCards(requests, 1);
+            vm.ThisWeekTotal = vm.ThisWeekCards.Sum(c => c.Summary.RequestCount);
+            vm.NextWeekCards = GetCards(requests, 2);
+            vm.NextWeekTotal = vm.NextWeekCards.Sum(c => c.Summary.RequestCount);
 
-            vm.Today = today
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
+            var tasks = db.DashboardTaskSummaries.Where(c => !c.CompletedDate.HasValue);
+            if (user.RoleId != Roles.SuperAdmin)
+            {
+                tasks = tasks.Where(c => c.AssignedToUserId == user.Id);
+            }
+            tasks.OrderBy(c => c.AssignedToUserId).ThenBy(c => c.TaskId).ToList();
 
-            vm.Tomorrow = tomorrow
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
-
-            vm.RestOfWeek = restOfWeek
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
-
-            vm.NextWeek = nextWeek
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
+            foreach (var item in tasks)
+            {
+                vm.AddTask(item);
+            }
 
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;
 
             return View(vm);
+        }
+
+        private static List<vm.IndexViewModel.DateCard> GetCards(List<GetDashboardServiceRequest_Result> requests, byte WeekNumber)
+        {
+            var cards = new List<vm.IndexViewModel.DateCard>();
+            var days = requests.Where(r => r.WeekNumber == WeekNumber).Select(c => new { Day = c.AppointmentDate.Value, WeekNumber = c.WeekNumber }).Distinct();
+
+            foreach (var day in days)
+            {
+                var dayRequests = requests.Where(c => c.AppointmentDate == day.Day.Date).OrderBy(c => c.StartTime).ToList();
+                var first = dayRequests.First();
+                var summary = new GetDashboardSchedule_Result()
+                {
+                    AddressName = first.AddressName,
+                    AppointmentDate = day.Day,
+                    City = first.City,
+                    CompanyName = first.CompanyName,
+                    StartTime = first.StartTime,
+                    EndTime = dayRequests.Last().EndTime,
+                    TimelineId = first.TimelineId,
+                    WeekNumber = first.WeekNumber,
+                    RequestCount = dayRequests.Count
+                };
+                cards.Add(new vm.IndexViewModel.DateCard
+                {
+                    Summary = summary,
+                    ServiceRequests = dayRequests
+                });
+            }
+            return cards;
         }
 
         // API

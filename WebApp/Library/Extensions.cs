@@ -61,9 +61,47 @@ namespace WebApp.Library.Extensions
             return restOfWeek;
         }
 
+        public static int GetDaysOfWeekPast(this DateTime obj)
+        {
+            int daysOfWeekPast = 0;
+            switch (obj.DayOfWeek)
+            {
+                case DayOfWeek.Sunday:
+                    daysOfWeekPast = 6;
+                    break;
+                case DayOfWeek.Monday:
+                    daysOfWeekPast = 0;
+                    break;
+                case DayOfWeek.Tuesday:
+                    daysOfWeekPast = 1;
+                    break;
+                case DayOfWeek.Wednesday:
+                    daysOfWeekPast = 2;
+                    break;
+                case DayOfWeek.Thursday:
+                    daysOfWeekPast = 3;
+                    break;
+                case DayOfWeek.Friday:
+                    daysOfWeekPast = 4;
+                    break;
+                case DayOfWeek.Saturday:
+                    daysOfWeekPast = 5;
+                    break;
+                default:
+                    daysOfWeekPast = 0;
+                    break;
+            }
+            return daysOfWeekPast;
+        }
+
         public static DateTime GetEndOfWeek(this DateTime obj)
         {
             return obj.AddDays(obj.GetRestOfWeek());
+        }
+
+        public static DateTime GetStartOfWeek(this DateTime obj)
+        {
+            return obj.AddDays(obj.GetDaysOfWeekPast() * -1);
         }
 
         public static StringBuilder RemoveLine(this StringBuilder @this, string lineText)

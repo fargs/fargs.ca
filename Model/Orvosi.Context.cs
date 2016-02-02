@@ -53,6 +53,7 @@ namespace Model
         public virtual DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; }
         public virtual DbSet<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
         public virtual DbSet<Physician> Physicians { get; set; }
+        public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -1406,6 +1407,32 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Update", idParameter, serviceRequestIdParameter, taskNameParameter, guidanceParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<GetDashboardSchedule_Result> GetDashboardSchedule(Nullable<System.DateTime> now, string userId, Nullable<bool> isSuperAdmin)
+        {
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var isSuperAdminParameter = isSuperAdmin.HasValue ?
+                new ObjectParameter("IsSuperAdmin", isSuperAdmin) :
+                new ObjectParameter("IsSuperAdmin", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardSchedule_Result>("GetDashboardSchedule", nowParameter, userIdParameter, isSuperAdminParameter);
+        }
+    
+        public virtual ObjectResult<GetDashboardServiceRequest_Result> GetDashboardServiceRequest(Nullable<System.DateTime> now)
+        {
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", nowParameter);
         }
     }
 }

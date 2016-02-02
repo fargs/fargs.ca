@@ -1,123 +1,177 @@
-﻿@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+﻿@using WebApp.Library
+@using e = Model.Enums;
+@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
-<h1>Dashboard</h1>
-<h4>For @ViewBag.PhysicianName</h4>
-<div class="h3 text-muted">Upcoming</div>
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Today</h2>
+@*<div class="text-muted">@ViewBag.PhysicianName - Dashboard</div>
+<hr />*@
+
+@*<div class="row">
+        @foreach (var item in Model.TaskCards)
+        {
+            <div class="col-md-2">
+                <a href="servicerequesttask/Index/@Model.User.Id" class="btn btn-default" style="border: none;">
+                    <div><strong class="h2" style="padding-right:10px;">@item.Total</strong> <small>@item.TaskName</small> </div>
+                    @if (Model.User.RoleId == e.Roles.SuperAdmin)
+                    {
+                        <small>@item.AssignedToDisplayName</small>
+                    }
+                </a>
             </div>
-            <div class="panel-body">
-                <div class="h1">@Model.Today.Count <span class="lead">IME's</span></div>
-                @foreach (var item in Model.Today)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
+        }
+    </div>
+    <p></p>*@
+@*<div class="row">
+    <div class="col-md-12">You have <a href="#ThisWeek" data-toggle="collapse" class="h3">@Model.ThisWeekTotal exams</a> scheduled <span class="h3">this week</span>.</div>
+</div>*@
+
+@if (Model.ThisWeekTotal == 0)
+{
+    <div class="col-md-12">You have <span class="h3">@Model.ThisWeekTotal exams</span> scheduled this week.</div>
+}
+<div id="ThisWeek" class="row">
+    @foreach (var item in Model.ThisWeekCards)
+    {
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="h2">@item.Summary.AppointmentDate.Value.ToString("dddd")</div><div class="lead">@item.Summary.AppointmentDate.Value.ToString("MMM dd")</div>
+            <div class="panel @(item.Summary.TimelineId == e.Timeline.Present ? "panel-info" : item.Summary.TimelineId == e.Timeline.Past ? "panel-success" : "panel-default")">
+                <div class="panel-heading">
+                    <strong class="panel-title">@item.Summary.City</strong><span class="pull-right">@item.Summary.CompanyName</span>
+                </div>
+                <div class="panel-body" )>
+                    <div class="pull-left">
+                        <div>
+                            <small class="text-muted">@item.Summary.AddressName</small>
+                        </div>
+                        @if (item.Summary.TimelineId == e.Timeline.Past)
+                        {
+                            <div class="glyphicon glyphicon-ok" style="font-size: 300%; padding-top: 10px"></div>
+                        }
+                        else
+                        {
+                            <div style="display: inline-block">
+                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.StartTime.Value).ToShortTimeString()</div>
+                                <div class="text-center">to</div>
+                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.EndTime.Value).ToShortTimeString()</div>
+                            </div>
+                        }
                     </div>
-                }
+                    <div class="pull-right">
+                        <a data-toggle="collapse" href="#@item.Summary.AppointmentDate.Value.Ticks" class="btn btn-sm btn-default" style="border: none; line-height: normal"><div style="font-size: 500%">@item.Summary.RequestCount</div><div class="lead">Exams</div></a>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
+                        @foreach (var request in item.ServiceRequests)
+                        {
+                            <div>
+                                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
+                                <div><strong>@request.ServiceName</strong></div>
+                                <div>@request.ClaimantName</div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Tomorrow</h2>
-            </div>
-            <div class="panel-body">
-                <div class="h1">@Model.Tomorrow.Count <span class="lead">IME's</span></div>
-                @foreach (var item in Model.Tomorrow)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Rest of the Week</h2>
-            </div>
-            <div class="panel-body">
-                <div class="h1">@Model.RestOfWeek.Count <span class="lead">IME's</span></div>
-                @foreach (var item in Model.RestOfWeek)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Next Week</h2>
-            </div>
-            <div class="panel-body">
-                <div class="h1">@Model.NextWeek.Count <span class="lead">IME's</span></div> 
-                @foreach (var item in Model.NextWeek)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
+    }
 </div>
-
-<div class="h3 text-muted">Open Tasks</div>
 <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Report Submissions</h2>
-            </div>
-            <div class="panel-body">
-                <div class="h1">@Model.Today.Count <span class="lead">reports</span></div>
-                @foreach (var item in Model.Today)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">QA Responses</h2>
-            </div>
-            <div class="panel-body">
-                <div class="h1">@Model.Tomorrow.Count <span class="lead">reports</span></div>
-                @foreach (var item in Model.Tomorrow)
-                {
-                    <div>
-                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
-                        <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
-                        <div><strong>Case Folder: </strong>@item.Title</div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
+    <div class="col-md-12">You have <a href="#NextWeek" data-toggle="collapse" class="h3">@Model.NextWeekTotal exams</a> scheduled next week.</div>
 </div>
+<div id="NextWeek" class="row collapse">
+    @foreach (var item in Model.NextWeekCards)
+    {
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="h2">@item.Summary.AppointmentDate.Value.ToString("dddd")</div><div class="lead">@item.Summary.AppointmentDate.Value.ToString("MMM dd")</div>
+            <div class="panel @(item.Summary.TimelineId == e.Timeline.Present ? "panel-info" : item.Summary.TimelineId == e.Timeline.Past ? "panel-success" : "panel-default")">
+                <div class="panel-heading">
+                    <strong class="panel-title">@item.Summary.City</strong><span class="pull-right">@item.Summary.CompanyName</span>
+                </div>
+                <div class="panel-body" )>
+                    <div class="pull-left">
+                        <div>
+                            <small class="text-muted">@item.Summary.AddressName</small>
+                        </div>
+                        @if (item.Summary.TimelineId == e.Timeline.Past)
+                        {
+                            <div class="glyphicon glyphicon-ok" style="font-size: 300%; padding-top: 10px"></div>
+                        }
+                        else
+                        {
+                            <div style="display: inline-block">
+                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.StartTime.Value).ToShortTimeString()</div>
+                                <div class="text-center">to</div>
+                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.EndTime.Value).ToShortTimeString()</div>
+                            </div>
+                        }
+                    </div>
+                    <div class="pull-right">
+                        <a data-toggle="collapse" href="#@item.Summary.AppointmentDate.Value.Ticks" class="btn btn-sm btn-default" style="border: none; line-height: normal"><div style="font-size: 500%">@item.Summary.RequestCount</div><div class="lead">Exams</div></a>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
+                        @foreach (var request in item.ServiceRequests)
+                        {
+                            <div>
+                                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
+                                <div><strong>@request.ServiceName</strong></div>
+                                <div>@request.ClaimantName</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@*<div class="h3 text-muted">Open Tasks</div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Report Submissions</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="h1">@Model.Today.Count <span class="lead">reports</span></div>
+                    @foreach (var item in Model.Today)
+                    {
+                        <div>
+                            <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                            <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                            <div><strong>Case Folder: </strong>@item.Title</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">QA Responses</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="h1">@Model.Tomorrow.Count <span class="lead">reports</span></div>
+                    @foreach (var item in Model.Tomorrow)
+                    {
+                        <div>
+                            <a class="lead" href="@Url.Content("~/servicerequest/Details/" + item.Id)">@string.Format("{0} at {1}", item.AppointmentDate.Value.ToString("dddd, MMM dd"), item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString())</a>
+                            <div><strong>@item.ServiceName</strong>@string.Format(" for {0}", item.ClaimantName) with <strong>@item.IntakeAssistantName</strong> in @item.LocationName at <strong>@item.AddressName</strong></div>
+                            <div><strong>Case Folder: </strong>@item.Title</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@section scripts{
+    <script type="text/javascript">
+        $('.card-showitemslink').click(function (e) {
+            e.text = (e.text == 'Show Items' ? 'Hide Items' : 'Show Items');
+        });
+    </script>
+}

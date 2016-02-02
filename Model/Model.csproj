@@ -70,6 +70,9 @@
     <Compile Include="CompanyAssessorPackage.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="DashboardTaskSummary.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Document.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -81,6 +84,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="fn_Weekdays_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetDashboardSchedule_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetDashboardServiceRequest_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="GetPhysicianGoogleAccount_Result.cs">

@@ -119,6 +119,13 @@ namespace Model.Enums
         public const byte Completed = 36;
     }
 
+    public static class Timeline
+    {
+        public const byte Past = 37;
+        public const byte Present = 38;
+        public const byte Future = 39;
+    }
+
     public static class DateRanges
     {
         public const byte Today = 1;

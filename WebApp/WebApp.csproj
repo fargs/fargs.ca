@@ -293,10 +293,13 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
+    <Compile Include="Controllers\ServiceRequestTaskController.cs" />
     <Compile Include="Library\Helpers.cs" />
+    <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
@@ -793,6 +796,7 @@
     <Content Include="Views\ServiceRequest\Availability.cshtml" />
     <Content Include="Views\ServiceRequest\CreateSuccess.cshtml" />
     <Content Include="Views\ServiceRequest\Cancel.cshtml" />
+    <Content Include="Views\ServiceRequestTask\Index.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

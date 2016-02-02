@@ -31,6 +31,7 @@
         <EntityTypeShape EntityType="OrvosiModel.ServiceRequestTask" Width="1.5" PointX="15.375" PointY="10.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceRequestCostRollUp" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="OrvosiModel.Physician" Width="1.5" PointX="17.375" PointY="0.75" />
+        <EntityTypeShape EntityType="OrvosiModel.DashboardTaskSummary" Width="1.5" PointX="17.375" PointY="10.75" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />

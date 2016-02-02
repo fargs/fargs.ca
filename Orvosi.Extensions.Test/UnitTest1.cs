@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 using System.Globalization;
 using WebApp.Library.Extensions;
+using WebApp.Library;
 
 namespace Orvosi.Extensions.Test
 {
@@ -33,6 +34,14 @@ namespace Orvosi.Extensions.Test
             var now = new DateTime(2015, 01, 13, 12, 59, 59);
             var formatted = now.GetDateTimeFormats('d')[5];
 
+        }
+
+        [TestMethod]
+        public void TestDateTimeStaticFunc()
+        {
+            var now = SystemTime.Now();
+            SystemTime.Now = () => new DateTime(2016, 01, 19, 00, 00, 00);
+            var now2 = SystemTime.Now();
         }
 
         [TestMethod]

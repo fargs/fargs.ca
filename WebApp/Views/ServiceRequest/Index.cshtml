@@ -141,7 +141,22 @@
                     @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
                     {
                         <td colspan="4">
-                            <div class="text-muted"><strong>Closed</strong> @item.Title</div>
+                            <div class="text-muted">
+                                <strong>Closed</strong>
+                                @item.Title
+                                @if (item.ServiceStatusId == ServiceStatus.NoShow)
+                                {
+                                    <span class="label label-danger"><strong>No Show</strong></span>
+                                }
+                                else if (item.ServiceStatusId == ServiceStatus.Cancellation)
+                                {
+                                    <span class="label label-warning"><strong>Cancellation</strong></span>
+                                }
+                                else if (item.ServiceStatusId == ServiceStatus.LateCancellation)
+                                {
+                                    <span class="label label-danger"><strong>Late Cancellation</strong></span>
+                                }
+                            </div>
                         </td>
                     }
                     else

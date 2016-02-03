@@ -1434,5 +1434,35 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", nowParameter);
         }
+    
+        public virtual int ServiceRequest_ToggleNoShow(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_ToggleNoShow", idParameter);
+        }
+    
+        public virtual int ServiceRequest_ToggleCancellation(Nullable<int> id, Nullable<System.DateTime> cancelledDate, Nullable<bool> isLateCancellation, string notes)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var cancelledDateParameter = cancelledDate.HasValue ?
+                new ObjectParameter("CancelledDate", cancelledDate) :
+                new ObjectParameter("CancelledDate", typeof(System.DateTime));
+    
+            var isLateCancellationParameter = isLateCancellation.HasValue ?
+                new ObjectParameter("IsLateCancellation", isLateCancellation) :
+                new ObjectParameter("IsLateCancellation", typeof(bool));
+    
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_ToggleCancellation", idParameter, cancelledDateParameter, isLateCancellationParameter, notesParameter);
+        }
     }
 }

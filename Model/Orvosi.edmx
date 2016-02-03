@@ -973,6 +973,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="IsNoShow" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
+        <Function Name="ServiceRequest_ToggleCancellation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="CancelledDate" Type="datetime" Mode="In" />
+          <Parameter Name="IsLateCancellation" Type="bit" Mode="In" />
+          <Parameter Name="Notes" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="ServiceRequest_ToggleNoShow" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
         <Function Name="ServiceRequest_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="ObjectGuid" Type="uniqueidentifier" Mode="In" />
@@ -1993,6 +2002,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImport Name="GetDashboardServiceRequest" ReturnType="Collection(OrvosiModel.GetDashboardServiceRequest_Result)">
           <Parameter Name="Now" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <FunctionImport Name="ServiceRequest_ToggleNoShow">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ServiceRequest_ToggleCancellation">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="CancelledDate" Mode="In" Type="DateTime" />
+            <Parameter Name="IsLateCancellation" Mode="In" Type="Boolean" />
+            <Parameter Name="Notes" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2596,7 +2614,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Cost" Type="Decimal" Precision="37" Scale="4" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
             <PropertyRef Name="Id" />
@@ -3798,6 +3816,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleNoShow" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleNoShow" />
+          <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleCancellation" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleCancellation" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -16,6 +16,7 @@
 
 
 
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -26,6 +27,7 @@ AS (
 		, ClosedTasks = COUNT(CompletedDate)
 		, OpenTasks = COUNT(CASE WHEN CompletedDate IS NOT NULL THEN NULL ELSE '2000-01-01' END)
 	FROM dbo.ServiceRequestTask t
+	WHERE IsObsolete = 0
 	GROUP BY ServiceRequestId
 ),
 NextTask
@@ -44,7 +46,7 @@ AS (
 			, RowNum = ROW_NUMBER() OVER(PARTITION BY t.ServiceRequestId ORDER BY t.[Sequence])
 		FROM dbo.ServiceRequestTask t
 		LEFT JOIN dbo.AspNetUsers u ON t.AssignedTo = u.Id
-		WHERE t.CompletedDate IS NULL 
+		WHERE t.CompletedDate IS NULL AND IsObsolete = 0
 	) t
 	WHERE RowNum = 1
 ),
@@ -55,7 +57,7 @@ AS (
 		, ClosedTasks = COUNT(CompletedDate)
 		, OpenTasks = COUNT(CASE WHEN CompletedDate IS NOT NULL THEN NULL ELSE '2000-01-01' END)
 	FROM dbo.ServiceRequestTask t
-	WHERE t.TaskPhaseId = 34
+	WHERE t.TaskPhaseId = 34 AND IsObsolete = 0
 	GROUP BY t.ServiceRequestId
 )
 --NextPrepTask

@@ -356,18 +356,25 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                using (db = new OrvosiEntities(User.Identity.Name))
-                {
-                    serviceRequest.CancelledDate = form.CancelledDate;
-                    serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
-                    serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
-                    serviceRequest.ServiceName = string.Empty; // this should not be needed but edmx is making it non nullable
-                    db.Entry(serviceRequest).State = EntityState.Modified;
-                    await db.SaveChangesAsync();
-                    return RedirectToAction("Index");
-                }
+                db.ServiceRequest_ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
+                return RedirectToAction("Index");
             }
             return View(serviceRequest);
+        }
+
+        public async Task<ActionResult> UndoCancel(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var serviceRequest = await db.ServiceRequests.FindAsync(id);
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+            db.ServiceRequest_ToggleCancellation(id, null, false, string.Empty);
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [HttpPost]
@@ -405,11 +412,7 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-
-            serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
-            db.Entry(serviceRequest).State = EntityState.Modified;
-            await db.SaveChangesAsync();
-
+            db.ServiceRequest_ToggleNoShow(id);
             return Redirect(Request.UrlReferrer.ToString());
         }
 

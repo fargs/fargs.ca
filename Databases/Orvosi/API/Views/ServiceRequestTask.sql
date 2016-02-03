@@ -6,6 +6,10 @@
 
 
 
+
+
+
+
 CREATE VIEW [API].[ServiceRequestTask]
 AS
 SELECT 
@@ -36,3 +40,4 @@ SELECT
 	,Cost = ActualHours * u.HourlyRate
 FROM dbo.ServiceRequestTask st
 LEFT JOIN dbo.AspNetUsers u ON st.AssignedTo = u.Id
+WHERE IsObsolete = 0

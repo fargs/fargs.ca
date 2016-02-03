@@ -121,8 +121,18 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a href="~/ServiceRequest/Edit/@item.Id#ResourceAssignment">Assign Resources</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li>@Html.ActionLink("Cancellation", "Cancel", new { id = item.Id })</li>
+                                        @if (item.ServiceStatusId != ServiceStatus.NoShow)
+                                        {
+                                            <li role="separator" class="divider"></li>
+                                            if (item.ServiceStatusId == ServiceStatus.Cancellation || item.ServiceStatusId == ServiceStatus.LateCancellation)
+                                            {
+                                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = item.Id })</li>
+                                            }
+                                            else
+                                            {
+                                                <li>@Html.ActionLink("Cancellation", "Cancel", new { id = item.Id })</li>
+                                            }
+                                        }
                                     </ul>
                                 }
                             }

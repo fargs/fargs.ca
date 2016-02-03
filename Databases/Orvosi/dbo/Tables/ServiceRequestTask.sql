@@ -20,9 +20,12 @@
     [TaskPhaseId]         TINYINT          NULL,
     [TaskPhaseName]       NVARCHAR (128)   NULL,
     [Guidance]            NVARCHAR (1000)  NULL,
+    [IsObsolete]          BIT              CONSTRAINT [DF_ServiceRequestTask_IsObsolete] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_ServiceRequestTask] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequestTask_ServiceRequest] FOREIGN KEY ([ServiceRequestId]) REFERENCES [dbo].[ServiceRequest] ([Id]) ON DELETE CASCADE
 );
+
+
 
 
 

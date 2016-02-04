@@ -262,7 +262,7 @@ namespace WebApp.Controllers
             }
 
             ViewBag.Staff = await db.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Staff)
+                .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.DisplayName,

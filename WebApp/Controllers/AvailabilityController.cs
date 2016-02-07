@@ -44,8 +44,15 @@ namespace WebApp.Controllers
                 CurrentUser = user,
                 SelectedUser = user,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
-                Today = SystemTime.Now()
+                Today = SystemTime.Now(),
+                NewAvailableDay = new AvailableDay()
+                {
+                    PhysicianId = selectedUser.Id
+                }
             };
+
+            var arr = model.AvailableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray<string>();
+            ViewBag.AvailableDaysCSV = MvcHtmlString.Create(string.Join(",", arr));
 
             return View(model);
         }

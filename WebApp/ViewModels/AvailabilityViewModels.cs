@@ -13,5 +13,6 @@ namespace WebApp.ViewModels.AvailabilityViewModels
         public List<AvailableDay> AvailableDays { get; set; }
         public System.Globalization.Calendar Calendar { get; set; }
         public DateTime Today { get; internal set; }
+        public AvailableDay NewAvailableDay { get; set; }
     }
 }

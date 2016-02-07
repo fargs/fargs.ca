@@ -1,5 +1,61 @@
-﻿@{
+﻿@using Model
+@using Model.Enums
+@model WebApp.ViewModels.AvailabilityViewModels.IndexViewModel
+@{
     ViewBag.Title = "Availability";
 }
 
+@{
+    var db = new OrvosiEntities();
+
+    ViewBag.Users = db.Users
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id,
+            Group = new SelectListGroup() { Name = c.RoleName }
+        }).ToList();
+}
+
+@if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
+{
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="UsersDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Users
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="UsersDropdownMenu">
+            @foreach (SelectListItem item in ViewBag.Users)
+            {
+                //TODO: Group the list items
+                <li><a href="~/Availability/Index/@item.Value">@item.Text</a></li>
+            }
+        </ul>
+    </div>
+}
 <h2>Availability</h2>
+
+<ul>
+    @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
+    {
+        <li>
+            @day.Day.ToString("yyyy MMM ddd dd")
+            <div class="btn-group">
+                @foreach (var slot in day.AvailableSlots)
+                {
+                    <button class="btn btn-default">@slot.StartTime</button>
+                }
+            </div>
+        </li>
+    }
+</ul>
+
+<h2>This Month</h2>
+
+<div class="btn-group">
+    @for (int i = 1; i <= Model.Calendar.GetDaysInMonth(Model.Today.Year, Model.Today.Month); i++)
+    {
+        <button class="btn btn-default">@i</button>
+    }
+</div>
+

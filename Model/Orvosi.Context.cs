@@ -1464,5 +1464,34 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_ToggleCancellation", idParameter, cancelledDateParameter, isLateCancellationParameter, notesParameter);
         }
+    
+        public virtual ObjectResult<Nullable<short>> AvailableDay_Insert(Nullable<System.DateTime> availableDay, string userId, Nullable<short> companyId, Nullable<short> locationId, Nullable<bool> isPrebook, string modifiedUser)
+        {
+            var availableDayParameter = availableDay.HasValue ?
+                new ObjectParameter("AvailableDay", availableDay) :
+                new ObjectParameter("AvailableDay", typeof(System.DateTime));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var isPrebookParameter = isPrebook.HasValue ?
+                new ObjectParameter("IsPrebook", isPrebook) :
+                new ObjectParameter("IsPrebook", typeof(bool));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableDay_Insert", availableDayParameter, userIdParameter, companyIdParameter, locationIdParameter, isPrebookParameter, modifiedUserParameter);
+        }
     }
 }

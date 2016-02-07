@@ -24,6 +24,15 @@
             Value = c.Id.ToString(),
             Group = new SelectListGroup() { Name = c.ParentName }
         }).ToList();
+
+    var locations = db.Locations.ToList(); // needed to use the string.format in the Select below
+    ViewBag.Locations = locations
+        .Select(c => new SelectListItem()
+        {
+            Text = string.Format("{0} - ({1})", c.Name, c.City),
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.EntityDisplayName }
+        }).ToList();
 }
 
 @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
@@ -52,24 +61,32 @@
 
 <form action="~/Availability/AddDay" method="post" class="form-horizontal">
 
-    @Html.HiddenFor(c => c.NewAvailableDay.PhysicianId)
+    @Html.Hidden("PhysicianId", Model.SelectedUser.Id)
 
     <div class="form-group">
         <label class="control-label col-md-2">Available Day</label>
         <div class="col-md-10">
             <div class="input-group date" style="width:100%" id="AvailableDayPicker">
-                @Html.TextBoxFor(c => c.NewAvailableDay.Day, new { @class = "form-control", size = "16" })
+                <input class="form-control" data-val="true" data-val-date="The field Day must be a date." data-val-required="The Day field is required." id="NewAvailableDay_Day" name="Day" size="16" type="text" value="@Model.NewAvailableDay.Day.ToString("yyyy-MM-dd")">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
-            @Html.ValidationMessageFor(c => c.NewAvailableDay.Day, "", new { @class = "text-danger" })
+            @Html.ValidationMessage("Day", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Location</label>
+        <div class="col-md-10">
+            @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
         <label class="control-label col-md-2">Company</label>
         <div class="col-md-10">
-            @Html.DropDownListFor(c => c.NewAvailableDay.CompanyId, new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessageFor(c => c.NewAvailableDay.CompanyId, "", new { @class = "text-danger" })
+            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
         </div>
     </div>
 
@@ -77,8 +94,8 @@
         <label class="control-label col-md-2">Is Prebook</label>
         <div class="col-md-10">
             <div class="checkbox">
-                @Html.CheckBoxFor(model => model.NewAvailableDay.IsPrebook)
-                @Html.ValidationMessageFor(model => model.NewAvailableDay.IsPrebook, "", new { @class = "text-danger" })
+                @Html.CheckBox("IsPrebook")
+                @Html.ValidationMessage("IsPrebook", "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
@@ -95,26 +112,29 @@
 
 @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
 {
-    <div class="row">
-        <p>
+    <p>
+        <div class="row">
             <div class="col-md-2">
                 <div>
                     @day.Day.ToString("yyyy MMM ddd dd")
                 </div>
                 <div>
-                    @day.LocationName for @day.CompanyName
+                    @day.LocationName
+                </div>
+                <div>
+                    @day.CompanyName
+                </div>
             </div>
-        </div>
-        <div class="col-md-10">
-            <div class="btn-group">
-                @foreach (var slot in day.AvailableSlots)
-                {
-                    <button class="btn btn-default">@slot.StartTime</button>
-                }
+            <div class="col-md-10">
+                <div class="btn-group">
+                    @foreach (var slot in day.AvailableSlots)
+                    {
+                        <button class="btn btn-default">@slot.StartTime</button>
+                    }
+                </div>
             </div>
         </div>
     </p>
-    </div>
 }
 
 <h2>This Month</h2>

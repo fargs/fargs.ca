@@ -47,7 +47,8 @@ namespace WebApp.Controllers
                 Today = SystemTime.Now(),
                 NewAvailableDay = new AvailableDay()
                 {
-                    PhysicianId = selectedUser.Id
+                    PhysicianId = selectedUser.Id,
+                    Day = SystemTime.Now()
                 }
             };
 
@@ -55,6 +56,22 @@ namespace WebApp.Controllers
             ViewBag.AvailableDaysCSV = MvcHtmlString.Create(string.Join(",", arr));
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddDay(AvailableDay newDay)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db = new OrvosiEntities(User.Identity.Name))
+                {
+                    db.AvailableDays.Add(newDay);
+                    await db.SaveChangesAsync();
+                    //await db.Entry(obj).ReloadAsync();
+                    return RedirectToAction("Index", new { id = newDay.PhysicianId });
+                }
+            }
+            return Redirect(Request.UrlReferrer.ToString());
         }
     }
 }

@@ -42,29 +42,17 @@
         </ul>
     </div>
 }
-<h2>Availability</h2>
+
+@if (Model.CurrentUser.Id != Model.SelectedUser.Id)
+{
+    <div class="lead">@Model.SelectedUser.DisplayName</div>
+}
+
+<h2>Add Available Day</h2>
 
 <form action="~/Availability/AddDay" method="post" class="form-horizontal">
 
     @Html.HiddenFor(c => c.NewAvailableDay.PhysicianId)
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Is Prebook</label>
-        <div class="col-md-10">
-            <div class="checkbox">
-                @Html.CheckBoxFor(model => model.NewAvailableDay.IsPrebook)
-                @Html.ValidationMessageFor(model => model.NewAvailableDay.IsPrebook, "", new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Company</label>
-        <div class="col-md-10">
-            @Html.DropDownListFor(c => c.NewAvailableDay.CompanyId, new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessageFor(c => c.NewAvailableDay.CompanyId, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
     <div class="form-group">
         <label class="control-label col-md-2">Available Day</label>
@@ -78,12 +66,32 @@
     </div>
 
     <div class="form-group">
+        <label class="control-label col-md-2">Company</label>
+        <div class="col-md-10">
+            @Html.DropDownListFor(c => c.NewAvailableDay.CompanyId, new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessageFor(c => c.NewAvailableDay.CompanyId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Is Prebook</label>
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.CheckBoxFor(model => model.NewAvailableDay.IsPrebook)
+                @Html.ValidationMessageFor(model => model.NewAvailableDay.IsPrebook, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-md-push-2 col-md-10">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </div>
 
 </form>
+
+<h2>Availability</h2>
 
 @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
 {

@@ -42,7 +42,7 @@ namespace WebApp.Controllers
             {
                 AvailableDays = availableDays,
                 CurrentUser = user,
-                SelectedUser = user,
+                SelectedUser = selectedUser,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
                 Today = SystemTime.Now(),
                 NewAvailableDay = new AvailableDay()

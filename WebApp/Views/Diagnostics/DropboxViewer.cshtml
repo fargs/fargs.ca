@@ -1,0 +1,35 @@
+﻿@model Dropbox.Api.Files.ListFolderResult
+
+<h1>Dropbox Viewer</h1>
+<div class="lead">@ViewBag.Path</div>
+<form action="~/Diagnostics/DropboxCreateFolder" method="post">
+    @Html.Hidden("Path", null, new { value = ViewBag.Path })
+    <input type="text" name="FolderName" value="" />
+    <button type="submit" class="btn btn-default">Create Folder</button>
+</form>
+<ol>
+    @foreach (var item in Model.Entries)
+    {
+        <li>
+            <div>@item.PathLower</div>
+
+            @if (item.IsFolder)
+            {
+                if (item.AsFolder.SharingInfo == null)
+                {
+                    <form action="~/Diagnostics/DropboxShareFolder" method="post">
+                        @Html.Hidden("Path", item.PathLower)
+                        <button type="submit" class="btn btn-default">Share Folder</button>
+                    </form>
+                }
+                else
+                {
+                    <form action="~/Diagnostics/DropboxFolderDetails" method="post">
+                        @Html.Hidden("Path", item.AsFolder.PathLower)
+                        <button type="submit" class="btn btn-default">View Members</button>
+                    </form>
+                }
+            }
+        </li>
+    }
+</ol>

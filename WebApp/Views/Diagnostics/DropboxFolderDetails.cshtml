@@ -1,0 +1,10 @@
+﻿@model WebApp.ViewModels.DiagnosticViewModels.DropboxFolderDetails
+
+<h3>@Model.Folder.AsFolder.PathLower</h3>
+
+<ol>
+    @foreach (var item in Model.Members)
+    {
+        <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+    }
+</ol>

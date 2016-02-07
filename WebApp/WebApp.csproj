@@ -53,6 +53,10 @@
       <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dropbox.Api, Version=0.1.5878.31965, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dropbox.Api.2.3.4\lib\portable-net45+sl50+win+wpa81+wp80\Dropbox.Api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -294,11 +298,13 @@
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
+    <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
@@ -797,6 +803,8 @@
     <Content Include="Views\ServiceRequest\CreateSuccess.cshtml" />
     <Content Include="Views\ServiceRequest\Cancel.cshtml" />
     <Content Include="Views\ServiceRequestTask\Index.cshtml" />
+    <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
+    <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

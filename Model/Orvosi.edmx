@@ -525,6 +525,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
             
             
             
+            <PropertyRef Name="PhysicianUserName" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -562,6 +563,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="PhysicianUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
           <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServicePrice" Type="decimal" Precision="18" Scale="2" />
@@ -1489,6 +1491,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName], 
     [ServiceRequest].[PhysicianId] AS [PhysicianId], 
     [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
+    [ServiceRequest].[PhysicianUserName] AS [PhysicianUserName], 
     [ServiceRequest].[CompanyName] AS [CompanyName], 
     [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName], 
     [ServiceRequest].[ServicePrice] AS [ServicePrice], 
@@ -2234,6 +2237,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServiceRequest">
           <Key>
             <PropertyRef Name="Id" />
+            <PropertyRef Name="PhysicianUserName" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
@@ -2305,6 +2309,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ServiceStatusId" Type="Byte" />
           <Property Name="ServiceRequestStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ServiceStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -3041,6 +3046,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="PhysicianUserName" ColumnName="PhysicianUserName" />
                 <ScalarProperty Name="ServiceStatusText" ColumnName="ServiceStatusText" />
                 <ScalarProperty Name="ServiceRequestStatusText" ColumnName="ServiceRequestStatusText" />
                 <ScalarProperty Name="ServiceStatusId" ColumnName="ServiceStatusId" />

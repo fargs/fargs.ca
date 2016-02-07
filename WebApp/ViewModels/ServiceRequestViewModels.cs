@@ -56,6 +56,12 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public List<ServiceRequestTask> ServiceRequestTasks { get; set; }
     }
 
+    public class CreateSuccessViewModel
+    {
+        public ServiceRequest ServiceRequest { get; set; }
+        public Dropbox.Api.Files.Metadata Folder { get; set; }
+    }
+
     public class FilterArgs
     {
         public string Sort { get; set; }

@@ -11,6 +11,8 @@ using Model;
 using Model.Enums;
 using WebApp.ViewModels.ServiceRequestViewModels;
 using System.Security.Claims;
+using WebApp.Library;
+using Dropbox.Api.Files;
 
 namespace WebApp.Controllers
 {
@@ -243,7 +245,30 @@ namespace WebApp.Controllers
                 NOTE: Share permissions will be granted when the resources are assigned.
             */
 
-            return View("CreateSuccess", obj);
+            /***********************************
+            Dropbox
+            ***********************************/
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Copy the case template folder
+            var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+            var destination = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title);
+            var folder = await client.Files.CopyAsync(new RelocationArg("cases/_CaseFolderTemplate", destination));
+
+            var model = new CreateSuccessViewModel()
+            {
+                ServiceRequest = obj,
+                Folder = folder
+            };
+            return RedirectToAction("CreateSuccess", model);
+        }
+
+        [HttpGet]
+        [ChildActionOnly]
+        public ActionResult CreateSuccess(CreateSuccessViewModel obj)
+        {
+            return View(obj);
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]

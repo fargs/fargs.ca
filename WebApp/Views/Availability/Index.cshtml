@@ -35,20 +35,29 @@
 }
 <h2>Availability</h2>
 
-<ul>
-    @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
-    {
-        <li>
-            @day.Day.ToString("yyyy MMM ddd dd")
+@foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
+{
+    <div class="row">
+        <p>
+            <div class="col-md-2">
+                <div>
+                    @day.Day.ToString("yyyy MMM ddd dd")
+                </div>
+                <div>
+                    @day.LocationName for @day.CompanyName
+            </div>
+        </div>
+        <div class="col-md-10">
             <div class="btn-group">
                 @foreach (var slot in day.AvailableSlots)
                 {
                     <button class="btn btn-default">@slot.StartTime</button>
                 }
             </div>
-        </li>
-    }
-</ul>
+        </div>
+    </p>
+    </div>
+}
 
 <h2>This Month</h2>
 

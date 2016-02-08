@@ -806,6 +806,7 @@
     <Content Include="Views\ServiceRequestTask\Index.cshtml" />
     <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
+    <Content Include="Views\Availability\AddDay.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

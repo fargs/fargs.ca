@@ -1493,5 +1493,30 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableDay_Insert", availableDayParameter, userIdParameter, companyIdParameter, locationIdParameter, isPrebookParameter, modifiedUserParameter);
         }
+    
+        public virtual ObjectResult<Nullable<short>> AvailableSlot_Insert(Nullable<short> availableDayId, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<short> duration, string modifiedUser)
+        {
+            var availableDayIdParameter = availableDayId.HasValue ?
+                new ObjectParameter("AvailableDayId", availableDayId) :
+                new ObjectParameter("AvailableDayId", typeof(short));
+    
+            var startTimeParameter = startTime.HasValue ?
+                new ObjectParameter("StartTime", startTime) :
+                new ObjectParameter("StartTime", typeof(System.TimeSpan));
+    
+            var endTimeParameter = endTime.HasValue ?
+                new ObjectParameter("EndTime", endTime) :
+                new ObjectParameter("EndTime", typeof(System.TimeSpan));
+    
+            var durationParameter = duration.HasValue ?
+                new ObjectParameter("Duration", duration) :
+                new ObjectParameter("Duration", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableSlot_Insert", availableDayIdParameter, startTimeParameter, endTimeParameter, durationParameter, modifiedUserParameter);
+        }
     }
 }

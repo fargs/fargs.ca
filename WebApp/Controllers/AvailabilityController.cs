@@ -110,5 +110,30 @@ namespace WebApp.Controllers
             }
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> AddSlots(short AvailableDayId, short StartHour, short StartMinute, short Duration, byte Repeat)
+        {
+            var firstStartTime = new TimeSpan(StartHour, StartMinute, 0);
+            using (var db = new OrvosiEntities(User.Identity.Name))
+            {
+                for (int i = 0; i < Repeat; i++)
+                {
+                    var startTime = firstStartTime.Add(new TimeSpan(0, Duration * i, 0));
+                    var endTime = startTime.Add(new TimeSpan(0, Duration, 0));
+                    var obj = new AvailableSlot()
+                    {
+                        AvailableDayId = AvailableDayId,
+                        StartTime = startTime,
+                        EndTime = endTime,
+                        Duration = Duration,
+                        Title = string.Empty // Needed because the view makes this non nullable.
+                    };
+                    db.AvailableSlots.Add(obj);
+                }
+                await db.SaveChangesAsync();
+            }
+            return Redirect(Request.UrlReferrer.ToString());
+        }
     }
 }

@@ -763,6 +763,13 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="IsPrebook" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
+        <Function Name="AvailableSlot_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="AvailableDayId" Type="smallint" Mode="In" />
+          <Parameter Name="StartTime" Type="time" Mode="In" />
+          <Parameter Name="EndTime" Type="time" Mode="In" />
+          <Parameter Name="Duration" Type="smallint" Mode="In" />
+          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="Company_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Name" Type="nvarchar" Mode="In" />
           <Parameter Name="Code" Type="nvarchar" Mode="In" />
@@ -2028,6 +2035,13 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
             <Parameter Name="LocationId" Mode="In" Type="Int16" />
             <Parameter Name="IsPrebook" Mode="In" Type="Boolean" />
+            <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="AvailableSlot_Insert" ReturnType="Collection(Int16)">
+            <Parameter Name="AvailableDayId" Mode="In" Type="Int16" />
+            <Parameter Name="StartTime" Mode="In" Type="Time" />
+            <Parameter Name="EndTime" Mode="In" Type="Time" />
+            <Parameter Name="Duration" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
@@ -3649,6 +3663,18 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OrvosiModel.AvailableSlot">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OrvosiModel.Store.AvailableSlot_Insert">
+                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
+                  <ScalarProperty Name="Duration" ParameterName="Duration" />
+                  <ScalarProperty Name="EndTime" ParameterName="EndTime" />
+                  <ScalarProperty Name="StartTime" ParameterName="StartTime" />
+                  <ScalarProperty Name="AvailableDayId" ParameterName="AvailableDayId" />
+                  <ResultBinding Name="Id" ColumnName="Id" />
+                </InsertFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetServiceCatalogueForCompany" FunctionName="OrvosiModel.Store.GetServiceCatalogueForCompany">
           <ResultMapping>
@@ -3854,6 +3880,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleNoShow" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleNoShow" />
           <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleCancellation" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleCancellation" />
           <FunctionImportMapping FunctionImportName="AvailableDay_Insert" FunctionName="OrvosiModel.Store.AvailableDay_Insert" />
+          <FunctionImportMapping FunctionImportName="AvailableSlot_Insert" FunctionName="OrvosiModel.Store.AvailableSlot_Insert" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

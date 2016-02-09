@@ -20,25 +20,37 @@ namespace WebApp.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // GET: Availability
-        public async Task<ActionResult> Index(string id)
+        public async Task<ActionResult> Index(FilterArgs args)
         {
+            var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
+            var nextMonth = thisMonth.AddMonths(1);
+            if (args.Year.HasValue && args.Month.HasValue)
+            {
+                thisMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
+                nextMonth = thisMonth.AddMonths(1);
+            }
+            args.Year = thisMonth.Year;
+            args.Month = thisMonth.Month;
+
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
             //TODO: this will not be limited to just physicians, intakes should be able to manage their availability as well.
             string physicianId;
             // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
-            if (user.RoleCategoryId == RoleCategory.Admin && !string.IsNullOrEmpty(id))
+            if (user.RoleCategoryId == RoleCategory.Admin && !string.IsNullOrEmpty(args.PhysicianId))
             {
-                physicianId = id;
+                args.PhysicianId = args.PhysicianId;
             }
             else
             {
-                physicianId = user.Id;
+                args.PhysicianId= user.Id;
             }
 
-            var availableDays = await db.AvailableDays.Where(c => c.PhysicianId == physicianId).ToListAsync();
+            var availableDays = await db.AvailableDays
+                .Where(c => c.PhysicianId == args.PhysicianId && (c.Day >= thisMonth && c.Day < nextMonth))
+                .ToListAsync();
 
-            var selectedUser = await db.Users.SingleOrDefaultAsync(c => c.Id == physicianId);
+            var selectedUser = await db.Users.SingleOrDefaultAsync(c => c.Id == args.PhysicianId);
 
             var model = new IndexViewModel()
             {
@@ -46,9 +58,10 @@ namespace WebApp.Controllers
                 CurrentUser = user,
                 SelectedUser = selectedUser,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
-                Today = SystemTime.Now()
+                Today = SystemTime.Now(),
+                FilterArgs = args
             };
-
+            
             return View(model);
         }
 

@@ -519,13 +519,6 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
         <EntityType Name="ServiceRequest">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            <PropertyRef Name="PhysicianUserName" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -2267,7 +2260,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServiceRequest">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="PhysicianUserName" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="ObjectGuid" Type="Guid" Nullable="false" />

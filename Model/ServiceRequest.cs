@@ -84,5 +84,6 @@ namespace Model
         public Nullable<byte> ServiceStatusId { get; set; }
         public string ServiceRequestStatusText { get; set; }
         public string ServiceStatusText { get; set; }
+        public string PhysicianUserName { get; set; }
     }
 }

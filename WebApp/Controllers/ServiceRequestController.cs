@@ -29,7 +29,7 @@ namespace WebApp.Controllers
             // get the user
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
 
-            var sr = db.ServiceRequests.AsQueryable<ServiceRequest>();
+            var sr = db.ServiceRequests.AsQueryable();
 
             if (filterArgs.StatusId.HasValue)
             {

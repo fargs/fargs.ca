@@ -75,7 +75,7 @@
                 <div class="pull-left">@day.Day.ToString("dddd dd")</div>
                 <form action="~/Availability/CancelDay" method="post">
                     @Html.Hidden("id", day.Id)
-                    <button type="submit" class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                    <button type="submit" @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty) class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
                 </form>
             </div>
             <span>
@@ -153,7 +153,7 @@
                         <div class="pull-left" style="vertical-align: middle">
                             <form action="~/Availability/CancelSlot" method="post">
                                 @Html.Hidden("id", slot.Id)
-                                <button type="submit" class="btn btn-link @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                <button type="submit" @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty) class="btn btn-link @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
                             </form>
                         </div>
                     </li>

@@ -11,6 +11,10 @@ using Model;
 using Model.Enums;
 using WebApp.ViewModels.ServiceRequestViewModels;
 using System.Security.Claims;
+using WebApp.Library;
+using Dropbox.Api.Files;
+using Dropbox.Api.Sharing;
+using Dropbox.Api.Team;
 
 namespace WebApp.Controllers
 {
@@ -198,52 +202,134 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
-            var obj = new ServiceRequest()
+            if (ModelState.IsValid)
             {
-                ServiceCatalogueId = serviceCatalogue.Id,
-                AppointmentDate = sr.AppointmentDate,
-                AvailableSlotId = sr.AvailableSlotId,
-                AddressId = location.Id,
-                CaseCoordinatorId = sr.CaseCoordinatorId,
-                IntakeAssistantId = sr.IntakeAssistantId,
-                DocumentReviewerId = sr.DocumentReviewerId,
-                ClaimantName = sr.ClaimantName,
-                CompanyReferenceId = sr.CompanyReferenceId,
-                RequestedBy = sr.RequestedBy,
-                RequestedDate = sr.RequestedDate,
-                DocumentFolderLink = sr.DocumentFolderLink,
-                CompanyId = sr.CompanyId,
-                ModifiedUser = User.Identity.Name,
-                ServiceName = string.Empty // this should not be needed but edmx is making it non nullable
-            };
+                var obj = new ServiceRequest()
+                {
+                    ServiceCatalogueId = serviceCatalogue.Id,
+                    AppointmentDate = sr.AppointmentDate,
+                    AvailableSlotId = sr.AvailableSlotId,
+                    AddressId = location.Id,
+                    CaseCoordinatorId = sr.CaseCoordinatorId,
+                    IntakeAssistantId = sr.IntakeAssistantId,
+                    DocumentReviewerId = sr.DocumentReviewerId,
+                    ClaimantName = sr.ClaimantName,
+                    CompanyReferenceId = sr.CompanyReferenceId,
+                    RequestedBy = sr.RequestedBy,
+                    RequestedDate = sr.RequestedDate,
+                    DocumentFolderLink = sr.DocumentFolderLink,
+                    CompanyId = sr.CompanyId,
+                    ModifiedUser = User.Identity.Name,
+                    ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
+                    PhysicianUserName = string.Empty // same as ServiceName
 
-            using (var db = new OrvosiEntities(User.Identity.Name))
-            {
-                db.ServiceRequests.Add(obj);
-                await db.SaveChangesAsync();
-                await db.Entry(obj).ReloadAsync();
+                };
+
+                using (var db = new OrvosiEntities(User.Identity.Name))
+                {
+                    db.ServiceRequests.Add(obj);
+                    await db.SaveChangesAsync();
+                    await db.Entry(obj).ReloadAsync();
+                }
+
+                /*  TODO: Create the calendar event in the physician booking calendar.
+                    TITLE will equal the Calendar Title field.
+                    WHERE will be populated with the location address.
+                    DESCRIPTION will be populated with:
+                        Case Details: 
+                        https://orvosi.ca/servicerequest/details/[id]
+
+                        Case Folder:
+                        [Case Folder Name field]
+
+                    NOTE: Invitees will be set with the resources are assigned. Not now.
+
+                    TODO: Create the DropBox folder.
+                    TITLE will equal the Case Folder Name field.
+                    PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
+
+                    NOTE: Share permissions will be granted when the resources are assigned.
+                */
+
+                /***********************************
+                Dropbox
+                ***********************************/
+                var dropbox = new OrvosiDropbox();
+                var client = await dropbox.GetServiceAccountClientAsync();
+
+                // Copy the case template folder
+                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+                var destination = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+                // Share the folder
+                var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
+                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+                // Add the case coordinator to the share
+                await client.Sharing.AddFolderMemberAsync(
+                    sharedFolderId,
+                    new List<AddMember>()
+                    {
+                        new AddMember(
+                            new MemberSelector.Email(caseCoordinator.Email)
+                        )
+                    },
+                    true
+                );
+
+                await client.Sharing.UpdateFolderMemberAsync(
+                    sharedFolderId,
+                    new MemberSelector.Email(caseCoordinator.Email),
+                    AccessLevel.Editor.Instance
+                );
+
+                var cc = await dropbox.GetTeamMemberClientAsync(caseCoordinator.Email);
+                await cc.Sharing.MountFolderAsync(sharedFolderId);
+
+                // Get the folder
+                var metadata = await client.Files.GetMetadataAsync(
+                    new GetMetadataArg(folder.AsFolder.PathLower)
+                );
+
+                // Get the members for the shared folder
+                var sharedMembers = await client.Sharing.ListFolderMembersAsync(
+                    new ListFolderMembersArgs(metadata.AsFolder.SharingInfo.SharedFolderId)
+                );
+
+                // Get the full member entities of the shared members
+                var args = new List<UserSelectorArg>();
+                foreach (var m in sharedMembers.Users)
+                {
+                    args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
+                }
+                var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
+
+                // Create the calendar event
+
+                // mark the first task as complete
+                using (var db = new OrvosiEntities(User.Identity.Name))
+                {
+                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder);
+                    serviceRequestTask.CompletedDate = SystemTime.Now();
+                    await db.SaveChangesAsync();
+                }
+
+                var model = new CreateSuccessViewModel()
+                {
+                    ServiceRequest = obj,
+                    Folder = metadata,
+                    Members = members
+                };
+                return View("CreateSuccess", model);
             }
+            //TODO: figure out how to return errors
+            return View();
+        }
 
-            /*  TODO: Create the calendar event in the physician booking calendar.
-                TITLE will equal the Calendar Title field.
-                WHERE will be populated with the location address.
-                DESCRIPTION will be populated with:
-                    Case Details: 
-                    https://orvosi.ca/servicerequest/details/[id]
-
-                    Case Folder:
-                    [Case Folder Name field]
-
-                NOTE: Invitees will be set with the resources are assigned. Not now.
-
-                TODO: Create the DropBox folder.
-                TITLE will equal the Case Folder Name field.
-                PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
-
-                NOTE: Share permissions will be granted when the resources are assigned.
-            */
-
-            return View("CreateSuccess", obj);
+        [HttpGet]       
+        public ActionResult CreateSuccess(CreateSuccessViewModel obj)
+        {
+            return View(obj);
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]

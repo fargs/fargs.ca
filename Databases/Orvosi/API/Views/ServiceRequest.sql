@@ -17,6 +17,8 @@
 
 
 
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -127,7 +129,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,[Title] = dbo.FormatDateTime(ad.[Day], 'yyyyMMdd') + '-' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + '-' + s.Code + '-' + SUBSTRING(p.Email, 0, CHARINDEX('@', p.Email, 0)) + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id) + ' (' + sr.ClaimantName + ') '
+	,[Title] = dbo.FormatDateTime(ad.[Day], 'yyyyMMdd') + '-' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + '-' + s.Code + '-' + p.UserName + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id) + ' (' + sr.ClaimantName + ') '
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -157,6 +159,7 @@ SELECT
 	,s.ServicePortfolioName
 	,sc.PhysicianId
 	,PhysicianDisplayName = p.DisplayName
+	,PhysicianUserName = p.UserName
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
 	,ServicePrice = s.DefaultPrice

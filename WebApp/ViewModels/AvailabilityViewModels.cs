@@ -20,7 +20,8 @@ namespace WebApp.ViewModels.AvailabilityViewModels
     public class FilterArgs
     {
         public string PhysicianId { get; set; }
-        public int? Year{ get; set; }
-        public int? Month{ get; set; }
+        public int? Year { get; set; }
+        public int? Month { get; set; }
+        public DateTime FilterDate { get; set; }
     }
 }

@@ -1518,5 +1518,23 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableSlot_Insert", availableDayIdParameter, startTimeParameter, endTimeParameter, durationParameter, modifiedUserParameter);
         }
+    
+        public virtual int AvailableDay_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableDay_Delete", idParameter);
+        }
+    
+        public virtual int AvailableSlot_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableSlot_Delete", idParameter);
+        }
     }
 }

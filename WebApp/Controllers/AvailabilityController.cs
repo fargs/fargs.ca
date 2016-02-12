@@ -31,11 +31,11 @@ namespace WebApp.Controllers
             }
             args.Year = thisMonth.Year;
             args.Month = thisMonth.Month;
+            args.FilterDate = thisMonth;
 
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
             //TODO: this will not be limited to just physicians, intakes should be able to manage their availability as well.
-            string physicianId;
             // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
             if (user.RoleCategoryId == RoleCategory.Admin && !string.IsNullOrEmpty(args.PhysicianId))
             {
@@ -146,6 +146,48 @@ namespace WebApp.Controllers
                 }
                 await db.SaveChangesAsync();
             }
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CancelDay(int id)
+        {
+            var day = await db.AvailableDays.SingleOrDefaultAsync(c => c.Id == id);
+            if (day == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null)
+            {
+                ModelState.AddModelError("", "Slots have already been booked.");
+            }
+
+            db.AvailableDays.Remove(day);
+
+            await db.SaveChangesAsync();
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CancelSlot(int id)
+        {
+            var slot = await db.AvailableSlots.SingleOrDefaultAsync(c => c.Id == id);
+            if (slot == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (slot.ServiceRequestId != null)
+            {
+                ModelState.AddModelError("", "Slot has already been booked.");
+            }
+
+            db.AvailableSlots.Remove(slot);
+
+            await db.SaveChangesAsync();
+
             return Redirect(Request.UrlReferrer.ToString());
         }
     }

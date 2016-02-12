@@ -65,13 +65,18 @@
         <a href="~/Availability/AddDay/@Model.SelectedUser.Id" class="btn btn-primary">Add Available Day(s)</a>
     </div>
 </div>
+<h3>@Model.FilterArgs.FilterDate.ToString("yyyy MMMM")</h3>
 @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
 {
     <p></p>
     <div class="row">
         <div class="col-md-2">
             <div>
-                @day.Day.ToString("yyyy MMM ddd dd")
+                <div class="pull-left">@day.Day.ToString("dddd dd")</div>
+                <form action="~/Availability/CancelDay" method="post">
+                    @Html.Hidden("id", day.Id)
+                    <button type="submit" class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                </form>
             </div>
             <span>
                 @if (day.LocationId == null)
@@ -101,7 +106,7 @@
                 <div class="bootstrap-timepicker">
                     <select name="StartHour">
                         <option value="7">7h</option>
-                        <option value="8">8h</option>
+                        <option value="8" selected>8h</option>
                         <option value="9">9h</option>
                         <option value="10">10h</option>
                         <option value="11">11h</option>
@@ -121,7 +126,7 @@
                     </select>
                     <select name="Duration">
                         <option value="30">30</option>
-                        <option value="60">1h</option>
+                        <option value="60" selected>1h</option>
                         <option value="90">1h30</option>
                         <option value="120">2h</option>
                     </select>
@@ -140,10 +145,18 @@
                     <button type="submit" class="btn btn-default btn-sm">Add Slot(s)</button>
                 </div>
             </form>
-            <ul class="list-inline">
+            <ul class="list-inline" style="margin-bottom: 0;">
                 @foreach (var slot in day.AvailableSlots.OrderBy(c => c.StartTime))
                 {
-                    <li>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</li>
+                    <li>
+                        <div class="pull-left">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
+                        <div class="pull-left" style="vertical-align: middle">
+                            <form action="~/Availability/CancelSlot" method="post">
+                                @Html.Hidden("id", slot.Id)
+                                <button type="submit" class="btn btn-link @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                            </form>
+                        </div>
+                    </li>
                 }
             </ul>
         </div>

@@ -489,9 +489,6 @@ warning 6002: The table/view 'Orvosi.API.ServiceCategory' does not have a primar
         <EntityType Name="ServiceCategory">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="Name" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="ModifiedDate" />
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -519,6 +516,13 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
         <EntityType Name="ServiceRequest">
           <Key>
             <PropertyRef Name="Id" />
+            
+            
+            
+            
+            
+            
+            
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -748,6 +752,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="LastActivationDate" Type="datetime" Mode="In" />
           <Parameter Name="IsTestRecord" Type="bit" Mode="In" />
         </Function>
+        <Function Name="AvailableDay_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
+        </Function>
         <Function Name="AvailableDay_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="AvailableDay" Type="date" Mode="In" />
           <Parameter Name="UserId" Type="nvarchar" Mode="In" />
@@ -755,6 +762,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="LocationId" Type="smallint" Mode="In" />
           <Parameter Name="IsPrebook" Type="bit" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="AvailableSlot_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="Id" Type="smallint" Mode="In" />
         </Function>
         <Function Name="AvailableSlot_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="AvailableDayId" Type="smallint" Mode="In" />
@@ -2037,6 +2047,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Duration" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="AvailableDay_Delete">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+          </FunctionImport>
+          <FunctionImport Name="AvailableSlot_Delete">
+            <Parameter Name="Id" Mode="In" Type="Int16" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2237,9 +2253,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServiceCategory">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="Name" />
-            <PropertyRef Name="ModifiedUser" />
-            <PropertyRef Name="ModifiedDate" />
           </Key>
           <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -3606,6 +3619,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" />
                   <ResultBinding Name="Id" ColumnName="Id" />
                 </InsertFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.AvailableDay_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
               </ModificationFunctionMapping>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -3665,6 +3681,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="AvailableDayId" ParameterName="AvailableDayId" />
                   <ResultBinding Name="Id" ColumnName="Id" />
                 </InsertFunction>
+                <DeleteFunction FunctionName="OrvosiModel.Store.AvailableSlot_Delete">
+                  <ScalarProperty Name="Id" ParameterName="Id" />
+                </DeleteFunction>
               </ModificationFunctionMapping>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -3873,6 +3892,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleCancellation" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleCancellation" />
           <FunctionImportMapping FunctionImportName="AvailableDay_Insert" FunctionName="OrvosiModel.Store.AvailableDay_Insert" />
           <FunctionImportMapping FunctionImportName="AvailableSlot_Insert" FunctionName="OrvosiModel.Store.AvailableSlot_Insert" />
+          <FunctionImportMapping FunctionImportName="AvailableDay_Delete" FunctionName="OrvosiModel.Store.AvailableDay_Delete" />
+          <FunctionImportMapping FunctionImportName="AvailableSlot_Delete" FunctionName="OrvosiModel.Store.AvailableSlot_Delete" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

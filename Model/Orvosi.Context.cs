@@ -1464,5 +1464,77 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_ToggleCancellation", idParameter, cancelledDateParameter, isLateCancellationParameter, notesParameter);
         }
+    
+        public virtual ObjectResult<Nullable<short>> AvailableDay_Insert(Nullable<System.DateTime> availableDay, string userId, Nullable<short> companyId, Nullable<short> locationId, Nullable<bool> isPrebook, string modifiedUser)
+        {
+            var availableDayParameter = availableDay.HasValue ?
+                new ObjectParameter("AvailableDay", availableDay) :
+                new ObjectParameter("AvailableDay", typeof(System.DateTime));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var isPrebookParameter = isPrebook.HasValue ?
+                new ObjectParameter("IsPrebook", isPrebook) :
+                new ObjectParameter("IsPrebook", typeof(bool));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableDay_Insert", availableDayParameter, userIdParameter, companyIdParameter, locationIdParameter, isPrebookParameter, modifiedUserParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<short>> AvailableSlot_Insert(Nullable<short> availableDayId, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<short> duration, string modifiedUser)
+        {
+            var availableDayIdParameter = availableDayId.HasValue ?
+                new ObjectParameter("AvailableDayId", availableDayId) :
+                new ObjectParameter("AvailableDayId", typeof(short));
+    
+            var startTimeParameter = startTime.HasValue ?
+                new ObjectParameter("StartTime", startTime) :
+                new ObjectParameter("StartTime", typeof(System.TimeSpan));
+    
+            var endTimeParameter = endTime.HasValue ?
+                new ObjectParameter("EndTime", endTime) :
+                new ObjectParameter("EndTime", typeof(System.TimeSpan));
+    
+            var durationParameter = duration.HasValue ?
+                new ObjectParameter("Duration", duration) :
+                new ObjectParameter("Duration", typeof(short));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<short>>("AvailableSlot_Insert", availableDayIdParameter, startTimeParameter, endTimeParameter, durationParameter, modifiedUserParameter);
+        }
+    
+        public virtual int AvailableDay_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableDay_Delete", idParameter);
+        }
+    
+        public virtual int AvailableSlot_Delete(Nullable<short> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(short));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableSlot_Delete", idParameter);
+        }
     }
 }

@@ -1,0 +1,102 @@
+﻿@using Model
+@using Model.Enums
+
+@model Model.AvailableDay
+
+@{
+    var db = new OrvosiEntities();
+
+    ViewBag.Users = db.Users
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id,
+            Group = new SelectListGroup() { Name = c.RoleName }
+        }).ToList();
+
+    ViewBag.Companies = db.Companies
+        .Where(c => c.ParentId == null)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString(),
+        }).ToList();
+
+    var locations = db.Locations.ToList(); // needed to use the string.format in the Select below
+    ViewBag.Locations = locations
+        .Select(c => new SelectListItem()
+        {
+            Text = string.Format("{0} - ({1})", c.Name, c.City),
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.EntityDisplayName }
+        }).ToList();
+}
+
+<div class="lead">@Model.PhysicianName</div>
+
+<h2>Add Available Day</h2>
+
+<form action="~/Availability/AddDay" method="post" class="form-horizontal">
+
+    @Html.Hidden("PhysicianId", Model.PhysicianId)
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Available Day</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="AvailableDayPicker">
+                <input class="form-control" data-val="true" data-val-required="The Day field is required." id="AvailableDays" name="AvailableDays" size="16" type="text">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessage("Day", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Location</label>
+        <div class="col-md-10">
+            @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Company</label>
+        <div class="col-md-10">
+            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Is Prebook</label>
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.CheckBox("IsPrebook")
+                @Html.ValidationMessage("IsPrebook", "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-push-2 col-md-10">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $('#AvailableDayPicker').datepicker({
+            startDate: '-1d',
+            format: 'yyyy-mm-dd',
+            multidate: true,
+            datesDisabled: [@ViewBag.AvailableDaysCSV]
+        });
+
+    </script>
+}

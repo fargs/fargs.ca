@@ -129,6 +129,7 @@ namespace Model.Enums
 
     public static class Tasks
     {
+        public const byte CreateCaseFolder = 16;
         public const byte SubmitInvoice = 24;
     }
 

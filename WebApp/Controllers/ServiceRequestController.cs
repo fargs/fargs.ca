@@ -273,7 +273,14 @@ namespace WebApp.Controllers
                         new AddMember(
                             new MemberSelector.Email(caseCoordinator.Email)
                         )
-                    }
+                    },
+                    true
+                );
+
+                await client.Sharing.UpdateFolderMemberAsync(
+                    sharedFolderId,
+                    new MemberSelector.Email(caseCoordinator.Email),
+                    AccessLevel.Editor.Instance
                 );
 
                 var cc = await dropbox.GetTeamMemberClientAsync(caseCoordinator.Email);
@@ -296,6 +303,16 @@ namespace WebApp.Controllers
                     args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
                 }
                 var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
+
+                // Create the calendar event
+
+                // mark the first task as complete
+                using (var db = new OrvosiEntities(User.Identity.Name))
+                {
+                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder);
+                    serviceRequestTask.CompletedDate = SystemTime.Now();
+                    await db.SaveChangesAsync();
+                }
 
                 var model = new CreateSuccessViewModel()
                 {

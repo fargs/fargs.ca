@@ -34,5 +34,14 @@ namespace WebApp.Library
             return _client;
         }
 
+        internal async Task<DropboxClient> GetTeamMemberClientAsync(string email)
+        {
+            List<UserSelectorArg> args = new List<UserSelectorArg>();
+            args.Add(new UserSelectorArg.Email(email));
+
+            var members = await TeamClient.Team.MembersGetInfoAsync(args);
+            var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
+            return TeamClient.AsMember(teamMemberId);
+        }
     }
 }

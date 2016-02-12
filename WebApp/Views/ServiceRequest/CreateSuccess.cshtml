@@ -13,14 +13,21 @@
     </dd>
 </dl>
 <h1>Dropbox Case Folder</h1>
-<h1>Service Request</h1>
 <div class="alert alert-success">
     <strong>Great!</strong> The dropbox folder was created successfully.
 </div>
 <dl>
     <dt>Folder Name</dt>
     <dd>@Model.Folder.AsFolder.Name</dd>
+    <dt>Folder Path</dt>
+    <dd>@Model.Folder.AsFolder.PathLower</dd>
 </dl>
+<ol>
+    @foreach (var item in Model.Members)
+    {
+        <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+    }
+</ol>
 <a href="~/ServiceRequest" class="btn btn-default">Back to List</a>
 <a href="~/ServiceRequest/Details/@Model.ServiceRequest.Id" class="btn btn-default">View Details</a>
 <a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id#ResourceAssignment" class="btn btn-default">Assign Resources</a>

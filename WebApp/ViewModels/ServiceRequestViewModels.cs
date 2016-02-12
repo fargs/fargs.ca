@@ -60,6 +60,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     {
         public ServiceRequest ServiceRequest { get; set; }
         public Dropbox.Api.Files.Metadata Folder { get; set; }
+        public List<Dropbox.Api.Team.MembersGetInfoItem> Members { get; set; }
     }
 
     public class FilterArgs

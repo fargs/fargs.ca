@@ -41,6 +41,8 @@
         <EntityTypeShape EntityType="OrvosiModel.ServiceCatalogue" Width="1.5" PointX="0.75" PointY="4.5" />
         <EntityTypeShape EntityType="OrvosiModel.PhysicianLocationArea" Width="1.5" PointX="0.875" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.AvailableDay" Width="1.5" PointX="12.25" PointY="1" />
+        <EntityTypeShape EntityType="OrvosiModel.AvailableSlot" Width="1.5" PointX="14.5" PointY="1.5" />
+        <AssociationConnector Association="OrvosiModel.AvailableDayAvailableSlot" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

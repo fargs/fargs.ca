@@ -25,7 +25,8 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Requests", "", "ServiceRequest", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Bookings", "", "ServiceRequest", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                         @*<li>@Html.ActionLink("Tasks", "", "ServiceRequestTask", new { area = "" }, null)</li>*@
                     }
                 </ul>

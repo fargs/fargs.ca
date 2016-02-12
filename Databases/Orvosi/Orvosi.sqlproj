@@ -248,6 +248,10 @@
     <Build Include="API\Stored Procedures\GetDashboardSchedule.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_ToggleNoShow.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_ToggleCancellation.sql" />
+    <Build Include="API\Stored Procedures\AvailableSlot_Insert.sql" />
+    <Build Include="API\Stored Procedures\AvailableDay_Insert.sql" />
+    <Build Include="API\Stored Procedures\AvailableSlot_Delete.sql" />
+    <Build Include="API\Stored Procedures\AvailableDay_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

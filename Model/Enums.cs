@@ -169,5 +169,35 @@ namespace Model.Enums
             }
             return range;
         }
+
+        public static Dictionary<int, string> GetMonths()
+        {
+            var months = new Dictionary<int, string>();
+            months.Add(1, "Jan");
+            months.Add(2, "Feb");
+            months.Add(3, "Mar");
+            months.Add(4, "Apr");
+            months.Add(5, "May");
+            months.Add(6, "Jun");
+            months.Add(7, "Jul");
+            months.Add(8, "Aug");
+            months.Add(9, "Sep");
+            months.Add(10, "Oct");
+            months.Add(11, "Nov");
+            months.Add(12, "Dec");
+            return months;
+        }
+
+        public static Dictionary<int, string> GetYears()
+        {
+            var months = new Dictionary<int, string>();
+            months.Add(2015, "2015");
+            months.Add(2016, "2016");
+            months.Add(2017, "2017");
+            months.Add(2018, "2018");
+            months.Add(2019, "2019");
+            months.Add(2020, "2020");
+            return months;
+        }
     }
 }

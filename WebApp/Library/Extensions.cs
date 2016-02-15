@@ -28,6 +28,17 @@ namespace WebApp.Library.Extensions
             return obj as ClaimsIdentity;
         }
 
+        public static string GetRoleId(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().Claims.SingleOrDefault(c => c.Type == "RoleId");
+            if (claim == null)
+            {
+                return string.Empty;
+            }
+            return claim.Value;
+            
+        }
+
         public static int GetRestOfWeek(this DateTime obj)
         {
             int restOfWeek = 0;

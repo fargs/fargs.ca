@@ -7,7 +7,7 @@
 
 <h3>@Model.ServiceRequest.PhysicianDisplayName</h3>
 <div class="lead">
-    Service Request ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName) </span>
+    Exam ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName) </span>
     @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
     {
         <span class="label label-danger">

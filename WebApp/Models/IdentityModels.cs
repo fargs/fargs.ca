@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using Model.Enums;
 
 namespace WebApp.Models
 {
@@ -20,7 +21,8 @@ namespace WebApp.Models
             // Add custom user claims here
             userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
-            userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id));
+            userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
+            userIdentity.AddClaim(new Claim("RoleId", this.Roles.FirstOrDefault().RoleId));
 
             return userIdentity;
         }

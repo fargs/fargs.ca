@@ -1,4 +1,6 @@
-﻿@using WebApp.Library
+﻿@using WebApp.Library.Extensions
+@using System.Security.Claims
+@using e = Model.Enums;
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,8 +27,11 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Bookings", "", "ServiceRequest", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Exams", "", "ServiceRequest", new { area = "" }, null)</li>
+                        if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator)
+                        {
+                            <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
+                        }
                         @*<li>@Html.ActionLink("Tasks", "", "ServiceRequestTask", new { area = "" }, null)</li>*@
                     }
                 </ul>

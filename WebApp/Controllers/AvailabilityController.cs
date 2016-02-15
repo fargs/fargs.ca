@@ -14,7 +14,7 @@ using System.Net;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class AvailabilityController : Controller
     {
         OrvosiEntities db = new OrvosiEntities();

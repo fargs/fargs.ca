@@ -270,6 +270,7 @@ namespace WebApp.Controllers
                 var sharedFolderId = share.AsComplete.Value.SharedFolderId;
 
                 await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
+                await DropboxAddMember(dropbox, client, obj.PhysicianId, sharedFolderId);
 
                 // Get the folder
                 var metadata = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);

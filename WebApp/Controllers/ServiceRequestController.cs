@@ -379,6 +379,7 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Edit(ServiceRequest sr)
         {
+            Guid? caseCoordinatorOriginal = null;
             Guid? documentReviewerOriginal = null;
             Guid? intakeAssistantOriginal = null;
 
@@ -390,10 +391,12 @@ namespace WebApp.Controllers
                     var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
 
                     // store the original values
+                    caseCoordinatorOriginal = obj.CaseCoordinatorId ?? null;
                     documentReviewerOriginal = obj.DocumentReviewerId ?? null;
                     intakeAssistantOriginal = obj.IntakeAssistantId ?? null;
 
                     // update the resource assignments
+                    obj.CaseCoordinatorId = sr.CaseCoordinatorId;
                     obj.DocumentReviewerId = sr.DocumentReviewerId;
                     obj.IntakeAssistantId = sr.IntakeAssistantId;
 
@@ -405,6 +408,7 @@ namespace WebApp.Controllers
                     var folder = await client.Files.GetMetadataAsync(obj.DocumentFolderLink);
                     var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
 
+                    await ApplyMemberChangesToDropbox(caseCoordinatorOriginal, obj.CaseCoordinatorId, dropbox, client, sharedFolderId);
                     await ApplyMemberChangesToDropbox(documentReviewerOriginal, obj.DocumentReviewerId, dropbox, client, sharedFolderId);
                     await ApplyMemberChangesToDropbox(intakeAssistantOriginal, obj.IntakeAssistantId, dropbox, client, sharedFolderId);
 

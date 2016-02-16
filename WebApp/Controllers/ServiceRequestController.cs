@@ -393,10 +393,30 @@ namespace WebApp.Controllers
 
                     await db.SaveChangesAsync();
 
+                    // Dropbox Integration
+                    var dropbox = new OrvosiDropbox();
+                    var client = await dropbox.GetServiceAccountClientAsync();
+                    var folder = await client.Files.GetMetadataAsync(obj.DocumentFolderLink);
+                    var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
+
+                    await ApplyMemberChangesToDropbox(documentReviewerOriginal, obj.DocumentReviewerId, dropbox, client, sharedFolderId);
+
                     return RedirectToAction("Index");
                 }
             }
             return View(sr);
+        }
+
+        private async Task ApplyMemberChangesToDropbox(Guid? originalId, Guid? currentId, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
+        {
+            if (originalId != currentId)
+            {
+                if (!originalId.HasValue)
+                {
+                    var user = await db.Users.SingleOrDefaultAsync(c => c.Id == currentId.ToString());
+                    await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+                }
+            }
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]

@@ -338,6 +338,16 @@ namespace WebApp.Controllers
             await cc.Sharing.MountFolderAsync(sharedFolderId);
         }
 
+        private static async Task DropboxRemoveMember(Dropbox.Api.DropboxClient client, string email, string sharedFolderId)
+        {
+            // Add the case coordinator to the share
+            await client.Sharing.RemoveFolderMemberAsync(
+                sharedFolderId,
+                new MemberSelector.Email(email),
+                false
+            );
+        }
+
         [HttpGet]       
         public ActionResult CreateSuccess(CreateSuccessViewModel obj)
         {
@@ -429,6 +439,15 @@ namespace WebApp.Controllers
                     if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
                     {
                         await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+                    }
+                }
+                else if (!currentId.HasValue)
+                {
+                    var user = await db.Users.SingleOrDefaultAsync(c => c.Id == originalId.ToString());
+                    //TODO: Get the current assignments 
+                    if (true) //TODO: Check if the originalId that was removed is assigned to another role still. If so, we will not remove the share permissions.
+                    {
+                        await DropboxRemoveMember(client, user.Email, sharedFolderId);
                     }
                 }
             }

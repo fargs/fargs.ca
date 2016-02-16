@@ -265,26 +265,8 @@ namespace WebApp.Controllers
                 var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
                 var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
                 var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-                // Add the case coordinator to the share
-                await client.Sharing.AddFolderMemberAsync(
-                    sharedFolderId,
-                    new List<AddMember>()
-                    {
-                        new AddMember(
-                            new MemberSelector.Email(caseCoordinator.Email)
-                        )
-                    },
-                    true
-                );
 
-                await client.Sharing.UpdateFolderMemberAsync(
-                    sharedFolderId,
-                    new MemberSelector.Email(caseCoordinator.Email),
-                    AccessLevel.Editor.Instance
-                );
-
-                var cc = await dropbox.GetTeamMemberClientAsync(caseCoordinator.Email);
-                await cc.Sharing.MountFolderAsync(sharedFolderId);
+                await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
 
                 // Get the folder
                 var metadata = await client.Files.GetMetadataAsync(
@@ -324,6 +306,30 @@ namespace WebApp.Controllers
             }
             //TODO: figure out how to return errors
             return View();
+        }
+
+        private static async Task DropboxAddMember(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string email, string sharedFolderId)
+        {
+            // Add the case coordinator to the share
+            await client.Sharing.AddFolderMemberAsync(
+                sharedFolderId,
+                new List<AddMember>()
+                {
+                        new AddMember(
+                            new MemberSelector.Email(email)
+                        )
+                },
+                true
+            );
+
+            await client.Sharing.UpdateFolderMemberAsync(
+                sharedFolderId,
+                new MemberSelector.Email(email),
+                AccessLevel.Editor.Instance
+            );
+
+            var cc = await dropbox.GetTeamMemberClientAsync(email);
+            await cc.Sharing.MountFolderAsync(sharedFolderId);
         }
 
         [HttpGet]       

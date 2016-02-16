@@ -2344,7 +2344,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ServiceStatusId" Type="Byte" />
           <Property Name="ServiceRequestStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ServiceStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="Location">
           <Key>

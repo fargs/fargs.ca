@@ -30,6 +30,14 @@ namespace Model.Enums
         public const byte HasWarnings = 3;
     }
 
+    public static class Actions
+    {
+        public const byte None = 0;
+        public const byte Added = 1;
+        public const byte Updated = 2;
+        public const byte Deleted = 3;
+    }
+
     public static class RoleCategory
     {
         public const byte Physician = 1;

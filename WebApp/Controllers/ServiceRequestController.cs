@@ -230,6 +230,10 @@ namespace WebApp.Controllers
                     db.ServiceRequests.Add(obj);
                     await db.SaveChangesAsync();
                     await db.Entry(obj).ReloadAsync();
+
+                    var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+                    obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+                    await db.SaveChangesAsync();
                 }
 
                 /*  TODO: Create the calendar event in the physician booking calendar.
@@ -258,8 +262,7 @@ namespace WebApp.Controllers
                 var client = await dropbox.GetServiceAccountClientAsync();
 
                 // Copy the case template folder
-                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-                var destination = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+                var destination = obj.DocumentFolderLink;
                 var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
                 // Share the folder
                 var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());

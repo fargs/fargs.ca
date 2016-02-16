@@ -371,20 +371,29 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(ServiceRequest serviceRequest)
+        public async Task<ActionResult> Edit(ServiceRequest sr)
         {
+            Guid? documentReviewerOriginal = null;
+
             if (ModelState.IsValid)
             {
                 using (db = new OrvosiEntities(User.Identity.Name))
                 {
-                    db.Entry(serviceRequest).State = EntityState.Modified;
-                    serviceRequest.ServiceName = string.Empty; // this should not be needed but edmx is making it non nullable
+                    // get the tracked object from the database
+                    var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
+
+                    // store the original values
+                    documentReviewerOriginal = obj.DocumentReviewerId ?? null;
+
+                    // update the resource assignments
+                    obj.DocumentReviewerId = sr.DocumentReviewerId;
 
                     await db.SaveChangesAsync();
+
                     return RedirectToAction("Index");
                 }
             }
-            return View(serviceRequest);
+            return View(sr);
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]

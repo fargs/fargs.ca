@@ -269,8 +269,9 @@ namespace WebApp.Controllers
                 var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
                 var sharedFolderId = share.AsComplete.Value.SharedFolderId;
 
+                var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
                 await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-                await DropboxAddMember(dropbox, client, obj.PhysicianId, sharedFolderId);
+                await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
 
                 // Get the folder
                 var metadata = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);

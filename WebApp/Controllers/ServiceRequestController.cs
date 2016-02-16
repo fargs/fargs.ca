@@ -272,22 +272,10 @@ namespace WebApp.Controllers
                 await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
 
                 // Get the folder
-                var metadata = await client.Files.GetMetadataAsync(
-                    new GetMetadataArg(folder.AsFolder.PathLower)
-                );
+                var metadata = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
 
-                // Get the members for the shared folder
-                var sharedMembers = await client.Sharing.ListFolderMembersAsync(
-                    new ListFolderMembersArgs(metadata.AsFolder.SharingInfo.SharedFolderId)
-                );
-
-                // Get the full member entities of the shared members
-                var args = new List<UserSelectorArg>();
-                foreach (var m in sharedMembers.Users)
-                {
-                    args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
-                }
-                var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
+                // Get the shared folder members
+                List<MembersGetInfoItem> members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
                 // Create the calendar event
 
@@ -309,6 +297,21 @@ namespace WebApp.Controllers
             }
             //TODO: figure out how to return errors
             return View();
+        }
+
+        private static async Task<List<MembersGetInfoItem>> GetSharedFolderMembers(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
+        {
+            // Get the members for the shared folder
+            var sharedMembers = await client.Sharing.ListFolderMembersAsync(sharedFolderId);
+
+            // Get the full member entities of the shared members
+            var args = new List<UserSelectorArg>();
+            foreach (var m in sharedMembers.Users)
+            {
+                args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
+            }
+            var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
+            return members;
         }
 
         private static async Task DropboxAddMember(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string email, string sharedFolderId)
@@ -377,6 +380,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Edit(ServiceRequest sr)
         {
             Guid? documentReviewerOriginal = null;
+            Guid? intakeAssistantOriginal = null;
 
             if (ModelState.IsValid)
             {
@@ -387,9 +391,11 @@ namespace WebApp.Controllers
 
                     // store the original values
                     documentReviewerOriginal = obj.DocumentReviewerId ?? null;
+                    intakeAssistantOriginal = obj.IntakeAssistantId ?? null;
 
                     // update the resource assignments
                     obj.DocumentReviewerId = sr.DocumentReviewerId;
+                    obj.IntakeAssistantId = sr.IntakeAssistantId;
 
                     await db.SaveChangesAsync();
 
@@ -400,6 +406,7 @@ namespace WebApp.Controllers
                     var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
 
                     await ApplyMemberChangesToDropbox(documentReviewerOriginal, obj.DocumentReviewerId, dropbox, client, sharedFolderId);
+                    await ApplyMemberChangesToDropbox(intakeAssistantOriginal, obj.IntakeAssistantId, dropbox, client, sharedFolderId);
 
                     return RedirectToAction("Index");
                 }

@@ -421,7 +421,11 @@ namespace WebApp.Controllers
                 if (!originalId.HasValue)
                 {
                     var user = await db.Users.SingleOrDefaultAsync(c => c.Id == currentId.ToString());
-                    await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+                    var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+                    if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
+                    {
+                        await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+                    }
                 }
             }
         }

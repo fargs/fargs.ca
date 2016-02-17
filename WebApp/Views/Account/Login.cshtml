@@ -4,14 +4,15 @@
     ViewBag.Title = "Log in";
 }
 
-@section instructions 
+@section instructions
 {
-<span>Enter your email and password to log in.</span>
+    <span>Enter your email and password to log in.</span>
 }
 
-<form method="post" action="~/Account/Login?@ViewBag.ReturnUrl" role="form">
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+{
     @Html.AntiForgeryToken()
-    @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+    if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
     {
         <div class="alert well-sm alert-danger">
             <a class="close" data-dismiss="alert">&times;</a>
@@ -20,7 +21,7 @@
     }
     <div class="form-group">
         <label for="Email" class="control-label">Email</label>
-        @Html.TextBox("Email", "", new { @class = "form-control"})
+        @Html.TextBox("Email", "", new { @class = "form-control" })
         @*<input type="text" class="form-control" name="Email" id="Email" />*@
         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
     </div>
@@ -37,9 +38,9 @@
     <div class="form-group">
         <input type="submit" value="Log in" class="btn btn-primary" />
     </div>
-</form>
+}
 
-@section footer 
+@section footer
 {
     <div class="col-md-6">
         <a href="~/Account/ForgotPassword"><small>Forgot your password?</small></a>

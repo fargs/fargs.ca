@@ -713,6 +713,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-custom\orvosi.less" />
+    <None Include="Properties\PublishProfiles\orvosiapp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

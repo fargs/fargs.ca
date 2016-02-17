@@ -391,22 +391,13 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Edit(ServiceRequest sr)
         {
-            Guid? caseCoordinatorOriginal = null;
-            Guid? documentReviewerOriginal = null;
-            Guid? intakeAssistantOriginal = null;
-
             if (ModelState.IsValid)
             {
                 using (db = new OrvosiEntities(User.Identity.Name))
                 {
                     // get the tracked object from the database
                     var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
-
-                    // store the original values
-                    caseCoordinatorOriginal = obj.CaseCoordinatorId ?? null;
-                    documentReviewerOriginal = obj.DocumentReviewerId ?? null;
-                    intakeAssistantOriginal = obj.IntakeAssistantId ?? null;
-
+                    
                     // update the resource assignments
                     obj.CaseCoordinatorId = sr.CaseCoordinatorId;
                     obj.DocumentReviewerId = sr.DocumentReviewerId;
@@ -420,37 +411,44 @@ namespace WebApp.Controllers
                     var folder = await client.Files.GetMetadataAsync(obj.DocumentFolderLink);
                     var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
 
-                    await ApplyMemberChangesToDropbox(caseCoordinatorOriginal, obj.CaseCoordinatorId, dropbox, client, sharedFolderId);
-                    await ApplyMemberChangesToDropbox(documentReviewerOriginal, obj.DocumentReviewerId, dropbox, client, sharedFolderId);
-                    await ApplyMemberChangesToDropbox(intakeAssistantOriginal, obj.IntakeAssistantId, dropbox, client, sharedFolderId);
-
+                    await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
+                    
                     return RedirectToAction("Index");
                 }
             }
             return View(sr);
         }
 
-        private async Task ApplyMemberChangesToDropbox(Guid? originalId, Guid? currentId, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
+        private async Task ApplyMemberChangesToDropbox(ServiceRequest request, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
         {
-            if (originalId != currentId)
+            string[] resources = new string[3]
+                    {
+                        request.CaseCoordinatorId.ToString(),
+                        request.DocumentReviewerId.ToString(),
+                        request.IntakeAssistantId.ToString()
+                    };
+
+            var list = resources.Where(r => !string.IsNullOrEmpty(r)).Distinct().ToList();
+            var users = db.Users.Where(c => list.Contains(c.Id)).ToList();
+
+            var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+
+            // Add members
+            foreach (var user in users)
             {
-                if (!originalId.HasValue)
+                if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
                 {
-                    var user = await db.Users.SingleOrDefaultAsync(c => c.Id == currentId.ToString());
-                    var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
-                    if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
-                    {
-                        await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
-                    }
+                    await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
                 }
-                else if (!currentId.HasValue)
+            }
+
+            // remove members
+            foreach (var member in members)
+            {
+                var memberEmail = member.AsMemberInfo.Value.Profile.Email;
+                if (!users.Exists(c => c.Email == memberEmail))
                 {
-                    var user = await db.Users.SingleOrDefaultAsync(c => c.Id == originalId.ToString());
-                    //TODO: Get the current assignments 
-                    if (true) //TODO: Check if the originalId that was removed is assigned to another role still. If so, we will not remove the share permissions.
-                    {
-                        await DropboxRemoveMember(client, user.Email, sharedFolderId);
-                    }
+                    await DropboxRemoveMember(client, memberEmail, sharedFolderId);
                 }
             }
         }

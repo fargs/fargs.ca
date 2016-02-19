@@ -1,0 +1,107 @@
+﻿@using Model
+@using Model.Enums
+@using WebApp.Library.Enums
+@model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Service Catalogue";
+
+    var db = new OrvosiEntities();
+
+    ViewBag.Users = db.Users
+        .Where(c => c.RoleCategoryId == RoleCategory.Physician)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.RoleName}
+        }).ToList();
+
+    ViewBag.Companies = db.Companies
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.ParentName }
+        }).ToList();
+
+    ViewBag.Services = db.Services
+        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .ToList();
+
+    ViewBag.LocationAreas = db.LocationAreas
+        .OrderBy(c => c.ItemText)
+        .ToList();
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form action="~/ServiceCatalogue/Index/" method="get" class="form-inline">
+            @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
+            {
+                <div class="form-group">
+                    @Html.DropDownList("UserId", new SelectList(ViewBag.Users, "Value", "Text", Model.FilterArgs.UserId), new { @class = "form-control" })
+                </div>
+            }
+            <div class="form-group">
+                @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), string.Empty, new { @class = "form-control" })
+            </div>
+            @Html.Hidden("mode", (byte)ViewBag.FormMode)
+            <button type="submit" class="btn btn-primary">Go</button>
+        </form>
+    </div>
+</div>
+<p />
+<div class="h3 lead">
+    @if (Model.SelectedCompany != null)
+    {
+        <span>Service Catalogue for @Model.SelectedUser.DisplayName and <strong>@Model.SelectedCompany.Name</strong></span>
+    }
+    else
+    {
+        <span>Default Service Catalogue for @Model.SelectedUser.DisplayName</span>
+    }
+</div>
+@if (ViewBag.FormMode != FormModes.Edit)
+{
+    <a href="@(string.Format("{0}/ServiceCatalogue/Index?UserId={1}&CompanyId={2}&mode={3}", Url.Content("~"), Model.FilterArgs.UserId, Model.FilterArgs.CompanyId, FormModes.Edit))">Edit</a>
+}
+
+<table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Service
+                </th>
+                @foreach (var item in ViewBag.LocationAreas)
+            {
+                    <th>
+                        @item.ItemText
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.Services)
+            {
+                <tr>
+                    <td>
+                        <div>@item.Name</div>
+                        @if (item.DefaultPrice != null)
+                        {
+                            <small class="text-muted">Recommended price is @item.DefaultPrice</small>
+                        }
+                    </td>
+                    @foreach (var service in Model.ServiceCatalogues.Where(c => c.ServiceId == item.Id).OrderBy(c => c.LocationName))
+                {
+                        <td>
+                            <span>@service.ServiceCatalogueItem.Price</span>
+                            <span>@service.ServiceCatalogueItem.ServicePrice</span>
+                        </td>
+                    }
+                </tr>
+            }
+
+        </tbody>
+        </table>

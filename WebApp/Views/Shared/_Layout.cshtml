@@ -31,6 +31,8 @@
                         if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator)
                         {
                             <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Services", "", "ServiceCatalogue", new { area = "" }, null)</li>
+
                         }
                         @*<li>@Html.ActionLink("Tasks", "", "ServiceRequestTask", new { area = "" }, null)</li>*@
                     }

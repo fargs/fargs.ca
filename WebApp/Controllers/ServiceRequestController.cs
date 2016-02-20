@@ -134,6 +134,32 @@ namespace WebApp.Controllers
             vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
 
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Copy the case template folder
+            var destination = vm.ServiceRequest.DocumentFolderLink;
+
+            try
+            {
+                // Get the folder
+                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination.ToLower());
+            }
+            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            {
+                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+                    throw;
+            }
+
+            if (vm.DropboxFolder != null)
+            {
+                if (vm.DropboxFolder.AsFolder.SharingInfo != null)
+                {
+                    // Get the shared folder members
+                    vm.DropboxFolderMembers = await GetSharedFolderMembers(dropbox, client, vm.DropboxFolder.AsFolder.SharingInfo.SharedFolderId);
+                }
+            }
+
             if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
@@ -299,6 +325,59 @@ namespace WebApp.Controllers
             }
             //TODO: figure out how to return errors
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateDropboxFolder(short id)
+        {
+            var obj = await db.ServiceRequests.FindAsync(id);
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Get the destination folder name
+            var destination = obj.DocumentFolderLink;
+
+            Metadata metadata = null;
+            // Check if the folder already exists
+            try
+            {
+                // Get the folder
+                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+            }
+            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            {
+                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+                    throw;
+            }
+
+            if (metadata != null)
+            {
+                return RedirectToAction("Details", new { id = id } );
+            }
+
+            // Copy the case template folder
+            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+
+            // Share the folder
+            var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+            var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+
+            var caseCoordinatorId = obj.CaseCoordinatorId.HasValue ? obj.CaseCoordinatorId.Value.ToString() : string.Empty;
+            var caseCoordinator = await db.Users.SingleOrDefaultAsync(c => c.Id == caseCoordinatorId);
+            if (caseCoordinator != null) { await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId); }
+
+            var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
+            if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
+
+            var documentReviewerId = obj.DocumentReviewerId.HasValue ? obj.DocumentReviewerId.Value.ToString() : string.Empty;
+            var documentReviewer = await db.Users.SingleOrDefaultAsync(c => c.Id == documentReviewerId);
+            if (documentReviewer != null) { await DropboxAddMember(dropbox, client, documentReviewer.Email, sharedFolderId); }
+
+            var intakeAssistantId = obj.IntakeAssistantId.HasValue ? obj.IntakeAssistantId.Value.ToString() : string.Empty;
+            var intakeAssistant = await db.Users.SingleOrDefaultAsync(c => c.Id == intakeAssistantId);
+            if (intakeAssistant != null) { await DropboxAddMember(dropbox, client, intakeAssistant.Email, sharedFolderId); }
+            
+            return RedirectToAction("Details", new { id = id });
         }
 
         private static async Task<List<MembersGetInfoItem>> GetSharedFolderMembers(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)

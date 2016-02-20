@@ -50,62 +50,62 @@ else
             @if (item.CompletedDate.HasValue)
             {
                 <button type="button" class="btn btn-success btn-circle disabled"><i class="glyphicon glyphicon-ok"></i></button>
-                        <strong>&nbsp;@item.TaskName</strong>
-                        <small class="text-muted">@item.AssignedToDisplayName</small>
-                            <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
+                <strong>&nbsp;@item.TaskName</strong>
+                <small class="text-muted">@item.AssignedToDisplayName</small>
+                <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
                 if (item.Notes != string.Empty)
                 {
                     <div><strong>Notes</strong></div>
-                            <div>
-                                @item.Notes
-                            </div>
+                    <div>
+                        @item.Notes
+                    </div>
                 }
                 if (Model.User.RoleId == e.Roles.SuperAdmin)
                 {
                     if (item.ActualHours.HasValue)
                     {
                         <div class="h5" style="margin-bottom:0;">Cost</div>
-                                <div>
-                                    Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
-                                </div>
-                                <div>
-                                    Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * item.StaffHourlyRate).Value.ToString("C2"))
-                                </div>
+                        <div>
+                            Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
+                        </div>
+                        <div>
+                            Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * item.StaffHourlyRate).Value.ToString("C2"))
+                        </div>
                     }
                 }
             }
             else
             {
                 <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="btn btn-default btn-circle">&nbsp;</a>
-                        <strong>&nbsp;@item.TaskName</strong>
-                        <small class="text-muted">@item.AssignedToDisplayName</small>
-                            <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
-                                <div class="help-block">@item.Guidance</div>
-                                <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
-                                    @Html.AntiForgeryToken()
-                                    @if (item.IsBillable)
+                <strong>&nbsp;@item.TaskName</strong>
+                <small class="text-muted">@item.AssignedToDisplayName</small>
+                <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
+                    <div class="help-block">@item.Guidance</div>
+                    <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
+                        @Html.AntiForgeryToken()
+                        @if (item.IsBillable)
+                        {
+                            <div class="form-group">
+                                <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
+                                <select class="form-control" name="Hours">
+                                    <option></option>
+                                    @for (int i = 0; i < 10; i++)
                                     {
-                                        <div class="form-group">
-                                            <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
-                                            <select class="form-control" name="Hours">
-                                                <option></option>
-                                                @for (int i = 0; i < 10; i++)
-                                                {
-                                                    <option>@((double)i)</option>
-                                                    <option>@((double)i + 0.25)</option>
-                                                    <option>@((double)i + 0.5)</option>
-                                                    <option>@((double)i + 0.75)</option>
-                                                }
-                                            </select>
-                                        </div>
+                                        <option>@((double)i)</option>
+                                        <option>@((double)i + 0.25)</option>
+                                        <option>@((double)i + 0.5)</option>
+                                        <option>@((double)i + 0.75)</option>
                                     }
-                                    <div class="form-group">
-                                        <label for="Notes" class="control-label">Notes</label>
-                                        <textarea rows="3" class="form-control" name="Notes"></textarea>
-                                    </div>
-                                    <button class="btn btn-primary">Done</button>
-                                </form>
+                                </select>
                             </div>
+                        }
+                        <div class="form-group">
+                            <label for="Notes" class="control-label">Notes</label>
+                            <textarea rows="3" class="form-control" name="Notes"></textarea>
+                        </div>
+                        <button class="btn btn-primary">Done</button>
+                    </form>
+                </div>
             }
         </li>
 
@@ -115,8 +115,8 @@ else
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <h3>Invoice from Physician to Company</h3>
-            <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
-            <h3>Invoice from Staff to Orvosi</h3>
+    <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
+    <h3>Invoice from Staff to Orvosi</h3>
     if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
     {
         <div>No billable tasks have been completed.</div>
@@ -167,7 +167,31 @@ else
             <dt>Claimant Name</dt>
             <dd>@Model.ServiceRequest.ClaimantName</dd>
             <dt>Case Folder</dt>
-            <dd><strong>@Model.ServiceRequest.Title</strong></dd>
+            <dd>
+                <strong>@Model.ServiceRequest.Title</strong>
+                @if (Model.DropboxFolder == null)
+                {
+                    <div>
+                        <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                            <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <span class="label label-success">Created</span>
+                    <div class="h4">Folder Shared To:</div>
+                    if (Model.DropboxFolderMembers != null)
+                    {
+                        <ul>
+                            @foreach (var item in Model.DropboxFolderMembers)
+                            {
+                                <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                            }
+                        </ul>
+                    }
+                }
+            </dd>
         </dl>
     </div>
 </div>
@@ -184,6 +208,11 @@ else
             <dt>Document Reviewer</dt>
             <dd>@Model.ServiceRequest.DocumentReviewerName</dd>
         </dl>
+        <a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit Resource Assignments</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
     </div>
 </div>
 <div class="row">
@@ -217,7 +246,7 @@ else
             @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
             {
                 @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
-            }
+        }
         </address>
     </div>
 </div>

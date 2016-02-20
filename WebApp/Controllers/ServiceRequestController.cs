@@ -361,22 +361,12 @@ namespace WebApp.Controllers
             // Share the folder
             var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
             var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-
-            var caseCoordinatorId = obj.CaseCoordinatorId.HasValue ? obj.CaseCoordinatorId.Value.ToString() : string.Empty;
-            var caseCoordinator = await db.Users.SingleOrDefaultAsync(c => c.Id == caseCoordinatorId);
-            if (caseCoordinator != null) { await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId); }
-
+            
             var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
             if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
 
-            var documentReviewerId = obj.DocumentReviewerId.HasValue ? obj.DocumentReviewerId.Value.ToString() : string.Empty;
-            var documentReviewer = await db.Users.SingleOrDefaultAsync(c => c.Id == documentReviewerId);
-            if (documentReviewer != null) { await DropboxAddMember(dropbox, client, documentReviewer.Email, sharedFolderId); }
+            await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
 
-            var intakeAssistantId = obj.IntakeAssistantId.HasValue ? obj.IntakeAssistantId.Value.ToString() : string.Empty;
-            var intakeAssistant = await db.Users.SingleOrDefaultAsync(c => c.Id == intakeAssistantId);
-            if (intakeAssistant != null) { await DropboxAddMember(dropbox, client, intakeAssistant.Email, sharedFolderId); }
-            
             return RedirectToAction("Details", new { id = id });
         }
 
@@ -525,9 +515,13 @@ namespace WebApp.Controllers
             foreach (var member in members)
             {
                 var memberEmail = member.AsMemberInfo.Value.Profile.Email;
-                if (!users.Exists(c => c.Email == memberEmail))
+                var user = db.Users.SingleOrDefault(c => c.Email == memberEmail);
+                if (user.RoleId == Roles.CaseCoordinator || user.RoleId == Roles.DocumentReviewer || user.RoleId == Roles.IntakeAssistant)
                 {
-                    await DropboxRemoveMember(client, memberEmail, sharedFolderId);
+                    if (!users.Exists(c => c.Email == memberEmail))
+                    {
+                        await DropboxRemoveMember(client, memberEmail, sharedFolderId);
+                    }
                 }
             }
         }

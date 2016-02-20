@@ -116,6 +116,13 @@ else
 {
     <h3>Invoice from Physician to Company</h3>
             <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
+            <form action="~/Invoice/Create" method="post">
+                <div class="form-group">
+                    <label class="control-label">Price Override</label>
+                    <input type="text" name="Price" class="form-control" value="@Model.ServiceRequest.EffectivePrice" />
+                </div>
+                <button type="submit" class="btn btn-primary">Create Invoice</button>
+            </form>
             <h3>Invoice from Staff to Orvosi</h3>
     if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
     {

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Dropbox.Api.Files;
+using Dropbox.Api.Team;
 
 namespace WebApp.ViewModels.ServiceRequestViewModels
 {
@@ -47,6 +49,8 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public ServiceRequest ServiceRequest { get; set; }
         public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
         public List<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
+        public Metadata DropboxFolder { get; internal set; }
+        public List<MembersGetInfoItem> DropboxFolderMembers { get; internal set; }
     }
 
     public class EditViewModel

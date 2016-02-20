@@ -660,7 +660,6 @@
     <Content Include="Areas\Admin\Views\Company\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\Account.cshtml" />
-    <Content Include="Areas\Admin\Views\User\Profile.cshtml" />
     <Content Include="Areas\Admin\Views\User\Companies.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Delete.cshtml" />
@@ -702,6 +701,7 @@
     <Content Include="Areas\Staff\Views\Home\Details.cshtml" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
+    <Content Include="Areas\Admin\Views\User\UserProfile.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

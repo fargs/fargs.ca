@@ -62,14 +62,14 @@
                     </div>
                 </div>
 
-                <div class="panel-body">
+                <div class="panel-body" style="padding-top: 0;">
                     <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
                         @foreach (var request in item.ServiceRequests)
                         {
-                            <div>
+                            <div style="padding-top: 15px;">
                                 <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
-                                <div><strong>@request.ServiceName</strong></div>
-                                <div>@request.ClaimantName</div>
+                                <div><strong>@request.ClaimantName</strong></div>
+                                <div>@request.ServiceName</div>
                             </div>
                         }
                     </div>
@@ -113,11 +113,11 @@
                     </div>
                 </div>
 
-                <div class="panel-body">
+                <div class="panel-body" style="padding-top: 0;">
                     <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
                         @foreach (var request in item.ServiceRequests)
                         {
-                            <div>
+                            <div style="padding-top: 15px;">
                                 <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
                                 <div><strong>@request.ServiceName</strong></div>
                                 <div>@request.ClaimantName</div>

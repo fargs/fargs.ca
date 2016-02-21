@@ -19,6 +19,9 @@
 
 
 
+
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -160,6 +163,7 @@ SELECT
 	,sc.PhysicianId
 	,PhysicianDisplayName = p.DisplayName
 	,PhysicianUserName = p.UserName
+	,CompanyGuid = c.ObjectGuid
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
 	,ServicePrice = s.DefaultPrice

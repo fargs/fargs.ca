@@ -252,6 +252,17 @@
     <Build Include="API\Stored Procedures\AvailableDay_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Delete.sql" />
     <Build Include="API\Stored Procedures\AvailableDay_Delete.sql" />
+    <Build Include="dbo\Tables\InvoiceDetail.sql" />
+    <Build Include="dbo\Tables\Invoice.sql" />
+    <Build Include="API\Views\PhysicianToCompanyServiceRequestInvoicePreview.sql" />
+    <Build Include="API\Views\Invoice.sql" />
+    <Build Include="dbo\Functions\GetInvoiceDetailAmount.sql" />
+    <Build Include="API\Stored Procedures\InvoiceDetail_Update.sql" />
+    <Build Include="API\Stored Procedures\InvoiceDetail_Insert.sql" />
+    <Build Include="API\Stored Procedures\InvoiceDetail_Delete.sql" />
+    <Build Include="API\Stored Procedures\Invoice_Update.sql" />
+    <Build Include="API\Stored Procedures\Invoice_Insert.sql" />
+    <Build Include="API\Stored Procedures\Invoice_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

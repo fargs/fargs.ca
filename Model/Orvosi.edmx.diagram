@@ -7,7 +7,7 @@
       <Diagram DiagramId="2a9440802f804d2fb03bf182fded51ae" Name="Diagram1" ZoomLevel="85" >
         <EntityTypeShape EntityType="OrvosiModel.CompanyAssessorPackage" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.Company" Width="1.5" PointX="7.375" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="7.375" PointY="4.5" />
+        <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="7.375" PointY="4.75" />
         <EntityTypeShape EntityType="OrvosiModel.User" Width="1.5" PointX="5.125" PointY="5.625" />
         <EntityTypeShape EntityType="OrvosiModel.Profile" Width="1.5" PointX="5.375" PointY="0.875" />
         <EntityTypeShape EntityType="OrvosiModel.Account" Width="1.5" PointX="7.375" PointY="8.75" />
@@ -32,6 +32,7 @@
         <EntityTypeShape EntityType="OrvosiModel.ServiceRequestCostRollUp" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="OrvosiModel.Physician" Width="1.5" PointX="17.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.DashboardTaskSummary" Width="1.5" PointX="17.375" PointY="10.75" />
+        <EntityTypeShape EntityType="OrvosiModel.PhysicianToCompanyServiceRequestInvoicePreview" Width="1.5" PointX="17.375" PointY="14.75" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />

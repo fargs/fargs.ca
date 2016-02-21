@@ -296,6 +296,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
     <Compile Include="Library\Dropbox.cs" />
@@ -808,6 +809,8 @@
     <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />
+    <Content Include="Views\Invoice\Index.cshtml" />
+    <Content Include="Views\Invoice\Preview.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

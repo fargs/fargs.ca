@@ -27,5 +27,6 @@ namespace Model
         public Nullable<System.Guid> ObjectGuid { get; set; }
         public bool IsParent { get; set; }
         public string Code { get; set; }
+        public string InvoiceEmails { get; set; }
     }
 }

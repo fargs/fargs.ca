@@ -50,24 +50,24 @@ else
             @if (item.CompletedDate.HasValue)
             {
                 <button type="button" class="btn btn-success btn-circle disabled"><i class="glyphicon glyphicon-ok"></i></button>
-                        <strong>&nbsp;@item.TaskName</strong>
+                <strong>&nbsp;@item.TaskName</strong>
                         <small class="text-muted">@item.AssignedToDisplayName</small>
-                            <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
+                        <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
                 if (item.Notes != string.Empty)
                 {
                     <div><strong>Notes</strong></div>
-                            <div>
-                                @item.Notes
-                            </div>
+                    <div>
+                        @item.Notes
+                    </div>
                 }
                 if (Model.User.RoleId == e.Roles.SuperAdmin)
                 {
                     if (item.ActualHours.HasValue)
                     {
                         <div class="h5" style="margin-bottom:0;">Cost</div>
-                                <div>
-                                    Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
-                                </div>
+                        <div>
+                            Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
+                        </div>
                                 <div>
                                     Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * item.StaffHourlyRate).Value.ToString("C2"))
                                 </div>
@@ -77,35 +77,35 @@ else
             else
             {
                 <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="btn btn-default btn-circle">&nbsp;</a>
-                        <strong>&nbsp;@item.TaskName</strong>
+                <strong>&nbsp;@item.TaskName</strong>
                         <small class="text-muted">@item.AssignedToDisplayName</small>
-                            <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
-                                <div class="help-block">@item.Guidance</div>
-                                <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
-                                    @Html.AntiForgeryToken()
-                                    @if (item.IsBillable)
-                                    {
-                                        <div class="form-group">
-                                            <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
-                                            <select class="form-control" name="Hours">
-                                                <option></option>
-                                                @for (int i = 0; i < 10; i++)
-                                                {
-                                                    <option>@((double)i)</option>
+                        <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
+                            <div class="help-block">@item.Guidance</div>
+                            <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
+                                @Html.AntiForgeryToken()
+                                @if (item.IsBillable)
+                                {
+                                    <div class="form-group">
+                                        <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
+                                        <select class="form-control" name="Hours">
+                                            <option></option>
+                                            @for (int i = 0; i < 10; i++)
+                                            {
+                                                <option>@((double)i)</option>
                                                     <option>@((double)i + 0.25)</option>
                                                     <option>@((double)i + 0.5)</option>
                                                     <option>@((double)i + 0.75)</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    }
-                                    <div class="form-group">
-                                        <label for="Notes" class="control-label">Notes</label>
-                                        <textarea rows="3" class="form-control" name="Notes"></textarea>
+                                            }
+                                        </select>
                                     </div>
-                                    <button class="btn btn-primary">Done</button>
-                                </form>
-                            </div>
+                                }
+                                <div class="form-group">
+                                    <label for="Notes" class="control-label">Notes</label>
+                                    <textarea rows="3" class="form-control" name="Notes"></textarea>
+                                </div>
+                                <button class="btn btn-primary">Done</button>
+                            </form>
+                        </div>
             }
         </li>
 
@@ -115,7 +115,7 @@ else
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <h3>Invoice from Physician to Company</h3>
-            <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
+    <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
             <form action="~/Invoice/Create" method="post">
                 <div class="form-group">
                     <label class="control-label">Price Override</label>

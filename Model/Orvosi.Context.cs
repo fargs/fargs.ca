@@ -55,6 +55,9 @@ namespace Model
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
         public virtual DbSet<PhysicianToCompanyServiceRequestInvoicePreview> PhysicianToCompanyServiceRequestInvoicePreviews { get; set; }
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<BillableEntity> BillableEntities { get; set; }
+        public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -503,7 +506,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
@@ -601,14 +604,22 @@ namespace Model
                 new ObjectParameter("IsNoShow", isNoShow) :
                 new ObjectParameter("IsNoShow", typeof(bool));
     
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -714,11 +725,19 @@ namespace Model
                 new ObjectParameter("IsNoShow", isNoShow) :
                 new ObjectParameter("IsNoShow", typeof(bool));
     
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
@@ -1536,6 +1555,308 @@ namespace Model
                 new ObjectParameter("Id", typeof(short));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableSlot_Delete", idParameter);
+        }
+    
+        public virtual int Invoice_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Invoice_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<decimal>> Invoice_Insert(string invoiceNumber, Nullable<System.DateTime> invoiceDate, string currency, string terms, Nullable<System.DateTime> dueDate, Nullable<System.Guid> companyGuid, string companyName, string email, string phoneNumber, string address1, string address2, string address3, Nullable<System.Guid> billToGuid, string billToName, string billToAddress1, string billToAddress2, string billToAddress3, string billToEmail, Nullable<decimal> subTotal, Nullable<decimal> taxRateHst, Nullable<decimal> discount, Nullable<decimal> total, Nullable<System.DateTime> paymentReceivedDate, string modifiedUser)
+        {
+            var invoiceNumberParameter = invoiceNumber != null ?
+                new ObjectParameter("InvoiceNumber", invoiceNumber) :
+                new ObjectParameter("InvoiceNumber", typeof(string));
+    
+            var invoiceDateParameter = invoiceDate.HasValue ?
+                new ObjectParameter("InvoiceDate", invoiceDate) :
+                new ObjectParameter("InvoiceDate", typeof(System.DateTime));
+    
+            var currencyParameter = currency != null ?
+                new ObjectParameter("Currency", currency) :
+                new ObjectParameter("Currency", typeof(string));
+    
+            var termsParameter = terms != null ?
+                new ObjectParameter("Terms", terms) :
+                new ObjectParameter("Terms", typeof(string));
+    
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
+            var companyGuidParameter = companyGuid.HasValue ?
+                new ObjectParameter("CompanyGuid", companyGuid) :
+                new ObjectParameter("CompanyGuid", typeof(System.Guid));
+    
+            var companyNameParameter = companyName != null ?
+                new ObjectParameter("CompanyName", companyName) :
+                new ObjectParameter("CompanyName", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var phoneNumberParameter = phoneNumber != null ?
+                new ObjectParameter("PhoneNumber", phoneNumber) :
+                new ObjectParameter("PhoneNumber", typeof(string));
+    
+            var address1Parameter = address1 != null ?
+                new ObjectParameter("Address1", address1) :
+                new ObjectParameter("Address1", typeof(string));
+    
+            var address2Parameter = address2 != null ?
+                new ObjectParameter("Address2", address2) :
+                new ObjectParameter("Address2", typeof(string));
+    
+            var address3Parameter = address3 != null ?
+                new ObjectParameter("Address3", address3) :
+                new ObjectParameter("Address3", typeof(string));
+    
+            var billToGuidParameter = billToGuid.HasValue ?
+                new ObjectParameter("BillToGuid", billToGuid) :
+                new ObjectParameter("BillToGuid", typeof(System.Guid));
+    
+            var billToNameParameter = billToName != null ?
+                new ObjectParameter("BillToName", billToName) :
+                new ObjectParameter("BillToName", typeof(string));
+    
+            var billToAddress1Parameter = billToAddress1 != null ?
+                new ObjectParameter("BillToAddress1", billToAddress1) :
+                new ObjectParameter("BillToAddress1", typeof(string));
+    
+            var billToAddress2Parameter = billToAddress2 != null ?
+                new ObjectParameter("BillToAddress2", billToAddress2) :
+                new ObjectParameter("BillToAddress2", typeof(string));
+    
+            var billToAddress3Parameter = billToAddress3 != null ?
+                new ObjectParameter("BillToAddress3", billToAddress3) :
+                new ObjectParameter("BillToAddress3", typeof(string));
+    
+            var billToEmailParameter = billToEmail != null ?
+                new ObjectParameter("BillToEmail", billToEmail) :
+                new ObjectParameter("BillToEmail", typeof(string));
+    
+            var subTotalParameter = subTotal.HasValue ?
+                new ObjectParameter("SubTotal", subTotal) :
+                new ObjectParameter("SubTotal", typeof(decimal));
+    
+            var taxRateHstParameter = taxRateHst.HasValue ?
+                new ObjectParameter("TaxRateHst", taxRateHst) :
+                new ObjectParameter("TaxRateHst", typeof(decimal));
+    
+            var discountParameter = discount.HasValue ?
+                new ObjectParameter("Discount", discount) :
+                new ObjectParameter("Discount", typeof(decimal));
+    
+            var totalParameter = total.HasValue ?
+                new ObjectParameter("Total", total) :
+                new ObjectParameter("Total", typeof(decimal));
+    
+            var paymentReceivedDateParameter = paymentReceivedDate.HasValue ?
+                new ObjectParameter("PaymentReceivedDate", paymentReceivedDate) :
+                new ObjectParameter("PaymentReceivedDate", typeof(System.DateTime));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<decimal>>("Invoice_Insert", invoiceNumberParameter, invoiceDateParameter, currencyParameter, termsParameter, dueDateParameter, companyGuidParameter, companyNameParameter, emailParameter, phoneNumberParameter, address1Parameter, address2Parameter, address3Parameter, billToGuidParameter, billToNameParameter, billToAddress1Parameter, billToAddress2Parameter, billToAddress3Parameter, billToEmailParameter, subTotalParameter, taxRateHstParameter, discountParameter, totalParameter, paymentReceivedDateParameter, modifiedUserParameter);
+        }
+    
+        public virtual int Invoice_Update(Nullable<int> id, string invoiceNumber, Nullable<System.DateTime> invoiceDate, string currency, string terms, Nullable<System.DateTime> dueDate, Nullable<System.Guid> companyGuid, string companyName, string email, string phoneNumber, string address1, string address2, string address3, Nullable<System.Guid> billToGuid, string billToName, string billToAddress1, string billToAddress2, string billToAddress3, string billToEmail, Nullable<decimal> subTotal, Nullable<decimal> taxRateHst, Nullable<decimal> discount, Nullable<decimal> total, Nullable<System.DateTime> paymentReceivedDate, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var invoiceNumberParameter = invoiceNumber != null ?
+                new ObjectParameter("InvoiceNumber", invoiceNumber) :
+                new ObjectParameter("InvoiceNumber", typeof(string));
+    
+            var invoiceDateParameter = invoiceDate.HasValue ?
+                new ObjectParameter("InvoiceDate", invoiceDate) :
+                new ObjectParameter("InvoiceDate", typeof(System.DateTime));
+    
+            var currencyParameter = currency != null ?
+                new ObjectParameter("Currency", currency) :
+                new ObjectParameter("Currency", typeof(string));
+    
+            var termsParameter = terms != null ?
+                new ObjectParameter("Terms", terms) :
+                new ObjectParameter("Terms", typeof(string));
+    
+            var dueDateParameter = dueDate.HasValue ?
+                new ObjectParameter("DueDate", dueDate) :
+                new ObjectParameter("DueDate", typeof(System.DateTime));
+    
+            var companyGuidParameter = companyGuid.HasValue ?
+                new ObjectParameter("CompanyGuid", companyGuid) :
+                new ObjectParameter("CompanyGuid", typeof(System.Guid));
+    
+            var companyNameParameter = companyName != null ?
+                new ObjectParameter("CompanyName", companyName) :
+                new ObjectParameter("CompanyName", typeof(string));
+    
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var phoneNumberParameter = phoneNumber != null ?
+                new ObjectParameter("PhoneNumber", phoneNumber) :
+                new ObjectParameter("PhoneNumber", typeof(string));
+    
+            var address1Parameter = address1 != null ?
+                new ObjectParameter("Address1", address1) :
+                new ObjectParameter("Address1", typeof(string));
+    
+            var address2Parameter = address2 != null ?
+                new ObjectParameter("Address2", address2) :
+                new ObjectParameter("Address2", typeof(string));
+    
+            var address3Parameter = address3 != null ?
+                new ObjectParameter("Address3", address3) :
+                new ObjectParameter("Address3", typeof(string));
+    
+            var billToGuidParameter = billToGuid.HasValue ?
+                new ObjectParameter("BillToGuid", billToGuid) :
+                new ObjectParameter("BillToGuid", typeof(System.Guid));
+    
+            var billToNameParameter = billToName != null ?
+                new ObjectParameter("BillToName", billToName) :
+                new ObjectParameter("BillToName", typeof(string));
+    
+            var billToAddress1Parameter = billToAddress1 != null ?
+                new ObjectParameter("BillToAddress1", billToAddress1) :
+                new ObjectParameter("BillToAddress1", typeof(string));
+    
+            var billToAddress2Parameter = billToAddress2 != null ?
+                new ObjectParameter("BillToAddress2", billToAddress2) :
+                new ObjectParameter("BillToAddress2", typeof(string));
+    
+            var billToAddress3Parameter = billToAddress3 != null ?
+                new ObjectParameter("BillToAddress3", billToAddress3) :
+                new ObjectParameter("BillToAddress3", typeof(string));
+    
+            var billToEmailParameter = billToEmail != null ?
+                new ObjectParameter("BillToEmail", billToEmail) :
+                new ObjectParameter("BillToEmail", typeof(string));
+    
+            var subTotalParameter = subTotal.HasValue ?
+                new ObjectParameter("SubTotal", subTotal) :
+                new ObjectParameter("SubTotal", typeof(decimal));
+    
+            var taxRateHstParameter = taxRateHst.HasValue ?
+                new ObjectParameter("TaxRateHst", taxRateHst) :
+                new ObjectParameter("TaxRateHst", typeof(decimal));
+    
+            var discountParameter = discount.HasValue ?
+                new ObjectParameter("Discount", discount) :
+                new ObjectParameter("Discount", typeof(decimal));
+    
+            var totalParameter = total.HasValue ?
+                new ObjectParameter("Total", total) :
+                new ObjectParameter("Total", typeof(decimal));
+    
+            var paymentReceivedDateParameter = paymentReceivedDate.HasValue ?
+                new ObjectParameter("PaymentReceivedDate", paymentReceivedDate) :
+                new ObjectParameter("PaymentReceivedDate", typeof(System.DateTime));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Invoice_Update", idParameter, invoiceNumberParameter, invoiceDateParameter, currencyParameter, termsParameter, dueDateParameter, companyGuidParameter, companyNameParameter, emailParameter, phoneNumberParameter, address1Parameter, address2Parameter, address3Parameter, billToGuidParameter, billToNameParameter, billToAddress1Parameter, billToAddress2Parameter, billToAddress3Parameter, billToEmailParameter, subTotalParameter, taxRateHstParameter, discountParameter, totalParameter, paymentReceivedDateParameter, modifiedUserParameter);
+        }
+    
+        public virtual int InvoiceDetail_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InvoiceDetail_Delete", idParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<decimal>> InvoiceDetail_Insert(Nullable<int> invoiceId, string description, Nullable<short> quantity, Nullable<decimal> rate, Nullable<decimal> total, Nullable<decimal> discount, Nullable<decimal> amount, string modifiedUser)
+        {
+            var invoiceIdParameter = invoiceId.HasValue ?
+                new ObjectParameter("InvoiceId", invoiceId) :
+                new ObjectParameter("InvoiceId", typeof(int));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var quantityParameter = quantity.HasValue ?
+                new ObjectParameter("Quantity", quantity) :
+                new ObjectParameter("Quantity", typeof(short));
+    
+            var rateParameter = rate.HasValue ?
+                new ObjectParameter("Rate", rate) :
+                new ObjectParameter("Rate", typeof(decimal));
+    
+            var totalParameter = total.HasValue ?
+                new ObjectParameter("Total", total) :
+                new ObjectParameter("Total", typeof(decimal));
+    
+            var discountParameter = discount.HasValue ?
+                new ObjectParameter("Discount", discount) :
+                new ObjectParameter("Discount", typeof(decimal));
+    
+            var amountParameter = amount.HasValue ?
+                new ObjectParameter("Amount", amount) :
+                new ObjectParameter("Amount", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<decimal>>("InvoiceDetail_Insert", invoiceIdParameter, descriptionParameter, quantityParameter, rateParameter, totalParameter, discountParameter, amountParameter, modifiedUserParameter);
+        }
+    
+        public virtual int InvoiceDetail_Update(Nullable<int> id, Nullable<int> invoiceId, string description, Nullable<short> quantity, Nullable<decimal> rate, Nullable<decimal> total, Nullable<decimal> discount, Nullable<decimal> amount, string modifiedUser)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var invoiceIdParameter = invoiceId.HasValue ?
+                new ObjectParameter("InvoiceId", invoiceId) :
+                new ObjectParameter("InvoiceId", typeof(int));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var quantityParameter = quantity.HasValue ?
+                new ObjectParameter("Quantity", quantity) :
+                new ObjectParameter("Quantity", typeof(short));
+    
+            var rateParameter = rate.HasValue ?
+                new ObjectParameter("Rate", rate) :
+                new ObjectParameter("Rate", typeof(decimal));
+    
+            var totalParameter = total.HasValue ?
+                new ObjectParameter("Total", total) :
+                new ObjectParameter("Total", typeof(decimal));
+    
+            var discountParameter = discount.HasValue ?
+                new ObjectParameter("Discount", discount) :
+                new ObjectParameter("Discount", typeof(decimal));
+    
+            var amountParameter = amount.HasValue ?
+                new ObjectParameter("Amount", amount) :
+                new ObjectParameter("Amount", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InvoiceDetail_Update", idParameter, invoiceIdParameter, descriptionParameter, quantityParameter, rateParameter, totalParameter, discountParameter, amountParameter, modifiedUserParameter);
         }
     }
 }

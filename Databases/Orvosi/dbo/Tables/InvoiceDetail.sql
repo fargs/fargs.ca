@@ -8,9 +8,12 @@
     [Total]            DECIMAL (10, 2) NULL,
     [Discount]         DECIMAL (10, 2) NULL,
     [Amount]           DECIMAL (10, 2) NULL,
+    [AdditionalNotes]  NVARCHAR (1000) NULL,
     [ModifiedDate]     DATETIME        CONSTRAINT [DF_InvoiceDetail_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]     NVARCHAR (100)  CONSTRAINT [DF_InvoiceDetail_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_InvoiceDetail] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_InvoiceDetail_Invoice] FOREIGN KEY ([InvoiceId]) REFERENCES [dbo].[Invoice] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
 

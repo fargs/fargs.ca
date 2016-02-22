@@ -1,0 +1,53 @@
+﻿@model Model.ServiceRequest
+@using Model.Enums
+
+@using Model.Extensions
+
+<h1>Exam Details</h1>
+
+@if (!ViewBag.IsValidToSubmitInvoice)
+{
+    <div class="alert alert-danger">
+        <strong>Sorry</strong>
+        <div>The intake assistant has not confirmed that the examination has been completed. Please follow up with them and ensure they mark their tasks complete.</div>
+        <a href="~/ServiceRequest/Details/@Model.Id" class="btn btn-default">Back to Exam</a>
+    </div>
+}
+else
+{
+    <p>
+        <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default">Back to List</a>
+        <a href="~/ServiceRequest/Details/@Model.Id" class="btn btn-default">Back to Exam</a>
+    </p>
+
+    <h3>@Model.PhysicianDisplayName</h3>
+    <div class="lead">
+        @Model.ClaimantName (@Model.CompanyName)
+        @if (Model.ServiceRequestStatusId == ServiceRequestStatus.Closed)
+        {
+            <span class="label label-danger">
+                @Model.ServiceRequestStatusText
+            </span>
+        }
+    </div>
+    <dl class="dl-horizontal">
+        <dt>Exam Id</dt>
+        <dd>@Model.Id</dd>
+        <dt>Examination</dt>
+        <dd>@Model.ServiceName</dd>
+        <dt>Location</dt>
+        <dd>@Model.City - @Model.AddressName</dd>
+    </dl>
+    <h1>Submit Invoice</h1>
+    <form action="~/Invoice/Create" method="post">
+        <div class="form-group">
+            <label class="control-label">Price</label>
+            <input type="text" name="Price" class="form-control" value="@Model.ServiceRequestPrice" />
+        </div>
+        <div class="form-group">
+            <label for="Notes" class="control-label">Notes</label>
+            <textarea rows="3" class="form-control" name="@Model.Notes"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Invoice</button>
+    </form>
+}

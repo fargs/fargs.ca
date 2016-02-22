@@ -63,6 +63,12 @@ namespace Model
         }
     }
 
+    partial class PhysicianToCompanyServiceRequestInvoicePreview
+    {
+        public decimal ServiceRequestPrice { get; set; }
+        public string Notes { get; set; }
+    }
+
     public class ServiceCatalogueItem
     {
         public Nullable<short> ServiceCatalogueId { get; set; }

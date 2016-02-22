@@ -300,13 +300,16 @@
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
     <Compile Include="Library\Dropbox.cs" />
+    <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
+    <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
@@ -810,7 +813,9 @@
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />
     <Content Include="Views\Invoice\Index.cshtml" />
-    <Content Include="Views\Invoice\Preview.cshtml" />
+    <Content Include="Views\Invoice\Details.cshtml" />
+    <Content Include="Views\Invoice\Create.cshtml" />
+    <Content Include="Views\Invoice\_Invoice.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

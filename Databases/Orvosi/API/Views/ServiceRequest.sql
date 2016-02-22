@@ -22,6 +22,7 @@
 
 
 
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 
@@ -153,6 +154,8 @@ SELECT
 	,CompanyId = ISNULL(sr.CompanyId, sc.CompanyId)
 	,sr.IsNoShow
 	,sr.IsLateCancellation
+	,sr.NoShowRate
+	,sr.LateCancellationRate
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
 	,sc.ServiceId

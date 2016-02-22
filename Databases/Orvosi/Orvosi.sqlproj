@@ -263,6 +263,9 @@
     <Build Include="API\Stored Procedures\Invoice_Update.sql" />
     <Build Include="API\Stored Procedures\Invoice_Insert.sql" />
     <Build Include="API\Stored Procedures\Invoice_Delete.sql" />
+    <Build Include="API\Views\InvoiceDetail.sql" />
+    <Build Include="API\Views\BillableEntity.sql" />
+    <Build Include="API\Views\Address.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

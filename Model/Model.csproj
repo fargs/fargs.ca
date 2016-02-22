@@ -64,6 +64,9 @@
     <Compile Include="AvailableSlot.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="BillableEntity.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Company.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -101,6 +104,12 @@
     <Compile Include="GetServiceCatalogue_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Invoice.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InvoiceDetail.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Location.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -131,6 +140,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Orvosi.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Orvosi.Partials\Extensions.cs" />
     <Compile Include="Orvosi.Partials\OrvosiEntities.cs" />
     <Compile Include="Orvosi.Partials\Partials.cs" />
     <Compile Include="Physician.cs">

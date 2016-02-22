@@ -86,5 +86,7 @@ namespace Model
         public string ServiceStatusText { get; set; }
         public string PhysicianUserName { get; set; }
         public Nullable<System.Guid> CompanyGuid { get; set; }
+        public Nullable<decimal> NoShowRate { get; set; }
+        public Nullable<decimal> LateCancellationRate { get; set; }
     }
 }

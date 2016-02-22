@@ -1,9 +1,12 @@
 ﻿
-CREATE VIEW API.Invoice
+
+
+CREATE VIEW [API].[Invoice]
 AS
 
 SELECT 
 	 [Id]
+	,[ServiceRequestId]
 	,[InvoiceNumber]
 	,[InvoiceDate]
 	,[Currency]
@@ -11,6 +14,7 @@ SELECT
 	,[DueDate]
 	,[CompanyGuid]
 	,[CompanyName]
+	,[CompanyLogoCssClass]
 	,[Email]
 	,[PhoneNumber]
 	,[Address1]

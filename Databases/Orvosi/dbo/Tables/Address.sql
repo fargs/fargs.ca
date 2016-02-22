@@ -14,10 +14,15 @@
     [LocationId]    SMALLINT         NULL,
     [ModifiedDate]  SMALLDATETIME    CONSTRAINT [DF_Address_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]  NVARCHAR (256)   CONSTRAINT [DF_Address_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
+    [Email]         NVARCHAR (128)   NULL,
+    [Phone]         NVARCHAR (128)   NULL,
+    [Fax]           NVARCHAR (128)   NULL,
     CONSTRAINT [PK_Address] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Address_Countries] FOREIGN KEY ([CountryID]) REFERENCES [dbo].[Country] ([Id]),
     CONSTRAINT [FK_Address_Provinces] FOREIGN KEY ([ProvinceID]) REFERENCES [dbo].[Province] ([Id])
 );
+
+
 
 
 

@@ -54,5 +54,6 @@ namespace Model
         public string LocationName { get; set; }
         public string AddressName { get; set; }
         public string PrimarySpecialtyName { get; set; }
+        public string LogoCssClass { get; set; }
     }
 }

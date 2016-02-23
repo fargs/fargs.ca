@@ -1,0 +1,37 @@
+﻿@model Model.Invoice
+@using WebApp.Library.Enums
+
+@if (ViewBag.FormMode == FormMode.New)
+{
+    <form action="~/Invoice/Create" method="post">
+        @Html.Hidden("ServiceRequestId", Model.InvoiceDetails.First().ServiceRequestId)
+        <div class="container">
+            @Html.Partial("_Invoice", Model)
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else if (ViewBag.FormMode == FormMode.Edit)
+{
+    <form action="~/Invoice/Edit" method="post">
+        @Html.Hidden("Id", Model.Id)
+        <div class="container">
+            @Html.Partial("_Invoice", Model)
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else
+{
+    <div class="container">
+        @Html.Partial("_Invoice", Model)
+    </div>
+}

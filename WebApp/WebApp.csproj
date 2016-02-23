@@ -812,6 +812,7 @@
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />
     <Content Include="Views\ServiceCatalogue\Index.cshtml" />
+    <Content Include="Views\ServiceCatalogue\Edit.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

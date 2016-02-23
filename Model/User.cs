@@ -43,5 +43,7 @@ namespace Model
         public Nullable<byte> RoleCategoryId { get; set; }
         public string RoleCategoryName { get; set; }
         public Nullable<decimal> HourlyRate { get; set; }
+        public string MyCompanyName { get; set; }
+        public string LogoCssClass { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 using WebApp.ViewModels.ServiceCatalogueViewModels;
 
 namespace WebApp.Controllers
@@ -16,10 +17,8 @@ namespace WebApp.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // GET: Admin/ServiceCatalogue
-        public async System.Threading.Tasks.Task<ActionResult> Index(FilterArgs args, byte mode = FormModes.ReadOnly)
+        public async Task<ActionResult> Index(FilterArgs args)
         {
-            ViewBag.FormMode = mode;
-
             var vm = new IndexViewModel();
 
             vm.FilterArgs = args;
@@ -45,6 +44,51 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        public async Task<ActionResult> Edit(FilterArgs args)
+        {
+            ServiceCatalogue sc = null;
+            sc = await db.ServiceCatalogues
+                .SingleOrDefaultAsync(c => c.PhysicianId == args.UserId && c.CompanyId == args.CompanyId && c.LocationId == args.LocationId);
+            if (sc == null)
+            {
+                sc = new ServiceCatalogue()
+                {
+                    CompanyId = args.CompanyId,
+                    PhysicianId = args.UserId,
+                    LocationId = args.LocationId
+                };
+            }
+            return View(sc);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Edit(ServiceCatalogue form)
+        {
+            using (var db = new OrvosiEntities(User.Identity.Name))
+            {
+                ServiceCatalogue sc = null;
+                sc = await db.ServiceCatalogues.SingleOrDefaultAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId);
+                if (sc == null)
+                {
+                    sc = new ServiceCatalogue()
+                    {
+                        CompanyId = form.CompanyId,
+                        PhysicianId = form.PhysicianId,
+                        LocationId = form.LocationId,
+                        ServiceId = form.ServiceId,
+                        ServiceCataloguePriceOverride = form.ServiceCataloguePriceOverride
+                    };
+                    db.ServiceCatalogues.Add(sc);
+                }
+                else
+                {
+                    sc.ServiceCataloguePriceOverride = form.ServiceCataloguePriceOverride;
+                }
+                await db.SaveChangesAsync();
+            }
+            
+            return RedirectToAction("Index", new FilterArgs() { CompanyId = form.CompanyId, UserId = form.PhysicianId });
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

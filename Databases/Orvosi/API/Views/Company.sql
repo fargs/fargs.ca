@@ -13,9 +13,9 @@ SELECT
 	,c.[IsParent]
 	,c.[ParentId]
 	,c.[LogoCssClass]
-	,c.[MasterBookingPageByPhysician]
-	,c.[MasterBookingPageByTime]
-	,c.[MasterBookingPageTeleconference]
+	,c.BillingEmail
+	,c.ReportsEmail
+	,c.Phone
 	,c.[ModifiedDate]
 	,c.[ModifiedUser]
 	,ParentName = p.Name

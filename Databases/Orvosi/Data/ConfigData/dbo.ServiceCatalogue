@@ -1,8 +1,127 @@
 ﻿<root>
   <row
     Id="1"
-    DoctorId="e62ebead-c270-4711-81cb-2cbd6b8031ad"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
     ServiceId="7"
-    CompanyId="2"
-    Rate="1000.00" />
+    CompanyId="10"
+    LocationId="19"
+    Price="950.00" />
+  <row
+    Id="5"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    CompanyId="19"
+    LocationId="19"
+    Price="1000.00" />
+  <row
+    Id="9"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    CompanyId="10"
+    LocationId="20"
+    Price="1400.00" />
+  <row
+    Id="10"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    LocationId="19"
+    Price="1200.00" />
+  <row
+    Id="11"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    CompanyId="10"
+    LocationId="22"
+    Price="950.00" />
+  <row
+    Id="12"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="20"
+    CompanyId="10"
+    LocationId="19"
+    Price="1200.00" />
+  <row
+    Id="13"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="20"
+    CompanyId="10"
+    LocationId="22"
+    Price="1200.00" />
+  <row
+    Id="14"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    CompanyId="18"
+    LocationId="19"
+    Price="1200.00" />
+  <row
+    Id="15"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="7"
+    CompanyId="18"
+    LocationId="22"
+    Price="1200.00" />
+  <row
+    Id="16"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="20"
+    CompanyId="18"
+    LocationId="19"
+    Price="1200.00" />
+  <row
+    Id="17"
+    PhysicianId="8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c"
+    ServiceId="20"
+    CompanyId="18"
+    LocationId="22"
+    Price="1200.00" />
+  <row
+    Id="18"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="7"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="19"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="8"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="20"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="9"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="21"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="11"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="22"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="12"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="23"
+    PhysicianId="8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9"
+    ServiceId="20"
+    CompanyId="10"
+    LocationId="21"
+    Price="1200.00" />
+  <row
+    Id="24"
+    PhysicianId="25f67e43-55b4-447e-913a-807b77536c8e"
+    ServiceId="7"
+    CompanyId="10"
+    LocationId="19"
+    Price="1000.00" />
 </root>

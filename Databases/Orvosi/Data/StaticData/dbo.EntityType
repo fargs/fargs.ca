@@ -2,4 +2,10 @@
   <row
     Id="1"
     Name="Orvosi" />
+  <row
+    Id="2"
+    Name="Company" />
+  <row
+    Id="3"
+    Name="Physician" />
 </root>

@@ -18,14 +18,14 @@ namespace Model
         public string Name { get; set; }
         public Nullable<int> ParentId { get; set; }
         public string LogoCssClass { get; set; }
-        public string MasterBookingPageByPhysician { get; set; }
-        public string MasterBookingPageByTime { get; set; }
-        public string MasterBookingPageTeleconference { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
         public string ParentName { get; set; }
         public Nullable<System.Guid> ObjectGuid { get; set; }
         public bool IsParent { get; set; }
         public string Code { get; set; }
+        public string BillingEmail { get; set; }
+        public string ReportsEmail { get; set; }
+        public string Phone { get; set; }
     }
 }

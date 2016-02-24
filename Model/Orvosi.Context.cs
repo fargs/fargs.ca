@@ -403,7 +403,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Service_Update", idParameter, objectGuidParameter, nameParameter, descriptionParameter, codeParameter, priceParameter, serviceCategoryIdParameter, servicePortfolioIdParameter, modifiedUserParameter);
         }
     
-        public virtual int Company_Insert(string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        public virtual int Company_Insert(string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string billingEmail, string reportsEmail, string phone, string modifiedUser)
         {
             var nameParameter = name != null ?
                 new ObjectParameter("Name", name) :
@@ -425,26 +425,26 @@ namespace Model
                 new ObjectParameter("LogoCssClass", logoCssClass) :
                 new ObjectParameter("LogoCssClass", typeof(string));
     
-            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
-                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
-                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+            var billingEmailParameter = billingEmail != null ?
+                new ObjectParameter("BillingEmail", billingEmail) :
+                new ObjectParameter("BillingEmail", typeof(string));
     
-            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
-                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
-                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+            var reportsEmailParameter = reportsEmail != null ?
+                new ObjectParameter("ReportsEmail", reportsEmail) :
+                new ObjectParameter("ReportsEmail", typeof(string));
     
-            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
-                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
-                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+            var phoneParameter = phone != null ?
+                new ObjectParameter("Phone", phone) :
+                new ObjectParameter("Phone", typeof(string));
     
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Insert", nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Insert", nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, billingEmailParameter, reportsEmailParameter, phoneParameter, modifiedUserParameter);
         }
     
-        public virtual int Company_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        public virtual int Company_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string billingEmail, string reportsEmail, string phone, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -474,23 +474,23 @@ namespace Model
                 new ObjectParameter("LogoCssClass", logoCssClass) :
                 new ObjectParameter("LogoCssClass", typeof(string));
     
-            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
-                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
-                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+            var billingEmailParameter = billingEmail != null ?
+                new ObjectParameter("BillingEmail", billingEmail) :
+                new ObjectParameter("BillingEmail", typeof(string));
     
-            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
-                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
-                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+            var reportsEmailParameter = reportsEmail != null ?
+                new ObjectParameter("ReportsEmail", reportsEmail) :
+                new ObjectParameter("ReportsEmail", typeof(string));
     
-            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
-                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
-                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+            var phoneParameter = phone != null ?
+                new ObjectParameter("Phone", phone) :
+                new ObjectParameter("Phone", typeof(string));
     
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, billingEmailParameter, reportsEmailParameter, phoneParameter, modifiedUserParameter);
         }
     
         public virtual int ServiceRequest_Delete(Nullable<int> id)

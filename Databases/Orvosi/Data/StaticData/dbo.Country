@@ -1,1 +1,8 @@
-﻿<root></root>
+﻿<root>
+  <row
+    Id="124"
+    Name="Canada"
+    ISO3DigitCountry="124"
+    ISO2CountryCode="CA"
+    ISO3CountryCode="CAN" />
+</root>

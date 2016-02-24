@@ -105,9 +105,9 @@ warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key de
           <Property Name="ParentId" Type="int" />
           <Property Name="InvoiceEmails" Type="nvarchar" MaxLength="1000" />
           <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
-          <Property Name="MasterBookingPageByPhysician" Type="nvarchar" MaxLength="50" />
-          <Property Name="MasterBookingPageByTime" Type="nvarchar" MaxLength="50" />
-          <Property Name="MasterBookingPageTeleconference" Type="nvarchar" MaxLength="50" />
+          <Property Name="BillingEmail" Type="nvarchar" MaxLength="128" />
+          <Property Name="ReportsEmail" Type="nvarchar" MaxLength="128" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="ParentName" Type="nvarchar" MaxLength="128" />
@@ -163,7 +163,7 @@ warning 6002: The table/view 'Orvosi.API.Document' does not have a primary key d
           <Property Name="ContentType" Type="nvarchar" MaxLength="50" />
           <Property Name="Path" Type="nvarchar" MaxLength="2000" />
           <Property Name="Name" Type="nvarchar" MaxLength="256" />
-          <Property Name="Extension" Type="nchar" MaxLength="10" />
+          <Property Name="Extension" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="OwnedByDisplayName" Type="nvarchar" MaxLength="210" />
@@ -230,13 +230,12 @@ warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary k
             
             <PropertyRef Name="ItemId" />
             
-            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" Nullable="false" />
+          <Property Name="ItemValue" Type="smallint" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -246,13 +245,12 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
             
             <PropertyRef Name="ItemId" />
             
-            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" Nullable="false" />
+          <Property Name="ItemValue" Type="smallint" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -795,9 +793,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="IsParent" Type="bit" Mode="In" />
           <Parameter Name="ParentId" Type="int" Mode="In" />
           <Parameter Name="LogoCssClass" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageByPhysician" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageByTime" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageTeleconference" Type="nvarchar" Mode="In" />
+          <Parameter Name="BillingEmail" Type="nvarchar" Mode="In" />
+          <Parameter Name="ReportsEmail" Type="nvarchar" Mode="In" />
+          <Parameter Name="Phone" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="Company_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -808,9 +806,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="IsParent" Type="bit" Mode="In" />
           <Parameter Name="ParentId" Type="int" Mode="In" />
           <Parameter Name="LogoCssClass" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageByPhysician" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageByTime" Type="nvarchar" Mode="In" />
-          <Parameter Name="MasterBookingPageTeleconference" Type="nvarchar" Mode="In" />
+          <Parameter Name="BillingEmail" Type="nvarchar" Mode="In" />
+          <Parameter Name="ReportsEmail" Type="nvarchar" Mode="In" />
+          <Parameter Name="Phone" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="Document_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
@@ -1217,9 +1215,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Company].[ParentId] AS [ParentId], 
     [Company].[InvoiceEmails] AS [InvoiceEmails], 
     [Company].[LogoCssClass] AS [LogoCssClass], 
-    [Company].[MasterBookingPageByPhysician] AS [MasterBookingPageByPhysician], 
-    [Company].[MasterBookingPageByTime] AS [MasterBookingPageByTime], 
-    [Company].[MasterBookingPageTeleconference] AS [MasterBookingPageTeleconference], 
+    [Company].[BillingEmail] AS [BillingEmail], 
+    [Company].[ReportsEmail] AS [ReportsEmail], 
+    [Company].[Phone] AS [Phone], 
     [Company].[ModifiedDate] AS [ModifiedDate], 
     [Company].[ModifiedUser] AS [ModifiedUser], 
     [Company].[ParentName] AS [ParentName]
@@ -1806,9 +1804,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="IsParent" Mode="In" Type="Boolean" />
             <Parameter Name="ParentId" Mode="In" Type="Int32" />
             <Parameter Name="LogoCssClass" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageByPhysician" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageByTime" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageTeleconference" Mode="In" Type="String" />
+            <Parameter Name="BillingEmail" Mode="In" Type="String" />
+            <Parameter Name="ReportsEmail" Mode="In" Type="String" />
+            <Parameter Name="Phone" Mode="In" Type="String" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="Company_Update">
@@ -1819,9 +1817,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="IsParent" Mode="In" Type="Boolean" />
             <Parameter Name="ParentId" Mode="In" Type="Int32" />
             <Parameter Name="LogoCssClass" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageByPhysician" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageByTime" Mode="In" Type="String" />
-            <Parameter Name="MasterBookingPageTeleconference" Mode="In" Type="String" />
+            <Parameter Name="BillingEmail" Mode="In" Type="String" />
+            <Parameter Name="ReportsEmail" Mode="In" Type="String" />
+            <Parameter Name="Phone" Mode="In" Type="String" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_Delete">
@@ -2108,10 +2106,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AvailableDay_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="AvailableSlot_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="ServiceCatalogue_Delete">
           <Parameter Name="Id" Mode="In" Type="Int32" />
@@ -2191,16 +2189,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="Name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MasterBookingPageByPhysician" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MasterBookingPageByTime" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="MasterBookingPageTeleconference" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="ParentName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ObjectGuid" Type="Guid" />
           <Property Name="IsParent" Type="Boolean" Nullable="false" />
           <Property Name="Code" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="InvoiceEmails" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="BillingEmail" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ReportsEmail" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PhysicianCompany">
           <Key>
@@ -2474,7 +2471,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" Nullable="false" />
+          <Property Name="ItemValue" Type="Int16" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -2530,7 +2527,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ContentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Path" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Extension" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Extension" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="OwnedByDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
@@ -2625,7 +2622,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" Nullable="false" />
+          <Property Name="ItemValue" Type="Int16" />
         </EntityType>
         <EntityType Name="PhysicianLocationArea">
           <Key>
@@ -2888,30 +2885,29 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="OrvosiModel.Company">
               <MappingFragment StoreEntitySet="Company">
-                <ScalarProperty Name="InvoiceEmails" ColumnName="InvoiceEmails" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="IsParent" ColumnName="IsParent" />
                 <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
                 <ScalarProperty Name="ParentName" ColumnName="ParentName" />
                 <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="MasterBookingPageTeleconference" ColumnName="MasterBookingPageTeleconference" />
-                <ScalarProperty Name="MasterBookingPageByTime" ColumnName="MasterBookingPageByTime" />
-                <ScalarProperty Name="MasterBookingPageByPhysician" ColumnName="MasterBookingPageByPhysician" />
                 <ScalarProperty Name="LogoCssClass" ColumnName="LogoCssClass" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="BillingEmail" ColumnName="BillingEmail" />
+                <ScalarProperty Name="ReportsEmail" ColumnName="ReportsEmail" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
               </MappingFragment>
             </EntityTypeMapping>
             <EntityTypeMapping TypeName="OrvosiModel.Company">
               <ModificationFunctionMapping>
                 <InsertFunction FunctionName="OrvosiModel.Store.Company_Insert">
+                  <ScalarProperty Name="Phone" ParameterName="Phone" />
+                  <ScalarProperty Name="ReportsEmail" ParameterName="ReportsEmail" />
+                  <ScalarProperty Name="BillingEmail" ParameterName="BillingEmail" />
                   <ScalarProperty Name="Code" ParameterName="Code" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
-                  <ScalarProperty Name="MasterBookingPageTeleconference" ParameterName="MasterBookingPageTeleconference" />
-                  <ScalarProperty Name="MasterBookingPageByTime" ParameterName="MasterBookingPageByTime" />
-                  <ScalarProperty Name="MasterBookingPageByPhysician" ParameterName="MasterBookingPageByPhysician" />
                   <ScalarProperty Name="LogoCssClass" ParameterName="LogoCssClass" />
                   <ScalarProperty Name="ParentId" ParameterName="ParentId" />
                   <ScalarProperty Name="IsParent" ParameterName="IsParent" />
@@ -2921,10 +2917,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ResultBinding Name="ModifiedDate" ColumnName="ModifiedDate" />
                 </InsertFunction>
                 <UpdateFunction FunctionName="OrvosiModel.Store.Company_Update">
+                  <ScalarProperty Name="Phone" ParameterName="Phone" Version="Current" />
+                  <ScalarProperty Name="ReportsEmail" ParameterName="ReportsEmail" Version="Current" />
+                  <ScalarProperty Name="BillingEmail" ParameterName="BillingEmail" Version="Current" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
-                  <ScalarProperty Name="MasterBookingPageTeleconference" ParameterName="MasterBookingPageTeleconference" Version="Current" />
-                  <ScalarProperty Name="MasterBookingPageByTime" ParameterName="MasterBookingPageByTime" Version="Current" />
-                  <ScalarProperty Name="MasterBookingPageByPhysician" ParameterName="MasterBookingPageByPhysician" Version="Current" />
                   <ScalarProperty Name="LogoCssClass" ParameterName="LogoCssClass" Version="Current" />
                   <ScalarProperty Name="ParentId" ParameterName="ParentId" Version="Current" />
                   <ScalarProperty Name="IsParent" ParameterName="IsParent" Version="Current" />
@@ -3259,6 +3255,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <ModificationFunctionMapping>
                 <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequest_Update">
+                  <ScalarProperty Name="LateCancellationRate" ParameterName="LateCancellationRate" Version="Current" />
+                  <ScalarProperty Name="NoShowRate" ParameterName="NoShowRate" Version="Current" />
                   <ScalarProperty Name="IsLateCancellation" ParameterName="IsLateCancellation" Version="Current" />
                   <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" Version="Current" />
                   <ScalarProperty Name="Notes" ParameterName="Notes" Version="Current" />
@@ -3291,6 +3289,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="Id" ParameterName="Id" />
                 </DeleteFunction>
                 <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequest_Insert">
+                  <ScalarProperty Name="LateCancellationRate" ParameterName="LateCancellationRate" />
+                  <ScalarProperty Name="NoShowRate" ParameterName="NoShowRate" />
                   <ScalarProperty Name="IsLateCancellation" ParameterName="IsLateCancellation" />
                   <ScalarProperty Name="IsNoShow" ParameterName="IsNoShow" />
                   <ScalarProperty Name="Notes" ParameterName="Notes" />

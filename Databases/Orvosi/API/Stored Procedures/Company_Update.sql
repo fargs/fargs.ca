@@ -7,9 +7,9 @@ CREATE PROC [API].[Company_Update]
 	,@IsParent bit
 	,@ParentId int
 	,@LogoCssClass nvarchar(50)
-	,@MasterBookingPageByPhysician nvarchar(50)
-	,@MasterBookingPageByTime nvarchar(50)
-	,@MasterBookingPageTeleconference nvarchar(50)
+	,@BillingEmail nvarchar(128)
+	,@ReportsEmail nvarchar(128)
+	,@Phone nvarchar(50)
 	,@ModifiedUser nvarchar(256)
 AS
 
@@ -23,9 +23,9 @@ SET
 	,[IsParent] = @IsParent
 	,[ParentId] = @ParentId
 	,[LogoCssClass] = @LogoCssClass
-	,[MasterBookingPageByPhysician] = @MasterBookingPageByPhysician
-	,[MasterBookingPageByTime] = @MasterBookingPageByTime
-	,[MasterBookingPageTeleconference] = @MasterBookingPageTeleconference
+	,[BillingEmail] = @BillingEmail
+	,[ReportsEmail] = @ReportsEmail
+	,[Phone] = @Phone
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser
 WHERE [Id] = @Id OR [ObjectGuid] = @ObjectGuid

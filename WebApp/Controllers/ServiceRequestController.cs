@@ -134,6 +134,32 @@ namespace WebApp.Controllers
             vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
 
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Copy the case template folder
+            var destination = vm.ServiceRequest.DocumentFolderLink;
+
+            try
+            {
+                // Get the folder
+                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination.ToLower());
+            }
+            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            {
+                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+                    throw;
+            }
+
+            if (vm.DropboxFolder != null)
+            {
+                if (vm.DropboxFolder.AsFolder.SharingInfo != null)
+                {
+                    // Get the shared folder members
+                    vm.DropboxFolderMembers = await GetSharedFolderMembers(dropbox, client, vm.DropboxFolder.AsFolder.SharingInfo.SharedFolderId);
+                }
+            }
+
             if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
@@ -301,6 +327,99 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> CreateDropboxFolder(short id)
+        {
+            var obj = await db.ServiceRequests.FindAsync(id);
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Get the destination folder name
+            var destination = obj.DocumentFolderLink;
+
+            Metadata metadata = null;
+            // Check if the folder already exists
+            try
+            {
+                // Get the folder
+                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+            }
+            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            {
+                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+                    throw;
+            }
+
+            if (metadata != null)
+            {
+                return RedirectToAction("Details", new { id = id } );
+            }
+
+            // Copy the case template folder
+            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+
+            // Share the folder
+            var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+            var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+            
+            var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
+            if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
+
+            await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
+
+            return RedirectToAction("Details", new { id = id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> ShareFolderToPhysician(short id)
+        {
+            var obj = await db.ServiceRequests.FindAsync(id);
+            var dropbox = new OrvosiDropbox();
+            var client = await dropbox.GetServiceAccountClientAsync();
+
+            // Get the destination folder name
+            var destination = obj.DocumentFolderLink;
+
+            Metadata metadata = null;
+            // Check if the folder already exists
+            try
+            {
+                // Get the folder
+                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+            }
+            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            {
+                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+                    throw;
+            }
+
+            if (metadata == null)
+            {
+                //TODO: Add some error messaging error
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            string sharedFolderId = string.Empty;
+            // Share the folder
+            if (metadata.AsFolder.SharingInfo == null)
+            {
+                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(metadata.AsFolder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                sharedFolderId = share.AsComplete.Value.SharedFolderId;
+            }
+            else
+            {
+                sharedFolderId = metadata.AsFolder.SharingInfo.SharedFolderId;
+            }
+
+            var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
+            if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
+            
+            return RedirectToAction("Details", new { id = id });
+        }
+
+
         private static async Task<List<MembersGetInfoItem>> GetSharedFolderMembers(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
         {
             // Get the members for the shared folder
@@ -446,9 +565,13 @@ namespace WebApp.Controllers
             foreach (var member in members)
             {
                 var memberEmail = member.AsMemberInfo.Value.Profile.Email;
-                if (!users.Exists(c => c.Email == memberEmail))
+                var user = db.Users.SingleOrDefault(c => c.Email == memberEmail);
+                if (user.RoleId == Roles.CaseCoordinator || user.RoleId == Roles.DocumentReviewer || user.RoleId == Roles.IntakeAssistant)
                 {
-                    await DropboxRemoveMember(client, memberEmail, sharedFolderId);
+                    if (!users.Exists(c => c.Email == memberEmail))
+                    {
+                        await DropboxRemoveMember(client, memberEmail, sharedFolderId);
+                    }
                 }
             }
         }
@@ -480,6 +603,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Cancel(int? id)
         {
             if (id == null)
@@ -500,6 +624,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Cancel(CancellationForm form)
         {
             if (!form.Id.HasValue)
@@ -520,6 +645,7 @@ namespace WebApp.Controllers
             return View(serviceRequest);
         }
 
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> UndoCancel(int? id)
         {
             if (id == null)

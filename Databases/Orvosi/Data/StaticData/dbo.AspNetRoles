@@ -1,20 +1,30 @@
 ﻿<root>
   <row
+    Id="22B5C8AC-2C96-4A74-8057-976914031A7E"
+    Name="Document Reviewer"
+    RoleCategoryId="3" />
+  <row
     Id="5e2cfba4-417a-4685-8e2b-970bd7061cd9"
-    Name="Claimant" />
+    Name="Accountant"
+    RoleCategoryId="3" />
   <row
     Id="7b930663-b091-44ca-924c-d8b11a1ee7ea"
-    Name="Company" />
+    Name="Company Booking Agent"
+    RoleCategoryId="2" />
   <row
     Id="7fab67dd-286b-492f-865a-0cb0ce1261ce"
-    Name="Super Admin" />
+    Name="Super Admin"
+    RoleCategoryId="4" />
   <row
     Id="8359141f-e423-4e48-8925-4624ba86245a"
-    Name="Doctor" />
+    Name="Physician"
+    RoleCategoryId="1" />
   <row
     Id="9dd582a0-cf86-4fc0-8894-477266068c12"
-    Name="Intake Coordinator" />
+    Name="Intake Assistant"
+    RoleCategoryId="3" />
   <row
     Id="9eab89c0-225c-4027-9f42-cc35e5656b14"
-    Name="Administrator" />
+    Name="Case Coordinator"
+    RoleCategoryId="4" />
 </root>

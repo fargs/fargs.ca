@@ -5,9 +5,9 @@ CREATE PROC [API].[Company_Insert]
 	,@IsParent bit
 	,@ParentId int
 	,@LogoCssClass nvarchar(50)
-	,@MasterBookingPageByPhysician nvarchar(50)
-	,@MasterBookingPageByTime nvarchar(50)
-	,@MasterBookingPageTeleconference nvarchar(50)
+	,@BillingEmail nvarchar(128)
+	,@ReportsEmail nvarchar(128)
+	,@Phone nvarchar(50)
 	,@ModifiedUser nvarchar(256)
 AS
 
@@ -21,9 +21,9 @@ INSERT INTO dbo.[Company]
 	,[IsParent]
 	,[ParentId]
 	,[LogoCssClass]
-	,[MasterBookingPageByPhysician]
-	,[MasterBookingPageByTime]
-	,[MasterBookingPageTeleconference]
+	,[BillingEmail]
+	,[ReportsEmail]
+	,[Phone]
 	,[ModifiedDate]
 	,[ModifiedUser]
 )
@@ -34,9 +34,9 @@ VALUES
 	,@IsParent
 	,@ParentId
 	,@LogoCssClass
-	,@MasterBookingPageByPhysician
-	,@MasterBookingPageByTime
-	,@MasterBookingPageTeleconference
+	,@BillingEmail
+	,@ReportsEmail
+	,@Phone
 	,@Now
 	,@ModifiedUser
 )

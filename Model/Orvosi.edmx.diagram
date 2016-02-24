@@ -4,9 +4,9 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="2a9440802f804d2fb03bf182fded51ae" Name="Diagram1" ZoomLevel="85" >
+      <Diagram DiagramId="2a9440802f804d2fb03bf182fded51ae" Name="Diagram1" ZoomLevel="48" >
         <EntityTypeShape EntityType="OrvosiModel.CompanyAssessorPackage" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.Company" Width="1.5" PointX="7.375" PointY="0.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Company" Width="1.5" PointX="3.375" PointY="1.125" />
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="7.375" PointY="4.5" />
         <EntityTypeShape EntityType="OrvosiModel.User" Width="1.5" PointX="5.125" PointY="5.625" />
         <EntityTypeShape EntityType="OrvosiModel.Profile" Width="1.5" PointX="5.375" PointY="0.875" />

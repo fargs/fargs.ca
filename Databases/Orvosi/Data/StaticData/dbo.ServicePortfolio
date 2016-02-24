@@ -4,5 +4,5 @@
     Name="Orvosi" />
   <row
     Id="2"
-    Name="Physiatrist" />
+    Name="Physician" />
 </root>

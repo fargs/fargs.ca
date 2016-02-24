@@ -33,6 +33,24 @@
                             <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                             <li>@Html.ActionLink("Services", "", "ServiceCatalogue", new { area = "" }, null)</li>
 
+                            <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                    Admin <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("Companies", "", "Company", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Locations", "", "Location", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = e.ServicePortfolios.Physician }, null)</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = e.RoleCategory.Physician }, null)</li>
+                                    <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>
+                                </ul>
+                            </li>
+
+                        }
+                        if (User.Identity.GetRoleId() == e.Roles.SuperAdmin)
+                        {
+
                         }
                         @*<li>@Html.ActionLink("Tasks", "", "ServiceRequestTask", new { area = "" }, null)</li>*@
                     }

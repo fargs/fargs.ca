@@ -279,6 +279,15 @@
     <None Include="Data\StaticData\dbo.Sequence" />
     <None Include="Data\StaticData\dbo.Time" />
     <None Include="Snapshots\Orvosi_20151121_16-25-17.dacpac" />
+    <None Include="Data\StaticData\dbo.LookupItem" />
+    <None Include="Data\StaticData\dbo.Lookup" />
+    <None Include="Data\StaticData\dbo.Service" />
+    <None Include="Data\StaticData\dbo.ServiceCategory" />
+    <None Include="Data\StaticData\dbo.ServicePortfolio" />
+    <None Include="Data\StaticData\dbo.ServiceRequestTemplate" />
+    <None Include="Data\StaticData\dbo.ServiceRequestTemplateTask" />
+    <None Include="Data\StaticData\dbo.Task" />
+    <None Include="Orvosi.localdb.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

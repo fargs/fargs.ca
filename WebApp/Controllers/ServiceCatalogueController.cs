@@ -63,7 +63,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Edit(ServiceCatalogue form)
         {
-            var exists = await db.ServiceCatalogues.AnyAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId);
+            var exists = await db.ServiceCatalogues.AnyAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
             if (!exists)
             {
                 var sc = new ServiceCatalogue()
@@ -80,7 +80,7 @@ namespace WebApp.Controllers
             }
             else
             {
-                var sc = await db.ServiceCatalogues.SingleAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId);
+                var sc = await db.ServiceCatalogues.SingleAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
                 if (form.ServiceCataloguePriceOverride.HasValue)
                 {
                     sc.ServiceCataloguePriceOverride = form.ServiceCataloguePriceOverride;

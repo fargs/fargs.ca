@@ -6,6 +6,7 @@
 
 
 
+
 CREATE VIEW [API].[Physician]
 AS
 SELECT 
@@ -38,6 +39,7 @@ SELECT
       ,u.[RoleCategoryId]
       ,u.[RoleCategoryName]
       ,u.[HourlyRate]
+	  ,u.[LogoCssClass]
 	,p.Designations
 	,p.PrimaryAddressId
 	,p.SpecialtyId

@@ -252,6 +252,9 @@
     <Build Include="API\Stored Procedures\AvailableDay_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Delete.sql" />
     <Build Include="API\Stored Procedures\AvailableDay_Delete.sql" />
+    <Build Include="API\Stored Procedures\ServiceCatalogue_Update.sql" />
+    <Build Include="API\Stored Procedures\ServiceCatalogue_Insert.sql" />
+    <Build Include="API\Stored Procedures\ServiceCatalogue_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

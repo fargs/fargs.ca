@@ -26,6 +26,8 @@ CREATE PROCEDURE [API].[ServiceRequest_Update]
 	,@CompanyId smallint
 	,@IsLateCancellation bit
 	,@IsNoShow bit
+	,@NoShowRate decimal(18,2)
+	,@LateCancellationRate decimal(18,2)
 	,@ModifiedUser nvarchar(100)
 AS
 
@@ -59,6 +61,8 @@ SET
 	,[CompanyId] = @CompanyId
 	,[IsLateCancellation] = @IsLateCancellation
 	,[IsNoShow] = @IsNoShow
+	,[NoShowRate] = @NoShowRate
+	,[LateCancellationRate] = @LateCancellationRate
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser
 WHERE 

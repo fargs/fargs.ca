@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using WebApp.ViewModels.ServiceCatalogueViewModels;
+using WebApp.Library;
 
 namespace WebApp.Controllers
 {
@@ -30,6 +31,7 @@ namespace WebApp.Controllers
             if (vm.SelectedUser != null)
             {
                 vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
+                var userGuid = new Guid(args.UserId);
                 if (vm.SelectedCompany != null)
                 {
                     vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(args.UserId, args.CompanyId).OrderBy(c => c.LocationName).ToList();
@@ -38,6 +40,9 @@ namespace WebApp.Controllers
                 {
                     vm.ServiceCatalogues = db.GetServiceCatalogue(args.UserId).OrderBy(c => c.LocationName).ToList();
                 }
+                var inheritedValues = db.GetServiceCatalogueRate(userGuid, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
+                vm.ServiceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
+                vm.ServiceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
             }
             return View(vm);
         }
@@ -94,6 +99,83 @@ namespace WebApp.Controllers
             
             return RedirectToAction("Index", new FilterArgs() { CompanyId = form.CompanyId, UserId = form.PhysicianId });
         }
+
+        public async Task<ActionResult> EditRates(string ServiceProviderGuid, string CustomerGuid)
+        {
+            var serviceCatalogueRate = new ServiceCatalogueRate();
+
+            var serviceProvider = await db.Users.SingleOrDefaultAsync(u => u.Id == ServiceProviderGuid);
+            if (serviceProvider != null)
+            {
+                var serviceProviderGuid = new Guid(serviceProvider.Id);
+                Guid? customerGuid = string.IsNullOrEmpty(CustomerGuid) ? Guid.Empty : new Guid(CustomerGuid);
+
+                var customer = await db.Companies.SingleOrDefaultAsync(c => c.ObjectGuid == customerGuid);
+                if (customer != null)
+                {
+                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == serviceProviderGuid && c.CustomerGuid == customer.ObjectGuid);
+                    if (serviceCatalogueRate == null)
+                    {
+                        serviceCatalogueRate = new ServiceCatalogueRate()
+                        {
+                            ServiceProviderGuid = serviceProviderGuid,
+                            CustomerGuid = customerGuid
+                        };
+                    }
+                }
+                else
+                {
+                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == serviceProviderGuid && !c.CustomerGuid.HasValue);
+                    if (serviceCatalogueRate == null)
+                    {
+                        serviceCatalogueRate = new ServiceCatalogueRate()
+                        {
+                            ServiceProviderGuid = serviceProviderGuid,
+                            CustomerGuid = customerGuid
+                        };
+                    }
+                }
+                var inheritedValues = db.GetServiceCatalogueRate(serviceProviderGuid, customerGuid).First();
+                serviceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
+                serviceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
+            }
+            else
+            {
+                throw new Exception("Incorrect parameters were passed.");
+            }
+            return View(serviceCatalogueRate);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditRates(ServiceCatalogueRate form)
+        {
+            var exists = await db.ServiceCatalogueRates.AnyAsync(c => c.ServiceProviderGuid == form.ServiceProviderGuid && c.CustomerGuid == form.CustomerGuid);
+            if (!exists)
+            {
+                var rate = new ServiceCatalogueRate()
+                {
+                    ServiceProviderGuid = form.ServiceProviderGuid,
+                    CustomerGuid = form.CustomerGuid,
+                    NoShowRate = form.NoShowRate,
+                    LateCancellationRate = form.LateCancellationRate,
+                    ModifiedDate = SystemTime.Now(),
+                    ModifiedUser = User.Identity.Name
+                };
+                db.ServiceCatalogueRates.Add(rate);
+            }
+            else
+            {
+                var rate = await db.ServiceCatalogueRates.SingleAsync(c => c.ServiceProviderGuid == form.ServiceProviderGuid && c.CustomerGuid == form.CustomerGuid);
+                rate.NoShowRate = form.NoShowRate.GetValueOrDefault(0);
+                rate.LateCancellationRate = form.LateCancellationRate.GetValueOrDefault(0);
+                rate.ModifiedDate = SystemTime.Now();
+                rate.ModifiedUser = User.Identity.Name;
+            }
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Index", new { ServiceProviderGuid = form.ServiceProviderGuid, CustomerGuid = form.CustomerGuid });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

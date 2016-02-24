@@ -5,6 +5,18 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ServiceCatalogueRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceProviderGuid" Type="uniqueidentifier" />
+          <Property Name="CustomerGuid" Type="uniqueidentifier" />
+          <Property Name="NoShowRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="LateCancellationRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Account' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Account">
@@ -859,6 +871,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
         </Function>
+        <Function Name="GetServiceCatalogueRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="ServiceProviderGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CustomerGuid" Type="uniqueidentifier" Mode="In" />
+        </Function>
         <Function Name="Location_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
@@ -1148,6 +1164,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </ReturnType>
         </Function>
         <EntityContainer Name="OrvosiModelStoreContainer">
+          <EntitySet Name="ServiceCatalogueRate" EntityType="Self.ServiceCatalogueRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Account" EntityType="Self.Account" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [Account].[Id] AS [Id], 
@@ -2132,6 +2149,11 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="NoShowRate" Mode="In" Type="Decimal" />
             <Parameter Name="LateCancellationRate" Mode="In" Type="Decimal" />
           </FunctionImport>
+          <EntitySet Name="ServiceCatalogueRates" EntityType="OrvosiModel.ServiceCatalogueRate" />
+          <FunctionImport Name="GetServiceCatalogueRate" ReturnType="Collection(OrvosiModel.GetServiceCatalogueRate_Result)">
+            <Parameter Name="ServiceProviderGuid" Mode="In" Type="Guid" />
+            <Parameter Name="CustomerGuid" Mode="In" Type="Guid" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2843,6 +2865,22 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="Guid" Name="IntakeAssistantId" Nullable="true" />
           <Property Type="String" Name="ServiceName" Nullable="false" MaxLength="128" />
           <Property Type="String" Name="ClaimantName" Nullable="true" MaxLength="128" />
+        </ComplexType>
+        <EntityType Name="ServiceCatalogueRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceProviderGuid" Type="Guid" />
+          <Property Name="CustomerGuid" Type="Guid" />
+          <Property Name="NoShowRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="LateCancellationRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="GetServiceCatalogueRate_Result">
+          <Property Type="Decimal" Name="NoShowRate" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="LateCancellationRate" Nullable="true" Precision="18" Scale="2" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -4029,6 +4067,27 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Delete" FunctionName="OrvosiModel.Store.ServiceCatalogue_Delete" />
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Insert" FunctionName="OrvosiModel.Store.ServiceCatalogue_Insert" />
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Update" FunctionName="OrvosiModel.Store.ServiceCatalogue_Update" />
+          <EntitySetMapping Name="ServiceCatalogueRates">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceCatalogueRate">
+              <MappingFragment StoreEntitySet="ServiceCatalogueRate">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="LateCancellationRate" ColumnName="LateCancellationRate" />
+                <ScalarProperty Name="NoShowRate" ColumnName="NoShowRate" />
+                <ScalarProperty Name="CustomerGuid" ColumnName="CustomerGuid" />
+                <ScalarProperty Name="ServiceProviderGuid" ColumnName="ServiceProviderGuid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetServiceCatalogueRate" FunctionName="OrvosiModel.Store.GetServiceCatalogueRate">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetServiceCatalogueRate_Result">
+                <ScalarProperty Name="NoShowRate" ColumnName="NoShowRate" />
+                <ScalarProperty Name="LateCancellationRate" ColumnName="LateCancellationRate" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

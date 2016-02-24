@@ -814,6 +814,7 @@
     <Content Include="Views\Availability\AddDay.cshtml" />
     <Content Include="Views\ServiceCatalogue\Index.cshtml" />
     <Content Include="Views\ServiceCatalogue\Edit.cshtml" />
+    <Content Include="Views\ServiceCatalogue\EditRates.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

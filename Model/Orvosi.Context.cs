@@ -54,6 +54,7 @@ namespace Model
         public virtual DbSet<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
+        public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -1638,6 +1639,19 @@ namespace Model
                 new ObjectParameter("LateCancellationRate", typeof(decimal));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Update", idParameter, physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
+        }
+    
+        public virtual ObjectResult<GetServiceCatalogueRate_Result> GetServiceCatalogueRate(Nullable<System.Guid> serviceProviderGuid, Nullable<System.Guid> customerGuid)
+        {
+            var serviceProviderGuidParameter = serviceProviderGuid.HasValue ?
+                new ObjectParameter("ServiceProviderGuid", serviceProviderGuid) :
+                new ObjectParameter("ServiceProviderGuid", typeof(System.Guid));
+    
+            var customerGuidParameter = customerGuid.HasValue ?
+                new ObjectParameter("CustomerGuid", customerGuid) :
+                new ObjectParameter("CustomerGuid", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogueRate_Result>("GetServiceCatalogueRate", serviceProviderGuidParameter, customerGuidParameter);
         }
     }
 }

@@ -103,7 +103,6 @@ warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key de
           <Property Name="Code" Type="nvarchar" MaxLength="50" />
           <Property Name="IsParent" Type="bit" Nullable="false" />
           <Property Name="ParentId" Type="int" />
-          <Property Name="InvoiceEmails" Type="nvarchar" MaxLength="1000" />
           <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
           <Property Name="BillingEmail" Type="nvarchar" MaxLength="128" />
           <Property Name="ReportsEmail" Type="nvarchar" MaxLength="128" />
@@ -986,7 +985,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
           <Parameter Name="LocationId" Type="smallint" Mode="In" />
           <Parameter Name="Price" Type="decimal" Mode="In" />
-          <Parameter Name="ModifiedDate" Type="datetime" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
           <Parameter Name="NoShowRate" Type="decimal" Mode="In" />
           <Parameter Name="LateCancellationRate" Type="decimal" Mode="In" />
@@ -1213,7 +1211,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Company].[Code] AS [Code], 
     [Company].[IsParent] AS [IsParent], 
     [Company].[ParentId] AS [ParentId], 
-    [Company].[InvoiceEmails] AS [InvoiceEmails], 
     [Company].[LogoCssClass] AS [LogoCssClass], 
     [Company].[BillingEmail] AS [BillingEmail], 
     [Company].[ReportsEmail] AS [ReportsEmail], 
@@ -2106,10 +2103,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AvailableDay_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int16" />
+          <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="AvailableSlot_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int16" />
+          <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="ServiceCatalogue_Delete">
           <Parameter Name="Id" Mode="In" Type="Int32" />
@@ -2120,7 +2117,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
             <Parameter Name="LocationId" Mode="In" Type="Int16" />
             <Parameter Name="Price" Mode="In" Type="Decimal" />
-            <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
             <Parameter Name="NoShowRate" Mode="In" Type="Decimal" />
             <Parameter Name="LateCancellationRate" Mode="In" Type="Decimal" />
@@ -3651,7 +3647,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="LateCancellationRate" ParameterName="LateCancellationRate" />
                   <ScalarProperty Name="NoShowRate" ParameterName="NoShowRate" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
-                  <ScalarProperty Name="ModifiedDate" ParameterName="ModifiedDate" />
                   <ScalarProperty Name="LocationId" ParameterName="LocationId" />
                   <ScalarProperty Name="CompanyId" ParameterName="CompanyId" />
                   <ScalarProperty Name="ServiceId" ParameterName="ServiceId" />

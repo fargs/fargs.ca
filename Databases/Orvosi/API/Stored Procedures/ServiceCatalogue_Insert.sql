@@ -5,7 +5,6 @@ CREATE PROCEDURE [API].[ServiceCatalogue_Insert]
 	,@CompanyId smallint
 	,@LocationId smallint
 	,@Price decimal
-	,@ModifiedDate datetime
 	,@ModifiedUser nvarchar(100)
 	,@NoShowRate decimal
 	,@LateCancellationRate decimal
@@ -40,4 +39,4 @@ VALUES
 )
 
 DECLARE @Id INT
-SELECT @Id = SCOPE_IDENTITY()
+SELECT Id = SCOPE_IDENTITY()

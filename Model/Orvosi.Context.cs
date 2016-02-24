@@ -1562,7 +1562,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Delete", idParameter);
         }
     
-        public virtual int ServiceCatalogue_Insert(string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, Nullable<System.DateTime> modifiedDate, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
+        public virtual int ServiceCatalogue_Insert(string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
         {
             var physicianIdParameter = physicianId != null ?
                 new ObjectParameter("PhysicianId", physicianId) :
@@ -1584,10 +1584,6 @@ namespace Model
                 new ObjectParameter("Price", price) :
                 new ObjectParameter("Price", typeof(decimal));
     
-            var modifiedDateParameter = modifiedDate.HasValue ?
-                new ObjectParameter("ModifiedDate", modifiedDate) :
-                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
-    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
@@ -1600,7 +1596,7 @@ namespace Model
                 new ObjectParameter("LateCancellationRate", lateCancellationRate) :
                 new ObjectParameter("LateCancellationRate", typeof(decimal));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Insert", physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedDateParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Insert", physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
         }
     
         public virtual int ServiceCatalogue_Update(Nullable<int> id, string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)

@@ -1,0 +1,119 @@
+﻿@using Model
+@using Model.Enums
+@using WebApp.Library.Enums
+@model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
+
+@{
+    ViewBag.Title = "Service Catalogue";
+
+    var db = new OrvosiEntities();
+
+    ViewBag.Users = db.Users
+        .Where(c => c.RoleCategoryId == RoleCategory.Physician)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.RoleName }
+        }).ToList();
+
+    ViewBag.Companies = db.Companies
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.ParentName }
+        }).ToList();
+
+    ViewBag.Services = db.Services
+        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .ToList();
+
+    ViewBag.LocationAreas = db.LocationAreas
+        .OrderBy(c => c.ItemText)
+        .ToList();
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form action="~/ServiceCatalogue/Index/" method="get" class="form-inline">
+            @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
+            {
+                <div class="form-group">
+                    @Html.DropDownList("UserId", new SelectList(ViewBag.Users, "Value", "Text", Model.FilterArgs.UserId), string.Empty, new { @class = "form-control" })
+                </div>
+            }
+            <div class="form-group">
+                @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), string.Empty, new { @class = "form-control" })
+            </div>
+            <button type="submit" class="btn btn-primary">Go</button>
+        </form>
+    </div>
+</div>
+<p />
+@if (Model.SelectedUser == null)
+{
+    <div class="text-info">No service catalogue is available</div>
+}
+else
+{
+    <div class="h3 lead">
+        @if (Model.SelectedCompany != null)
+        {
+            <span>Service Catalogue for @Model.SelectedUser.DisplayName and <strong>@Model.SelectedCompany.Name</strong></span>
+        }
+        else
+        {
+            <span>Default Service Catalogue for @Model.SelectedUser.DisplayName</span>
+        }
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Service
+                </th>
+                @foreach (var item in ViewBag.LocationAreas)
+                {
+                    <th>
+                        @item.ItemText
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var service in ViewBag.Services)
+            {
+                <tr>
+                    <td>
+                        <div>@service.Name</div>
+                        @if (service.DefaultPrice != null)
+                        {
+                            <small class="text-muted">Recommended price is @service.DefaultPrice</small>
+                        }
+                    </td>
+                    @foreach (var location in ViewBag.LocationAreas)
+                    {
+                        <td>
+                            <a href="~/@(string.Format("ServiceCatalogue/Edit?UserId={0}&CompanyId={1}&LocationId={2}&ServiceId={3}", Model.FilterArgs.UserId, Model.FilterArgs.CompanyId, location.ItemId, service.Id))">
+                                @{
+                                    var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == service.Id && c.LocationId == location.ItemId);
+                                }
+                                @if (serviceCatalogueItem.ServiceCatalogueItem.Price.HasValue)
+                                {
+                                    <span>@serviceCatalogueItem.ServiceCatalogueItem.Price</span>
+                                }
+                                else
+                                {
+                                    <span>Edit</span>
+                                }
+                            </a>
+                        </td>
+                    }
+                </tr>
+                }
+        </tbody>
+    </table>
+}

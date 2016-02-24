@@ -3,6 +3,8 @@
 
 
 
+
+
 CREATE VIEW [API].[User]
 AS
 
@@ -42,10 +44,12 @@ SELECT u.[Id]
       ,u.[IsTestRecord]
 	  ,r.RoleId
 	  ,r.RoleName
+	  ,MyCompanyName = u.CompanyName
 	  ,CompanyName = c.Name
 	  ,r.RoleCategoryId
 	  ,RoleCategoryName = rc.Name
 	  ,u.HourlyRate
+	  ,u.LogoCssClass
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.RoleCategory rc ON r.RoleCategoryId = rc.Id

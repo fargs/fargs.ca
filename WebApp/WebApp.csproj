@@ -296,9 +296,11 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
     <Compile Include="Library\Dropbox.cs" />
+    <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -306,6 +308,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
+    <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
@@ -660,6 +663,7 @@
     <Content Include="Areas\Admin\Views\Company\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\Account.cshtml" />
+    <Content Include="Areas\Admin\Views\User\UserProfile.cshtml" />
     <Content Include="Areas\Admin\Views\User\Companies.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Service\Delete.cshtml" />
@@ -808,6 +812,8 @@
     <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />
+    <Content Include="Views\ServiceCatalogue\Index.cshtml" />
+    <Content Include="Views\ServiceCatalogue\Edit.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>
@@ -817,6 +823,7 @@
     <Folder Include="Areas\Physicians\Views\Base\" />
     <Folder Include="Areas\Staff\Views\Base\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
+    <Folder Include="Views\Physician\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

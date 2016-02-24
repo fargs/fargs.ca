@@ -502,7 +502,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
@@ -600,14 +600,22 @@ namespace Model
                 new ObjectParameter("IsNoShow", isNoShow) :
                 new ObjectParameter("IsNoShow", typeof(bool));
     
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -713,11 +721,19 @@ namespace Model
                 new ObjectParameter("IsNoShow", isNoShow) :
                 new ObjectParameter("IsNoShow", typeof(bool));
     
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
@@ -1535,6 +1551,93 @@ namespace Model
                 new ObjectParameter("Id", typeof(short));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AvailableSlot_Delete", idParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Delete", idParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Insert(string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(short));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Insert", physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Update(Nullable<int> id, string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(short));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Update", idParameter, physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
         }
     }
 }

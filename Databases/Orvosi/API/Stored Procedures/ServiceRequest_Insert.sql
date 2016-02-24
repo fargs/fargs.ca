@@ -24,6 +24,8 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@CompanyId smallint
 	,@IsLateCancellation bit
 	,@IsNoShow bit
+	,@NoShowRate decimal(18,2)
+	,@LateCancellationRate decimal(18,2)
 	,@ModifiedUser nvarchar(100)
 AS
 
@@ -56,6 +58,8 @@ INSERT INTO dbo.[ServiceRequest]
 	,[CompanyId]
 	,[IsLateCancellation]
 	,[IsNoShow]
+	,[NoShowRate]
+	,[LateCancellationRate]
 	,[ModifiedUser]
 )
 VALUES 
@@ -84,6 +88,8 @@ VALUES
 	,@CompanyId
 	,@IsLateCancellation
 	,@IsNoShow
+	,@NoShowRate
+	,@LateCancellationRate
 	,@ModifiedUser
 )
 

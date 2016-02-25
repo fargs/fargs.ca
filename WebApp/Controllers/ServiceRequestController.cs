@@ -776,7 +776,9 @@ namespace WebApp.Controllers
             {
                 Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.Title,
                 Value = c.Id.ToString()
-            }).ToList();
+            })
+            .OrderBy(c => c.Text)
+            .ToList();
 
             ViewBag.Companies = await db.Companies
                 .Where(c => c.IsParent == false)

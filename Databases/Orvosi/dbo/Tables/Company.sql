@@ -7,9 +7,9 @@
     [ParentId]                        INT              NULL,
     [InvoiceEmails]                   NVARCHAR (1000)  NULL,
     [LogoCssClass]                    NVARCHAR (50)    NULL,
-    [MasterBookingPageByPhysician]    NVARCHAR (50)    NULL,
-    [MasterBookingPageByTime]         NVARCHAR (50)    NULL,
-    [MasterBookingPageTeleconference] NVARCHAR (50)    NULL,
+	[BillingEmail] NVARCHAR(128) NULL, 
+    [ReportsEmail] NVARCHAR(128) NULL, 
+    [Phone] NVARCHAR(50) NULL, 
     [ModifiedDate]                    DATETIME         CONSTRAINT [DF_Company_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]                    NVARCHAR (256)   CONSTRAINT [DF_Company_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_Company] PRIMARY KEY CLUSTERED ([Id] ASC)

@@ -9,9 +9,6 @@
     Id="3"
     Name="Invoicing" />
   <row
-    Id="4"
-    Name="Medical Consultation" />
-  <row
     Id="5"
     Name="Independent Medical Exam" />
   <row

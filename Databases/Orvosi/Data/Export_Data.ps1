@@ -1,6 +1,6 @@
 ﻿Param(
 	$DBName = "Orvosi",
-	$Server = "(localdb)\mssqllocaldb"
+	$Server = "localhost"
 )
 
 function Create-SQLScript

@@ -216,14 +216,10 @@ namespace WebApp.Controllers
 
             var location = await db.Locations.SingleOrDefaultAsync(c => c.Id == sr.LocationId);
 
-            var serviceCatalogue = await db.ServiceCatalogues
-                .SingleOrDefaultAsync(c => c.PhysicianId == sr.PhysicianId
-                                && c.CompanyId != null // parent id can be null and if these are included, more than one row can be returned.
-                                && (c.CompanyId == sr.CompanyId || c.CompanyId == company.ParentId)
-                                && c.LocationId == location.LocationId
-                                && c.ServiceId == sr.ServiceId);
+            var serviceCatalogue = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
-            if (serviceCatalogue == null)
+            var service = serviceCatalogue.SingleOrDefault(c => c.LocationId == location.LocationId && c.ServiceId == sr.ServiceId);
+            if (service == null)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
@@ -232,7 +228,7 @@ namespace WebApp.Controllers
             {
                 var obj = new ServiceRequest()
                 {
-                    ServiceCatalogueId = serviceCatalogue.Id,
+                    ServiceCatalogueId = service.ServiceCatalogueId,
                     AppointmentDate = sr.AppointmentDate,
                     AvailableSlotId = sr.AvailableSlotId,
                     AddressId = location.Id,

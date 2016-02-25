@@ -12,12 +12,14 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class LocationArea
+    public partial class ServiceCatalogueRate
     {
-        public short LookupId { get; set; }
-        public string LookupName { get; set; }
-        public short ItemId { get; set; }
-        public string ItemText { get; set; }
-        public Nullable<short> ItemValue { get; set; }
+        public int Id { get; set; }
+        public Nullable<System.Guid> ServiceProviderGuid { get; set; }
+        public Nullable<System.Guid> CustomerGuid { get; set; }
+        public Nullable<decimal> NoShowRate { get; set; }
+        public Nullable<decimal> LateCancellationRate { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
+        public string ModifiedUser { get; set; }
     }
 }

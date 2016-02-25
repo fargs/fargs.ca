@@ -1,5 +1,14 @@
 ﻿<root>
   <row
-    AddressTypeID="1"
-    Name="Main" />
+    Id="1"
+    Name="Company Assessment Office" />
+  <row
+    Id="2"
+    Name="Physician Clinic" />
+  <row
+    Id="3"
+    Name="Primary Office" />
+  <row
+    Id="4"
+    Name="Billing Address" />
 </root>

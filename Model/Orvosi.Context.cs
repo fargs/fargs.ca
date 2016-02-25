@@ -58,6 +58,7 @@ namespace Model
         public virtual DbSet<Invoice> Invoices { get; set; }
         public virtual DbSet<BillableEntity> BillableEntities { get; set; }
         public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
+        public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -407,7 +408,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Service_Update", idParameter, objectGuidParameter, nameParameter, descriptionParameter, codeParameter, priceParameter, serviceCategoryIdParameter, servicePortfolioIdParameter, modifiedUserParameter);
         }
     
-        public virtual int Company_Insert(string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        public virtual int Company_Insert(string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string billingEmail, string reportsEmail, string phone, string modifiedUser)
         {
             var nameParameter = name != null ?
                 new ObjectParameter("Name", name) :
@@ -429,26 +430,26 @@ namespace Model
                 new ObjectParameter("LogoCssClass", logoCssClass) :
                 new ObjectParameter("LogoCssClass", typeof(string));
     
-            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
-                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
-                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+            var billingEmailParameter = billingEmail != null ?
+                new ObjectParameter("BillingEmail", billingEmail) :
+                new ObjectParameter("BillingEmail", typeof(string));
     
-            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
-                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
-                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+            var reportsEmailParameter = reportsEmail != null ?
+                new ObjectParameter("ReportsEmail", reportsEmail) :
+                new ObjectParameter("ReportsEmail", typeof(string));
     
-            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
-                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
-                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+            var phoneParameter = phone != null ?
+                new ObjectParameter("Phone", phone) :
+                new ObjectParameter("Phone", typeof(string));
     
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Insert", nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Insert", nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, billingEmailParameter, reportsEmailParameter, phoneParameter, modifiedUserParameter);
         }
     
-        public virtual int Company_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string masterBookingPageByPhysician, string masterBookingPageByTime, string masterBookingPageTeleconference, string modifiedUser)
+        public virtual int Company_Update(Nullable<short> id, Nullable<System.Guid> objectGuid, string name, string code, Nullable<bool> isParent, Nullable<int> parentId, string logoCssClass, string billingEmail, string reportsEmail, string phone, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -478,23 +479,23 @@ namespace Model
                 new ObjectParameter("LogoCssClass", logoCssClass) :
                 new ObjectParameter("LogoCssClass", typeof(string));
     
-            var masterBookingPageByPhysicianParameter = masterBookingPageByPhysician != null ?
-                new ObjectParameter("MasterBookingPageByPhysician", masterBookingPageByPhysician) :
-                new ObjectParameter("MasterBookingPageByPhysician", typeof(string));
+            var billingEmailParameter = billingEmail != null ?
+                new ObjectParameter("BillingEmail", billingEmail) :
+                new ObjectParameter("BillingEmail", typeof(string));
     
-            var masterBookingPageByTimeParameter = masterBookingPageByTime != null ?
-                new ObjectParameter("MasterBookingPageByTime", masterBookingPageByTime) :
-                new ObjectParameter("MasterBookingPageByTime", typeof(string));
+            var reportsEmailParameter = reportsEmail != null ?
+                new ObjectParameter("ReportsEmail", reportsEmail) :
+                new ObjectParameter("ReportsEmail", typeof(string));
     
-            var masterBookingPageTeleconferenceParameter = masterBookingPageTeleconference != null ?
-                new ObjectParameter("MasterBookingPageTeleconference", masterBookingPageTeleconference) :
-                new ObjectParameter("MasterBookingPageTeleconference", typeof(string));
+            var phoneParameter = phone != null ?
+                new ObjectParameter("Phone", phone) :
+                new ObjectParameter("Phone", typeof(string));
     
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, masterBookingPageByPhysicianParameter, masterBookingPageByTimeParameter, masterBookingPageTeleconferenceParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Company_Update", idParameter, objectGuidParameter, nameParameter, codeParameter, isParentParameter, parentIdParameter, logoCssClassParameter, billingEmailParameter, reportsEmailParameter, phoneParameter, modifiedUserParameter);
         }
     
         public virtual int ServiceRequest_Delete(Nullable<int> id)
@@ -1857,6 +1858,106 @@ namespace Model
                 new ObjectParameter("ModifiedUser", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InvoiceDetail_Update", idParameter, invoiceIdParameter, descriptionParameter, quantityParameter, rateParameter, totalParameter, discountParameter, amountParameter, modifiedUserParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Delete(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Delete", idParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Insert(string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
+        {
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(short));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Insert", physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
+        }
+    
+        public virtual int ServiceCatalogue_Update(Nullable<int> id, string physicianId, Nullable<short> serviceId, Nullable<short> companyId, Nullable<short> locationId, Nullable<decimal> price, string modifiedUser, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(short));
+    
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var priceParameter = price.HasValue ?
+                new ObjectParameter("Price", price) :
+                new ObjectParameter("Price", typeof(decimal));
+    
+            var modifiedUserParameter = modifiedUser != null ?
+                new ObjectParameter("ModifiedUser", modifiedUser) :
+                new ObjectParameter("ModifiedUser", typeof(string));
+    
+            var noShowRateParameter = noShowRate.HasValue ?
+                new ObjectParameter("NoShowRate", noShowRate) :
+                new ObjectParameter("NoShowRate", typeof(decimal));
+    
+            var lateCancellationRateParameter = lateCancellationRate.HasValue ?
+                new ObjectParameter("LateCancellationRate", lateCancellationRate) :
+                new ObjectParameter("LateCancellationRate", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceCatalogue_Update", idParameter, physicianIdParameter, serviceIdParameter, companyIdParameter, locationIdParameter, priceParameter, modifiedUserParameter, noShowRateParameter, lateCancellationRateParameter);
+        }
+    
+        public virtual ObjectResult<GetServiceCatalogueRate_Result> GetServiceCatalogueRate(Nullable<System.Guid> serviceProviderGuid, Nullable<System.Guid> customerGuid)
+        {
+            var serviceProviderGuidParameter = serviceProviderGuid.HasValue ?
+                new ObjectParameter("ServiceProviderGuid", serviceProviderGuid) :
+                new ObjectParameter("ServiceProviderGuid", typeof(System.Guid));
+    
+            var customerGuidParameter = customerGuid.HasValue ?
+                new ObjectParameter("CustomerGuid", customerGuid) :
+                new ObjectParameter("CustomerGuid", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogueRate_Result>("GetServiceCatalogueRate", serviceProviderGuidParameter, customerGuidParameter);
         }
     }
 }

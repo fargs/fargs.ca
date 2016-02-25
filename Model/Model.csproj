@@ -101,6 +101,9 @@
     <Compile Include="GetServiceCatalogueMatrix_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetServiceCatalogueRate_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="GetServiceCatalogue_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -175,6 +178,9 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="ServiceCatalogue.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceCatalogueRate.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="ServiceCategory.cs">

@@ -25,5 +25,9 @@ namespace Model
         public string PhysicianDisplayName { get; set; }
         public string CompanyName { get; set; }
         public string LocationName { get; set; }
+        public string ModifiedUser { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
+        public Nullable<decimal> NoShowRate { get; set; }
+        public Nullable<decimal> LateCancellationRate { get; set; }
     }
 }

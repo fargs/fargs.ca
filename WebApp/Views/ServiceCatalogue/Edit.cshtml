@@ -1,0 +1,10 @@
+﻿@model Model.ServiceCatalogue
+
+<form action="~/ServiceCatalogue/Edit" method="post">
+    @Html.Hidden("CompanyId", Model.CompanyId)
+    @Html.Hidden("PhysicianId", Model.PhysicianId)
+    @Html.Hidden("ServiceID", Model.ServiceId)
+    @Html.Hidden("LocationId", Model.LocationId)
+    Price: <input type="text" name="ServiceCataloguePriceOverride" value="@Model.ServiceCataloguePriceOverride" />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

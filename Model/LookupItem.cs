@@ -18,6 +18,6 @@ namespace Model
         public string LookupName { get; set; }
         public short ItemId { get; set; }
         public string ItemText { get; set; }
-        public short ItemValue { get; set; }
+        public Nullable<short> ItemValue { get; set; }
     }
 }

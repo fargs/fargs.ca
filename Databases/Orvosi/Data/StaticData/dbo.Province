@@ -1,1 +1,67 @@
-﻿<root></root>
+﻿<root>
+  <row
+    Id="1"
+    CountryID="124"
+    ProvinceName="Alberta"
+    ProvinceCode="CA-AB" />
+  <row
+    Id="2"
+    CountryID="124"
+    ProvinceName="British Columbia"
+    ProvinceCode="CA-BC" />
+  <row
+    Id="3"
+    CountryID="124"
+    ProvinceName="Manitoba"
+    ProvinceCode="CA-MB" />
+  <row
+    Id="4"
+    CountryID="124"
+    ProvinceName="New Brunswick"
+    ProvinceCode="CA-NB" />
+  <row
+    Id="5"
+    CountryID="124"
+    ProvinceName="Newfoundland and Labrador"
+    ProvinceCode="CA-NL" />
+  <row
+    Id="6"
+    CountryID="124"
+    ProvinceName="Northwest Territories"
+    ProvinceCode="CA-NT" />
+  <row
+    Id="7"
+    CountryID="124"
+    ProvinceName="Nova Scotia"
+    ProvinceCode="CA-NS" />
+  <row
+    Id="8"
+    CountryID="124"
+    ProvinceName="Nunavut"
+    ProvinceCode="CA-NU" />
+  <row
+    Id="9"
+    CountryID="124"
+    ProvinceName="Ontario"
+    ProvinceCode="CA-ON" />
+  <row
+    Id="10"
+    CountryID="124"
+    ProvinceName="Prince Edward Island"
+    ProvinceCode="CA-PE" />
+  <row
+    Id="11"
+    CountryID="124"
+    ProvinceName="Québec"
+    ProvinceCode="CA-QC" />
+  <row
+    Id="12"
+    CountryID="124"
+    ProvinceName="Saskatchewan"
+    ProvinceCode="CA-SK" />
+  <row
+    Id="13"
+    CountryID="124"
+    ProvinceName="Yukon"
+    ProvinceCode="CA-YT" />
+</root>

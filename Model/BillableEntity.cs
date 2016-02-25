@@ -27,8 +27,7 @@ namespace Model
         public string PostalCode { get; set; }
         public string ProvinceName { get; set; }
         public string CountryName { get; set; }
-        public string Email { get; set; }
+        public string BillingEmail { get; set; }
         public string Phone { get; set; }
-        public string Fax { get; set; }
     }
 }

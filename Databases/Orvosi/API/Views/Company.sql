@@ -2,7 +2,6 @@
 
 
 
-
 CREATE VIEW [API].[Company]
 AS
 
@@ -13,7 +12,6 @@ SELECT
 	,c.[Code]
 	,c.[IsParent]
 	,c.[ParentId]
-	,c.[InvoiceEmails]
 	,c.[LogoCssClass]
 	,c.BillingEmail
 	,c.ReportsEmail

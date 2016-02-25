@@ -37,7 +37,7 @@ namespace WebApp.Controllers
             // Confirm the examination was completed.
             var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
             ViewBag.IsValidToSubmitInvoice = intakeInterviewTask.CompletedDate.HasValue ? true : false;
-            ViewBag.FormMode = FormMode.New;
+            ViewBag.FormMode = FormModes.Add;
             return View("Details", invoice);
         }
 
@@ -76,7 +76,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Details(int id)
         {
             var obj = await db.Invoices.FindAsync(id);
-            ViewBag.FormMode = FormMode.ReadOnly;
+            ViewBag.FormMode = FormModes.ReadOnly;
             return View(obj);
         }
     }

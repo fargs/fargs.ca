@@ -3,6 +3,7 @@
 
 
 
+
 CREATE VIEW [API].[BillableEntity]
 AS
 
@@ -13,6 +14,8 @@ AS (
 		, EntityName = Name
 		, EntityType = 'COMPANY'
 		, LogoCssClass
+		, BillingEmail
+		, Phone
 	FROM dbo.Company
 	UNION
 	SELECT Id
@@ -20,6 +23,8 @@ AS (
 		, u.MyCompanyName
 		, 'PHYSICIAN'
 		, u.LogoCssClass
+		, u.Email
+		, u.PhoneNumber
 	FROM API.[User] u
 	WHERE u.RoleCategoryId = 1
 )
@@ -36,8 +41,7 @@ SELECT e.EntityGuid
 	, a.PostalCode
 	, a.ProvinceName
 	, a.CountryName
-	, a.Email
-	, a.Phone
-	, a.Fax
+	, e.BillingEmail
+	, e.Phone
 FROM Entity e
 LEFT JOIN API.[Address] a ON e.EntityGuid = a.OwnerGuid AND a.AddressTypeID = 4

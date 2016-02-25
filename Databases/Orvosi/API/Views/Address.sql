@@ -6,6 +6,7 @@
 
 
 
+
 CREATE VIEW [API].[Address]
 AS
 SELECT 
@@ -28,9 +29,6 @@ SELECT
 	,CountryCode = c.ISO3CountryCode
 	,ProvinceName = p.ProvinceName
 	,ProvinceCode = p.ProvinceCode
-	,Email
-	,Phone
-	,Fax
 FROM [dbo].[Address] a
 LEFT JOIN dbo.[AddressType] at ON a.AddressTypeId = at.Id
 LEFT JOIN dbo.Country c ON a.CountryId = c.Id

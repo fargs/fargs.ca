@@ -1,6 +1,5 @@
 ﻿CREATE TABLE [dbo].[Invoice] (
     [Id]                  INT              IDENTITY (1, 1) NOT NULL,
-    [ServiceRequestId]    INT              NULL,
     [InvoiceNumber]       NVARCHAR (128)   NOT NULL,
     [InvoiceDate]         DATETIME         NOT NULL,
     [Currency]            NVARCHAR (128)   NULL,
@@ -29,6 +28,8 @@
     [ModifiedUser]        NVARCHAR (100)   CONSTRAINT [DF_Invoice_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_Invoice] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

@@ -120,9 +120,8 @@ warning 6002: The table/view 'Orvosi.API.BillableEntity' does not have a primary
           <Property Name="PostalCode" Type="nvarchar" MaxLength="50" />
           <Property Name="ProvinceName" Type="nvarchar" MaxLength="100" />
           <Property Name="CountryName" Type="nvarchar" MaxLength="100" />
-          <Property Name="Email" Type="nvarchar" MaxLength="128" />
-          <Property Name="Phone" Type="nvarchar" MaxLength="128" />
-          <Property Name="Fax" Type="nvarchar" MaxLength="128" />
+          <Property Name="BillingEmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="Phone" Type="nvarchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -139,7 +138,6 @@ warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key de
           <Property Name="Code" Type="nvarchar" MaxLength="50" />
           <Property Name="IsParent" Type="bit" Nullable="false" />
           <Property Name="ParentId" Type="int" />
-          <Property Name="InvoiceEmails" Type="nvarchar" MaxLength="1000" />
           <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
           <Property Name="BillingEmail" Type="nvarchar" MaxLength="128" />
           <Property Name="ReportsEmail" Type="nvarchar" MaxLength="128" />
@@ -331,12 +329,13 @@ warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary k
             
             <PropertyRef Name="ItemId" />
             
+            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" />
+          <Property Name="ItemValue" Type="smallint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -346,12 +345,13 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
             
             <PropertyRef Name="ItemId" />
             
+            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" />
+          <Property Name="ItemValue" Type="smallint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1008,6 +1008,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
           <Parameter Name="CompanyId" Type="smallint" Mode="In" />
         </Function>
+        <Function Name="GetServiceCatalogueRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="ServiceProviderGuid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="CustomerGuid" Type="uniqueidentifier" Mode="In" />
+        </Function>
         <Function Name="Invoice_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
@@ -1087,10 +1091,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Discount" Type="decimal" Mode="In" />
           <Parameter Name="Amount" Type="decimal" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
-        </Function>
-        <Function Name="GetServiceCatalogueRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="ServiceProviderGuid" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="CustomerGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
         <Function Name="Location_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1452,9 +1452,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [BillableEntity].[PostalCode] AS [PostalCode], 
     [BillableEntity].[ProvinceName] AS [ProvinceName], 
     [BillableEntity].[CountryName] AS [CountryName], 
-    [BillableEntity].[Email] AS [Email], 
-    [BillableEntity].[Phone] AS [Phone], 
-    [BillableEntity].[Fax] AS [Fax]
+    [BillableEntity].[BillingEmail] AS [BillingEmail], 
+    [BillableEntity].[Phone] AS [Phone]
     FROM [API].[BillableEntity] AS [BillableEntity]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Company" EntityType="Self.Company" store:Type="Views" store:Schema="API">
@@ -2439,10 +2438,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AvailableDay_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int16" />
+          <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="AvailableSlot_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int16" />
+          <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="PhysicianToCompanyServiceRequestInvoicePreviews" EntityType="OrvosiModel.PhysicianToCompanyServiceRequestInvoicePreview" />
           <EntitySet Name="Invoices" EntityType="OrvosiModel.Invoice" />
@@ -2453,7 +2452,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <End Role="Invoice" EntitySet="Invoices" />
           </AssociationSet>
           <FunctionImport Name="Invoice_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int32" />
+          <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="Invoice_Insert" ReturnType="Collection(Decimal)">
             <Parameter Name="InvoiceNumber" Mode="In" Type="String" />
@@ -2509,7 +2508,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="InvoiceDetail_Delete">
-            <Parameter Name="Id" Mode="In" Type="Int32" />
+          <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="InvoiceDetail_Insert" ReturnType="Collection(Decimal)">
             <Parameter Name="InvoiceId" Mode="In" Type="Int32" />
@@ -2896,7 +2895,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" />
+          <Property Name="ItemValue" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -3047,7 +3046,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" />
+          <Property Name="ItemValue" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="PhysicianLocationArea">
           <Key>
@@ -3359,9 +3358,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="PostalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ProvinceName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CountryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Phone" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Fax" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="BillingEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="InvoiceDetail">
           <Key>
@@ -4724,9 +4722,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="BillableEntities">
             <EntityTypeMapping TypeName="OrvosiModel.BillableEntity">
               <MappingFragment StoreEntitySet="BillableEntity">
-                <ScalarProperty Name="Fax" ColumnName="Fax" />
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="BillingEmail" ColumnName="BillingEmail" />
                 <ScalarProperty Name="CountryName" ColumnName="CountryName" />
                 <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
                 <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />

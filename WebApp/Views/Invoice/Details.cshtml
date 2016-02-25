@@ -1,7 +1,7 @@
 ﻿@model Model.Invoice
 @using WebApp.Library.Enums
 
-@if (ViewBag.FormMode == FormMode.New)
+@if (ViewBag.FormMode == FormModes.Add)
 {
     <form action="~/Invoice/Create" method="post">
         @Html.Hidden("ServiceRequestId", Model.InvoiceDetails.First().ServiceRequestId)
@@ -15,7 +15,7 @@
         </div>
     </form>
 }
-else if (ViewBag.FormMode == FormMode.Edit)
+else if (ViewBag.FormMode == FormModes.Edit)
 {
     <form action="~/Invoice/Edit" method="post">
         @Html.Hidden("Id", Model.Id)

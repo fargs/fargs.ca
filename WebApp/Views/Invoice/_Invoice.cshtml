@@ -65,7 +65,7 @@
                 <tr>
                     <td width="80%">
                         @MvcHtmlString.Create(item.Description)
-                        @if (ViewBag.FormMode == FormMode.Edit || ViewBag.FormMode == FormMode.New)
+                        @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
                             <div class="form-group">
                                 <label for="Notes" class="control-label">Notes</label>
@@ -79,7 +79,7 @@
                         }
                     </td>
                     <td width="20%">
-                        @if (ViewBag.FormMode == FormMode.Edit || ViewBag.FormMode == FormMode.New)
+                        @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
                             <div class="form-group">
                                 <input type="text" name="Amount" class="form-control text-right" value="@item.Amount" />

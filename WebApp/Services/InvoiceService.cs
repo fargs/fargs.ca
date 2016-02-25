@@ -27,14 +27,14 @@ namespace WebApp.Services
                 Address1 = serviceProvider.Address1,
                 Address2 = string.Format("{0}, {1} {2}", serviceProvider.City, serviceProvider.ProvinceName, serviceProvider.CountryName),
                 Address3 = serviceProvider.PostalCode,
-                Email = serviceProvider.Email,
+                Email = serviceProvider.BillingEmail,
                 PhoneNumber = serviceProvider.Phone,
                 BillToGuid = customer.EntityGuid,
                 BillToName = customer.EntityName,
                 BillToAddress1 = customer.Address1,
                 BillToAddress2 = string.Format("{0}, {1} {2}", customer.City, customer.ProvinceName, customer.CountryName),
                 BillToAddress3 = customer.PostalCode,
-                BillToEmail = customer.Email,
+                BillToEmail = customer.BillingEmail,
                 TaxRateHst = TaxRateHst
             };
 

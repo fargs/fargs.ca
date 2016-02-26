@@ -820,7 +820,6 @@
     <Content Include="Views\ServiceCatalogue\EditRates.cshtml" />
     <Content Include="Views\Invoice\Index.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />
-    <Content Include="Views\Invoice\Create.cshtml" />
     <Content Include="Views\Invoice\_Invoice.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>

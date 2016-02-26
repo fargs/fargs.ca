@@ -14,6 +14,13 @@ namespace Model
     
     public partial class BillableEntity
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public BillableEntity()
+        {
+            this.ServiceProviderInvoices = new HashSet<Invoice>();
+            this.CustomerInvoices = new HashSet<Invoice>();
+        }
+    
         public System.Guid EntityGuid { get; set; }
         public string EntityName { get; set; }
         public string EntityType { get; set; }
@@ -29,5 +36,10 @@ namespace Model
         public string CountryName { get; set; }
         public string BillingEmail { get; set; }
         public string Phone { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Invoice> ServiceProviderInvoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Invoice> CustomerInvoices { get; set; }
     }
 }

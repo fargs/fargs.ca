@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="480270ed-07c2-44bb-9200-4f5d905fac2d" ChangeDateTime="02/24/2016 18:59:57">
+    <Property Name="ElementName" Value="[dbo].[ServiceCatalogueRate].[ServiceProviderId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ServiceCatalogueRate]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ServiceProviderGuid" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ed557a1-4d5f-4c0b-858d-1b9c61d28b19" ChangeDateTime="02/26/2016 00:20:47">
+    <Property Name="ElementName" Value="[dbo].[Invoice].[CompanyGuid]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Invoice]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ServiceProviderGuid" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c0536398-4713-449d-a0cd-8f0f8a8cf02a" ChangeDateTime="02/26/2016 00:20:49">
+    <Property Name="ElementName" Value="[dbo].[Invoice].[CompanyName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Invoice]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ServiceProviderName" />
+  </Operation>
+</Operations>

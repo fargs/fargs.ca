@@ -26,19 +26,28 @@ namespace Model
         public string Currency { get; set; }
         public string Terms { get; set; }
         public Nullable<System.DateTime> DueDate { get; set; }
-        public Nullable<System.Guid> CompanyGuid { get; set; }
-        public string CompanyName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string Address3 { get; set; }
-        public Nullable<System.Guid> BillToGuid { get; set; }
-        public string BillToName { get; set; }
-        public string BillToAddress1 { get; set; }
-        public string BillToAddress2 { get; set; }
-        public string BillToAddress3 { get; set; }
-        public string BillToEmail { get; set; }
+        public System.Guid ServiceProviderGuid { get; set; }
+        public string ServiceProviderName { get; set; }
+        public string ServiceProviderEntityType { get; set; }
+        public string ServiceProviderLogoCssClass { get; set; }
+        public string ServiceProviderEmail { get; set; }
+        public string ServiceProviderPhoneNumber { get; set; }
+        public string ServiceProviderAddress1 { get; set; }
+        public string ServiceProviderAddress2 { get; set; }
+        public string ServiceProviderCity { get; set; }
+        public string ServiceProviderPostalCode { get; set; }
+        public string ServiceProviderProvince { get; set; }
+        public string ServiceProviderCountry { get; set; }
+        public System.Guid CustomerGuid { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEntityType { get; set; }
+        public string CustomerAddress1 { get; set; }
+        public string CustomerAddress2 { get; set; }
+        public string CustomerCity { get; set; }
+        public string CustomerPostalCode { get; set; }
+        public string CustomerProvince { get; set; }
+        public string CustomerCountry { get; set; }
+        public string CustomerEmail { get; set; }
         public Nullable<decimal> SubTotal { get; set; }
         public Nullable<decimal> TaxRateHst { get; set; }
         public Nullable<decimal> Discount { get; set; }
@@ -46,10 +55,11 @@ namespace Model
         public Nullable<System.DateTime> PaymentReceivedDate { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
-        public Nullable<int> ServiceRequestId { get; set; }
-        public string CompanyLogoCssClass { get; set; }
+        public Nullable<System.DateTime> SentDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }
+        public virtual BillableEntity ServiceProvider { get; set; }
+        public virtual BillableEntity Customer { get; set; }
     }
 }

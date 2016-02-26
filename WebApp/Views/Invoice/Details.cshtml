@@ -5,6 +5,7 @@
 {
     <form action="~/Invoice/Create" method="post">
         @Html.Hidden("ServiceRequestId", Model.InvoiceDetails.First().ServiceRequestId)
+
         <div class="container">
             @Html.Partial("_Invoice", Model)
             <div class="row">
@@ -33,5 +34,14 @@ else
 {
     <div class="container">
         @Html.Partial("_Invoice", Model)
+        <div>
+            <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
+        </div>
+        <form action="~/Invoice/Send" method="post">
+            <div class="form-group">
+                <input type="text" value="@Model.CustomerEmail" name="CustomerEmail" class="form-control" placeholder="Bill To Email" />
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
     </div>
 }

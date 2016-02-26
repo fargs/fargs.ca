@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[InvoiceDetail] (
     [Id]               INT             IDENTITY (1, 1) NOT NULL,
-    [InvoiceId]        INT             NULL,
+    [InvoiceId]        INT             NOT NULL,
     [ServiceRequestId] INT             NULL,
     [Description]      NVARCHAR (256)  NOT NULL,
     [Quantity]         SMALLINT        NULL,

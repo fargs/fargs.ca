@@ -10,6 +10,9 @@ using WebApp.Library.Enums;
 using WebApp.Library;
 using WebApp.Services;
 using System.Data.Entity;
+using WebApp.ViewModels.InvoiceViewModels;
+using Model.Enums;
+using System.Globalization;
 
 namespace WebApp.Controllers
 {
@@ -17,14 +20,49 @@ namespace WebApp.Controllers
     {
         private OrvosiEntities db = new OrvosiEntities();
         // GET: Invoice
-        public ActionResult Index()
+        public async Task<ActionResult> Index(FilterArgs args)
         {
-            return View();
+            var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
+            var nextMonth = thisMonth.AddMonths(1);
+            if (args.Year.HasValue && args.Month.HasValue)
+            {
+                thisMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
+                nextMonth = thisMonth.AddMonths(1);
+            }
+            args.Year = thisMonth.Year;
+            args.Month = thisMonth.Month;
+            args.FilterDate = thisMonth;
+
+            var vm = new IndexViewModel();
+
+            vm.FilterArgs = args;
+
+            vm.CurrentUser = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            //vm.SelectedServiceProvider = await db.BillableEntities.SingleOrDefaultAsync(u => u.EntityGuid == args.ServiceProviderId);
+            //vm.SelectedCustomer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == args.CustomerId);
+            IQueryable<Invoice> query = db.Invoices.Where(c => c.InvoiceDate >= thisMonth && c.InvoiceDate < nextMonth);
+            if (args.ServiceProviderId.HasValue && args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.ServiceProviderGuid == args.ServiceProviderId && i.CustomerGuid == args.CustomerId);
+            }
+            else if (args.ServiceProviderId.HasValue && !args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.ServiceProviderGuid == args.ServiceProviderId);
+            }
+            else if (!args.ServiceProviderId.HasValue && args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.CustomerGuid == args.CustomerId);
+            }
+            vm.Invoices = await query.ToListAsync();
+            
+            return View(vm);
         }
 
-        public async Task<ActionResult> Create(short id)
+        [HttpPost]
+        public async Task<ActionResult> Create(short ServiceRequestId)
         {
-            var serviceRequest = await db.ServiceRequests.FindAsync(id);
+            var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
 
             var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
             var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
@@ -32,51 +70,56 @@ namespace WebApp.Controllers
             // Automap to an invoice object
             var service = new InvoiceService();
             serviceRequest.ServiceRequestPrice = serviceRequest.EffectivePrice;
-            var invoice = service.PreviewInvoice(serviceProvider, customer, serviceRequest);
+            var invoiceNumber = db.GetNextInvoiceNumber();
+            var invoice = service.PreviewInvoice(invoiceNumber.ToString(), serviceProvider, customer, serviceRequest);
 
-            // Confirm the examination was completed.
-            var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
-            ViewBag.IsValidToSubmitInvoice = intakeInterviewTask.CompletedDate.HasValue ? true : false;
-            ViewBag.FormMode = FormModes.Add;
-            return View("Details", invoice);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Create(decimal? Amount, string AdditionalNotes, int ServiceRequestId)
-        {
-            var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
-
-            var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == ServiceRequestId && c.TaskId == Model.Enums.Tasks.IntakeInterview);
-            if (!intakeInterviewTask.CompletedDate.HasValue)
+            using (var context = new OrvosiEntities(User.Identity.Name))
             {
-                return RedirectToAction("Create", new { id = serviceRequest.Id });
+                context.Invoices.Add(invoice);
+                await context.SaveChangesAsync();
             }
-            if (ModelState.IsValid)
-            {
-                var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
-                var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
 
-                // Automap to an invoice object
-                var service = new InvoiceService();
-                serviceRequest.ServiceRequestPrice = Amount;
-                var invoice = service.PreviewInvoice(serviceProvider, customer, serviceRequest);
-                //TODO: Clean up the below line
-                invoice.InvoiceDetails.First().AdditionalNotes = AdditionalNotes;
-                // Confirm the examination was completed.
-                using (var context = new OrvosiEntities(User.Identity.Name))
-                {
-                    context.Invoices.Add(invoice);
-                    await context.SaveChangesAsync();
-                }
-                return RedirectToAction("Details", new { id = invoice.Id });
-            }
-            return RedirectToAction("Create", new { id = serviceRequest.Id });
+            //// Confirm the examination was completed.
+            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+
+            return RedirectToAction("Details", new { id = invoice.Id });
         }
 
         public async Task<ActionResult> Details(int id)
         {
             var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.ReadOnly;
+            return View(obj);
+        }
+
+        public async Task<ActionResult> Edit(int id)
+        {
+            var obj = await db.Invoices.FindAsync(id);
+            ViewBag.FormMode = FormModes.Edit;
+            return View("Details", obj);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddInvoiceDetail(int id)
+        {
+            var obj = await db.Invoices.FindAsync(id);
+            ViewBag.FormMode = FormModes.Edit;
+            return View(obj);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditInvoiceDetail(int id)
+        {
+            var obj = await db.Invoices.FindAsync(id);
+            ViewBag.FormMode = FormModes.Edit;
+            return View(obj);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteInvoiceDetail(int id)
+        {
+            var obj = await db.Invoices.FindAsync(id);
+            ViewBag.FormMode = FormModes.Edit;
             return View(obj);
         }
     }

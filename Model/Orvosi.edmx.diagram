@@ -34,7 +34,6 @@
         <EntityTypeShape EntityType="OrvosiModel.DashboardTaskSummary" Width="1.5" PointX="17.375" PointY="10.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceCatalogueRate" Width="1.5" PointX="17.375" PointY="14.75" />
         <EntityTypeShape EntityType="OrvosiModel.PhysicianToCompanyServiceRequestInvoicePreview" Width="1.5" PointX="17.375" PointY="14.75" />
-        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="14.375" PointY="17.75" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />
@@ -48,10 +47,12 @@
         <AssociationConnector Association="OrvosiModel.AvailableDayAvailableSlot" />
       </Diagram>
       <Diagram DiagramId="e569724c65224fd0b850dba8cc097e3a" Name="Invoice" >
-        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="4.125" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.BillableEntity" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.InvoiceDetail" Width="1.5" PointX="6.75" PointY="0.75" />
-        <AssociationConnector Association="OrvosiModel.InvoiceDetailInvoice" />
+        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="3.375" PointY="1.25" />
+        <EntityTypeShape EntityType="OrvosiModel.InvoiceDetail" Width="1.5" PointX="5.625" PointY="3.375" />
+        <AssociationConnector Association="OrvosiModel.FK_InvoiceDetail_Invoice" />
+        <AssociationConnector Association="OrvosiModel.ServiceProviderInvoice" />
+        <AssociationConnector Association="OrvosiModel.CustomerInvoice" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

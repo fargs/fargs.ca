@@ -23,8 +23,10 @@ namespace Model
         public Nullable<decimal> Total { get; set; }
         public Nullable<decimal> Discount { get; set; }
         public Nullable<decimal> Amount { get; set; }
+        public string AdditionalNotes { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
-        public string AdditionalNotes { get; set; }
+    
+        public virtual Invoice Invoice { get; set; }
     }
 }

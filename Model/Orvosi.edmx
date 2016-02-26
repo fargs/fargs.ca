@@ -5,6 +5,64 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Invoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceNumber" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
+          <Property Name="Currency" Type="nvarchar" MaxLength="128" />
+          <Property Name="Terms" Type="nvarchar" MaxLength="128" />
+          <Property Name="DueDate" Type="datetime" />
+          <Property Name="ServiceProviderGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ServiceProviderName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ServiceProviderEntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ServiceProviderLogoCssClass" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderEmail" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderPhoneNumber" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderAddress1" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderAddress2" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderCity" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderPostalCode" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderProvince" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceProviderCountry" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CustomerName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CustomerEntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CustomerAddress1" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerAddress2" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerCity" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerPostalCode" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerProvince" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerCountry" Type="nvarchar" MaxLength="128" />
+          <Property Name="CustomerEmail" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="SubTotal" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="TaxRateHst" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Discount" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Total" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="SentDate" Type="datetime" />
+          <Property Name="PaymentReceivedDate" Type="datetime" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InvoiceDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceId" Type="int" Nullable="false" />
+          <Property Name="ServiceRequestId" Type="int" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Quantity" Type="smallint" />
+          <Property Name="Rate" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Total" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Discount" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Amount" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="AdditionalNotes" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="ServiceCatalogueRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -219,71 +277,6 @@ warning 6002: The table/view 'Orvosi.API.Entity' does not have a primary key def
           <Property Name="EntityType" Type="varchar" MaxLength="9" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Orvosi.API.Invoice' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="Invoice">
-          <Key>
-            <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ServiceRequestId" Type="int" />
-          <Property Name="InvoiceNumber" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
-          <Property Name="Currency" Type="nvarchar" MaxLength="128" />
-          <Property Name="Terms" Type="nvarchar" MaxLength="128" />
-          <Property Name="DueDate" Type="datetime" />
-          <Property Name="CompanyGuid" Type="uniqueidentifier" />
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="CompanyLogoCssClass" Type="nvarchar" MaxLength="128" />
-          <Property Name="Email" Type="nvarchar" MaxLength="128" />
-          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="128" />
-          <Property Name="Address1" Type="nvarchar" MaxLength="128" />
-          <Property Name="Address2" Type="nvarchar" MaxLength="128" />
-          <Property Name="Address3" Type="nvarchar" MaxLength="128" />
-          <Property Name="BillToGuid" Type="uniqueidentifier" />
-          <Property Name="BillToName" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="BillToAddress1" Type="nvarchar" MaxLength="128" />
-          <Property Name="BillToAddress2" Type="nvarchar" MaxLength="128" />
-          <Property Name="BillToAddress3" Type="nvarchar" MaxLength="128" />
-          <Property Name="BillToEmail" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="SubTotal" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="TaxRateHst" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="Discount" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="Total" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="PaymentReceivedDate" Type="datetime" />
-          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
-        </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Orvosi.API.InvoiceDetail' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="InvoiceDetail">
-          <Key>
-            <PropertyRef Name="Id" />
-            
-            
-            
-            
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="InvoiceId" Type="int" Nullable="false" />
-          <Property Name="ServiceRequestId" Type="int" />
-          <Property Name="Description" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="Quantity" Type="smallint" />
-          <Property Name="Rate" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="Total" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="Discount" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="Amount" Type="decimal" Precision="10" Scale="2" />
-          <Property Name="AdditionalNotes" Type="nvarchar" MaxLength="1000" />
-          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
-        </EntityType>
-        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Location' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Location">
           <Key>
@@ -329,13 +322,12 @@ warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary k
             
             <PropertyRef Name="ItemId" />
             
-            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" Nullable="false" />
+          <Property Name="ItemValue" Type="smallint" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -345,13 +337,12 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
             
             <PropertyRef Name="ItemId" />
             
-            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" Nullable="false" />
+          <Property Name="ItemValue" Type="smallint" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -519,7 +510,6 @@ warning 6002: The table/view 'Orvosi.API.PhysicianToCompanyServiceRequestInvoice
             
             
             
-            
           </Key>
           <Property Name="ServiceRequestId" Type="int" Nullable="false" />
           <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
@@ -538,10 +528,10 @@ warning 6002: The table/view 'Orvosi.API.PhysicianToCompanyServiceRequestInvoice
           <Property Name="BillToAddress1" Type="nvarchar" MaxLength="255" />
           <Property Name="BillToAddress2" Type="nvarchar" MaxLength="152" />
           <Property Name="BillToAddress3" Type="nvarchar" MaxLength="50" />
-          <Property Name="BillToEmail" Type="nvarchar" MaxLength="1000" />
+          <Property Name="BillToEmail" Type="nvarchar" MaxLength="128" />
           <Property Name="DescriptionLine1" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="DescriptionLine2" Type="nvarchar" MaxLength="308" />
-          <Property Name="DescriptionLine3" Type="nvarchar" MaxLength="263" Nullable="false" />
+          <Property Name="DescriptionLine3" Type="nvarchar" MaxLength="263" />
           <Property Name="IsNoShow" Type="bit" Nullable="false" />
           <Property Name="NoShowRate" Type="numeric" Precision="1" Scale="1" Nullable="false" />
           <Property Name="CancelledDate" Type="datetime" />
@@ -878,6 +868,20 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" />
           <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <Association Name="FK_InvoiceDetail_Invoice">
+          <End Role="Invoice" Type="Self.Invoice" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="InvoiceDetail" Type="Self.InvoiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceDetail">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="Account_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="nvarchar" Mode="In" />
           <Parameter Name="Email" Type="nvarchar" Mode="In" />
@@ -997,6 +1001,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <Function Name="GetDashboardServiceRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Now" Type="datetime" Mode="In" />
         </Function>
+        <Function Name="GetNextInvoiceNumber" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API" />
         <Function Name="GetServiceCatalogue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
         </Function>
@@ -1011,86 +1016,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <Function Name="GetServiceCatalogueRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="ServiceProviderGuid" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="CustomerGuid" Type="uniqueidentifier" Mode="In" />
-        </Function>
-        <Function Name="Invoice_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
-        <Function Name="Invoice_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="InvoiceNumber" Type="nvarchar" Mode="In" />
-          <Parameter Name="InvoiceDate" Type="datetime" Mode="In" />
-          <Parameter Name="Currency" Type="nvarchar" Mode="In" />
-          <Parameter Name="Terms" Type="nvarchar" Mode="In" />
-          <Parameter Name="DueDate" Type="datetime" Mode="In" />
-          <Parameter Name="CompanyGuid" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="CompanyName" Type="nvarchar" Mode="In" />
-          <Parameter Name="Email" Type="nvarchar" Mode="In" />
-          <Parameter Name="PhoneNumber" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address1" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address2" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address3" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToGuid" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="BillToName" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress1" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress2" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress3" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToEmail" Type="nvarchar" Mode="In" />
-          <Parameter Name="SubTotal" Type="decimal" Mode="In" />
-          <Parameter Name="TaxRateHst" Type="decimal" Mode="In" />
-          <Parameter Name="Discount" Type="decimal" Mode="In" />
-          <Parameter Name="Total" Type="decimal" Mode="In" />
-          <Parameter Name="PaymentReceivedDate" Type="datetime" Mode="In" />
-          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
-        </Function>
-        <Function Name="Invoice_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="Id" Type="int" Mode="In" />
-          <Parameter Name="InvoiceNumber" Type="nvarchar" Mode="In" />
-          <Parameter Name="InvoiceDate" Type="datetime" Mode="In" />
-          <Parameter Name="Currency" Type="nvarchar" Mode="In" />
-          <Parameter Name="Terms" Type="nvarchar" Mode="In" />
-          <Parameter Name="DueDate" Type="datetime" Mode="In" />
-          <Parameter Name="CompanyGuid" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="CompanyName" Type="nvarchar" Mode="In" />
-          <Parameter Name="Email" Type="nvarchar" Mode="In" />
-          <Parameter Name="PhoneNumber" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address1" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address2" Type="nvarchar" Mode="In" />
-          <Parameter Name="Address3" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToGuid" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="BillToName" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress1" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress2" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToAddress3" Type="nvarchar" Mode="In" />
-          <Parameter Name="BillToEmail" Type="nvarchar" Mode="In" />
-          <Parameter Name="SubTotal" Type="decimal" Mode="In" />
-          <Parameter Name="TaxRateHst" Type="decimal" Mode="In" />
-          <Parameter Name="Discount" Type="decimal" Mode="In" />
-          <Parameter Name="Total" Type="decimal" Mode="In" />
-          <Parameter Name="PaymentReceivedDate" Type="datetime" Mode="In" />
-          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
-        </Function>
-        <Function Name="InvoiceDetail_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
-        <Function Name="InvoiceDetail_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="InvoiceId" Type="int" Mode="In" />
-          <Parameter Name="Description" Type="nvarchar" Mode="In" />
-          <Parameter Name="Quantity" Type="smallint" Mode="In" />
-          <Parameter Name="Rate" Type="decimal" Mode="In" />
-          <Parameter Name="Total" Type="decimal" Mode="In" />
-          <Parameter Name="Discount" Type="decimal" Mode="In" />
-          <Parameter Name="Amount" Type="decimal" Mode="In" />
-          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
-        </Function>
-        <Function Name="InvoiceDetail_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
-          <Parameter Name="Id" Type="int" Mode="In" />
-          <Parameter Name="InvoiceId" Type="int" Mode="In" />
-          <Parameter Name="Description" Type="nvarchar" Mode="In" />
-          <Parameter Name="Quantity" Type="smallint" Mode="In" />
-          <Parameter Name="Rate" Type="decimal" Mode="In" />
-          <Parameter Name="Total" Type="decimal" Mode="In" />
-          <Parameter Name="Discount" Type="decimal" Mode="In" />
-          <Parameter Name="Amount" Type="decimal" Mode="In" />
-          <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="Location_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1381,6 +1306,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </ReturnType>
         </Function>
         <EntityContainer Name="OrvosiModelStoreContainer">
+          <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InvoiceDetail" EntityType="Self.InvoiceDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ServiceCatalogueRate" EntityType="Self.ServiceCatalogueRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Account" EntityType="Self.Account" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -1525,54 +1452,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Entity].[DisplayName] AS [DisplayName], 
     [Entity].[EntityType] AS [EntityType]
     FROM [API].[Entity] AS [Entity]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="Invoice" EntityType="Self.Invoice" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Invoice].[Id] AS [Id], 
-    [Invoice].[ServiceRequestId] AS [ServiceRequestId], 
-    [Invoice].[InvoiceNumber] AS [InvoiceNumber], 
-    [Invoice].[InvoiceDate] AS [InvoiceDate], 
-    [Invoice].[Currency] AS [Currency], 
-    [Invoice].[Terms] AS [Terms], 
-    [Invoice].[DueDate] AS [DueDate], 
-    [Invoice].[CompanyGuid] AS [CompanyGuid], 
-    [Invoice].[CompanyName] AS [CompanyName], 
-    [Invoice].[CompanyLogoCssClass] AS [CompanyLogoCssClass], 
-    [Invoice].[Email] AS [Email], 
-    [Invoice].[PhoneNumber] AS [PhoneNumber], 
-    [Invoice].[Address1] AS [Address1], 
-    [Invoice].[Address2] AS [Address2], 
-    [Invoice].[Address3] AS [Address3], 
-    [Invoice].[BillToGuid] AS [BillToGuid], 
-    [Invoice].[BillToName] AS [BillToName], 
-    [Invoice].[BillToAddress1] AS [BillToAddress1], 
-    [Invoice].[BillToAddress2] AS [BillToAddress2], 
-    [Invoice].[BillToAddress3] AS [BillToAddress3], 
-    [Invoice].[BillToEmail] AS [BillToEmail], 
-    [Invoice].[SubTotal] AS [SubTotal], 
-    [Invoice].[TaxRateHst] AS [TaxRateHst], 
-    [Invoice].[Discount] AS [Discount], 
-    [Invoice].[Total] AS [Total], 
-    [Invoice].[PaymentReceivedDate] AS [PaymentReceivedDate], 
-    [Invoice].[ModifiedDate] AS [ModifiedDate], 
-    [Invoice].[ModifiedUser] AS [ModifiedUser]
-    FROM [API].[Invoice] AS [Invoice]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="InvoiceDetail" EntityType="Self.InvoiceDetail" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [InvoiceDetail].[Id] AS [Id], 
-    [InvoiceDetail].[InvoiceId] AS [InvoiceId], 
-    [InvoiceDetail].[ServiceRequestId] AS [ServiceRequestId], 
-    [InvoiceDetail].[Description] AS [Description], 
-    [InvoiceDetail].[Quantity] AS [Quantity], 
-    [InvoiceDetail].[Rate] AS [Rate], 
-    [InvoiceDetail].[Total] AS [Total], 
-    [InvoiceDetail].[Discount] AS [Discount], 
-    [InvoiceDetail].[Amount] AS [Amount], 
-    [InvoiceDetail].[AdditionalNotes] AS [AdditionalNotes], 
-    [InvoiceDetail].[ModifiedDate] AS [ModifiedDate], 
-    [InvoiceDetail].[ModifiedUser] AS [ModifiedUser]
-    FROM [API].[InvoiceDetail] AS [InvoiceDetail]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Location" EntityType="Self.Location" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -2020,6 +1899,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [User].[LogoCssClass] AS [LogoCssClass]
     FROM [API].[User] AS [User]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_InvoiceDetail_Invoice" Association="Self.FK_InvoiceDetail_Invoice">
+            <End Role="Invoice" EntitySet="Invoice" />
+            <End Role="InvoiceDetail" EntitySet="InvoiceDetail" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -2444,13 +2327,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="PhysicianToCompanyServiceRequestInvoicePreviews" EntityType="OrvosiModel.PhysicianToCompanyServiceRequestInvoicePreview" />
-          <EntitySet Name="Invoices" EntityType="OrvosiModel.Invoice" />
           <EntitySet Name="BillableEntities" EntityType="OrvosiModel.BillableEntity" />
-          <EntitySet Name="InvoiceDetails" EntityType="OrvosiModel.InvoiceDetail" />
-          <AssociationSet Name="InvoiceDetailInvoice" Association="OrvosiModel.InvoiceDetailInvoice">
-            <End Role="InvoiceDetail" EntitySet="InvoiceDetails" />
-            <End Role="Invoice" EntitySet="Invoices" />
-          </AssociationSet>
           <FunctionImport Name="Invoice_Delete">
           <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -2560,6 +2437,21 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ServiceProviderGuid" Mode="In" Type="Guid" />
             <Parameter Name="CustomerGuid" Mode="In" Type="Guid" />
           </FunctionImport>
+          <EntitySet Name="Invoices" EntityType="OrvosiModel.Invoice" />
+          <EntitySet Name="InvoiceDetails" EntityType="OrvosiModel.InvoiceDetail" />
+          <AssociationSet Name="FK_InvoiceDetail_Invoice" Association="OrvosiModel.FK_InvoiceDetail_Invoice">
+            <End Role="Invoice" EntitySet="Invoices" />
+            <End Role="InvoiceDetail" EntitySet="InvoiceDetails" />
+          </AssociationSet>
+          <AssociationSet Name="ServiceProviderInvoice" Association="OrvosiModel.ServiceProviderInvoice">
+            <End Role="BillableEntity" EntitySet="BillableEntities" />
+            <End Role="Invoice" EntitySet="Invoices" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerInvoice" Association="OrvosiModel.CustomerInvoice">
+            <End Role="BillableEntity" EntitySet="BillableEntities" />
+            <End Role="Invoice" EntitySet="Invoices" />
+          </AssociationSet>
+          <FunctionImport Name="GetNextInvoiceNumber" ReturnType="Collection(Int32)" />
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2895,7 +2787,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" Nullable="false" />
+          <Property Name="ItemValue" Type="Int16" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -3046,7 +2938,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" Nullable="false" />
+          <Property Name="ItemValue" Type="Int16" />
         </EntityType>
         <EntityType Name="PhysicianLocationArea">
           <Key>
@@ -3292,10 +3184,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="BillToAddress1" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="BillToAddress2" Type="String" MaxLength="152" FixedLength="false" Unicode="true" />
           <Property Name="BillToAddress3" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="BillToEmail" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="BillToEmail" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="DescriptionLine1" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DescriptionLine2" Type="String" MaxLength="308" FixedLength="false" Unicode="true" />
-          <Property Name="DescriptionLine3" Type="String" MaxLength="263" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DescriptionLine3" Type="String" MaxLength="263" FixedLength="false" Unicode="true" />
           <Property Name="IsNoShow" Type="Boolean" Nullable="false" />
           <Property Name="NoShowRate" Type="Decimal" Precision="1" Scale="1" Nullable="false" />
           <Property Name="CancelledDate" Type="DateTime" Precision="3" />
@@ -3306,40 +3198,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="Discount" Type="Int32" />
           <Property Name="Total" Type="Decimal" Precision="10" Scale="2" />
           <Property Name="ServiceRequestId" Type="Int32" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Invoice">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="InvoiceNumber" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Currency" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Terms" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="DueDate" Type="DateTime" Precision="3" />
-          <Property Name="CompanyGuid" Type="Guid" />
-          <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Address1" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Address2" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Address3" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="BillToGuid" Type="Guid" />
-          <Property Name="BillToName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="BillToAddress1" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="BillToAddress2" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="BillToAddress3" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="BillToEmail" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="SubTotal" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="TaxRateHst" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="Discount" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="Total" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="PaymentReceivedDate" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ServiceRequestId" Type="Int32" />
-          <Property Name="CompanyLogoCssClass" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="InvoiceDetails" Relationship="OrvosiModel.InvoiceDetailInvoice" FromRole="Invoice" ToRole="InvoiceDetail" />
         </EntityType>
         <EntityType Name="BillableEntity">
           <Key>
@@ -3360,36 +3218,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CountryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="BillingEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Phone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ServiceProviderInvoices" Relationship="OrvosiModel.ServiceProviderInvoice" FromRole="BillableEntity" ToRole="Invoice" />
+          <NavigationProperty Name="CustomerInvoices" Relationship="OrvosiModel.CustomerInvoice" FromRole="BillableEntity" ToRole="Invoice" />
         </EntityType>
-        <EntityType Name="InvoiceDetail">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="InvoiceId" Type="Int32" Nullable="false" />
-          <Property Name="ServiceRequestId" Type="Int32" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Quantity" Type="Int16" />
-          <Property Name="Rate" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="Total" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="Discount" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="Amount" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="AdditionalNotes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <Association Name="InvoiceDetailInvoice">
-          <End Type="OrvosiModel.InvoiceDetail" Role="InvoiceDetail" Multiplicity="*" />
-          <End Type="OrvosiModel.Invoice" Role="Invoice" Multiplicity="1" />
-          <ReferentialConstraint>
-            <Principal Role="Invoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="InvoiceDetail">
-              <PropertyRef Name="InvoiceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ServiceCatalogueRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -3406,6 +3237,106 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="Decimal" Name="NoShowRate" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="LateCancellationRate" Nullable="true" Precision="18" Scale="2" />
         </ComplexType>
+        <EntityType Name="Invoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceNumber" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Currency" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Terms" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DueDate" Type="DateTime" Precision="3" />
+          <Property Name="ServiceProviderGuid" Type="Guid" Nullable="false" />
+          <Property Name="ServiceProviderName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderEntityType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderLogoCssClass" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderEmail" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderPhoneNumber" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderAddress1" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderAddress2" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderCity" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderPostalCode" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderProvince" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceProviderCountry" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerGuid" Type="Guid" Nullable="false" />
+          <Property Name="CustomerName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerEntityType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress1" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerAddress2" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCity" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerPostalCode" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerProvince" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerCountry" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerEmail" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="SubTotal" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="TaxRateHst" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Discount" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Total" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="PaymentReceivedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InvoiceDetails" Relationship="OrvosiModel.FK_InvoiceDetail_Invoice" FromRole="Invoice" ToRole="InvoiceDetail" />
+          <NavigationProperty Name="ServiceProvider" Relationship="OrvosiModel.ServiceProviderInvoice" FromRole="Invoice" ToRole="BillableEntity" />
+          <NavigationProperty Name="Customer" Relationship="OrvosiModel.CustomerInvoice" FromRole="Invoice" ToRole="BillableEntity" />
+          <Property Name="SentDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="InvoiceDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceId" Type="Int32" Nullable="false" />
+          <Property Name="ServiceRequestId" Type="Int32" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int16" />
+          <Property Name="Rate" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Total" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Discount" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Amount" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="AdditionalNotes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Invoice" Relationship="OrvosiModel.FK_InvoiceDetail_Invoice" FromRole="InvoiceDetail" ToRole="Invoice" />
+        </EntityType>
+        <Association Name="FK_InvoiceDetail_Invoice">
+          <End Type="OrvosiModel.Invoice" Role="Invoice" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="OrvosiModel.InvoiceDetail" Role="InvoiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceDetail">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ServiceProviderInvoice">
+          <End Type="OrvosiModel.BillableEntity" Role="BillableEntity" Multiplicity="1" />
+          <End Type="OrvosiModel.Invoice" Role="Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BillableEntity">
+              <PropertyRef Name="EntityGuid" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="ServiceProviderGuid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CustomerInvoice">
+          <End Type="OrvosiModel.BillableEntity" Role="BillableEntity" Multiplicity="1" />
+          <End Type="OrvosiModel.Invoice" Role="Invoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BillableEntity">
+              <PropertyRef Name="EntityGuid" />
+            </Principal>
+            <Dependent Role="Invoice">
+              <PropertyRef Name="CustomerGuid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4624,101 +4555,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Invoices">
-            <EntityTypeMapping TypeName="OrvosiModel.Invoice">
-              <MappingFragment StoreEntitySet="Invoice">
-                <ScalarProperty Name="CompanyLogoCssClass" ColumnName="CompanyLogoCssClass" />
-                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
-                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="PaymentReceivedDate" ColumnName="PaymentReceivedDate" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="Discount" ColumnName="Discount" />
-                <ScalarProperty Name="TaxRateHst" ColumnName="TaxRateHst" />
-                <ScalarProperty Name="SubTotal" ColumnName="SubTotal" />
-                <ScalarProperty Name="BillToEmail" ColumnName="BillToEmail" />
-                <ScalarProperty Name="BillToAddress3" ColumnName="BillToAddress3" />
-                <ScalarProperty Name="BillToAddress2" ColumnName="BillToAddress2" />
-                <ScalarProperty Name="BillToAddress1" ColumnName="BillToAddress1" />
-                <ScalarProperty Name="BillToName" ColumnName="BillToName" />
-                <ScalarProperty Name="BillToGuid" ColumnName="BillToGuid" />
-                <ScalarProperty Name="Address3" ColumnName="Address3" />
-                <ScalarProperty Name="Address2" ColumnName="Address2" />
-                <ScalarProperty Name="Address1" ColumnName="Address1" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="CompanyGuid" ColumnName="CompanyGuid" />
-                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
-                <ScalarProperty Name="Terms" ColumnName="Terms" />
-                <ScalarProperty Name="Currency" ColumnName="Currency" />
-                <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
-                <ScalarProperty Name="InvoiceNumber" ColumnName="InvoiceNumber" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-            <EntityTypeMapping TypeName="OrvosiModel.Invoice">
-              <ModificationFunctionMapping>
-                <InsertFunction FunctionName="OrvosiModel.Store.Invoice_Insert">
-                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
-                  <ScalarProperty Name="PaymentReceivedDate" ParameterName="PaymentReceivedDate" />
-                  <ScalarProperty Name="Total" ParameterName="Total" />
-                  <ScalarProperty Name="Discount" ParameterName="Discount" />
-                  <ScalarProperty Name="TaxRateHst" ParameterName="TaxRateHst" />
-                  <ScalarProperty Name="SubTotal" ParameterName="SubTotal" />
-                  <ScalarProperty Name="BillToEmail" ParameterName="BillToEmail" />
-                  <ScalarProperty Name="BillToAddress3" ParameterName="BillToAddress3" />
-                  <ScalarProperty Name="BillToAddress2" ParameterName="BillToAddress2" />
-                  <ScalarProperty Name="BillToAddress1" ParameterName="BillToAddress1" />
-                  <ScalarProperty Name="BillToName" ParameterName="BillToName" />
-                  <ScalarProperty Name="BillToGuid" ParameterName="BillToGuid" />
-                  <ScalarProperty Name="Address3" ParameterName="Address3" />
-                  <ScalarProperty Name="Address2" ParameterName="Address2" />
-                  <ScalarProperty Name="Address1" ParameterName="Address1" />
-                  <ScalarProperty Name="PhoneNumber" ParameterName="PhoneNumber" />
-                  <ScalarProperty Name="Email" ParameterName="Email" />
-                  <ScalarProperty Name="CompanyName" ParameterName="CompanyName" />
-                  <ScalarProperty Name="CompanyGuid" ParameterName="CompanyGuid" />
-                  <ScalarProperty Name="DueDate" ParameterName="DueDate" />
-                  <ScalarProperty Name="Terms" ParameterName="Terms" />
-                  <ScalarProperty Name="Currency" ParameterName="Currency" />
-                  <ScalarProperty Name="InvoiceDate" ParameterName="InvoiceDate" />
-                  <ScalarProperty Name="InvoiceNumber" ParameterName="InvoiceNumber" />
-                  <ResultBinding Name="Id" ColumnName="Id" />
-                </InsertFunction>
-                <UpdateFunction FunctionName="OrvosiModel.Store.Invoice_Update">
-                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
-                  <ScalarProperty Name="PaymentReceivedDate" ParameterName="PaymentReceivedDate" Version="Current" />
-                  <ScalarProperty Name="Total" ParameterName="Total" Version="Current" />
-                  <ScalarProperty Name="Discount" ParameterName="Discount" Version="Current" />
-                  <ScalarProperty Name="TaxRateHst" ParameterName="TaxRateHst" Version="Current" />
-                  <ScalarProperty Name="SubTotal" ParameterName="SubTotal" Version="Current" />
-                  <ScalarProperty Name="BillToEmail" ParameterName="BillToEmail" Version="Current" />
-                  <ScalarProperty Name="BillToAddress3" ParameterName="BillToAddress3" Version="Current" />
-                  <ScalarProperty Name="BillToAddress2" ParameterName="BillToAddress2" Version="Current" />
-                  <ScalarProperty Name="BillToAddress1" ParameterName="BillToAddress1" Version="Current" />
-                  <ScalarProperty Name="BillToName" ParameterName="BillToName" Version="Current" />
-                  <ScalarProperty Name="BillToGuid" ParameterName="BillToGuid" Version="Current" />
-                  <ScalarProperty Name="Address3" ParameterName="Address3" Version="Current" />
-                  <ScalarProperty Name="Address2" ParameterName="Address2" Version="Current" />
-                  <ScalarProperty Name="Address1" ParameterName="Address1" Version="Current" />
-                  <ScalarProperty Name="PhoneNumber" ParameterName="PhoneNumber" Version="Current" />
-                  <ScalarProperty Name="Email" ParameterName="Email" Version="Current" />
-                  <ScalarProperty Name="CompanyName" ParameterName="CompanyName" Version="Current" />
-                  <ScalarProperty Name="CompanyGuid" ParameterName="CompanyGuid" Version="Current" />
-                  <ScalarProperty Name="DueDate" ParameterName="DueDate" Version="Current" />
-                  <ScalarProperty Name="Terms" ParameterName="Terms" Version="Current" />
-                  <ScalarProperty Name="Currency" ParameterName="Currency" Version="Current" />
-                  <ScalarProperty Name="InvoiceDate" ParameterName="InvoiceDate" Version="Current" />
-                  <ScalarProperty Name="InvoiceNumber" ParameterName="InvoiceNumber" Version="Current" />
-                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
-                </UpdateFunction>
-                <DeleteFunction FunctionName="OrvosiModel.Store.Invoice_Delete">
-                  <ScalarProperty Name="Id" ParameterName="Id" />
-                </DeleteFunction>
-              </ModificationFunctionMapping>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="BillableEntities">
             <EntityTypeMapping TypeName="OrvosiModel.BillableEntity">
               <MappingFragment StoreEntitySet="BillableEntity">
@@ -4740,59 +4576,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="InvoiceDetails">
-            <EntityTypeMapping TypeName="OrvosiModel.InvoiceDetail">
-              <MappingFragment StoreEntitySet="InvoiceDetail">
-                <ScalarProperty Name="AdditionalNotes" ColumnName="AdditionalNotes" />
-                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Discount" ColumnName="Discount" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="Rate" ColumnName="Rate" />
-                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
-                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-            <EntityTypeMapping TypeName="OrvosiModel.InvoiceDetail">
-              <ModificationFunctionMapping>
-                <InsertFunction FunctionName="OrvosiModel.Store.InvoiceDetail_Insert">
-                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
-                  <ScalarProperty Name="Amount" ParameterName="Amount" />
-                  <ScalarProperty Name="Discount" ParameterName="Discount" />
-                  <ScalarProperty Name="Total" ParameterName="Total" />
-                  <ScalarProperty Name="Rate" ParameterName="Rate" />
-                  <ScalarProperty Name="Quantity" ParameterName="Quantity" />
-                  <ScalarProperty Name="Description" ParameterName="Description" />
-                  <ScalarProperty Name="InvoiceId" ParameterName="InvoiceId" />
-                  <ResultBinding Name="Id" ColumnName="Id" />
-                </InsertFunction>
-                <UpdateFunction FunctionName="OrvosiModel.Store.InvoiceDetail_Update">
-                  <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
-                  <ScalarProperty Name="Amount" ParameterName="Amount" Version="Current" />
-                  <ScalarProperty Name="Discount" ParameterName="Discount" Version="Current" />
-                  <ScalarProperty Name="Total" ParameterName="Total" Version="Current" />
-                  <ScalarProperty Name="Rate" ParameterName="Rate" Version="Current" />
-                  <ScalarProperty Name="Quantity" ParameterName="Quantity" Version="Current" />
-                  <ScalarProperty Name="Description" ParameterName="Description" Version="Current" />
-                  <ScalarProperty Name="InvoiceId" ParameterName="InvoiceId" Version="Current" />
-                  <ScalarProperty Name="Id" ParameterName="Id" Version="Current" />
-                </UpdateFunction>
-                <DeleteFunction FunctionName="OrvosiModel.Store.InvoiceDetail_Delete">
-                  <ScalarProperty Name="Id" ParameterName="Id" />
-                </DeleteFunction>
-              </ModificationFunctionMapping>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="Invoice_Delete" FunctionName="OrvosiModel.Store.Invoice_Delete" />
-          <FunctionImportMapping FunctionImportName="Invoice_Insert" FunctionName="OrvosiModel.Store.Invoice_Insert" />
-          <FunctionImportMapping FunctionImportName="Invoice_Update" FunctionName="OrvosiModel.Store.Invoice_Update" />
-          <FunctionImportMapping FunctionImportName="InvoiceDetail_Delete" FunctionName="OrvosiModel.Store.InvoiceDetail_Delete" />
-          <FunctionImportMapping FunctionImportName="InvoiceDetail_Insert" FunctionName="OrvosiModel.Store.InvoiceDetail_Insert" />
-          <FunctionImportMapping FunctionImportName="InvoiceDetail_Update" FunctionName="OrvosiModel.Store.InvoiceDetail_Update" />
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Delete" FunctionName="OrvosiModel.Store.ServiceCatalogue_Delete" />
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Insert" FunctionName="OrvosiModel.Store.ServiceCatalogue_Insert" />
           <FunctionImportMapping FunctionImportName="ServiceCatalogue_Update" FunctionName="OrvosiModel.Store.ServiceCatalogue_Update" />
@@ -4817,6 +4600,67 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="Invoices">
+            <EntityTypeMapping TypeName="OrvosiModel.Invoice">
+              <MappingFragment StoreEntitySet="Invoice">
+                <ScalarProperty Name="SentDate" ColumnName="SentDate" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="PaymentReceivedDate" ColumnName="PaymentReceivedDate" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="TaxRateHst" ColumnName="TaxRateHst" />
+                <ScalarProperty Name="SubTotal" ColumnName="SubTotal" />
+                <ScalarProperty Name="CustomerEmail" ColumnName="CustomerEmail" />
+                <ScalarProperty Name="CustomerCountry" ColumnName="CustomerCountry" />
+                <ScalarProperty Name="CustomerProvince" ColumnName="CustomerProvince" />
+                <ScalarProperty Name="CustomerPostalCode" ColumnName="CustomerPostalCode" />
+                <ScalarProperty Name="CustomerCity" ColumnName="CustomerCity" />
+                <ScalarProperty Name="CustomerAddress2" ColumnName="CustomerAddress2" />
+                <ScalarProperty Name="CustomerAddress1" ColumnName="CustomerAddress1" />
+                <ScalarProperty Name="CustomerEntityType" ColumnName="CustomerEntityType" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="CustomerGuid" ColumnName="CustomerGuid" />
+                <ScalarProperty Name="ServiceProviderCountry" ColumnName="ServiceProviderCountry" />
+                <ScalarProperty Name="ServiceProviderProvince" ColumnName="ServiceProviderProvince" />
+                <ScalarProperty Name="ServiceProviderPostalCode" ColumnName="ServiceProviderPostalCode" />
+                <ScalarProperty Name="ServiceProviderCity" ColumnName="ServiceProviderCity" />
+                <ScalarProperty Name="ServiceProviderAddress2" ColumnName="ServiceProviderAddress2" />
+                <ScalarProperty Name="ServiceProviderAddress1" ColumnName="ServiceProviderAddress1" />
+                <ScalarProperty Name="ServiceProviderPhoneNumber" ColumnName="ServiceProviderPhoneNumber" />
+                <ScalarProperty Name="ServiceProviderEmail" ColumnName="ServiceProviderEmail" />
+                <ScalarProperty Name="ServiceProviderLogoCssClass" ColumnName="ServiceProviderLogoCssClass" />
+                <ScalarProperty Name="ServiceProviderEntityType" ColumnName="ServiceProviderEntityType" />
+                <ScalarProperty Name="ServiceProviderName" ColumnName="ServiceProviderName" />
+                <ScalarProperty Name="ServiceProviderGuid" ColumnName="ServiceProviderGuid" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="Terms" ColumnName="Terms" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
+                <ScalarProperty Name="InvoiceNumber" ColumnName="InvoiceNumber" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceDetails">
+            <EntityTypeMapping TypeName="OrvosiModel.InvoiceDetail">
+              <MappingFragment StoreEntitySet="InvoiceDetail">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="AdditionalNotes" ColumnName="AdditionalNotes" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetNextInvoiceNumber" FunctionName="OrvosiModel.Store.GetNextInvoiceNumber" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

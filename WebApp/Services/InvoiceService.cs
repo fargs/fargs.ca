@@ -104,7 +104,7 @@ namespace WebApp.Services
             return price * rate;
         }
 
-        public decimal? GetInvoiceTotal(decimal? subTotal, decimal taxRate)
+        public decimal? GetInvoiceTotal(decimal? subTotal, decimal? taxRate)
         {
             return subTotal * (1 + taxRate);
         }

@@ -19,7 +19,7 @@
 else if (ViewBag.FormMode == FormModes.Edit)
 {
     <form action="~/Invoice/Edit" method="post">
-        @Html.Hidden("Id", Model.Id)
+        @Html.Hidden("Id", Model.InvoiceDetails.First().Id)
         <div class="container">
             @Html.Partial("_Invoice", Model)
             <div class="row">

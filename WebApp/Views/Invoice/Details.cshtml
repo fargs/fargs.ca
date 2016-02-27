@@ -34,14 +34,30 @@ else
 {
     <div class="container">
         @Html.Partial("_Invoice", Model)
-        <div>
-            <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
-        </div>
-        <form action="~/Invoice/Send" method="post">
-            <div class="form-group">
-                <input type="text" value="@Model.CustomerEmail" name="CustomerEmail" class="form-control" placeholder="Bill To Email" />
+        <div class="row">
+            <div class="col-sm-4">
+                <form action="~/Invoice/Send" method="post">
+                    <div class="form-group">
+                        <label class="control-label">Send Invoice To Email</label>
+                        <div>
+                            <input type="text" value="@Model.CustomerEmail" name="CustomerEmail" class="form-control" placeholder="Bill To Email" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Send</button>
-        </form>
+            <div class="col-sm-4">
+
+            </div>
+            <div class="col-sm-4">
+                <div class="pull-right">
+                    <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
+                </div>
+            </div>
+        </div>
     </div>
 }

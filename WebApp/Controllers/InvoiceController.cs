@@ -70,8 +70,8 @@ namespace WebApp.Controllers
             // Automap to an invoice object
             var service = new InvoiceService();
             serviceRequest.ServiceRequestPrice = serviceRequest.EffectivePrice;
-            var invoiceNumber = db.GetNextInvoiceNumber();
-            var invoice = service.PreviewInvoice(invoiceNumber.ToString(), serviceProvider, customer, serviceRequest);
+            var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+            var invoice = service.PreviewInvoice(invoiceNumber, serviceProvider, customer, serviceRequest);
 
             using (var context = new OrvosiEntities(User.Identity.Name))
             {
@@ -100,11 +100,11 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddInvoiceDetail(int id)
+        public async Task<ActionResult> AddInvoiceDetail(InvoiceDetail InvoiceDetail)
         {
-            var obj = await db.Invoices.FindAsync(id);
-            ViewBag.FormMode = FormModes.Edit;
-            return View(obj);
+            db.InvoiceDetails.Add(InvoiceDetail);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = InvoiceDetail.InvoiceId });
         }
 
         [HttpPost]

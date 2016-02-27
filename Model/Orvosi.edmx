@@ -2451,7 +2451,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <End Role="BillableEntity" EntitySet="BillableEntities" />
             <End Role="Invoice" EntitySet="Invoices" />
           </AssociationSet>
-          <FunctionImport Name="GetNextInvoiceNumber" ReturnType="Collection(Int32)" />
+          <FunctionImport Name="GetNextInvoiceNumber" ReturnType="Collection(String)" />
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />

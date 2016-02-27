@@ -1,5 +1,5 @@
 ﻿
 CREATE PROCEDURE [API].[GetNextInvoiceNumber]
 AS
-	SELECT NextInvoiceNumber = NEXT VALUE FOR dbo.InvoiceNumberSequence
+	SELECT NextInvoiceNumber = CONVERT(NVARCHAR(50), NEXT VALUE FOR dbo.InvoiceNumberSequence)
 RETURN 0

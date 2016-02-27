@@ -1960,9 +1960,9 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogueRate_Result>("GetServiceCatalogueRate", serviceProviderGuidParameter, customerGuidParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> GetNextInvoiceNumber()
+        public virtual ObjectResult<string> GetNextInvoiceNumber()
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("GetNextInvoiceNumber");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetNextInvoiceNumber");
         }
     }
 }

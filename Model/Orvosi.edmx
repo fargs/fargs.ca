@@ -2452,6 +2452,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <End Role="Invoice" EntitySet="Invoices" />
           </AssociationSet>
           <FunctionImport Name="GetNextInvoiceNumber" ReturnType="Collection(String)" />
+          <AssociationSet Name="ServiceRequestInvoiceDetail" Association="OrvosiModel.ServiceRequestInvoiceDetail">
+            <End Role="ServiceRequest" EntitySet="ServiceRequests" />
+            <End Role="InvoiceDetail" EntitySet="InvoiceDetails" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2675,80 +2679,81 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
-          <Property Name="CompanyReferenceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Nullable="false" Type="Int32" />
+          <Property Name="ObjectGuid" Nullable="false" Type="Guid" />
+          <Property Name="CompanyReferenceId" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="ServiceCatalogueId" Type="Int16" />
           <Property Name="HarvestProjectId" Type="Int64" />
-          <Property Name="Title" Type="String" MaxLength="800" FixedLength="false" Unicode="true" />
-          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Title" MaxLength="800" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="Body" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="AddressId" Type="Int32" />
-          <Property Name="RequestedDate" Type="DateTime" Precision="3" />
+          <Property Name="RequestedDate" Precision="3" Type="DateTime" />
           <Property Name="RequestedBy" Type="Guid" />
-          <Property Name="CancelledDate" Type="DateTime" Precision="3" />
-          <Property Name="DueDate" Type="DateTime" Precision="0" />
-          <Property Name="StartTime" Type="Time" Precision="7" />
-          <Property Name="EndTime" Type="Time" Precision="7" />
-          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ServiceName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ServiceCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ServicePortfolioName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianDisplayName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ParentCompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="EffectivePrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="AddressName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CancelledDate" Precision="3" Type="DateTime" />
+          <Property Name="DueDate" Precision="0" Type="DateTime" />
+          <Property Name="StartTime" Precision="7" Type="Time" />
+          <Property Name="EndTime" Precision="7" Type="Time" />
+          <Property Name="ModifiedDate" Nullable="false" Precision="3" Type="DateTime" />
+          <Property Name="ModifiedUser" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ServiceName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ServiceCategoryName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ServicePortfolioName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="PhysicianDisplayName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="CompanyName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ParentCompanyName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="EffectivePrice" Precision="18" Scale="2" Type="Decimal" />
+          <Property Name="AddressName" MaxLength="256" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="AddressTypeId" Type="Byte" />
-          <Property Name="AddressTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Address1" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Address2" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AddressTypeName" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="Address1" MaxLength="255" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="Address2" MaxLength="255" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="City" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="ProvinceId" Type="Int16" />
-          <Property Name="ProvinceName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceName" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="CountryId" Type="Int16" />
-          <Property Name="CountryName" Type="String" MaxLength="3" FixedLength="false" Unicode="true" />
+          <Property Name="CountryName" MaxLength="3" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="LocationId" Type="Int16" />
-          <Property Name="LocationName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="PostalCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ClaimantName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="AppointmentDate" Type="DateTime" Precision="0" />
+          <Property Name="LocationName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="PostalCode" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ClaimantName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="AppointmentDate" Precision="0" Type="DateTime" />
           <Property Name="CaseCoordinatorId" Type="Guid" />
           <Property Name="IntakeAssistantId" Type="Guid" />
           <Property Name="DocumentReviewerId" Type="Guid" />
-          <Property Name="ServiceRequestPrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="ServicePrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="ServiceCataloguePrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="RequestedByName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="CaseCoordinatorName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="IntakeAssistantName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
-          <Property Name="DocumentReviewerName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceRequestPrice" Precision="18" Scale="2" Type="Decimal" />
+          <Property Name="ServicePrice" Precision="18" Scale="2" Type="Decimal" />
+          <Property Name="ServiceCataloguePrice" Precision="18" Scale="2" Type="Decimal" />
+          <Property Name="RequestedByName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="CaseCoordinatorName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="IntakeAssistantName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="DocumentReviewerName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="AvailableSlotId" Type="Int16" />
           <Property Name="Duration" Type="Int16" />
-          <Property Name="CalendarEventTitle" Type="String" MaxLength="281" FixedLength="false" Unicode="true" />
-          <Property Name="DocumentFolderLink" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="ServiceCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="CalendarEventTitle" MaxLength="281" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="DocumentFolderLink" MaxLength="2000" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ServiceCode" MaxLength="10" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="ServiceId" Type="Int16" />
-          <Property Name="PhysicianId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianId" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="CompanyId" Type="Int16" />
-          <Property Name="Notes" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
-          <Property Name="IsNoShow" Type="Boolean" Nullable="false" />
+          <Property Name="Notes" MaxLength="2000" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="IsNoShow" Nullable="false" Type="Boolean" />
           <Property Name="TotalTasks" Type="Int32" />
           <Property Name="ClosedTasks" Type="Int32" />
           <Property Name="OpenTasks" Type="Int32" />
-          <Property Name="IsLateCancellation" Type="Boolean" Nullable="false" />
+          <Property Name="IsLateCancellation" Nullable="false" Type="Boolean" />
           <Property Name="NextTaskId" Type="Int32" />
-          <Property Name="NextTaskName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="NextTaskAssignedTo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="NextTaskAssignedtoName" Type="String" MaxLength="210" FixedLength="false" Unicode="true" />
+          <Property Name="NextTaskName" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="NextTaskAssignedTo" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="NextTaskAssignedtoName" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="ServiceRequestStatusId" Type="Byte" />
           <Property Name="ServiceStatusId" Type="Byte" />
-          <Property Name="ServiceRequestStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ServiceStatusText" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="NoShowRate" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="LateCancellationRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ServiceRequestStatusText" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="ServiceStatusText" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="PhysicianUserName" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="NoShowRate" Precision="18" Scale="2" Type="Decimal" />
+          <Property Name="LateCancellationRate" Precision="18" Scale="2" Type="Decimal" />
           <Property Name="CompanyGuid" Type="Guid" />
+          <NavigationProperty Name="InvoiceDetails" Relationship="OrvosiModel.ServiceRequestInvoiceDetail" FromRole="ServiceRequest" ToRole="InvoiceDetail" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -3287,7 +3292,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="InvoiceId" Type="Int32" Nullable="false" />
-          <Property Name="ServiceRequestId" Type="Int32" />
+          <Property Name="ServiceRequestId" Type="Int32" Nullable="false" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Quantity" Type="Int16" />
           <Property Name="Rate" Type="Decimal" Precision="10" Scale="2" />
@@ -3298,6 +3303,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Invoice" Relationship="OrvosiModel.FK_InvoiceDetail_Invoice" FromRole="InvoiceDetail" ToRole="Invoice" />
+          <NavigationProperty Name="ServiceRequest" Relationship="OrvosiModel.ServiceRequestInvoiceDetail" FromRole="InvoiceDetail" ToRole="ServiceRequest" />
         </EntityType>
         <Association Name="FK_InvoiceDetail_Invoice">
           <End Type="OrvosiModel.Invoice" Role="Invoice" Multiplicity="1">
@@ -3334,6 +3340,18 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             </Principal>
             <Dependent Role="Invoice">
               <PropertyRef Name="CustomerGuid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ServiceRequestInvoiceDetail">
+          <End Type="OrvosiModel.ServiceRequest" Role="ServiceRequest" Multiplicity="1" />
+          <End Type="OrvosiModel.InvoiceDetail" Role="InvoiceDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ServiceRequest">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceDetail">
+              <PropertyRef Name="ServiceRequestId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

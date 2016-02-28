@@ -83,28 +83,16 @@
             {
                 <tr>
                     <td width="80%">
-                        @MvcHtmlString.Create(item.Description)
+                        <span class="invoice-description">@Html.Raw(item.Description)</span>
                         @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    Notes
-                                </dt>
-                                <dd>
-                                    <textarea rows="3" class="form-control" name="AdditionalNotes" value="@item.AdditionalNotes"></textarea>
-                                </dd>
-                            </dl>
+                            <label style="padding-top: 10px;">Notes</label>
+                            <textarea rows="3" class="form-control" name="AdditionalNotes" value="@item.AdditionalNotes" placeholder="Notes"></textarea>
                         }
                         else
                         {
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    Notes
-                                </dt>
-                                <dd>
-                                    @item.AdditionalNotes
-                                </dd>
-                            </dl>
+                            <label style="padding-top: 10px;">Notes</label>
+                            <div>@item.AdditionalNotes</div>
                         }
                     </td>
                     <td width="20%">

@@ -111,36 +111,37 @@ namespace WebApp.Controllers
             };
 
             var description = new StringBuilder();
-            description.AppendFormat("<dl class='dl-horizontal' style='margin-bottom: 0px;'><dt>Claimant</dt><dd>{0}</dd>", serviceRequest.ClaimantName);
-            description.AppendFormat("<dt>Service</dt><dd>{0}</dd>", serviceRequest.ServiceName);
-            description.AppendFormat("<dt>Location</dt><dd>{0}, {1}</dd></dl>", serviceRequest.City, serviceRequest.AddressName);
+            description.AppendLine(serviceRequest.ClaimantName);
+            description.AppendLine(serviceRequest.ServiceName);
+            description.AppendLine(serviceRequest.City);
             if (serviceRequest.IsNoShow)
             {
-                description.AppendFormat("<p>NO SHOW - RATE {0}</p>", invoiceDetail.Rate.Value.ToString("0%"));
+                description.AppendLine(string.Format("NO SHOW - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
             }
             else if (serviceRequest.IsLateCancellation)
             {
-                description.AppendFormat("<p>LATE CANCELLATION - RATE {0}</p>", invoiceDetail.Rate.Value.ToString("0%"));
+                description.AppendLine(string.Format("LATE CANCELLATION - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
             }
 
             invoiceDetail.Description = description.ToString();
             invoiceDetail.Amount = GetInvoiceDetailAmount(serviceRequest.EffectivePrice, invoiceDetail.Rate);
+            invoiceDetail.ModifiedUser = User.Identity.Name;
+            invoiceDetail.ModifiedDate = SystemTime.Now();
 
             invoice.InvoiceDetails.Add(invoiceDetail);
 
             invoice.SubTotal = invoiceDetail.Amount;
             invoice.Total = GetInvoiceTotal(invoice.SubTotal, TaxRateHst);
+            invoice.ModifiedUser = User.Identity.Name;
+            invoice.ModifiedDate = SystemTime.Now();
 
-            using (var context = new OrvosiEntities(User.Identity.Name))
-            {
-                context.Invoices.Add(invoice);
-                await context.SaveChangesAsync();
-            }
+            db.Invoices.Add(invoice);
+            await db.SaveChangesAsync();
 
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
-            return RedirectToAction("Details", new { id = invoice.Id });
+            return RedirectToAction("Details", "ServiceRequest", new { id = invoiceDetail.ServiceRequest.Id });
         }
 
         public async Task<ActionResult> Details(int id)
@@ -160,7 +161,9 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Edit(InvoiceDetail updatedInvoiceDetail)
         {
-            var invoiceDetail = await db.InvoiceDetails.FindAsync(updatedInvoiceDetail.Id);
+            var id = int.Parse(Request.Form.Get("Id"));
+
+            var invoiceDetail = await db.InvoiceDetails.FindAsync(id);
             var invoice = invoiceDetail.Invoice;
 
             //var updatedInvoiceDetail = updatedInvoice.InvoiceDetails.First();
@@ -180,6 +183,17 @@ namespace WebApp.Controllers
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
             return RedirectToAction("Details", new { id = invoice.Id });
+        }
+
+        public async Task<ActionResult> Submit(int id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
+            invoice.SentDate = SystemTime.Now();
+            invoice.ModifiedDate = SystemTime.Now();
+            invoice.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            //TODO: Send invoice
+            return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
         }
 
         [HttpPost]

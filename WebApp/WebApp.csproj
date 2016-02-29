@@ -762,6 +762,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Shared\NotificationTemplates\Invoice.html" />
     <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
     <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />
     <Content Include="Web.config">
@@ -824,9 +825,9 @@
     <Content Include="Views\Invoice\Details.cshtml" />
     <Content Include="Views\Invoice\_Invoice.cshtml" />
     <Content Include="Views\ServiceRequest\_CreateInvoice.cshtml" />
-    <Content Include="Views\ServiceRequest\_InvoiceTable.cshtml" />
-    <Content Include="Views\Invoice\_InvoiceTable.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
+    <Content Include="Views\Shared\_InvoiceTable.cshtml" />
+    <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

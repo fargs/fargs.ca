@@ -8,7 +8,7 @@
             <th>Invoice #</th>
             <th>Invoice Date</th>
             <th>Details</th>
-            <th>Total (Before Tax)</th>
+            <th>Total (Before @Model.First().Invoice.TaxRateHst.Value.ToString("0%") tax)</th>
             <th>Submitted</th>
             <th>Payment Received</th>
         </tr>
@@ -29,14 +29,13 @@
                 <td>
                     @if (detail.Invoice.SentDate.HasValue)
                     {
-                        <div>
-                            <span class="glyphicon glyphicon-ok" style="font-size: 200%; padding-top: 10px"></span>
-                            @detail.Invoice.SentDate.Value.GetDateTimeFormats('d')[0]
-                        </div>
+                        @Html.Partial("_InvoiceSubmitted", detail.Invoice.SentDate.Value)
                     }
                     else
                     {
-                        @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = detail.InvoiceId }, new AjaxOptions { HttpMethod="Post", InsertionMode = InsertionMode.InsertAfter });
+                        <div id="submit-invoice">
+                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = detail.InvoiceId }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId="submit-invoice" })
+                        </div>
 
                     }
                 </td>

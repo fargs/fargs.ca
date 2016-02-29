@@ -117,7 +117,12 @@ else
     <h3>Invoice from Physician to Company</h3>
     if (Model.ServiceRequest.InvoiceDetails.Count == 0)
     {
-        @Html.Partial("_CreateInvoice", Model.ServiceRequest.Id)
+        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
+        using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+        {
+            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+            <button type="submit" class="btn btn-primary">Create Invoice</button>
+        }
     }
     else
     {

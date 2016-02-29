@@ -141,7 +141,7 @@ namespace WebApp.Controllers
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
-            return RedirectToAction("Details", "ServiceRequest", new { id = invoiceDetail.ServiceRequest.Id });
+            return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
         }
 
         public async Task<ActionResult> Details(int id)
@@ -188,12 +188,15 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Submit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
+
+            var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
+            await messageService.SendInvoice(invoice.CustomerEmail, invoice.InvoiceDetails.First());
+
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
             invoice.ModifiedUser = User.Identity.Name;
             await db.SaveChangesAsync();
-            //TODO: Send invoice
-            return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
+            return PartialView("_InvoiceSubmitted", invoice.SentDate.Value);
         }
 
         [HttpPost]

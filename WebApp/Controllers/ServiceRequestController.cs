@@ -32,7 +32,6 @@ namespace WebApp.Controllers
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
             filterArgs.StatusId = (filterArgs.StatusId ?? ServiceRequestStatus.Open);
-            filterArgs.NextTask = (filterArgs.NextTask ?? vm.User.Id);
 
             var sr = db.ServiceRequests.AsQueryable();
 

@@ -5,9 +5,9 @@
     <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
 </p>
 
-<h3>@Model.ServiceRequest.PhysicianDisplayName</h3>
-<div class="lead">
-    Exam ID @Model.ServiceRequest.Id <span class="lead">(@Model.ServiceRequest.ClaimantName) </span>
+<h4>@Model.ServiceRequest.PhysicianDisplayName</h4>
+<div class="row">
+    <span class="h1 col-md-12"> @Model.ServiceRequest.ClaimantName</span>
     @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
     {
         <span class="label label-danger">
@@ -15,31 +15,49 @@
         </span>
     }
 </div>
+<div class="row">
+    <span class="h4 col-md-1">Exam:</span>
+    <span class="h4 col-md-11"> @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</span>
+</div>
+<div class="row">
+    <span class="h4 col-md-1">Report:</span>
+    @if (Model.ServiceRequest.DueDate.HasValue)
+    {
+        <span class="h4 col-md-11">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</span>
+    }
+    else
+    {
+        <span class="col-md-11">&nbsp;</span>
+    }
+</div>
 
-
-@if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-{
-    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
-    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
-}
-else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
-{
-    <form action="~/ServiceRequest/ToggleNoShow" method="post">
-        @Html.AntiForgeryToken()
-        @Html.Hidden("id")
-        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-        <span><button class="btn btn-link">Undo</button></span>
-    </form>
-}
-else
-{
-    <form action="~/ServiceRequest/ToggleNoShow" method="post">
-        @Html.AntiForgeryToken()
-        @Html.Hidden("id")
-        <button class="btn btn-default">No Show</button>
-        <div class="help-block">Click to flag this case as a "No Show"</div>
-    </form>
-}
+<div class="row" style="margin-top:30px;">
+    <div class="col-md-12">
+        @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
+        {
+            <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
+            @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
+        }
+        else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
+        {
+            <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id")
+                <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
+                <span><button class="btn btn-link">Undo</button></span>
+            </form>
+        }
+        else
+        {
+            <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id")
+                <button class="btn btn-default">No Show</button>
+                <div class="help-block">Click to flag this case as a "No Show"</div>
+            </form>
+        }
+    </div>
+</div>
 
 <h2>Tasks</h2>
 <ul class="list-group">
@@ -166,6 +184,8 @@ else
             <dd>@Model.ServiceRequest.CompanyReferenceId</dd>
             <dt>Claimant Name</dt>
             <dd>@Model.ServiceRequest.ClaimantName</dd>
+            <dt>Exam Id</dt>
+            <dd>@Model.ServiceRequest.Id</dd>
             <dt>Case Folder</dt>
             <dd>
                 <strong>@Model.ServiceRequest.Title</strong>

@@ -120,6 +120,17 @@
     </div>
 
     <div class="form-group">
+        <label class="control-label col-md-2">Due Date</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="DueDatePicker">
+                @Html.TextBox("DueDate", "", new { @class = "form-control", size = "16" })
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessage("DueDate", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
         <label class="control-label col-md-2">Reference Id</label>
         <div class="col-md-10">
             @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
@@ -169,28 +180,6 @@
     </div>
 
 </form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @*
 
@@ -359,6 +348,12 @@
             var appointmentDate = $('#AppointmentDate');
             var requestedDate = $('#RequestedDate');
             var startTime = $('#StartTime');
+
+            $('#DueDatePicker').datepicker({
+                startDate: '-1d',
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
 
             //var dueDate = $('#DueDate').datepicker();
             $('#AppointmentDatePicker').datepicker({

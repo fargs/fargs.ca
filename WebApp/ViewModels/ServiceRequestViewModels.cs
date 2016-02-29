@@ -72,6 +72,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public string Sort { get; set; }
         public byte? DateRange { get; set; }
         public byte? StatusId { get; set; }
+        public string NextTask { get; set; }
         public string Ids { get; set; }
         public string ClaimantName { get; set; }
         public string PhysicianId { get; set; }

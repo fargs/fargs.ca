@@ -25,13 +25,14 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
-            filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
-            filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
-
             var vm = new IndexViewModel();
-
             // get the user
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
+            filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
+            filterArgs.StatusId = (filterArgs.StatusId ?? ServiceRequestStatus.Open);
+            filterArgs.NextTask = (filterArgs.NextTask ?? vm.User.Id);
 
             var sr = db.ServiceRequests.AsQueryable();
 
@@ -75,6 +76,11 @@ namespace WebApp.Controllers
                 }
             }
 
+            if (!string.IsNullOrEmpty(filterArgs.NextTask))
+            {
+                sr = sr.Where(c => c.NextTaskAssignedTo == filterArgs.NextTask);
+            }
+
             if (filterArgs.Sort == "Newest")
             {
                 sr = sr.OrderByDescending(c => c.AppointmentDate.Value).ThenBy(c => c.StartTime.Value);
@@ -86,22 +92,6 @@ namespace WebApp.Controllers
 
             // order the requests from oldest to newest
             vm.ServiceRequests = await sr.ToListAsync();
-
-            ViewBag.ServiceRequestStatuses = db.LookupItems
-                .Where(l => l.LookupId == Lookups.ServiceRequestStatus)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ItemText,
-                    Value = c.ItemId.ToString()
-                })
-                .ToList();
-
-            ViewBag.Physicians = db.Physicians
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString()
-                }).ToList();
 
             vm.FilterArgs = filterArgs;
 
@@ -472,7 +462,7 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> ResourceAssignment(int? id)
         {
             if (id == null)
             {
@@ -486,14 +476,6 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.Staff = await db.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString()
-                }).ToListAsync();
-
             // TODO: Update the calendar and dropbox folder if appropriate.
 
             return View(serviceRequest);
@@ -504,7 +486,7 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(ServiceRequest sr)
+        public async Task<ActionResult> ResourceAssignment(ServiceRequest sr)
         {
             if (ModelState.IsValid)
             {
@@ -573,6 +555,54 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
+
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+
+            // TODO: Update the calendar and dropbox folder if appropriate.
+
+            return View(serviceRequest);
+        }
+
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Edit(ServiceRequest sr)
+        {
+            if (ModelState.IsValid)
+            {
+                using (db = new OrvosiEntities(User.Identity.Name))
+                {
+                    // get the tracked object from the database
+                    var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
+
+                    // update the resource assignments
+                    obj.ClaimantName = sr.ClaimantName;
+                    obj.CompanyReferenceId = sr.CompanyReferenceId;
+                    obj.DueDate = sr.DueDate;
+                    obj.Notes = sr.Notes;
+                    
+                    await db.SaveChangesAsync();
+                    
+                    return RedirectToAction("Details", new { id = obj.Id });
+                }
+            }
+            return View(sr);
+        }
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -596,6 +626,8 @@ namespace WebApp.Controllers
             ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
             db.ServiceRequests.Remove(serviceRequest);
             await db.SaveChangesAsync();
+
+            //TODO: Unshare and delete folders from dropbox
             return RedirectToAction("Index");
         }
 

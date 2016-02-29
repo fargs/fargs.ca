@@ -815,6 +815,7 @@
     <Content Include="Views\ServiceCatalogue\Index.cshtml" />
     <Content Include="Views\ServiceCatalogue\Edit.cshtml" />
     <Content Include="Views\ServiceCatalogue\EditRates.cshtml" />
+    <Content Include="Views\ServiceRequest\ResourceAssignment.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
   </ItemGroup>
   <ItemGroup>

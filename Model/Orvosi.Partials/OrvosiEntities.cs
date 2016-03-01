@@ -132,4 +132,21 @@ namespace Model
     public partial class PhysicianLicense
     {
     }
+
+    public class CityMeta
+    {
+        [Display(Name = "Province")]  // format used by Html.EditorFor
+        public short ProvinceId;
+
+        [Display(AutoGenerateField = false)]
+        public DateTime ModifiedDate;
+
+        [Display(AutoGenerateField = false)]
+        public string ModifiedUser;
+    }
+
+    [MetadataType(typeof(CityMeta))]
+    public partial class City
+    {
+    }
 }

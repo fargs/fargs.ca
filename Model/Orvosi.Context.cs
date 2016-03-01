@@ -55,6 +55,7 @@ namespace Model
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
         public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)

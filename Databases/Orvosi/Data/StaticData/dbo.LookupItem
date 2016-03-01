@@ -58,7 +58,8 @@
     Id="18"
     LookupId="4"
     Text="Oakville"
-    Value="1" />
+    Value="1"
+    ShortText="OAK" />
   <row
     Id="19"
     LookupId="4"
@@ -68,22 +69,26 @@
     Id="20"
     LookupId="4"
     Text="London"
-    Value="3" />
+    Value="3"
+    ShortText="LON" />
   <row
     Id="21"
     LookupId="4"
     Text="Ottawa"
-    Value="4" />
+    Value="4"
+    ShortText="OTT" />
   <row
     Id="22"
     LookupId="4"
-    Text="Hamilton/Niagara"
-    Value="5" />
+    Text="Hamilton"
+    Value="5"
+    ShortText="HAM" />
   <row
     Id="23"
     LookupId="4"
     Text="Vancouver"
-    Value="6" />
+    Value="6"
+    ShortText="VAN" />
   <row
     Id="24"
     LookupId="5"
@@ -165,4 +170,34 @@
     Id="40"
     LookupId="3"
     Text="Obsolete" />
+  <row
+    Id="41"
+    LookupId="4"
+    Text="Barrie"
+    ShortText="BAR" />
+  <row
+    Id="42"
+    LookupId="4"
+    Text="Thunder Bay"
+    ShortText="THU" />
+  <row
+    Id="43"
+    LookupId="4"
+    Text="Windsor"
+    ShortText="WIN" />
+  <row
+    Id="44"
+    LookupId="4"
+    Text="Woodbridge"
+    ShortText="WOO" />
+  <row
+    Id="45"
+    LookupId="4"
+    Text="Mississauga"
+    ShortText="MIS" />
+  <row
+    Id="46"
+    LookupId="4"
+    Text="Burlington"
+    ShortText="BUR" />
 </root>

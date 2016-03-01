@@ -320,6 +320,10 @@ namespace WebApp.Controllers
             var dropbox = new OrvosiDropbox();
             var client = await dropbox.GetServiceAccountClientAsync();
 
+            var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+            obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+            await db.SaveChangesAsync();
+
             // Get the destination folder name
             var destination = obj.DocumentFolderLink;
 

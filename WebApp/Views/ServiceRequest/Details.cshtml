@@ -186,9 +186,11 @@
             <dd>@Model.ServiceRequest.ClaimantName</dd>
             <dt>Exam Id</dt>
             <dd>@Model.ServiceRequest.Id</dd>
+            <dt>Title</dt>
+            <dd>@Model.ServiceRequest.Title</dd>
             <dt>Case Folder</dt>
             <dd>
-                <strong>@Model.ServiceRequest.Title</strong>
+                <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
                 @if (Model.DropboxFolder == null)
                 {
                     if (Model.User.RoleCategoryId == e.RoleCategory.Admin)

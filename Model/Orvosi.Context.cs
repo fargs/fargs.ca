@@ -504,7 +504,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string physicianId, Nullable<short> serviceId, Nullable<short> locationId, Nullable<decimal> serviceCataloguePrice, string modifiedUser)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
@@ -610,23 +610,35 @@ namespace Model
                 new ObjectParameter("LateCancellationRate", lateCancellationRate) :
                 new ObjectParameter("LateCancellationRate", typeof(decimal));
     
+            var physicianIdParameter = physicianId != null ?
+                new ObjectParameter("PhysicianId", physicianId) :
+                new ObjectParameter("PhysicianId", typeof(string));
+    
+            var serviceIdParameter = serviceId.HasValue ?
+                new ObjectParameter("ServiceId", serviceId) :
+                new ObjectParameter("ServiceId", typeof(short));
+    
+            var locationIdParameter = locationId.HasValue ?
+                new ObjectParameter("LocationId", locationId) :
+                new ObjectParameter("LocationId", typeof(short));
+    
+            var serviceCataloguePriceParameter = serviceCataloguePrice.HasValue ?
+                new ObjectParameter("ServiceCataloguePrice", serviceCataloguePrice) :
+                new ObjectParameter("ServiceCataloguePrice", typeof(decimal));
+    
             var modifiedUserParameter = modifiedUser != null ?
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, physicianIdParameter, serviceIdParameter, locationIdParameter, serviceCataloguePriceParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, Nullable<System.Guid> objectGuid, string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, string companyReferenceId, string claimantName, Nullable<int> addressId, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
                 new ObjectParameter("Id", typeof(int));
     
-            var objectGuidParameter = objectGuid.HasValue ?
-                new ObjectParameter("ObjectGuid", objectGuid) :
-                new ObjectParameter("ObjectGuid", typeof(System.Guid));
-    
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
                 new ObjectParameter("CompanyReferenceId", typeof(string));
@@ -635,21 +647,9 @@ namespace Model
                 new ObjectParameter("ClaimantName", claimantName) :
                 new ObjectParameter("ClaimantName", typeof(string));
     
-            var serviceCatalogueIdParameter = serviceCatalogueId.HasValue ?
-                new ObjectParameter("ServiceCatalogueId", serviceCatalogueId) :
-                new ObjectParameter("ServiceCatalogueId", typeof(short));
-    
             var addressIdParameter = addressId.HasValue ?
                 new ObjectParameter("AddressId", addressId) :
                 new ObjectParameter("AddressId", typeof(int));
-    
-            var harvestProjectIdParameter = harvestProjectId.HasValue ?
-                new ObjectParameter("HarvestProjectId", harvestProjectId) :
-                new ObjectParameter("HarvestProjectId", typeof(long));
-    
-            var titleParameter = title != null ?
-                new ObjectParameter("Title", title) :
-                new ObjectParameter("Title", typeof(string));
     
             var bodyParameter = body != null ?
                 new ObjectParameter("Body", body) :
@@ -735,7 +735,7 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, objectGuidParameter, companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, companyReferenceIdParameter, claimantNameParameter, addressIdParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)

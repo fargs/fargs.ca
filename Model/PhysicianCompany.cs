@@ -29,5 +29,6 @@ namespace Model
         public Nullable<short> Value { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
+        public string ShortText { get; set; }
     }
 }

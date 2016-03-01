@@ -44,5 +44,6 @@ namespace Model
         public string ProvinceCode { get; set; }
         public string LocationName { get; set; }
         public string EntityId { get; set; }
+        public string LocationShortName { get; set; }
     }
 }

@@ -230,6 +230,10 @@ namespace WebApp.Controllers
                     RequestedDate = sr.RequestedDate,
                     DocumentFolderLink = sr.DocumentFolderLink,
                     CompanyId = sr.CompanyId,
+                    PhysicianId = sr.PhysicianId,
+                    ServiceId = service.ServiceId,
+                    LocationId = service.LocationId,
+                    ServiceCataloguePrice = service.Price,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
                     PhysicianUserName = string.Empty, // same as ServiceName

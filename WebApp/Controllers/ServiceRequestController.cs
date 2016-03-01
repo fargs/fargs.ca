@@ -132,7 +132,7 @@ namespace WebApp.Controllers
             try
             {
                 // Get the folder
-                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination.ToLower());
+                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
@@ -276,7 +276,7 @@ namespace WebApp.Controllers
 
                 // Copy the case template folder
                 var destination = obj.DocumentFolderLink;
-                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
                 // Share the folder
                 var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
                 var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
@@ -334,7 +334,7 @@ namespace WebApp.Controllers
             try
             {
                 // Get the folder
-                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+                metadata = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
@@ -348,7 +348,7 @@ namespace WebApp.Controllers
             }
 
             // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
 
             // Share the folder
             var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
@@ -378,7 +378,7 @@ namespace WebApp.Controllers
             try
             {
                 // Get the folder
-                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+                metadata = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {

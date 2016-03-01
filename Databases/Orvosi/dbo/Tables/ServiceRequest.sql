@@ -30,6 +30,10 @@
     [ModifiedUser]         NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     [NoShowRate]           DECIMAL (18, 2)  NULL,
     [LateCancellationRate] DECIMAL (18, 2)  NULL,
+	[PhysicianId]		   NVARCHAR (128)   NOT NULL,
+	[ServiceId]			   SMALLINT			NOT NULL,
+	[LocationId]		   SMALLINT			NOT NULL,
+	[ServiceCataloguePrice] DECIMAL(18,2)	NOT NULL,	
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

@@ -3351,6 +3351,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="ClaimantName" ParameterName="ClaimantName" />
                   <ScalarProperty Name="CompanyReferenceId" ParameterName="CompanyReferenceId" />
                   <ResultBinding Name="Id" ColumnName="Id" />
+                  <ResultBinding Name="ObjectGuid" ColumnName="ObjectGuid" />
                 </InsertFunction>
               </ModificationFunctionMapping>
             </EntityTypeMapping>

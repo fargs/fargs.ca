@@ -151,27 +151,27 @@ SELECT
 	,ServiceRequestPrice = sr.[Price]
 	,sr.Notes
 	,sr.DocumentFolderLink
-	,CompanyId = ISNULL(sr.CompanyId, sc.CompanyId)
+	,CompanyId = ISNULL(sr.CompanyId, sr.CompanyId)
 	,sr.IsNoShow
 	,sr.IsLateCancellation
 	,sr.NoShowRate
 	,sr.LateCancellationRate
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
-	,sc.ServiceId
+	,sr.ServiceId
 	,ServiceName = s.Name
 	,ServiceCode = s.Code
 	,s.ServiceCategoryName
 	,s.ServicePortfolioName
-	,sc.PhysicianId
+	,sr.PhysicianId
 	,PhysicianDisplayName = p.DisplayName
 	,PhysicianUserName = p.UserName
 	,CompanyGuid = c.ObjectGuid
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
 	,ServicePrice = s.DefaultPrice
-	,ServiceCataloguePrice = sc.Price
-	,EffectivePrice = COALESCE(sr.Price, sc.Price, s.DefaultPrice)
+	,ServiceCataloguePrice = sr.ServiceCataloguePrice
+	,EffectivePrice = COALESCE(sr.Price, sr.ServiceCataloguePrice, s.DefaultPrice)
 	,RequestedByName = dbo.GetDisplayName(rb.FirstName, rb.LastName, rb.Title)
 	,AddressName = a.Name
 	,AddressTypeId = a.AddressTypeId
@@ -214,10 +214,9 @@ SELECT
 	--,NextCloseoutTaskAssignedTo = nct.AssignedTo
 	--,NextCloseoutTaskAssignedtoName = nct.AssignedToName
 FROM dbo.ServiceRequest sr
-LEFT JOIN dbo.ServiceCatalogue sc ON sc.Id = sr.ServiceCatalogueId
-INNER JOIN API.[Service] s ON s.Id = sc.ServiceId
-INNER JOIN API.Physician p ON sc.PhysicianId = p.Id
-LEFT JOIN API.Company c ON ISNULL(sr.CompanyId, sc.CompanyId) = c.Id
+INNER JOIN API.[Service] s ON s.Id = sr.ServiceId
+INNER JOIN API.Physician p ON sr.PhysicianId = p.Id
+INNER JOIN API.Company c ON ISNULL(sr.CompanyId, sr.CompanyId) = c.Id
 LEFT JOIN dbo.[AspNetUsers] cc ON cc.Id = sr.CaseCoordinatorId
 LEFT JOIN dbo.[AspNetUsers] ia ON ia.Id = sr.IntakeAssistantId
 LEFT JOIN dbo.[AspNetUsers] dr ON dr.Id = sr.DocumentReviewerId

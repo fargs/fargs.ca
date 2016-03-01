@@ -12,12 +12,15 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class LocationArea
+    public partial class City
     {
-        public short LookupId { get; set; }
-        public string LookupName { get; set; }
-        public short ItemId { get; set; }
-        public string ItemText { get; set; }
-        public short ItemValue { get; set; }
+        public short Id { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public short ProvinceId { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
+        public string ModifiedUser { get; set; }
+    
+        public virtual Province Province { get; set; }
     }
 }

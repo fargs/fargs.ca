@@ -18,7 +18,7 @@
         <EntityTypeShape EntityType="OrvosiModel.ServiceRequest" Width="1.875" PointX="11.25" PointY="5.125" />
         <EntityTypeShape EntityType="OrvosiModel.Location" Width="1.5" PointX="13.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.LookupItem" Width="1.5" PointX="3.375" PointY="13.75" />
-        <EntityTypeShape EntityType="OrvosiModel.Province" Width="1.5" PointX="13.375" PointY="11.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Province" Width="1.5" PointX="16.625" PointY="18.125" />
         <EntityTypeShape EntityType="OrvosiModel.Entity" Width="1.5" PointX="0.75" PointY="13.75" />
         <EntityTypeShape EntityType="OrvosiModel.PhysicianInsurance" Width="1.5" PointX="15.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.Document" Width="1.5" PointX="15.375" PointY="4.75" />
@@ -33,6 +33,8 @@
         <EntityTypeShape EntityType="OrvosiModel.Physician" Width="1.5" PointX="17.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.DashboardTaskSummary" Width="1.5" PointX="17.375" PointY="10.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceCatalogueRate" Width="1.5" PointX="17.375" PointY="14.75" />
+        <EntityTypeShape EntityType="OrvosiModel.City" Width="1.5" PointX="14.375" PointY="17.75" />
+        <AssociationConnector Association="OrvosiModel.CityProvince" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />

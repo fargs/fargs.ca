@@ -5,6 +5,17 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="City">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ProvinceId" Type="smallint" Nullable="false" />
+          <Property Name="ModifiedDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="ModifiedUser" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
         <EntityType Name="ServiceCatalogueRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -241,12 +252,13 @@ warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary k
             
             <PropertyRef Name="ItemId" />
             
+            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" />
+          <Property Name="ItemValue" Type="smallint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -256,12 +268,13 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
             
             <PropertyRef Name="ItemId" />
             
+            
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ItemId" Type="smallint" Nullable="false" />
           <Property Name="ItemText" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="ItemValue" Type="smallint" />
+          <Property Name="ItemValue" Type="smallint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1164,6 +1177,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </ReturnType>
         </Function>
         <EntityContainer Name="OrvosiModelStoreContainer">
+          <EntitySet Name="City" EntityType="Self.City" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ServiceCatalogueRate" EntityType="Self.ServiceCatalogueRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Account" EntityType="Self.Account" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -2154,6 +2168,11 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ServiceProviderGuid" Mode="In" Type="Guid" />
             <Parameter Name="CustomerGuid" Mode="In" Type="Guid" />
           </FunctionImport>
+          <EntitySet Name="Cities" EntityType="OrvosiModel.City" />
+          <AssociationSet Name="CityProvince" Association="OrvosiModel.CityProvince">
+            <End Role="City" EntitySet="Cities" />
+            <End Role="Province" EntitySet="Provinces" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -2489,7 +2508,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" />
+          <Property Name="ItemValue" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -2499,6 +2518,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CountryId" Type="Int16" Nullable="false" />
           <Property Name="ProvinceName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ProvinceCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Cities" Relationship="OrvosiModel.CityProvince" FromRole="Province" ToRole="City" />
         </EntityType>
         <ComplexType Name="Location_Select_PhysicianAndCompany_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
@@ -2640,7 +2660,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LookupName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ItemId" Type="Int16" Nullable="false" />
           <Property Name="ItemText" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ItemValue" Type="Int16" />
+          <Property Name="ItemValue" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="PhysicianLocationArea">
           <Key>
@@ -2882,6 +2902,30 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="Decimal" Name="NoShowRate" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="LateCancellationRate" Nullable="true" Precision="18" Scale="2" />
         </ComplexType>
+        <EntityType Name="City">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceId" Type="Int16" Nullable="false" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Province" Relationship="OrvosiModel.CityProvince" FromRole="City" ToRole="Province" />
+          </EntityType>
+        <Association Name="CityProvince">
+          <End Type="OrvosiModel.City" Role="City" Multiplicity="*" />
+          <End Type="OrvosiModel.Province" Role="Province" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="Province">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="City">
+              <PropertyRef Name="ProvinceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4089,6 +4133,18 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="Cities">
+            <EntityTypeMapping TypeName="OrvosiModel.City">
+              <MappingFragment StoreEntitySet="City">
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ProvinceId" ColumnName="ProvinceId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

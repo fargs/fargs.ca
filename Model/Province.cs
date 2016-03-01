@@ -14,9 +14,18 @@ namespace Model
     
     public partial class Province
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Province()
+        {
+            this.Cities = new HashSet<City>();
+        }
+    
         public short Id { get; set; }
         public short CountryId { get; set; }
         public string ProvinceName { get; set; }
         public string ProvinceCode { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<City> Cities { get; set; }
     }
 }

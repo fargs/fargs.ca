@@ -124,7 +124,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,[Title] = dbo.FormatDateTime(ad.[Day], 'yy-MM-dd') + ' ' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + ' - ' + a.LocationShortName + ' ' + sr.ClaimantName + ' - ' + s.Code + ' ' + p.UserName + ' ' + ISNULL(c.Code, '') + ' - ' + CONVERT(nvarchar(10), sr.Id)
+	,[Title] = dbo.FormatDateTime(ad.[Day], 'yy-MM-dd') + '(' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + ')-' + a.LocationShortName + '-' + sr.ClaimantName + ' (' + s.Code + '-' + p.UserName + ') ' + c.Code + '-' + CONVERT(nvarchar(10), sr.Id)
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -184,7 +184,7 @@ SELECT
 	,sl.StartTime
 	,sl.Duration
 	,sl.EndTime
-	,CalendarEventTitle = '(' + sr.ClaimantName + ') ' + s.Code + '-' + c.Name + '-' + CONVERT(nvarchar(10), sr.Id)
+	,CalendarEventTitle = a.LocationShortName + ': ' + sr.ClaimantName + ' (' + s.Code + ') ' + c.Code + '-' + CONVERT(nvarchar(10), sr.Id)
 	,ts.TotalTasks
 	,ts.ClosedTasks
 	,ts.OpenTasks

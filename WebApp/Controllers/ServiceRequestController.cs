@@ -232,20 +232,18 @@ namespace WebApp.Controllers
                     CompanyId = sr.CompanyId,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
-                    PhysicianUserName = string.Empty // same as ServiceName
+                    PhysicianUserName = string.Empty, // same as ServiceName
+                    ModifiedDate = SystemTime.Now()
 
                 };
 
-                using (var db = new OrvosiEntities(User.Identity.Name))
-                {
-                    db.ServiceRequests.Add(obj);
-                    await db.SaveChangesAsync();
-                    await db.Entry(obj).ReloadAsync();
+                db.ServiceRequests.Add(obj);
+                await db.SaveChangesAsync();
+                await db.Entry(obj).ReloadAsync();
 
-                    var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-                    obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-                    await db.SaveChangesAsync();
-                }
+                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+                obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+                await db.SaveChangesAsync();
 
                 /*  TODO: Create the calendar event in the physician booking calendar.
                     TITLE will equal the Calendar Title field.

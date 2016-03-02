@@ -158,12 +158,7 @@ namespace WebApp.Controllers
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         // GET: Admin/ServiceRequest/Create
-        public async Task<ActionResult> Availability()
-        {
-            await GetPhysicianDropDownData();
-
-            return View();
-        }
+        public ActionResult Availability() => View();
 
         [HttpPost]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
@@ -178,22 +173,20 @@ namespace WebApp.Controllers
             if (ad == null)
             {
                 this.ModelState.AddModelError("AppointmentDate", string.Format("{0} is not available on this day.", p.DisplayName));
-
-                await GetPhysicianDropDownData();
-
-                return View();
             }
 
-            var vm = new CreateViewModel();
-            vm.AvailableDay = ad;
-            vm.Physician = p;
-            vm.ServiceRequest.PhysicianId = p.Id;
-            vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
-            vm.ServiceRequest.AppointmentDate = ad.Day;
+            if (ModelState.IsValid)
+            {
+                var vm = new CreateViewModel();
+                vm.AvailableDay = ad;
+                vm.Physician = p;
+                vm.ServiceRequest.PhysicianId = p.Id;
+                vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
+                vm.ServiceRequest.AppointmentDate = ad.Day;
 
-            await GetCreateDropdownlistData(vm.AvailableDay);
-
-            return View("Create", vm);
+                return View("Create", vm);
+            }
+            return View(form);
         }
 
         // POST: Admin/ServiceRequest/Create
@@ -208,7 +201,7 @@ namespace WebApp.Controllers
             var serviceCatalogue = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
             var service = serviceCatalogue.SingleOrDefault(c => c.LocationId == location.LocationId && c.ServiceId == sr.ServiceId);
-            if (service == null)
+            if (service == null || !service.Price.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
@@ -310,8 +303,16 @@ namespace WebApp.Controllers
                 };
                 return View("CreateSuccess", model);
             }
-            //TODO: figure out how to return errors
-            return View();
+
+            var vm = new CreateViewModel();
+            vm.AvailableDay = db.AvailableSlots.SingleOrDefault(c => c.Id == sr.AvailableSlotId).AvailableDay;
+            vm.Physician = db.Physicians.SingleOrDefault(c => c.Id == sr.PhysicianId);
+            vm.ServiceRequest.AvailableSlotId = sr.AvailableSlotId;
+            vm.ServiceRequest.PhysicianId = sr.PhysicianId;
+            vm.ServiceRequest.PhysicianDisplayName = vm.Physician.DisplayName;
+            vm.ServiceRequest.AppointmentDate = sr.AppointmentDate;
+
+            return View(vm);
         }
 
         [HttpPost]

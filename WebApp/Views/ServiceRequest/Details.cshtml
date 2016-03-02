@@ -188,41 +188,41 @@
             <dd>@Model.ServiceRequest.Id</dd>
             <dt>Title</dt>
             <dd>@Model.ServiceRequest.Title</dd>
-            <dt>Case Folder</dt>
-            <dd>
-                <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
-                @if (Model.DropboxFolder == null)
-                {
-                    if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+            @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+            {
+                <dt>Case Folder</dt>
+                <dd>
+                    <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
+                    @if (Model.DropboxFolder == null)
                     {
-                        <div>
-                            <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                            </form>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <span class="label label-success">Created</span>
-                    <div class="h4">Folder Shared To:</div>
-                    if (Model.DropboxFolderMembers != null)
-                    {
-                        <ul>
-                            @foreach (var item in Model.DropboxFolderMembers)
-                            {
-                                <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                            }
-                        </ul>
                         if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
                         {
+                            <div>
+                                <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                    <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                                </form>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <span class="label label-success">Created</span>
+                        <div class="h4">Folder Shared To:</div>
+                        if (Model.DropboxFolderMembers != null)
+                        {
+                            <ul>
+                                @foreach (var item in Model.DropboxFolderMembers)
+                                {
+                                    <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                                }
+                            </ul>
                             <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
                                 <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
                             </form>
                         }
                     }
-                }
-            </dd>
+                </dd>
+            }
         </dl>
     </div>
 </div>

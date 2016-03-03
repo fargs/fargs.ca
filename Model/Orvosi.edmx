@@ -2748,8 +2748,11 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <NavigationProperty Name="AvailableDay" Relationship="OrvosiModel.AvailableDayAvailableSlot" FromRole="AvailableSlot" ToRole="AvailableDay" />
         </EntityType>
         <Association Name="AvailableDayAvailableSlot">
-          <End Type="OrvosiModel.AvailableDay" Role="AvailableDay" Multiplicity="1" />
-          <End Type="OrvosiModel.AvailableSlot" Role="AvailableSlot" Multiplicity="*" />
+          <End Type="OrvosiModel.AvailableDay" Role="AvailableDay" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="OrvosiModel.AvailableSlot" Role="AvailableSlot" Multiplicity="*" >
+          </End>
           <ReferentialConstraint>
             <Principal Role="AvailableDay">
               <PropertyRef Name="Id" />

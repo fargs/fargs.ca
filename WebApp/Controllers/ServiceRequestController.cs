@@ -127,7 +127,7 @@ namespace WebApp.Controllers
             var client = await dropbox.GetServiceAccountClientAsync();
 
             // Copy the case template folder
-            var destination = vm.ServiceRequest.DocumentFolderLink;
+            var destination = vm.ServiceRequest.DocumentFolderLink ?? "/qwertypoiu";
 
             try
             {
@@ -305,7 +305,7 @@ namespace WebApp.Controllers
             }
 
             var vm = new CreateViewModel();
-            vm.AvailableDay = db.AvailableSlots.SingleOrDefault(c => c.Id == sr.AvailableSlotId).AvailableDay;
+            vm.AvailableDay = db.AvailableSlots.First(c => c.Id == sr.AvailableSlotId).AvailableDay;
             vm.Physician = db.Physicians.SingleOrDefault(c => c.Id == sr.PhysicianId);
             vm.ServiceRequest.AvailableSlotId = sr.AvailableSlotId;
             vm.ServiceRequest.PhysicianId = sr.PhysicianId;

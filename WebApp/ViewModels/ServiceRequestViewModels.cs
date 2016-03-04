@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using Dropbox.Api.Files;
 using Dropbox.Api.Team;
+using System.Web.Mvc;
 
 namespace WebApp.ViewModels.ServiceRequestViewModels
 {
@@ -41,6 +42,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public bool IsAvailable { get; set; }
         public bool HasCommittedToLocation { get; set; }
         public ServiceCatalogue ServiceCatalogueSelected { get; set; }
+        
     }
 
     public class DetailsViewModel
@@ -62,10 +64,15 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
 
     public class CreateSuccessViewModel
     {
+        public CreateSuccessViewModel()
+        {
+            this.Errors = new ModelErrorCollection();
+        }
         public ServiceRequest ServiceRequest { get; set; }
         public Invoice Invoice { get; set; }
         public Dropbox.Api.Files.Metadata Folder { get; set; }
         public List<Dropbox.Api.Team.MembersGetInfoItem> Members { get; set; }
+        public ModelErrorCollection Errors { get; set; }
     }
 
     public class FilterArgs

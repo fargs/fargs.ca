@@ -209,11 +209,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                var additionalErrors = new ModelErrorCollection();
                 var obj = new ServiceRequest()
                 {
                     ServiceCatalogueId = service.ServiceCatalogueId,
                     AppointmentDate = sr.AppointmentDate,
                     AvailableSlotId = sr.AvailableSlotId,
+                    DueDate = sr.DueDate,
                     AddressId = location.Id,
                     CaseCoordinatorId = sr.CaseCoordinatorId,
                     IntakeAssistantId = sr.IntakeAssistantId,
@@ -252,7 +254,7 @@ namespace WebApp.Controllers
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
 
                 var invoiceService = new InvoiceService();
-                var invoice = invoiceService.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest);
+                var invoice = invoiceService.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
                 db.Invoices.Add(invoice);
                 var validationResults = db.GetValidationErrors();
                 if (validationResults.Count() > 0)
@@ -261,7 +263,7 @@ namespace WebApp.Controllers
                     {
                         foreach (var error in validationResult.ValidationErrors)
                         {
-                            ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                            additionalErrors.Add(new ModelError(error.ErrorMessage));
                         }
                     }
                 }
@@ -295,7 +297,7 @@ namespace WebApp.Controllers
                 var dropbox = new OrvosiDropbox();
                 var client = await dropbox.GetServiceAccountClientAsync();
                 Metadata folder = null;
-                List<MembersGetInfoItem> members = null;
+                List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
                 try
                 {
 
@@ -318,9 +320,9 @@ namespace WebApp.Controllers
                     members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
                 }
-                catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError("", ex);
+                    additionalErrors.Add(new ModelError(ex.Message));
                 }
                 // Create the calendar event
 
@@ -337,7 +339,8 @@ namespace WebApp.Controllers
                     ServiceRequest = obj,
                     Folder = folder,
                     Members = members,
-                    Invoice = invoice
+                    Invoice = invoice,
+                    Errors = additionalErrors
                 };
                 return View("CreateSuccess", model);
             }
@@ -392,7 +395,7 @@ namespace WebApp.Controllers
 
                 await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
             }
-            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex);
             }
@@ -465,7 +468,6 @@ namespace WebApp.Controllers
 
         private static async Task DropboxAddMember(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string email, string sharedFolderId)
         {
-            // Add the case coordinator to the share
             await client.Sharing.AddFolderMemberAsync(
                 sharedFolderId,
                 new List<AddMember>()

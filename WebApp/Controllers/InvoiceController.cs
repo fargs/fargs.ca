@@ -76,7 +76,7 @@ namespace WebApp.Controllers
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
 
                 var service = new InvoiceService();
-                var invoice = service.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest);
+                var invoice = service.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
                 db.Invoices.Add(invoice);
                 if (db.GetValidationErrors().Count() == 0)
                 {

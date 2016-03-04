@@ -13,7 +13,7 @@ namespace WebApp.Services
         public const byte PaymentDueInDays = 14;
         public const decimal TaxRateHst = 0.13M;
 
-        public Invoice BuildInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
+        public Invoice BuildInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest, string userName)
         {
             var invoice = new Invoice()
             {
@@ -43,13 +43,17 @@ namespace WebApp.Services
                 CustomerProvince = customer.ProvinceName,
                 CustomerCountry = customer.CountryName,
                 CustomerEmail = customer.BillingEmail,
-                TaxRateHst = TaxRateHst
+                TaxRateHst = TaxRateHst,
+                ModifiedDate = SystemTime.Now(),
+                ModifiedUser = userName
             };
 
             var invoiceDetail = new InvoiceDetail()
             {
                 ServiceRequestId = serviceRequest.Id,
-                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate)
+                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate),
+                ModifiedDate = SystemTime.Now(),
+                ModifiedUser = userName
             };
 
             var description = new StringBuilder();

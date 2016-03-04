@@ -67,6 +67,9 @@
     <Compile Include="BillableEntity.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="City.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Company.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

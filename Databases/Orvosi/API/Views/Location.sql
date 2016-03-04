@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [API].[Location]
 AS
 SELECT 
@@ -31,6 +32,7 @@ SELECT
 	,ProvinceName = p.ProvinceName
 	,ProvinceCode = p.ProvinceCode
 	,LocationName = l.[Text]
+	,LocationShortName = l.ShortText
 FROM [dbo].[Address] a
 LEFT JOIN dbo.[AddressType] at ON a.AddressTypeId = at.Id
 LEFT JOIN API.Entity e ON a.OwnerGuid = e.EntityGuid

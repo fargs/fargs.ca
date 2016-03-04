@@ -1,13 +1,9 @@
 ﻿
 CREATE PROCEDURE [API].[ServiceRequest_Update]
 	 @Id int
-	,@ObjectGuid uniqueidentifier
 	,@CompanyReferenceId nvarchar(128)
 	,@ClaimantName nvarchar(128)
-	,@ServiceCatalogueId smallint
 	,@AddressId int
-	,@HarvestProjectId bigint
-	,@Title nvarchar(256)
 	,@Body nvarchar(max)
 	,@RequestedDate datetime
 	,@RequestedBy uniqueidentifier
@@ -36,13 +32,9 @@ SET @Now = GETDATE()
 
 UPDATE dbo.[ServiceRequest]
 SET
-	 [ObjectGuid] = @ObjectGuid
-	,[CompanyReferenceId] = @CompanyReferenceId
+	[CompanyReferenceId] = @CompanyReferenceId
 	,[ClaimantName] = @ClaimantName
-	,[ServiceCatalogueId] = @ServiceCatalogueId
 	,[AddressId] = @AddressId
-	,[HarvestProjectId] = @HarvestProjectId
-	,[Title] = @Title
 	,[Body] = @Body
 	,[RequestedDate] = @RequestedDate
 	,[RequestedBy] = @RequestedBy

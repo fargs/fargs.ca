@@ -13,7 +13,7 @@ using WebApp.Library;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin")]
+    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class ServiceCatalogueController : Controller
     {
         OrvosiEntities db = new OrvosiEntities();

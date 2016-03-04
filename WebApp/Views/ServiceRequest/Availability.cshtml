@@ -1,7 +1,16 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
+﻿@using Model
+@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
 
 @{
     ViewBag.Title = "Create Booking - Availability";
+    var db = new OrvosiEntities();
+    ViewBag.Physicians = db.Physicians
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.PrimarySpecialtyName }
+        }).ToList();
 }
 
 <h3>Book an Exam</h3>

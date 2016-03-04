@@ -25,13 +25,13 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
-            filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
-            filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
-
             var vm = new IndexViewModel();
-
             // get the user
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
+            filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
+            filterArgs.StatusId = (filterArgs.StatusId ?? ServiceRequestStatus.Open);
 
             var sr = db.ServiceRequests.AsQueryable();
 
@@ -75,6 +75,11 @@ namespace WebApp.Controllers
                 }
             }
 
+            if (!string.IsNullOrEmpty(filterArgs.NextTask))
+            {
+                sr = sr.Where(c => c.NextTaskAssignedTo == filterArgs.NextTask);
+            }
+
             if (filterArgs.Sort == "Newest")
             {
                 sr = sr.OrderByDescending(c => c.AppointmentDate.Value).ThenBy(c => c.StartTime.Value);
@@ -86,22 +91,6 @@ namespace WebApp.Controllers
 
             // order the requests from oldest to newest
             vm.ServiceRequests = await sr.ToListAsync();
-
-            ViewBag.ServiceRequestStatuses = db.LookupItems
-                .Where(l => l.LookupId == Lookups.ServiceRequestStatus)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ItemText,
-                    Value = c.ItemId.ToString()
-                })
-                .ToList();
-
-            ViewBag.Physicians = db.Physicians
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString()
-                }).ToList();
 
             vm.FilterArgs = filterArgs;
 
@@ -138,12 +127,12 @@ namespace WebApp.Controllers
             var client = await dropbox.GetServiceAccountClientAsync();
 
             // Copy the case template folder
-            var destination = vm.ServiceRequest.DocumentFolderLink;
+            var destination = vm.ServiceRequest.DocumentFolderLink ?? "/qwertypoiu";
 
             try
             {
                 // Get the folder
-                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination.ToLower());
+                vm.DropboxFolder = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
@@ -169,12 +158,7 @@ namespace WebApp.Controllers
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         // GET: Admin/ServiceRequest/Create
-        public async Task<ActionResult> Availability()
-        {
-            await GetPhysicianDropDownData();
-
-            return View();
-        }
+        public ActionResult Availability() => View();
 
         [HttpPost]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
@@ -189,22 +173,20 @@ namespace WebApp.Controllers
             if (ad == null)
             {
                 this.ModelState.AddModelError("AppointmentDate", string.Format("{0} is not available on this day.", p.DisplayName));
-
-                await GetPhysicianDropDownData();
-
-                return View();
             }
 
-            var vm = new CreateViewModel();
-            vm.AvailableDay = ad;
-            vm.Physician = p;
-            vm.ServiceRequest.PhysicianId = p.Id;
-            vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
-            vm.ServiceRequest.AppointmentDate = ad.Day;
+            if (ModelState.IsValid)
+            {
+                var vm = new CreateViewModel();
+                vm.AvailableDay = ad;
+                vm.Physician = p;
+                vm.ServiceRequest.PhysicianId = p.Id;
+                vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
+                vm.ServiceRequest.AppointmentDate = ad.Day;
 
-            await GetCreateDropdownlistData(vm.AvailableDay);
-
-            return View("Create", vm);
+                return View("Create", vm);
+            }
+            return View(form);
         }
 
         // POST: Admin/ServiceRequest/Create
@@ -219,7 +201,7 @@ namespace WebApp.Controllers
             var serviceCatalogue = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
             var service = serviceCatalogue.SingleOrDefault(c => c.LocationId == location.LocationId && c.ServiceId == sr.ServiceId);
-            if (service == null)
+            if (service == null || !service.Price.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
@@ -241,22 +223,24 @@ namespace WebApp.Controllers
                     RequestedDate = sr.RequestedDate,
                     DocumentFolderLink = sr.DocumentFolderLink,
                     CompanyId = sr.CompanyId,
+                    PhysicianId = sr.PhysicianId,
+                    ServiceId = service.ServiceId,
+                    LocationId = service.LocationId,
+                    ServiceCataloguePrice = service.Price,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
-                    PhysicianUserName = string.Empty // same as ServiceName
+                    PhysicianUserName = string.Empty, // same as ServiceName
+                    ModifiedDate = SystemTime.Now()
 
                 };
 
-                using (var db = new OrvosiEntities(User.Identity.Name))
-                {
-                    db.ServiceRequests.Add(obj);
-                    await db.SaveChangesAsync();
-                    await db.Entry(obj).ReloadAsync();
+                db.ServiceRequests.Add(obj);
+                await db.SaveChangesAsync();
+                await db.Entry(obj).ReloadAsync();
 
-                    var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-                    obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-                    await db.SaveChangesAsync();
-                }
+                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+                obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+                await db.SaveChangesAsync();
 
                 /*  TODO: Create the calendar event in the physician booking calendar.
                     TITLE will equal the Calendar Title field.
@@ -285,7 +269,7 @@ namespace WebApp.Controllers
 
                 // Copy the case template folder
                 var destination = obj.DocumentFolderLink;
-                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
                 // Share the folder
                 var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
                 var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
@@ -319,8 +303,16 @@ namespace WebApp.Controllers
                 };
                 return View("CreateSuccess", model);
             }
-            //TODO: figure out how to return errors
-            return View();
+
+            var vm = new CreateViewModel();
+            vm.AvailableDay = db.AvailableSlots.First(c => c.Id == sr.AvailableSlotId).AvailableDay;
+            vm.Physician = db.Physicians.SingleOrDefault(c => c.Id == sr.PhysicianId);
+            vm.ServiceRequest.AvailableSlotId = sr.AvailableSlotId;
+            vm.ServiceRequest.PhysicianId = sr.PhysicianId;
+            vm.ServiceRequest.PhysicianDisplayName = vm.Physician.DisplayName;
+            vm.ServiceRequest.AppointmentDate = sr.AppointmentDate;
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -331,6 +323,10 @@ namespace WebApp.Controllers
             var dropbox = new OrvosiDropbox();
             var client = await dropbox.GetServiceAccountClientAsync();
 
+            var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+            obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+            await db.SaveChangesAsync();
+
             // Get the destination folder name
             var destination = obj.DocumentFolderLink;
 
@@ -339,7 +335,7 @@ namespace WebApp.Controllers
             try
             {
                 // Get the folder
-                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+                metadata = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
@@ -353,7 +349,7 @@ namespace WebApp.Controllers
             }
 
             // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate".ToLower(), destination));
+            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
 
             // Share the folder
             var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
@@ -383,7 +379,7 @@ namespace WebApp.Controllers
             try
             {
                 // Get the folder
-                metadata = await client.Files.GetMetadataAsync(destination.ToLower());
+                metadata = await client.Files.GetMetadataAsync(destination);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
@@ -472,7 +468,7 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> ResourceAssignment(int? id)
         {
             if (id == null)
             {
@@ -486,14 +482,6 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.Staff = await db.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString()
-                }).ToListAsync();
-
             // TODO: Update the calendar and dropbox folder if appropriate.
 
             return View(serviceRequest);
@@ -504,7 +492,7 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(ServiceRequest sr)
+        public async Task<ActionResult> ResourceAssignment(ServiceRequest sr)
         {
             if (ModelState.IsValid)
             {
@@ -573,6 +561,54 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
+
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+
+            // TODO: Update the calendar and dropbox folder if appropriate.
+
+            return View(serviceRequest);
+        }
+
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Edit(ServiceRequest sr)
+        {
+            if (ModelState.IsValid)
+            {
+                using (db = new OrvosiEntities(User.Identity.Name))
+                {
+                    // get the tracked object from the database
+                    var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
+
+                    // update the resource assignments
+                    obj.ClaimantName = sr.ClaimantName;
+                    obj.CompanyReferenceId = sr.CompanyReferenceId;
+                    obj.DueDate = sr.DueDate;
+                    obj.Notes = sr.Notes;
+                    
+                    await db.SaveChangesAsync();
+                    
+                    return RedirectToAction("Details", new { id = obj.Id });
+                }
+            }
+            return View(sr);
+        }
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -596,6 +632,8 @@ namespace WebApp.Controllers
             ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
             db.ServiceRequests.Remove(serviceRequest);
             await db.SaveChangesAsync();
+
+            //TODO: Unshare and delete folders from dropbox
             return RedirectToAction("Index");
         }
 
@@ -776,7 +814,9 @@ namespace WebApp.Controllers
             {
                 Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.Title,
                 Value = c.Id.ToString()
-            }).ToList();
+            })
+            .OrderBy(c => c.Text)
+            .ToList();
 
             ViewBag.Companies = await db.Companies
                 .Where(c => c.IsParent == false)

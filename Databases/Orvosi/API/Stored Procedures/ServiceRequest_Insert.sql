@@ -26,6 +26,10 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@IsNoShow bit
 	,@NoShowRate decimal(18,2)
 	,@LateCancellationRate decimal(18,2)
+	,@PhysicianId NVARCHAR (128)
+	,@ServiceId SMALLINT
+	,@LocationId SMALLINT
+	,@ServiceCataloguePrice DECIMAL(18,2)	
 	,@ModifiedUser nvarchar(100)
 AS
 
@@ -38,8 +42,6 @@ INSERT INTO dbo.[ServiceRequest]
 	,[ClaimantName]
 	,[ServiceCatalogueId]
 	,[AddressId]
-	,[HarvestProjectId]
-	,[Title]
 	,[Body]
 	,[RequestedDate]
 	,[RequestedBy]
@@ -61,6 +63,10 @@ INSERT INTO dbo.[ServiceRequest]
 	,[NoShowRate]
 	,[LateCancellationRate]
 	,[ModifiedUser]
+	,[PhysicianId]
+	,[ServiceId]	
+	,[LocationId]
+	,[ServiceCataloguePrice] 
 )
 VALUES 
 (
@@ -68,8 +74,6 @@ VALUES
 	,@ClaimantName
 	,@ServiceCatalogueId
 	,@AddressId
-	,@HarvestProjectId
-	,@Title
 	,@Body
 	,@RequestedDate
 	,@RequestedBy
@@ -91,6 +95,10 @@ VALUES
 	,@NoShowRate
 	,@LateCancellationRate
 	,@ModifiedUser
+	,@PhysicianId
+	,@ServiceId
+	,@LocationId
+	,@ServiceCataloguePrice
 )
 
 DECLARE @Id INT
@@ -141,7 +149,7 @@ SELECT @Id
 FROM API.[Task] st
 LEFT JOIN Assignments a ON st.ResponsibleRoleId = a.RoleId
 WHERE st.ServiceCategoryId = (
-	SELECT ServiceCategoryId FROM dbo.ServiceCatalogue WHERE Id = @ServiceCatalogueId
+	SELECT ServiceCategoryId FROM dbo.[Service] WHERE Id = @ServiceId
 )
 
-SELECT * FROM API.ServiceRequest WHERE Id = @Id
+SELECT Id, ObjectGuid FROM dbo.ServiceRequest WHERE Id = @Id

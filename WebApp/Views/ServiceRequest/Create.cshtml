@@ -1,377 +1,429 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
+﻿@using Model
+@using Model.Enums
+    @model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
 
-@{
-    ViewBag.Title = "Book an Exam - Details";
-}
+    @{
+        ViewBag.Title = "Book an Exam - Details";
 
-<h3>Book an Exam</h3>
-<h4>Step 2 of 2: Details</h4>
+        var db = new OrvosiEntities();
 
-<form action="@Url.Content("~/ServiceRequest/Create")" method="post" class="form-horizontal">
+        ViewBag.Services = db.Services
+            .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+            .Select(c => new SelectListItem()
+            {
+                Text = c.Name,
+                Value = c.Id.ToString(),
+                Group = new SelectListGroup() { Name = c.ServiceCategoryName }
+            }).ToList();
 
-    @Html.AntiForgeryToken()
+        var slots = db.AvailableSlots
+            .Where(c => c.AvailableDayId == Model.AvailableDay.Id).ToList();
 
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        ViewBag.AvailableSlots = slots.Select(c => new SelectListItem()
+        {
+            Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.Title,
+            Value = c.Id.ToString()
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
 
-    @Html.Hidden("PhysicianId")
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Physician</label>
-        <div class="col-sm-10">
-            <p class="form-control-static">@Model.ServiceRequest.PhysicianDisplayName</p>
-        </div>
-    </div>
+        ViewBag.Companies = db.Companies
+            .Where(c => c.IsParent == false)
+            .Select(c => new SelectListItem()
+            {
+                Text = c.Name,
+                Value = c.Id.ToString(),
+                Group = new SelectListGroup() { Name = c.ParentName }
+            }).ToList();
 
-    @Html.Hidden("AppointmentDate")
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Appointment Date</label>
-        <div class="col-sm-10">
-            <p class="form-control-static">@Model.ServiceRequest.AppointmentDate.Value.ToLongDateString()</p>
-        </div>
-    </div>
+        var l = db.Locations.ToList();
+        ViewBag.Locations = l.Select(c => new SelectListItem()
+        {
+            Text = string.Format("{0} - {1}", c.LocationName, c.Name),
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.EntityDisplayName }
+        });
 
-    @if (Model.AvailableDay.IsPrebook)
-    {
-        <div class="form-group">
-            <div class="col-md-push-2 col-md-10 text-info">
-                @Model.ServiceRequest.PhysicianDisplayName has a <strong>prebook agreement</strong> in place with <strong>@Model.AvailableDay.CompanyName</strong> on this day
-            </div>
-        </div>
+        ViewBag.Requestors = db.Users
+            .Where(u => u.RoleCategoryId == RoleCategory.Company)
+            .Select(c => new SelectListItem()
+            {
+                Text = c.DisplayName,
+                Value = c.Id.ToString()
+            }).ToList();
+
+        ViewBag.Staff = db.Users
+            .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
+            .Select(c => new SelectListItem()
+            {
+                Text = c.DisplayName,
+                Value = c.Id.ToString()
+            }).ToList();
     }
-    else if (Model.AvailableDay.CompanyId != null)
-    {
-        <div class="form-group">
-            <div class="col-md-push-2 col-md-10 text-info">
-                @Model.ServiceRequest.PhysicianDisplayName has offered this day to <strong>@Model.AvailableDay.CompanyName</strong>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="form-group">
-            <div class="col-md-push-2 col-md-10 text-info">
-                @Model.ServiceRequest.PhysicianDisplayName <strong>is available</strong> to <strong>all</strong> companies
-            </div>
-        </div>
-    }
 
-    <div class="form-group">
-        <label class="control-label col-md-2">Company</label>
-        <div class="col-md-10">
-            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <h3>Book an Exam</h3>
+    <h4>Step 2 of 2: Details</h4>
 
-    @if (Model.AvailableDay.LocationId != null)
-    {
-        <div class="form-group">
-            <div class="col-md-push-2 col-md-10 text-info">
-                @Model.ServiceRequest.PhysicianDisplayName has committed to a location on this day
-            </div>
-        </div>
+    <form action="@Url.Content("~/ServiceRequest/Create")" method="post" class="form-horizontal">
 
-        @Html.Hidden("LocationId", Model.AvailableDay.LocationId)
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.Hidden("PhysicianId")
         <div class="form-group">
-            <label class="col-sm-2 control-label">Location</label>
+            <label class="col-sm-2 control-label">Physician</label>
             <div class="col-sm-10">
-                <p class="form-control-static">@string.Format("{0}'s", Model.AvailableDay.LocationOwnerDisplayName) @Model.AvailableDay.LocationName</p>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="form-group">
-            <div class="col-md-push-2 col-md-10 text-info">
-                The location is <strong>to be determined</strong>
+                <p class="form-control-static">@Model.ServiceRequest.PhysicianDisplayName</p>
             </div>
         </div>
 
+        @Html.Hidden("AppointmentDate")
         <div class="form-group">
-            <label class="control-label col-md-2">Location</label>
+            <label class="col-sm-2 control-label">Appointment Date</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.ServiceRequest.AppointmentDate.Value.ToLongDateString()</p>
+            </div>
+        </div>
+
+        @if (Model.AvailableDay.IsPrebook)
+        {
+            <div class="form-group">
+                <div class="col-md-push-2 col-md-10 text-info">
+                    @Model.ServiceRequest.PhysicianDisplayName has a <strong>prebook agreement</strong> in place with <strong>@Model.AvailableDay.CompanyName</strong> on this day
+                </div>
+            </div>
+        }
+        else if (Model.AvailableDay.CompanyId != null)
+        {
+            <div class="form-group">
+                <div class="col-md-push-2 col-md-10 text-info">
+                    @Model.ServiceRequest.PhysicianDisplayName has offered this day to <strong>@Model.AvailableDay.CompanyName</strong>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-md-push-2 col-md-10 text-info">
+                    @Model.ServiceRequest.PhysicianDisplayName <strong>is available</strong> to <strong>all</strong> companies
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Company</label>
             <div class="col-md-10">
-                @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-                @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
+                @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
             </div>
         </div>
-    }
 
-    <div class="form-group">
-        <label class="control-label col-md-2">Time Slot</label>
-        <div class="col-md-10">
-            @Html.DropDownList("AvailableSlotId", new SelectList(ViewBag.AvailableSlots, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Service</label>
-        <div class="col-md-10">
-            @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Claimant</label>
-        <div class="col-md-10">
-            @Html.Editor("ClaimantName", new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessage("ClaimantName", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Reference Id</label>
-        <div class="col-md-10">
-            @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Requested By</label>
-        <div class="col-md-10">
-            @Html.Editor("RequestedBy", new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Requested On</label>
-        <div class="col-md-10">
-            <div class="input-group date" style="width:100%" id="RequestedDatePicker">
-                <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
-                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Additional Notes</label>
-        <div class="col-md-10">
-            <textarea class="form-control" name="Notes" rows="3"></textarea>
-            @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Case Coordinator</label>
-        <div class="col-md-10">
-            @Html.DropDownList("CaseCoordinatorId", new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-push-2 col-md-10">
-            <button class="btn btn-primary">Submit</button>
-            <a href="~/ServiceRequest/Availability" class="btn btn-primary">Start Over</a>
-        </div>
-    </div>
-
-</form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@*
-
-
-            </div>
-            @*
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Case Details
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label class="control-label col-md-2">Time Slot</label>
-                    <div class="col-md-10">
-                        <select class="form-control disabled" name="AvailableSlotId" id="StartTime">
-                            <option></option>
-                        </select>
-                        @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
-                    </div>
+        @if (Model.AvailableDay.LocationId != null)
+        {
+            <div class="form-group">
+                <div class="col-md-push-2 col-md-10 text-info">
+                    @Model.ServiceRequest.PhysicianDisplayName has committed to a location on this day
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Service</label>
-                    <div class="col-md-10">
-                        <select class="form-control disabled" name="ServiceCatalogueId" id="ServiceId">
-                            <option></option>
-                        </select>
-                        @Html.ValidationMessage("ServiceCatalogueId", "", new { @class = "text-danger" })
-                    </div>
+            </div>
+
+            @Html.Hidden("LocationId", Model.AvailableDay.LocationId)
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Location</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@string.Format("{0}'s", Model.AvailableDay.LocationOwnerDisplayName) @Model.AvailableDay.LocationName</p>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Requested By</label>
-                    <div class="col-md-10">
-                        <select class="form-control disabled" name="RequestedBy" id="RequestedBy">
-                            <option></option>
-                        </select>
-                        @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
-                    </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-md-push-2 col-md-10 text-info">
+                    The location is <strong>to be determined</strong>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Requested On</label>
-                    <div class="col-md-10">
-                        <div class="input-group date" style="width:100%" id="RequestedDatePicker">
-                            <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Location</label>
+                <div class="col-md-10">
+                    @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                    @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Time Slot</label>
+            <div class="col-md-10">
+                @Html.DropDownList("AvailableSlotId", new SelectList(ViewBag.AvailableSlots, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Service</label>
+            <div class="col-md-10">
+                @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Claimant</label>
+            <div class="col-md-10">
+                @Html.Editor("ClaimantName", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("ClaimantName", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Due Date</label>
+            <div class="col-md-10">
+                <div class="input-group date" style="width:100%" id="DueDatePicker">
+                    @Html.TextBox("DueDate", "", new { @class = "form-control", size = "16" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+                @Html.ValidationMessage("DueDate", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Reference Id</label>
+            <div class="col-md-10">
+                @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Requested By</label>
+            <div class="col-md-10">
+                @Html.Editor("RequestedBy", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Requested On</label>
+            <div class="col-md-10">
+                <div class="input-group date" style="width:100%" id="RequestedDatePicker">
+                    <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Additional Notes</label>
+            <div class="col-md-10">
+                <textarea class="form-control" name="Notes" rows="3"></textarea>
+                @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Case Coordinator</label>
+            <div class="col-md-10">
+                @Html.DropDownList("CaseCoordinatorId", new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-push-2 col-md-10">
+                <button class="btn btn-primary">Submit</button>
+                <a href="~/ServiceRequest/Availability" class="btn btn-primary">Start Over</a>
+            </div>
+        </div>
+
+    </form>
+
+    @*
+
+
+                </div>
+                @*
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Case Details
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Time Slot</label>
+                        <div class="col-md-10">
+                            <select class="form-control disabled" name="AvailableSlotId" id="StartTime">
+                                <option></option>
+                            </select>
+                            @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Service</label>
+                        <div class="col-md-10">
+                            <select class="form-control disabled" name="ServiceCatalogueId" id="ServiceId">
+                                <option></option>
+                            </select>
+                            @Html.ValidationMessage("ServiceCatalogueId", "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Requested By</label>
+                        <div class="col-md-10">
+                            <select class="form-control disabled" name="RequestedBy" id="RequestedBy">
+                                <option></option>
+                            </select>
+                            @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Requested On</label>
+                        <div class="col-md-10">
+                            <div class="input-group date" style="width:100%" id="RequestedDatePicker">
+                                <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Reference Id</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.CompanyReferenceId, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.CompanyReferenceId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Claimant</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ClaimantName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ClaimantName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Document Folder Link</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.DocumentFolderLink, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DocumentFolderLink, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Additional Notes</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" name="Body" rows="3"></textarea>
+                            @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Reference Id</label>
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.CompanyReferenceId, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.CompanyReferenceId, "", new { @class = "text-danger" })
-                    </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Resource Assignments
                 </div>
-
-                <div class="form-group">
-                    <label class="control-label col-md-2">Claimant</label>
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.ClaimantName, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.ClaimantName, "", new { @class = "text-danger" })
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Case Coordinator</label>
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CaseCoordinatorId, "", new { @class = "text-danger" })
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label col-md-2">Document Folder Link</label>
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.DocumentFolderLink, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.DocumentFolderLink, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Intake Assistant</label>
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.IntakeAssistantId, "", new { @class = "text-danger" })
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label col-md-2">Additional Notes</label>
-                    <div class="col-md-10">
-                        <textarea class="form-control" name="Body" rows="3"></textarea>
-                        @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Document Reviewer</label>
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.DocumentReviewerId, "", new { @class = "text-danger" })
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Resource Assignments
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label class="control-label col-md-2">Case Coordinator</label>
-                    <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.CaseCoordinatorId, "", new { @class = "text-danger" })
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Price
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Intake Assistant</label>
-                    <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.IntakeAssistantId, "", new { @class = "text-danger" })
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Service Price</label>
+                        <div class="col-md-10">
+                            <p class="form-control-static" id="ServicePrice"></p>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-2">Document Reviewer</label>
-                    <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.DocumentReviewerId, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Price
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label class="control-label col-md-2">Service Price</label>
-                    <div class="col-md-10">
-                        <p class="form-control-static" id="ServicePrice"></p>
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="control-label col-md-2">Company Override</label>
-                    <div class="col-md-10">
-                        <p class="form-control-static" id="ServiceCataloguePrice"></p>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Company Override</label>
+                        <div class="col-md-10">
+                            <p class="form-control-static" id="ServiceCataloguePrice"></p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="control-label col-md-2">Request Override</label>
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.ServiceRequestPrice, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.ServiceRequestPrice, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Request Override</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ServiceRequestPrice, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ServiceRequestPrice, "", new { @class = "text-danger" })
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" />
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Create" class="btn btn-default" />
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-*@
+        }
+    *@
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-    <script type="text/javascript">
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
 
-        $('document').ready(function () {
-            var company = $('#CompanyId');
-            var physician = $('#PhysicianId');
-            var service = $('#ServiceId');
-            var location = $('#LocationId');
-            var requestedBy = $('#RequestedBy');
-            var servicePrice = $('#ServicePrice');
-            var serviceCataloguePrice = $('#ServiceCataloguePrice');
-            var serviceRequestPrice = $('#ServiceRequestPriceOrverride');
-            var effectivePrice = $('#EffectivePrice');
-            var getAvailabilityButton = $('#GetAvailabilityButton');
-            var appointmentDate = $('#AppointmentDate');
-            var requestedDate = $('#RequestedDate');
-            var startTime = $('#StartTime');
+            $('document').ready(function () {
+                var company = $('#CompanyId');
+                var physician = $('#PhysicianId');
+                var service = $('#ServiceId');
+                var location = $('#LocationId');
+                var requestedBy = $('#RequestedBy');
+                var servicePrice = $('#ServicePrice');
+                var serviceCataloguePrice = $('#ServiceCataloguePrice');
+                var serviceRequestPrice = $('#ServiceRequestPriceOrverride');
+                var effectivePrice = $('#EffectivePrice');
+                var getAvailabilityButton = $('#GetAvailabilityButton');
+                var appointmentDate = $('#AppointmentDate');
+                var requestedDate = $('#RequestedDate');
+                var startTime = $('#StartTime');
 
-            //var dueDate = $('#DueDate').datepicker();
-            $('#AppointmentDatePicker').datepicker({
-                startDate: '-1d',
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
+                $('#DueDatePicker').datepicker({
+                    startDate: '-1d',
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
 
-            $('#RequestedDatePicker').datepicker({
-                format: 'yyyy-mm-dd'
-            });
+                //var dueDate = $('#DueDate').datepicker();
+                $('#AppointmentDatePicker').datepicker({
+                    startDate: '-1d',
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
 
-            @*getAvailabilityButton.click(function (e) {
+                $('#RequestedDatePicker').datepicker({
+                    format: 'yyyy-mm-dd'
+                });
+
+                @*getAvailabilityButton.click(function (e) {
                 e.preventDefault();
                 // load the physicians
                 $.post(
@@ -506,6 +558,6 @@
             });*@
 
 
-        });
-    </script>
-}
+            });
+        </script>
+    }

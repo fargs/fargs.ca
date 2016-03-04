@@ -14,6 +14,12 @@ namespace Model
     
     public partial class ServiceRequest
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ServiceRequest()
+        {
+            this.InvoiceDetails = new HashSet<InvoiceDetail>();
+        }
+    
         public int Id { get; set; }
         public System.Guid ObjectGuid { get; set; }
         public string CompanyReferenceId { get; set; }
@@ -88,5 +94,8 @@ namespace Model
         public Nullable<decimal> NoShowRate { get; set; }
         public Nullable<decimal> LateCancellationRate { get; set; }
         public Nullable<System.Guid> CompanyGuid { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }
     }
 }

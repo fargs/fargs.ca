@@ -15,7 +15,7 @@
         <EntityTypeShape EntityType="OrvosiModel.Service" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceCategory" Width="1.5" PointX="9.375" PointY="5.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServicePortfolio" Width="1.5" PointX="9.375" PointY="8.75" />
-        <EntityTypeShape EntityType="OrvosiModel.ServiceRequest" Width="1.875" PointX="11.25" PointY="5.125" />
+        <EntityTypeShape EntityType="OrvosiModel.ServiceRequest" PointX="11.375" PointY="14.75" Width="1.875" />
         <EntityTypeShape EntityType="OrvosiModel.Location" Width="1.5" PointX="13.375" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.LookupItem" Width="1.5" PointX="3.375" PointY="13.75" />
         <EntityTypeShape EntityType="OrvosiModel.Province" Width="1.5" PointX="16.625" PointY="18.125" />
@@ -49,10 +49,14 @@
         <AssociationConnector Association="OrvosiModel.AvailableDayAvailableSlot" />
       </Diagram>
       <Diagram DiagramId="e569724c65224fd0b850dba8cc097e3a" Name="Invoice" >
-        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="4.125" PointY="0.75" />
         <EntityTypeShape EntityType="OrvosiModel.BillableEntity" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.InvoiceDetail" Width="1.5" PointX="6.75" PointY="0.75" />
-        <AssociationConnector Association="OrvosiModel.InvoiceDetailInvoice" />
+        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="3.375" PointY="1.25" />
+        <EntityTypeShape EntityType="OrvosiModel.InvoiceDetail" Width="1.5" PointX="5.625" PointY="3.375" />
+        <AssociationConnector Association="OrvosiModel.FK_InvoiceDetail_Invoice" />
+        <AssociationConnector Association="OrvosiModel.ServiceProviderInvoice" />
+        <AssociationConnector Association="OrvosiModel.CustomerInvoice" />
+        <EntityTypeShape EntityType="OrvosiModel.ServiceRequest" Width="1.5" PointX="8" PointY="3.375" />
+        <AssociationConnector Association="OrvosiModel.ServiceRequestInvoiceDetail" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

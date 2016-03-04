@@ -75,6 +75,7 @@
     <Folder Include="Snapshots" />
     <Folder Include="Harvest\" />
     <Folder Include="Harvest\Tables\" />
+    <Folder Include="dbo\Sequences\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -254,7 +255,6 @@
     <Build Include="API\Stored Procedures\AvailableDay_Delete.sql" />
     <Build Include="dbo\Tables\InvoiceDetail.sql" />
     <Build Include="dbo\Tables\Invoice.sql" />
-    <Build Include="API\Views\PhysicianToCompanyServiceRequestInvoicePreview.sql" />
     <Build Include="API\Views\Invoice.sql" />
     <Build Include="dbo\Functions\GetInvoiceDetailAmount.sql" />
     <Build Include="API\Stored Procedures\InvoiceDetail_Update.sql" />
@@ -271,6 +271,8 @@
     <Build Include="API\Stored Procedures\ServiceCatalogue_Delete.sql" />
     <Build Include="dbo\Tables\ServiceCatalogueRate.sql" />
     <Build Include="API\Stored Procedures\GetServiceCatalogueRate.sql" />
+    <Build Include="API\Stored Procedures\GetNextInvoiceNumber.sql" />
+    <Build Include="dbo\Sequences\InvoiceNumberSequence.sql" />
     <Build Include="dbo\Tables\City.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -318,5 +320,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Orvosi.refactorlog" />
   </ItemGroup>
 </Project>

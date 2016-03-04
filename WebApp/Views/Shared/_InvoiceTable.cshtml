@@ -1,0 +1,49 @@
+﻿@model List<Model.InvoiceDetail>
+<table class="table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Physician</th>
+            <th>Company</th>
+            <th>Invoice #</th>
+            <th>Invoice Date</th>
+            <th>Details</th>
+            <th>Total (Before @Model.First().Invoice.TaxRateHst.Value.ToString("0%") tax)</th>
+            <th>Submitted</th>
+            <th>Payment Received</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detail in Model)
+        {
+            <tr>
+                <td>
+                    <a href="~/Invoice/Edit/@detail.Invoice.Id" class="btn btn-primary btn-sm">Edit</a>
+                </td>
+                <td>@detail.Invoice.ServiceProviderName</td>
+                <td>@detail.Invoice.CustomerName</td>
+                <td>@detail.Invoice.InvoiceNumber</td>
+                <td>@detail.Invoice.InvoiceDate.GetDateTimeFormats('d')[0]</td>
+                <td><span class="invoice-description">@Html.Raw(detail.Description)</span></td>
+                <td>@detail.Invoice.SubTotal</td>
+                <td>
+                    @if (detail.Invoice.SentDate.HasValue)
+                    {
+                        @Html.Partial("_InvoiceSubmitted", detail.Invoice.SentDate.Value)
+                    }
+                    else
+                    {
+                        <div id="submit-invoice">
+                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = detail.InvoiceId }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId="submit-invoice" })
+                        </div>
+
+                    }
+                </td>
+                <td>
+                    @(detail.Invoice.PaymentReceivedDate.HasValue ? detail.Invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "Pending")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

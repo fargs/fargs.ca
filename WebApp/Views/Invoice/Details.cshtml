@@ -5,6 +5,7 @@
 {
     <form action="~/Invoice/Create" method="post">
         @Html.Hidden("ServiceRequestId", Model.InvoiceDetails.First().ServiceRequestId)
+
         <div class="container">
             @Html.Partial("_Invoice", Model)
             <div class="row">
@@ -18,12 +19,13 @@
 else if (ViewBag.FormMode == FormModes.Edit)
 {
     <form action="~/Invoice/Edit" method="post">
-        @Html.Hidden("Id", Model.Id)
+        <input type="hidden" name="Id" value="@Model.InvoiceDetails.First().Id" />
         <div class="container">
             @Html.Partial("_Invoice", Model)
             <div class="row">
                 <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-primary">Back to Service Request</a>
                 </div>
             </div>
         </div>
@@ -33,5 +35,31 @@ else
 {
     <div class="container">
         @Html.Partial("_Invoice", Model)
+        <div class="row">
+            <div class="col-sm-4">
+                <form action="~/Invoice/Send" method="post">
+                    <div class="form-group">
+                        <label class="control-label">Send Invoice To Email</label>
+                        <div>
+                            <input type="text" value="@Model.CustomerEmail" name="CustomerEmail" class="form-control" placeholder="Bill To Email" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-primary">Back to Service Request</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-4">
+
+            </div>
+            <div class="col-sm-4">
+                <div class="pull-right">
+                    <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
+                </div>
+            </div>
+        </div>
     </div>
 }

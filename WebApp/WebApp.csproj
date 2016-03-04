@@ -513,6 +513,8 @@
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.ar.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.az.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.bg.min.js" />
@@ -766,6 +768,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Shared\NotificationTemplates\Invoice.html" />
     <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
     <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />
     <Content Include="Web.config">
@@ -826,9 +829,11 @@
     <Content Include="Views\ServiceCatalogue\EditRates.cshtml" />
     <Content Include="Views\Invoice\Index.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />
-    <Content Include="Views\Invoice\Create.cshtml" />
     <Content Include="Views\Invoice\_Invoice.cshtml" />
+    <Content Include="Views\ServiceRequest\_CreateInvoice.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
+    <Content Include="Views\Shared\_InvoiceTable.cshtml" />
+    <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -4,15 +4,16 @@
 <div class="row">
     <div class="col-sm-6">
         <div class="image-logo-md"></div>
-        <div class="lead">@Model.CompanyName</div>
+        <div class="lead">@Model.ServiceProviderName</div>
     </div>
     <div class="col-sm-6">
         <div class="pull-right">
-            <div>@Model.Address1</div>
-            <div>@Model.Address2</div>
-            <div>@Model.Address3</div>
-            <div>@Model.Email</div>
-            <div>@Model.PhoneNumber</div>
+            <div>@Model.ServiceProviderAddress1</div>
+            <div>@Model.ServiceProviderAddress2</div>
+            <div>@(string.Format("{0}, {1} {2}", Model.ServiceProviderCity, Model.ServiceProviderProvince, Model.ServiceProviderCountry))</div>
+            <div>@Model.ServiceProviderPostalCode</div>
+            <div>@Model.ServiceProviderEmail</div>
+            <div>@Model.ServiceProviderPhoneNumber</div>
         </div>
     </div>
 </div>
@@ -25,10 +26,12 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-6">
-                        <div class="h1">@Model.BillToName</div>
-                        <div>@Model.BillToAddress1</div>
-                        <div>@Model.BillToAddress2</div>
-                        <div>@Model.BillToAddress3</div>
+                        <div class="h1">@Model.CustomerName</div>
+                        <div>@Model.CustomerAddress1</div>
+                        <div>@Model.CustomerAddress2</div>
+                        <div>@(string.Format("{0}, {1} {2}", Model.CustomerCity, Model.CustomerProvince, Model.CustomerCountry))</div>
+                        <div>@Model.CustomerPostalCode</div>
+                        <div>@Model.CustomerEmail</div>
                     </div>
                     <div class="col-sm-6">
                         <div class="h1 text-right text-danger">
@@ -36,7 +39,7 @@
                         </div>
                         <dl class="dl-horizontal pull-right text-right">
                             <dt>Invoice Number</dt>
-                            <dd>@(string.IsNullOrEmpty(Model.InvoiceNumber) ? "TBD" : Model.InvoiceNumber)</dd>
+                            <dd>@Model.InvoiceNumber</dd>
                             <dt>Invoice Date</dt>
                             <dd>@Model.InvoiceDate.GetDateTimeFormats('d')[0]</dd>
                             <dt>Payment Due</dt>
@@ -48,6 +51,22 @@
         </div>
     </div>
 </div>
+@*@if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
+{
+    <form action="~/Invoice/AddInvoiceItem" method="post" style="margin-bottom:20px;">
+        @Html.Hidden("InvoiceId", Model.Id)
+        @Html.Hidden("Rate", 1)
+        <div class="form-group">
+            <label for="Description" class="control-label">Description</label>
+            <textarea rows="3" class="form-control" name="Description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="Amount" class="control-label">Amount</label>
+            <input type="text" class="form-control" name="Amount" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Add Item</button>
+    </form>
+}*@
 <div class="panel panel-default">
     <div class="panel-heading">
         <strong>Details</strong>
@@ -64,18 +83,16 @@
             {
                 <tr>
                     <td width="80%">
-                        @MvcHtmlString.Create(item.Description)
+                        <span class="invoice-description">@Html.Raw(item.Description)</span>
                         @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
-                            <div class="form-group">
-                                <label for="Notes" class="control-label">Notes</label>
-                                <textarea rows="3" class="form-control" name="@item.AdditionalNotes"></textarea>
-                            </div>
+                            <label style="padding-top: 10px;">Notes</label>
+                            <textarea rows="3" class="form-control" name="AdditionalNotes" value="@item.AdditionalNotes" placeholder="Notes"></textarea>
                         }
                         else
                         {
-                            <br />
-                            @item.AdditionalNotes
+                            <label style="padding-top: 10px;">Notes</label>
+                            <div>@item.AdditionalNotes</div>
                         }
                     </td>
                     <td width="20%">

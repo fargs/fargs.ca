@@ -16,15 +16,18 @@ namespace Model
     {
         public int Id { get; set; }
         public int InvoiceId { get; set; }
-        public Nullable<int> ServiceRequestId { get; set; }
+        public int ServiceRequestId { get; set; }
         public string Description { get; set; }
         public Nullable<short> Quantity { get; set; }
         public Nullable<decimal> Rate { get; set; }
         public Nullable<decimal> Total { get; set; }
         public Nullable<decimal> Discount { get; set; }
         public Nullable<decimal> Amount { get; set; }
+        public string AdditionalNotes { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
-        public string AdditionalNotes { get; set; }
+    
+        public virtual Invoice Invoice { get; set; }
+        public virtual ServiceRequest ServiceRequest { get; set; }
     }
 }

@@ -122,6 +122,10 @@ body {
     border: 0;
 }
 
+.invoice-description {
+    white-space: pre-line;
+}
+
 /*--------------------------------------------------*/
 
 .border-left {

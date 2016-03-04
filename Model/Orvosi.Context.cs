@@ -55,10 +55,10 @@ namespace Model
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
         public virtual DbSet<PhysicianToCompanyServiceRequestInvoicePreview> PhysicianToCompanyServiceRequestInvoicePreviews { get; set; }
-        public virtual DbSet<Invoice> Invoices { get; set; }
         public virtual DbSet<BillableEntity> BillableEntities { get; set; }
-        public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
         public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
         public virtual DbSet<City> Cities { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
@@ -1959,6 +1959,11 @@ namespace Model
                 new ObjectParameter("CustomerGuid", typeof(System.Guid));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceCatalogueRate_Result>("GetServiceCatalogueRate", serviceProviderGuidParameter, customerGuidParameter);
+        }
+    
+        public virtual ObjectResult<string> GetNextInvoiceNumber()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetNextInvoiceNumber");
         }
     }
 }

@@ -33,29 +33,29 @@
 
 <div class="row" style="margin-top:30px;">
     <div class="col-md-12">
-        @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-        {
-            <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
-            @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
-        }
-        else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
-        {
-            <form action="~/ServiceRequest/ToggleNoShow" method="post">
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id")
-                <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-                <span><button class="btn btn-link">Undo</button></span>
-            </form>
-        }
-        else
-        {
-            <form action="~/ServiceRequest/ToggleNoShow" method="post">
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id")
-                <button class="btn btn-default">No Show</button>
-                <div class="help-block">Click to flag this case as a "No Show"</div>
-            </form>
-        }
+@if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
+{
+    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
+    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
+}
+else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
+{
+    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id")
+        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
+        <span><button class="btn btn-link">Undo</button></span>
+    </form>
+}
+else
+{
+    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id")
+        <button class="btn btn-default">No Show</button>
+        <div class="help-block">Click to flag this case as a "No Show"</div>
+    </form>
+}
     </div>
 </div>
 
@@ -133,7 +133,20 @@
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <h3>Invoice from Physician to Company</h3>
-    <a href="~/Invoice/Create/@Model.ServiceRequest.Id">Create Invoice</a>
+    if (Model.ServiceRequest.InvoiceDetails.Count == 0)
+    {
+        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
+        using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+        {
+            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+            <button type="submit" class="btn btn-primary">Create Invoice</button>
+        }
+    }
+    else
+    {
+        @Html.Partial("_InvoiceTable", Model.ServiceRequest.InvoiceDetails.ToList())
+    }
+
     <h3>Invoice from Staff to Orvosi</h3>
     if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
     {
@@ -190,38 +203,38 @@
             <dd>@Model.ServiceRequest.Title</dd>
             @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
             {
-                <dt>Case Folder</dt>
-                <dd>
+            <dt>Case Folder</dt>
+            <dd>
                     <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
-                    @if (Model.DropboxFolder == null)
+                @if (Model.DropboxFolder == null)
+                {
+                    if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
                     {
-                        if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                        {
-                            <div>
-                                <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                    <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                                </form>
-                            </div>
-                        }
+                        <div>
+                            <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                            </form>
+                        </div>
                     }
-                    else
+                }
+                else
+                {
+                    <span class="label label-success">Created</span>
+                    <div class="h4">Folder Shared To:</div>
+                    if (Model.DropboxFolderMembers != null)
                     {
-                        <span class="label label-success">Created</span>
-                        <div class="h4">Folder Shared To:</div>
-                        if (Model.DropboxFolderMembers != null)
-                        {
-                            <ul>
-                                @foreach (var item in Model.DropboxFolderMembers)
-                                {
-                                    <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                                }
-                            </ul>
+                        <ul>
+                            @foreach (var item in Model.DropboxFolderMembers)
+                            {
+                                <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                            }
+                        </ul>
                             <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
                                 <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
                             </form>
                         }
                     }
-                </dd>
+            </dd>
             }
         </dl>
     </div>
@@ -284,3 +297,10 @@
         </address>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+        })
+    </script>
+}

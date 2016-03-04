@@ -12,29 +12,36 @@ namespace WebApp.Services
     {
         public const byte PaymentDueInDays = 14;
         public const decimal TaxRateHst = 0.13M;
-        public Invoice PreviewInvoice(BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
+        public Invoice PreviewInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
         {
             var invoice = new Invoice()
             {
-                InvoiceNumber = "100001",
-                ServiceRequestId = serviceRequest.Id,
-                InvoiceDate = SystemTime.Now(),
+                InvoiceNumber = invoiceNumber,
+                InvoiceDate = serviceRequest.AppointmentDate.Value,
                 DueDate = SystemTime.Now().AddDays(PaymentDueInDays),
                 Currency = "CAD",
-                CompanyGuid = serviceProvider.EntityGuid,
-                CompanyName = serviceProvider.EntityName,
-                CompanyLogoCssClass = serviceProvider.LogoCssClass,
-                Address1 = serviceProvider.Address1,
-                Address2 = string.Format("{0}, {1} {2}", serviceProvider.City, serviceProvider.ProvinceName, serviceProvider.CountryName),
-                Address3 = serviceProvider.PostalCode,
-                Email = serviceProvider.BillingEmail,
-                PhoneNumber = serviceProvider.Phone,
-                BillToGuid = customer.EntityGuid,
-                BillToName = customer.EntityName,
-                BillToAddress1 = customer.Address1,
-                BillToAddress2 = string.Format("{0}, {1} {2}", customer.City, customer.ProvinceName, customer.CountryName),
-                BillToAddress3 = customer.PostalCode,
-                BillToEmail = customer.BillingEmail,
+                ServiceProviderGuid = serviceProvider.EntityGuid,
+                ServiceProviderName = serviceProvider.EntityName,
+                ServiceProviderEntityType = serviceProvider.EntityType,
+                ServiceProviderLogoCssClass = serviceProvider.LogoCssClass,
+                ServiceProviderAddress1 = serviceProvider.Address1,
+                ServiceProviderAddress2 = serviceProvider.Address2,
+                ServiceProviderCity = serviceProvider.PostalCode,
+                ServiceProviderPostalCode = serviceProvider.PostalCode,
+                ServiceProviderProvince = serviceProvider.ProvinceName,
+                ServiceProviderCountry = serviceProvider.CountryName,
+                ServiceProviderEmail = serviceProvider.BillingEmail,
+                ServiceProviderPhoneNumber = serviceProvider.Phone,
+                CustomerGuid = customer.EntityGuid,
+                CustomerName = customer.EntityName,
+                CustomerEntityType = customer.EntityType,
+                CustomerAddress1 = customer.Address1,
+                CustomerAddress2 = customer.Address2,
+                CustomerCity = customer.PostalCode,
+                CustomerPostalCode = customer.PostalCode,
+                CustomerProvince = customer.ProvinceName,
+                CustomerCountry = customer.CountryName,
+                CustomerEmail = customer.BillingEmail,
                 TaxRateHst = TaxRateHst
             };
 
@@ -97,7 +104,7 @@ namespace WebApp.Services
             return price * rate;
         }
 
-        public decimal? GetInvoiceTotal(decimal? subTotal, decimal taxRate)
+        public decimal? GetInvoiceTotal(decimal? subTotal, decimal? taxRate)
         {
             return subTotal * (1 + taxRate);
         }

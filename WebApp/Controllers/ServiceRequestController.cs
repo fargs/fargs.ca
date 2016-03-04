@@ -15,6 +15,7 @@ using WebApp.Library;
 using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -240,7 +241,34 @@ namespace WebApp.Controllers
 
                 var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
                 obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-                await db.SaveChangesAsync();
+
+
+                //CREATE THE INVOICE
+                var serviceRequest = obj;
+
+                var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
+                var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
+
+                var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+
+                var invoiceService = new InvoiceService();
+                var invoice = invoiceService.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest);
+                db.Invoices.Add(invoice);
+                var validationResults = db.GetValidationErrors();
+                if (validationResults.Count() > 0)
+                {
+                    foreach (var validationResult in validationResults)
+                    {
+                        foreach (var error in validationResult.ValidationErrors)
+                        {
+                            ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                        }
+                    }
+                }
+                else
+                {
+                    await db.SaveChangesAsync();
+                }
 
                 /*  TODO: Create the calendar event in the physician booking calendar.
                     TITLE will equal the Calendar Title field.
@@ -266,25 +294,34 @@ namespace WebApp.Controllers
                 ***********************************/
                 var dropbox = new OrvosiDropbox();
                 var client = await dropbox.GetServiceAccountClientAsync();
+                Metadata folder = null;
+                List<MembersGetInfoItem> members = null;
+                try
+                {
 
-                // Copy the case template folder
-                var destination = obj.DocumentFolderLink;
-                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-                // Share the folder
-                var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
-                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-                var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+                    // Copy the case template folder
+                    var destination = obj.DocumentFolderLink;
+                    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+                    // Share the folder
+                    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
+                    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
 
-                var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
-                await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-                await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
+                    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
+                    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
+                    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
 
-                // Get the folder
-                var metadata = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
+                    // Get the folder
+                    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
 
-                // Get the shared folder members
-                List<MembersGetInfoItem> members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+                    // Get the shared folder members
+                    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
+                }
+                catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+                {
+                    ModelState.AddModelError("", ex);
+                }
                 // Create the calendar event
 
                 // mark the first task as complete
@@ -298,8 +335,9 @@ namespace WebApp.Controllers
                 var model = new CreateSuccessViewModel()
                 {
                     ServiceRequest = obj,
-                    Folder = metadata,
-                    Members = members
+                    Folder = folder,
+                    Members = members,
+                    Invoice = invoice
                 };
                 return View("CreateSuccess", model);
             }
@@ -336,30 +374,28 @@ namespace WebApp.Controllers
             {
                 // Get the folder
                 metadata = await client.Files.GetMetadataAsync(destination);
+
+                if (metadata != null)
+                {
+                    return RedirectToAction("Details", new { id = id });
+                }
+
+                // Copy the case template folder
+                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+
+                // Share the folder
+                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+
+                var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
+                if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
+
+                await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
             }
             catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
             {
-                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
-                    throw;
+                ModelState.AddModelError("", ex);
             }
-
-            if (metadata != null)
-            {
-                return RedirectToAction("Details", new { id = id } );
-            }
-
-            // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-
-            // Share the folder
-            var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-            var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-            
-            var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
-            if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
-
-            await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
-
             return RedirectToAction("Details", new { id = id });
         }
 
@@ -407,7 +443,7 @@ namespace WebApp.Controllers
 
             var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
             if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
-            
+
             return RedirectToAction("Details", new { id = id });
         }
 
@@ -461,7 +497,7 @@ namespace WebApp.Controllers
             );
         }
 
-        [HttpGet]       
+        [HttpGet]
         public ActionResult CreateSuccess(CreateSuccessViewModel obj)
         {
             return View(obj);
@@ -500,7 +536,7 @@ namespace WebApp.Controllers
                 {
                     // get the tracked object from the database
                     var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
-                    
+
                     // update the resource assignments
                     obj.CaseCoordinatorId = sr.CaseCoordinatorId;
                     obj.DocumentReviewerId = sr.DocumentReviewerId;
@@ -515,7 +551,7 @@ namespace WebApp.Controllers
                     var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
 
                     await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
-                    
+
                     return RedirectToAction("Index");
                 }
             }
@@ -599,9 +635,9 @@ namespace WebApp.Controllers
                     obj.CompanyReferenceId = sr.CompanyReferenceId;
                     obj.DueDate = sr.DueDate;
                     obj.Notes = sr.Notes;
-                    
+
                     await db.SaveChangesAsync();
-                    
+
                     return RedirectToAction("Details", new { id = obj.Id });
                 }
             }

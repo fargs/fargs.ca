@@ -66,82 +66,25 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(short ServiceRequestId)
         {
-            var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
-
-            var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
-            var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
-
-            var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
-
-            var invoice = new Invoice()
+            using (var context = new OrvosiEntities(User.Identity.Name))
             {
-                InvoiceNumber = invoiceNumber,
-                InvoiceDate = serviceRequest.AppointmentDate.Value,
-                DueDate = SystemTime.Now().AddDays(PaymentDueInDays),
-                Currency = "CAD",
-                ServiceProviderGuid = serviceProvider.EntityGuid,
-                ServiceProviderName = serviceProvider.EntityName,
-                ServiceProviderEntityType = serviceProvider.EntityType,
-                ServiceProviderLogoCssClass = serviceProvider.LogoCssClass,
-                ServiceProviderAddress1 = serviceProvider.Address1,
-                ServiceProviderAddress2 = serviceProvider.Address2,
-                ServiceProviderCity = serviceProvider.PostalCode,
-                ServiceProviderPostalCode = serviceProvider.PostalCode,
-                ServiceProviderProvince = serviceProvider.ProvinceName,
-                ServiceProviderCountry = serviceProvider.CountryName,
-                ServiceProviderEmail = serviceProvider.BillingEmail,
-                ServiceProviderPhoneNumber = serviceProvider.Phone,
-                CustomerGuid = customer.EntityGuid,
-                CustomerName = customer.EntityName,
-                CustomerEntityType = customer.EntityType,
-                CustomerAddress1 = customer.Address1,
-                CustomerAddress2 = customer.Address2,
-                CustomerCity = customer.PostalCode,
-                CustomerPostalCode = customer.PostalCode,
-                CustomerProvince = customer.ProvinceName,
-                CustomerCountry = customer.CountryName,
-                CustomerEmail = customer.BillingEmail,
-                TaxRateHst = TaxRateHst
-            };
+                var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
 
-            var invoiceDetail = new InvoiceDetail()
-            {
-                ServiceRequestId = serviceRequest.Id,
-                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate)
-            };
+                var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
+                var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
 
-            var description = new StringBuilder();
-            description.AppendLine(serviceRequest.ClaimantName);
-            description.AppendLine(serviceRequest.ServiceName);
-            description.AppendLine(serviceRequest.City);
-            if (serviceRequest.IsNoShow)
-            {
-                description.AppendLine(string.Format("NO SHOW - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
+                var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+
+                var service = new InvoiceService();
+                var invoice = service.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest);
+                db.Invoices.Add(invoice);
+                if (db.GetValidationErrors().Count() == 0)
+                {
+                    await db.SaveChangesAsync();
+                    return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
+                }
+                return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
             }
-            else if (serviceRequest.IsLateCancellation)
-            {
-                description.AppendLine(string.Format("LATE CANCELLATION - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
-            }
-
-            invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = GetInvoiceDetailAmount(serviceRequest.EffectivePrice, invoiceDetail.Rate);
-            invoiceDetail.ModifiedUser = User.Identity.Name;
-            invoiceDetail.ModifiedDate = SystemTime.Now();
-
-            invoice.InvoiceDetails.Add(invoiceDetail);
-
-            invoice.SubTotal = invoiceDetail.Amount;
-            invoice.Total = GetInvoiceTotal(invoice.SubTotal, TaxRateHst);
-            invoice.ModifiedUser = User.Identity.Name;
-            invoice.ModifiedDate = SystemTime.Now();
-
-            db.Invoices.Add(invoice);
-            if (db.GetValidationErrors().Count() == 0)
-            {
-                db.SaveChanges();
-                return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
-            }
-            return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
         }
@@ -192,7 +135,7 @@ namespace WebApp.Controllers
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
 
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice.CustomerEmail, invoice.InvoiceDetails.First());
+            await messageService.SendInvoice(invoice.CustomerEmail, invoice.ServiceProviderEmail, invoice.InvoiceDetails.First());
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();

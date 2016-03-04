@@ -102,11 +102,11 @@ namespace WebApp
             return true;
         }
 
-        public async Task<bool> SendInvoice(string billingEmail, InvoiceDetail detail)
+        public async Task<bool> SendInvoice(string billingEmail, string serviceProviderEmail, InvoiceDetail detail)
         {
             var message = new MailMessage();
             message.To.Add(billingEmail);
-            message.From = new MailAddress("support@orvosi.ca");
+            message.From = new MailAddress(serviceProviderEmail);
             message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", detail.Invoice.InvoiceNumber, detail.Invoice.ServiceProviderName, detail.Invoice.DueDate);
             message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");

@@ -12,6 +12,68 @@ namespace WebApp.Services
     {
         public const byte PaymentDueInDays = 14;
         public const decimal TaxRateHst = 0.13M;
+
+        public Invoice BuildInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
+        {
+            var invoice = new Invoice()
+            {
+                InvoiceNumber = invoiceNumber,
+                InvoiceDate = serviceRequest.AppointmentDate.Value,
+                DueDate = SystemTime.Now().AddDays(PaymentDueInDays),
+                Currency = "CAD",
+                ServiceProviderGuid = serviceProvider.EntityGuid,
+                ServiceProviderName = serviceProvider.EntityName,
+                ServiceProviderEntityType = serviceProvider.EntityType,
+                ServiceProviderLogoCssClass = serviceProvider.LogoCssClass,
+                ServiceProviderAddress1 = serviceProvider.Address1,
+                ServiceProviderAddress2 = serviceProvider.Address2,
+                ServiceProviderCity = serviceProvider.PostalCode,
+                ServiceProviderPostalCode = serviceProvider.PostalCode,
+                ServiceProviderProvince = serviceProvider.ProvinceName,
+                ServiceProviderCountry = serviceProvider.CountryName,
+                ServiceProviderEmail = serviceProvider.BillingEmail,
+                ServiceProviderPhoneNumber = serviceProvider.Phone,
+                CustomerGuid = customer.EntityGuid,
+                CustomerName = customer.EntityName,
+                CustomerEntityType = customer.EntityType,
+                CustomerAddress1 = customer.Address1,
+                CustomerAddress2 = customer.Address2,
+                CustomerCity = customer.PostalCode,
+                CustomerPostalCode = customer.PostalCode,
+                CustomerProvince = customer.ProvinceName,
+                CustomerCountry = customer.CountryName,
+                CustomerEmail = customer.BillingEmail,
+                TaxRateHst = TaxRateHst
+            };
+
+            var invoiceDetail = new InvoiceDetail()
+            {
+                ServiceRequestId = serviceRequest.Id,
+                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate)
+            };
+
+            var description = new StringBuilder();
+            description.AppendLine(serviceRequest.ClaimantName);
+            description.AppendLine(serviceRequest.ServiceName);
+            description.AppendLine(serviceRequest.City);
+            if (serviceRequest.IsNoShow)
+            {
+                description.AppendLine(string.Format("NO SHOW - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
+            }
+            else if (serviceRequest.IsLateCancellation)
+            {
+                description.AppendLine(string.Format("LATE CANCELLATION - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
+            }
+
+            invoiceDetail.Description = description.ToString();
+            invoiceDetail.Amount = GetInvoiceDetailAmount(serviceRequest.EffectivePrice, invoiceDetail.Rate);
+            invoice.InvoiceDetails.Add(invoiceDetail);
+
+            invoice.SubTotal = invoiceDetail.Amount;
+            invoice.Total = GetInvoiceTotal(invoice.SubTotal, TaxRateHst);
+
+            return invoice;
+        }
         public Invoice PreviewInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
         {
             var invoice = new Invoice()

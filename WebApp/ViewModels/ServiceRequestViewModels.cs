@@ -63,6 +63,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     public class CreateSuccessViewModel
     {
         public ServiceRequest ServiceRequest { get; set; }
+        public Invoice Invoice { get; set; }
         public Dropbox.Api.Files.Metadata Folder { get; set; }
         public List<Dropbox.Api.Team.MembersGetInfoItem> Members { get; set; }
     }

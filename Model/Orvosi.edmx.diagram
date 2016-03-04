@@ -35,7 +35,10 @@
         <EntityTypeShape EntityType="OrvosiModel.ServiceCatalogueRate" Width="1.5" PointX="17.375" PointY="14.75" />
         <EntityTypeShape EntityType="OrvosiModel.City" Width="1.5" PointX="14.375" PointY="17.75" />
         <AssociationConnector Association="OrvosiModel.CityProvince" />
-        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="14.375" PointY="17.75" />
+        <EntityTypeShape EntityType="OrvosiModel.Invoice" Width="1.5" PointX="17.875" PointY="21.625" />
+        <EntityTypeShape EntityType="OrvosiModel.InvoiceDetail" Width="1.5" PointX="14.625" PointY="21.625" />
+        <AssociationConnector Association="OrvosiModel.FK_InvoiceDetail_Invoice" />
+        <AssociationConnector Association="OrvosiModel.ServiceRequestInvoiceDetail" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />

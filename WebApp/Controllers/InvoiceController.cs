@@ -136,12 +136,14 @@ namespace WebApp.Controllers
             invoice.ModifiedDate = SystemTime.Now();
 
             db.Invoices.Add(invoice);
-            await db.SaveChangesAsync();
-
+            if (db.GetValidationErrors().Count() == 0)
+            {
+                db.SaveChanges();
+                return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
+            }
+            return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
-
-            return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
         }
 
         public async Task<ActionResult> Details(int id)
@@ -189,7 +191,7 @@ namespace WebApp.Controllers
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
 
-            var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
+            var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
             await messageService.SendInvoice(invoice.CustomerEmail, invoice.InvoiceDetails.First());
 
             invoice.SentDate = SystemTime.Now();

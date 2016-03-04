@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="OrvosiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Invoice">
           <Key>
             <PropertyRef Name="Id" />
@@ -91,15 +91,15 @@ warning 6002: The table/view 'Orvosi.API.Account' does not have a primary key de
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -127,11 +127,11 @@ warning 6002: The table/view 'Orvosi.API.AvailableDay' does not have a primary k
         <EntityType Name="AvailableDay">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -153,11 +153,11 @@ warning 6002: The table/view 'Orvosi.API.AvailableSlot' does not have a primary 
         <EntityType Name="AvailableSlot">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="AvailableDayId" Type="smallint" Nullable="false" />
@@ -173,7 +173,7 @@ warning 6002: The table/view 'Orvosi.API.AvailableSlot' does not have a primary 
 warning 6002: The table/view 'Orvosi.API.BillableEntity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BillableEntity">
           <Key>
-            
+
             <PropertyRef Name="EntityGuid" />
           </Key>
           <Property Name="EntityGuid" Type="uniqueidentifier" Nullable="false" />
@@ -197,9 +197,9 @@ warning 6002: The table/view 'Orvosi.API.Company' does not have a primary key de
         <EntityType Name="Company">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -252,9 +252,9 @@ warning 6002: The table/view 'Orvosi.API.Document' does not have a primary key d
         <EntityType Name="Document">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -279,7 +279,7 @@ warning 6002: The table/view 'Orvosi.API.Document' does not have a primary key d
 warning 6002: The table/view 'Orvosi.API.Entity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Entity">
           <Key>
-            
+
             <PropertyRef Name="EntityGuid" />
           </Key>
           <Property Name="EntityId" Type="nvarchar" MaxLength="128" />
@@ -292,13 +292,13 @@ warning 6002: The table/view 'Orvosi.API.Location' does not have a primary key d
         <EntityType Name="Location">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -330,10 +330,10 @@ warning 6002: The table/view 'Orvosi.API.Location' does not have a primary key d
 warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="LocationArea">
           <Key>
-            
-            
+
+
             <PropertyRef Name="ItemId" />
-            
+
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -345,10 +345,10 @@ warning 6002: The table/view 'Orvosi.API.LocationArea' does not have a primary k
 warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="LookupItem">
           <Key>
-            
-            
+
+
             <PropertyRef Name="ItemId" />
-            
+
           </Key>
           <Property Name="LookupId" Type="smallint" Nullable="false" />
           <Property Name="LookupName" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -361,15 +361,15 @@ warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key 
         <EntityType Name="Physician">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -442,9 +442,9 @@ warning 6002: The table/view 'Orvosi.API.PhysicianInsurance' does not have a pri
         <EntityType Name="PhysicianInsurance">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -462,9 +462,9 @@ warning 6002: The table/view 'Orvosi.API.PhysicianLicense' does not have a prima
         <EntityType Name="PhysicianLicense">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -514,15 +514,15 @@ warning 6002: The table/view 'Orvosi.API.PhysicianToCompanyServiceRequestInvoice
         <EntityType Name="PhysicianToCompanyServiceRequestInvoicePreview">
           <Key>
             <PropertyRef Name="ServiceRequestId" />
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
           </Key>
           <Property Name="ServiceRequestId" Type="int" Nullable="false" />
           <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
@@ -560,9 +560,9 @@ warning 6002: The table/view 'Orvosi.API.Profile' does not have a primary key de
         <EntityType Name="Profile">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -586,8 +586,8 @@ warning 6002: The table/view 'Orvosi.API.Province' does not have a primary key d
         <EntityType Name="Province">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
+
+
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CountryId" Type="smallint" Nullable="false" />
@@ -599,9 +599,9 @@ warning 6002: The table/view 'Orvosi.API.Service' does not have a primary key de
         <EntityType Name="Service">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -621,9 +621,9 @@ warning 6002: The table/view 'Orvosi.API.ServiceCatalogue' does not have a prima
         <EntityType Name="ServiceCatalogue">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="CompanyId" Type="smallint" />
@@ -646,9 +646,9 @@ warning 6002: The table/view 'Orvosi.API.ServiceCategory' does not have a primar
         <EntityType Name="ServiceCategory">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -661,9 +661,9 @@ warning 6002: The table/view 'Orvosi.API.ServicePortfolio' does not have a prima
         <EntityType Name="ServicePortfolio">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -676,13 +676,13 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
         <EntityType Name="ServiceRequest">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -764,8 +764,8 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestCostRollUp' does not have
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
+
+
           </Key>
           <Property Name="Id" Type="bigint" Nullable="false" />
           <Property Name="ServiceRequestId" Type="int" />
@@ -780,12 +780,12 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
         <EntityType Name="ServiceRequestTask">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -818,9 +818,9 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
         <EntityType Name="SpecialRequest">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
+
+
+
           </Key>
           <Property Name="Id" Type="smallint" Nullable="false" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" />
@@ -839,15 +839,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
           </Key>
           <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" />
@@ -1324,609 +1324,668 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySet Name="City" EntityType="Self.City" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ServiceCatalogueRate" EntityType="Self.ServiceCatalogueRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Account" EntityType="Self.Account" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Account].[Id] AS [Id], 
-    [Account].[Email] AS [Email], 
-    [Account].[EmailConfirmed] AS [EmailConfirmed], 
-    [Account].[PhoneNumber] AS [PhoneNumber], 
-    [Account].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed], 
-    [Account].[TwoFactorEnabled] AS [TwoFactorEnabled], 
-    [Account].[LockoutEndDateUtc] AS [LockoutEndDateUtc], 
-    [Account].[LockoutEnabled] AS [LockoutEnabled], 
-    [Account].[AccessFailedCount] AS [AccessFailedCount], 
-    [Account].[UserName] AS [UserName], 
-    [Account].[DisplayName] AS [DisplayName], 
-    [Account].[CompanyId] AS [CompanyId], 
-    [Account].[CompanySubmittedName] AS [CompanySubmittedName], 
-    [Account].[ModifiedDate] AS [ModifiedDate], 
-    [Account].[ModifiedUser] AS [ModifiedUser], 
-    [Account].[IsTestRecord] AS [IsTestRecord], 
-    [Account].[RoleId] AS [RoleId], 
-    [Account].[RoleName] AS [RoleName], 
-    [Account].[CompanyName] AS [CompanyName], 
-    [Account].[LastActivationDate] AS [LastActivationDate]
-    FROM [API].[Account] AS [Account]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Account].[Id] AS [Id],
+              [Account].[Email] AS [Email],
+              [Account].[EmailConfirmed] AS [EmailConfirmed],
+              [Account].[PhoneNumber] AS [PhoneNumber],
+              [Account].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed],
+              [Account].[TwoFactorEnabled] AS [TwoFactorEnabled],
+              [Account].[LockoutEndDateUtc] AS [LockoutEndDateUtc],
+              [Account].[LockoutEnabled] AS [LockoutEnabled],
+              [Account].[AccessFailedCount] AS [AccessFailedCount],
+              [Account].[UserName] AS [UserName],
+              [Account].[DisplayName] AS [DisplayName],
+              [Account].[CompanyId] AS [CompanyId],
+              [Account].[CompanySubmittedName] AS [CompanySubmittedName],
+              [Account].[ModifiedDate] AS [ModifiedDate],
+              [Account].[ModifiedUser] AS [ModifiedUser],
+              [Account].[IsTestRecord] AS [IsTestRecord],
+              [Account].[RoleId] AS [RoleId],
+              [Account].[RoleName] AS [RoleName],
+              [Account].[CompanyName] AS [CompanyName],
+              [Account].[LastActivationDate] AS [LastActivationDate]
+              FROM [API].[Account] AS [Account]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="AvailableDay" EntityType="Self.AvailableDay" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [AvailableDay].[Id] AS [Id], 
-    [AvailableDay].[PhysicianId] AS [PhysicianId], 
-    [AvailableDay].[Day] AS [Day], 
-    [AvailableDay].[IsPrebook] AS [IsPrebook], 
-    [AvailableDay].[CompanyId] AS [CompanyId], 
-    [AvailableDay].[LocationId] AS [LocationId], 
-    [AvailableDay].[ModifiedDate] AS [ModifiedDate], 
-    [AvailableDay].[ModifiedUser] AS [ModifiedUser], 
-    [AvailableDay].[CompanyName] AS [CompanyName], 
-    [AvailableDay].[CompanyIsParent] AS [CompanyIsParent], 
-    [AvailableDay].[LocationName] AS [LocationName], 
-    [AvailableDay].[LocationOwnerDisplayName] AS [LocationOwnerDisplayName], 
-    [AvailableDay].[LocationOwnerId] AS [LocationOwnerId], 
-    [AvailableDay].[PhysicianName] AS [PhysicianName]
-    FROM [API].[AvailableDay] AS [AvailableDay]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [AvailableDay].[Id] AS [Id],
+              [AvailableDay].[PhysicianId] AS [PhysicianId],
+              [AvailableDay].[Day] AS [Day],
+              [AvailableDay].[IsPrebook] AS [IsPrebook],
+              [AvailableDay].[CompanyId] AS [CompanyId],
+              [AvailableDay].[LocationId] AS [LocationId],
+              [AvailableDay].[ModifiedDate] AS [ModifiedDate],
+              [AvailableDay].[ModifiedUser] AS [ModifiedUser],
+              [AvailableDay].[CompanyName] AS [CompanyName],
+              [AvailableDay].[CompanyIsParent] AS [CompanyIsParent],
+              [AvailableDay].[LocationName] AS [LocationName],
+              [AvailableDay].[LocationOwnerDisplayName] AS [LocationOwnerDisplayName],
+              [AvailableDay].[LocationOwnerId] AS [LocationOwnerId],
+              [AvailableDay].[PhysicianName] AS [PhysicianName]
+              FROM [API].[AvailableDay] AS [AvailableDay]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="AvailableSlot" EntityType="Self.AvailableSlot" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [AvailableSlot].[Id] AS [Id], 
-    [AvailableSlot].[AvailableDayId] AS [AvailableDayId], 
-    [AvailableSlot].[StartTime] AS [StartTime], 
-    [AvailableSlot].[EndTime] AS [EndTime], 
-    [AvailableSlot].[Duration] AS [Duration], 
-    [AvailableSlot].[ModifiedDate] AS [ModifiedDate], 
-    [AvailableSlot].[ModifiedUser] AS [ModifiedUser], 
-    [AvailableSlot].[ServiceRequestId] AS [ServiceRequestId], 
-    [AvailableSlot].[Title] AS [Title]
-    FROM [API].[AvailableSlot] AS [AvailableSlot]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [AvailableSlot].[Id] AS [Id],
+              [AvailableSlot].[AvailableDayId] AS [AvailableDayId],
+              [AvailableSlot].[StartTime] AS [StartTime],
+              [AvailableSlot].[EndTime] AS [EndTime],
+              [AvailableSlot].[Duration] AS [Duration],
+              [AvailableSlot].[ModifiedDate] AS [ModifiedDate],
+              [AvailableSlot].[ModifiedUser] AS [ModifiedUser],
+              [AvailableSlot].[ServiceRequestId] AS [ServiceRequestId],
+              [AvailableSlot].[Title] AS [Title]
+              FROM [API].[AvailableSlot] AS [AvailableSlot]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="BillableEntity" EntityType="Self.BillableEntity" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [BillableEntity].[EntityGuid] AS [EntityGuid], 
-    [BillableEntity].[EntityName] AS [EntityName], 
-    [BillableEntity].[EntityType] AS [EntityType], 
-    [BillableEntity].[EntityId] AS [EntityId], 
-    [BillableEntity].[LogoCssClass] AS [LogoCssClass], 
-    [BillableEntity].[AddressName] AS [AddressName], 
-    [BillableEntity].[Attention] AS [Attention], 
-    [BillableEntity].[Address1] AS [Address1], 
-    [BillableEntity].[Address2] AS [Address2], 
-    [BillableEntity].[City] AS [City], 
-    [BillableEntity].[PostalCode] AS [PostalCode], 
-    [BillableEntity].[ProvinceName] AS [ProvinceName], 
-    [BillableEntity].[CountryName] AS [CountryName], 
-    [BillableEntity].[BillingEmail] AS [BillingEmail], 
-    [BillableEntity].[Phone] AS [Phone]
-    FROM [API].[BillableEntity] AS [BillableEntity]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [BillableEntity].[EntityGuid] AS [EntityGuid],
+              [BillableEntity].[EntityName] AS [EntityName],
+              [BillableEntity].[EntityType] AS [EntityType],
+              [BillableEntity].[EntityId] AS [EntityId],
+              [BillableEntity].[LogoCssClass] AS [LogoCssClass],
+              [BillableEntity].[AddressName] AS [AddressName],
+              [BillableEntity].[Attention] AS [Attention],
+              [BillableEntity].[Address1] AS [Address1],
+              [BillableEntity].[Address2] AS [Address2],
+              [BillableEntity].[City] AS [City],
+              [BillableEntity].[PostalCode] AS [PostalCode],
+              [BillableEntity].[ProvinceName] AS [ProvinceName],
+              [BillableEntity].[CountryName] AS [CountryName],
+              [BillableEntity].[BillingEmail] AS [BillingEmail],
+              [BillableEntity].[Phone] AS [Phone]
+              FROM [API].[BillableEntity] AS [BillableEntity]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Company" EntityType="Self.Company" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Company].[Id] AS [Id], 
-    [Company].[ObjectGuid] AS [ObjectGuid], 
-    [Company].[Name] AS [Name], 
-    [Company].[Code] AS [Code], 
-    [Company].[IsParent] AS [IsParent], 
-    [Company].[ParentId] AS [ParentId], 
-    [Company].[LogoCssClass] AS [LogoCssClass], 
-    [Company].[BillingEmail] AS [BillingEmail], 
-    [Company].[ReportsEmail] AS [ReportsEmail], 
-    [Company].[Phone] AS [Phone], 
-    [Company].[ModifiedDate] AS [ModifiedDate], 
-    [Company].[ModifiedUser] AS [ModifiedUser], 
-    [Company].[ParentName] AS [ParentName]
-    FROM [API].[Company] AS [Company]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Company].[Id] AS [Id],
+              [Company].[ObjectGuid] AS [ObjectGuid],
+              [Company].[Name] AS [Name],
+              [Company].[Code] AS [Code],
+              [Company].[IsParent] AS [IsParent],
+              [Company].[ParentId] AS [ParentId],
+              [Company].[LogoCssClass] AS [LogoCssClass],
+              [Company].[BillingEmail] AS [BillingEmail],
+              [Company].[ReportsEmail] AS [ReportsEmail],
+              [Company].[Phone] AS [Phone],
+              [Company].[ModifiedDate] AS [ModifiedDate],
+              [Company].[ModifiedUser] AS [ModifiedUser],
+              [Company].[ParentName] AS [ParentName]
+              FROM [API].[Company] AS [Company]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="CompanyAssessorPackage" EntityType="Self.CompanyAssessorPackage" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [CompanyAssessorPackage].[DocumentTemplateId] AS [DocumentTemplateId], 
-    [CompanyAssessorPackage].[DocumentTemplateName] AS [DocumentTemplateName], 
-    [CompanyAssessorPackage].[CompanyObjectGuid] AS [CompanyObjectGuid], 
-    [CompanyAssessorPackage].[ModifiedDate] AS [ModifiedDate], 
-    [CompanyAssessorPackage].[ModifiedUser] AS [ModifiedUser], 
-    [CompanyAssessorPackage].[CompanyName] AS [CompanyName]
-    FROM [API].[CompanyAssessorPackage] AS [CompanyAssessorPackage]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [CompanyAssessorPackage].[DocumentTemplateId] AS [DocumentTemplateId],
+              [CompanyAssessorPackage].[DocumentTemplateName] AS [DocumentTemplateName],
+              [CompanyAssessorPackage].[CompanyObjectGuid] AS [CompanyObjectGuid],
+              [CompanyAssessorPackage].[ModifiedDate] AS [ModifiedDate],
+              [CompanyAssessorPackage].[ModifiedUser] AS [ModifiedUser],
+              [CompanyAssessorPackage].[CompanyName] AS [CompanyName]
+              FROM [API].[CompanyAssessorPackage] AS [CompanyAssessorPackage]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="DashboardTaskSummary" EntityType="Self.DashboardTaskSummary" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [DashboardTaskSummary].[TaskId] AS [TaskId], 
-    [DashboardTaskSummary].[TaskName] AS [TaskName], 
-    [DashboardTaskSummary].[TaskPhaseName] AS [TaskPhaseName], 
-    [DashboardTaskSummary].[AssignedToUserId] AS [AssignedToUserId], 
-    [DashboardTaskSummary].[AssignedToDisplayName] AS [AssignedToDisplayName], 
-    [DashboardTaskSummary].[CompletedDate] AS [CompletedDate], 
-    [DashboardTaskSummary].[ResponsibleRoleId] AS [ResponsibleRoleId], 
-    [DashboardTaskSummary].[ResponsibleRoleName] AS [ResponsibleRoleName], 
-    [DashboardTaskSummary].[TaskCount] AS [TaskCount]
-    FROM [API].[DashboardTaskSummary] AS [DashboardTaskSummary]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [DashboardTaskSummary].[TaskId] AS [TaskId],
+              [DashboardTaskSummary].[TaskName] AS [TaskName],
+              [DashboardTaskSummary].[TaskPhaseName] AS [TaskPhaseName],
+              [DashboardTaskSummary].[AssignedToUserId] AS [AssignedToUserId],
+              [DashboardTaskSummary].[AssignedToDisplayName] AS [AssignedToDisplayName],
+              [DashboardTaskSummary].[CompletedDate] AS [CompletedDate],
+              [DashboardTaskSummary].[ResponsibleRoleId] AS [ResponsibleRoleId],
+              [DashboardTaskSummary].[ResponsibleRoleName] AS [ResponsibleRoleName],
+              [DashboardTaskSummary].[TaskCount] AS [TaskCount]
+              FROM [API].[DashboardTaskSummary] AS [DashboardTaskSummary]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Document" EntityType="Self.Document" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Document].[Id] AS [Id], 
-    [Document].[ObjectGuid] AS [ObjectGuid], 
-    [Document].[OwnedByObjectGuid] AS [OwnedByObjectGuid], 
-    [Document].[DocumentTemplateId] AS [DocumentTemplateId], 
-    [Document].[EffectiveDate] AS [EffectiveDate], 
-    [Document].[ExpiryDate] AS [ExpiryDate], 
-    [Document].[Content] AS [Content], 
-    [Document].[ContentType] AS [ContentType], 
-    [Document].[Path] AS [Path], 
-    [Document].[Name] AS [Name], 
-    [Document].[Extension] AS [Extension], 
-    [Document].[ModifiedDate] AS [ModifiedDate], 
-    [Document].[ModifiedUser] AS [ModifiedUser], 
-    [Document].[OwnedByDisplayName] AS [OwnedByDisplayName], 
-    [Document].[OwnedByEntityType] AS [OwnedByEntityType], 
-    [Document].[DocumentTemplateName] AS [DocumentTemplateName], 
-    [Document].[DocumentTemplateOwnedByDisplayName] AS [DocumentTemplateOwnedByDisplayName], 
-    [Document].[DocumentTemplateOwnedByEntityType] AS [DocumentTemplateOwnedByEntityType]
-    FROM [API].[Document] AS [Document]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Document].[Id] AS [Id],
+              [Document].[ObjectGuid] AS [ObjectGuid],
+              [Document].[OwnedByObjectGuid] AS [OwnedByObjectGuid],
+              [Document].[DocumentTemplateId] AS [DocumentTemplateId],
+              [Document].[EffectiveDate] AS [EffectiveDate],
+              [Document].[ExpiryDate] AS [ExpiryDate],
+              [Document].[Content] AS [Content],
+              [Document].[ContentType] AS [ContentType],
+              [Document].[Path] AS [Path],
+              [Document].[Name] AS [Name],
+              [Document].[Extension] AS [Extension],
+              [Document].[ModifiedDate] AS [ModifiedDate],
+              [Document].[ModifiedUser] AS [ModifiedUser],
+              [Document].[OwnedByDisplayName] AS [OwnedByDisplayName],
+              [Document].[OwnedByEntityType] AS [OwnedByEntityType],
+              [Document].[DocumentTemplateName] AS [DocumentTemplateName],
+              [Document].[DocumentTemplateOwnedByDisplayName] AS [DocumentTemplateOwnedByDisplayName],
+              [Document].[DocumentTemplateOwnedByEntityType] AS [DocumentTemplateOwnedByEntityType]
+              FROM [API].[Document] AS [Document]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Entity" EntityType="Self.Entity" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Entity].[EntityId] AS [EntityId], 
-    [Entity].[EntityGuid] AS [EntityGuid], 
-    [Entity].[DisplayName] AS [DisplayName], 
-    [Entity].[EntityType] AS [EntityType]
-    FROM [API].[Entity] AS [Entity]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Entity].[EntityId] AS [EntityId],
+              [Entity].[EntityGuid] AS [EntityGuid],
+              [Entity].[DisplayName] AS [DisplayName],
+              [Entity].[EntityType] AS [EntityType]
+              FROM [API].[Entity] AS [Entity]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Location" EntityType="Self.Location" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Location].[Id] AS [Id], 
-    [Location].[ObjectGuid] AS [ObjectGuid], 
-    [Location].[OwnerGuid] AS [OwnerGuid], 
-    [Location].[EntityId] AS [EntityId], 
-    [Location].[EntityDisplayName] AS [EntityDisplayName], 
-    [Location].[EntityType] AS [EntityType], 
-    [Location].[AddressTypeID] AS [AddressTypeID], 
-    [Location].[AddressTypeName] AS [AddressTypeName], 
-    [Location].[Name] AS [Name], 
-    [Location].[Attention] AS [Attention], 
-    [Location].[Address1] AS [Address1], 
-    [Location].[Address2] AS [Address2], 
-    [Location].[City] AS [City], 
-    [Location].[PostalCode] AS [PostalCode], 
-    [Location].[CountryID] AS [CountryID], 
-    [Location].[ProvinceID] AS [ProvinceID], 
-    [Location].[LocationId] AS [LocationId], 
-    [Location].[ModifiedDate] AS [ModifiedDate], 
-    [Location].[ModifiedUser] AS [ModifiedUser], 
-    [Location].[CountryName] AS [CountryName], 
-    [Location].[CountryCode] AS [CountryCode], 
-    [Location].[ProvinceName] AS [ProvinceName], 
-    [Location].[ProvinceCode] AS [ProvinceCode], 
-    [Location].[LocationName] AS [LocationName], 
-    [Location].[LocationShortName] AS [LocationShortName]
-    FROM [API].[Location] AS [Location]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Location].[Id] AS [Id],
+              [Location].[ObjectGuid] AS [ObjectGuid],
+              [Location].[OwnerGuid] AS [OwnerGuid],
+              [Location].[EntityId] AS [EntityId],
+              [Location].[EntityDisplayName] AS [EntityDisplayName],
+              [Location].[EntityType] AS [EntityType],
+              [Location].[AddressTypeID] AS [AddressTypeID],
+              [Location].[AddressTypeName] AS [AddressTypeName],
+              [Location].[Name] AS [Name],
+              [Location].[Attention] AS [Attention],
+              [Location].[Address1] AS [Address1],
+              [Location].[Address2] AS [Address2],
+              [Location].[City] AS [City],
+              [Location].[PostalCode] AS [PostalCode],
+              [Location].[CountryID] AS [CountryID],
+              [Location].[ProvinceID] AS [ProvinceID],
+              [Location].[LocationId] AS [LocationId],
+              [Location].[ModifiedDate] AS [ModifiedDate],
+              [Location].[ModifiedUser] AS [ModifiedUser],
+              [Location].[CountryName] AS [CountryName],
+              [Location].[CountryCode] AS [CountryCode],
+              [Location].[ProvinceName] AS [ProvinceName],
+              [Location].[ProvinceCode] AS [ProvinceCode],
+              [Location].[LocationName] AS [LocationName],
+              [Location].[LocationShortName] AS [LocationShortName]
+              FROM [API].[Location] AS [Location]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="LocationArea" EntityType="Self.LocationArea" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [LocationArea].[LookupId] AS [LookupId], 
-    [LocationArea].[LookupName] AS [LookupName], 
-    [LocationArea].[ItemId] AS [ItemId], 
-    [LocationArea].[ItemText] AS [ItemText], 
-    [LocationArea].[ItemValue] AS [ItemValue]
-    FROM [API].[LocationArea] AS [LocationArea]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [LocationArea].[LookupId] AS [LookupId],
+              [LocationArea].[LookupName] AS [LookupName],
+              [LocationArea].[ItemId] AS [ItemId],
+              [LocationArea].[ItemText] AS [ItemText],
+              [LocationArea].[ItemValue] AS [ItemValue]
+              FROM [API].[LocationArea] AS [LocationArea]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="LookupItem" EntityType="Self.LookupItem" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [LookupItem].[LookupId] AS [LookupId], 
-    [LookupItem].[LookupName] AS [LookupName], 
-    [LookupItem].[ItemId] AS [ItemId], 
-    [LookupItem].[ItemText] AS [ItemText], 
-    [LookupItem].[ItemValue] AS [ItemValue]
-    FROM [API].[LookupItem] AS [LookupItem]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [LookupItem].[LookupId] AS [LookupId],
+              [LookupItem].[LookupName] AS [LookupName],
+              [LookupItem].[ItemId] AS [ItemId],
+              [LookupItem].[ItemText] AS [ItemText],
+              [LookupItem].[ItemValue] AS [ItemValue]
+              FROM [API].[LookupItem] AS [LookupItem]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Physician" EntityType="Self.Physician" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Physician].[Id] AS [Id], 
-    [Physician].[Email] AS [Email], 
-    [Physician].[EmailConfirmed] AS [EmailConfirmed], 
-    [Physician].[PasswordHash] AS [PasswordHash], 
-    [Physician].[SecurityStamp] AS [SecurityStamp], 
-    [Physician].[PhoneNumber] AS [PhoneNumber], 
-    [Physician].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed], 
-    [Physician].[TwoFactorEnabled] AS [TwoFactorEnabled], 
-    [Physician].[LockoutEndDateUtc] AS [LockoutEndDateUtc], 
-    [Physician].[LockoutEnabled] AS [LockoutEnabled], 
-    [Physician].[AccessFailedCount] AS [AccessFailedCount], 
-    [Physician].[UserName] AS [UserName], 
-    [Physician].[Title] AS [Title], 
-    [Physician].[FirstName] AS [FirstName], 
-    [Physician].[LastName] AS [LastName], 
-    [Physician].[DisplayName] AS [DisplayName], 
-    [Physician].[EmployeeId] AS [EmployeeId], 
-    [Physician].[CompanyId] AS [CompanyId], 
-    [Physician].[CompanySubmittedName] AS [CompanySubmittedName], 
-    [Physician].[ModifiedDate] AS [ModifiedDate], 
-    [Physician].[ModifiedUser] AS [ModifiedUser], 
-    [Physician].[LastActivationDate] AS [LastActivationDate], 
-    [Physician].[IsTestRecord] AS [IsTestRecord], 
-    [Physician].[RoleId] AS [RoleId], 
-    [Physician].[RoleName] AS [RoleName], 
-    [Physician].[CompanyName] AS [CompanyName], 
-    [Physician].[RoleCategoryId] AS [RoleCategoryId], 
-    [Physician].[RoleCategoryName] AS [RoleCategoryName], 
-    [Physician].[HourlyRate] AS [HourlyRate], 
-    [Physician].[LogoCssClass] AS [LogoCssClass], 
-    [Physician].[Designations] AS [Designations], 
-    [Physician].[PrimaryAddressId] AS [PrimaryAddressId], 
-    [Physician].[SpecialtyId] AS [SpecialtyId], 
-    [Physician].[OtherSpecialties] AS [OtherSpecialties], 
-    [Physician].[Pediatrics] AS [Pediatrics], 
-    [Physician].[Adolescents] AS [Adolescents], 
-    [Physician].[Adults] AS [Adults], 
-    [Physician].[Geriatrics] AS [Geriatrics], 
-    [Physician].[LocationName] AS [LocationName], 
-    [Physician].[AddressName] AS [AddressName], 
-    [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName]
-    FROM [API].[Physician] AS [Physician]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Physician].[Id] AS [Id],
+              [Physician].[Email] AS [Email],
+              [Physician].[EmailConfirmed] AS [EmailConfirmed],
+              [Physician].[PasswordHash] AS [PasswordHash],
+              [Physician].[SecurityStamp] AS [SecurityStamp],
+              [Physician].[PhoneNumber] AS [PhoneNumber],
+              [Physician].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed],
+              [Physician].[TwoFactorEnabled] AS [TwoFactorEnabled],
+              [Physician].[LockoutEndDateUtc] AS [LockoutEndDateUtc],
+              [Physician].[LockoutEnabled] AS [LockoutEnabled],
+              [Physician].[AccessFailedCount] AS [AccessFailedCount],
+              [Physician].[UserName] AS [UserName],
+              [Physician].[Title] AS [Title],
+              [Physician].[FirstName] AS [FirstName],
+              [Physician].[LastName] AS [LastName],
+              [Physician].[DisplayName] AS [DisplayName],
+              [Physician].[EmployeeId] AS [EmployeeId],
+              [Physician].[CompanyId] AS [CompanyId],
+              [Physician].[CompanySubmittedName] AS [CompanySubmittedName],
+              [Physician].[ModifiedDate] AS [ModifiedDate],
+              [Physician].[ModifiedUser] AS [ModifiedUser],
+              [Physician].[LastActivationDate] AS [LastActivationDate],
+              [Physician].[IsTestRecord] AS [IsTestRecord],
+              [Physician].[RoleId] AS [RoleId],
+              [Physician].[RoleName] AS [RoleName],
+              [Physician].[CompanyName] AS [CompanyName],
+              [Physician].[RoleCategoryId] AS [RoleCategoryId],
+              [Physician].[RoleCategoryName] AS [RoleCategoryName],
+              [Physician].[HourlyRate] AS [HourlyRate],
+              [Physician].[LogoCssClass] AS [LogoCssClass],
+              [Physician].[Designations] AS [Designations],
+              [Physician].[PrimaryAddressId] AS [PrimaryAddressId],
+              [Physician].[SpecialtyId] AS [SpecialtyId],
+              [Physician].[OtherSpecialties] AS [OtherSpecialties],
+              [Physician].[Pediatrics] AS [Pediatrics],
+              [Physician].[Adolescents] AS [Adolescents],
+              [Physician].[Adults] AS [Adults],
+              [Physician].[Geriatrics] AS [Geriatrics],
+              [Physician].[LocationName] AS [LocationName],
+              [Physician].[AddressName] AS [AddressName],
+              [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName]
+              FROM [API].[Physician] AS [Physician]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianCompany].[PhysicianId] AS [PhysicianId], 
-    [PhysicianCompany].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [PhysicianCompany].[CompanyId] AS [CompanyId], 
-    [PhysicianCompany].[CompanyName] AS [CompanyName], 
-    [PhysicianCompany].[LogoCssClass] AS [LogoCssClass], 
-    [PhysicianCompany].[ParentId] AS [ParentId], 
-    [PhysicianCompany].[ParentCompanyName] AS [ParentCompanyName], 
-    [PhysicianCompany].[RelationshipStatusId] AS [RelationshipStatusId], 
-    [PhysicianCompany].[Id] AS [Id], 
-    [PhysicianCompany].[LookupId] AS [LookupId], 
-    [PhysicianCompany].[Text] AS [Text], 
-    [PhysicianCompany].[Value] AS [Value], 
-    [PhysicianCompany].[ModifiedDate] AS [ModifiedDate], 
-    [PhysicianCompany].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianCompany].[ShortText] AS [ShortText], 
-    [PhysicianCompany].[RelationshipStatusName] AS [RelationshipStatusName]
-    FROM [API].[PhysicianCompany] AS [PhysicianCompany]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [PhysicianCompany].[PhysicianId] AS [PhysicianId],
+              [PhysicianCompany].[PhysicianDisplayName] AS [PhysicianDisplayName],
+              [PhysicianCompany].[CompanyId] AS [CompanyId],
+              [PhysicianCompany].[CompanyName] AS [CompanyName],
+              [PhysicianCompany].[LogoCssClass] AS [LogoCssClass],
+              [PhysicianCompany].[ParentId] AS [ParentId],
+              [PhysicianCompany].[ParentCompanyName] AS [ParentCompanyName],
+              [PhysicianCompany].[RelationshipStatusId] AS [RelationshipStatusId],
+              [PhysicianCompany].[Id] AS [Id],
+              [PhysicianCompany].[LookupId] AS [LookupId],
+              [PhysicianCompany].[Text] AS [Text],
+              [PhysicianCompany].[Value] AS [Value],
+              [PhysicianCompany].[ModifiedDate] AS [ModifiedDate],
+              [PhysicianCompany].[ModifiedUser] AS [ModifiedUser],
+              [PhysicianCompany].[ShortText] AS [ShortText],
+              [PhysicianCompany].[RelationshipStatusName] AS [RelationshipStatusName]
+              FROM [API].[PhysicianCompany] AS [PhysicianCompany]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianInsurance" EntityType="Self.PhysicianInsurance" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianInsurance].[Id] AS [Id], 
-    [PhysicianInsurance].[PhysicianId] AS [PhysicianId], 
-    [PhysicianInsurance].[Insurer] AS [Insurer], 
-    [PhysicianInsurance].[PolicyNumber] AS [PolicyNumber], 
-    [PhysicianInsurance].[ExpiryDate] AS [ExpiryDate], 
-    [PhysicianInsurance].[DocumentId] AS [DocumentId], 
-    [PhysicianInsurance].[ModifiedDate] AS [ModifiedDate], 
-    [PhysicianInsurance].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianInsurance].[Content] AS [Content], 
-    [PhysicianInsurance].[ContentType] AS [ContentType]
-    FROM [API].[PhysicianInsurance] AS [PhysicianInsurance]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [PhysicianInsurance].[Id] AS [Id],
+              [PhysicianInsurance].[PhysicianId] AS [PhysicianId],
+              [PhysicianInsurance].[Insurer] AS [Insurer],
+              [PhysicianInsurance].[PolicyNumber] AS [PolicyNumber],
+              [PhysicianInsurance].[ExpiryDate] AS [ExpiryDate],
+              [PhysicianInsurance].[DocumentId] AS [DocumentId],
+              [PhysicianInsurance].[ModifiedDate] AS [ModifiedDate],
+              [PhysicianInsurance].[ModifiedUser] AS [ModifiedUser],
+              [PhysicianInsurance].[Content] AS [Content],
+              [PhysicianInsurance].[ContentType] AS [ContentType]
+              FROM [API].[PhysicianInsurance] AS [PhysicianInsurance]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianLicense" EntityType="Self.PhysicianLicense" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianLicense].[Id] AS [Id], 
-    [PhysicianLicense].[PhysicianId] AS [PhysicianId], 
-    [PhysicianLicense].[CollegeName] AS [CollegeName], 
-    [PhysicianLicense].[LongName] AS [LongName], 
-    [PhysicianLicense].[ExpiryDate] AS [ExpiryDate], 
-    [PhysicianLicense].[MemberName] AS [MemberName], 
-    [PhysicianLicense].[CertificateClass] AS [CertificateClass], 
-    [PhysicianLicense].[IsPrimary] AS [IsPrimary], 
-    [PhysicianLicense].[Preference] AS [Preference], 
-    [PhysicianLicense].[DocumentId] AS [DocumentId], 
-    [PhysicianLicense].[CountryId] AS [CountryId], 
-    [PhysicianLicense].[ProvinceId] AS [ProvinceId], 
-    [PhysicianLicense].[ModifiedDate] AS [ModifiedDate], 
-    [PhysicianLicense].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianLicense].[Content] AS [Content], 
-    [PhysicianLicense].[ContentType] AS [ContentType], 
-    [PhysicianLicense].[CountryName] AS [CountryName], 
-    [PhysicianLicense].[CountryCode] AS [CountryCode], 
-    [PhysicianLicense].[ProvinceName] AS [ProvinceName], 
-    [PhysicianLicense].[ProvinceCode] AS [ProvinceCode]
-    FROM [API].[PhysicianLicense] AS [PhysicianLicense]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [PhysicianLicense].[Id] AS [Id],
+              [PhysicianLicense].[PhysicianId] AS [PhysicianId],
+              [PhysicianLicense].[CollegeName] AS [CollegeName],
+              [PhysicianLicense].[LongName] AS [LongName],
+              [PhysicianLicense].[ExpiryDate] AS [ExpiryDate],
+              [PhysicianLicense].[MemberName] AS [MemberName],
+              [PhysicianLicense].[CertificateClass] AS [CertificateClass],
+              [PhysicianLicense].[IsPrimary] AS [IsPrimary],
+              [PhysicianLicense].[Preference] AS [Preference],
+              [PhysicianLicense].[DocumentId] AS [DocumentId],
+              [PhysicianLicense].[CountryId] AS [CountryId],
+              [PhysicianLicense].[ProvinceId] AS [ProvinceId],
+              [PhysicianLicense].[ModifiedDate] AS [ModifiedDate],
+              [PhysicianLicense].[ModifiedUser] AS [ModifiedUser],
+              [PhysicianLicense].[Content] AS [Content],
+              [PhysicianLicense].[ContentType] AS [ContentType],
+              [PhysicianLicense].[CountryName] AS [CountryName],
+              [PhysicianLicense].[CountryCode] AS [CountryCode],
+              [PhysicianLicense].[ProvinceName] AS [ProvinceName],
+              [PhysicianLicense].[ProvinceCode] AS [ProvinceCode]
+              FROM [API].[PhysicianLicense] AS [PhysicianLicense]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianLocationArea" EntityType="Self.PhysicianLocationArea" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianLocationArea].[Id] AS [Id], 
-    [PhysicianLocationArea].[PhysicianId] AS [PhysicianId], 
-    [PhysicianLocationArea].[LocationId] AS [LocationId], 
-    [PhysicianLocationArea].[StatusId] AS [StatusId], 
-    [PhysicianLocationArea].[StatusText] AS [StatusText], 
-    [PhysicianLocationArea].[Price] AS [Price], 
-    [PhysicianLocationArea].[PriceIncrease] AS [PriceIncrease], 
-    [PhysicianLocationArea].[ModifiedDate] AS [ModifiedDate], 
-    [PhysicianLocationArea].[ModifiedUser] AS [ModifiedUser], 
-    [PhysicianLocationArea].[LocationName] AS [LocationName], 
-    [PhysicianLocationArea].[PhysicianName] AS [PhysicianName]
-    FROM [API].[PhysicianLocationArea] AS [PhysicianLocationArea]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [PhysicianLocationArea].[Id] AS [Id],
+              [PhysicianLocationArea].[PhysicianId] AS [PhysicianId],
+              [PhysicianLocationArea].[LocationId] AS [LocationId],
+              [PhysicianLocationArea].[StatusId] AS [StatusId],
+              [PhysicianLocationArea].[StatusText] AS [StatusText],
+              [PhysicianLocationArea].[Price] AS [Price],
+              [PhysicianLocationArea].[PriceIncrease] AS [PriceIncrease],
+              [PhysicianLocationArea].[ModifiedDate] AS [ModifiedDate],
+              [PhysicianLocationArea].[ModifiedUser] AS [ModifiedUser],
+              [PhysicianLocationArea].[LocationName] AS [LocationName],
+              [PhysicianLocationArea].[PhysicianName] AS [PhysicianName]
+              FROM [API].[PhysicianLocationArea] AS [PhysicianLocationArea]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianToCompanyServiceRequestInvoicePreview" EntityType="Self.PhysicianToCompanyServiceRequestInvoicePreview" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[ServiceRequestId] AS [ServiceRequestId], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[InvoiceDate] AS [InvoiceDate], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Currency] AS [Currency], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Terms] AS [Terms], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[DueDate] AS [DueDate], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[CompanyGuid] AS [CompanyGuid], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[CompanyName] AS [CompanyName], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Email] AS [Email], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[PhoneNumber] AS [PhoneNumber], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Address1] AS [Address1], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Address2] AS [Address2], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Address3] AS [Address3], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToGuid] AS [BillToGuid], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToName] AS [BillToName], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress1] AS [BillToAddress1], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress2] AS [BillToAddress2], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress3] AS [BillToAddress3], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[BillToEmail] AS [BillToEmail], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine1] AS [DescriptionLine1], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine2] AS [DescriptionLine2], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine3] AS [DescriptionLine3], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[IsNoShow] AS [IsNoShow], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[NoShowRate] AS [NoShowRate], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[CancelledDate] AS [CancelledDate], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[IsLateCancellation] AS [IsLateCancellation], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[LateCancellationRate] AS [LateCancellationRate], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[SubTotal] AS [SubTotal], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[TaxRateHst] AS [TaxRateHst], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Discount] AS [Discount], 
-    [PhysicianToCompanyServiceRequestInvoicePreview].[Total] AS [Total]
-    FROM [API].[PhysicianToCompanyServiceRequestInvoicePreview] AS [PhysicianToCompanyServiceRequestInvoicePreview]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [PhysicianToCompanyServiceRequestInvoicePreview].[ServiceRequestId] AS [ServiceRequestId],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[InvoiceDate] AS [InvoiceDate],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Currency] AS [Currency],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Terms] AS [Terms],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[DueDate] AS [DueDate],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[CompanyGuid] AS [CompanyGuid],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[CompanyName] AS [CompanyName],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Email] AS [Email],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[PhoneNumber] AS [PhoneNumber],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Address1] AS [Address1],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Address2] AS [Address2],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Address3] AS [Address3],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToGuid] AS [BillToGuid],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToName] AS [BillToName],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress1] AS [BillToAddress1],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress2] AS [BillToAddress2],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToAddress3] AS [BillToAddress3],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[BillToEmail] AS [BillToEmail],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine1] AS [DescriptionLine1],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine2] AS [DescriptionLine2],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[DescriptionLine3] AS [DescriptionLine3],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[IsNoShow] AS [IsNoShow],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[NoShowRate] AS [NoShowRate],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[CancelledDate] AS [CancelledDate],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[IsLateCancellation] AS [IsLateCancellation],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[LateCancellationRate] AS [LateCancellationRate],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[SubTotal] AS [SubTotal],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[TaxRateHst] AS [TaxRateHst],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Discount] AS [Discount],
+              [PhysicianToCompanyServiceRequestInvoicePreview].[Total] AS [Total]
+              FROM [API].[PhysicianToCompanyServiceRequestInvoicePreview] AS [PhysicianToCompanyServiceRequestInvoicePreview]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Profile" EntityType="Self.Profile" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Profile].[Id] AS [Id], 
-    [Profile].[Email] AS [Email], 
-    [Profile].[PhoneNumber] AS [PhoneNumber], 
-    [Profile].[Title] AS [Title], 
-    [Profile].[FirstName] AS [FirstName], 
-    [Profile].[LastName] AS [LastName], 
-    [Profile].[DisplayName] AS [DisplayName], 
-    [Profile].[EmployeeId] AS [EmployeeId], 
-    [Profile].[CompanyId] AS [CompanyId], 
-    [Profile].[CompanySubmittedName] AS [CompanySubmittedName], 
-    [Profile].[ModifiedDate] AS [ModifiedDate], 
-    [Profile].[ModifiedUser] AS [ModifiedUser], 
-    [Profile].[IsTestRecord] AS [IsTestRecord], 
-    [Profile].[RoleId] AS [RoleId], 
-    [Profile].[RoleName] AS [RoleName], 
-    [Profile].[CompanyName] AS [CompanyName]
-    FROM [API].[Profile] AS [Profile]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Profile].[Id] AS [Id],
+              [Profile].[Email] AS [Email],
+              [Profile].[PhoneNumber] AS [PhoneNumber],
+              [Profile].[Title] AS [Title],
+              [Profile].[FirstName] AS [FirstName],
+              [Profile].[LastName] AS [LastName],
+              [Profile].[DisplayName] AS [DisplayName],
+              [Profile].[EmployeeId] AS [EmployeeId],
+              [Profile].[CompanyId] AS [CompanyId],
+              [Profile].[CompanySubmittedName] AS [CompanySubmittedName],
+              [Profile].[ModifiedDate] AS [ModifiedDate],
+              [Profile].[ModifiedUser] AS [ModifiedUser],
+              [Profile].[IsTestRecord] AS [IsTestRecord],
+              [Profile].[RoleId] AS [RoleId],
+              [Profile].[RoleName] AS [RoleName],
+              [Profile].[CompanyName] AS [CompanyName]
+              FROM [API].[Profile] AS [Profile]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Province" EntityType="Self.Province" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Province].[Id] AS [Id], 
-    [Province].[CountryId] AS [CountryId], 
-    [Province].[ProvinceName] AS [ProvinceName], 
-    [Province].[ProvinceCode] AS [ProvinceCode]
-    FROM [API].[Province] AS [Province]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Province].[Id] AS [Id],
+              [Province].[CountryId] AS [CountryId],
+              [Province].[ProvinceName] AS [ProvinceName],
+              [Province].[ProvinceCode] AS [ProvinceCode]
+              FROM [API].[Province] AS [Province]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="Service" EntityType="Self.Service" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [Service].[Id] AS [Id], 
-    [Service].[ObjectGuid] AS [ObjectGuid], 
-    [Service].[Name] AS [Name], 
-    [Service].[Description] AS [Description], 
-    [Service].[Code] AS [Code], 
-    [Service].[DefaultPrice] AS [DefaultPrice], 
-    [Service].[ServiceCategoryId] AS [ServiceCategoryId], 
-    [Service].[ServicePortfolioId] AS [ServicePortfolioId], 
-    [Service].[ModifiedDate] AS [ModifiedDate], 
-    [Service].[ModifiedUser] AS [ModifiedUser], 
-    [Service].[ServiceCategoryName] AS [ServiceCategoryName], 
-    [Service].[ServicePortfolioName] AS [ServicePortfolioName]
-    FROM [API].[Service] AS [Service]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [Service].[Id] AS [Id],
+              [Service].[ObjectGuid] AS [ObjectGuid],
+              [Service].[Name] AS [Name],
+              [Service].[Description] AS [Description],
+              [Service].[Code] AS [Code],
+              [Service].[DefaultPrice] AS [DefaultPrice],
+              [Service].[ServiceCategoryId] AS [ServiceCategoryId],
+              [Service].[ServicePortfolioId] AS [ServicePortfolioId],
+              [Service].[ModifiedDate] AS [ModifiedDate],
+              [Service].[ModifiedUser] AS [ModifiedUser],
+              [Service].[ServiceCategoryName] AS [ServiceCategoryName],
+              [Service].[ServicePortfolioName] AS [ServicePortfolioName]
+              FROM [API].[Service] AS [Service]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceCatalogue" EntityType="Self.ServiceCatalogue" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServiceCatalogue].[Id] AS [Id], 
-    [ServiceCatalogue].[CompanyId] AS [CompanyId], 
-    [ServiceCatalogue].[PhysicianId] AS [PhysicianId], 
-    [ServiceCatalogue].[ServiceId] AS [ServiceId], 
-    [ServiceCatalogue].[LocationId] AS [LocationId], 
-    [ServiceCatalogue].[ServiceCataloguePriceOverride] AS [ServiceCataloguePriceOverride], 
-    [ServiceCatalogue].[ServiceName] AS [ServiceName], 
-    [ServiceCatalogue].[ServicePrice] AS [ServicePrice], 
-    [ServiceCatalogue].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [ServiceCatalogue].[CompanyName] AS [CompanyName], 
-    [ServiceCatalogue].[LocationName] AS [LocationName], 
-    [ServiceCatalogue].[ModifiedUser] AS [ModifiedUser], 
-    [ServiceCatalogue].[ModifiedDate] AS [ModifiedDate], 
-    [ServiceCatalogue].[NoShowRate] AS [NoShowRate], 
-    [ServiceCatalogue].[LateCancellationRate] AS [LateCancellationRate]
-    FROM [API].[ServiceCatalogue] AS [ServiceCatalogue]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServiceCatalogue].[Id] AS [Id],
+              [ServiceCatalogue].[CompanyId] AS [CompanyId],
+              [ServiceCatalogue].[PhysicianId] AS [PhysicianId],
+              [ServiceCatalogue].[ServiceId] AS [ServiceId],
+              [ServiceCatalogue].[LocationId] AS [LocationId],
+              [ServiceCatalogue].[ServiceCataloguePriceOverride] AS [ServiceCataloguePriceOverride],
+              [ServiceCatalogue].[ServiceName] AS [ServiceName],
+              [ServiceCatalogue].[ServicePrice] AS [ServicePrice],
+              [ServiceCatalogue].[PhysicianDisplayName] AS [PhysicianDisplayName],
+              [ServiceCatalogue].[CompanyName] AS [CompanyName],
+              [ServiceCatalogue].[LocationName] AS [LocationName],
+              [ServiceCatalogue].[ModifiedUser] AS [ModifiedUser],
+              [ServiceCatalogue].[ModifiedDate] AS [ModifiedDate],
+              [ServiceCatalogue].[NoShowRate] AS [NoShowRate],
+              [ServiceCatalogue].[LateCancellationRate] AS [LateCancellationRate]
+              FROM [API].[ServiceCatalogue] AS [ServiceCatalogue]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceCategory" EntityType="Self.ServiceCategory" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServiceCategory].[Id] AS [Id], 
-    [ServiceCategory].[Name] AS [Name], 
-    [ServiceCategory].[Description] AS [Description], 
-    [ServiceCategory].[ModifiedUser] AS [ModifiedUser], 
-    [ServiceCategory].[ModifiedDate] AS [ModifiedDate]
-    FROM [API].[ServiceCategory] AS [ServiceCategory]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServiceCategory].[Id] AS [Id],
+              [ServiceCategory].[Name] AS [Name],
+              [ServiceCategory].[Description] AS [Description],
+              [ServiceCategory].[ModifiedUser] AS [ModifiedUser],
+              [ServiceCategory].[ModifiedDate] AS [ModifiedDate]
+              FROM [API].[ServiceCategory] AS [ServiceCategory]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServicePortfolio" EntityType="Self.ServicePortfolio" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServicePortfolio].[Id] AS [Id], 
-    [ServicePortfolio].[Name] AS [Name], 
-    [ServicePortfolio].[Description] AS [Description], 
-    [ServicePortfolio].[ModifiedUser] AS [ModifiedUser], 
-    [ServicePortfolio].[ModifiedDate] AS [ModifiedDate]
-    FROM [API].[ServicePortfolio] AS [ServicePortfolio]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServicePortfolio].[Id] AS [Id],
+              [ServicePortfolio].[Name] AS [Name],
+              [ServicePortfolio].[Description] AS [Description],
+              [ServicePortfolio].[ModifiedUser] AS [ModifiedUser],
+              [ServicePortfolio].[ModifiedDate] AS [ModifiedDate]
+              FROM [API].[ServicePortfolio] AS [ServicePortfolio]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceRequest" EntityType="Self.ServiceRequest" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServiceRequest].[Id] AS [Id], 
-    [ServiceRequest].[ObjectGuid] AS [ObjectGuid], 
-    [ServiceRequest].[CompanyReferenceId] AS [CompanyReferenceId], 
-    [ServiceRequest].[ClaimantName] AS [ClaimantName], 
-    [ServiceRequest].[ServiceCatalogueId] AS [ServiceCatalogueId], 
-    [ServiceRequest].[HarvestProjectId] AS [HarvestProjectId], 
-    [ServiceRequest].[Title] AS [Title], 
-    [ServiceRequest].[Body] AS [Body], 
-    [ServiceRequest].[AddressId] AS [AddressId], 
-    [ServiceRequest].[RequestedDate] AS [RequestedDate], 
-    [ServiceRequest].[RequestedBy] AS [RequestedBy], 
-    [ServiceRequest].[CancelledDate] AS [CancelledDate], 
-    [ServiceRequest].[ServiceRequestStatusId] AS [ServiceRequestStatusId], 
-    [ServiceRequest].[ServiceRequestStatusText] AS [ServiceRequestStatusText], 
-    [ServiceRequest].[ServiceStatusId] AS [ServiceStatusId], 
-    [ServiceRequest].[ServiceStatusText] AS [ServiceStatusText], 
-    [ServiceRequest].[AvailableSlotId] AS [AvailableSlotId], 
-    [ServiceRequest].[DueDate] AS [DueDate], 
-    [ServiceRequest].[CaseCoordinatorId] AS [CaseCoordinatorId], 
-    [ServiceRequest].[IntakeAssistantId] AS [IntakeAssistantId], 
-    [ServiceRequest].[DocumentReviewerId] AS [DocumentReviewerId], 
-    [ServiceRequest].[ServiceRequestPrice] AS [ServiceRequestPrice], 
-    [ServiceRequest].[Notes] AS [Notes], 
-    [ServiceRequest].[DocumentFolderLink] AS [DocumentFolderLink], 
-    [ServiceRequest].[CompanyId] AS [CompanyId], 
-    [ServiceRequest].[IsNoShow] AS [IsNoShow], 
-    [ServiceRequest].[IsLateCancellation] AS [IsLateCancellation], 
-    [ServiceRequest].[NoShowRate] AS [NoShowRate], 
-    [ServiceRequest].[LateCancellationRate] AS [LateCancellationRate], 
-    [ServiceRequest].[ModifiedDate] AS [ModifiedDate], 
-    [ServiceRequest].[ModifiedUser] AS [ModifiedUser], 
-    [ServiceRequest].[ServiceId] AS [ServiceId], 
-    [ServiceRequest].[ServiceName] AS [ServiceName], 
-    [ServiceRequest].[ServiceCode] AS [ServiceCode], 
-    [ServiceRequest].[ServiceCategoryName] AS [ServiceCategoryName], 
-    [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName], 
-    [ServiceRequest].[PhysicianId] AS [PhysicianId], 
-    [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [ServiceRequest].[PhysicianUserName] AS [PhysicianUserName], 
-    [ServiceRequest].[CompanyGuid] AS [CompanyGuid], 
-    [ServiceRequest].[CompanyName] AS [CompanyName], 
-    [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName], 
-    [ServiceRequest].[ServicePrice] AS [ServicePrice], 
-    [ServiceRequest].[ServiceCataloguePrice] AS [ServiceCataloguePrice], 
-    [ServiceRequest].[EffectivePrice] AS [EffectivePrice], 
-    [ServiceRequest].[RequestedByName] AS [RequestedByName], 
-    [ServiceRequest].[AddressName] AS [AddressName], 
-    [ServiceRequest].[AddressTypeId] AS [AddressTypeId], 
-    [ServiceRequest].[AddressTypeName] AS [AddressTypeName], 
-    [ServiceRequest].[Address1] AS [Address1], 
-    [ServiceRequest].[Address2] AS [Address2], 
-    [ServiceRequest].[City] AS [City], 
-    [ServiceRequest].[PostalCode] AS [PostalCode], 
-    [ServiceRequest].[ProvinceId] AS [ProvinceId], 
-    [ServiceRequest].[ProvinceName] AS [ProvinceName], 
-    [ServiceRequest].[CountryId] AS [CountryId], 
-    [ServiceRequest].[CountryName] AS [CountryName], 
-    [ServiceRequest].[LocationId] AS [LocationId], 
-    [ServiceRequest].[LocationName] AS [LocationName], 
-    [ServiceRequest].[CaseCoordinatorName] AS [CaseCoordinatorName], 
-    [ServiceRequest].[IntakeAssistantName] AS [IntakeAssistantName], 
-    [ServiceRequest].[DocumentReviewerName] AS [DocumentReviewerName], 
-    [ServiceRequest].[AppointmentDate] AS [AppointmentDate], 
-    [ServiceRequest].[StartTime] AS [StartTime], 
-    [ServiceRequest].[Duration] AS [Duration], 
-    [ServiceRequest].[EndTime] AS [EndTime], 
-    [ServiceRequest].[CalendarEventTitle] AS [CalendarEventTitle], 
-    [ServiceRequest].[TotalTasks] AS [TotalTasks], 
-    [ServiceRequest].[ClosedTasks] AS [ClosedTasks], 
-    [ServiceRequest].[OpenTasks] AS [OpenTasks], 
-    [ServiceRequest].[NextTaskId] AS [NextTaskId], 
-    [ServiceRequest].[NextTaskName] AS [NextTaskName], 
-    [ServiceRequest].[NextTaskAssignedTo] AS [NextTaskAssignedTo], 
-    [ServiceRequest].[NextTaskAssignedtoName] AS [NextTaskAssignedtoName]
-    FROM [API].[ServiceRequest] AS [ServiceRequest]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServiceRequest].[Id] AS [Id],
+              [ServiceRequest].[ObjectGuid] AS [ObjectGuid],
+              [ServiceRequest].[CompanyReferenceId] AS [CompanyReferenceId],
+              [ServiceRequest].[ClaimantName] AS [ClaimantName],
+              [ServiceRequest].[ServiceCatalogueId] AS [ServiceCatalogueId],
+              [ServiceRequest].[HarvestProjectId] AS [HarvestProjectId],
+              [ServiceRequest].[Title] AS [Title],
+              [ServiceRequest].[Body] AS [Body],
+              [ServiceRequest].[AddressId] AS [AddressId],
+              [ServiceRequest].[RequestedDate] AS [RequestedDate],
+              [ServiceRequest].[RequestedBy] AS [RequestedBy],
+              [ServiceRequest].[CancelledDate] AS [CancelledDate],
+              [ServiceRequest].[ServiceRequestStatusId] AS [ServiceRequestStatusId],
+              [ServiceRequest].[ServiceRequestStatusText] AS [ServiceRequestStatusText],
+              [ServiceRequest].[ServiceStatusId] AS [ServiceStatusId],
+              [ServiceRequest].[ServiceStatusText] AS [ServiceStatusText],
+              [ServiceRequest].[AvailableSlotId] AS [AvailableSlotId],
+              [ServiceRequest].[DueDate] AS [DueDate],
+              [ServiceRequest].[CaseCoordinatorId] AS [CaseCoordinatorId],
+              [ServiceRequest].[IntakeAssistantId] AS [IntakeAssistantId],
+              [ServiceRequest].[DocumentReviewerId] AS [DocumentReviewerId],
+              [ServiceRequest].[ServiceRequestPrice] AS [ServiceRequestPrice],
+              [ServiceRequest].[Notes] AS [Notes],
+              [ServiceRequest].[DocumentFolderLink] AS [DocumentFolderLink],
+              [ServiceRequest].[CompanyId] AS [CompanyId],
+              [ServiceRequest].[IsNoShow] AS [IsNoShow],
+              [ServiceRequest].[IsLateCancellation] AS [IsLateCancellation],
+              [ServiceRequest].[NoShowRate] AS [NoShowRate],
+              [ServiceRequest].[LateCancellationRate] AS [LateCancellationRate],
+              [ServiceRequest].[ModifiedDate] AS [ModifiedDate],
+              [ServiceRequest].[ModifiedUser] AS [ModifiedUser],
+              [ServiceRequest].[ServiceId] AS [ServiceId],
+              [ServiceRequest].[ServiceName] AS [ServiceName],
+              [ServiceRequest].[ServiceCode] AS [ServiceCode],
+              [ServiceRequest].[ServiceCategoryName] AS [ServiceCategoryName],
+              [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName],
+              [ServiceRequest].[PhysicianId] AS [PhysicianId],
+              [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName],
+              [ServiceRequest].[PhysicianUserName] AS [PhysicianUserName],
+              [ServiceRequest].[CompanyGuid] AS [CompanyGuid],
+              [ServiceRequest].[CompanyName] AS [CompanyName],
+              [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName],
+              [ServiceRequest].[ServicePrice] AS [ServicePrice],
+              [ServiceRequest].[ServiceCataloguePrice] AS [ServiceCataloguePrice],
+              [ServiceRequest].[EffectivePrice] AS [EffectivePrice],
+              [ServiceRequest].[RequestedByName] AS [RequestedByName],
+              [ServiceRequest].[AddressName] AS [AddressName],
+              [ServiceRequest].[AddressTypeId] AS [AddressTypeId],
+              [ServiceRequest].[AddressTypeName] AS [AddressTypeName],
+              [ServiceRequest].[Address1] AS [Address1],
+              [ServiceRequest].[Address2] AS [Address2],
+              [ServiceRequest].[City] AS [City],
+              [ServiceRequest].[PostalCode] AS [PostalCode],
+              [ServiceRequest].[ProvinceId] AS [ProvinceId],
+              [ServiceRequest].[ProvinceName] AS [ProvinceName],
+              [ServiceRequest].[CountryId] AS [CountryId],
+              [ServiceRequest].[CountryName] AS [CountryName],
+              [ServiceRequest].[LocationId] AS [LocationId],
+              [ServiceRequest].[LocationName] AS [LocationName],
+              [ServiceRequest].[CaseCoordinatorName] AS [CaseCoordinatorName],
+              [ServiceRequest].[IntakeAssistantName] AS [IntakeAssistantName],
+              [ServiceRequest].[DocumentReviewerName] AS [DocumentReviewerName],
+              [ServiceRequest].[AppointmentDate] AS [AppointmentDate],
+              [ServiceRequest].[StartTime] AS [StartTime],
+              [ServiceRequest].[Duration] AS [Duration],
+              [ServiceRequest].[EndTime] AS [EndTime],
+              [ServiceRequest].[CalendarEventTitle] AS [CalendarEventTitle],
+              [ServiceRequest].[TotalTasks] AS [TotalTasks],
+              [ServiceRequest].[ClosedTasks] AS [ClosedTasks],
+              [ServiceRequest].[OpenTasks] AS [OpenTasks],
+              [ServiceRequest].[NextTaskId] AS [NextTaskId],
+              [ServiceRequest].[NextTaskName] AS [NextTaskName],
+              [ServiceRequest].[NextTaskAssignedTo] AS [NextTaskAssignedTo],
+              [ServiceRequest].[NextTaskAssignedtoName] AS [NextTaskAssignedtoName]
+              FROM [API].[ServiceRequest] AS [ServiceRequest]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceRequestCostRollUp" EntityType="Self.ServiceRequestCostRollUp" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServiceRequestCostRollUp].[Id] AS [Id], 
-    [ServiceRequestCostRollUp].[ServiceRequestId] AS [ServiceRequestId], 
-    [ServiceRequestCostRollUp].[DisplayName] AS [DisplayName], 
-    [ServiceRequestCostRollUp].[RoleName] AS [RoleName], 
-    [ServiceRequestCostRollUp].[RoleCategoryName] AS [RoleCategoryName], 
-    [ServiceRequestCostRollUp].[TaskName] AS [TaskName], 
-    [ServiceRequestCostRollUp].[TotalCost] AS [TotalCost]
-    FROM [API].[ServiceRequestCostRollUp] AS [ServiceRequestCostRollUp]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServiceRequestCostRollUp].[Id] AS [Id],
+              [ServiceRequestCostRollUp].[ServiceRequestId] AS [ServiceRequestId],
+              [ServiceRequestCostRollUp].[DisplayName] AS [DisplayName],
+              [ServiceRequestCostRollUp].[RoleName] AS [RoleName],
+              [ServiceRequestCostRollUp].[RoleCategoryName] AS [RoleCategoryName],
+              [ServiceRequestCostRollUp].[TaskName] AS [TaskName],
+              [ServiceRequestCostRollUp].[TotalCost] AS [TotalCost]
+              FROM [API].[ServiceRequestCostRollUp] AS [ServiceRequestCostRollUp]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="ServiceRequestTask" EntityType="Self.ServiceRequestTask" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [ServiceRequestTask].[Id] AS [Id], 
-    [ServiceRequestTask].[ObjectGuid] AS [ObjectGuid], 
-    [ServiceRequestTask].[ServiceRequestId] AS [ServiceRequestId], 
-    [ServiceRequestTask].[TaskId] AS [TaskId], 
-    [ServiceRequestTask].[TaskName] AS [TaskName], 
-    [ServiceRequestTask].[Guidance] AS [Guidance], 
-    [ServiceRequestTask].[ResponsibleRoleId] AS [ResponsibleRoleId], 
-    [ServiceRequestTask].[ResponsibleRoleName] AS [ResponsibleRoleName], 
-    [ServiceRequestTask].[Sequence] AS [Sequence], 
-    [ServiceRequestTask].[AssignedTo] AS [AssignedTo], 
-    [ServiceRequestTask].[IsBillable] AS [IsBillable], 
-    [ServiceRequestTask].[HourlyRate] AS [HourlyRate], 
-    [ServiceRequestTask].[EstimatedHours] AS [EstimatedHours], 
-    [ServiceRequestTask].[ActualHours] AS [ActualHours], 
-    [ServiceRequestTask].[CompletedDate] AS [CompletedDate], 
-    [ServiceRequestTask].[Notes] AS [Notes], 
-    [ServiceRequestTask].[InvoiceItemId] AS [InvoiceItemId], 
-    [ServiceRequestTask].[ModifiedDate] AS [ModifiedDate], 
-    [ServiceRequestTask].[ModifiedUser] AS [ModifiedUser], 
-    [ServiceRequestTask].[TaskPhaseId] AS [TaskPhaseId], 
-    [ServiceRequestTask].[TaskPhaseName] AS [TaskPhaseName], 
-    [ServiceRequestTask].[AssignedToDisplayName] AS [AssignedToDisplayName], 
-    [ServiceRequestTask].[UserId] AS [UserId], 
-    [ServiceRequestTask].[StaffHourlyRate] AS [StaffHourlyRate], 
-    [ServiceRequestTask].[Cost] AS [Cost]
-    FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [ServiceRequestTask].[Id] AS [Id],
+              [ServiceRequestTask].[ObjectGuid] AS [ObjectGuid],
+              [ServiceRequestTask].[ServiceRequestId] AS [ServiceRequestId],
+              [ServiceRequestTask].[TaskId] AS [TaskId],
+              [ServiceRequestTask].[TaskName] AS [TaskName],
+              [ServiceRequestTask].[Guidance] AS [Guidance],
+              [ServiceRequestTask].[ResponsibleRoleId] AS [ResponsibleRoleId],
+              [ServiceRequestTask].[ResponsibleRoleName] AS [ResponsibleRoleName],
+              [ServiceRequestTask].[Sequence] AS [Sequence],
+              [ServiceRequestTask].[AssignedTo] AS [AssignedTo],
+              [ServiceRequestTask].[IsBillable] AS [IsBillable],
+              [ServiceRequestTask].[HourlyRate] AS [HourlyRate],
+              [ServiceRequestTask].[EstimatedHours] AS [EstimatedHours],
+              [ServiceRequestTask].[ActualHours] AS [ActualHours],
+              [ServiceRequestTask].[CompletedDate] AS [CompletedDate],
+              [ServiceRequestTask].[Notes] AS [Notes],
+              [ServiceRequestTask].[InvoiceItemId] AS [InvoiceItemId],
+              [ServiceRequestTask].[ModifiedDate] AS [ModifiedDate],
+              [ServiceRequestTask].[ModifiedUser] AS [ModifiedUser],
+              [ServiceRequestTask].[TaskPhaseId] AS [TaskPhaseId],
+              [ServiceRequestTask].[TaskPhaseName] AS [TaskPhaseName],
+              [ServiceRequestTask].[AssignedToDisplayName] AS [AssignedToDisplayName],
+              [ServiceRequestTask].[UserId] AS [UserId],
+              [ServiceRequestTask].[StaffHourlyRate] AS [StaffHourlyRate],
+              [ServiceRequestTask].[Cost] AS [Cost]
+              FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [SpecialRequest].[Id] AS [Id], 
-    [SpecialRequest].[ObjectGuid] AS [ObjectGuid], 
-    [SpecialRequest].[PhysicianId] AS [PhysicianId], 
-    [SpecialRequest].[ServiceId] AS [ServiceId], 
-    [SpecialRequest].[Timeframe] AS [Timeframe], 
-    [SpecialRequest].[AdditionalNotes] AS [AdditionalNotes], 
-    [SpecialRequest].[ModifiedDate] AS [ModifiedDate], 
-    [SpecialRequest].[ModifiedUserName] AS [ModifiedUserName], 
-    [SpecialRequest].[ModifiedUserId] AS [ModifiedUserId], 
-    [SpecialRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
-    [SpecialRequest].[ServiceName] AS [ServiceName]
-    FROM [API].[SpecialRequest] AS [SpecialRequest]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [SpecialRequest].[Id] AS [Id],
+              [SpecialRequest].[ObjectGuid] AS [ObjectGuid],
+              [SpecialRequest].[PhysicianId] AS [PhysicianId],
+              [SpecialRequest].[ServiceId] AS [ServiceId],
+              [SpecialRequest].[Timeframe] AS [Timeframe],
+              [SpecialRequest].[AdditionalNotes] AS [AdditionalNotes],
+              [SpecialRequest].[ModifiedDate] AS [ModifiedDate],
+              [SpecialRequest].[ModifiedUserName] AS [ModifiedUserName],
+              [SpecialRequest].[ModifiedUserId] AS [ModifiedUserId],
+              [SpecialRequest].[PhysicianDisplayName] AS [PhysicianDisplayName],
+              [SpecialRequest].[ServiceName] AS [ServiceName]
+              FROM [API].[SpecialRequest] AS [SpecialRequest]
+            </DefiningQuery>
           </EntitySet>
           <EntitySet Name="User" EntityType="Self.User" store:Type="Views" store:Schema="API">
-            <DefiningQuery>SELECT 
-    [User].[Id] AS [Id], 
-    [User].[Email] AS [Email], 
-    [User].[EmailConfirmed] AS [EmailConfirmed], 
-    [User].[PasswordHash] AS [PasswordHash], 
-    [User].[SecurityStamp] AS [SecurityStamp], 
-    [User].[PhoneNumber] AS [PhoneNumber], 
-    [User].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed], 
-    [User].[TwoFactorEnabled] AS [TwoFactorEnabled], 
-    [User].[LockoutEndDateUtc] AS [LockoutEndDateUtc], 
-    [User].[LockoutEnabled] AS [LockoutEnabled], 
-    [User].[AccessFailedCount] AS [AccessFailedCount], 
-    [User].[UserName] AS [UserName], 
-    [User].[Title] AS [Title], 
-    [User].[FirstName] AS [FirstName], 
-    [User].[LastName] AS [LastName], 
-    [User].[DisplayName] AS [DisplayName], 
-    [User].[EmployeeId] AS [EmployeeId], 
-    [User].[CompanyId] AS [CompanyId], 
-    [User].[CompanySubmittedName] AS [CompanySubmittedName], 
-    [User].[ModifiedDate] AS [ModifiedDate], 
-    [User].[ModifiedUser] AS [ModifiedUser], 
-    [User].[LastActivationDate] AS [LastActivationDate], 
-    [User].[IsTestRecord] AS [IsTestRecord], 
-    [User].[RoleId] AS [RoleId], 
-    [User].[RoleName] AS [RoleName], 
-    [User].[MyCompanyName] AS [MyCompanyName], 
-    [User].[CompanyName] AS [CompanyName], 
-    [User].[RoleCategoryId] AS [RoleCategoryId], 
-    [User].[RoleCategoryName] AS [RoleCategoryName], 
-    [User].[HourlyRate] AS [HourlyRate], 
-    [User].[LogoCssClass] AS [LogoCssClass]
-    FROM [API].[User] AS [User]</DefiningQuery>
+            <DefiningQuery>
+              SELECT
+              [User].[Id] AS [Id],
+              [User].[Email] AS [Email],
+              [User].[EmailConfirmed] AS [EmailConfirmed],
+              [User].[PasswordHash] AS [PasswordHash],
+              [User].[SecurityStamp] AS [SecurityStamp],
+              [User].[PhoneNumber] AS [PhoneNumber],
+              [User].[PhoneNumberConfirmed] AS [PhoneNumberConfirmed],
+              [User].[TwoFactorEnabled] AS [TwoFactorEnabled],
+              [User].[LockoutEndDateUtc] AS [LockoutEndDateUtc],
+              [User].[LockoutEnabled] AS [LockoutEnabled],
+              [User].[AccessFailedCount] AS [AccessFailedCount],
+              [User].[UserName] AS [UserName],
+              [User].[Title] AS [Title],
+              [User].[FirstName] AS [FirstName],
+              [User].[LastName] AS [LastName],
+              [User].[DisplayName] AS [DisplayName],
+              [User].[EmployeeId] AS [EmployeeId],
+              [User].[CompanyId] AS [CompanyId],
+              [User].[CompanySubmittedName] AS [CompanySubmittedName],
+              [User].[ModifiedDate] AS [ModifiedDate],
+              [User].[ModifiedUser] AS [ModifiedUser],
+              [User].[LastActivationDate] AS [LastActivationDate],
+              [User].[IsTestRecord] AS [IsTestRecord],
+              [User].[RoleId] AS [RoleId],
+              [User].[RoleName] AS [RoleName],
+              [User].[MyCompanyName] AS [MyCompanyName],
+              [User].[CompanyName] AS [CompanyName],
+              [User].[RoleCategoryId] AS [RoleCategoryId],
+              [User].[RoleCategoryName] AS [RoleCategoryName],
+              [User].[HourlyRate] AS [HourlyRate],
+              [User].[LogoCssClass] AS [LogoCssClass]
+              FROM [API].[User] AS [User]
+            </DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_InvoiceDetail_Invoice" Association="Self.FK_InvoiceDetail_Invoice">
             <End Role="Invoice" EntitySet="Invoice" />
             <End Role="InvoiceDetail" EntitySet="InvoiceDetail" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="OrvosiModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="OrvosiEntities" annotation:LazyLoadingEnabled="true" >
           <FunctionImport Name="fn_Weekdays" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Weekdays_Result)">
-          <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="fn_Timeframe" IsComposable="true" ReturnType="Collection(OrvosiModel.fn_Timeframe_Result)">
             <Parameter Name="DatePart" Mode="In" Type="String" />
@@ -1934,7 +1993,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="EndDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="GetPhysicianGoogleAccount" ReturnType="Collection(OrvosiModel.GetPhysicianGoogleAccount_Result)">
-          <Parameter Name="id" Mode="In" Type="String" />
+            <Parameter Name="id" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SpecialRequest_Insert">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
@@ -2054,7 +2113,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_Insert">
             <Parameter Name="CompanyReferenceId" Mode="In" Type="String" />
@@ -2127,7 +2186,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySet Name="Entities" EntityType="OrvosiModel.Entity" />
           <EntitySet Name="PhysicianInsurances" EntityType="OrvosiModel.PhysicianInsurance" />
           <FunctionImport Name="PhysicianInsurance_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="PhysicianInsurance_Insert" EntitySet="PhysicianInsurances" ReturnType="Collection(OrvosiModel.PhysicianInsurance)">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
@@ -2148,7 +2207,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <EntitySet Name="Documents" EntityType="OrvosiModel.Document" />
           <FunctionImport Name="Document_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="Document_Insert" EntitySet="Documents" ReturnType="Collection(OrvosiModel.Document)">
             <Parameter Name="ObjectGuid" Mode="In" Type="Guid" />
@@ -2179,7 +2238,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <EntitySet Name="PhysicianLicenses" EntityType="OrvosiModel.PhysicianLicense" />
           <FunctionImport Name="PhysicianLicense_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="PhysicianLicense_Insert" ReturnType="Collection(OrvosiModel.PhysicianLicense_Insert_Result)">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
@@ -2216,13 +2275,13 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="CompanyId" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="GetServiceCatalogue" ReturnType="Collection(OrvosiModel.GetServiceCatalogue_Result)">
-          <Parameter Name="PhysicianId" Mode="In" Type="String" />
+            <Parameter Name="PhysicianId" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="LocationAreas" EntityType="OrvosiModel.LocationArea" />
           <EntitySet Name="PhysicianLocationAreas" EntityType="OrvosiModel.PhysicianLocationArea" />
           <EntitySet Name="AvailableDays" EntityType="OrvosiModel.AvailableDay" />
           <FunctionImport Name="Location_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="Location_Insert" ReturnType="Collection(OrvosiModel.Location_Insert_Result)">
             <Parameter Name="OwnerGuid" Mode="In" Type="Guid" />
@@ -2264,7 +2323,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <EntitySet Name="ServiceRequestTasks" EntityType="OrvosiModel.ServiceRequestTask" />
           <FunctionImport Name="ServiceRequestTask_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequestTask_Insert" ReturnType="Collection(Int32)">
             <Parameter Name="ServiceRequestId" Mode="In" Type="Int32" />
@@ -2310,10 +2369,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="IsSuperAdmin" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="GetDashboardServiceRequest" ReturnType="Collection(OrvosiModel.GetDashboardServiceRequest_Result)">
-          <Parameter Name="Now" Mode="In" Type="DateTime" />
+            <Parameter Name="Now" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_ToggleNoShow">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="ServiceRequest_ToggleCancellation">
             <Parameter Name="Id" Mode="In" Type="Int32" />
@@ -2337,15 +2396,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="AvailableDay_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="AvailableSlot_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int16" />
+            <Parameter Name="Id" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="PhysicianToCompanyServiceRequestInvoicePreviews" EntityType="OrvosiModel.PhysicianToCompanyServiceRequestInvoicePreview" />
           <EntitySet Name="BillableEntities" EntityType="OrvosiModel.BillableEntity" />
           <FunctionImport Name="Invoice_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="Invoice_Insert" ReturnType="Collection(Decimal)">
             <Parameter Name="InvoiceNumber" Mode="In" Type="String" />
@@ -2401,7 +2460,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="InvoiceDetail_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="InvoiceDetail_Insert" ReturnType="Collection(Decimal)">
             <Parameter Name="InvoiceId" Mode="In" Type="Int32" />
@@ -2425,7 +2484,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="ServiceCatalogue_Delete">
-          <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="ServiceCatalogue_Insert">
             <Parameter Name="PhysicianId" Mode="In" Type="String" />
@@ -3094,7 +3153,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Cost" Type="Decimal" Precision="37" Scale="4" />
-          </EntityType>
+        </EntityType>
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
             <PropertyRef Name="Id" />
@@ -3269,6 +3328,30 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="Decimal" Name="NoShowRate" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Decimal" Name="LateCancellationRate" Nullable="true" Precision="18" Scale="2" />
         </ComplexType>
+        <EntityType Name="City">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ProvinceId" Type="Int16" Nullable="false" />
+          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Province" Relationship="OrvosiModel.CityProvince" FromRole="City" ToRole="Province" />
+        </EntityType>
+        <Association Name="CityProvince">
+          <End Type="OrvosiModel.City" Role="City" Multiplicity="*" />
+          <End Type="OrvosiModel.Province" Role="Province" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="Province">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="City">
+              <PropertyRef Name="ProvinceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Invoice">
           <Key>
             <PropertyRef Name="Id" />
@@ -3375,44 +3458,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <End Type="OrvosiModel.InvoiceDetail" Role="InvoiceDetail" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ServiceRequest">
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ServiceProviderGuid" Type="Guid" />
-          <Property Name="CustomerGuid" Type="Guid" />
-          <Property Name="NoShowRate" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="LateCancellationRate" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <ComplexType Name="GetServiceCatalogueRate_Result">
-          <Property Type="Decimal" Name="NoShowRate" Nullable="true" Precision="18" Scale="2" />
-          <Property Type="Decimal" Name="LateCancellationRate" Nullable="true" Precision="18" Scale="2" />
-        </ComplexType>
-        <EntityType Name="City">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int16" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ProvinceId" Type="Int16" Nullable="false" />
-          <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="ModifiedUser" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Province" Relationship="OrvosiModel.CityProvince" FromRole="City" ToRole="Province" />
-          </EntityType>
-        <Association Name="CityProvince">
-          <End Type="OrvosiModel.City" Role="City" Multiplicity="*" />
-          <End Type="OrvosiModel.Province" Role="Province" Multiplicity="1" />
-          <ReferentialConstraint>
-            <Principal Role="Province">
               <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="City">
-              <PropertyRef Name="ProvinceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
             </Principal>
             <Dependent Role="InvoiceDetail">
               <PropertyRef Name="ServiceRequestId" />
@@ -3450,7 +3496,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                 <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CompanyObjectGuid" ColumnName="CompanyObjectGuid" />
-                </MappingFragment>
+              </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Companies">
@@ -4397,7 +4443,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetServiceCatalogueForCompany" FunctionName="OrvosiModel.Store.GetServiceCatalogueForCompany">
-          <ResultMapping>
+            <ResultMapping>
               <ComplexTypeMapping TypeName="OrvosiModel.GetServiceCatalogue_Result">
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />

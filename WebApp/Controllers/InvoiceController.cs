@@ -142,6 +142,12 @@ namespace WebApp.Controllers
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
             await messageService.SendInvoice(invoice.CustomerEmail, invoice.ServiceProviderEmail, invoice.InvoiceDetails.First());
 
+            var html = WebApp.Library.Helpers.HtmlHelpers.RenderPartialViewToString(this, "Details", invoice);
+            SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
+            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(html, Url.Content("~"));
+            doc.Save(string.Format(@"C:\Invoice_{1}.pdf", invoice.ServiceProviderName, invoice.InvoiceNumber));
+            doc.Close();
+
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
             invoice.ModifiedUser = User.Identity.Name;

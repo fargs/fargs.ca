@@ -52,10 +52,7 @@
     </div>
 </div>
 
-@foreach (var invoice in Model.Invoices)
-{
-    <div>@invoice.InvoiceNumber</div>
-}
+@Html.Action("Table", new { invoices = Model.Invoices })
 
 
 

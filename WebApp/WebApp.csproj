@@ -831,6 +831,7 @@
     <Content Include="Views\Invoice\Details.cshtml" />
     <Content Include="Views\Invoice\_Invoice.cshtml" />
     <Content Include="Views\ServiceRequest\_CreateInvoice.cshtml" />
+    <Content Include="Views\Invoice\_Table.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_InvoiceTable.cshtml" />
     <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />

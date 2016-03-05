@@ -63,6 +63,11 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        public ActionResult Table(List<Invoice> invoices)
+        {
+            return PartialView("_Table", invoices);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Create(short ServiceRequestId)
         {

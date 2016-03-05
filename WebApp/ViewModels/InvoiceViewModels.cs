@@ -8,6 +8,10 @@ namespace WebApp.ViewModels.InvoiceViewModels
 {
     public class IndexViewModel
     {
+        public IndexViewModel()
+        {
+            this.Invoices = new List<Invoice>();
+        }
         public User CurrentUser { get; set; }
         public BillableEntity SelectedServiceProvider { get; set; }
         public BillableEntity SelectedCustomer { get; set; }

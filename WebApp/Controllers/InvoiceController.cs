@@ -14,6 +14,8 @@ using WebApp.ViewModels.InvoiceViewModels;
 using Model.Enums;
 using System.Globalization;
 using System.Text;
+using WebApp.Library.Extensions;
+using SelectPdf;
 
 namespace WebApp.Controllers
 {
@@ -142,10 +144,18 @@ namespace WebApp.Controllers
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
             await messageService.SendInvoice(invoice.CustomerEmail, invoice.ServiceProviderEmail, invoice.InvoiceDetails.First());
 
-            var html = WebApp.Library.Helpers.HtmlHelpers.RenderPartialViewToString(this, "Details", invoice);
-            SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
-            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(html, Url.Content("~"));
-            doc.Save(string.Format(@"C:\Invoice_{1}.pdf", invoice.ServiceProviderName, invoice.InvoiceNumber));
+            var html = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
+            SelectPdf.HtmlToPdf converter = new HtmlToPdf();
+
+            converter.Options.PdfPageSize = PdfPageSize.A4;
+            converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+            converter.Options.MarginLeft = 10;
+            converter.Options.MarginRight = 10;
+            converter.Options.MarginTop = 20;
+            converter.Options.MarginBottom = 20;
+
+            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(html, Request.GetBaseUrl());
+            doc.Save(string.Format(@"{0}\App_Data\Invoice_{1}.pdf", Server.MapPath("~"), invoice.InvoiceNumber));
             doc.Close();
 
             invoice.SentDate = SystemTime.Now();

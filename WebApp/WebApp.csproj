@@ -305,6 +305,7 @@
     <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
+    <Compile Include="Library\BundlesFormats.cs" />
     <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Helpers.cs" />
@@ -312,6 +313,11 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="OrvosiDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OrvosiDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
@@ -732,6 +738,17 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-custom\orvosi.less" />
+    <Content Include="OrvosiDataSet.xsc">
+      <DependentUpon>OrvosiDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="OrvosiDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OrvosiDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="OrvosiDataSet.xss">
+      <DependentUpon>OrvosiDataSet.xsd</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\orvosiapp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
@@ -836,10 +853,12 @@
     <Content Include="Views\Invoice\_Invoice.cshtml" />
     <Content Include="Views\ServiceRequest\_CreateInvoice.cshtml" />
     <Content Include="Views\Invoice\_Table.cshtml" />
+    <Content Include="Views\Invoice\PrintableInvoice.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_InvoiceTable.cshtml" />
     <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
+    <Content Include="Views\Shared\_LayoutPrint.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -865,6 +884,9 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Invoice.rdlc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -8,9 +8,9 @@ namespace Model.Extensions
 {
     public static class Extensions
     {
-        public static bool IsValidToSubmitInvoice(this PhysicianToCompanyServiceRequestInvoicePreview obj, DateTime? IntakeInterviewCompletedDate)
-        {
-            return IntakeInterviewCompletedDate.HasValue ? true : false;
-        }
+        //public static bool IsValidToSubmitInvoice(this Invoice obj, DateTime? IntakeInterviewCompletedDate)
+        //{
+        //    return IntakeInterviewCompletedDate.HasValue ? true : false;
+        //}
     }
 }

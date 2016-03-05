@@ -33,7 +33,7 @@ else if (ViewBag.FormMode == FormModes.Edit)
 }
 else
 {
-    <div class="container">
+    <div class="container hidden-print">
         @Html.Partial("_Invoice", Model)
         <div class="row">
             <div class="col-sm-4">

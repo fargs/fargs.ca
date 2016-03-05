@@ -63,7 +63,7 @@ namespace Model
         }
     }
 
-    partial class PhysicianToCompanyServiceRequestInvoicePreview
+    partial class Invoice
     {
         public decimal ServiceRequestPrice { get; set; }
         public string Notes { get; set; }

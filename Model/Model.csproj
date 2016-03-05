@@ -58,6 +58,9 @@
     <Compile Include="Account.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="AddressType.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="AvailableDay.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -149,6 +152,11 @@
     <Compile Include="Orvosi.Partials\Extensions.cs" />
     <Compile Include="Orvosi.Partials\OrvosiEntities.cs" />
     <Compile Include="Orvosi.Partials\Partials.cs" />
+    <Compile Include="Orvosi1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Orvosi.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Physician.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

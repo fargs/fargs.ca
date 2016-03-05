@@ -1,7 +1,42 @@
-﻿@model Model.Location
+﻿@using Model
+@using Model.Enums
+@model Model.Location
 
 @{
     ViewBag.Title = "Create";
+
+    var db = new OrvosiEntities();
+
+    ViewBag.Owners = db.Entities
+        .Where(c => c.EntityType == EntityTypes.Company || c.EntityType == EntityTypes.Physician)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.EntityGuid.ToString()
+        }).ToList();
+
+    ViewBag.Locations = db.LookupItems
+        .Where(c => c.LookupId == Lookups.LocationAreas)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.ItemText,
+            Value = c.ItemId.ToString()
+        }).ToList();
+
+    ViewBag.Provinces = db.Provinces
+        .Where(c => c.CountryId == 124) // Canada
+        .Select(c => new SelectListItem()
+        {
+            Text = c.ProvinceName,
+            Value = c.Id.ToString()
+        }).ToList();
+
+    ViewBag.AddressTypes = db.AddressTypes
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString()
+        }).ToList();
 }
 
 <h2>Create</h2>
@@ -16,6 +51,14 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         
+        <div class="form-group">
+            <label class="control-label col-md-2">Address Type</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.AddressTypeID, new SelectList(ViewBag.AddressTypes, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AddressTypeID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
         <div class="form-group">
             <label class="control-label col-md-2">Owner</label>
             <div class="col-md-10">

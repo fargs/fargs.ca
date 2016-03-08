@@ -2,22 +2,6 @@
 @using WebApp.Library.Enums
 
 <div class="row">
-    <div class="col-sm-6">
-        <div class="image-logo-md"></div>
-        <div class="lead">@Model.ServiceProviderName</div>
-    </div>
-    <div class="col-sm-6">
-        <div class="pull-right">
-            <div>@Model.ServiceProviderAddress1</div>
-            <div>@Model.ServiceProviderAddress2</div>
-            <div>@(string.Format("{0}, {1} {2}", Model.ServiceProviderCity, Model.ServiceProviderProvince, Model.ServiceProviderCountry))</div>
-            <div>@Model.ServiceProviderPostalCode</div>
-            <div>@Model.ServiceProviderEmail</div>
-            <div>@Model.ServiceProviderPhoneNumber</div>
-        </div>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -52,21 +36,21 @@
     </div>
 </div>
 @*@if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
-{
-    <form action="~/Invoice/AddInvoiceItem" method="post" style="margin-bottom:20px;">
-        @Html.Hidden("InvoiceId", Model.Id)
-        @Html.Hidden("Rate", 1)
-        <div class="form-group">
-            <label for="Description" class="control-label">Description</label>
-            <textarea rows="3" class="form-control" name="Description"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="Amount" class="control-label">Amount</label>
-            <input type="text" class="form-control" name="Amount" />
-        </div>
-        <button type="submit" class="btn btn-primary btn-sm">Add Item</button>
-    </form>
-}*@
+    {
+        <form action="~/Invoice/AddInvoiceItem" method="post" style="margin-bottom:20px;">
+            @Html.Hidden("InvoiceId", Model.Id)
+            @Html.Hidden("Rate", 1)
+            <div class="form-group">
+                <label for="Description" class="control-label">Description</label>
+                <textarea rows="3" class="form-control" name="Description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="Amount" class="control-label">Amount</label>
+                <input type="text" class="form-control" name="Amount" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Add Item</button>
+        </form>
+    }*@
 <div class="panel panel-default">
     <div class="panel-heading">
         <strong>Details</strong>
@@ -91,8 +75,11 @@
                         }
                         else
                         {
-                            <label style="padding-top: 10px;">Notes</label>
-                            <div>@item.AdditionalNotes</div>
+                            if (!string.IsNullOrEmpty(Model.InvoiceDetails.First().AdditionalNotes))
+                            {
+                                <label style="padding-top: 10px;">Notes</label>
+                                <div>@item.AdditionalNotes</div>
+                            }
                         }
                     </td>
                     <td width="20%">
@@ -131,13 +118,12 @@
             </tr>
         </tfoot>
     </table>
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="center-block">
-                    Terms
-                </div>
-            </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="well text-center">
+            All cheques payable to @Model.ServiceProviderName. Thank you for you referral!
         </div>
     </div>
 </div>

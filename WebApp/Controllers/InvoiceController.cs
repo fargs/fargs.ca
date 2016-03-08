@@ -16,14 +16,12 @@ using System.Globalization;
 using System.Text;
 using WebApp.Library.Extensions;
 using SelectPdf;
+using WebApp.Library.Helpers;
 
 namespace WebApp.Controllers
 {
     public class InvoiceController : Controller
     {
-        public const byte PaymentDueInDays = 14;
-        public const decimal TaxRateHst = 0.13M;
-
         private OrvosiEntities db = new OrvosiEntities();
         // GET: Invoice
         public async Task<ActionResult> Index(FilterArgs args)
@@ -82,7 +80,7 @@ namespace WebApp.Controllers
 
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
 
-                var service = new InvoiceService();
+                var service = new InvoiceService(User.Identity.Name);
                 var invoice = service.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
                 db.Invoices.Add(invoice);
                 if (db.GetValidationErrors().Count() == 0)
@@ -107,7 +105,7 @@ namespace WebApp.Controllers
         {
             var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.Edit;
-            return View("Details", obj);
+            return View(obj);
         }
 
         [HttpPost]
@@ -134,29 +132,75 @@ namespace WebApp.Controllers
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
-            return RedirectToAction("Details", new { id = invoice.Id });
+            if (string.IsNullOrEmpty(Request.UrlReferrer.ToString()))
+            {
+                return RedirectToAction("Details", new { id = invoice.Id });
+            }
+            return Redirect(Request.UrlReferrer.ToString());
         }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> Download(Guid id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+
+            var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
+            var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
+            var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
+            
+            HtmlToPdf converter = new HtmlToPdf();
+
+            // header settings
+            converter.Options.DisplayHeader = true;
+            converter.Header.Height = 100;
+
+            PdfHtmlSection headerHtml = new PdfHtmlSection(header, Request.GetBaseUrl());
+            headerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
+            converter.Header.Add(headerHtml);
+
+            // footer settings
+            converter.Options.DisplayFooter = true;
+            converter.Footer.Height = 30;
+
+            PdfHtmlSection footerHtml = new PdfHtmlSection(footer, Request.GetBaseUrl());
+            footerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
+            converter.Footer.Add(footerHtml);
+
+            PdfTextSection text = new PdfTextSection(0, 10,
+                    "Page {page_number} of {total_pages}  ",
+                    new System.Drawing.Font("Arial", 8));
+            text.HorizontalAlign = PdfTextHorizontalAlign.Right;
+            converter.Footer.Add(text);
+
+            converter.Options.PdfPageSize = PdfPageSize.A4;
+            converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+            converter.Options.MarginLeft = 30;
+            converter.Options.MarginRight = 30;
+            converter.Options.MarginTop = 30;
+            converter.Options.MarginBottom = 30;
+            
+            PdfDocument doc = converter.ConvertHtmlString(body, Request.GetBaseUrl());
+            var filePath = string.Format(@"{0}\App_Data\Invoice_{1}.pdf", Server.MapPath("~"), invoice.InvoiceNumber);
+            var docBytes = doc.Save();
+            doc.Close();
+
+            invoice.WasDownloaded = true;
+            invoice.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+
+            //// Confirm the examination was completed.
+            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+
+            return File(docBytes, "application/pdf", string.Format("Invoice_{0}.pdf", invoice.InvoiceNumber));
+        }
+
 
         public async Task<ActionResult> Submit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
 
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice.CustomerEmail, invoice.ServiceProviderEmail, invoice.InvoiceDetails.First());
-
-            var html = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
-            SelectPdf.HtmlToPdf converter = new HtmlToPdf();
-
-            converter.Options.PdfPageSize = PdfPageSize.A4;
-            converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-            converter.Options.MarginLeft = 10;
-            converter.Options.MarginRight = 10;
-            converter.Options.MarginTop = 20;
-            converter.Options.MarginBottom = 20;
-
-            SelectPdf.PdfDocument doc = converter.ConvertHtmlString(html, Request.GetBaseUrl());
-            doc.Save(string.Format(@"{0}\App_Data\Invoice_{1}.pdf", Server.MapPath("~"), invoice.InvoiceNumber));
-            doc.Close();
+            await messageService.SendInvoice(invoice, Request.GetBaseUrl());
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
@@ -168,6 +212,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> AddInvoiceDetail(InvoiceDetail InvoiceDetail)
         {
+            throw new NotImplementedException();
             db.InvoiceDetails.Add(InvoiceDetail);
             await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = InvoiceDetail.InvoiceId });
@@ -176,6 +221,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> EditInvoiceDetail(int id)
         {
+            throw new NotImplementedException();
             var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.Edit;
             return View(obj);
@@ -184,6 +230,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> DeleteInvoiceDetail(int id)
         {
+            throw new NotImplementedException();
             var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.Edit;
             return View(obj);

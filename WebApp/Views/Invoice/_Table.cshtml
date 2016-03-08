@@ -20,14 +20,37 @@
         {
             <tr>
                 <td>
-                    <a href="~/Invoice/Edit/@invoice.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <div class="btn-group" style="width:100px">
+                        @if (invoice.SentDate.HasValue)
+                        {
+                            <a href="~/Invoice/Details/@invoice.Id" class="btn btn-default btn-sm">View</a>
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/Invoice/Edit/@invoice.Id" class="btn btn-sm">Edit</a></li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <a href="~/Invoice/Edit/@invoice.Id" class="btn btn-default btn-sm">Edit</a>
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/Invoice/Details/@invoice.Id" class="btn btn-sm">View</a></li>
+                            </ul>
+                        }
+                    </div>
                 </td>
                 <td>@invoice.ServiceProviderName</td>
                 <td>@invoice.CustomerName</td>
                 <td>@invoice.InvoiceNumber</td>
                 <td>@invoice.InvoiceDate.GetDateTimeFormats('d')[0]</td>
                 <td>@invoice.SubTotal</td>
-                <td>@invoice.TaxRateHst</td>
+                <td>@invoice.TaxRateHst.Value.ToString("0%")</td>
                 <td>@invoice.Total</td>
                 <td>
                     @if (invoice.SentDate.HasValue)
@@ -37,22 +60,20 @@
                     else
                     {
                         <div id="submit-invoice">
-                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" })
+                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
                         </div>
 
                     }
                 </td>
                 <td>
-                    @(invoice.PaymentReceivedDate.HasValue ? invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "Pending")
+                    @(invoice.PaymentReceivedDate.HasValue ? invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "No")
                 </td>
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="10">
-                
-            </td>
+            <td colspan="10"></td>
         </tr>
     </tfoot>
 </table>

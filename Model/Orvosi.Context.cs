@@ -303,7 +303,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Account_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, companyIdParameter, modifiedUserParameter, lastActivationDateParameter);
         }
     
-        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string employeeId, string modifiedUser, Nullable<bool> isTestRecord)
+        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord)
         {
             var idParameter = id != null ?
                 new ObjectParameter("Id", id) :
@@ -321,6 +321,10 @@ namespace Model
                 new ObjectParameter("LastName", lastName) :
                 new ObjectParameter("LastName", typeof(string));
     
+            var logoCssClassParameter = logoCssClass != null ?
+                new ObjectParameter("LogoCssClass", logoCssClass) :
+                new ObjectParameter("LogoCssClass", typeof(string));
+    
             var employeeIdParameter = employeeId != null ?
                 new ObjectParameter("EmployeeId", employeeId) :
                 new ObjectParameter("EmployeeId", typeof(string));
@@ -333,7 +337,7 @@ namespace Model
                 new ObjectParameter("IsTestRecord", isTestRecord) :
                 new ObjectParameter("IsTestRecord", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter);
         }
     
         public virtual int Service_Insert(string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)

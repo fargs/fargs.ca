@@ -207,6 +207,12 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
+            var rates = db.GetServiceCatalogueRate(new Guid(sr.PhysicianId), sr.CompanyGuid).First();
+            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            }
+
             if (ModelState.IsValid)
             {
                 var additionalErrors = new ModelErrorCollection();
@@ -230,6 +236,8 @@ namespace WebApp.Controllers
                     ServiceId = service.ServiceId,
                     LocationId = service.LocationId,
                     ServiceCataloguePrice = service.Price,
+                    NoShowRate = rates.NoShowRate,
+                    LateCancellationRate = rates.LateCancellationRate,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
                     PhysicianUserName = string.Empty, // same as ServiceName
@@ -253,7 +261,7 @@ namespace WebApp.Controllers
 
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
 
-                var invoiceService = new InvoiceService();
+                var invoiceService = new InvoiceService(User.Identity.Name);
                 var invoice = invoiceService.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
                 db.Invoices.Add(invoice);
                 var validationResults = db.GetValidationErrors();

@@ -203,3 +203,4 @@ FakesAssemblies/
 /Api
 /Auth
 *.dacpac
+App_Data/

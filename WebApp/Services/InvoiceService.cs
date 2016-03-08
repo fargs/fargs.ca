@@ -11,10 +11,18 @@ namespace WebApp.Services
     public class InvoiceService
     {
         public const byte PaymentDueInDays = 14;
-        public const decimal TaxRateHst = 0.13M;
+        private OrvosiEntities context;
+        public event EventHandler InvoiceDetailsUpdated;
+
+        public InvoiceService(string userName)
+        {
+            this.context = new OrvosiEntities(userName);
+        }
 
         public Invoice BuildInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest, string userName)
         {
+            var TaxRateHst = GetTaxRate(customer.ProvinceName);
+
             var invoice = new Invoice()
             {
                 InvoiceNumber = invoiceNumber,
@@ -27,7 +35,7 @@ namespace WebApp.Services
                 ServiceProviderLogoCssClass = serviceProvider.LogoCssClass,
                 ServiceProviderAddress1 = serviceProvider.Address1,
                 ServiceProviderAddress2 = serviceProvider.Address2,
-                ServiceProviderCity = serviceProvider.PostalCode,
+                ServiceProviderCity = serviceProvider.City,
                 ServiceProviderPostalCode = serviceProvider.PostalCode,
                 ServiceProviderProvince = serviceProvider.ProvinceName,
                 ServiceProviderCountry = serviceProvider.CountryName,
@@ -38,7 +46,7 @@ namespace WebApp.Services
                 CustomerEntityType = customer.EntityType,
                 CustomerAddress1 = customer.Address1,
                 CustomerAddress2 = customer.Address2,
-                CustomerCity = customer.PostalCode,
+                CustomerCity = customer.City,
                 CustomerPostalCode = customer.PostalCode,
                 CustomerProvince = customer.ProvinceName,
                 CustomerCountry = customer.CountryName,
@@ -51,94 +59,72 @@ namespace WebApp.Services
             var invoiceDetail = new InvoiceDetail()
             {
                 ServiceRequestId = serviceRequest.Id,
-                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate),
                 ModifiedDate = SystemTime.Now(),
                 ModifiedUser = userName
             };
 
             var description = new StringBuilder();
-            description.AppendLine(serviceRequest.ClaimantName);
+            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.AppointmentDate.Value.GetDateTimeFormats('d')[0]));
             description.AppendLine(serviceRequest.ServiceName);
             description.AppendLine(serviceRequest.City);
-            if (serviceRequest.IsNoShow)
-            {
-                description.AppendLine(string.Format("NO SHOW - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
-            }
-            else if (serviceRequest.IsLateCancellation)
-            {
-                description.AppendLine(string.Format("LATE CANCELLATION - RATE {0}", invoiceDetail.Rate.Value.ToString("0%")));
-            }
-
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = GetInvoiceDetailAmount(serviceRequest.EffectivePrice, invoiceDetail.Rate);
+            invoiceDetail.Amount = serviceRequest.EffectivePrice;
+            invoiceDetail.Total = serviceRequest.EffectivePrice;
             invoice.InvoiceDetails.Add(invoiceDetail);
 
-            invoice.SubTotal = invoiceDetail.Amount;
+            invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
             invoice.Total = GetInvoiceTotal(invoice.SubTotal, TaxRateHst);
 
             return invoice;
         }
-        public Invoice PreviewInvoice(string invoiceNumber, BillableEntity serviceProvider, BillableEntity customer, ServiceRequest serviceRequest)
+
+        public void ApplyNoShowRate(bool isNoShow, InvoiceDetail detail, decimal? rate)
         {
-            var invoice = new Invoice()
+            if (isNoShow)
             {
-                InvoiceNumber = invoiceNumber,
-                InvoiceDate = serviceRequest.AppointmentDate.Value,
-                DueDate = SystemTime.Now().AddDays(PaymentDueInDays),
-                Currency = "CAD",
-                ServiceProviderGuid = serviceProvider.EntityGuid,
-                ServiceProviderName = serviceProvider.EntityName,
-                ServiceProviderEntityType = serviceProvider.EntityType,
-                ServiceProviderLogoCssClass = serviceProvider.LogoCssClass,
-                ServiceProviderAddress1 = serviceProvider.Address1,
-                ServiceProviderAddress2 = serviceProvider.Address2,
-                ServiceProviderCity = serviceProvider.PostalCode,
-                ServiceProviderPostalCode = serviceProvider.PostalCode,
-                ServiceProviderProvince = serviceProvider.ProvinceName,
-                ServiceProviderCountry = serviceProvider.CountryName,
-                ServiceProviderEmail = serviceProvider.BillingEmail,
-                ServiceProviderPhoneNumber = serviceProvider.Phone,
-                CustomerGuid = customer.EntityGuid,
-                CustomerName = customer.EntityName,
-                CustomerEntityType = customer.EntityType,
-                CustomerAddress1 = customer.Address1,
-                CustomerAddress2 = customer.Address2,
-                CustomerCity = customer.PostalCode,
-                CustomerPostalCode = customer.PostalCode,
-                CustomerProvince = customer.ProvinceName,
-                CustomerCountry = customer.CountryName,
-                CustomerEmail = customer.BillingEmail,
-                TaxRateHst = TaxRateHst
-            };
-
-            var invoiceDetail = new InvoiceDetail()
-            {
-                ServiceRequestId = serviceRequest.Id,
-                Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate)
-            };
-
-            var description = new StringBuilder();
-            description.AppendFormat("<dl class='dl-horizontal' style='margin-bottom: 0px;'><dt>Claimant</dt><dd>{0}</dd>", serviceRequest.ClaimantName);
-            description.AppendFormat("<dt>Service</dt><dd>{0}</dd>", serviceRequest.ServiceName);
-            description.AppendFormat("<dt>Location</dt><dd>{0}, {1}</dd></dl>", serviceRequest.City, serviceRequest.AddressName);
-            if (serviceRequest.IsNoShow)
-            {
-                description.AppendFormat("<p>NO SHOW - RATE {0}</p>", invoiceDetail.Rate.Value.ToString("0%"));
+                if (rate.HasValue)
+                {
+                    detail.AdditionalNotes = string.Format("NO SHOW - Rate {0} - Original Amount {1}", rate.HasValue ? rate.Value.ToString("0%") : "NOT SET", detail.Amount);
+                    detail.Rate = rate;
+                    detail.Total = detail.Amount * detail.Rate;
+                }
             }
-            else if (serviceRequest.IsLateCancellation)
+            else
             {
-                description.AppendFormat("<p>LATE CANCELLATION - RATE {0}</p>", invoiceDetail.Rate.Value.ToString("0%"));
+                detail.AdditionalNotes = null;
+                detail.Rate = null;
+                detail.Total = detail.Amount;
             }
+        }
 
-            invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = GetInvoiceDetailAmount(serviceRequest.EffectivePrice, invoiceDetail.Rate);
+        public void ApplyLateCancellationRate(bool isLateCancellation, InvoiceDetail detail, decimal? rate)
+        {
+            if (isLateCancellation)
+            {
+                if (rate.HasValue)
+                {
+                    detail.AdditionalNotes = string.Format("LATE CANCELLATION - Rate {0} - Original Amount {1}", rate.HasValue ? rate.Value.ToString("0%") : "NOT SET", detail.Amount);
+                    detail.Rate = rate;
+                    detail.Total = detail.Amount * detail.Rate;
+                }
+            }
+            else
+            {
+                detail.AdditionalNotes = null;
+                detail.Rate = null;
+                detail.Total = detail.Amount;
+            }
+        }
 
-            invoice.InvoiceDetails.Add(invoiceDetail);
-
-            invoice.SubTotal = invoiceDetail.Amount;
-            invoice.Total = GetInvoiceTotal(invoice.SubTotal, TaxRateHst);
-
-            return invoice;
+        private decimal? GetTaxRate(string provinceName)
+        {
+            switch (provinceName)
+            {
+                case "British Colombia":
+                    return 0.05M;
+                default:
+                    return 0.13M;
+            }
         }
 
         public decimal? GetInvoiceDetailRate(bool isNoShow, decimal? noShowRate, bool isLateCancellation, decimal? lateCancellationRate)

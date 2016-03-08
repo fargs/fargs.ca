@@ -30,6 +30,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" StoreGeneratedPattern="Computed" />
           <Property Name="InvoiceNumber" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
           <Property Name="Currency" Type="nvarchar" MaxLength="128" />
@@ -62,6 +63,7 @@
           <Property Name="Discount" Type="decimal" Precision="10" Scale="2" />
           <Property Name="Total" Type="decimal" Precision="10" Scale="2" />
           <Property Name="SentDate" Type="datetime" />
+          <Property Name="WasDownloaded" Type="bit" Nullable="false" />
           <Property Name="PaymentReceivedDate" Type="datetime" />
           <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedUser" Type="nvarchar" MaxLength="100" Nullable="false" />
@@ -589,6 +591,7 @@ warning 6002: The table/view 'Orvosi.API.Profile' does not have a primary key de
           <Property Name="RoleId" Type="nvarchar" MaxLength="128" />
           <Property Name="RoleName" Type="nvarchar" MaxLength="256" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LogoCssClass" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Province' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1132,6 +1135,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Title" Type="nvarchar" Mode="In" />
           <Parameter Name="FirstName" Type="nvarchar" Mode="In" />
           <Parameter Name="LastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="LogoCssClass" Type="nvarchar" Mode="In" />
           <Parameter Name="EmployeeId" Type="nvarchar" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
           <Parameter Name="IsTestRecord" Type="bit" Mode="In" />
@@ -1693,7 +1697,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Profile].[IsTestRecord] AS [IsTestRecord], 
     [Profile].[RoleId] AS [RoleId], 
     [Profile].[RoleName] AS [RoleName], 
-    [Profile].[CompanyName] AS [CompanyName]
+    [Profile].[CompanyName] AS [CompanyName], 
+    [Profile].[LogoCssClass] AS [LogoCssClass]
     FROM [API].[Profile] AS [Profile]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Province" EntityType="Self.Province" store:Type="Views" store:Schema="API">
@@ -2008,6 +2013,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Title" Mode="In" Type="String" />
             <Parameter Name="FirstName" Mode="In" Type="String" />
             <Parameter Name="LastName" Mode="In" Type="String" />
+            <Parameter Name="LogoCssClass" Mode="In" Type="String" />
             <Parameter Name="EmployeeId" Mode="In" Type="String" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
             <Parameter Name="IsTestRecord" Mode="In" Type="Boolean" />
@@ -2629,6 +2635,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="RoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="CompanyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Account">
           <Key>
@@ -3347,6 +3354,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <NavigationProperty Name="ServiceProvider" Relationship="OrvosiModel.ServiceProviderInvoice" FromRole="Invoice" ToRole="BillableEntity" />
           <NavigationProperty Name="Customer" Relationship="OrvosiModel.CustomerInvoice" FromRole="Invoice" ToRole="BillableEntity" />
           <Property Name="SentDate" Type="DateTime" Precision="3" />
+          <Property Name="ObjectGuid" Type="Guid" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="WasDownloaded" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="InvoiceDetail">
           <Key>
@@ -3575,6 +3584,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Profiles">
             <EntityTypeMapping TypeName="OrvosiModel.Profile">
               <MappingFragment StoreEntitySet="Profile">
+                <ScalarProperty Name="LogoCssClass" ColumnName="LogoCssClass" />
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
@@ -3596,6 +3606,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.Profile">
               <ModificationFunctionMapping>
                 <UpdateFunction FunctionName="OrvosiModel.Store.Profile_Update">
+                  <ScalarProperty Name="LogoCssClass" ParameterName="LogoCssClass" Version="Current" />
                   <ScalarProperty Name="IsTestRecord" ParameterName="IsTestRecord" Version="Current" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
                   <ScalarProperty Name="EmployeeId" ParameterName="EmployeeId" Version="Current" />
@@ -4695,6 +4706,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Invoices">
             <EntityTypeMapping TypeName="OrvosiModel.Invoice">
               <MappingFragment StoreEntitySet="Invoice">
+                <ScalarProperty Name="WasDownloaded" ColumnName="WasDownloaded" />
+                <ScalarProperty Name="ObjectGuid" ColumnName="ObjectGuid" />
                 <ScalarProperty Name="SentDate" ColumnName="SentDate" />
                 <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />

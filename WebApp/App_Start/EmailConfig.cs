@@ -102,22 +102,23 @@ namespace WebApp
             return true;
         }
 
-        public async Task<bool> SendInvoice(string billingEmail, string serviceProviderEmail, InvoiceDetail detail)
+        public async Task<bool> SendInvoice(Invoice invoice, string callbackUrlBase)
         {
             var message = new MailMessage();
-            message.To.Add(billingEmail);
-            message.From = new MailAddress(serviceProviderEmail);
-            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", detail.Invoice.InvoiceNumber, detail.Invoice.ServiceProviderName, detail.Invoice.DueDate);
+            message.To.Add(invoice.CustomerEmail);
+            message.From = new MailAddress(invoice.ServiceProviderEmail);
+            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate);
             message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 
             var templatePath = Path.Combine(_templateFolder, "Invoice.html");
 
 
+            var url = string.Format("{0}/Invoice/Download/{1}", callbackUrlBase, invoice.ObjectGuid.ToString());
             StreamReader sr = File.OpenText(templatePath);
             while (sr.Peek() >= 0)
             {
-                message.Body += sr.ReadLine().Replace("%DESCRIPTION%", detail.Description).Replace("%SERVICEPROVIDERNAME%", detail.Invoice.ServiceProviderName);
+                message.Body += sr.ReadLine().Replace("%DOWNLOADLINK%", url).Replace("%SERVICEPROVIDERNAME%", invoice.ServiceProviderName);
             }
             sr.Close();
 

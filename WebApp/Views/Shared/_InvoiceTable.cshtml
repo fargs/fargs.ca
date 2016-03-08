@@ -1,4 +1,5 @@
 ﻿@model List<Model.InvoiceDetail>
+
 <table class="table table-condensed table-hover">
     <thead>
         <tr>
@@ -7,7 +8,6 @@
             <th>Company</th>
             <th>Invoice #</th>
             <th>Invoice Date</th>
-            <th>Details</th>
             <th>Total (Before @Model.First().Invoice.TaxRateHst.Value.ToString("0%") tax)</th>
             <th>Submitted</th>
             <th>Payment Received</th>
@@ -15,16 +15,40 @@
     </thead>
     <tbody>
         @foreach (var detail in Model)
-        {
+            {
             <tr>
                 <td>
-                    <a href="~/Invoice/Edit/@detail.Invoice.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <div class="btn-group" style="width:100px">
+                        @if (detail.Invoice.SentDate.HasValue)
+                        {
+                            <a href="~/Invoice/Details/@detail.InvoiceId" class="btn btn-default btn-sm">View</a>
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="~/Invoice/Edit/@detail.InvoiceId" class="btn btn-sm">Edit</a></li>
+                                    <li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>
+                                </ul>
+                        }
+                        else
+                        {
+                            <a href="~/Invoice/Edit/@detail.InvoiceId" class="btn btn-default btn-sm">Edit</a>
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="~/Invoice/Details/@detail.InvoiceId" class="btn btn-sm">View</a></li>
+                                    <li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>
+                                </ul>
+                        }
+                    </div>
                 </td>
                 <td>@detail.Invoice.ServiceProviderName</td>
                 <td>@detail.Invoice.CustomerName</td>
                 <td>@detail.Invoice.InvoiceNumber</td>
                 <td>@detail.Invoice.InvoiceDate.GetDateTimeFormats('d')[0]</td>
-                <td><span class="invoice-description">@Html.Raw(detail.Description)</span></td>
                 <td>@detail.Invoice.SubTotal</td>
                 <td>
                     @if (detail.Invoice.SentDate.HasValue)
@@ -34,16 +58,15 @@
                     else
                     {
                         <div id="submit-invoice">
-                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = detail.InvoiceId }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId="submit-invoice" })
+                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = detail.InvoiceId }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
                         </div>
 
                     }
                 </td>
                 <td>
-                    @(detail.Invoice.PaymentReceivedDate.HasValue ? detail.Invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "Pending")
+                    @(detail.Invoice.PaymentReceivedDate.HasValue ? detail.Invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "No")
                 </td>
             </tr>
         }
     </tbody>
 </table>
-

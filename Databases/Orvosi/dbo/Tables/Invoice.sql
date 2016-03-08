@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[Invoice] (
     [Id]                  INT              IDENTITY (1, 1) NOT NULL,
+	[ObjectGuid]           UNIQUEIDENTIFIER CONSTRAINT [DF_Invoice_ObjectGuid] DEFAULT (newid()) NOT NULL,
     [InvoiceNumber]       NVARCHAR (128)   NOT NULL,
     [InvoiceDate]         DATETIME         NOT NULL,
     [Currency]            NVARCHAR (128)   NULL,
@@ -32,6 +33,7 @@
     [Discount]            DECIMAL (10, 2)  NULL,
     [Total]               DECIMAL (10, 2)  NULL,
 	[SentDate]		      DATETIME NULL, 
+	[WasDownloaded] BIT NOT NULL DEFAULT 0, 
     [PaymentReceivedDate] DATETIME         NULL,
     [ModifiedDate]        DATETIME         CONSTRAINT [DF_Invoice_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]        NVARCHAR (100)   CONSTRAINT [DF_Invoice_ModifiedUser] DEFAULT (suser_name()) NOT NULL,

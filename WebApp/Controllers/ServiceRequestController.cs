@@ -746,18 +746,21 @@ namespace WebApp.Controllers
 
                 serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
 
-                var detail = serviceRequest.InvoiceDetails.First();
-                if (serviceRequest.IsLateCancellation)
+                if (serviceRequest.InvoiceDetails.Count > 0)
                 {
-                    var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
-                    detail.ApplyDiscount(DiscountTypes.LateCancellation, rates.LateCancellationRate);
+                    var detail = serviceRequest.InvoiceDetails.First();
+                    if (serviceRequest.IsLateCancellation)
+                    {
+                        var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                        detail.ApplyDiscount(DiscountTypes.LateCancellation, rates.LateCancellationRate);
+                    }
+                    else
+                    {
+                        detail.RemoveDiscount();
+                    }
+                    detail.Invoice.CalculateTotal();
+                    await db.SaveChangesAsync();
                 }
-                else
-                {
-                    detail.RemoveDiscount();
-                }
-                detail.Invoice.CalculateTotal();
-                await db.SaveChangesAsync();
 
                 return RedirectToAction("Index");
             }
@@ -778,9 +781,13 @@ namespace WebApp.Controllers
             }
             db.ServiceRequest_ToggleCancellation(id, null, false, string.Empty);
 
-            var detail = serviceRequest.InvoiceDetails.First();
-            detail.RemoveDiscount();
-            detail.Invoice.CalculateTotal();
+            if (serviceRequest.InvoiceDetails.Count > 0)
+            {
+                var detail = serviceRequest.InvoiceDetails.First();
+                detail.RemoveDiscount();
+                detail.Invoice.CalculateTotal();
+                await db.SaveChangesAsync();
+            }
 
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -824,18 +831,21 @@ namespace WebApp.Controllers
 
             serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
 
-            var detail = serviceRequest.InvoiceDetails.First();
-            if (serviceRequest.IsNoShow)
+            if (serviceRequest.InvoiceDetails.Count > 0)
             {
-                var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
-                detail.ApplyDiscount(DiscountTypes.NoShow, rates.NoShowRate);
+                var detail = serviceRequest.InvoiceDetails.First();
+                if (serviceRequest.IsNoShow)
+                {
+                    var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                    detail.ApplyDiscount(DiscountTypes.NoShow, rates.NoShowRate);
+                }
+                else
+                {
+                    detail.RemoveDiscount();
+                }
+                detail.Invoice.CalculateTotal();
+                await db.SaveChangesAsync();
             }
-            else
-            {
-                detail.RemoveDiscount();
-            }
-            detail.Invoice.CalculateTotal();
-            await db.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
         }

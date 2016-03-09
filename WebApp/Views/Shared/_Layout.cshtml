@@ -31,7 +31,7 @@
                         if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator)
                         {
                             <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Invoices", "", "Invoice", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
                             <li role="presentation" class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                     Admin <span class="caret"></span>
@@ -41,6 +41,7 @@
                                     <li>@Html.ActionLink("Locations", "", "Location", new { area = "Admin" }, null)</li>
                                     <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = e.ServicePortfolios.Physician }, null)</li>
                                     <li>@Html.ActionLink("Service Catalogues", "", "ServiceCatalogue", new { area = "" }, null)</li>
+                                    <li>@Html.ActionLink("Invoices", "", "Invoice", new { area = "" }, null)</li>
                                     <li role="separator" class="divider"></li>
                                     <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = e.RoleCategory.Physician }, null)</li>
                                     <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>

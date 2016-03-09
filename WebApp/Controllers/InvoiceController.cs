@@ -19,6 +19,7 @@ using WebApp.Library.Helpers;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class InvoiceController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
@@ -34,7 +35,6 @@ namespace WebApp.Controllers
             Console.WriteLine("Event handled in Invoice Controller");
         }
 
-        // GET: Invoice
         public async Task<ActionResult> Index(FilterArgs args)
         {
             var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
@@ -232,7 +232,6 @@ namespace WebApp.Controllers
 
             return File(docBytes, "application/pdf", fileName);
         }
-
 
         public async Task<ActionResult> Submit(int id)
         {

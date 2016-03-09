@@ -58,10 +58,16 @@
     <Compile Include="Account.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="AddressType.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="AvailableDay.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="AvailableSlot.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BillableEntity.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="City.cs">
@@ -107,6 +113,12 @@
     <Compile Include="GetServiceCatalogue_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Invoice.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InvoiceDetail.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Location.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -137,8 +149,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Orvosi.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Orvosi.Partials\Extensions.cs" />
     <Compile Include="Orvosi.Partials\OrvosiEntities.cs" />
     <Compile Include="Orvosi.Partials\Partials.cs" />
+    <Compile Include="Orvosi1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Orvosi.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Physician.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -198,7 +216,7 @@
   <ItemGroup>
     <EntityDeploy Include="Orvosi.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Orvosi.Designer.cs</LastGenOutput>
+      <LastGenOutput>Orvosi1.Designer.cs</LastGenOutput>
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>

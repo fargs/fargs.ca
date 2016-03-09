@@ -1,0 +1,23 @@
+﻿@model Model.Invoice
+@{
+    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+    ViewBag.Title = "Document Footer";
+}
+<div class="row">
+    <div class="col-sm-6">
+        <img src="@string.Format("{0}{1}", Url.Content("~/Content/images/Physician Branding/"), Model.ServiceProviderLogoCssClass)" height="100" width="500" />
+    </div>
+    <div class="col-sm-6">
+        <div class="pull-right well">
+            <strong>@Model.ServiceProviderName</strong>
+            <p>
+                <div class="small">@Model.ServiceProviderAddress1</div>
+                <div class="small">@Model.ServiceProviderAddress2</div>
+                <div class="small">@(string.Format("{0}, {1} {2}", Model.ServiceProviderCity, Model.ServiceProviderProvince, Model.ServiceProviderCountry))</div>
+                <div class="small">@Model.ServiceProviderPostalCode</div>
+            </p>
+            <div><strong>E: </strong>@Model.ServiceProviderEmail</div>
+            <div><strong>P: </strong>@Model.ServiceProviderPhoneNumber</div>
+        </div>
+    </div>
+</div>

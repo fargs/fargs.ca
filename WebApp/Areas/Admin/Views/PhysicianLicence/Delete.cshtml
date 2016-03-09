@@ -40,7 +40,7 @@
         </dt>
 
         <dd>
-            @(Model.ExpiryDate.HasValue ? Model.ExpiryDate.Value.GetDateTimeFormats('d')[0] : string.Empty)
+            @(Model.ExpiryDate.HasValue ? Model.ExpiryDate.Value.ToOrvosiDateFormat() : string.Empty)
         </dd>
 
         <dt>

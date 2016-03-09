@@ -1,0 +1,15 @@
+﻿@model Model.Invoice
+@using WebApp.Library.Enums
+
+<form action="~/Invoice/Edit" method="post">
+    <input type="hidden" name="Id" value="@Model.InvoiceDetails.First().Id" />
+    <div class="container">
+        @Html.Partial("_Invoice", Model)
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-primary">Back to Service Request</a>
+            </div>
+        </div>
+    </div>
+</form>

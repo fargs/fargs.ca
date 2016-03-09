@@ -28,6 +28,17 @@
         <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
     }
 </ol>
+@if (Model.Errors.Count > 0)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var item in Model.Errors)
+            {
+                <li>@item.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
 <a href="~/ServiceRequest" class="btn btn-default">Back to List</a>
 <a href="~/ServiceRequest/Details/@Model.ServiceRequest.Id" class="btn btn-default">View Details</a>
 <a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id" class="btn btn-default">Assign Resources</a>

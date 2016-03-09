@@ -1,5 +1,6 @@
 ﻿using Model.Enums;
 using System;
+using System.IO;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 
@@ -7,6 +8,32 @@ namespace WebApp.Library.Helpers
 {
     public static class HtmlHelpers
     {
+        public static string RenderPartialViewToString(Controller controller, string viewName, object model)
+        {
+            controller.ViewData.Model = model;
+            using (StringWriter sw = new StringWriter())
+            {
+                ViewEngineResult viewResult = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName);
+                ViewContext viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, sw);
+                viewResult.View.Render(viewContext, sw);
+
+                return sw.ToString();
+            }
+        }
+
+        public static String RenderViewToString(ControllerContext context, String viewPath, object model = null)
+        {
+            context.Controller.ViewData.Model = model;
+            using (var sw = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindView(context, viewPath, null);
+                var viewContext = new ViewContext(context, viewResult.View, context.Controller.ViewData, context.Controller.TempData, sw);
+                viewResult.View.Render(viewContext, sw);
+                viewResult.ViewEngine.ReleaseView(context, viewResult.View);
+                return sw.GetStringBuilder().ToString();
+            }
+        }
+
         public static MvcHtmlString MenuLink(this HtmlHelper htmlHelper, string linkText, string actionName, string controllerName, string area)
         {
             var currentAction = htmlHelper.ViewContext.RouteData.GetRequiredString("action");

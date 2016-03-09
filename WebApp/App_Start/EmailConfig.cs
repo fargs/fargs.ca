@@ -7,6 +7,7 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using Model.Enums;
+using Model;
 
 namespace WebApp
 {
@@ -20,19 +21,24 @@ namespace WebApp
         public MessagingService(string templateFolder, string host)
         {
             _templateFolder = templateFolder;
-            _logoPath = host + "/Content/images/OrvosiBranding/logo-orvosi-md.png";
+            _logoPath = "/Content/images/OrvosiBranding/logo-orvosi-md.png";
             // not in debug mode and not local request => we are in production
             service = MessagingService.CreateService();
         }
 
         private static IEmailService CreateService()
         {
-            if (ConfigurationManager.AppSettings["MailSystem"] == "SendGrid")
+            var mailSystem = ConfigurationManager.AppSettings["MailSystem"];
+            if (mailSystem == "SendGrid")
             {
                 return new SendGridEmailService();
             }
+            else if (mailSystem == "Gmail")
+            {
+                return new GmailEmailService();
+            }
             return new LocalEmailService();
-            
+
         }
 
         public static IEmailService GetService()
@@ -96,6 +102,30 @@ namespace WebApp
             return true;
         }
 
+        public async Task<bool> SendInvoice(Invoice invoice, string callbackUrlBase)
+        {
+            var message = new MailMessage();
+            message.To.Add(invoice.CustomerEmail);
+            message.From = new MailAddress(invoice.ServiceProviderEmail);
+            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate);
+            message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+
+            var templatePath = Path.Combine(_templateFolder, "Invoice.html");
+
+
+            var url = string.Format("{0}/Invoice/Download/{1}", callbackUrlBase, invoice.ObjectGuid.ToString());
+            StreamReader sr = File.OpenText(templatePath);
+            while (sr.Peek() >= 0)
+            {
+                message.Body += sr.ReadLine().Replace("%DOWNLOADLINK%", url).Replace("%SERVICEPROVIDERNAME%", invoice.ServiceProviderName);
+            }
+            sr.Close();
+
+            await service.SendAsync(message);
+            return true;
+        }
+
         public async Task<bool> SendTestEmail(string email)
         {
             var message = new MailMessage();
@@ -121,7 +151,7 @@ namespace WebApp
             {
                 // Plug in your email service here to send an email.
                 var myMessage = new SendGridMessage();
-                
+
                 foreach (var item in message.To)
                 {
                     myMessage.AddTo(item.Address);
@@ -137,7 +167,7 @@ namespace WebApp
 
                 // Create a Web transport for sending email.
                 var transportWeb = new Web(credentials);
-                
+
                 // Send the email.
                 if (transportWeb != null)
                 {
@@ -160,6 +190,24 @@ namespace WebApp
                 {
                     Host = "localhost",
                     Port = 25
+                };
+
+                await client.SendMailAsync(message);
+            }
+        }
+
+        public class GmailEmailService : IEmailService
+        {
+            public async Task SendAsync(MailMessage message)
+            {
+                // Plug in your email service here to send an email.
+                var client = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    Credentials = new NetworkCredential("lfarago@orvosi.ca", "Orvosiinc"),
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network
                 };
 
                 await client.SendMailAsync(message);
@@ -224,4 +272,5 @@ namespace WebApp
             await client.SendMailAsync(mail);
         }
     }
+
 }

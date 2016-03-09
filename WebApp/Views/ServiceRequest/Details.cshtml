@@ -33,29 +33,29 @@
 
 <div class="row" style="margin-top:30px;">
     <div class="col-md-12">
-        @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-        {
-            <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
-            @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
-        }
-        else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
-        {
-            <form action="~/ServiceRequest/ToggleNoShow" method="post">
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id")
-                <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-                <span><button class="btn btn-link">Undo</button></span>
-            </form>
-        }
-        else
-        {
-            <form action="~/ServiceRequest/ToggleNoShow" method="post">
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id")
-                <button class="btn btn-default">No Show</button>
-                <div class="help-block">Click to flag this case as a "No Show"</div>
-            </form>
-        }
+@if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
+{
+    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
+    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
+}
+else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
+{
+    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id")
+        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
+        <span><button class="btn btn-link">Undo</button></span>
+    </form>
+}
+else
+{
+    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id")
+        <button class="btn btn-default">No Show</button>
+        <div class="help-block">Click to flag this case as a "No Show"</div>
+    </form>
+}
     </div>
 </div>
 
@@ -69,8 +69,8 @@
             {
                 <button type="button" class="btn btn-success btn-circle disabled"><i class="glyphicon glyphicon-ok"></i></button>
                 <strong>&nbsp;@item.TaskName</strong>
-                <small class="text-muted">@item.AssignedToDisplayName</small>
-                <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
+                        <small class="text-muted">@item.AssignedToDisplayName</small>
+                        <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
                 if (item.Notes != string.Empty)
                 {
                     <div><strong>Notes</strong></div>
@@ -86,9 +86,9 @@
                         <div>
                             Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
                         </div>
-                        <div>
-                            Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * item.StaffHourlyRate).Value.ToString("C2"))
-                        </div>
+                                <div>
+                                    Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * (item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value : 0)).Value.ToString("C2"))
+                                </div>
                     }
                 }
             }
@@ -96,34 +96,34 @@
             {
                 <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="btn btn-default btn-circle">&nbsp;</a>
                 <strong>&nbsp;@item.TaskName</strong>
-                <small class="text-muted">@item.AssignedToDisplayName</small>
-                <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
-                    <div class="help-block">@item.Guidance</div>
-                    <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
-                        @Html.AntiForgeryToken()
-                        @if (item.IsBillable)
-                        {
-                            <div class="form-group">
-                                <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
-                                <select class="form-control" name="Hours">
-                                    <option></option>
-                                    @for (int i = 0; i < 10; i++)
-                                    {
-                                        <option>@((double)i)</option>
-                                        <option>@((double)i + 0.25)</option>
-                                        <option>@((double)i + 0.5)</option>
-                                        <option>@((double)i + 0.75)</option>
-                                    }
-                                </select>
-                            </div>
-                        }
-                        <div class="form-group">
-                            <label for="Notes" class="control-label">Notes</label>
-                            <textarea rows="3" class="form-control" name="Notes"></textarea>
+                        <small class="text-muted">@item.AssignedToDisplayName</small>
+                        <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
+                            <div class="help-block">@item.Guidance</div>
+                            <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
+                                @Html.AntiForgeryToken()
+                                @if (item.IsBillable)
+                                {
+                                    <div class="form-group">
+                                        <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
+                                        <select class="form-control" name="Hours">
+                                            <option></option>
+                                            @for (int i = 0; i < 10; i++)
+                                            {
+                                                <option>@((double)i)</option>
+                                                    <option>@((double)i + 0.25)</option>
+                                                    <option>@((double)i + 0.5)</option>
+                                                    <option>@((double)i + 0.75)</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label for="Notes" class="control-label">Notes</label>
+                                    <textarea rows="3" class="form-control" name="Notes"></textarea>
+                                </div>
+                                <button class="btn btn-primary">Done</button>
+                            </form>
                         </div>
-                        <button class="btn btn-primary">Done</button>
-                    </form>
-                </div>
             }
         </li>
 
@@ -133,7 +133,20 @@
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <h3>Invoice from Physician to Company</h3>
-    <div>Price: @(Model.ServiceRequest.EffectivePrice.HasValue ? Model.ServiceRequest.EffectivePrice.Value.ToString("C2") : "<Price has not been set>")</div>
+    if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
+    {
+        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
+        using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+        {
+            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+            <button type="submit" class="btn btn-primary">Create Invoice</button>
+        }
+    }
+    else
+    {
+        @Html.Partial("_InvoiceTable", Model.ServiceRequest.InvoiceDetails.ToList())
+    }
+
     <h3>Invoice from Staff to Orvosi</h3>
     if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
     {
@@ -190,38 +203,38 @@
             <dd>@Model.ServiceRequest.Title</dd>
             @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
             {
-                <dt>Case Folder</dt>
-                <dd>
+            <dt>Case Folder</dt>
+            <dd>
                     <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
-                    @if (Model.DropboxFolder == null)
+                @if (Model.DropboxFolder == null)
+                {
+                    if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
                     {
-                        if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                        {
-                            <div>
-                                <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                    <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                                </form>
-                            </div>
-                        }
+                        <div>
+                            <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                            </form>
+                        </div>
                     }
-                    else
+                }
+                else
+                {
+                    <span class="label label-success">Created</span>
+                    <div class="h4">Folder Shared To:</div>
+                    if (Model.DropboxFolderMembers != null)
                     {
-                        <span class="label label-success">Created</span>
-                        <div class="h4">Folder Shared To:</div>
-                        if (Model.DropboxFolderMembers != null)
-                        {
-                            <ul>
-                                @foreach (var item in Model.DropboxFolderMembers)
-                                {
-                                    <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                                }
-                            </ul>
+                        <ul>
+                            @foreach (var item in Model.DropboxFolderMembers)
+                            {
+                                <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                            }
+                        </ul>
                             <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
                                 <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
                             </form>
                         }
                     }
-                </dd>
+            </dd>
             }
         </dl>
     </div>
@@ -280,7 +293,14 @@
             @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
             {
                 @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
-        }
+            }
         </address>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+        })
+    </script>
+}

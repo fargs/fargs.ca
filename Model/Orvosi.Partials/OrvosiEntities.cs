@@ -149,4 +149,13 @@ namespace Model
     public partial class City
     {
     }
+
+    public class ServiceRequestMeta
+    {
+    }
+
+    [MetadataType(typeof(ServiceRequest))]
+    public partial class ServiceRequest
+    {
+    }
 }

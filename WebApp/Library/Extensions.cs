@@ -15,6 +15,20 @@ namespace WebApp.Library.Extensions
 {
     public static class Extensions
     {
+
+        public static string GetBaseUrl(this HttpRequestBase request)
+        {
+            if (request.Url == (Uri)null)
+                return string.Empty;
+            else
+                return request.Url.Scheme + "://" + request.Url.Authority + VirtualPathUtility.ToAbsolute("~/");
+        }
+
+        public static string ToOrvosiDateFormat(this DateTime value)
+        {
+            return value.GetDateTimeFormats('d')[5];
+        }
+
         public static string ToJson(this object obj)
         {
             JsonSerializer js = JsonSerializer.Create(new JsonSerializerSettings());
@@ -36,7 +50,7 @@ namespace WebApp.Library.Extensions
                 return string.Empty;
             }
             return claim.Value;
-            
+
         }
 
         public static int GetRestOfWeek(this DateTime obj)

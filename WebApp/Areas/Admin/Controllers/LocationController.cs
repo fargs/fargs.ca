@@ -38,40 +38,14 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         // GET: Admin/Location/Create
-        public ActionResult Create()
-        {
-            ViewBag.Owners = db.Entities
-                .Where(c => c.EntityType == EntityTypes.Company || c.EntityType == EntityTypes.Physician)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.EntityGuid.ToString()
-                }).ToList();
-
-            ViewBag.Locations = db.LookupItems
-                .Where(c => c.LookupId == Lookups.LocationAreas)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ItemText,
-                    Value = c.ItemId.ToString()
-                }).ToList();
-
-            ViewBag.Provinces = db.Provinces
-                .Where(c => c.CountryId == 124) // Canada
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ProvinceName,
-                    Value = c.Id.ToString()
-                }).ToList();
-            return View();
-        }
+        public ActionResult Create() => View();
 
         // POST: Admin/Location/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
         {
             var db = new OrvosiEntities(User.Identity.Name);
 
@@ -98,28 +72,6 @@ namespace WebApp.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.Owners = db.Entities
-                .Where(c => c.EntityType == EntityTypes.Company || c.EntityType == EntityTypes.Physician)
-                .Select(c => new SelectListItem() {
-                    Text = c.DisplayName,
-                    Value = c.EntityGuid.ToString()
-                }).ToList();
-
-            ViewBag.Locations = db.LookupItems
-                .Where(c => c.LookupId == Lookups.LocationAreas)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ItemText,
-                    Value = c.ItemId.ToString()
-                }).ToList();
-
-            ViewBag.Provinces = db.Provinces
-                .Where(c => c.CountryId == 124) // Canada
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.ProvinceName,
-                    Value = c.Id.ToString()
-                }).ToList();
             return View(location);
         }
 
@@ -128,7 +80,7 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
         {
             var db = new OrvosiEntities(User.Identity.Name);
             if (ModelState.IsValid)

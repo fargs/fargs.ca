@@ -63,13 +63,19 @@ namespace Model
         }
     }
 
+    partial class Invoice
+    {
+        public decimal ServiceRequestPrice { get; set; }
+        public string Notes { get; set; }
+    }
+
     public class ServiceCatalogueItem
     {
         public Nullable<short> ServiceCatalogueId { get; set; }
         public short ServiceId { get; set; }
         public Nullable<short> LocationId { get; set; }
         public decimal ServicePrice { get; set; }
-        public Nullable<decimal> Price{ get; set; }
+        public Nullable<decimal> Price { get; set; }
     }
 
     partial class GetServiceCatalogue_Result
@@ -104,4 +110,5 @@ namespace Model
             return null;
         }
     }
+    
 }

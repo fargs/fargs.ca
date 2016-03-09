@@ -30,5 +30,6 @@ namespace Model
         public string RoleId { get; set; }
         public string RoleName { get; set; }
         public string CompanyName { get; set; }
+        public string LogoCssClass { get; set; }
     }
 }

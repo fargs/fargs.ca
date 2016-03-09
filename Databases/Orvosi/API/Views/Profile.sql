@@ -33,6 +33,7 @@ SELECT u.[Id]
 	  ,r.RoleId
 	  ,r.RoleName
 	  ,CompanyName = c.Name
+	  ,u.LogoCssClass
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.Company c ON u.CompanyId = c.Id

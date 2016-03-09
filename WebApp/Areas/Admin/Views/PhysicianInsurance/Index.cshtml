@@ -50,7 +50,7 @@
                 @item.PolicyNumber
             </td>
             <td>
-                @(item.ExpiryDate.HasValue ? item.ExpiryDate.Value.GetDateTimeFormats('d')[0] : string.Empty)
+                @(item.ExpiryDate.HasValue ? item.ExpiryDate.Value.ToOrvosiDateFormat() : string.Empty)
             </td>
             <td>
                 @if(item.Content != null && item.Content.Length > 0)

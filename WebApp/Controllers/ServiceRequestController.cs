@@ -18,10 +18,15 @@ using Dropbox.Api.Team;
 
 namespace WebApp.Controllers
 {
+    public delegate void NoShowToggledHandler(object sender, EventArgs e);
+
     [Authorize]
     public class ServiceRequestController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
+
+        public event NoShowToggledHandler NoShowToggledEvent;
+        
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
@@ -206,13 +211,21 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
+            var rates = db.GetServiceCatalogueRate(new Guid(sr.PhysicianId), sr.CompanyGuid).First();
+            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            }
+
             if (ModelState.IsValid)
             {
+                var additionalErrors = new ModelErrorCollection();
                 var obj = new ServiceRequest()
                 {
                     ServiceCatalogueId = service.ServiceCatalogueId,
                     AppointmentDate = sr.AppointmentDate,
                     AvailableSlotId = sr.AvailableSlotId,
+                    DueDate = sr.DueDate,
                     AddressId = location.Id,
                     CaseCoordinatorId = sr.CaseCoordinatorId,
                     IntakeAssistantId = sr.IntakeAssistantId,
@@ -227,6 +240,8 @@ namespace WebApp.Controllers
                     ServiceId = service.ServiceId,
                     LocationId = service.LocationId,
                     ServiceCataloguePrice = service.Price,
+                    NoShowRate = rates.NoShowRate,
+                    LateCancellationRate = rates.LateCancellationRate,
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
                     PhysicianUserName = string.Empty, // same as ServiceName
@@ -240,7 +255,53 @@ namespace WebApp.Controllers
 
                 var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
                 obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-                await db.SaveChangesAsync();
+
+
+                //CREATE THE INVOICE
+                var serviceRequest = obj;
+
+                var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
+                var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
+
+                var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+                var invoiceDate = serviceRequest.AppointmentDate.Value;
+
+                var invoice = new Invoice();
+                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+
+                // Create or update the invoice detail for the service request
+                InvoiceDetail invoiceDetail;
+
+                invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+                if (invoiceDetail == null)
+                {
+                    invoiceDetail = new InvoiceDetail();
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                    invoice.InvoiceDetails.Add(invoiceDetail);
+                }
+                else
+                {
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                }
+
+                invoice.CalculateTotal();
+                db.Invoices.Add(invoice);
+
+                var validationResults = db.GetValidationErrors();
+                if (validationResults.Count() > 0)
+                {
+                    foreach (var validationResult in validationResults)
+                    {
+                        foreach (var error in validationResult.ValidationErrors)
+                        {
+                            additionalErrors.Add(new ModelError(error.ErrorMessage));
+                        }
+                    }
+                }
+                else
+                {
+                    await db.SaveChangesAsync();
+                }
 
                 /*  TODO: Create the calendar event in the physician booking calendar.
                     TITLE will equal the Calendar Title field.
@@ -266,25 +327,34 @@ namespace WebApp.Controllers
                 ***********************************/
                 var dropbox = new OrvosiDropbox();
                 var client = await dropbox.GetServiceAccountClientAsync();
+                Metadata folder = null;
+                List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
+                try
+                {
 
-                // Copy the case template folder
-                var destination = obj.DocumentFolderLink;
-                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-                // Share the folder
-                var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
-                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-                var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+                    // Copy the case template folder
+                    var destination = obj.DocumentFolderLink;
+                    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+                    // Share the folder
+                    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
+                    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
 
-                var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
-                await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-                await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
+                    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
+                    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
+                    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
 
-                // Get the folder
-                var metadata = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
+                    // Get the folder
+                    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
 
-                // Get the shared folder members
-                List<MembersGetInfoItem> members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+                    // Get the shared folder members
+                    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
+                }
+                catch (Exception ex)
+                {
+                    additionalErrors.Add(new ModelError(ex.Message));
+                }
                 // Create the calendar event
 
                 // mark the first task as complete
@@ -298,8 +368,10 @@ namespace WebApp.Controllers
                 var model = new CreateSuccessViewModel()
                 {
                     ServiceRequest = obj,
-                    Folder = metadata,
-                    Members = members
+                    Folder = folder,
+                    Members = members,
+                    Invoice = invoice,
+                    Errors = additionalErrors
                 };
                 return View("CreateSuccess", model);
             }
@@ -336,30 +408,28 @@ namespace WebApp.Controllers
             {
                 // Get the folder
                 metadata = await client.Files.GetMetadataAsync(destination);
+
+                if (metadata != null)
+                {
+                    return RedirectToAction("Details", new { id = id });
+                }
+
+                // Copy the case template folder
+                var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+
+                // Share the folder
+                var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+
+                var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
+                if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
+
+                await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
             }
-            catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
+            catch (Exception ex)
             {
-                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
-                    throw;
+                ModelState.AddModelError("", ex);
             }
-
-            if (metadata != null)
-            {
-                return RedirectToAction("Details", new { id = id } );
-            }
-
-            // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-
-            // Share the folder
-            var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-            var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-            
-            var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
-            if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
-
-            await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
-
             return RedirectToAction("Details", new { id = id });
         }
 
@@ -407,7 +477,7 @@ namespace WebApp.Controllers
 
             var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
             if (physician != null) { await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId); }
-            
+
             return RedirectToAction("Details", new { id = id });
         }
 
@@ -429,7 +499,6 @@ namespace WebApp.Controllers
 
         private static async Task DropboxAddMember(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string email, string sharedFolderId)
         {
-            // Add the case coordinator to the share
             await client.Sharing.AddFolderMemberAsync(
                 sharedFolderId,
                 new List<AddMember>()
@@ -461,7 +530,7 @@ namespace WebApp.Controllers
             );
         }
 
-        [HttpGet]       
+        [HttpGet]
         public ActionResult CreateSuccess(CreateSuccessViewModel obj)
         {
             return View(obj);
@@ -500,7 +569,7 @@ namespace WebApp.Controllers
                 {
                     // get the tracked object from the database
                     var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
-                    
+
                     // update the resource assignments
                     obj.CaseCoordinatorId = sr.CaseCoordinatorId;
                     obj.DocumentReviewerId = sr.DocumentReviewerId;
@@ -515,7 +584,7 @@ namespace WebApp.Controllers
                     var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
 
                     await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
-                    
+
                     return RedirectToAction("Index");
                 }
             }
@@ -599,9 +668,9 @@ namespace WebApp.Controllers
                     obj.CompanyReferenceId = sr.CompanyReferenceId;
                     obj.DueDate = sr.DueDate;
                     obj.Notes = sr.Notes;
-                    
+
                     await db.SaveChangesAsync();
-                    
+
                     return RedirectToAction("Details", new { id = obj.Id });
                 }
             }
@@ -674,6 +743,25 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 db.ServiceRequest_ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
+
+                serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
+
+                if (serviceRequest.InvoiceDetails.Count > 0)
+                {
+                    var detail = serviceRequest.InvoiceDetails.First();
+                    if (serviceRequest.IsLateCancellation)
+                    {
+                        var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                        detail.ApplyDiscount(DiscountTypes.LateCancellation, rates.LateCancellationRate);
+                    }
+                    else
+                    {
+                        detail.RemoveDiscount();
+                    }
+                    detail.Invoice.CalculateTotal();
+                    await db.SaveChangesAsync();
+                }
+
                 return RedirectToAction("Index");
             }
             return View(serviceRequest);
@@ -692,6 +780,15 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             db.ServiceRequest_ToggleCancellation(id, null, false, string.Empty);
+
+            if (serviceRequest.InvoiceDetails.Count > 0)
+            {
+                var detail = serviceRequest.InvoiceDetails.First();
+                detail.RemoveDiscount();
+                detail.Invoice.CalculateTotal();
+                await db.SaveChangesAsync();
+            }
+
             return Redirect(Request.UrlReferrer.ToString());
         }
 
@@ -731,6 +828,25 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             db.ServiceRequest_ToggleNoShow(id);
+
+            serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
+
+            if (serviceRequest.InvoiceDetails.Count > 0)
+            {
+                var detail = serviceRequest.InvoiceDetails.First();
+                if (serviceRequest.IsNoShow)
+                {
+                    var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                    detail.ApplyDiscount(DiscountTypes.NoShow, rates.NoShowRate);
+                }
+                else
+                {
+                    detail.RemoveDiscount();
+                }
+                detail.Invoice.CalculateTotal();
+                await db.SaveChangesAsync();
+            }
+
             return Redirect(Request.UrlReferrer.ToString());
         }
 

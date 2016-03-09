@@ -1,0 +1,20 @@
+﻿@model Model.Invoice
+@using WebApp.Library.Enums
+
+<div class="container">
+    @Html.Partial("DocumentHeader", Model)
+    @Html.Partial("_Invoice", Model)
+    <div class="row">
+        <div class="col-sm-4">
+            <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-primary">Back to Service Request</a>
+        </div>
+        <div class="col-sm-4">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="pull-right">
+                <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
+            </div>
+        </div>
+    </div>
+</div>

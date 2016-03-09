@@ -138,6 +138,7 @@ namespace Model.Enums
     public static class Tasks
     {
         public const byte CreateCaseFolder = 16;
+        public const byte IntakeInterview = 12;
         public const byte SubmitInvoice = 24;
     }
 
@@ -146,6 +147,12 @@ namespace Model.Enums
         public const byte Past = 37;
         public const byte Present = 38;
         public const byte Future = 39;
+    }
+
+    public static class DiscountTypes
+    {
+        public const byte NoShow = 1;
+        public const byte LateCancellation = 2;
     }
 
     public static class DateRanges

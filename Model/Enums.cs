@@ -149,6 +149,12 @@ namespace Model.Enums
         public const byte Future = 39;
     }
 
+    public static class DiscountTypes
+    {
+        public const byte NoShow = 1;
+        public const byte LateCancellation = 2;
+    }
+
     public static class DateRanges
     {
         public const byte Today = 1;

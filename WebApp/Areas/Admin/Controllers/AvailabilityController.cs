@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Areas.Admin.ViewModels.AvailabilityViewModels;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -29,7 +30,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 title = c.CompanyName + " - " + c.LocationName,
 
-                start = c.Day.GetDateTimeFormats('d')[0]
+                start = c.Day.ToOrvosiDateFormat()
             }).ToList();
 
             var vm = new IndexViewModel()

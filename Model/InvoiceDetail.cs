@@ -26,6 +26,7 @@ namespace Model
         public string AdditionalNotes { get; set; }
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
+        public string DiscountDescription { get; set; }
     
         public virtual Invoice Invoice { get; set; }
         public virtual ServiceRequest ServiceRequest { get; set; }

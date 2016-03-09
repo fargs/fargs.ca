@@ -9,12 +9,15 @@
     </div>
     <div class="col-sm-6">
         <div class="pull-right well">
-            <div>@Model.ServiceProviderAddress1</div>
-            <div>@Model.ServiceProviderAddress2</div>
-            <div>@(string.Format("{0}, {1} {2}", Model.ServiceProviderCity, Model.ServiceProviderProvince, Model.ServiceProviderCountry))</div>
-            <div>@Model.ServiceProviderPostalCode</div>
-            <div>@Model.ServiceProviderEmail</div>
-            <div>@Model.ServiceProviderPhoneNumber</div>
+            <strong>@Model.ServiceProviderName</strong>
+            <p>
+                <div class="small">@Model.ServiceProviderAddress1</div>
+                <div class="small">@Model.ServiceProviderAddress2</div>
+                <div class="small">@(string.Format("{0}, {1} {2}", Model.ServiceProviderCity, Model.ServiceProviderProvince, Model.ServiceProviderCountry))</div>
+                <div class="small">@Model.ServiceProviderPostalCode</div>
+            </p>
+            <div><strong>E: </strong>@Model.ServiceProviderEmail</div>
+            <div><strong>P: </strong>@Model.ServiceProviderPhoneNumber</div>
         </div>
     </div>
 </div>

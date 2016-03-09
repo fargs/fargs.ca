@@ -1,4 +1,5 @@
-﻿@model List<Model.Invoice>
+﻿@using WebApp.Library.Extensions
+@model List<Model.Invoice>
 
 <table class="table table-condensed table-hover">
     <thead>
@@ -48,10 +49,10 @@
                 <td>@invoice.ServiceProviderName</td>
                 <td>@invoice.CustomerName</td>
                 <td>@invoice.InvoiceNumber</td>
-                <td>@invoice.InvoiceDate.GetDateTimeFormats('d')[0]</td>
-                <td>@invoice.SubTotal</td>
+                <td>@invoice.InvoiceDate.ToOrvosiDateFormat()</td>
+                <td>@invoice.SubTotal.Value.ToString("C2")</td>
                 <td>@invoice.TaxRateHst.Value.ToString("0%")</td>
-                <td>@invoice.Total</td>
+                <td>@invoice.Total.Value.ToString("C2")</td>
                 <td>
                     @if (invoice.SentDate.HasValue)
                     {
@@ -66,7 +67,7 @@
                     }
                 </td>
                 <td>
-                    @(invoice.PaymentReceivedDate.HasValue ? invoice.PaymentReceivedDate.Value.GetDateTimeFormats('d')[0] : "No")
+                    @(invoice.PaymentReceivedDate.HasValue ? invoice.PaymentReceivedDate.Value.ToOrvosiDateFormat() : "No")
                 </td>
             </tr>
         }

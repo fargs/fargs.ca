@@ -1,5 +1,6 @@
-﻿@model DateTime
+﻿@using WebApp.Library.Extensions
+@model DateTime
 <div>
     <span class="glyphicon glyphicon-ok" style="font-size: 100%"></span>
-    <strong class="text-success">@Model.GetDateTimeFormats('d')[0]</strong>
+    <strong class="text-success">@Model.ToOrvosiDateFormat()</strong>
 </div>

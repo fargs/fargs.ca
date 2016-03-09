@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using Model.Extensions;
 using WebApp.Library.Enums;
 using WebApp.Library;
-using WebApp.Services;
 using System.Data.Entity;
 using WebApp.ViewModels.InvoiceViewModels;
 using Model.Enums;
@@ -23,6 +22,18 @@ namespace WebApp.Controllers
     public class InvoiceController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
+
+        public InvoiceController()
+        {
+            var serviceRequestController = new ServiceRequestController();
+            serviceRequestController.NoShowToggledEvent += new NoShowToggledHandler(NoShowToggled);
+        }
+
+        internal void NoShowToggled(object sender, EventArgs e)
+        {
+            Console.WriteLine("Event handled in Invoice Controller");
+        }
+
         // GET: Invoice
         public async Task<ActionResult> Index(FilterArgs args)
         {
@@ -75,14 +86,41 @@ namespace WebApp.Controllers
             {
                 var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
 
+                // check if the no show rates are set in the request. Migrate old records to use invoices.
+                if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
+                {
+                    var rates = db.GetServiceCatalogueRate(new Guid(serviceRequest.PhysicianId), serviceRequest.CompanyGuid).First();
+                    serviceRequest.NoShowRate = rates.NoShowRate;
+                    serviceRequest.LateCancellationRate = rates.LateCancellationRate;
+                }
+
                 var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
                 var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
 
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+                var invoiceDate = serviceRequest.AppointmentDate.Value;
 
-                var service = new InvoiceService(User.Identity.Name);
-                var invoice = service.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
+                var invoice = new Invoice();
+                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+
+                // Create or update the invoice detail for the service request
+                InvoiceDetail invoiceDetail;
+
+                invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+                if (invoiceDetail == null)
+                {
+                    invoiceDetail = new InvoiceDetail();
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                    invoice.InvoiceDetails.Add(invoiceDetail);
+                }
+                else
+                {
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                }
+
+                invoice.CalculateTotal();
                 db.Invoices.Add(invoice);
+
                 if (db.GetValidationErrors().Count() == 0)
                 {
                     await db.SaveChangesAsync();
@@ -113,30 +151,31 @@ namespace WebApp.Controllers
         {
             var id = int.Parse(Request.Form.Get("Id"));
 
+            // Here we should parse out all of the invoice details and loop through them. For now we know there is only going to be one.
             var invoiceDetail = await db.InvoiceDetails.FindAsync(id);
             var invoice = invoiceDetail.Invoice;
 
-            //var updatedInvoiceDetail = updatedInvoice.InvoiceDetails.First();
-            var serviceRequest = await db.ServiceRequests.FindAsync(invoiceDetail.ServiceRequestId);
-            invoiceDetail.AdditionalNotes = updatedInvoiceDetail.AdditionalNotes;
-            invoiceDetail.Rate = GetInvoiceDetailRate(serviceRequest.IsNoShow, serviceRequest.NoShowRate, serviceRequest.IsLateCancellation, serviceRequest.LateCancellationRate);
-            invoiceDetail.Amount = GetInvoiceDetailAmount(updatedInvoiceDetail.Amount, invoiceDetail.Rate);
+            invoiceDetail.Amount = updatedInvoiceDetail.Amount;
+            if (!string.IsNullOrEmpty(invoiceDetail.DiscountDescription))
+            {
 
-            invoice.SubTotal = updatedInvoiceDetail.Amount;
-            invoice.Total = GetInvoiceTotal(invoice.SubTotal, invoice.TaxRateHst);
+                var discountType = invoiceDetail.ServiceRequest.GetDiscountType();
+                invoiceDetail.DiscountDescription = InvoiceHelper.GetDiscountDescription(discountType, invoiceDetail.Rate, invoiceDetail.Amount);
+            }
+            invoiceDetail.CalculateTotal();
+            invoiceDetail.AdditionalNotes = updatedInvoiceDetail.AdditionalNotes;
+
+            invoice.CalculateTotal();
 
             invoice.ModifiedUser = User.Identity.Name;
             invoiceDetail.ModifiedUser = User.Identity.Name;
+
             await db.SaveChangesAsync();
 
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
-            if (string.IsNullOrEmpty(Request.UrlReferrer.ToString()))
-            {
-                return RedirectToAction("Details", new { id = invoice.Id });
-            }
-            return Redirect(Request.UrlReferrer.ToString());
+            return RedirectToAction("Details", new { id = invoice.Id });
         }
 
         [AllowAnonymous]
@@ -180,18 +219,18 @@ namespace WebApp.Controllers
             converter.Options.MarginBottom = 30;
             
             PdfDocument doc = converter.ConvertHtmlString(body, Request.GetBaseUrl());
-            var filePath = string.Format(@"{0}\App_Data\Invoice_{1}.pdf", Server.MapPath("~"), invoice.InvoiceNumber);
+            var fileName = string.Format(@"Invoice_{0}_{1}_{2}.pdf", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.CustomerName);
             var docBytes = doc.Save();
             doc.Close();
 
-            invoice.WasDownloaded = true;
+            invoice.DownloadDate = SystemTime.Now();
             invoice.ModifiedUser = User.Identity.Name;
             await db.SaveChangesAsync();
 
             //// Confirm the examination was completed.
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
 
-            return File(docBytes, "application/pdf", string.Format("Invoice_{0}.pdf", invoice.InvoiceNumber));
+            return File(docBytes, "application/pdf", fileName);
         }
 
 
@@ -205,7 +244,16 @@ namespace WebApp.Controllers
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
             invoice.ModifiedUser = User.Identity.Name;
+
             await db.SaveChangesAsync();
+
+            foreach (var item in invoice.InvoiceDetails)
+            {
+                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId);
+                task.CompletedDate = SystemTime.Now();
+                await db.SaveChangesAsync();
+            }
+
             return PartialView("_InvoiceSubmitted", invoice.SentDate.Value);
         }
 

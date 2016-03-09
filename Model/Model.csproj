@@ -175,9 +175,6 @@
     <Compile Include="PhysicianLocationArea.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="PhysicianToCompanyServiceRequestInvoicePreview.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Profile.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

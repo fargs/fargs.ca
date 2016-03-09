@@ -33,7 +33,7 @@
     [Discount]            DECIMAL (10, 2)  NULL,
     [Total]               DECIMAL (10, 2)  NULL,
 	[SentDate]		      DATETIME NULL, 
-	[WasDownloaded] BIT NOT NULL DEFAULT 0, 
+	[DownloadDate] DATETIME NULL, 
     [PaymentReceivedDate] DATETIME         NULL,
     [ModifiedDate]        DATETIME         CONSTRAINT [DF_Invoice_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]        NVARCHAR (100)   CONSTRAINT [DF_Invoice_ModifiedUser] DEFAULT (suser_name()) NOT NULL,

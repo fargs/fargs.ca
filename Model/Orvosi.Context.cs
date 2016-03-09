@@ -54,7 +54,6 @@ namespace Model
         public virtual DbSet<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
         public virtual DbSet<Physician> Physicians { get; set; }
         public virtual DbSet<DashboardTaskSummary> DashboardTaskSummaries { get; set; }
-        public virtual DbSet<PhysicianToCompanyServiceRequestInvoicePreview> PhysicianToCompanyServiceRequestInvoicePreviews { get; set; }
         public virtual DbSet<BillableEntity> BillableEntities { get; set; }
         public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
         public virtual DbSet<Invoice> Invoices { get; set; }

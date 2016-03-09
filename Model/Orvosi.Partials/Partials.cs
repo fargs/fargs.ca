@@ -75,7 +75,7 @@ namespace Model
         public short ServiceId { get; set; }
         public Nullable<short> LocationId { get; set; }
         public decimal ServicePrice { get; set; }
-        public Nullable<decimal> Price{ get; set; }
+        public Nullable<decimal> Price { get; set; }
     }
 
     partial class GetServiceCatalogue_Result
@@ -110,4 +110,5 @@ namespace Model
             return null;
         }
     }
+    
 }

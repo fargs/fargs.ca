@@ -2,6 +2,7 @@
 @using WebApp.Library.Enums
 
 <div class="container">
+    @Html.Partial("DocumentHeader", Model)
     @Html.Partial("_Invoice", Model)
     <div class="row">
         <div class="col-sm-4">

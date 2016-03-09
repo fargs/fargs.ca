@@ -1,5 +1,6 @@
 ﻿@model Model.Invoice
 @using WebApp.Library.Enums
+@using WebApp.Library.Extensions
 
 <div class="row">
     <div class="col-md-12">
@@ -25,9 +26,9 @@
                             <dt>Invoice Number</dt>
                             <dd>@Model.InvoiceNumber</dd>
                             <dt>Invoice Date</dt>
-                            <dd>@Model.InvoiceDate.GetDateTimeFormats('d')[0]</dd>
+                            <dd>@Model.InvoiceDate.ToOrvosiDateFormat()</dd>
                             <dt>Payment Due</dt>
-                            <dd>@Model.DueDate.Value.GetDateTimeFormats('d')[0]</dd>
+                            <dd>@Model.DueDate.Value.ToOrvosiDateFormat()</dd>
                         </dl>
                     </div>
                 </div>
@@ -68,6 +69,10 @@
                 <tr>
                     <td width="80%">
                         <span class="invoice-description">@Html.Raw(item.Description)</span>
+                        @if (!string.IsNullOrEmpty(item.DiscountDescription))
+                        {                            
+                            <div class="text-danger"><strong>@item.DiscountDescription</strong></div>
+                        }
                         @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
                             <label style="padding-top: 10px;">Notes</label>
@@ -86,12 +91,15 @@
                         @if (ViewBag.FormMode == FormModes.Edit || ViewBag.FormMode == FormModes.Add)
                         {
                             <div class="form-group">
+                                <label class="control-label">Price</label>
                                 <input type="text" name="Amount" class="form-control text-right" value="@item.Amount" />
+                                <div class="help-block">Amount after rate adjustments</div>
+                                <div class="control-label text-center">@item.Total.Value.ToString("C2")</div>
                             </div>
                         }
                         else
                         {
-                            <div class="text-right">@item.Amount.Value.ToString("C2")</div>
+                            <div class="text-right">@item.Total.Value.ToString("C2")</div>
                         }
                     </td>
                 </tr>

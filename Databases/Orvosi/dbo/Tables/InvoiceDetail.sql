@@ -7,6 +7,7 @@
     [Rate]             DECIMAL (10, 2) NULL,
     [Total]            DECIMAL (10, 2) NULL,
     [Discount]         DECIMAL (10, 2) NULL,
+	[DiscountDescription] nvarchar(256) NULL,
     [Amount]           DECIMAL (10, 2) NULL,
     [AdditionalNotes]  NVARCHAR (1000) NULL,
     [ModifiedDate]     DATETIME        CONSTRAINT [DF_InvoiceDetail_ModifiedDate] DEFAULT (getdate()) NOT NULL,

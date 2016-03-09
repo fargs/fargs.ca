@@ -15,14 +15,18 @@ using WebApp.Library;
 using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
-using WebApp.Services;
 
 namespace WebApp.Controllers
 {
+    public delegate void NoShowToggledHandler(object sender, EventArgs e);
+
     [Authorize]
     public class ServiceRequestController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
+
+        public event NoShowToggledHandler NoShowToggledEvent;
+        
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
@@ -260,10 +264,29 @@ namespace WebApp.Controllers
                 var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
 
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
+                var invoiceDate = serviceRequest.AppointmentDate.Value;
 
-                var invoiceService = new InvoiceService(User.Identity.Name);
-                var invoice = invoiceService.BuildInvoice(invoiceNumber, serviceProvider, customer, serviceRequest, User.Identity.Name);
+                var invoice = new Invoice();
+                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+
+                // Create or update the invoice detail for the service request
+                InvoiceDetail invoiceDetail;
+
+                invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+                if (invoiceDetail == null)
+                {
+                    invoiceDetail = new InvoiceDetail();
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                    invoice.InvoiceDetails.Add(invoiceDetail);
+                }
+                else
+                {
+                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                }
+
+                invoice.CalculateTotal();
                 db.Invoices.Add(invoice);
+
                 var validationResults = db.GetValidationErrors();
                 if (validationResults.Count() > 0)
                 {
@@ -720,6 +743,22 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 db.ServiceRequest_ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
+
+                serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
+
+                var detail = serviceRequest.InvoiceDetails.First();
+                if (serviceRequest.IsLateCancellation)
+                {
+                    var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                    detail.ApplyDiscount(DiscountTypes.LateCancellation, rates.LateCancellationRate);
+                }
+                else
+                {
+                    detail.RemoveDiscount();
+                }
+                detail.Invoice.CalculateTotal();
+                await db.SaveChangesAsync();
+
                 return RedirectToAction("Index");
             }
             return View(serviceRequest);
@@ -738,6 +777,11 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             db.ServiceRequest_ToggleCancellation(id, null, false, string.Empty);
+
+            var detail = serviceRequest.InvoiceDetails.First();
+            detail.RemoveDiscount();
+            detail.Invoice.CalculateTotal();
+
             return Redirect(Request.UrlReferrer.ToString());
         }
 
@@ -777,6 +821,22 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             db.ServiceRequest_ToggleNoShow(id);
+
+            serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
+
+            var detail = serviceRequest.InvoiceDetails.First();
+            if (serviceRequest.IsNoShow)
+            {
+                var rates = db.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
+                detail.ApplyDiscount(DiscountTypes.NoShow, rates.NoShowRate);
+            }
+            else
+            {
+                detail.RemoveDiscount();
+            }
+            detail.Invoice.CalculateTotal();
+            await db.SaveChangesAsync();
+
             return Redirect(Request.UrlReferrer.ToString());
         }
 

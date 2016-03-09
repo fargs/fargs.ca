@@ -24,6 +24,11 @@ namespace WebApp.Library.Extensions
                 return request.Url.Scheme + "://" + request.Url.Authority + VirtualPathUtility.ToAbsolute("~/");
         }
 
+        public static string ToOrvosiDateFormat(this DateTime value)
+        {
+            return value.GetDateTimeFormats('d')[5];
+        }
+
         public static string ToJson(this object obj)
         {
             JsonSerializer js = JsonSerializer.Create(new JsonSerializerSettings());

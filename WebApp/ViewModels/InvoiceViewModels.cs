@@ -21,6 +21,11 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public FilterArgs FilterArgs { get; set; }
     }
 
+    public class DashboardViewModel
+    {
+        public User User { get; set; }
+    }
+
     public class FilterArgs
     {
         public Guid? ServiceProviderId { get; set; }

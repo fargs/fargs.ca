@@ -35,6 +35,25 @@ namespace WebApp.Controllers
             Console.WriteLine("Event handled in Invoice Controller");
         }
 
+
+        public async Task<ActionResult> Dashboard()
+        {
+            var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
+            Guid userGuid = new Guid(user.Id);
+
+            var invoices = db.Invoices.AsQueryable();
+
+            if (user.RoleId != Roles.SuperAdmin)
+            {
+                invoices = invoices.Where(c => c.ServiceProviderGuid == userGuid);
+            }
+
+            var vm = new DashboardViewModel();
+            vm.User = user;
+
+            return View(vm);
+        }
+
         public async Task<ActionResult> Index(FilterArgs args)
         {
             var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);

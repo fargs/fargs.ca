@@ -1,6 +1,6 @@
 ﻿@model Model.Invoice
 @using WebApp.Library.Enums
-
+@Html.Partial("DocumentHeader", Model)
 <form action="~/Invoice/Edit" method="post">
     <input type="hidden" name="Id" value="@Model.InvoiceDetails.First().Id" />
     <div class="container">

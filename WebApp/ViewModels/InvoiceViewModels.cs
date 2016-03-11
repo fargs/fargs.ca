@@ -19,11 +19,19 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public System.Globalization.Calendar Calendar { get; set; }
         public DateTime Today { get; internal set; }
         public FilterArgs FilterArgs { get; set; }
+        public string[] Months { get; set; }
+        public decimal Money { get; set; }
+        public decimal Expenses { get; set; }
     }
 
     public class DashboardViewModel
     {
+        public IEnumerable<decimal?> Expenses { get; internal set; }
+        public IEnumerable<decimal?> Hst { get; internal set; }
+        public IEnumerable<decimal?> SubTotal { get; internal set; }
+        public IEnumerable<decimal?> Total { get; internal set; }
         public User User { get; set; }
+        public FilterArgs FilterArgs { get; set; }
     }
 
     public class FilterArgs

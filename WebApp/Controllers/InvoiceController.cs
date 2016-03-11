@@ -36,46 +36,20 @@ namespace WebApp.Controllers
         }
 
 
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Dashboard(FilterArgs args)
         {
-            var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
-            Guid userGuid = new Guid(user.Id);
+            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
-            var invoices = db.Invoices.AsQueryable();
-
+            // Service provider dropdown is defaulted to the current user unless you are a Super Admin.
             if (user.RoleId != Roles.SuperAdmin)
             {
-                invoices = invoices.Where(c => c.ServiceProviderGuid == userGuid);
+                args.ServiceProviderId = new Guid(user.Id);
             }
 
-            var vm = new DashboardViewModel();
-            vm.User = user;
+            var query = db.Invoices
+                .AsQueryable();
 
-            return View(vm);
-        }
-
-        public async Task<ActionResult> Index(FilterArgs args)
-        {
-            var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
-            var nextMonth = thisMonth.AddMonths(1);
-            if (args.Year.HasValue && args.Month.HasValue)
-            {
-                thisMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
-                nextMonth = thisMonth.AddMonths(1);
-            }
-            args.Year = thisMonth.Year;
-            args.Month = thisMonth.Month;
-            args.FilterDate = thisMonth;
-
-            var vm = new IndexViewModel();
-
-            vm.FilterArgs = args;
-
-            vm.CurrentUser = db.Users.Single(u => u.UserName == User.Identity.Name);
-
-            //vm.SelectedServiceProvider = await db.BillableEntities.SingleOrDefaultAsync(u => u.EntityGuid == args.ServiceProviderId);
-            //vm.SelectedCustomer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == args.CustomerId);
-            IQueryable<Invoice> query = db.Invoices.Where(c => c.InvoiceDate >= thisMonth && c.InvoiceDate < nextMonth);
+            // Apply the service provider and customer filters.
             if (args.ServiceProviderId.HasValue && args.CustomerId.HasValue)
             {
                 query = query.Where(i => i.ServiceProviderGuid == args.ServiceProviderId && i.CustomerGuid == args.CustomerId);
@@ -88,7 +62,115 @@ namespace WebApp.Controllers
             {
                 query = query.Where(i => i.CustomerGuid == args.CustomerId);
             }
-            vm.Invoices = await query.ToListAsync();
+
+            args.Year = args.Year.HasValue ? args.Year.Value : DateTime.Today.Year;
+            // Apply the year and month filters.
+            query = query.Where(c => c.InvoiceDate.Year == args.Year);
+
+            var invoices = await query.ToListAsync();
+
+            var startDate = new DateTime(args.Year.Value, 01, 01);
+            var endDate = startDate.AddYears(1);
+            var dateRange = startDate.GetDateRangeTo(endDate);
+
+            var dates = dateRange.Select(r => new { r.Month, r.Date});
+
+            var invoiceTotals = invoices
+                .Where(i => i.InvoiceDate > startDate && i.InvoiceDate <= endDate)
+                .Select(i => new
+                {
+                    i.ServiceProviderName,
+                    i.InvoiceDate,
+                    i.Total,
+                    i.SubTotal,
+                    Hst = i.Total - i.SubTotal
+                })
+                .ToList();
+
+            var summary = dateRange
+                .GroupJoin(invoiceTotals,
+                    r => r.Date,
+                    t => t.InvoiceDate,
+                    (r, t) => new
+                    {
+                        Date = r,
+                        Hst = t.Sum(c => c.Hst),
+                        SubTotal = t.Sum(c => c.SubTotal),
+                    })
+                .GroupBy(c => new { c.Date.Month, c.Date.Year })
+                .Select(c => new
+                {
+                    Hst = c.Sum(s => s.Hst),
+                    SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
+                    Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                });
+
+            var vm = new DashboardViewModel();
+
+            vm.User = user;
+            vm.SubTotal = summary.Select(c => c.SubTotal);
+            vm.Hst = summary.Select(c => c.Hst);
+            vm.Expenses = summary.Select(c => c.Expenses);
+            vm.FilterArgs = args;
+
+            return View(vm);
+        }
+
+        public async Task<ActionResult> Index(FilterArgs args)
+        {
+            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            // Service provider dropdown is defaulted to the current user unless you are a Super Admin.
+            if (user.RoleId != Roles.SuperAdmin)
+            { 
+                args.ServiceProviderId = new Guid(user.Id);
+            }
+
+            var query = db.Invoices
+                .AsQueryable();
+
+            // Apply the service provider and customer filters.
+            if (args.ServiceProviderId.HasValue && args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.ServiceProviderGuid == args.ServiceProviderId && i.CustomerGuid == args.CustomerId);
+            }
+            else if (args.ServiceProviderId.HasValue && !args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.ServiceProviderGuid == args.ServiceProviderId);
+            }
+            else if (!args.ServiceProviderId.HasValue && args.CustomerId.HasValue)
+            {
+                query = query.Where(i => i.CustomerGuid == args.CustomerId);
+            }
+
+            // Apply the year and month filters.
+            args.Year = args.Year.HasValue ? args.Year.Value : SystemTime.Now().Year;
+            query = query.Where(c => c.InvoiceDate.Year == args.Year.Value);
+            if (args.Month.HasValue)
+            {
+                query = query.Where(c => c.InvoiceDate.Month == args.Month);
+            }
+
+            var invoices = await query.ToListAsync();
+
+            //var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
+            //var nextMonth = thisMonth.AddMonths(1);
+            //if (args.Year.HasValue && args.Month.HasValue)
+            //{
+            //    thisMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
+            //    nextMonth = thisMonth.AddMonths(1);
+            //}
+            //args.Year = thisMonth.Year;
+            //args.Month = thisMonth.Month;
+            //args.FilterDate = thisMonth;
+
+            var vm = new IndexViewModel();
+
+            vm.FilterArgs = args;
+
+            vm.CurrentUser = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            vm.Invoices = invoices;
             
             return View(vm);
         }

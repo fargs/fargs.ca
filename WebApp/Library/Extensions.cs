@@ -16,6 +16,19 @@ namespace WebApp.Library.Extensions
     public static class Extensions
     {
 
+        public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
+        {
+            var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);
+
+            return from p in range
+                   select self.Date.AddDays(p);
+        }
+
+        public static int Quarter(this DateTime dateTime)
+        {
+            return Convert.ToInt16((dateTime.Month - 1) / 3) + 1;
+        }
+
         public static string GetBaseUrl(this HttpRequestBase request)
         {
             if (request.Url == (Uri)null)

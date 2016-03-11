@@ -1,5 +1,125 @@
-﻿@model WebApp.ViewModels.InvoiceViewModels.DashboardViewModel
+﻿@using Model
+@using e = Model.Enums
+@model WebApp.ViewModels.InvoiceViewModels.DashboardViewModel
 
+@{
+    var db = new OrvosiEntities();
+
+    ViewBag.BillableEntities = db.BillableEntities
+        .Select(c => new SelectListItem()
+        {
+            Text = c.EntityName,
+            Value = c.EntityGuid.ToString(),
+            Group = new SelectListGroup() { Name = c.EntityType }
+        }).ToList();
+
+    ViewBag.Years = e.DateRanges.GetYears()
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Value,
+            Value = c.Key.ToString()
+        }).ToList();
+
+    ViewBag.Months = e.DateRanges.GetMonths()
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Value,
+            Value = c.Key.ToString()
+        }).ToList();
+}
 <h2>Invoice Dashboard</h2>
 
-<div class="lead">@Model.User.DisplayName</div>
+<div class="row" style="margin-bottom:20px">
+    <div class="col-md-12">
+        <form action="~/Invoice/Dashboard/" method="get" class="form-inline">
+            @if (Model.User.RoleId == e.Roles.SuperAdmin)
+            {
+                <div class="form-group">
+                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                </div>
+            }
+            <div class="form-group">
+                @Html.DropDownList("CustomerId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), "-- Customer --", new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+            <div class="form-group">
+                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div id="container" style="width:100%; height:100%;"></div>
+    </div>
+</div>
+
+@section scripts {
+
+    @Scripts.Render("~/bundles/highcharts")
+
+    <script>
+        $(function () {
+            $('#container').highcharts({
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Dollars'
+                    },
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    x: -30,
+                    verticalAlign: 'top',
+                    y: -10,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                textShadow: '0 0 3px black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Revenue',
+                    data: [@string.Join(",", Model.SubTotal)]
+                }, {
+                    name: 'Expenses',
+                    data: [@string.Join(",", Model.Expenses)]
+                }, {
+                    name: 'HST',
+                    data: [@string.Join(",", Model.Hst)]
+                }]
+            });
+        });
+    </script>
+}

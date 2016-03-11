@@ -25,7 +25,8 @@
         {
             Text = c.Value,
             Value = c.Key.ToString()
-        }).ToList();
+        })
+        .ToList();
 }
 <h1>Invoices</h1>
 
@@ -35,19 +36,18 @@
             @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
             {
                 <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), string.Empty, new { @class = "form-control", placeholder="Service Provider" })
+                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
                 <div class="form-group">
-                    @Html.DropDownList("CustomerId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), string.Empty, new { @class = "form-control", placeholder="Customer" })
+                    @Html.DropDownList("CustomerId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), "-- Customer --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
             }
             <div class="form-group">
-                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.Value.ToString()), new { @class = "form-control" })
+                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
             <div class="form-group">
-                @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.Value.ToString()), new { @class = "form-control" })
+                @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.HasValue ? Model.FilterArgs.Month.Value.ToString() : string.Empty), "-- Month --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
-            <button type="submit" class="btn btn-primary">Get Invoices</button>
         </form>
     </div>
 </div>

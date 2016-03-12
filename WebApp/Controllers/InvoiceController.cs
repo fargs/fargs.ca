@@ -108,9 +108,13 @@ namespace WebApp.Controllers
             var vm = new DashboardViewModel();
 
             vm.User = user;
-            vm.SubTotal = summary.Select(c => c.SubTotal);
-            vm.Hst = summary.Select(c => c.Hst);
-            vm.Expenses = summary.Select(c => c.Expenses);
+            vm.SubTotalByMonth = summary.Select(c => c.SubTotal);
+            vm.HstByMonth = summary.Select(c => c.Hst);
+            vm.ExpensesByMonth = summary.Select(c => c.Expenses);
+            vm.SubTotal = summary.Sum(c => c.SubTotal);
+            vm.Hst = summary.Sum(c => c.Hst);
+            vm.Expenses = summary.Sum(c => c.Expenses);
+            vm.Invoices = summary.Count();
             vm.FilterArgs = args;
 
             return View(vm);

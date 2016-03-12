@@ -48,6 +48,32 @@
     </div>
 </div>
 <div class="row">
+    <div class="col-sm-4">
+        <div class="thumbnail alert alert-info">
+            <div class="caption">
+                <div class="h1 text-center">@Model.Invoices.ToString()</div>
+                <div class="text-muted text-center">Invoices</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="thumbnail alert alert-success">
+            <div class="caption">
+                <div class="h1 text-center">@Model.SubTotal.Value.ToString("C0")</div>
+                <div class="text-muted text-center">Revenue</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="thumbnail alert alert-info">
+            <div class="caption">
+                <div class="h1 text-center">@Model.Hst.Value.ToString("C0")</div>
+                <div class="text-muted text-center">HST</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-sm-12">
         <div id="container" style="width:100%; height:100%;"></div>
     </div>
@@ -101,7 +127,7 @@
                     column: {
                         stacking: 'normal',
                         dataLabels: {
-                            enabled: true,
+                            enabled: false,
                             color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
                             style: {
                                 textShadow: '0 0 3px black'
@@ -111,13 +137,7 @@
                 },
                 series: [{
                     name: 'Revenue',
-                    data: [@string.Join(",", Model.SubTotal)]
-                }, {
-                    name: 'Expenses',
-                    data: [@string.Join(",", Model.Expenses)]
-                }, {
-                    name: 'HST',
-                    data: [@string.Join(",", Model.Hst)]
+                    data: [@string.Join(",", Model.SubTotalByMonth)]
                 }]
             });
         });

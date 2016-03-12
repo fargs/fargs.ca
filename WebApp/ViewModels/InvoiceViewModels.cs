@@ -26,12 +26,15 @@ namespace WebApp.ViewModels.InvoiceViewModels
 
     public class DashboardViewModel
     {
-        public IEnumerable<decimal?> Expenses { get; internal set; }
-        public IEnumerable<decimal?> Hst { get; internal set; }
-        public IEnumerable<decimal?> SubTotal { get; internal set; }
-        public IEnumerable<decimal?> Total { get; internal set; }
+        public IEnumerable<decimal?> ExpensesByMonth { get; internal set; }
+        public IEnumerable<decimal?> HstByMonth { get; internal set; }
+        public IEnumerable<decimal?> SubTotalByMonth { get; internal set; }
+        public decimal? Expenses { get; internal set; }
+        public decimal? Hst { get; internal set; }
+        public decimal? SubTotal { get; internal set; }
         public User User { get; set; }
         public FilterArgs FilterArgs { get; set; }
+        public int Invoices { get; internal set; }
     }
 
     public class FilterArgs

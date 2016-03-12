@@ -5,29 +5,37 @@
 @{
     var db = new OrvosiEntities();
 
-    ViewBag.BillableEntities = db.BillableEntities
+    ViewBag.ServiceProviders = db.BillableEntities
+        .Where(c => c.EntityType == e.EntityTypes.Physician)
         .Select(c => new SelectListItem()
         {
             Text = c.EntityName,
-            Value = c.EntityGuid.ToString(),
-            Group = new SelectListGroup() { Name = c.EntityType }
-        }).ToList();
+            Value = c.EntityGuid.ToString()
+        });
 
-    ViewBag.Years = e.DateRanges.GetYears()
+    ViewBag.Customers = db.Companies
+        .Where(c => c.IsParent == false)
         .Select(c => new SelectListItem()
         {
-            Text = c.Value,
-            Value = c.Key.ToString()
-        }).ToList();
+            Text = c.Name,
+            Value = c.ObjectGuid.ToString(),
+            Group = new SelectListGroup() { Name = c.ParentName }
+        });
+
+    ViewBag.Years = e.DateRanges.GetYears()
+.Select(c => new SelectListItem()
+{
+    Text = c.Value,
+    Value = c.Key.ToString()
+});
 
     ViewBag.Months = e.DateRanges.GetMonths()
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
             Value = c.Key.ToString()
-        }).ToList();
+        });
 }
-<h2>Invoice Dashboard</h2>
 
 <div class="row" style="margin-bottom:20px">
     <div class="col-md-12">
@@ -35,11 +43,11 @@
             @if (Model.User.RoleId == e.Roles.SuperAdmin)
             {
                 <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.ServiceProviders, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
             }
             <div class="form-group">
-                @Html.DropDownList("CustomerId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), "-- Customer --", new { @class = "form-control", onchange = "this.form.submit();" })
+                @Html.DropDownList("CustomerId", new SelectList(ViewBag.Customers, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), "-- Customer --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
             <div class="form-group">
                 @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), new { @class = "form-control", onchange = "this.form.submit();" })
@@ -51,7 +59,7 @@
     <div class="col-sm-4">
         <div class="thumbnail alert alert-info">
             <div class="caption">
-                <div class="h1 text-center">@Model.Invoices.ToString()</div>
+                <div class="h1 text-center">@Model.InvoiceCount.ToString()</div>
                 <div class="text-muted text-center">Invoices</div>
             </div>
         </div>
@@ -59,8 +67,8 @@
     <div class="col-sm-4">
         <div class="thumbnail alert alert-success">
             <div class="caption">
-                <div class="h1 text-center">@Model.SubTotal.Value.ToString("C0")</div>
-                <div class="text-muted text-center">Revenue</div>
+                <div class="h1 text-center">@Model.NetIncome.Value.ToString("C0")</div>
+                <div class="text-muted text-center">Net Income</div>
             </div>
         </div>
     </div>
@@ -73,11 +81,14 @@
         </div>
     </div>
 </div>
+<h2>Revenue By Month</h2>
 <div class="row">
     <div class="col-sm-12">
         <div id="container" style="width:100%; height:100%;"></div>
     </div>
 </div>
+<h2>Invoices</h2>
+@Html.Action("Table", new { invoices = Model.Invoices })
 
 @section scripts {
 
@@ -117,7 +128,8 @@
                     backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
                     borderColor: '#CCC',
                     borderWidth: 1,
-                    shadow: false
+                    shadow: false,
+                    enabled: false
                 },
                 tooltip: {
                     headerFormat: '<b>{point.x}</b><br/>',

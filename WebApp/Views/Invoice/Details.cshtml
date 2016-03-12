@@ -1,5 +1,5 @@
 ﻿@model Model.Invoice
-@using WebApp.Library.Enums
+@using e = Model.Enums
 
 <div class="container">
     @Html.Partial("DocumentHeader", Model)
@@ -12,9 +12,12 @@
 
         </div>
         <div class="col-sm-4">
-            <div class="pull-right">
-                <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
-            </div>
+            @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+            {
+                <div class="pull-right">
+                    <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
+                </div>
+            }
         </div>
     </div>
 </div>

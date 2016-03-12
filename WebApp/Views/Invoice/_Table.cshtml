@@ -1,11 +1,15 @@
 ﻿@using WebApp.Library.Extensions
+@using e = Model.Enums
 @model List<Model.Invoice>
 
 <table class="table table-condensed table-hover">
     <thead>
         <tr>
             <th></th>
-            <th>Physician</th>
+            @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+            {
+                <th>Physician</th>
+            }
             <th>Company</th>
             <th>Invoice #</th>
             <th>Invoice Date</th>
@@ -22,7 +26,11 @@
             <tr>
                 <td>
                     <div class="btn-group" style="width:100px">
-                        @if (invoice.SentDate.HasValue)
+                        @if (ViewBag.User.RoleId == e.Roles.Physician)
+                        {
+                            <a href="~/Invoice/Details/@invoice.Id" class="btn btn-default btn-sm">View</a>
+                        }
+                        else if (invoice.SentDate.HasValue)
                         {
                             <a href="~/Invoice/Details/@invoice.Id" class="btn btn-default btn-sm">View</a>
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,7 +54,10 @@
                         }
                     </div>
                 </td>
-                <td>@invoice.ServiceProviderName</td>
+                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                {
+                    <td>@invoice.ServiceProviderName</td>
+                }
                 <td>@invoice.CustomerName</td>
                 <td>@invoice.InvoiceNumber</td>
                 <td>@invoice.InvoiceDate.ToOrvosiDateFormat()</td>
@@ -60,10 +71,16 @@
                     }
                     else
                     {
-                        <div id="submit-invoice">
-                            @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
-                        </div>
-
+                        if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                        {
+                            <div id="submit-invoice">
+                                @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
+                            </div>
+                        }
+                        else
+                        {
+                            <div>No</div>
+                        }
                     }
                 </td>
                 <td>

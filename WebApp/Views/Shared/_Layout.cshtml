@@ -28,10 +28,12 @@
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Exams", "", "ServiceRequest", new { area = "" }, null)</li>
+                        if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator || User.Identity.GetRoleId() == e.Roles.Physician) { 
+                            <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
+                        }
                         if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator)
                         {
                             <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
                             <li role="presentation" class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                     Admin <span class="caret"></span>

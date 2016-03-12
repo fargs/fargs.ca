@@ -19,7 +19,6 @@ using WebApp.Library.Helpers;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class InvoiceController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
             Console.WriteLine("Event handled in Invoice Controller");
         }
 
-
+        [Authorize(Roles = "Super Admin,Case Coordinator,Physician")]
         public async Task<ActionResult> Dashboard(FilterArgs args)
         {
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
@@ -76,7 +75,6 @@ namespace WebApp.Controllers
             var dates = dateRange.Select(r => new { r.Month, r.Date});
 
             var invoiceTotals = invoices
-                .Where(i => i.InvoiceDate > startDate && i.InvoiceDate <= endDate)
                 .Select(i => new
                 {
                     i.ServiceProviderName,
@@ -84,8 +82,7 @@ namespace WebApp.Controllers
                     i.Total,
                     i.SubTotal,
                     Hst = i.Total - i.SubTotal
-                })
-                .ToList();
+                });
 
             var summary = dateRange
                 .GroupJoin(invoiceTotals,
@@ -111,15 +108,17 @@ namespace WebApp.Controllers
             vm.SubTotalByMonth = summary.Select(c => c.SubTotal);
             vm.HstByMonth = summary.Select(c => c.Hst);
             vm.ExpensesByMonth = summary.Select(c => c.Expenses);
-            vm.SubTotal = summary.Sum(c => c.SubTotal);
+            vm.NetIncome = summary.Sum(c => c.SubTotal);
             vm.Hst = summary.Sum(c => c.Hst);
             vm.Expenses = summary.Sum(c => c.Expenses);
-            vm.Invoices = summary.Count();
+            vm.InvoiceCount = invoiceTotals.Count();
+            vm.Invoices = invoices;
             vm.FilterArgs = args;
 
             return View(vm);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         public async Task<ActionResult> Index(FilterArgs args)
         {
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
@@ -179,11 +178,15 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        [Authorize(Roles = "Super Admin,Case Coordinator,Physician")]
         public ActionResult Table(List<Invoice> invoices)
         {
+            ViewBag.User = db.Users.Single(u => u.UserName == User.Identity.Name);
+
             return PartialView("_Table", invoices);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
         public async Task<ActionResult> Create(short ServiceRequestId)
         {
@@ -237,13 +240,16 @@ namespace WebApp.Controllers
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
         public async Task<ActionResult> Details(int id)
         {
+            ViewBag.User = await db.Users.SingleAsync(c => c.UserName == User.Identity.Name);
             var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.ReadOnly;
             return View(obj);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         public async Task<ActionResult> Edit(int id)
         {
             var obj = await db.Invoices.FindAsync(id);
@@ -251,6 +257,7 @@ namespace WebApp.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
         public async Task<ActionResult> Edit(InvoiceDetail updatedInvoiceDetail)
         {
@@ -338,6 +345,7 @@ namespace WebApp.Controllers
             return File(docBytes, "application/pdf", fileName);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         public async Task<ActionResult> Submit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
@@ -361,6 +369,7 @@ namespace WebApp.Controllers
             return PartialView("_InvoiceSubmitted", invoice.SentDate.Value);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
         public async Task<ActionResult> AddInvoiceDetail(InvoiceDetail InvoiceDetail)
         {
@@ -370,6 +379,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Details", new { id = InvoiceDetail.InvoiceId });
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
         public async Task<ActionResult> EditInvoiceDetail(int id)
         {
@@ -379,6 +389,7 @@ namespace WebApp.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
         public async Task<ActionResult> DeleteInvoiceDetail(int id)
         {

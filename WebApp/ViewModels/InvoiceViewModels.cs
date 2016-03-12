@@ -31,10 +31,11 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public IEnumerable<decimal?> SubTotalByMonth { get; internal set; }
         public decimal? Expenses { get; internal set; }
         public decimal? Hst { get; internal set; }
-        public decimal? SubTotal { get; internal set; }
+        public decimal? NetIncome { get; internal set; }
         public User User { get; set; }
         public FilterArgs FilterArgs { get; set; }
-        public int Invoices { get; internal set; }
+        public int InvoiceCount { get; internal set; }
+        public List<Invoice> Invoices { get; set; }
     }
 
     public class FilterArgs

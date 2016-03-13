@@ -112,10 +112,6 @@ else
                 <tr>
                     <td>
                         <div>@service.Name</div>
-                        @if (service.DefaultPrice != null)
-                        {
-                            <small class="text-muted">Recommended price is @service.DefaultPrice</small>
-                        }
                     </td>
                     @foreach (var location in ViewBag.LocationAreas)
                     {

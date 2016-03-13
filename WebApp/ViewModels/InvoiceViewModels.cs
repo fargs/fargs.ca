@@ -28,7 +28,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
     {
         public IEnumerable<decimal?> ExpensesByMonth { get; internal set; }
         public IEnumerable<decimal?> HstByMonth { get; internal set; }
-        public IEnumerable<decimal?> SubTotalByMonth { get; internal set; }
+        public IEnumerable<decimal?> NetIncomeByMonth { get; internal set; }
         public decimal? Expenses { get; internal set; }
         public decimal? Hst { get; internal set; }
         public decimal? NetIncome { get; internal set; }
@@ -36,6 +36,9 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public FilterArgs FilterArgs { get; set; }
         public int InvoiceCount { get; internal set; }
         public List<Invoice> Invoices { get; set; }
+        public IEnumerable<decimal?> NetIncomeByCompany { get; internal set; }
+        public string Months { get; internal set; }
+        public IEnumerable<string> Companies { get; internal set; }
     }
 
     public class FilterArgs

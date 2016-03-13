@@ -150,6 +150,12 @@ namespace WebApp.Library.Extensions
             arr.RemoveAt(index);
             return @this.Clear().Append(string.Join("\r\n", arr));
         }
+
+        public static HtmlString ToCSV(this IEnumerable<string> values)
+        {
+            var result = new HtmlString("'" + string.Join("','", values) + "'");
+            return result;
+        }
     }
 }
 

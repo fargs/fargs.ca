@@ -77,6 +77,7 @@ namespace WebApp.Controllers
             var invoiceTotals = invoices
                 .Select(i => new
                 {
+                    i.CustomerGuid,
                     i.ServiceProviderName,
                     i.InvoiceDate,
                     i.Total,
@@ -84,7 +85,7 @@ namespace WebApp.Controllers
                     Hst = i.Total - i.SubTotal
                 });
 
-            var summary = dateRange
+            var netIncomeByMonth = dateRange
                 .GroupJoin(invoiceTotals,
                     r => r.Date,
                     t => t.InvoiceDate,
@@ -97,7 +98,29 @@ namespace WebApp.Controllers
                 .GroupBy(c => new { c.Date.Month, c.Date.Year })
                 .Select(c => new
                 {
+                    Year = c.Key.Year,
+                    Month = c.Key.Month,
                     Hst = c.Sum(s => s.Hst),
+                    SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
+                    Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                });
+
+            var netIncomeByCompany = invoiceTotals
+                .Join(db.BillableEntities,
+                    i => i.CustomerGuid,
+                    c => c.EntityGuid,
+                    (i, c) => new
+                    {
+                        EntityGuid = c.EntityGuid,
+                        CompanyName = c.EntityName,
+                        Hst = i.Hst,
+                        SubTotal = i.SubTotal
+                    })
+                .GroupBy(c => new { c.EntityGuid, c.CompanyName })
+                .Select(c => new
+                {
+                    CompanyName = c.Key.CompanyName,
+                    Hst = c.Sum(i => i.Hst),
                     SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
                     Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
                 });
@@ -105,12 +128,13 @@ namespace WebApp.Controllers
             var vm = new DashboardViewModel();
 
             vm.User = user;
-            vm.SubTotalByMonth = summary.Select(c => c.SubTotal);
-            vm.HstByMonth = summary.Select(c => c.Hst);
-            vm.ExpensesByMonth = summary.Select(c => c.Expenses);
-            vm.NetIncome = summary.Sum(c => c.SubTotal);
-            vm.Hst = summary.Sum(c => c.Hst);
-            vm.Expenses = summary.Sum(c => c.Expenses);
+            vm.Months = "'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'"; //TODO: Refactoring - List of months.
+            vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct();
+            vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.SubTotal);
+            vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.SubTotal);
+            vm.NetIncome = netIncomeByMonth.Sum(c => c.SubTotal);
+            vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
+            vm.Expenses = netIncomeByMonth.Sum(c => c.Expenses);
             vm.InvoiceCount = invoiceTotals.Count();
             vm.Invoices = invoices;
             vm.FilterArgs = args;

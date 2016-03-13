@@ -112,7 +112,7 @@
                     text: ''
                 },
                 xAxis: {
-                    categories: [@Html.Raw(string.Join(",", Model.Months))],
+                    categories: [@Model.Months.ToCSV()],
                     stackLabels: {
                         enabled: true,
                         style: {

@@ -128,7 +128,7 @@ namespace WebApp.Controllers
             var vm = new DashboardViewModel();
 
             vm.User = user;
-            vm.Months = "'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'"; //TODO: Refactoring - List of months.
+            vm.Months = new string[12] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
             vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct();
             vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.SubTotal);
             vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.SubTotal);

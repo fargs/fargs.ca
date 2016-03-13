@@ -37,7 +37,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public int InvoiceCount { get; internal set; }
         public List<Invoice> Invoices { get; set; }
         public IEnumerable<decimal?> NetIncomeByCompany { get; internal set; }
-        public string Months { get; internal set; }
+        public IEnumerable<string> Months { get; internal set; }
         public IEnumerable<string> Companies { get; internal set; }
     }
 

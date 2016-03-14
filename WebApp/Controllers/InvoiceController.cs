@@ -45,9 +45,11 @@ namespace WebApp.Controllers
                 args.ServiceProviderId = new Guid(user.Id);
             }
 
+            var now = SystemTime.Now();
+
             var query = db.Invoices
                 .Where(i => !i.InvoiceDetails.All(id => id.ServiceRequest.CancelledDate.HasValue && id.ServiceRequest.IsLateCancellation == false))
-                .Where(i => i.SentDate.HasValue)
+                .Where(i => i.InvoiceDate < now)
                 .AsQueryable();
 
             // Apply the service provider and customer filters.

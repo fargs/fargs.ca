@@ -21,7 +21,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var invoice in Model)
+        @foreach (var invoice in Model.OrderBy(i => i.InvoiceDate))
         {
             <tr>
                 <td>

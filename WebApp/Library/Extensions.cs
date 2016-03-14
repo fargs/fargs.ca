@@ -39,7 +39,7 @@ namespace WebApp.Library.Extensions
 
         public static string ToOrvosiDateFormat(this DateTime value)
         {
-            return value.GetDateTimeFormats('d')[5];
+            return value.ToString("yyyy-MM-dd");
         }
 
         public static string ToJson(this object obj)

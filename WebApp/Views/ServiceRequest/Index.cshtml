@@ -202,9 +202,9 @@
                             <div class="text-muted">@item.AddressName</div>
                         </td>
                         <td>
-                            <div><strong>E: @item.AppointmentDate.Value.ToString("ddd, MMM dd")</strong></div>
-                            <div class="text-muted" style="padding-left: 18px;">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
-                            <div><strong>R: @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : string.Empty)</strong></div>
+                            <div><strong>EXM: @item.AppointmentDate.Value.ToString("ddd, MMM dd")</strong></div>
+                            <div class="text-muted" style="padding-left: 40px;">@item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
+                            <div><strong>DUE: @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : string.Empty)</strong></div>
                         </td>
                         <td>
                             <div class="label label-@(item.ServiceStatusId == ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>

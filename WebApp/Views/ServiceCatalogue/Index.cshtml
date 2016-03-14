@@ -27,6 +27,7 @@
 
     ViewBag.Services = db.Services
         .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .OrderBy(c => c.Name)
         .ToList();
 
     ViewBag.LocationAreas = db.LocationAreas

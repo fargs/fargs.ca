@@ -105,6 +105,7 @@
     <script>
         $(function () {
             $('#revenueByMonth').highcharts({
+                colors: ["#90ee7e"],
                 chart: {
                     type: 'bar'
                 },
@@ -146,7 +147,10 @@
                 },
                 tooltip: {
                     headerFormat: '<b>{point.x}</b><br/>',
-                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                    pointFormat: '{series.name}: {point.y}',
+                    valueDecimals: 2,
+                    valuePrefix: '$',
+                    valueSuffix: ' CAD'
                 },
                 plotOptions: {
                     column: {
@@ -161,12 +165,13 @@
                     }
                 },
                 series: [{
-                    name: 'Revenue',
+                    name: 'Net Income',
                     data: [@string.Join(",", Model.NetIncomeByMonth)]
                 }]
             });
 
             $('#revenueByCompany').highcharts({
+                colors: ["#f7a35c"],
                 chart: {
                     type: 'bar'
                 },
@@ -208,7 +213,10 @@
                 },
                 tooltip: {
                     headerFormat: '<b>{point.x}</b><br/>',
-                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                    pointFormat: '{series.name}: {point.y}',
+                    valueDecimals: 2,
+                    valuePrefix: '$',
+                    valueSuffix: ' CAD'
                 },
                 plotOptions: {
                     column: {
@@ -223,7 +231,7 @@
                     }
                 },
                 series: [{
-                    name: 'Revenue',
+                    name: 'Net Income',
                     data: [@string.Join(",", Model.NetIncomeByCompany)]
                 }]
             });

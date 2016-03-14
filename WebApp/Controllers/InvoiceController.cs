@@ -47,6 +47,7 @@ namespace WebApp.Controllers
 
             var query = db.Invoices
                 .Where(i => !i.InvoiceDetails.All(id => id.ServiceRequest.CancelledDate.HasValue && id.ServiceRequest.IsLateCancellation == false))
+                .Where(i => i.SentDate.HasValue)
                 .AsQueryable();
 
             // Apply the service provider and customer filters.

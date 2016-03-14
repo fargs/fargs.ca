@@ -42,6 +42,11 @@ namespace WebApp.Library.Extensions
             return value.ToString("yyyy-MM-dd");
         }
 
+        public static string ToOrvosiDateFormat(this DateTime? value)
+        {
+            return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
+        }
+
         public static string ToJson(this object obj)
         {
             JsonSerializer js = JsonSerializer.Create(new JsonSerializerSettings());

@@ -6,6 +6,7 @@
 @{
     var db = new OrvosiEntities();
 
+    //TODO: Filter out the lookups that are not needed per role
     ViewBag.ServiceProviders = db.BillableEntities
         .Where(c => c.EntityType == e.EntityTypes.Physician)
         .Select(c => new SelectListItem()
@@ -92,11 +93,19 @@
         <div id="revenueByCompany" style="width:100%; height:100%;"></div>
     </div>
 </div>
-<div class="row">
-    
+<div class="panel panel-default" style="margin-top: 40px">
+    <div class="panel-heading" role="tab" id="headingOne">
+        <h2 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                @Model.FilterArgs.Year Invoices 
+                <small>&nbsp;(click to view)</small>
+            </a>
+        </h2>
+    </div>
+    <div id="collapseOne" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
+        @Html.Action("Table", new { invoices = Model.Invoices })
+    </div>
 </div>
-<h2>@Model.FilterArgs.Year Invoices</h2>
-@Html.Action("Table", new { invoices = Model.Invoices })
 
 @section scripts {
 

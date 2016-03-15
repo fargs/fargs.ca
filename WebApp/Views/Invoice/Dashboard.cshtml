@@ -59,10 +59,11 @@
 </div>
 <div class="row">
     <div class="col-sm-4">
-        <div class="thumbnail alert alert-info">
+        <div class="thumbnail alert alert-warning">
             <div class="caption">
                 <div class="h1 text-center">@Model.InvoiceCount.ToString()</div>
                 <div class="text-muted text-center">Invoices</div>
+                <div class="text-muted text-center"><small>&nbsp;</small></div>
             </div>
         </div>
     </div>
@@ -70,7 +71,8 @@
         <div class="thumbnail alert alert-success">
             <div class="caption">
                 <div class="h1 text-center">@Model.NetIncome.Value.ToString("C0")</div>
-                <div class="text-muted text-center">Net Income</div>
+                <div class="text-center"><strong>Your Take Home!</strong></div>
+                <div class="text-muted text-center"><small>(Expenses and HST are already deducted)</small></div>
             </div>
         </div>
     </div>
@@ -79,17 +81,18 @@
             <div class="caption">
                 <div class="h1 text-center">@Model.Hst.Value.ToString("C0")</div>
                 <div class="text-muted text-center">HST</div>
+                <div class="text-muted text-center"><small>&nbsp;</small></div>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-6">
-        <h2>@Model.FilterArgs.Year Net Income By Month</h2>
+    <div class="col-xs-12 col-sm-6">
+        <h2>@Model.FilterArgs.Year Take Home By Month</h2>
         <div id="revenueByMonth" style="width:100%; height:100%;"></div>
     </div>
-    <div class="col-sm-6">
-        <h2>@Model.FilterArgs.Year Net Income By Company</h2>
+    <div class="col-xs-12 col-sm-6">
+        <h2>@Model.FilterArgs.Year Take Home By Company</h2>
         <div id="revenueByCompany" style="width:100%; height:100%;"></div>
     </div>
 </div>
@@ -97,7 +100,7 @@
     <div class="panel-heading" role="tab" id="headingOne">
         <h2 class="panel-title">
             <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                @Model.FilterArgs.Year Invoices 
+                @Model.FilterArgs.Year Invoices
                 <small>&nbsp;(click to view)</small>
             </a>
         </h2>
@@ -115,6 +118,9 @@
         $(function () {
             $('#revenueByMonth').highcharts({
                 colors: ["#90ee7e"],
+                credits: {
+                    enabled: false
+                },
                 chart: {
                     type: 'bar'
                 },
@@ -122,14 +128,7 @@
                     text: ''
                 },
                 xAxis: {
-                    categories: [@Model.Months.ToCSV()],
-                    stackLabels: {
-                        enabled: true,
-                        style: {
-                            fontWeight: 'bold',
-                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                        }
-                    }
+                    categories: [@Model.Months.ToCSV()]
                 },
                 yAxis: {
                     min: 0,
@@ -137,6 +136,7 @@
                         text: ''
                     },
                     labels: {
+                        overflow: 'justify',
                         formatter: function () {
                             return '$' + this.value;
                         }
@@ -162,25 +162,28 @@
                     valueSuffix: ' CAD'
                 },
                 plotOptions: {
-                    column: {
-                        stacking: 'normal',
+                    bar: {
                         dataLabels: {
-                            enabled: false,
-                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-                            style: {
-                                textShadow: '0 0 3px black'
+                            enabled: true,
+                            formatter: function () {
+                                if (this.y != 0) {
+                                    return '$' + this.y;
+                                }
                             }
                         }
                     }
                 },
                 series: [{
-                    name: 'Net Income',
+                    name: 'Your Take Home',
                     data: [@string.Join(",", Model.NetIncomeByMonth)]
                 }]
             });
 
             $('#revenueByCompany').highcharts({
                 colors: ["#f7a35c"],
+                credits: {
+                    enabled: false
+                },
                 chart: {
                     type: 'bar'
                 },
@@ -228,19 +231,19 @@
                     valueSuffix: ' CAD'
                 },
                 plotOptions: {
-                    column: {
-                        stacking: 'normal',
+                    bar: {
                         dataLabels: {
-                            enabled: false,
-                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-                            style: {
-                                textShadow: '0 0 3px black'
+                            enabled: true,
+                            formatter: function () {
+                                if (this.y != 0) {
+                                    return '$' + this.y;
+                                }
                             }
                         }
                     }
                 },
                 series: [{
-                    name: 'Net Income',
+                    name: 'Your Take Home',
                     data: [@string.Join(",", Model.NetIncomeByCompany)]
                 }]
             });

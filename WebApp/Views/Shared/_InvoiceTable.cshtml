@@ -1,4 +1,5 @@
 ﻿@using WebApp.Library.Extensions
+@using e = Model.Enums
 @model List<Model.InvoiceDetail>
 
 <table class="table table-condensed table-hover">
@@ -29,7 +30,11 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a href="~/Invoice/Edit/@detail.InvoiceId" class="btn btn-sm">Edit</a></li>
-                                    <li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>
+                                    @*<li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>*@
+                                    @if (ViewContext.Controller.ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                    {
+                                        <li><a href="~/Invoice/Submit/@detail.Invoice.Id" class="btn btn-sm">Submit</a></li>
+                                    }
                                 </ul>
                         }
                         else
@@ -41,7 +46,11 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a href="~/Invoice/Details/@detail.InvoiceId" class="btn btn-sm">View</a></li>
-                                    <li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>
+                                    @*<li><a href="~/Invoice/Download/@detail.Invoice.ObjectGuid" class="btn btn-sm">Download</a></li>*@
+                                    @if (ViewContext.Controller.ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                    {
+                                        <li><a href="~/Invoice/Unsubmit/@detail.Invoice.Id" class="btn btn-sm">Unsubmit</a></li>
+                                    }
                                 </ul>
                         }
                     </div>

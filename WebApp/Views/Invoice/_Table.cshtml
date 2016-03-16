@@ -39,6 +39,10 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Edit/@invoice.Id" class="btn btn-sm">Edit</a></li>
+                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                {
+                                <li><a href="~/Invoice/Unsubmit/@invoice.Id" class="btn btn-sm">Unsubmit</a></li>
+                                }
                             </ul>
                         }
                         else
@@ -50,6 +54,10 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Details/@invoice.Id" class="btn btn-sm">View</a></li>
+                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                {
+                                    <li><a href="~/Invoice/Submit/@invoice.Id" class="btn btn-sm">Submit</a></li>
+                                }
                             </ul>
                         }
                     </div>
@@ -73,9 +81,10 @@
                     {
                         if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
                         {
-                            <div id="submit-invoice">
+                            <a href="~/Invoice/Submit/@invoice.Id" class="btn btn-sm">Submit</a>
+                            @*<div id="submit-invoice">
                                 @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
-                            </div>
+                            </div>*@
                         }
                         else
                         {

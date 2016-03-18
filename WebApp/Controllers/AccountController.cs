@@ -98,19 +98,15 @@ namespace WebApp.Controllers
                 ViewBag.errorMessage = "The e-mail address entered is incorrect.";
                 return View("Error");
             }
-
-            if (user != null)
+            if (!await UserManager.IsEmailConfirmedAsync(user.Id))
             {
-                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-                {
-                    //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
+                //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
-                    // Uncomment to debug locally  
-                    //ViewBag.Link = callbackUrl;
+                // Uncomment to debug locally  
+                //ViewBag.Link = callbackUrl;
 
-                    ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
-                    return View("Error");
-                }
+                ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
+                return View("Error");
             }
 
             // This doesn't count login failures towards account lockout

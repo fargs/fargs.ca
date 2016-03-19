@@ -373,7 +373,8 @@ namespace WebApp.Controllers
             return File(docBytes, "application/pdf", fileName);
         }
 
-        [Authorize(Roles = "Super Admin, Case Coordinator")]
+        [HttpPost]
+        [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Submit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
@@ -397,7 +398,8 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
-        [Authorize(Roles = "Super Admin, Case Coordinator")]
+        [HttpPost]
+        [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Unsubmit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);

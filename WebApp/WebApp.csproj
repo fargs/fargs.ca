@@ -883,8 +883,6 @@
     <Content Include="Views\Invoice\Edit.cshtml" />
     <Content Include="Views\Invoice\Dashboard.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
-    <Content Include="Views\Shared\_InvoiceTable.cshtml" />
-    <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
     <Content Include="Views\Shared\DocumentHeader.cshtml" />

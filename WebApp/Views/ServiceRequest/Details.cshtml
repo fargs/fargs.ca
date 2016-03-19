@@ -133,7 +133,7 @@ else
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <h3>Invoice from Physician to Company</h3>
-    if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
+    if (Model.Invoices.Count() == 0)
     {
         var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
         using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
@@ -144,7 +144,7 @@ else
     }
     else
     {
-        @Html.Partial("_InvoiceTable", Model.ServiceRequest.InvoiceDetails.ToList())
+        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
     }
 
     <h3>Invoice from Staff to Orvosi</h3>

@@ -92,22 +92,23 @@ namespace WebApp.Controllers
 
             // Require the user to have a confirmed email before they can log on.
             var user = await UserManager.FindByEmailAsync(model.Email);
-            if (user != null)
+
+            if (user == null)
             {
-                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-                {
-                    //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
-
-                    // Uncomment to debug locally  
-                    //ViewBag.Link = callbackUrl;
-
-                    ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
-                    return View("Error");
-                }
+                ViewBag.errorMessage = "The e-mail address entered is incorrect.";
+                return View("Error");
             }
+            if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+            {
+                //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
+                // Uncomment to debug locally  
+                //ViewBag.Link = callbackUrl;
+
+                ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
+                return View("Error");
+            }
+            
             var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)
             {

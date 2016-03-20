@@ -6,31 +6,24 @@
     <hr />*@
 
 @*<div class="row">
-        @foreach (var item in Model.TaskCards)
-        {
-            <div class="col-md-2">
-                <a href="servicerequesttask/Index/@Model.User.Id" class="btn btn-default" style="border: none;">
-                    <div><strong class="h2" style="padding-right:10px;">@item.Total</strong> <small>@item.TaskName</small> </div>
-                    @if (Model.User.RoleId == e.Roles.SuperAdmin)
-                    {
-                        <small>@item.AssignedToDisplayName</small>
-                    }
-                </a>
-            </div>
-        }
-    </div>
-    <p></p>*@
-@*<div class="row">
         <div class="col-md-12">You have <a href="#ThisWeek" data-toggle="collapse" class="h3">@Model.ThisWeekTotal exams</a> scheduled <span class="h3">this week</span>.</div>
     </div>*@
 
-@if (Model.ThisWeekTotal == 0)
-{
-    <div class="row">
-        <div class="col-md-12">You have <span class="h3">@Model.ThisWeekTotal exams</span> scheduled this week.</div>
+<div class="row">
+    <div class="col-md-12">
+        You have
+        @if (Model.ThisWeekTotal == 0)
+        {
+            <h3 style="display:inline-block">@Model.ThisWeekTotal exams</h3>
+        }
+        else
+        {
+            <a href="#ThisWeek" data-toggle="collapse"><h3 style="display:inline-block">@Model.ThisWeekTotal exams</h3></a>
+        }
+        scheduled for this week.
     </div>
-}
-<div id="ThisWeek" class="row">
+</div>
+<div id="ThisWeek" class="row collapse in">
     @foreach (var item in Model.ThisWeekCards)
     {
         <div class="col-xs-12 col-sm-6 col-md-3">
@@ -78,9 +71,48 @@
         </div>
     }
 </div>
-<div class="row" style="padding-top: 10px">
-    <div class="col-md-12">You have <a href="#NextWeek" data-toggle="collapse" class="h3">@Model.NextWeekTotal exams</a> scheduled next week.</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        You have
+        @if (Model.PreviousWeeksTotal == 0)
+        {
+            <h3 style="display:inline-block">@Model.PreviousWeeksTotal exams</h3>
+        }
+        else
+        {
+            <a href="#PreviousWeeks" data-toggle="collapse"><h3 style="display:inline-block">@Model.PreviousWeeksTotal exams</h3></a>
+        }
+        from previous weeks that require your attention.
+    </div>
 </div>
+<div class="row collapse" id="PreviousWeeks">
+    @foreach (var item in Model.TaskCards)
+    {
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <a href="#@item.CardId" data-toggle="collapse" class="btn btn-default" style="border: none;">
+                <div>
+                    <strong class="h2" style="padding-right:10px;">@item.Total</strong>
+                    <small>@item.TaskName</small>
+                </div>
+                @if (Model.User.RoleId == e.Roles.SuperAdmin)
+                {
+                    <small>@item.TaskName</small>
+                }
+            </a>
+            <div id="@item.CardId" class="collapse">
+                <div>@item.TaskName</div>
+            </div>
+        </div>
+    }
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">You have <a href="#NextWeek" data-toggle="collapse"><h3 style="display:inline-block">@Model.NextWeekTotal exams</h3></a> scheduled next week.</div>
+</div>
+
 <div id="NextWeek" class="row collapse">
     @foreach (var item in Model.NextWeekCards)
     {

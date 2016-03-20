@@ -38,17 +38,19 @@ namespace WebApp.Controllers
             vm.NextWeekCards = GetCards(requests, 2);
             vm.NextWeekTotal = vm.NextWeekCards.Sum(c => c.Summary.RequestCount);
 
-            var tasks = db.DashboardTaskSummaries.Where(c => !c.CompletedDate.HasValue);
+            var tasks = db.ServiceRequestTasks.Where(srt => srt.CompletedDate == null);
             if (user.RoleId != Roles.SuperAdmin)
             {
-                tasks = tasks.Where(c => c.AssignedToUserId == user.Id);
+                tasks = tasks.Where(srt => srt.AssignedTo == user.Id);
             }
-            tasks.OrderBy(c => c.AssignedToUserId).ThenBy(c => c.TaskId).ToList();
+            vm.TaskCards = tasks.GroupBy(srt => new { srt.TaskId, srt.TaskName, srt.Sequence })
+                .Select(c => new vm.IndexViewModel.TaskCard() { CardId = c.Key.TaskId.ToString(), TaskName = c.Key.TaskName, Sequence = c.Key.Sequence.Value, Total = c.Count() })
+                .OrderBy(c => c.Sequence).ToList();
 
-            foreach (var item in tasks)
-            {
-                vm.AddTask(item);
-            }
+            //foreach (var item in tasks)
+            //{
+            //    vm.AddTask(item);
+            //}
 
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;

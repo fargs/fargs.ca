@@ -3,7 +3,7 @@
 AS
 
 DECLARE @weekday INT
-SELECT @weekday = DATEPART(WEEKDAY, GETDATE());
+SELECT @weekday = DATEPART(WEEKDAY, @Now);
 WITH DateRanges
 AS (
 	SELECT 

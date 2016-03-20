@@ -12,6 +12,7 @@
     [HourlyRate]          DECIMAL (18, 2)  NULL,
     [EstimatedHours]      DECIMAL (18, 2)  NULL,
     [ActualHours]         DECIMAL (18, 2)  NULL,
+	[DueDate]			  DATETIME		   NULL,
     [CompletedDate]       DATETIME         NULL,
     [Notes]               NVARCHAR (2000)  NULL,
     [InvoiceItemId]       SMALLINT         NULL,

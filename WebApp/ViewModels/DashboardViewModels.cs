@@ -16,6 +16,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         }
 
         public User User { get; set; }
+        public int PreviousWeeksTotal { get; set; } = 0;
         public List<DateCard> ThisWeekCards { get; set; }
         public int? ThisWeekTotal { get; set; }
         public List<DateCard> NextWeekCards { get; set; }
@@ -37,8 +38,6 @@ namespace WebApp.ViewModels.DashboardViewModels
             TaskCards.Add(new TaskCard
             {
                 TaskName = summary.TaskName,
-                AssignedToUserId = summary.AssignedToUserId,
-                AssignedToDisplayName = summary.AssignedToDisplayName,
                 Total = summary.TaskCount.Value
             });
         }
@@ -60,8 +59,7 @@ namespace WebApp.ViewModels.DashboardViewModels
             public string CardSubTitle { get; set; }
             public int Total { get; set; }
             public string TaskName { get; set; }
-            public string AssignedToUserId { get; set; }
-            public string AssignedToDisplayName { get; set; }
+            public int Sequence { get; set; }
             public List<ServiceRequestTask> Tasks { get; set; }
         }
     }

@@ -979,6 +979,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="IsSuperAdmin" Type="bit" Mode="In" />
         </Function>
         <Function Name="GetDashboardServiceRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="ServiceProviderId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="Now" Type="datetime" Mode="In" />
         </Function>
         <Function Name="GetNextInvoiceNumber" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API" />
@@ -2246,9 +2247,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="UserId" Mode="In" Type="String" />
             <Parameter Name="IsSuperAdmin" Mode="In" Type="Boolean" />
           </FunctionImport>
-          <FunctionImport Name="GetDashboardServiceRequest" ReturnType="Collection(OrvosiModel.GetDashboardServiceRequest_Result)">
-          <Parameter Name="Now" Mode="In" Type="DateTime" />
-          </FunctionImport>
           <FunctionImport Name="ServiceRequest_ToggleNoShow">
           <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -2414,6 +2412,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <End Role="Province" EntitySet="Provinces" />
           </AssociationSet>
           <EntitySet Name="AddressTypes" EntityType="OrvosiModel.AddressType" />
+          <FunctionImport Name="GetDashboardServiceRequest" ReturnType="Collection(OrvosiModel.GetDashboardServiceRequest_Result)">
+            <Parameter Name="ServiceProviderId" Mode="In" Type="Guid" />
+            <Parameter Name="Now" Mode="In" Type="DateTime" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -3117,23 +3119,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="Time" Name="StartTime" Nullable="true" />
           <Property Type="Time" Name="EndTime" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="GetDashboardServiceRequest_Result">
-          <Property Type="Int32" Name="WeekNumber" Nullable="false" />
-          <Property Type="DateTime" Name="AppointmentDate" Nullable="true" />
-          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="128" />
-          <Property Type="Int32" Name="Id" Nullable="false" />
-          <Property Type="String" Name="AddressName" Nullable="true" MaxLength="256" />
-          <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
-          <Property Type="Time" Name="StartTime" Nullable="true" />
-          <Property Type="Time" Name="EndTime" Nullable="true" />
-          <Property Type="Int32" Name="TimelineId" Nullable="false" />
-          <Property Type="String" Name="PhysicianId" Nullable="true" MaxLength="128" />
-          <Property Type="Guid" Name="CaseCoordinatorId" Nullable="true" />
-          <Property Type="Guid" Name="DocumentReviewerId" Nullable="true" />
-          <Property Type="Guid" Name="IntakeAssistantId" Nullable="true" />
-          <Property Type="String" Name="ServiceName" Nullable="false" MaxLength="128" />
-          <Property Type="String" Name="ClaimantName" Nullable="true" MaxLength="128" />
-        </ComplexType>
         <EntityType Name="BillableEntity">
           <Key>
             <PropertyRef Name="EntityGuid" />
@@ -3321,6 +3306,23 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedUser" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
+        <ComplexType Name="GetDashboardServiceRequest_Result">
+          <Property Type="Int32" Name="WeekNumber" Nullable="false" />
+          <Property Type="DateTime" Name="AppointmentDate" Nullable="true" />
+          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="AddressName" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="50" />
+          <Property Type="Time" Name="StartTime" Nullable="true" />
+          <Property Type="Time" Name="EndTime" Nullable="true" />
+          <Property Type="Int32" Name="TimelineId" Nullable="false" />
+          <Property Type="String" Name="PhysicianId" Nullable="true" MaxLength="128" />
+          <Property Type="Guid" Name="CaseCoordinatorId" Nullable="true" />
+          <Property Type="Guid" Name="DocumentReviewerId" Nullable="true" />
+          <Property Type="Guid" Name="IntakeAssistantId" Nullable="true" />
+          <Property Type="String" Name="ServiceName" Nullable="false" MaxLength="128" />
+          <Property Type="String" Name="ClaimantName" Nullable="true" MaxLength="128" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4481,27 +4483,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetDashboardServiceRequest" FunctionName="OrvosiModel.Store.GetDashboardServiceRequest">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OrvosiModel.GetDashboardServiceRequest_Result">
-                <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
-                <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="AddressName" ColumnName="AddressName" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
-                <ScalarProperty Name="TimelineId" ColumnName="TimelineId" />
-                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
-                <ScalarProperty Name="CaseCoordinatorId" ColumnName="CaseCoordinatorId" />
-                <ScalarProperty Name="DocumentReviewerId" ColumnName="DocumentReviewerId" />
-                <ScalarProperty Name="IntakeAssistantId" ColumnName="IntakeAssistantId" />
-                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
-                <ScalarProperty Name="ClaimantName" ColumnName="ClaimantName" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleNoShow" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleNoShow" />
           <FunctionImportMapping FunctionImportName="ServiceRequest_ToggleCancellation" FunctionName="OrvosiModel.Store.ServiceRequest_ToggleCancellation" />
           <FunctionImportMapping FunctionImportName="AvailableDay_Insert" FunctionName="OrvosiModel.Store.AvailableDay_Insert" />
@@ -4639,6 +4620,27 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetDashboardServiceRequest" FunctionName="OrvosiModel.Store.GetDashboardServiceRequest">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetDashboardServiceRequest_Result">
+                <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
+                <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AddressName" ColumnName="AddressName" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="TimelineId" ColumnName="TimelineId" />
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="CaseCoordinatorId" ColumnName="CaseCoordinatorId" />
+                <ScalarProperty Name="DocumentReviewerId" ColumnName="DocumentReviewerId" />
+                <ScalarProperty Name="IntakeAssistantId" ColumnName="IntakeAssistantId" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ClaimantName" ColumnName="ClaimantName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

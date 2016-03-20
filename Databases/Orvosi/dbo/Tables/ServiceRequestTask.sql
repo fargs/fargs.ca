@@ -12,7 +12,6 @@
     [HourlyRate]          DECIMAL (18, 2)  NULL,
     [EstimatedHours]      DECIMAL (18, 2)  NULL,
     [ActualHours]         DECIMAL (18, 2)  NULL,
-	[DueDate]			  DATETIME		   NULL,
     [CompletedDate]       DATETIME         NULL,
     [Notes]               NVARCHAR (2000)  NULL,
     [InvoiceItemId]       SMALLINT         NULL,
@@ -22,6 +21,7 @@
     [TaskPhaseName]       NVARCHAR (128)   NULL,
     [Guidance]            NVARCHAR (1000)  NULL,
     [IsObsolete]          BIT              CONSTRAINT [DF_ServiceRequestTask_IsObsolete] DEFAULT ((0)) NOT NULL,
+	[DueDate]			  DATETIME		   NULL,
     CONSTRAINT [PK_ServiceRequestTask] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequestTask_ServiceRequest] FOREIGN KEY ([ServiceRequestId]) REFERENCES [dbo].[ServiceRequest] ([Id]) ON DELETE CASCADE
 );

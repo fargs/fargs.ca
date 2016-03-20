@@ -1452,15 +1452,6 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardSchedule_Result>("GetDashboardSchedule", nowParameter, userIdParameter, isSuperAdminParameter);
         }
     
-        public virtual ObjectResult<GetDashboardServiceRequest_Result> GetDashboardServiceRequest(Nullable<System.DateTime> now)
-        {
-            var nowParameter = now.HasValue ?
-                new ObjectParameter("Now", now) :
-                new ObjectParameter("Now", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", nowParameter);
-        }
-    
         public virtual int ServiceRequest_ToggleNoShow(Nullable<int> id)
         {
             var idParameter = id.HasValue ?
@@ -1968,6 +1959,19 @@ namespace Model
         public virtual ObjectResult<string> GetNextInvoiceNumber()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetNextInvoiceNumber");
+        }
+    
+        public virtual ObjectResult<GetDashboardServiceRequest_Result> GetDashboardServiceRequest(Nullable<System.Guid> serviceProviderId, Nullable<System.DateTime> now)
+        {
+            var serviceProviderIdParameter = serviceProviderId.HasValue ?
+                new ObjectParameter("ServiceProviderId", serviceProviderId) :
+                new ObjectParameter("ServiceProviderId", typeof(System.Guid));
+    
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", serviceProviderIdParameter, nowParameter);
         }
     }
 }

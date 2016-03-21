@@ -39,6 +39,15 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Edit/@invoice.Id" class="btn btn-sm">Edit</a></li>
+                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                {
+                                    <li>
+                                        <form action="~/Invoice/Unsubmit" method="post">
+                                            @Html.Hidden("Id", invoice.Id)
+                                            <input type="submit" class="form-control btn btn-sm" name="Unsubmit" value="Unsubmit" />
+                                        </form>
+                                    </li>
+                                }
                             </ul>
                         }
                         else
@@ -50,6 +59,15 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Details/@invoice.Id" class="btn btn-sm">View</a></li>
+                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                {
+                                    <li>
+                                        <form action="~/Invoice/Submit" method="post">
+                                            @Html.Hidden("Id", invoice.Id)
+                                            <input type="submit" class="form-control btn btn-sm" name="submit" value="Submit" />
+                                        </form>
+                                    </li>
+                                }
                             </ul>
                         }
                     </div>
@@ -67,15 +85,22 @@
                 <td>
                     @if (invoice.SentDate.HasValue)
                     {
-                        @Html.Partial("_InvoiceSubmitted", invoice.SentDate.Value)
+                        <div>
+                            <span class="glyphicon glyphicon-ok" style="font-size: 100%"></span>
+                            <strong class="text-success">@invoice.SentDate.ToOrvosiDateFormat()</strong>
+                        </div>
                     }
                     else
                     {
                         if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
                         {
-                            <div id="submit-invoice">
+                            <form action="~/Invoice/Submit" method="post">
+                                @Html.Hidden("Id", invoice.Id)
+                                <input type="submit" class="form-control btn btn-sm btn-danger" name="submit" value="Submit" />
+                            </form>
+                            @*<div id="submit-invoice">
                                 @Ajax.ActionLink("Submit", "Submit", "Invoice", new { id = invoice.Id }, new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "submit-invoice" }, new { @class = "btn btn-sm btn-danger" })
-                            </div>
+                            </div>*@
                         }
                         else
                         {

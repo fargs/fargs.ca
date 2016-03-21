@@ -1,7 +1,31 @@
-﻿@using WebApp.Library
-@using e = Model.Enums;
+﻿@using Model
+@using e = Model.Enums
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
+@{
+    var db = new OrvosiEntities();
+
+    ViewBag.Users = db.Users
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.RoleName }
+        }).ToList();
+}
+
+@if (Model.User.RoleId == e.Roles.SuperAdmin)
+{
+<div class="row" style="margin-bottom:20px">
+    <div class="col-md-12">
+        <form action="~/Dashboard/Index/" method="get" class="form-inline">
+            <div class="form-group">
+                @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.Users, "Value", "Text", "Group.Name", ViewBag.ServiceProviderId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+        </form>
+    </div>
+</div>
+}
 @*<div class="text-muted">@ViewBag.PhysicianName - Dashboard</div>
     <hr />*@
 

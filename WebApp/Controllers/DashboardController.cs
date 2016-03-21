@@ -19,17 +19,20 @@ namespace WebApp.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // MVC
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string ServiceProviderId)
         {
+            Guid? serviceProviderGuid;
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
-            Guid? userGuid = new Guid(user.Id);
-
-            var requests = db.GetDashboardServiceRequest(SystemTime.Now().Date).ToList();
-
-            if (user.RoleId != Roles.SuperAdmin)
+            if (user.RoleId == Roles.SuperAdmin)
             {
-                requests = requests.Where(c => c.PhysicianId == user.Id || c.CaseCoordinatorId == userGuid || c.DocumentReviewerId == userGuid || c.IntakeAssistantId == userGuid).ToList();
+                serviceProviderGuid = new Guid(ServiceProviderId);
             }
+            else
+            {
+                serviceProviderGuid = new Guid(user.Id);
+            }
+
+            var requests = db.GetDashboardServiceRequest(serviceProviderGuid, SystemTime.Now().Date).ToList();
 
             var vm = new vm.IndexViewModel();
             vm.User = user;
@@ -54,6 +57,7 @@ namespace WebApp.Controllers
 
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;
+            ViewBag.ServiceProviderId = serviceProviderGuid;
 
             return View(vm);
         }

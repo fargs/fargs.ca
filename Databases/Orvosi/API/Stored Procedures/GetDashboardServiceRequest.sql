@@ -37,6 +37,7 @@ AS (
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.WeekStart AND dr.WeekEnd
+		AND sr.CancelledDate IS NULL
 	UNION 
 	SELECT 2 as WeekNumber
 		, AppointmentDate
@@ -55,5 +56,6 @@ AS (
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.NextWeekStart AND dr.NextWeekEnd		
+		AND sr.CancelledDate IS NULL
 )
 SELECT * FROM ServiceRequests

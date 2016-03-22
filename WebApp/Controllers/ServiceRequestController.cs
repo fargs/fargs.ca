@@ -26,7 +26,7 @@ namespace WebApp.Controllers
         private OrvosiEntities db = new OrvosiEntities();
 
         public event NoShowToggledHandler NoShowToggledEvent;
-        
+
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
@@ -165,8 +165,15 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        // GET: Admin/ServiceRequest/Create
+        public ActionResult Reschedule(int id)
+        {
+            var model = db.ServiceRequests.Single(c => c.Id == id);
+            return View(model);
+        }
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult Availability() => View();
 
         [HttpPost]

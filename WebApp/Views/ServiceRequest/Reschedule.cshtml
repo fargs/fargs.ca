@@ -1,0 +1,78 @@
+﻿@using Model
+@model ServiceRequest
+
+<h3>Book an Exam</h3>
+<h4>Step 1 of 2: Availability</h4>
+
+<form action="@Url.Content("~/ServiceRequest/Reschedule")" method="post" class="form-horizontal">
+
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.Hidden("PhysicianId", Model.PhysicianId)
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Appointment Date</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="AppointmentDatePicker">
+                @Html.TextBoxFor(c => c.AppointmentDate, new { @class = "form-control", size = "16" })
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessageFor(c => c.AppointmentDate, "", new { @class = "text-danger" })
+            <div id="availableDayIdErrorMessage" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Time Slot</label>
+        <div class="col-md-10">
+            <select class="form-control disabled" name="AvailableSlotId" id="slots">
+                <option></option>
+            </select>
+            @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var slots = $('#slots');
+
+            $('#AppointmentDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            })
+            .on('changeDate', function(e) {
+                $.get(
+                    '@Url.Content("~/api/physician/" + Model.PhysicianId)/day/' + e.format('yyyy-mm-dd') + '/slots'
+                )
+                .done(function (data) {
+                    $('#availableDayIdErrorMessage').text("");
+                    if (data == 'undefined') {
+                        toastr.warning('There a no avialable slots on this day.', 'Warning');
+                    }
+                    else {
+                        slots.children('option:not(:first)').remove();
+                        $.each(data.Slots, function (index, object) {
+                            slots
+                                .append($("<option></option>")
+                                .attr("Value", object.Id)
+                                .text(object.StartTime + ' - ' + (object.Title || 'Available')));
+                        });
+                    }
+                }).fail(function () {
+                    slots.children('option:not(:first)').remove();
+                    $('#availableDayIdErrorMessage').text("No availability on this day");
+                });
+            });;
+
+        });
+
+    </script>
+}

@@ -173,6 +173,24 @@ namespace WebApp.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Reschedule(ServiceRequest serviceRequest)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == serviceRequest.Id);
+            var slot = db.AvailableSlots.Single(c => c.Id == serviceRequest.AvailableSlotId);
+            sr.AvailableSlotId = serviceRequest.AvailableSlotId;
+            sr.AppointmentDate = slot.AvailableDay.Day;
+            sr.StartTime = slot.StartTime;
+            sr.EndTime = slot.EndTime;
+            sr.Duration = slot.Duration;
+            sr.AddressId = serviceRequest.AddressId;
+            sr.ModifiedDate = SystemTime.Now();
+            sr.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = sr.Id });
+        }
+
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult Availability() => View();
 

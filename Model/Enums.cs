@@ -38,6 +38,13 @@ namespace Model.Enums
         public const byte Deleted = 3;
     }
 
+    public static class AddressTypes
+    {
+        public const byte CompanyAssessmentOffice = 1;
+        public const byte PhysicianClinic = 2;
+        public const byte PrimaryOffice = 3;
+        public const byte BillingAddress = 4;
+    }
     public static class RoleCategory
     {
         public const byte Physician = 1;

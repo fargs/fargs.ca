@@ -1,5 +1,5 @@
 ﻿@using Model
-@using Model.Enums
+@using e = Model.Enums
 @model WebApp.ViewModels.ServiceRequestViewModels.IndexViewModel
 
 @{
@@ -8,7 +8,7 @@
     var db = new OrvosiEntities();
 
     ViewBag.ServiceRequestStatuses = db.LookupItems
-        .Where(l => l.LookupId == Lookups.ServiceRequestStatus)
+        .Where(l => l.LookupId == e.Lookups.ServiceRequestStatus)
         .Select(c => new SelectListItem()
         {
             Text = c.ItemText,
@@ -70,8 +70,8 @@
                     <label class="control-label small">Date Range</label>
                     <select class="form-control" name="FilterArgs.DateRange">
                         <option></option>
-                        <option value="@DateRanges.Today" @(Model.FilterArgs.DateRange == DateRanges.Today ? "selected" : string.Empty)>Today</option>
-                        <option value="@DateRanges.Next10Days" @(Model.FilterArgs.DateRange == DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
+                        <option value="@e.DateRanges.Today" @(Model.FilterArgs.DateRange == e.DateRanges.Today ? "selected" : string.Empty)>Today</option>
+                        <option value="@e.DateRanges.Next10Days" @(Model.FilterArgs.DateRange == e.DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
                     </select>
                 </div>
                 <div class="form-group form-group-sm">
@@ -81,7 +81,7 @@
                         <option value="Oldest" @(Model.FilterArgs.Sort == "Oldest" ? "selected" : string.Empty)>Oldest</option>
                     </select>
                 </div>
-                @if (Model.User.RoleCategoryId == RoleCategory.Staff || Model.User.RoleCategoryId == RoleCategory.Admin)
+                @if (Model.User.RoleCategoryId == e.RoleCategory.Staff || Model.User.RoleCategoryId == e.RoleCategory.Admin)
                 {
                     <fieldset>
                         <legend class="small">Staff Only</legend>
@@ -91,7 +91,7 @@
                         </div>
                     </fieldset>
                 }
-                @if (Model.User.RoleCategoryId == RoleCategory.Admin)
+                @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
                 {
                     <fieldset>
                         <legend class="small">Admin Only</legend>
@@ -134,14 +134,14 @@
                     @*<td class="@(item.StatusId == ServiceRequestStatus.Open ? "bordered-left-success" : "bordered-left-warning")">*@
                     <td class="col-md-1">
                         <div class="btn-group" style="width:100px">
-                            @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
+                            @if (item.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
                             {
                                 <a href="~/ServiceRequest/Details/@item.Id">View</a>
                             }
                             else
                             {
                                 @Html.ActionLink("View", "Details", new { id = item.Id }, new { @class = "btn btn-default" })
-                                if (Model.User.RoleCategoryId != RoleCategory.Physician)
+                                if (Model.User.RoleId == e.Roles.CaseCoordinator || Model.User.RoleId == e.Roles.SuperAdmin)
                                 {
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="caret"></span>
@@ -149,11 +149,12 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a href="~/ServiceRequest/Edit/@item.Id">Edit</a></li>
+                                        <li><a href="~/ServiceRequest/Reschedule/@item.Id">Reschedule</a></li>
                                         <li><a href="~/ServiceRequest/ResourceAssignment/@item.Id">Resource Assignment</a></li>
-                                        @if (item.ServiceStatusId != ServiceStatus.NoShow)
+                                        @if (item.ServiceStatusId != e.ServiceStatus.NoShow)
                                         {
                                             <li role="separator" class="divider"></li>
-                                            if (item.ServiceStatusId == ServiceStatus.Cancellation || item.ServiceStatusId == ServiceStatus.LateCancellation)
+                                            if (item.ServiceStatusId == e.ServiceStatus.Cancellation || item.ServiceStatusId == e.ServiceStatus.LateCancellation)
                                             {
                                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = item.Id })</li>
                                             }
@@ -167,21 +168,21 @@
                             }
                         </div>
                     </td>
-                    @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
+                    @if (item.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
                     {
                         <td colspan="4">
                             <div class="text-muted">
                                 <strong>Closed</strong>
                                 @item.Title
-                                @if (item.ServiceStatusId == ServiceStatus.NoShow)
+                                @if (item.ServiceStatusId == e.ServiceStatus.NoShow)
                                 {
                                     <span class="label label-danger"><strong>No Show</strong></span>
                                 }
-                                else if (item.ServiceStatusId == ServiceStatus.Cancellation)
+                                else if (item.ServiceStatusId == e.ServiceStatus.Cancellation)
                                 {
                                     <span class="label label-warning"><strong>Cancellation</strong></span>
                                 }
-                                else if (item.ServiceStatusId == ServiceStatus.LateCancellation)
+                                else if (item.ServiceStatusId == e.ServiceStatus.LateCancellation)
                                 {
                                     <span class="label label-danger"><strong>Late Cancellation</strong></span>
                                 }
@@ -207,7 +208,7 @@
                             <div><strong>DUE: @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : string.Empty)</strong></div>
                         </td>
                         <td>
-                            <div class="label label-@(item.ServiceStatusId == ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>
+                            <div class="label label-@(item.ServiceStatusId == e.ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>
                             <div>
                                 <div class="progress" style="margin-bottom: 0">
                                     <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="@item.ClosedTasks" aria-valuemin="0" aria-valuemax="@item.TotalTasks" style="width: @(item.ClosedTasks * 100 / item.TotalTasks)%;">

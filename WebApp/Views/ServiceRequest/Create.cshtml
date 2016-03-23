@@ -36,7 +36,7 @@
                 Group = new SelectListGroup() { Name = c.ParentName }
             }).ToList();
 
-        var l = db.Locations.ToList();
+        var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
         ViewBag.Locations = l.Select(c => new SelectListItem()
         {
             Text = string.Format("{0} - {1}", c.LocationName, c.Name),

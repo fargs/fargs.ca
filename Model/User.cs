@@ -45,5 +45,6 @@ namespace Model
         public Nullable<decimal> HourlyRate { get; set; }
         public string MyCompanyName { get; set; }
         public string LogoCssClass { get; set; }
+        public string ColorCode { get; set; }
     }
 }

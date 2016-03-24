@@ -265,7 +265,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\AvailableDayController.cs" />
     <Compile Include="API\AvailableSlotController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\EmailConfig.cs" />

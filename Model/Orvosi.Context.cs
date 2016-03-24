@@ -302,7 +302,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Account_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, companyIdParameter, modifiedUserParameter, lastActivationDateParameter);
         }
     
-        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord)
+        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord, string colorCode)
         {
             var idParameter = id != null ?
                 new ObjectParameter("Id", id) :
@@ -336,7 +336,11 @@ namespace Model
                 new ObjectParameter("IsTestRecord", isTestRecord) :
                 new ObjectParameter("IsTestRecord", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter);
+            var colorCodeParameter = colorCode != null ?
+                new ObjectParameter("ColorCode", colorCode) :
+                new ObjectParameter("ColorCode", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter, colorCodeParameter);
         }
     
         public virtual int Service_Insert(string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)

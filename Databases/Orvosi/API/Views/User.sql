@@ -50,6 +50,7 @@ SELECT u.[Id]
 	  ,RoleCategoryName = rc.Name
 	  ,u.HourlyRate
 	  ,u.LogoCssClass
+	  ,u.ColorCode
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.RoleCategory rc ON r.RoleCategoryId = rc.Id

@@ -42,7 +42,7 @@ namespace WebApp.Controllers
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
-            if ((user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator) || !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id))
+            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }

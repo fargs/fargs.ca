@@ -65,6 +65,13 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <label for="Profile_ColorCode" class="control-label col-md-2">Color</label>
+            <div class="col-md-10">
+                <input type="color" id="Profile_ColorCode" name="Profile.ColorCode" value="@Model.Profile.ColorCode" required />
+            </div>
+        </div>
+
         <div class="col-md-offset-2 col-md-10">
             <div class="h4 text-muted">To edit the following fields, go to @Html.ActionLink("Security", "Account", new { id = Model.Profile.Id }).</div>
         </div>

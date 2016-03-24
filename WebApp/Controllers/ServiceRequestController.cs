@@ -26,7 +26,7 @@ namespace WebApp.Controllers
         private OrvosiEntities db = new OrvosiEntities();
 
         public event NoShowToggledHandler NoShowToggledEvent;
-        
+
 
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
@@ -127,6 +127,10 @@ namespace WebApp.Controllers
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
             vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
+            vm.Invoices = db.Invoices.Join(db.InvoiceDetails.Where(ids => ids.ServiceRequestId == id),
+                i => i.Id,
+                ids => ids.InvoiceId,
+                (i, ids) => i);
 
             var dropbox = new OrvosiDropbox();
             var client = await dropbox.GetServiceAccountClientAsync();
@@ -161,8 +165,33 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        // GET: Admin/ServiceRequest/Create
+        public ActionResult Reschedule(int id)
+        {
+            var model = db.ServiceRequests.Single(c => c.Id == id);
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Reschedule(ServiceRequest serviceRequest)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == serviceRequest.Id);
+            var slot = db.AvailableSlots.Single(c => c.Id == serviceRequest.AvailableSlotId);
+            sr.AvailableSlotId = serviceRequest.AvailableSlotId;
+            sr.AppointmentDate = slot.AvailableDay.Day;
+            sr.StartTime = slot.StartTime;
+            sr.EndTime = slot.EndTime;
+            sr.Duration = slot.Duration;
+            sr.AddressId = serviceRequest.AddressId;
+            sr.ModifiedDate = SystemTime.Now();
+            sr.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = sr.Id });
+        }
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult Availability() => View();
 
         [HttpPost]

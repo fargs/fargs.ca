@@ -39,6 +39,7 @@ AS (
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.WeekStart AND dr.WeekEnd
 		AND @ServiceProviderId IN (sr.PhysicianId, sr.CaseCoordinatorId, sr.DocumentReviewerId, sr.IntakeAssistantId)
+		AND sr.CancelledDate IS NULL
 	UNION 
 	SELECT 2 as WeekNumber
 		, AppointmentDate
@@ -58,5 +59,6 @@ AS (
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.NextWeekStart AND dr.NextWeekEnd		
 		AND @ServiceProviderId IN (sr.PhysicianId, sr.CaseCoordinatorId, sr.DocumentReviewerId, sr.IntakeAssistantId)
+		AND sr.CancelledDate IS NULL
 )
 SELECT * FROM ServiceRequests

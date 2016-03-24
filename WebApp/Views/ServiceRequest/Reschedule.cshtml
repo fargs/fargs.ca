@@ -1,0 +1,173 @@
+﻿@using Model
+@using Model.Enums
+@using WebApp.Library.Extensions
+@model ServiceRequest
+
+@{ 
+    var db = new OrvosiEntities();
+    var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
+    ViewBag.Locations = l.Select(c => new SelectListItem()
+    {
+        Text = string.Format("{0} - {1}", c.LocationName, c.Name),
+        Value = c.Id.ToString(),
+        Group = new SelectListGroup() { Name = c.EntityDisplayName }
+    });
+}
+
+<h3>Reschedule Exam @Model.ClaimantName</h3>
+
+<form action="@Url.Content("~/ServiceRequest/Reschedule")" method="post" class="form-horizontal">
+
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.Hidden("Id", Model.Id)
+
+    @Html.Hidden("PhysicianId", Model.PhysicianId)
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Request Id</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.Id</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Current Time</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@(string.Format("{0} at {1}", Model.AppointmentDate.ToOrvosiDateFormat(), Model.StartTime.Value.ToString()))</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Current Location</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.LocationName</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">New Appointment Date</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="AppointmentDatePicker">
+                @Html.TextBoxFor(c => c.AppointmentDate, "{0:yyyy-MM-dd}", new { @class = "form-control", size = "16" })
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessageFor(c => c.AppointmentDate, "", new { @class = "text-danger" })
+            <div id="availableDayMessage" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">New Time Slot</label>
+        <div class="col-md-10">
+            <select class="form-control disabled" name="AvailableSlotId" id="slots">
+                <option></option>
+                <option value="@Model.AvailableSlotId" selected>@Model.StartTime</option>
+            </select>
+            @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Location</label>
+        <div class="col-md-10">
+            @Html.DropDownList("AddressId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", Model.AddressId), new { @class = "form-control" })
+            @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
+            <div id="locationMessage" class="text-danger"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2"></label>
+        <div class="col-md-10">
+            <button class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var slots = $('#slots');
+
+            $('#AppointmentDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            })
+            .on('changeDate', function(e) {
+                $.get(
+                    '@Url.Content("~/api/physician/" + Model.PhysicianId)/day/' + e.format('yyyy-mm-dd') + '/slots'
+                )
+                .done(function (data) {
+                    $('#availableDayMessage').text("");
+                    var dayMessage = '';
+                    var dayCssClass = 'text-danger';
+
+                    if (data.IsPrebook)
+                    {
+                        dayMessage = 'A prebook agreement is in place with ' + data.CompanyName + ' on this day.';
+                        dayCssClass = 'text-warning';
+                    }
+                    else if (data.CompanyId != null)
+                    {
+                        dayMessage = 'This day is offered to ' + data.CompanyName + '.';
+                        dayCssClass = 'text-warning';
+                    }
+                    else
+                    {
+                        dayMessage = 'This day is available to all companies.';
+                        dayCssClass = 'text-success';
+                    }
+
+                    $("#availableDayMessage").text(dayMessage);
+                    $("#availableDayMessage").removeClass();
+                    $("#availableDayMessage").addClass(dayCssClass);
+
+                    $('#locationMessage').text("");
+                    var locationMessage = '';
+                    var locationCssClass = 'text-danger';
+
+                    if (data.LocationId != null) {
+                        locationMessage = 'The location for this day is ' + data.LocationName + '. ';
+                        locationCssClass = 'text-info';
+                        $('#AddressId').val(data.LocationId);
+                        $('#AddressId').addClass('disabled')
+                    }
+                    else {
+                        $('#AddressId').removeClass('disabled')
+                    }
+
+                    if (data.LocationId != null && data.LocationId != @Model.AddressId)
+                    {
+                        locationMessage += 'It is different than the original booking.';
+                        locationCssClass = 'text-danger';
+                    }
+
+                    $('#locationMessage').text(locationMessage);
+                    $('#locationMessage').removeClass();
+                    $('#locationMessage').addClass(locationCssClass);
+
+                    slots.children('option:not(:first)').remove();
+                    $.each(data.Slots, function (index, object) {
+                        slots
+                            .append($("<option></option>")
+                            .attr("Value", object.Id)
+                            .text(object.StartTime + ' - ' + (object.Title || 'Available')));
+                    });
+                }).fail(function () {
+                    slots.children('option:not(:first)').remove();
+
+                    $('#slots').val();
+
+                    $('#availableDayMessage').text("Not available on this day");
+                    $('#availableDayMessage').removeClass();
+                    $('#availableDayMessage').addClass('text-danger');
+                    $('#locationMessage').text("");
+                });
+            });
+        });
+
+    </script>
+}

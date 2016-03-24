@@ -373,13 +373,14 @@ namespace WebApp.Controllers
             return File(docBytes, "application/pdf", fileName);
         }
 
-        [Authorize(Roles = "Super Admin, Case Coordinator")]
+        [HttpPost]
+        [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Submit(int id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
 
-            var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice, Request.GetBaseUrl());
+            //var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
+            //await messageService.SendInvoice(invoice, Request.GetBaseUrl());
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
@@ -394,7 +395,29 @@ namespace WebApp.Controllers
                 await db.SaveChangesAsync();
             }
 
-            return PartialView("_InvoiceSubmitted", invoice.SentDate.Value);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Super Admin")]
+        public async Task<ActionResult> Unsubmit(int id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
+            
+            invoice.SentDate = null;
+            invoice.ModifiedDate = SystemTime.Now();
+            invoice.ModifiedUser = User.Identity.Name;
+
+            await db.SaveChangesAsync();
+
+            foreach (var item in invoice.InvoiceDetails)
+            {
+                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId);
+                task.CompletedDate = null;
+                await db.SaveChangesAsync();
+            }
+
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [Authorize(Roles = "Super Admin, Case Coordinator")]

@@ -174,9 +174,14 @@
                         @foreach (var request in item.ServiceRequests)
                         {
                             <div style="padding-top: 15px;">
-                                <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
-                                <div><strong>@request.ServiceName</strong></div>
-                                <div>@request.ClaimantName</div>
+                                <div class="col-md-6">
+                                    <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
+                                    <div><strong>@request.ServiceName</strong></div>
+                                    <div>@request.ClaimantName</div>
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.Action("TaskList", "ServiceRequestTask", request.Id)
+                                </div>
                             </div>
                         }
                     </div>

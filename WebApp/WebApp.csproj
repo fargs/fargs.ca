@@ -882,6 +882,7 @@
     <Content Include="Views\Invoice\PrintableInvoice.cshtml" />
     <Content Include="Views\Invoice\Edit.cshtml" />
     <Content Include="Views\Invoice\Dashboard.cshtml" />
+    <Content Include="Views\ServiceRequestTask\TaskList.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_InvoiceTable.cshtml" />
     <Content Include="Views\Shared\_InvoiceSubmitted.cshtml" />

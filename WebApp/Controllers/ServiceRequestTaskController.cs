@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Net;
 
 namespace WebApp.Controllers
 {
@@ -34,6 +35,27 @@ namespace WebApp.Controllers
             };
 
             return View(vm);
+        }
+
+        public ActionResult TaskList(int? serviceRequestId)
+        {
+            // get the user
+            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            if ((user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator) || !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId);
+
+            var vm = new IndexViewModel()
+            {
+                User = user,
+                Tasks = tasks.ToList()
+            };
+
+            return PartialView("TaskList", vm);
         }
     }
 }

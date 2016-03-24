@@ -23,7 +23,7 @@ namespace WebApp.Controllers
         {
             Guid? serviceProviderGuid;
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
-            if (user.RoleId == Roles.SuperAdmin)
+            if (user.RoleId == Roles.SuperAdmin && ServiceProviderId != null)
             {
                 serviceProviderGuid = new Guid(ServiceProviderId);
             }

@@ -60,6 +60,9 @@ else
 </div>
 
 <h2>Tasks</h2>
+
+@Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+
 <ul class="list-group">
     @foreach (var item in Model.ServiceRequestTasks)
             {

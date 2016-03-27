@@ -37,9 +37,11 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false)
+        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;
+            ViewBag.UseShortName = useShortName;
+            ViewBag.MyTasksOnly = myTasksOnly;
 
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
@@ -59,8 +61,10 @@ namespace WebApp.Controllers
                     Id = t.Id,
                     ServiceRequestId = t.ServiceRequestId,
                     TaskId = t.TaskId,
-                    Name = t.ShortName,
-                    AssignedTo = t.AssignedToDisplayName,
+                    Name = t.TaskName,
+                    ShortName = t.ShortName,
+                    AssignedToDisplayName = t.AssignedToDisplayName,
+                    AssignedTo = t.AssignedTo,
                     AssignedToRoleId = t.ResponsibleRoleId,
                     Initials = t.AssignedToInitials,
                     DueDateBase = t.DueDateBase,
@@ -74,7 +78,13 @@ namespace WebApp.Controllers
                 .ToList();
 
             var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
-            BuildDependencies(closeOutTask, tasks);
+
+            BuildDependencies(closeOutTask, null, tasks);
+
+            if (myTasksOnly)
+            {
+                tasks = tasks.Where(t => (t.AssignedTo ?? string.Empty).ToLower() == user.Id.ToLower()).ToList();
+            }
 
             //var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId)
             //    .GroupBy(srt => new
@@ -93,11 +103,11 @@ namespace WebApp.Controllers
             //        CompletedTaskCount = c.Count(t => t.CompletedDate == null),
             //        ActiveTaskCount = c.Count(t => t.CompletedDate != null)
             //    });
-            
-            return PartialView("TaskList", tasks.ToList());
+
+            return PartialView("TaskList", tasks);
         }
 
-        private TaskViewModel BuildDependencies(TaskViewModel task, List<TaskViewModel> tasks)
+        private TaskViewModel BuildDependencies(TaskViewModel task, TaskViewModel parent, List<TaskViewModel> tasks)
         {
             if (!string.IsNullOrEmpty(task.DependsOn) && task.DependsOn != "ExamDate")
             {
@@ -106,7 +116,8 @@ namespace WebApp.Controllers
                 {
                     var id = int.Parse(item);
                     var depTask = tasks.Single(t => t.TaskId == id);
-                    task.Dependencies.Add(BuildDependencies(depTask, tasks));
+                    depTask.Parent = parent;
+                    task.Dependencies.Add(BuildDependencies(depTask, task, tasks));
                 }
             }
             return task;

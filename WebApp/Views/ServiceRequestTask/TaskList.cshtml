@@ -5,7 +5,7 @@
 
 @functions{
 
-    public string GetTaskStatusCSS(TaskStatusViewModel status)
+    public string GetTaskStatusCSS(TaskStatusViewModel status, string assignedTo)
     {
         if (status.Id == TaskStatuses.Active)
         {
@@ -19,22 +19,46 @@
         {
             return "warning";
         }
+        else if (string.IsNullOrEmpty(assignedTo))
+        {
+            return "danger";
+        }
+
         return string.Empty;
     }
 
 }
 
-@foreach (var item in Model)
+@{ byte level = 0; }
+@helper ShowTree(IEnumerable<TaskViewModel> tasks, byte level)
 {
-    if (!(ViewBag.HideCaseCoordinator && item.AssignedToRoleId == e.Roles.CaseCoordinator))
-    {
-        <div class="row">
-            <div class="col-xs-3">
-                <div class="btn btn-@GetTaskStatusCSS(item.Status) btn-circle"><div class="small">@item.Initials</div></div>
-            </div>
-            <div class="col-xs-9">
-                <span>@item.Name </span><span class="badge"> @(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span>
-            </div>
-        </div>
-    }
+    <ul class="list-unstyled" style="margin-left: @(level * 10)px;">
+        @foreach(var item in tasks)
+        {
+            var rowId = Guid.NewGuid().ToString();
+            if (!(ViewBag.HideCaseCoordinator && item.AssignedToRoleId == e.Roles.CaseCoordinator))
+            {
+                <li>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <span class="btn btn-@GetTaskStatusCSS(item.Status, item.AssignedTo) btn-circle">
+                                <span class="small">@item.Initials</span>
+                            </span>
+                            <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
+                            @if (item.Status.Id == TaskStatuses.Waiting)
+                            {
+                                <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
+                                <div id="task-row-@rowId" class="collapse">
+                                    @ShowTree(item.Status.WaitingOn, level)
+                                    @{ level++; }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
 }
+
+@ShowTree(Model, level)

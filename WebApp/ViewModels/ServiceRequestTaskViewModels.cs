@@ -21,6 +21,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public int ServiceRequestId { get; set; }
         public short? TaskId { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
         public string AssignedTo { get; set; }
         public string AssignedToRoleId { get; set; }
         public string Initials { get; set; }
@@ -33,6 +34,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public string DependsOn { get; set; }
         public short? Sequence { get; set; }
         public List<TaskViewModel> Dependencies { get; set; }
+        public TaskViewModel Parent { get; set; }
         public TaskStatusViewModel Status
         {
             get
@@ -70,6 +72,8 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
                 }
             }
         }
+
+        public string AssignedToDisplayName { get; internal set; }
 
         public TaskViewModel()
         {

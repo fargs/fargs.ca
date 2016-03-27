@@ -754,6 +754,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
             
             
             
+            <PropertyRef Name="IsCriticalPath" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -777,9 +778,15 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
           <Property Name="TaskPhaseId" Type="tinyint" />
           <Property Name="TaskPhaseName" Type="nvarchar" MaxLength="128" />
           <Property Name="AssignedToDisplayName" Type="nvarchar" MaxLength="210" />
+          <Property Name="AssignedToInitials" Type="nvarchar" MaxLength="4" />
           <Property Name="UserId" Type="nvarchar" MaxLength="128" />
           <Property Name="StaffHourlyRate" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Cost" Type="decimal" Precision="37" Scale="4" />
+          <Property Name="DependsOn" Type="nvarchar" MaxLength="50" />
+          <Property Name="DueDateBase" Type="tinyint" />
+          <Property Name="DueDateDiff" Type="smallint" />
+          <Property Name="ShortName" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsCriticalPath" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1801,9 +1808,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequestTask].[TaskPhaseId] AS [TaskPhaseId], 
     [ServiceRequestTask].[TaskPhaseName] AS [TaskPhaseName], 
     [ServiceRequestTask].[AssignedToDisplayName] AS [AssignedToDisplayName], 
+    [ServiceRequestTask].[AssignedToInitials] AS [AssignedToInitials], 
     [ServiceRequestTask].[UserId] AS [UserId], 
     [ServiceRequestTask].[StaffHourlyRate] AS [StaffHourlyRate], 
-    [ServiceRequestTask].[Cost] AS [Cost]
+    [ServiceRequestTask].[Cost] AS [Cost], 
+    [ServiceRequestTask].[DependsOn] AS [DependsOn], 
+    [ServiceRequestTask].[DueDateBase] AS [DueDateBase], 
+    [ServiceRequestTask].[DueDateDiff] AS [DueDateDiff], 
+    [ServiceRequestTask].[ShortName] AS [ShortName], 
+    [ServiceRequestTask].[IsCriticalPath] AS [IsCriticalPath]
     FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
@@ -3016,6 +3029,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServiceRequestTask">
           <Key>
             <PropertyRef Name="Id" />
+            <PropertyRef Name="IsCriticalPath" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
@@ -3042,6 +3056,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Cost" Type="Decimal" Precision="37" Scale="4" />
+          <Property Name="DependsOn" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DueDateBase" Type="Byte" />
+          <Property Name="DueDateDiff" Type="Int16" />
+          <Property Name="AssignedToInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsCriticalPath" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
@@ -4330,6 +4350,12 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequestTasks">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
               <MappingFragment StoreEntitySet="ServiceRequestTask">
+                <ScalarProperty Name="IsCriticalPath" ColumnName="IsCriticalPath" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="AssignedToInitials" ColumnName="AssignedToInitials" />
+                <ScalarProperty Name="DueDateDiff" ColumnName="DueDateDiff" />
+                <ScalarProperty Name="DueDateBase" ColumnName="DueDateBase" />
+                <ScalarProperty Name="DependsOn" ColumnName="DependsOn" />
                 <ScalarProperty Name="Cost" ColumnName="Cost" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />

@@ -37,8 +37,10 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public ActionResult TaskList(int? serviceRequestId)
+        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false)
         {
+            ViewBag.HideCaseCoordinator = hideCaseCoordinator;
+
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
@@ -47,15 +49,76 @@ namespace WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
 
-            var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId);
+            var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var vm = new IndexViewModel()
+            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+
+            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId)
+                .Select(t => new TaskViewModel()
+                {
+                    Id = t.Id,
+                    ServiceRequestId = t.ServiceRequestId,
+                    TaskId = t.TaskId,
+                    Name = t.ShortName,
+                    AssignedTo = t.AssignedToDisplayName,
+                    AssignedToRoleId = t.ResponsibleRoleId,
+                    Initials = t.AssignedToInitials,
+                    DueDateBase = t.DueDateBase,
+                    DueDateDiff = t.DueDateDiff,
+                    ExamDate = serviceRequest.AppointmentDate.Value,
+                    ReportDate = dueDate,
+                    DependsOn = t.DependsOn,
+                    Sequence = t.Sequence
+                })
+                .OrderBy(t => t.Sequence)
+                .ToList();
+
+            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
+            BuildDependencies(closeOutTask, tasks);
+
+            //var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId)
+            //    .GroupBy(srt => new
+            //    {
+            //        srt.AssignedToDisplayName,
+            //        srt.AssignedTo,
+            //        srt.TaskId,
+            //        srt.TaskName
+            //    })
+            //    .Select(c => new
+            //    {
+            //        c.Key.AssignedToDisplayName,
+            //        c.Key.AssignedTo,
+            //        c.Key.TaskId,
+            //        c.Key.TaskName,
+            //        CompletedTaskCount = c.Count(t => t.CompletedDate == null),
+            //        ActiveTaskCount = c.Count(t => t.CompletedDate != null)
+            //    });
+            
+            return PartialView("TaskList", tasks.ToList());
+        }
+
+        private TaskViewModel BuildDependencies(TaskViewModel task, List<TaskViewModel> tasks)
+        {
+            if (!string.IsNullOrEmpty(task.DependsOn) && task.DependsOn != "ExamDate")
             {
-                User = user,
-                Tasks = tasks.ToList()
-            };
+                var depends = task.DependsOn.Split(',');
+                foreach (var item in depends)
+                {
+                    var id = int.Parse(item);
+                    var depTask = tasks.Single(t => t.TaskId == id);
+                    task.Dependencies.Add(BuildDependencies(depTask, tasks));
+                }
+            }
+            return task;
+        }
 
-            return PartialView("TaskList", vm);
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

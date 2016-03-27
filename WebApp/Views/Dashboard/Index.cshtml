@@ -90,7 +90,7 @@
                                     <div>@request.ClaimantName</div>
                                 </div>
                                 <div class="col-md-6">
-                                    @Html.Action("TaskList", "ServiceRequestTask", request.Id)
+                                    @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = request.Id, hideCaseCoordinator = true })
                                 </div>
                             </div>
                         }
@@ -185,7 +185,7 @@
                                     <div>@request.ClaimantName</div>
                                 </div>
                                 <div class="col-md-6">
-                                    @Html.Action("TaskList", "ServiceRequestTask", request.Id)
+                                    @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = request.Id, hideCaseCoordinator = true })
                                 </div>
                             </div>
                         }

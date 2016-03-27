@@ -41,14 +41,15 @@ namespace WebApp.Controllers
             vm.NextWeekCards = GetCards(requests, 2);
             vm.NextWeekTotal = vm.NextWeekCards.Sum(c => c.Summary.RequestCount);
 
-            var tasks = db.ServiceRequestTasks.Where(srt => srt.CompletedDate == null);
-            if (user.RoleId != Roles.SuperAdmin)
-            {
-                tasks = tasks.Where(srt => srt.AssignedTo == user.Id);
-            }
-            vm.TaskCards = tasks.GroupBy(srt => new { srt.TaskId, srt.TaskName, srt.Sequence })
-                .Select(c => new vm.IndexViewModel.TaskCard() { CardId = c.Key.TaskId.ToString(), TaskName = c.Key.TaskName, Sequence = c.Key.Sequence.Value, Total = c.Count() })
-                .OrderBy(c => c.Sequence).ToList();
+            //var tasks = db.ServiceRequestTasks.Where(srt => srt.CompletedDate == null);
+            //if (user.RoleId != Roles.SuperAdmin)
+            //{
+            //    tasks = tasks.Where(srt => srt.AssignedTo == user.Id);
+            //}
+            //vm.TaskCards = tasks.GroupBy(srt => new { srt.TaskId, srt.TaskName, srt.Sequence })
+            //    .Select(c => new vm.IndexViewModel.TaskCard() { CardId = c.Key.TaskId.ToString(), TaskName = c.Key.TaskName, Sequence = c.Key.Sequence.Value, Total = c.Count() })
+            //    .OrderBy(c => c.Sequence)
+            //    .ToList();
 
             //foreach (var item in tasks)
             //{
@@ -90,6 +91,15 @@ namespace WebApp.Controllers
                 });
             }
             return cards;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         // API
@@ -179,4 +189,5 @@ namespace WebApp.Controllers
         //    return Json(result);
         //}
     }
+
 }

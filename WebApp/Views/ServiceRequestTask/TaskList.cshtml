@@ -1,17 +1,40 @@
-﻿<div class="row">
-    <div class="col-xs-6">
-        <div class="btn btn-success btn-circle">ZW</div>
-    </div>
-    <div class="col-xs-6">
-        <div class="btn btn-default btn-circle">MC</div>
-    </div>
-</div>
-<p></p>
-<div class="row">
-    <div class="col-xs-6">
-        <div class="btn btn-default btn-circle">DM</div>
-    </div>
-    <div class="col-xs-6">
-        <div class="btn btn-default btn-circle">DS</div>
-    </div>
-</div>
+﻿@using e = Model.Enums
+@using WebApp.Library.Enums
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@model List<TaskViewModel>
+
+@functions{
+
+    public string GetTaskStatusCSS(TaskStatusViewModel status)
+    {
+        if (status.Id == TaskStatuses.Active)
+        {
+            return "default";
+        }
+        else if (status.Id == TaskStatuses.Completed)
+        {
+            return "success";
+        }
+        else if (status.Id == TaskStatuses.Waiting)
+        {
+            return "warning";
+        }
+        return string.Empty;
+    }
+
+}
+
+@foreach (var item in Model)
+{
+    if (!(ViewBag.HideCaseCoordinator && item.AssignedToRoleId == e.Roles.CaseCoordinator))
+    {
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="btn btn-@GetTaskStatusCSS(item.Status) btn-circle"><div class="small">@item.Initials</div></div>
+            </div>
+            <div class="col-xs-9">
+                <span>@item.Name </span><span class="badge"> @(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span>
+            </div>
+        </div>
+    }
+}

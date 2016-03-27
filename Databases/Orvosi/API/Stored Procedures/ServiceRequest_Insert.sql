@@ -130,6 +130,11 @@ INSERT INTO dbo.ServiceRequestTask (
 	,[EstimatedHours]
 	,[ModifiedDate]
 	,[ModifiedUser]
+	,[DependsOn]
+	,[DueDateBase]
+	,[DueDateDiff]
+	,[ShortName]
+	,[IsCriticalPath]
 )
 SELECT @Id
 	, st.Id
@@ -146,6 +151,11 @@ SELECT @Id
 	, st.EstimatedHours
 	, @Now
 	, @ModifiedUser
+	, st.DependsOn
+	, st.DueDateBase
+	, st.DueDateDiff
+	, st.ShortName
+	, st.IsCriticalPath
 FROM API.[Task] st
 LEFT JOIN Assignments a ON st.ResponsibleRoleId = a.RoleId
 WHERE st.ServiceCategoryId = (

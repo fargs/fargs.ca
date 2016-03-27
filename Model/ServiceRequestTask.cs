@@ -39,5 +39,11 @@ namespace Model
         public Nullable<decimal> HourlyRate { get; set; }
         public string UserId { get; set; }
         public Nullable<decimal> Cost { get; set; }
+        public string DependsOn { get; set; }
+        public Nullable<byte> DueDateBase { get; set; }
+        public Nullable<short> DueDateDiff { get; set; }
+        public string AssignedToInitials { get; set; }
+        public string ShortName { get; set; }
+        public bool IsCriticalPath { get; set; }
     }
 }

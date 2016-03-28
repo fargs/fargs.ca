@@ -1,309 +1,276 @@
 ﻿@using e = Model.Enums
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
+@{
+    var physician = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.Physician);
+    var cc = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.CaseCoordinator);
+    var intake = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.IntakeAssistant);
+    var docreview = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.DocumentReviewer);
+}
+
 <p>
-    <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
+    <ul class="list-unstyled">
+        <li>
+            <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions <span class="caret"></span>
+                </button>
+                @if (Model.User.RoleId == e.Roles.CaseCoordinator || Model.User.RoleId == e.Roles.SuperAdmin)
+                {
+                    <ul class="dropdown-menu">
+                        <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
+                        <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
+                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
+                        @if (Model.ServiceRequest.ServiceStatusId != e.ServiceStatus.NoShow)
+                        {
+                            <li role="separator" class="divider"></li>
+                            if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
+                            {
+                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
+                            }
+                            else
+                            {
+                                <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
+                            }
+                        }
+                    </ul>
+                }
+            </div>
+
+            <strong class="pull-right">Case @Model.ServiceRequest.Id</strong>
+
+        </li>
+    </ul>
 </p>
 
-<h4>@Model.ServiceRequest.PhysicianDisplayName</h4>
+
+
 <div class="row">
-    <span class="h1 col-md-12"> @Model.ServiceRequest.ClaimantName</span>
-    @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
-    {
-        <span class="label label-danger">
-            @Model.ServiceRequest.ServiceRequestStatusText
-        </span>
-    }
-</div>
-<div class="row">
-    <span class="h4 col-md-1">Exam:</span>
-    <span class="h4 col-md-11"> @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</span>
-</div>
-<div class="row">
-    <span class="h4 col-md-1">Report:</span>
-    @if (Model.ServiceRequest.DueDate.HasValue)
-    {
-        <span class="h4 col-md-11">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</span>
-    }
-    else
-    {
-        <span class="col-md-11">&nbsp;</span>
-    }
-</div>
-
-<div class="row" style="margin-top:30px;">
-    <div class="col-md-12">
-@if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-{
-    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
-    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
-}
-else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
-{
-    <form action="~/ServiceRequest/ToggleNoShow" method="post">
-        @Html.AntiForgeryToken()
-        @Html.Hidden("id")
-        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-        <span><button class="btn btn-link">Undo</button></span>
-    </form>
-}
-else
-{
-    <form action="~/ServiceRequest/ToggleNoShow" method="post">
-        @Html.AntiForgeryToken()
-        @Html.Hidden("id")
-        <button class="btn btn-default">No Show</button>
-        <div class="help-block">Click to flag this case as a "No Show"</div>
-    </form>
-}
-    </div>
-</div>
-
-<h2>Tasks</h2>
-
-@Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
-
-<ul class="list-group">
-    @foreach (var item in Model.ServiceRequestTasks)
+    <div class="col-sm-3">
+        <h4><span class="btn btn-circle" style="color: white; background-color: @physician.AssignedToColorCode">@physician.AssignedToInitials </span> @Model.ServiceRequest.PhysicianDisplayName</h4>
+        <hr />
+        <h3>@Model.ServiceRequest.ClaimantName</h3>
+        <p class="small text-muted">@Model.ServiceRequest.ServiceName, @Model.ServiceRequest.CompanyName</p>
+        @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
+        {
+            <span class="label label-danger">
+                @Model.ServiceRequest.ServiceRequestStatusText
+            </span>
+        }
+        <div class="form-group">
+            <label class="control-label">Exam Date</label>
+            <p class="form-control-static"> @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</p>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Report Date</label>
+            @if (Model.ServiceRequest.DueDate.HasValue)
             {
-        <li class="list-group-item @(item.CompletedDate.HasValue ? "border-left-success" : "border-left-warning")">
-
-            @if (item.CompletedDate.HasValue)
-            {
-                <button type="button" class="btn btn-success btn-circle disabled"><i class="glyphicon glyphicon-ok"></i></button>
-                <strong>&nbsp;@item.TaskName</strong>
-                        <small class="text-muted">@item.AssignedToDisplayName</small>
-                        <div>Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</div>
-                if (item.Notes != string.Empty)
-                {
-                    <div><strong>Notes</strong></div>
-                    <div>
-                        @item.Notes
-                    </div>
-                }
-                if (Model.User.RoleId == e.Roles.SuperAdmin)
-                {
-                    if (item.ActualHours.HasValue)
-                    {
-                        <div class="h5" style="margin-bottom:0;">Cost</div>
-                        <div>
-                            Expected: @item.EstimatedHours hours at @(item.HourlyRate.HasValue ? item.HourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.EstimatedHours * item.HourlyRate).Value.ToString("C2"))
-                        </div>
-                                <div>
-                                    Actual:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>@item.ActualHours hours</strong> at @(item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value.ToString("C2") : "<Not Set>") = @((item.ActualHours * (item.StaffHourlyRate.HasValue ? item.StaffHourlyRate.Value : 0)).Value.ToString("C2"))
-                                </div>
-                    }
-                }
+                <p class="form-control-static">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
             }
             else
             {
-                <a data-toggle="collapse" href="@("#CompleteForm" + @item.Id.ToString())" class="btn btn-default btn-circle">&nbsp;</a>
-                <strong>&nbsp;@item.TaskName</strong>
-                        <small class="text-muted">@item.AssignedToDisplayName</small>
-                        <div id="@("CompleteForm" + @item.Id.ToString())" class="collapse">
-                            <div class="help-block">@item.Guidance</div>
-                            <form method="post" action="@(Url.Content("~/servicerequest/markascomplete/") + item.Id)">
-                                @Html.AntiForgeryToken()
-                                @if (item.IsBillable)
-                                {
-                                    <div class="form-group">
-                                        <label for="Time Spent" class="control-label">Time Spent (Hours)</label>
-                                        <select class="form-control" name="Hours">
-                                            <option></option>
-                                            @for (int i = 0; i < 10; i++)
-                                            {
-                                                <option>@((double)i)</option>
-                                                    <option>@((double)i + 0.25)</option>
-                                                    <option>@((double)i + 0.5)</option>
-                                                    <option>@((double)i + 0.75)</option>
-                                            }
-                                        </select>
-                                    </div>
-                                }
-                                <div class="form-group">
-                                    <label for="Notes" class="control-label">Notes</label>
-                                    <textarea rows="3" class="form-control" name="Notes"></textarea>
-                                </div>
-                                <button class="btn btn-primary">Done</button>
-                            </form>
-                        </div>
+                <p class="form-control-static">Not Set</p>
             }
-        </li>
+        </div>
 
-    }
-</ul>
-
-@if (Model.User.RoleId == e.Roles.SuperAdmin)
-{
-    <h3>Invoice from Physician to Company</h3>
-    if (Model.Invoices.Count() == 0)
-    {
-        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
-        using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
-        {
-            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-            <button type="submit" class="btn btn-primary">Create Invoice</button>
-        }
-    }
-    else
-    {
-        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
-    }
-
-    <h3>Invoice from Staff to Orvosi</h3>
-    if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
-    {
-        <div>No billable tasks have been completed.</div>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Contractor</th>
-                    <th>Task</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.ServiceRequestCostRollUps)
+        <div class="form-group">
+            <label class="control-label">Assignments</label>
+            <p class="form-control-static">
+                @if (!string.IsNullOrEmpty(cc.AssignedTo))
                 {
-                    <tr>
-                        <td>
-                            @item.DisplayName
-                        </td>
-                        <td>
-                            @item.TaskName
-                        </td>
-                        <td>
-                            @item.TotalCost
-                        </td>
-                    </tr>
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @cc.AssignedToColorCode">@cc.AssignedToInitials</span>
                 }
-            </tbody>
-        </table>
-    }
-
-}
-<h4></h4>
-
-
-<h2>Case Details</h2>
-<div class="row">
-    <div class="col-md-12">
-        <dl class="dl-horizontal">
-            <dt>Service</dt>
-            <dd>@Model.ServiceRequest.ServiceName</dd>
-            <dt>Company</dt>
-            <dd>@Model.ServiceRequest.CompanyName</dd>
-            <dt>Reference Id</dt>
-            <dd>@Model.ServiceRequest.CompanyReferenceId</dd>
-            <dt>Claimant Name</dt>
-            <dd>@Model.ServiceRequest.ClaimantName</dd>
-            <dt>Exam Id</dt>
-            <dd>@Model.ServiceRequest.Id</dd>
-            <dt>Title</dt>
-            <dd>@Model.ServiceRequest.Title</dd>
-            @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-            {
-            <dt>Case Folder</dt>
-            <dd>
-                    <strong>@Model.ServiceRequest.DocumentFolderLink</strong>
-                @if (Model.DropboxFolder == null)
+                @if (!string.IsNullOrEmpty(intake.AssignedTo))
                 {
-                    if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                    {
-                        <div>
-                            <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                            </form>
-                        </div>
-                    }
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @intake.AssignedToColorCode">@intake.AssignedToInitials</span>
+                }
+                @if (!string.IsNullOrEmpty(docreview.AssignedTo))
+                {
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @docreview.AssignedToColorCode">@docreview.AssignedToInitials</span>
+                }
+            </p>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+            <div class="col-md-12">
+                @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
+                {
+                    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
+                    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
+                }
+                else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
+                {
+                    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id")
+                        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
+                        <span><button class="btn btn-link">Undo</button></span>
+                    </form>
                 }
                 else
                 {
-                    <span class="label label-success">Created</span>
-                    <div class="h4">Folder Shared To:</div>
-                    if (Model.DropboxFolderMembers != null)
+                    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id")
+                        <button class="btn btn-default">No Show</button>
+                        <div class="help-block">Click to flag this case as a "No Show"</div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Location
+            </div>
+            <div class="panel-body">
+                <address>
+                    <strong>@Model.ServiceRequest.LocationName</strong><br>
+                    <strong>@Model.ServiceRequest.AddressName</strong><br>
+                    @Model.ServiceRequest.Address1<br>
+                    @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
                     {
-                        <ul>
-                            @foreach (var item in Model.DropboxFolderMembers)
-                            {
-                                <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                            }
-                        </ul>
-                            <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
-                                <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
-                            </form>
-                        }
+                        @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
                     }
-            </dd>
-            }
-        </dl>
-    </div>
-</div>
-<h2>People</h2>
-<div class="row">
-    <div class="col-md-12">
-        <dl class="dl-horizontal">
-            <dt>Requested By</dt>
-            <dd>@Model.ServiceRequest.RequestedByName</dd>
-            <dt>Case Coordinator</dt>
-            <dd>@Model.ServiceRequest.CaseCoordinatorName</dd>
-            <dt>Intake Assistant</dt>
-            <dd>@Model.ServiceRequest.IntakeAssistantName</dd>
-            <dt>Document Reviewer</dt>
-            <dd>@Model.ServiceRequest.DocumentReviewerName</dd>
-        </dl>
-        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-        {
-            <a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Edit Resource Assignments</a>
-        }
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <h2>Schedule</h2>
-        <dl class="dl-horizontal">
-            <dt>Appointment Date</dt>
-            <dd>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</dd>
-            <dt>Start Time</dt>
-            <dd>@Model.ServiceRequest.StartTime</dd>
-            <dt>End Time</dt>
-            <dd>@Model.ServiceRequest.EndTime</dd>
-            <dt>Calendar Title</dt>
-            <dd><strong>@Model.ServiceRequest.CalendarEventTitle</strong></dd>
-            @*<dt>Effective Price</dt>
-                <dd>
-                    <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">
-                        <strong class="text-success">@Model.EffectivePrice</strong>
-                    </a>
-                </dd>*@
-        </dl>
-    </div>
-</div>
-<h2>Location</h2>
-<div class="row">
-    <div class="col-md-12">
-        <address>
-            <strong>@Model.ServiceRequest.LocationName</strong><br>
-            <strong>@Model.ServiceRequest.AddressName</strong><br>
-            @Model.ServiceRequest.Address1<br>
-            @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
-            {
-                @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
-            }
-        </address>
+                </address>
+            </div>
+        </div>
+
     </div>
 </div>
 
-@section Scripts {
-    <script type="text/javascript">
-        $(function () {
-        })
-    </script>
+@if (Model.User.RoleId == e.Roles.SuperAdmin || Model.User.RoleId == e.Roles.CaseCoordinator)
+{
+    <div>
+        <a href="#AdminSection" data-toggle="collapse">Admin Section</a>
+
+        <div id="AdminSection" class="row collapse">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Google Calendar Integration
+                    </div>
+                    <div class="panel-body">
+                        <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
+                        <strong>Google Event Data</strong>
+                        <div>@Model.ServiceRequest.CalendarEventTitle</div>
+                        <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                        <div>@Model.ServiceRequest.StartTime</div>
+                        <div>@Model.ServiceRequest.EndTime</div>
+                        @*<dt>Effective Price</dt>
+                            <dd>
+                                <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">
+                                    <strong class="text-success">@Model.EffectivePrice</strong>
+                                </a>
+                            </dd>*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Box Integration
+                    </div>
+                    <div class="panel-body">
+                        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                        {
+                            <div>
+                                 <p>@Model.ServiceRequest.Title</p>
+                            </div>
+
+                            if (Model.DropboxFolder == null)
+                            {
+                                if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                                {
+                                    <div>
+                                        <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                            <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                                        </form>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="label label-success">Created</span>
+                                <div class="h4">Folder Shared To:</div>
+                                if (Model.DropboxFolderMembers != null)
+                                {
+                                    <ul>
+                                        @foreach (var item in Model.DropboxFolderMembers)
+                                        {
+                                            <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                                        }
+                                    </ul>
+                                    <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
+                                        <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
+                                    </form>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+
+            </div>
+        </div>
+    </div>
 }
+@if (Model.User.RoleId == e.Roles.SuperAdmin)
+{
+    <div>
+        <a href="#SuperAdminSection" data-toggle="collapse">Super Admin Section</a>
+
+        <div id="SuperAdminSection" class="row collapse">
+
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Invoice from Physician to Company
+                    </div>
+                    <div class="panel-body">
+                        @if (Model.Invoices.Count() == 0)
+                {
+                    var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
+                    using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+                    {
+                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+                                <button type="submit" class="btn btn-primary">Create Invoice</button>
+                            }
+                        }
+                        else
+                        {
+                            @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
+                        }
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Invoice from Staff to Orvosi
+                    </div>
+                    <div class="panel-body">
+                        @if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
+                {
+                            <div>No billable tasks have been completed.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+    @section Scripts {
+        <script type="text/javascript">
+            $(function () {
+            })
+        </script>
+    }

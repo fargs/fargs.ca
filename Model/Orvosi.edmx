@@ -748,13 +748,6 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
         <EntityType Name="ServiceRequestTask">
           <Key>
             <PropertyRef Name="Id" />
-            
-            
-            
-            
-            
-            
-            <PropertyRef Name="IsCriticalPath" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -787,6 +780,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
           <Property Name="DueDateDiff" Type="smallint" />
           <Property Name="ShortName" Type="nvarchar" MaxLength="50" />
           <Property Name="IsCriticalPath" Type="bit" Nullable="false" />
+          <Property Name="AssignedToColorCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1816,7 +1810,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequestTask].[DueDateBase] AS [DueDateBase], 
     [ServiceRequestTask].[DueDateDiff] AS [DueDateDiff], 
     [ServiceRequestTask].[ShortName] AS [ShortName], 
-    [ServiceRequestTask].[IsCriticalPath] AS [IsCriticalPath]
+    [ServiceRequestTask].[IsCriticalPath] AS [IsCriticalPath], 
+    [ServiceRequestTask].[AssignedToColorCode] AS [AssignedToColorCode]
     FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
@@ -3029,7 +3024,6 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <EntityType Name="ServiceRequestTask">
           <Key>
             <PropertyRef Name="Id" />
-            <PropertyRef Name="IsCriticalPath" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="Guid" Nullable="false" />
@@ -3062,6 +3056,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="AssignedToInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
           <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="IsCriticalPath" Type="Boolean" Nullable="false" />
+          <Property Name="AssignedToColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
@@ -4350,6 +4345,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequestTasks">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
               <MappingFragment StoreEntitySet="ServiceRequestTask">
+                <ScalarProperty Name="AssignedToColorCode" ColumnName="AssignedToColorCode" />
                 <ScalarProperty Name="IsCriticalPath" ColumnName="IsCriticalPath" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="AssignedToInitials" ColumnName="AssignedToInitials" />

@@ -1,5 +1,5 @@
 ﻿
-CREATE PROC API.ServiceRequest_ToggleNoShow
+CREATE PROC [API].[ServiceRequest_ToggleNoShow]
 	@Id INT
 AS
 
@@ -14,5 +14,6 @@ WHERE Id = @Id
 
 UPDATE dbo.ServiceRequestTask SET IsObsolete = CASE WHEN @IsNoShow = 1 THEN 1 ELSE 0 END
 WHERE ServiceRequestId = @Id 
-	AND TaskId <> 24
+	AND TaskId <> 24 
+	AND TaskId <> 30
 	AND CompletedDate IS NULL

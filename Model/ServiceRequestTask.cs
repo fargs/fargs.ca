@@ -45,5 +45,6 @@ namespace Model
         public string AssignedToInitials { get; set; }
         public string ShortName { get; set; }
         public bool IsCriticalPath { get; set; }
+        public string AssignedToColorCode { get; set; }
     }
 }

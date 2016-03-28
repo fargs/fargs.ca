@@ -27,38 +27,107 @@
         return string.Empty;
     }
 
+    public string GetTaskStatusIcon(TaskStatusViewModel status)
+    {
+        if (status.Id == TaskStatuses.Active)
+        {
+            return string.Empty;
+        }
+        else if (status.Id == TaskStatuses.Completed)
+        {
+            return "glyphicon glyphicon-ok";
+        }
+        else if (status.Id == TaskStatuses.Waiting)
+        {
+            return "glyphicon glyphicon-hourglass";
+        }
+
+        return string.Empty;
+    }
+
 }
 
-@{ byte level = 0; }
 @helper ShowTree(IEnumerable<TaskViewModel> tasks, byte level)
 {
-    <ul class="list-unstyled" style="margin-left: @(level * 10)px;">
-        @foreach(var item in tasks)
+    <ul class="list-unstyled" style="margin-left: @(level * 30)px;">
+        @foreach (var item in tasks)
         {
             var rowId = Guid.NewGuid().ToString();
-            if (!(ViewBag.HideCaseCoordinator && item.AssignedToRoleId == e.Roles.CaseCoordinator))
-            {
-                <li>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <span class="btn btn-@GetTaskStatusCSS(item.Status, item.AssignedTo) btn-circle">
-                                <span class="small">@item.Initials</span>
-                            </span>
-                            <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
-                            @if (item.Status.Id == TaskStatuses.Waiting)
-                            {
-                                <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
-                                <div id="task-row-@rowId" class="collapse">
-                                    @ShowTree(item.Status.WaitingOn, level)
-                                    @{ level++; }
-                                </div>
-                            }
-                        </div>
+            <li>
+                <div class="row" style="padding:8px 0px;">
+                    <div class="col-xs-12">
+                        <span class="btn btn-circle disabled" style="color: white; background-color: @(string.IsNullOrEmpty(item.AssignedToColorCode) ? "gray" : item.AssignedToColorCode);">
+                            <span class="small">@(string.IsNullOrEmpty(item.Initials) ? "?" : item.Initials)</span>
+                        </span>
+                        <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
+                        @if (item.Status.Id == TaskStatuses.Completed)
+                        {
+                            <span class="small pull-right">Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
+                        }
+                        @if (item.Status.Id == TaskStatuses.Waiting)
+                        {
+                            <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
+                            <div id="task-row-@rowId" class="collapse">
+                                @ShowTree(item.Status.WaitingOn, level++)
+                            </div>
+                        }
                     </div>
-                </li>
-            }
+                </div>
+            </li>
         }
     </ul>
 }
 
-@ShowTree(Model, level)
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        byte level = 1;
+        var rowId = Guid.NewGuid().ToString();
+        if (!(ViewBag.HideCaseCoordinator && item.AssignedToRoleId == e.Roles.CaseCoordinator))
+        {
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-xs-12">
+                        @if (item.Status.Id == TaskStatuses.Completed)
+                        {
+                            <form method="post" action="@(Url.Content("~/servicerequesttask/markasincomplete"))">
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id)
+                                <button class="btn btn-success btn-circle">
+                                    <i class="glyphicon glyphicon-ok"></i>
+                                </button>
+                                <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
+                                <span class="small pull-right">Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
+                            </form>
+                        }
+                        else if (item.Status.Id == TaskStatuses.Active)
+                        {
+                            <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id)
+                                <button class="btn btn-default btn-circle">
+                                </button>
+                                <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
+                            </form>
+                        }
+                        else if (item.Status.Id == TaskStatuses.Waiting)
+                        {
+                            <form method="post" class="form-inline" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id)
+                                <button class="btn btn-warning btn-circle">
+                                    <i class="glyphicon glyphicon-hourglass"></i>
+                                </button>
+                                <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
+                                <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
+                            </form>
+                            <div id="task-row-@rowId" class="collapse">
+                                @ShowTree(item.Status.WaitingOn, level++)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+    }
+</ul>

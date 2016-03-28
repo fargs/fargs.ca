@@ -7,6 +7,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Net;
+using System.Threading.Tasks;
+using WebApp.Library;
 
 namespace WebApp.Controllers
 {
@@ -63,9 +65,11 @@ namespace WebApp.Controllers
                     TaskId = t.TaskId,
                     Name = t.TaskName,
                     ShortName = t.ShortName,
+                    CompletedDate = t.CompletedDate,
                     AssignedToDisplayName = t.AssignedToDisplayName,
                     AssignedTo = t.AssignedTo,
                     AssignedToRoleId = t.ResponsibleRoleId,
+                    AssignedToColorCode = t.AssignedToColorCode,
                     Initials = t.AssignedToInitials,
                     DueDateBase = t.DueDateBase,
                     DueDateDiff = t.DueDateDiff,
@@ -115,12 +119,47 @@ namespace WebApp.Controllers
                 foreach (var item in depends)
                 {
                     var id = int.Parse(item);
-                    var depTask = tasks.Single(t => t.TaskId == id);
-                    depTask.Parent = parent;
-                    task.Dependencies.Add(BuildDependencies(depTask, task, tasks));
+                    var depTask = tasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
+                    if (depTask != null)
+                    {
+                        depTask.Parent = parent;
+                        task.Dependencies.Add(BuildDependencies(depTask, task, tasks));
+                    }
                 }
             }
             return task;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> MarkAsComplete(int id)
+        {
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(id);
+            if (serviceRequestTask == null)
+            {
+                return HttpNotFound();
+            }
+            serviceRequestTask.CompletedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> MarkAsIncomplete(int id)
+        {
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(id);
+            if (serviceRequestTask == null)
+            {
+                return HttpNotFound();
+            }
+            serviceRequestTask.CompletedDate = null;
+            serviceRequestTask.ModifiedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            await db.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         protected override void Dispose(bool disposing)

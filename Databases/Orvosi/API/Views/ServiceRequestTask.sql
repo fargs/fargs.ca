@@ -13,6 +13,7 @@
 
 
 
+
 CREATE VIEW [API].[ServiceRequestTask]
 AS
 SELECT 
@@ -47,6 +48,7 @@ SELECT
 	,st.DueDateDiff
 	,st.ShortName
 	,st.IsCriticalPath
+	,AssignedToColorCode = u.ColorCode
 FROM dbo.ServiceRequestTask st
 LEFT JOIN dbo.AspNetUsers u ON st.AssignedTo = u.Id
 WHERE IsObsolete = 0

@@ -75,6 +75,8 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 
         public string AssignedToDisplayName { get; internal set; }
 
+        public string AssignedToColorCode { get; internal set; }
+
         public TaskViewModel()
         {
             Dependencies = new List<TaskViewModel>();

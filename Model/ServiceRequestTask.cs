@@ -46,5 +46,6 @@ namespace Model
         public string ShortName { get; set; }
         public bool IsCriticalPath { get; set; }
         public string AssignedToColorCode { get; set; }
+        public bool IsObsolete { get; set; }
     }
 }

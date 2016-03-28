@@ -125,7 +125,7 @@ namespace WebApp.Controllers
 
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
-            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id && !sr.IsObsolete).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
             vm.Invoices = db.Invoices.Join(db.InvoiceDetails.Where(ids => ids.ServiceRequestId == id),
                 i => i.Id,
@@ -389,7 +389,7 @@ namespace WebApp.Controllers
                 // mark the first task as complete
                 using (var db = new OrvosiEntities(User.Identity.Name))
                 {
-                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder);
+                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
                     serviceRequestTask.CompletedDate = SystemTime.Now();
                     await db.SaveChangesAsync();
                 }

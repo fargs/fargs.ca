@@ -64,7 +64,7 @@ namespace WebApp.Areas.Staff.Controllers
             var vm = new DetailsViewModel();
 
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
-            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).ToList();
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id && !sr.IsObsolete).ToList();
 
             if (vm.ServiceRequest == null)
             {

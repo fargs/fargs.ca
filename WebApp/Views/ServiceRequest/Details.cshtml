@@ -1,13 +1,6 @@
 ﻿@using e = Model.Enums
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
-@{
-    var physician = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.Physician);
-    var cc = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.CaseCoordinator);
-    var intake = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.IntakeAssistant);
-    var docreview = Model.ServiceRequestTasks.First(c => c.ResponsibleRoleId == e.Roles.DocumentReviewer);
-}
-
 <p>
     <ul class="list-unstyled">
         <li>
@@ -49,7 +42,7 @@
 
 <div class="row">
     <div class="col-sm-3">
-        <h4><span class="btn btn-circle" style="color: white; background-color: @physician.AssignedToColorCode">@physician.AssignedToInitials </span> @Model.ServiceRequest.PhysicianDisplayName</h4>
+        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.PhysicianColorCode">@Model.ServiceRequest.PhysicianInitials </span> @Model.ServiceRequest.PhysicianDisplayName</h4>
         <hr />
         <h3>@Model.ServiceRequest.ClaimantName</h3>
         <p class="small text-muted">@Model.ServiceRequest.ServiceName, @Model.ServiceRequest.CompanyName</p>
@@ -78,22 +71,22 @@
         <div class="form-group">
             <label class="control-label">Assignments</label>
             <p class="form-control-static">
-                @if (!string.IsNullOrEmpty(cc.AssignedTo))
+                @if (!Model.ServiceRequest.CaseCoordinatorId.HasValue)
                 {
-                    <span class="btn btn-circle disabled" style="color: white; background-color: @cc.AssignedToColorCode">@cc.AssignedToInitials</span>
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @Model.ServiceRequest.CaseCoordinatorColorCode">@Model.ServiceRequest.CaseCoordinatorInitials</span>
                 }
-                @if (!string.IsNullOrEmpty(intake.AssignedTo))
+                @if (!Model.ServiceRequest.IntakeAssistantId.HasValue)
                 {
-                    <span class="btn btn-circle disabled" style="color: white; background-color: @intake.AssignedToColorCode">@intake.AssignedToInitials</span>
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @Model.ServiceRequest.IntakeAssistantColorCode">@Model.ServiceRequest.IntakeAssistantInitials</span>
                 }
-                @if (!string.IsNullOrEmpty(docreview.AssignedTo))
+                @if (!Model.ServiceRequest.DocumentReviewerId.HasValue)
                 {
-                    <span class="btn btn-circle disabled" style="color: white; background-color: @docreview.AssignedToColorCode">@docreview.AssignedToInitials</span>
+                    <span class="btn btn-circle disabled" style="color: white; background-color: @Model.ServiceRequest.DocumentReviewerColorCode">@Model.ServiceRequest.DocumentReviewerInitials</span>
                 }
             </p>
         </div>
 
-        <div class="row" style="margin-top:30px;">
+        <div class="row">
             <div class="col-md-12">
                 @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
                 {
@@ -141,15 +134,14 @@
                 </address>
             </div>
         </div>
-
     </div>
 </div>
 
 @if (Model.User.RoleId == e.Roles.SuperAdmin || Model.User.RoleId == e.Roles.CaseCoordinator)
 {
+    <hr />
     <div>
         <a href="#AdminSection" data-toggle="collapse">Admin Section</a>
-
         <div id="AdminSection" class="row collapse">
             <div class="col-sm-4">
                 <div class="panel panel-default">
@@ -226,9 +218,7 @@
 {
     <div>
         <a href="#SuperAdminSection" data-toggle="collapse">Super Admin Section</a>
-
-        <div id="SuperAdminSection" class="row collapse">
-
+        <div id="SuperAdminSection" class="collapse">
             <div class="col-sm-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">

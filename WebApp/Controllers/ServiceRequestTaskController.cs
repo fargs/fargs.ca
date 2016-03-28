@@ -22,7 +22,7 @@ namespace WebApp.Controllers
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
-            var sr = db.ServiceRequestTasks.AsQueryable<ServiceRequestTask>();
+            var sr = db.ServiceRequestTasks.Where(srt => !srt.IsObsolete).AsQueryable<ServiceRequestTask>();
 
             if (user.RoleId == Roles.SuperAdmin && filterArgs.ShowAll.Value) { }
             else
@@ -48,7 +48,7 @@ namespace WebApp.Controllers
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);
 
-            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id))
+            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
@@ -57,7 +57,7 @@ namespace WebApp.Controllers
 
             var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
 
-            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId)
+            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
                 .Select(t => new TaskViewModel()
                 {
                     Id = t.Id,

@@ -424,6 +424,7 @@ warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key 
           <Property Name="LocationName" Type="nvarchar" MaxLength="128" />
           <Property Name="AddressName" Type="nvarchar" MaxLength="256" />
           <Property Name="PrimarySpecialtyName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -691,6 +692,8 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
           <Property Name="PhysicianUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="PhysicianInitials" Type="nvarchar" MaxLength="4" />
+          <Property Name="PhysicianColorCode" Type="nvarchar" MaxLength="50" />
           <Property Name="CompanyGuid" Type="uniqueidentifier" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="128" />
           <Property Name="ParentCompanyName" Type="nvarchar" MaxLength="128" />
@@ -712,8 +715,14 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="LocationId" Type="smallint" />
           <Property Name="LocationName" Type="nvarchar" MaxLength="128" />
           <Property Name="CaseCoordinatorName" Type="nvarchar" MaxLength="210" />
+          <Property Name="CaseCoordinatorInitials" Type="nvarchar" MaxLength="4" />
+          <Property Name="CaseCoordinatorColorCode" Type="nvarchar" MaxLength="50" />
           <Property Name="IntakeAssistantName" Type="nvarchar" MaxLength="210" />
+          <Property Name="IntakeAssistantInitials" Type="nvarchar" MaxLength="4" />
+          <Property Name="IntakeAssistantColorCode" Type="nvarchar" MaxLength="50" />
           <Property Name="DocumentReviewerName" Type="nvarchar" MaxLength="210" />
+          <Property Name="DocumentReviewerInitials" Type="nvarchar" MaxLength="4" />
+          <Property Name="DocumentReviewerColorCode" Type="nvarchar" MaxLength="50" />
           <Property Name="AppointmentDate" Type="date" />
           <Property Name="StartTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
@@ -781,6 +790,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
           <Property Name="ShortName" Type="nvarchar" MaxLength="50" />
           <Property Name="IsCriticalPath" Type="bit" Nullable="false" />
           <Property Name="AssignedToColorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsObsolete" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1530,7 +1540,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Physician].[Geriatrics] AS [Geriatrics], 
     [Physician].[LocationName] AS [LocationName], 
     [Physician].[AddressName] AS [AddressName], 
-    [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName]
+    [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName], 
+    [Physician].[ColorCode] AS [ColorCode]
     FROM [API].[Physician] AS [Physician]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
@@ -1730,6 +1741,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[PhysicianId] AS [PhysicianId], 
     [ServiceRequest].[PhysicianDisplayName] AS [PhysicianDisplayName], 
     [ServiceRequest].[PhysicianUserName] AS [PhysicianUserName], 
+    [ServiceRequest].[PhysicianInitials] AS [PhysicianInitials], 
+    [ServiceRequest].[PhysicianColorCode] AS [PhysicianColorCode], 
     [ServiceRequest].[CompanyGuid] AS [CompanyGuid], 
     [ServiceRequest].[CompanyName] AS [CompanyName], 
     [ServiceRequest].[ParentCompanyName] AS [ParentCompanyName], 
@@ -1751,8 +1764,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[LocationId] AS [LocationId], 
     [ServiceRequest].[LocationName] AS [LocationName], 
     [ServiceRequest].[CaseCoordinatorName] AS [CaseCoordinatorName], 
+    [ServiceRequest].[CaseCoordinatorInitials] AS [CaseCoordinatorInitials], 
+    [ServiceRequest].[CaseCoordinatorColorCode] AS [CaseCoordinatorColorCode], 
     [ServiceRequest].[IntakeAssistantName] AS [IntakeAssistantName], 
+    [ServiceRequest].[IntakeAssistantInitials] AS [IntakeAssistantInitials], 
+    [ServiceRequest].[IntakeAssistantColorCode] AS [IntakeAssistantColorCode], 
     [ServiceRequest].[DocumentReviewerName] AS [DocumentReviewerName], 
+    [ServiceRequest].[DocumentReviewerInitials] AS [DocumentReviewerInitials], 
+    [ServiceRequest].[DocumentReviewerColorCode] AS [DocumentReviewerColorCode], 
     [ServiceRequest].[AppointmentDate] AS [AppointmentDate], 
     [ServiceRequest].[StartTime] AS [StartTime], 
     [ServiceRequest].[Duration] AS [Duration], 
@@ -1811,7 +1830,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequestTask].[DueDateDiff] AS [DueDateDiff], 
     [ServiceRequestTask].[ShortName] AS [ShortName], 
     [ServiceRequestTask].[IsCriticalPath] AS [IsCriticalPath], 
-    [ServiceRequestTask].[AssignedToColorCode] AS [AssignedToColorCode]
+    [ServiceRequestTask].[AssignedToColorCode] AS [AssignedToColorCode], 
+    [ServiceRequestTask].[IsObsolete] AS [IsObsolete]
     FROM [API].[ServiceRequestTask] AS [ServiceRequestTask]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="SpecialRequest" EntityType="Self.SpecialRequest" store:Type="Views" store:Schema="API">
@@ -2732,6 +2752,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="LateCancellationRate" Precision="18" Scale="2" Type="Decimal" />
           <Property Name="CompanyGuid" Type="Guid" />
           <NavigationProperty Name="InvoiceDetails" Relationship="OrvosiModel.ServiceRequestInvoiceDetail" FromRole="ServiceRequest" ToRole="InvoiceDetail" />
+          <Property Name="PhysicianInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CaseCoordinatorInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <Property Name="CaseCoordinatorColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IntakeAssistantInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <Property Name="IntakeAssistantColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentReviewerInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentReviewerColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -3057,6 +3085,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="IsCriticalPath" Type="Boolean" Nullable="false" />
           <Property Name="AssignedToColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsObsolete" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="ServiceRequestCostRollUp">
           <Key>
@@ -3115,6 +3144,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="AddressName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="PrimarySpecialtyName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="LogoCssClass" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="DashboardTaskSummary">
           <Key>
@@ -3680,6 +3710,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="DocumentReviewerColorCode" ColumnName="DocumentReviewerColorCode" />
+                <ScalarProperty Name="DocumentReviewerInitials" ColumnName="DocumentReviewerInitials" />
+                <ScalarProperty Name="IntakeAssistantColorCode" ColumnName="IntakeAssistantColorCode" />
+                <ScalarProperty Name="IntakeAssistantInitials" ColumnName="IntakeAssistantInitials" />
+                <ScalarProperty Name="CaseCoordinatorColorCode" ColumnName="CaseCoordinatorColorCode" />
+                <ScalarProperty Name="CaseCoordinatorInitials" ColumnName="CaseCoordinatorInitials" />
+                <ScalarProperty Name="PhysicianColorCode" ColumnName="PhysicianColorCode" />
+                <ScalarProperty Name="PhysicianInitials" ColumnName="PhysicianInitials" />
                 <ScalarProperty Name="CompanyGuid" ColumnName="CompanyGuid" />
                 <ScalarProperty Name="LateCancellationRate" ColumnName="LateCancellationRate" />
                 <ScalarProperty Name="NoShowRate" ColumnName="NoShowRate" />
@@ -4345,6 +4383,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequestTasks">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
               <MappingFragment StoreEntitySet="ServiceRequestTask">
+                <ScalarProperty Name="IsObsolete" ColumnName="IsObsolete" />
                 <ScalarProperty Name="AssignedToColorCode" ColumnName="AssignedToColorCode" />
                 <ScalarProperty Name="IsCriticalPath" ColumnName="IsCriticalPath" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
@@ -4441,6 +4480,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Physicians">
             <EntityTypeMapping TypeName="OrvosiModel.Physician">
               <MappingFragment StoreEntitySet="Physician">
+                <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
                 <ScalarProperty Name="LogoCssClass" ColumnName="LogoCssClass" />
                 <ScalarProperty Name="PrimarySpecialtyName" ColumnName="PrimarySpecialtyName" />
                 <ScalarProperty Name="AddressName" ColumnName="AddressName" />

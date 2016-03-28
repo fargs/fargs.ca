@@ -94,6 +94,14 @@ namespace Model
         public Nullable<decimal> NoShowRate { get; set; }
         public Nullable<decimal> LateCancellationRate { get; set; }
         public Nullable<System.Guid> CompanyGuid { get; set; }
+        public string PhysicianInitials { get; set; }
+        public string PhysicianColorCode { get; set; }
+        public string CaseCoordinatorInitials { get; set; }
+        public string CaseCoordinatorColorCode { get; set; }
+        public string IntakeAssistantInitials { get; set; }
+        public string IntakeAssistantColorCode { get; set; }
+        public string DocumentReviewerInitials { get; set; }
+        public string DocumentReviewerColorCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }

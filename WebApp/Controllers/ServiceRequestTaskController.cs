@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Net;
 using System.Threading.Tasks;
 using WebApp.Library;
+using MoreLinq;
 
 namespace WebApp.Controllers
 {
@@ -109,6 +110,105 @@ namespace WebApp.Controllers
             //    });
 
             return PartialView("TaskList", tasks);
+        }
+
+        public ActionResult NextTaskList(int? serviceRequestId)
+        {
+            // get the user
+            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            ViewBag.User = user;
+
+            var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
+
+            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+
+            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
+                .Select(t => new TaskViewModel()
+                {
+                    Id = t.Id,
+                    ServiceRequestId = t.ServiceRequestId,
+                    TaskId = t.TaskId,
+                    Name = t.TaskName,
+                    ShortName = t.ShortName,
+                    CompletedDate = t.CompletedDate,
+                    AssignedToDisplayName = t.AssignedToDisplayName,
+                    AssignedTo = t.AssignedTo,
+                    AssignedToRoleId = t.ResponsibleRoleId,
+                    AssignedToColorCode = t.AssignedToColorCode,
+                    Initials = t.AssignedToInitials,
+                    DueDateBase = t.DueDateBase,
+                    DueDateDiff = t.DueDateDiff,
+                    ExamDate = serviceRequest.AppointmentDate.Value,
+                    ReportDate = dueDate,
+                    DependsOn = t.DependsOn,
+                    Sequence = t.Sequence
+                })
+                .OrderBy(t => t.Sequence)
+                .ToList();
+
+            tasks.Select(t => {
+                if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue)
+                {
+                    var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(7);
+                    t.DueDate = t.DueDateBase == 1 ? serviceRequest.AppointmentDate.Value.AddDays(t.DueDateDiff.Value) : reportDueDate.AddDays(t.DueDateDiff.Value);
+                }
+                return t;
+            }).ToList();
+
+            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
+
+            BuildDependencies(closeOutTask, null, tasks);
+
+            var nextTasks = tasks
+                        .Where(c => c.Status.Id != WebApp.Library.Enums.TaskStatuses.Completed)
+                        .OrderBy(o => o.DueDate)
+                        .GroupBy(g => (string.IsNullOrEmpty(g.AssignedTo) ? string.Empty : g.AssignedTo.ToLower()))
+                        .Select(s => new { s, Count = s.Count() })
+                        .SelectMany(sm => sm.s.Select(s => s)
+                                          .Zip(Enumerable.Range(1, sm.Count), (task, index)
+                                              => new NextTaskViewModel() {
+                                                  RowNum = index,
+                                                  Id = task.Id,
+                                                  ServiceRequestId = task.ServiceRequestId,
+                                                  DueDate = task.DueDate,
+                                                  ShortName = task.ShortName,
+                                                  TaskId = task.TaskId,
+                                                  Name = task.Name,
+                                                  Initials = task.Initials,
+                                                  AssignedToRoleId = task.AssignedToRoleId,
+                                                  AssignedToColorCode = task.AssignedToColorCode,
+                                                  AssignedTo = task.AssignedTo,
+                                                  AssignedToDisplayName = task.AssignedToDisplayName,
+                                                  StatusId = task.Status.Id,
+                                                  StatusName = task.Status.Name })
+                                    ).Where(t => t.RowNum == 1)
+                                    .ToList();
+
+            //var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId)
+            //    .GroupBy(srt => new
+            //    {
+            //        srt.AssignedToDisplayName,
+            //        srt.AssignedTo,
+            //        srt.TaskId,
+            //        srt.TaskName
+            //    })
+            //    .Select(c => new
+            //    {
+            //        c.Key.AssignedToDisplayName,
+            //        c.Key.AssignedTo,
+            //        c.Key.TaskId,
+            //        c.Key.TaskName,
+            //        CompletedTaskCount = c.Count(t => t.CompletedDate == null),
+            //        ActiveTaskCount = c.Count(t => t.CompletedDate != null)
+            //    });
+
+            return PartialView("NextTaskList", nextTasks);
         }
 
         private TaskViewModel BuildDependencies(TaskViewModel task, TaskViewModel parent, List<TaskViewModel> tasks)

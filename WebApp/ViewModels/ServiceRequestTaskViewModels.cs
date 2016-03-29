@@ -72,15 +72,32 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
                 }
             }
         }
-
         public string AssignedToDisplayName { get; internal set; }
-
         public string AssignedToColorCode { get; internal set; }
+        public DateTime DueDate { get; set; }
 
         public TaskViewModel()
         {
             Dependencies = new List<TaskViewModel>();
         }
+    }
+
+    public class NextTaskViewModel
+    {
+        public int RowNum { get; set; }
+        public int Id { get; set; }
+        public int ServiceRequestId { get; set; }
+        public short? TaskId { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public byte StatusId { get; set; }
+        public string StatusName { get; set; }
+        public string AssignedTo { get; set; }
+        public string AssignedToRoleId { get; set; }
+        public string Initials { get; set; }
+        public string AssignedToDisplayName { get; internal set; }
+        public string AssignedToColorCode { get; internal set; }
+        public DateTime DueDate { get; set; }
     }
 
 

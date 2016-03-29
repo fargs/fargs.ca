@@ -1,0 +1,25 @@
+﻿@using WebApp.Library.Enums
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@model List<NextTaskViewModel>
+
+@foreach (var item in Model)
+{
+    <div>
+        @if (item.StatusId == TaskStatuses.Active && item.AssignedTo.ToLower() == ViewBag.User.Id.ToLower())
+        {
+            <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", item.Id)
+                <button title="@item.AssignedToDisplayName" class="btn btn-sm btn-circle" style="color: white; background-color: @item.AssignedToColorCode">@item.Initials</button>
+                <span class="font-bold">@item.Name</span>
+            </form>
+        }
+        else
+        {
+            <span title="@item.AssignedToDisplayName" class="btn btn-sm btn-circle disabled" style="cursor: default; color: white; background-color: @item.AssignedToColorCode">
+                @item.Initials
+            </span>
+            <span class="@(item.StatusId == TaskStatuses.Waiting ? "text-muted" : "font-bold")">@item.Name</span>
+        }
+    </div>
+}

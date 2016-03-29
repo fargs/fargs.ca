@@ -56,7 +56,7 @@
             <li>
                 <div class="row" style="padding:8px 0px;">
                     <div class="col-xs-12">
-                        <span class="btn btn-circle disabled" style="color: white; background-color: @(string.IsNullOrEmpty(item.AssignedToColorCode) ? "gray" : item.AssignedToColorCode);">
+                        <span title="@item.AssignedToDisplayName" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @(string.IsNullOrEmpty(item.AssignedToColorCode) ? "gray" : item.AssignedToColorCode);">
                             <span class="small">@(string.IsNullOrEmpty(item.Initials) ? "?" : item.Initials)</span>
                         </span>
                         <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
@@ -66,8 +66,8 @@
                         }
                         @if (item.Status.Id == TaskStatuses.Waiting)
                         {
-                            <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
-                            <div id="task-row-@rowId" class="collapse">
+                            <span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span>
+                            <div id="task-row-@rowId">
                                 @ShowTree(item.Status.WaitingOn, level++)
                             </div>
                         }
@@ -121,7 +121,7 @@
                                 <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
                                 <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
                             </form>
-                            <div id="task-row-@rowId" class="collapse">
+                            <div id="task-row-@rowId" class="collapse in">
                                 @ShowTree(item.Status.WaitingOn, level++)
                             </div>
                         }

@@ -115,7 +115,16 @@
         </div>
     </div>
     <div class="col-sm-5">
-        @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = (Model.User.RoleId != e.Roles.SuperAdmin) })
+        <div class="panel panel-success">
+            <div class="panel-heading"><strong>My Tasks</strong></div>
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><a href="#AllTasks" data-toggle="collapse">All Tasks</a></div>
+            <div id="AllTasks" class="panel-collapse collapse">
+                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = false, collapsed = true })
+            </div>
+        </div>
     </div>
     <div class="col-sm-4">
         <div class="panel panel-default">

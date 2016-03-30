@@ -54,7 +54,7 @@
         {
             var rowId = Guid.NewGuid().ToString();
             <li>
-                <div class="row" style="padding:8px 0px;">
+                <div class="row" style="padding:8px 0;">
                     <div class="col-xs-12">
                         <span title="@item.AssignedToDisplayName" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @(string.IsNullOrEmpty(item.AssignedToColorCode) ? "gray" : item.AssignedToColorCode);">
                             <span class="small">@(string.IsNullOrEmpty(item.Initials) ? "?" : item.Initials)</span>
@@ -121,7 +121,7 @@
                                 <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
                                 <a href="#task-row-@rowId" data-toggle="collapse"><span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span></a>
                             </form>
-                            <div id="task-row-@rowId" class="collapse in">
+                            <div id="task-row-@rowId" class="collapse @(ViewBag.Collapsed ? string.Empty : "in")">
                                 @ShowTree(item.Status.WaitingOn, level++)
                             </div>
                         }

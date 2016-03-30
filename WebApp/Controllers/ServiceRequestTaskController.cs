@@ -40,11 +40,12 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true)
+        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;
             ViewBag.UseShortName = useShortName;
             ViewBag.MyTasksOnly = myTasksOnly;
+            ViewBag.Collapsed = collapsed;
 
             // get the user
             var user = db.Users.Single(u => u.UserName == User.Identity.Name);

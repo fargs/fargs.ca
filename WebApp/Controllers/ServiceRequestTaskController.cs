@@ -40,6 +40,39 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        [HttpPost]
+        public ActionResult AddRespondToQACommentsTask(int serviceRequestId)
+        {
+            var st = db.ServiceTasks.Single(t => t.Id == Tasks.RespondToQAComments);
+            var task = new ServiceRequestTask();
+            task.ServiceRequestId = serviceRequestId;
+            task.TaskId = Tasks.RespondToQAComments;
+            task.TaskName = st.TaskName;
+            task.TaskPhaseId = st.TaskPhaseId;
+            task.TaskPhaseName = st.TaskPhaseName;
+            task.ResponsibleRoleId = st.ResponsibleRoleId;
+            task.ResponsibleRoleName = st.ResponsibleRoleName;
+            task.Sequence = st.Sequence;
+            task.AssignedTo = db.ServiceRequestTasks.First(sr => sr.ResponsibleRoleId == st.ResponsibleRoleId).AssignedTo;
+            task.IsBillable = st.IsBillable.Value;
+            task.HourlyRate = st.HourlyRate;
+            task.EstimatedHours = st.EstimatedHours;
+            task.DependsOn = st.DependsOn;
+            task.DueDateBase = st.DueDateBase;
+            task.DueDateDiff = st.DueDateDiff;
+            task.Guidance = st.Guidance;
+            task.ModifiedDate = SystemTime.Now();
+            task.ModifiedUser = User.Identity.Name;
+
+            db.ServiceRequestTasks.Add(task);
+
+            var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
+            obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
+            db.SaveChanges();
+            
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
         public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;

@@ -757,6 +757,14 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequestTask' does not have a pri
         <EntityType Name="ServiceRequestTask">
           <Key>
             <PropertyRef Name="Id" />
+            
+            
+            
+            
+            
+            
+            
+            
           </Key>
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ObjectGuid" Type="uniqueidentifier" Nullable="false" />
@@ -812,6 +820,33 @@ warning 6002: The table/view 'Orvosi.API.SpecialRequest' does not have a primary
           <Property Name="ModifiedUserId" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="PhysicianDisplayName" Type="nvarchar" MaxLength="210" />
           <Property Name="ServiceName" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.Task' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="Id" />
+            
+            
+          </Key>
+          <Property Name="ServiceCategoryId" Type="smallint" />
+          <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
+          <Property Name="Id" Type="smallint" Nullable="false" />
+          <Property Name="TaskName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Guidance" Type="nvarchar" MaxLength="1000" />
+          <Property Name="EstimatedHours" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Sequence" Type="smallint" />
+          <Property Name="IsBillable" Type="bit" />
+          <Property Name="ResponsibleRoleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ResponsibleRoleName" Type="nvarchar" MaxLength="256" />
+          <Property Name="TaskPhaseId" Type="tinyint" />
+          <Property Name="TaskPhaseName" Type="nvarchar" MaxLength="128" />
+          <Property Name="DependsOn" Type="nvarchar" MaxLength="50" />
+          <Property Name="DueDateBase" Type="tinyint" />
+          <Property Name="DueDateDiff" Type="smallint" />
+          <Property Name="ShortName" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsCriticalPath" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1231,12 +1266,20 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         </Function>
         <Function Name="ServiceRequestTask_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="ServiceRequestId" Type="int" Mode="In" />
+          <Parameter Name="TaskId" Type="int" Mode="In" />
           <Parameter Name="TaskName" Type="nvarchar" Mode="In" />
+          <Parameter Name="TaskPhaseId" Type="tinyint" Mode="In" />
+          <Parameter Name="TaskPhaseName" Type="nvarchar" Mode="In" />
           <Parameter Name="Guidance" Type="nvarchar" Mode="In" />
           <Parameter Name="ResponsibleRoleId" Type="nvarchar" Mode="In" />
           <Parameter Name="ResponsibleRoleName" Type="nvarchar" Mode="In" />
           <Parameter Name="Sequence" Type="smallint" Mode="In" />
           <Parameter Name="AssignedTo" Type="nvarchar" Mode="In" />
+          <Parameter Name="DependsOn" Type="nvarchar" Mode="In" />
+          <Parameter Name="DueDateBase" Type="tinyint" Mode="In" />
+          <Parameter Name="DueDateDiff" Type="smallint" Mode="In" />
+          <Parameter Name="ShortName" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsCriticalPath" Type="bit" Mode="In" />
           <Parameter Name="IsBillable" Type="bit" Mode="In" />
           <Parameter Name="HourlyRate" Type="decimal" Mode="In" />
           <Parameter Name="EstimatedHours" Type="decimal" Mode="In" />
@@ -1263,6 +1306,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="Notes" Type="nvarchar" Mode="In" />
           <Parameter Name="InvoiceItemId" Type="smallint" Mode="In" />
           <Parameter Name="ModifiedUser" Type="nvarchar" Mode="In" />
+          <Parameter Name="DependsOn" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="SpecialRequest_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
@@ -1849,6 +1893,28 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [SpecialRequest].[ServiceName] AS [ServiceName]
     FROM [API].[SpecialRequest] AS [SpecialRequest]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="Task" EntityType="Self.Task" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [Task].[ServiceCategoryId] AS [ServiceCategoryId], 
+    [Task].[ServiceCategoryName] AS [ServiceCategoryName], 
+    [Task].[Id] AS [Id], 
+    [Task].[TaskName] AS [TaskName], 
+    [Task].[Guidance] AS [Guidance], 
+    [Task].[EstimatedHours] AS [EstimatedHours], 
+    [Task].[HourlyRate] AS [HourlyRate], 
+    [Task].[Sequence] AS [Sequence], 
+    [Task].[IsBillable] AS [IsBillable], 
+    [Task].[ResponsibleRoleId] AS [ResponsibleRoleId], 
+    [Task].[ResponsibleRoleName] AS [ResponsibleRoleName], 
+    [Task].[TaskPhaseId] AS [TaskPhaseId], 
+    [Task].[TaskPhaseName] AS [TaskPhaseName], 
+    [Task].[DependsOn] AS [DependsOn], 
+    [Task].[DueDateBase] AS [DueDateBase], 
+    [Task].[DueDateDiff] AS [DueDateDiff], 
+    [Task].[ShortName] AS [ShortName], 
+    [Task].[IsCriticalPath] AS [IsCriticalPath]
+    FROM [API].[Task] AS [Task]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="User" EntityType="Self.User" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
     [User].[Id] AS [Id], 
@@ -2240,12 +2306,20 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <FunctionImport Name="ServiceRequestTask_Insert" ReturnType="Collection(Int32)">
             <Parameter Name="ServiceRequestId" Mode="In" Type="Int32" />
+            <Parameter Name="TaskId" Mode="In" Type="Int32" />
             <Parameter Name="TaskName" Mode="In" Type="String" />
+            <Parameter Name="TaskPhaseId" Mode="In" Type="Byte" />
+            <Parameter Name="TaskPhaseName" Mode="In" Type="String" />
             <Parameter Name="Guidance" Mode="In" Type="String" />
             <Parameter Name="ResponsibleRoleId" Mode="In" Type="String" />
             <Parameter Name="ResponsibleRoleName" Mode="In" Type="String" />
             <Parameter Name="Sequence" Mode="In" Type="Int16" />
             <Parameter Name="AssignedTo" Mode="In" Type="String" />
+            <Parameter Name="DependsOn" Mode="In" Type="String" />
+            <Parameter Name="DueDateBase" Mode="In" Type="Byte" />
+            <Parameter Name="DueDateDiff" Mode="In" Type="Int16" />
+            <Parameter Name="ShortName" Mode="In" Type="String" />
+            <Parameter Name="IsCriticalPath" Mode="In" Type="Boolean" />
             <Parameter Name="IsBillable" Mode="In" Type="Boolean" />
             <Parameter Name="HourlyRate" Mode="In" Type="Decimal" />
             <Parameter Name="EstimatedHours" Mode="In" Type="Decimal" />
@@ -2272,6 +2346,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Notes" Mode="In" Type="String" />
             <Parameter Name="InvoiceItemId" Mode="In" Type="Int16" />
             <Parameter Name="ModifiedUser" Mode="In" Type="String" />
+            <Parameter Name="DependsOn" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="ServiceRequestCostRollUps" EntityType="OrvosiModel.ServiceRequestCostRollUp" />
           <EntitySet Name="Physicians" EntityType="OrvosiModel.Physician" />
@@ -2450,6 +2525,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="ServiceProviderId" Mode="In" Type="Guid" />
             <Parameter Name="Now" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <EntitySet Name="ServiceTasks" EntityType="OrvosiModel.ServiceTask" />
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -3376,6 +3452,29 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="String" Name="ServiceName" Nullable="false" MaxLength="128" />
           <Property Type="String" Name="ClaimantName" Nullable="true" MaxLength="128" />
         </ComplexType>
+        <EntityType Name="ServiceTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="ServiceCategoryId" Type="Int16" />
+          <Property Name="ServiceCategoryName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int16" Nullable="false" />
+          <Property Name="TaskName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Guidance" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="EstimatedHours" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Sequence" Type="Int16" />
+          <Property Name="IsBillable" Type="Boolean" />
+          <Property Name="ResponsibleRoleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ResponsibleRoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="TaskPhaseId" Type="Byte" />
+          <Property Name="TaskPhaseName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DependsOn" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DueDateBase" Type="Byte" />
+          <Property Name="DueDateDiff" Type="Int16" />
+          <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsCriticalPath" Type="Boolean" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4421,6 +4520,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequestTask">
               <ModificationFunctionMapping>
                 <InsertFunction FunctionName="OrvosiModel.Store.ServiceRequestTask_Insert">
+                  <ScalarProperty Name="IsCriticalPath" ParameterName="IsCriticalPath" />
+                  <ScalarProperty Name="ShortName" ParameterName="ShortName" />
+                  <ScalarProperty Name="DueDateDiff" ParameterName="DueDateDiff" />
+                  <ScalarProperty Name="DueDateBase" ParameterName="DueDateBase" />
+                  <ScalarProperty Name="DependsOn" ParameterName="DependsOn" />
+                  <ScalarProperty Name="TaskPhaseName" ParameterName="TaskPhaseName" />
+                  <ScalarProperty Name="TaskPhaseId" ParameterName="TaskPhaseId" />
+                  <ScalarProperty Name="TaskId" ParameterName="TaskId" />
                   <ScalarProperty Name="HourlyRate" ParameterName="HourlyRate" />
                   <ScalarProperty Name="Guidance" ParameterName="Guidance" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" />
@@ -4438,6 +4545,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                   <ScalarProperty Name="ServiceRequestId" ParameterName="ServiceRequestId" />
                 </InsertFunction>
                 <UpdateFunction FunctionName="OrvosiModel.Store.ServiceRequestTask_Update">
+                  <ScalarProperty Name="DependsOn" ParameterName="DependsOn" Version="Current" />
                   <ScalarProperty Name="HourlyRate" ParameterName="HourlyRate" Version="Current" />
                   <ScalarProperty Name="Guidance" ParameterName="Guidance" Version="Current" />
                   <ScalarProperty Name="ModifiedUser" ParameterName="ModifiedUser" Version="Current" />
@@ -4714,6 +4822,30 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="ServiceTasks">
+            <EntityTypeMapping TypeName="OrvosiModel.ServiceTask">
+              <MappingFragment StoreEntitySet="Task">
+                <ScalarProperty Name="IsCriticalPath" ColumnName="IsCriticalPath" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="DueDateDiff" ColumnName="DueDateDiff" />
+                <ScalarProperty Name="DueDateBase" ColumnName="DueDateBase" />
+                <ScalarProperty Name="DependsOn" ColumnName="DependsOn" />
+                <ScalarProperty Name="TaskPhaseName" ColumnName="TaskPhaseName" />
+                <ScalarProperty Name="TaskPhaseId" ColumnName="TaskPhaseId" />
+                <ScalarProperty Name="ResponsibleRoleName" ColumnName="ResponsibleRoleName" />
+                <ScalarProperty Name="ResponsibleRoleId" ColumnName="ResponsibleRoleId" />
+                <ScalarProperty Name="IsBillable" ColumnName="IsBillable" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
+                <ScalarProperty Name="EstimatedHours" ColumnName="EstimatedHours" />
+                <ScalarProperty Name="Guidance" ColumnName="Guidance" />
+                <ScalarProperty Name="TaskName" ColumnName="TaskName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ServiceCategoryName" ColumnName="ServiceCategoryName" />
+                <ScalarProperty Name="ServiceCategoryId" ColumnName="ServiceCategoryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

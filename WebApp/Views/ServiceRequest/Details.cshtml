@@ -123,6 +123,12 @@
             <div class="panel-heading"><a href="#AllTasks" data-toggle="collapse">All Tasks</a></div>
             <div id="AllTasks" class="panel-collapse collapse">
                 @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = false, collapsed = true })
+                <div style="padding-top: 20px">
+                    <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
+                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                        <input type="submit" value="Add Physician Task - Respond To QA Comments" class="btn btn-primary" />
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -182,7 +188,7 @@
                         @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
                         {
                             <div>
-                                 <p>@Model.ServiceRequest.Title</p>
+                                <p>@Model.ServiceRequest.Title</p>
                             </div>
 
                             if (Model.DropboxFolder == null)
@@ -227,27 +233,27 @@
 {
     <div>
         <a href="#SuperAdminSection" data-toggle="collapse">Super Admin Section</a>
-        <div id="SuperAdminSection" class="collapse">
+        <div id="SuperAdminSection" class="row collapse">
             <div class="col-sm-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Invoice from Physician to Company
                     </div>
-                    <div class="panel-body">
-                        @if (Model.Invoices.Count() == 0)
-                {
-                    var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
-                    using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+                    @if (Model.Invoices.Count() == 0)
                     {
+                        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
+                        <div class="panel-body">
+                            @using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
+                            {
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
                                 <button type="submit" class="btn btn-primary">Create Invoice</button>
                             }
-                        }
-                        else
-                        {
-                            @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
-                        }
-                    </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
+                    }
                 </div>
 
                 <div class="panel panel-default">
@@ -256,7 +262,7 @@
                     </div>
                     <div class="panel-body">
                         @if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
-                {
+                        {
                             <div>No billable tasks have been completed.</div>
                         }
                     </div>
@@ -267,9 +273,9 @@
 }
 
 
-    @section Scripts {
-        <script type="text/javascript">
-            $(function () {
-            })
-        </script>
-    }
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+        })
+    </script>
+}

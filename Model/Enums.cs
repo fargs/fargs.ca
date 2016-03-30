@@ -147,6 +147,8 @@ namespace Model.Enums
         public const byte CreateCaseFolder = 16;
         public const byte IntakeInterview = 12;
         public const byte SubmitInvoice = 24;
+        public const byte RespondToQAComments = 21;
+        public const byte ObtainFinalReportCompany = 28;
         public const byte CloseCase = 30;
     }
 

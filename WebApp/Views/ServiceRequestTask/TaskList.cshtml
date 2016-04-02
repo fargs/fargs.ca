@@ -1,5 +1,4 @@
 ﻿@using e = Model.Enums
-@using WebApp.Library.Enums
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model List<TaskViewModel>
 
@@ -7,15 +6,15 @@
 
     public string GetTaskStatusCSS(TaskStatusViewModel status, string assignedTo)
     {
-        if (status.Id == TaskStatuses.Active)
+        if (status.Id == e.TaskStatuses.ToDo)
         {
             return "default";
         }
-        else if (status.Id == TaskStatuses.Completed)
+        else if (status.Id == e.TaskStatuses.Done)
         {
             return "success";
         }
-        else if (status.Id == TaskStatuses.Waiting)
+        else if (status.Id == e.TaskStatuses.Waiting)
         {
             return "warning";
         }
@@ -29,15 +28,15 @@
 
     public string GetTaskStatusIcon(TaskStatusViewModel status)
     {
-        if (status.Id == TaskStatuses.Active)
+        if (status.Id == e.TaskStatuses.ToDo)
         {
             return string.Empty;
         }
-        else if (status.Id == TaskStatuses.Completed)
+        else if (status.Id == e.TaskStatuses.Done)
         {
             return "glyphicon glyphicon-ok";
         }
-        else if (status.Id == TaskStatuses.Waiting)
+        else if (status.Id == e.TaskStatuses.Waiting)
         {
             return "glyphicon glyphicon-hourglass";
         }
@@ -60,11 +59,11 @@
                             <span class="small">@(string.IsNullOrEmpty(item.Initials) ? "?" : item.Initials)</span>
                         </span>
                         <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
-                        @if (item.Status.Id == TaskStatuses.Completed)
+                        @if (item.Status.Id == e.TaskStatuses.Done)
                         {
                             <span class="small pull-right">Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
                         }
-                        @if (item.Status.Id == TaskStatuses.Waiting)
+                        @if (item.Status.Id == e.TaskStatuses.Waiting)
                         {
                             <span class="badge pull-right">@(item.DependsOn == "ExamDate" ? "E" : item.Status.WaitingOn.Count.ToString())</span>
                             <div id="task-row-@rowId">
@@ -88,7 +87,7 @@
             <li class="list-group-item">
                 <div class="row">
                     <div class="col-xs-12">
-                        @if (item.Status.Id == TaskStatuses.Completed)
+                        @if (item.Status.Id == e.TaskStatuses.Done)
                         {
                             <form method="post" action="@(Url.Content("~/servicerequesttask/markasincomplete"))">
                                 @Html.AntiForgeryToken()
@@ -100,7 +99,7 @@
                                 <span class="small pull-right">Completed on @item.CompletedDate.Value.ToString("dddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
                             </form>
                         }
-                        else if (item.Status.Id == TaskStatuses.Active)
+                        else if (item.Status.Id == e.TaskStatuses.ToDo)
                         {
                             <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
                                 @Html.AntiForgeryToken()
@@ -110,7 +109,7 @@
                                 <span>@(ViewBag.UseShortName ? item.ShortName : item.Name) </span>
                             </form>
                         }
-                        else if (item.Status.Id == TaskStatuses.Waiting)
+                        else if (item.Status.Id == e.TaskStatuses.Waiting)
                         {
                             <form method="post" class="form-inline" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
                                 @Html.AntiForgeryToken()

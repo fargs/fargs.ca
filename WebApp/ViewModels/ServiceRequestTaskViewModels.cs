@@ -1,9 +1,9 @@
-﻿using Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Library.Enums;
+using Model;
+using Model.Enums;
 
 namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 {
@@ -41,7 +41,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
             {
                 if (this.CompletedDate.HasValue)
                 {
-                    return new TaskStatusViewModel(TaskStatuses.Completed);
+                    return new TaskStatusViewModel(TaskStatuses.Done);
                 }
                 else if (this.IsObsolete == true)
                 {
@@ -51,17 +51,17 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
                 {
                     if (DateTime.Now >= this.ExamDate)
                     {
-                        return new TaskStatusViewModel(TaskStatuses.Active);
+                        return new TaskStatusViewModel(TaskStatuses.ToDo);
                     }
                     return new TaskStatusViewModel(TaskStatuses.Waiting);
                 }
                 else if (string.IsNullOrEmpty(this.DependsOn))
                 {
-                    return new TaskStatusViewModel(TaskStatuses.Active);
+                    return new TaskStatusViewModel(TaskStatuses.ToDo);
                 }
                 else
                 {
-                    var status = new TaskStatusViewModel(TaskStatuses.Active);
+                    var status = new TaskStatusViewModel(TaskStatuses.ToDo);
                     foreach (var item in Dependencies.Where(d => !d.CompletedDate.HasValue && d.IsObsolete == false))
                     {
                         status.Id = TaskStatuses.Waiting;
@@ -111,14 +111,14 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         {
             WaitingOn = new List<TaskViewModel>();
 
-            if (TaskStatusId == TaskStatuses.Active)
+            if (TaskStatusId == TaskStatuses.ToDo)
             {
-                Id = TaskStatuses.Active;
+                Id = TaskStatuses.ToDo;
                 Name = "Active";
             }
-            else if (TaskStatusId == TaskStatuses.Completed)
+            else if (TaskStatusId == TaskStatuses.Done)
             {
-                Id = TaskStatuses.Completed;
+                Id = TaskStatuses.Done;
                 Name = "Completed";
             }
             else if (TaskStatusId == TaskStatuses.Waiting)

@@ -1,0 +1,14 @@
+﻿@using WebApp.Library.Extensions
+@using Model.Enums
+@model List<Model.GetMyTasks_Result>
+
+<ul>
+    @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
+    {
+        <li>
+            <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
+                @string.Format("{0}, {1}", item.TaskName, item.DueDate.ToOrvosiDateFormat())
+            </a>
+        </li>
+    }
+</ul>

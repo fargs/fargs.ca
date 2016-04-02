@@ -117,20 +117,21 @@
     <div class="col-sm-5">
         <div class="panel panel-success">
             <div class="panel-heading"><strong>My Tasks</strong></div>
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, collapsed = true })
         </div>
         <div class="panel panel-default">
             <div class="panel-heading"><a href="#AllTasks" data-toggle="collapse">All Tasks</a></div>
             <div id="AllTasks" class="panel-collapse collapse">
                 @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = false, collapsed = true })
-                <div style="padding-top: 20px">
-                    <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
-                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                        <input type="submit" value="Add Physician Task - Respond To QA Comments" class="btn btn-primary" />
-                    </form>
-                </div>
             </div>
         </div>
+        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+        {
+            <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
+                @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                <input type="submit" value="Add Physician Task - Respond To QA Comments" class="btn btn-primary" />
+            </form>
+        }
     </div>
     <div class="col-sm-4">
         <div class="panel panel-default">

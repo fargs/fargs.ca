@@ -73,6 +73,33 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
+        public ActionResult MyTaskList(string serviceProviderId)
+        {
+            // get the user
+            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+
+            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            Guid? serviceProviderGuid;
+            if (user.RoleId == Roles.SuperAdmin && !string.IsNullOrEmpty(serviceProviderId))
+            {
+                serviceProviderGuid = new Guid(serviceProviderId);
+            }
+            else
+            {
+                serviceProviderGuid = new Guid(user.Id);
+            }
+
+            var tasks = db.GetMyTasks(serviceProviderGuid, SystemTime.Now())
+                .OrderBy(t => t.DueDate)
+                .ToList();
+
+            return PartialView("MyTaskList", tasks);
+        }
+
         public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;
@@ -200,7 +227,7 @@ namespace WebApp.Controllers
             BuildDependencies(closeOutTask, null, tasks);
 
             var nextTasks = tasks
-                        .Where(c => c.Status.Id != WebApp.Library.Enums.TaskStatuses.Completed)
+                        .Where(c => c.Status.Id != TaskStatuses.Done)
                         .OrderBy(o => o.DueDate)
                         .GroupBy(g => (string.IsNullOrEmpty(g.AssignedTo) ? string.Empty : g.AssignedTo.ToLower()))
                         .Select(s => new { s, Count = s.Count() })

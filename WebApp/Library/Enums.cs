@@ -20,12 +20,4 @@ namespace WebApp.Library.Enums
         public static string Waiting = Color.Blue.ToString();
         public static string Completed = Color.Gray.ToString();
     }
-
-    public static class TaskStatuses
-    {
-        public const byte Active = 1;
-        public const byte Completed = 2;
-        public const byte Waiting = 3;
-        public const byte Obsolete = 4;
-    }
 }

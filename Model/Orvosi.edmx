@@ -369,6 +369,22 @@ warning 6002: The table/view 'Orvosi.API.LookupItem' does not have a primary key
           <Property Name="ItemValue" Type="smallint" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'Orvosi.API.MyTasks' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MyTasks">
+          <Key>
+            <PropertyRef Name="ServiceRequestId" />
+            <PropertyRef Name="IsObsolete" />
+          </Key>
+          <Property Name="AssignedTo" Type="nvarchar" MaxLength="128" />
+          <Property Name="ServiceRequestId" Type="int" Nullable="false" />
+          <Property Name="TaskId" Type="smallint" />
+          <Property Name="TaskStatus" Type="tinyint" />
+          <Property Name="IsObsolete" Type="bit" Nullable="false" />
+          <Property Name="DependentCompletedDate" Type="datetime" />
+          <Property Name="DependentIsObsolete" Type="bit" />
+          <Property Name="DueDate" Type="datetime" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Physician">
           <Key>
@@ -1030,6 +1046,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Parameter Name="ServiceProviderId" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="Now" Type="datetime" Mode="In" />
         </Function>
+        <Function Name="GetMyTasks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="AssignedTo" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Now" Type="datetime" Mode="In" />
+        </Function>
         <Function Name="GetNextInvoiceNumber" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API" />
         <Function Name="GetServiceCatalogue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="PhysicianId" Type="nvarchar" Mode="In" />
@@ -1541,6 +1561,18 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [LookupItem].[ItemText] AS [ItemText], 
     [LookupItem].[ItemValue] AS [ItemValue]
     FROM [API].[LookupItem] AS [LookupItem]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="MyTasks" EntityType="Self.MyTasks" store:Type="Views" store:Schema="API">
+            <DefiningQuery>SELECT 
+    [MyTasks].[AssignedTo] AS [AssignedTo], 
+    [MyTasks].[ServiceRequestId] AS [ServiceRequestId], 
+    [MyTasks].[TaskId] AS [TaskId], 
+    [MyTasks].[TaskStatus] AS [TaskStatus], 
+    [MyTasks].[IsObsolete] AS [IsObsolete], 
+    [MyTasks].[DependentCompletedDate] AS [DependentCompletedDate], 
+    [MyTasks].[DependentIsObsolete] AS [DependentIsObsolete], 
+    [MyTasks].[DueDate] AS [DueDate]
+    FROM [API].[MyTasks] AS [MyTasks]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Physician" EntityType="Self.Physician" store:Type="Views" store:Schema="API">
             <DefiningQuery>SELECT 
@@ -2526,6 +2558,11 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="Now" Mode="In" Type="DateTime" />
           </FunctionImport>
           <EntitySet Name="ServiceTasks" EntityType="OrvosiModel.ServiceTask" />
+          <EntitySet Name="MyTasks" EntityType="OrvosiModel.MyTask" />
+          <FunctionImport Name="GetMyTasks" ReturnType="Collection(OrvosiModel.GetMyTasks_Result)">
+            <Parameter Name="AssignedTo" Mode="In" Type="Guid" />
+            <Parameter Name="Now" Mode="In" Type="DateTime" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -3475,6 +3512,36 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ShortName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="IsCriticalPath" Type="Boolean" Nullable="false" />
         </EntityType>
+        <EntityType Name="MyTask">
+          <Key>
+            <PropertyRef Name="ServiceRequestId" />
+            <PropertyRef Name="IsObsolete" />
+          </Key>
+          <Property Name="AssignedTo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceRequestId" Type="Int32" Nullable="false" />
+          <Property Name="TaskId" Type="Int16" />
+          <Property Name="TaskStatus" Type="Byte" />
+          <Property Name="IsObsolete" Type="Boolean" Nullable="false" />
+          <Property Name="DependentCompletedDate" Type="DateTime" Precision="3" />
+          <Property Name="DependentIsObsolete" Type="Boolean" />
+          <Property Name="DueDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="GetMyTasks_Result">
+          <Property Type="Int32" Name="ServiceRequestId" Nullable="false" />
+          <Property Type="DateTime" Name="ReportDueDate" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="AppointmentDate" Nullable="true" />
+          <Property Type="Time" Name="StartTime" Nullable="true" />
+          <Property Type="Int16" Name="TaskId" Nullable="true" />
+          <Property Type="String" Name="TaskName" Nullable="false" MaxLength="128" />
+          <Property Type="DateTime" Name="DueDate" Nullable="true" Precision="23" />
+          <Property Type="Byte" Name="TaskStatusId" Nullable="true" />
+          <Property Type="String" Name="TaskStatusName" Nullable="true" MaxLength="128" />
+          <Property Type="Boolean" Name="IsObsolete" Nullable="false" />
+          <Property Type="Int16" Name="CompanyId" Nullable="true" />
+          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="128" />
+          <Property Type="Int16" Name="ServiceId" Nullable="true" />
+          <Property Type="String" Name="ServiceName" Nullable="true" MaxLength="128" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4846,6 +4913,40 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MyTasks">
+            <EntityTypeMapping TypeName="OrvosiModel.MyTask">
+              <MappingFragment StoreEntitySet="MyTasks">
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="DependentIsObsolete" ColumnName="DependentIsObsolete" />
+                <ScalarProperty Name="DependentCompletedDate" ColumnName="DependentCompletedDate" />
+                <ScalarProperty Name="IsObsolete" ColumnName="IsObsolete" />
+                <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
+                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetMyTasks" FunctionName="OrvosiModel.Store.GetMyTasks">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetMyTasks_Result">
+                <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
+                <ScalarProperty Name="ReportDueDate" ColumnName="ReportDueDate" />
+                <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="TaskName" ColumnName="TaskName" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="TaskStatusId" ColumnName="TaskStatusId" />
+                <ScalarProperty Name="TaskStatusName" ColumnName="TaskStatusName" />
+                <ScalarProperty Name="IsObsolete" ColumnName="IsObsolete" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

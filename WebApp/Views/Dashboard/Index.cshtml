@@ -35,6 +35,13 @@
 
 <div class="row">
     <div class="col-md-12">
+        <h2>Tasks</h2>
+        @Html.Action("MyTaskList", "ServiceRequestTask")
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
         You have
         @if (Model.ThisWeekTotal == 0)
         {

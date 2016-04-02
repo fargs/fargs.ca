@@ -61,6 +61,7 @@ namespace Model
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
+        public virtual DbSet<MyTask> MyTasks { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -2013,6 +2014,19 @@ namespace Model
                 new ObjectParameter("Now", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", serviceProviderIdParameter, nowParameter);
+        }
+    
+        public virtual ObjectResult<GetMyTasks_Result> GetMyTasks(Nullable<System.Guid> assignedTo, Nullable<System.DateTime> now)
+        {
+            var assignedToParameter = assignedTo.HasValue ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(System.Guid));
+    
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMyTasks_Result>("GetMyTasks", assignedToParameter, nowParameter);
         }
     }
 }

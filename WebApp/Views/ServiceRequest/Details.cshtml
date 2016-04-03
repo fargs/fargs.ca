@@ -196,7 +196,7 @@
                         else
                         {
                             <span class="label label-success">Created</span>
-                                        <div class="h4">Folder Shared To:</div>
+                            <div class="h4">Folder Shared To:</div>
                             if (Model.DropboxFolderMembers != null)
                             {
                                 <ul>
@@ -205,9 +205,9 @@
                                         <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
                                     }
                                 </ul>
-                                            <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
-                                                <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
-                                            </form>
+                                <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
+                                    <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
+                                </form>
                             }
                         }
                     }
@@ -219,41 +219,38 @@
 
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
-    <div>
-        <a href="#SuperAdminSection" data-toggle="collapse">Super Admin Section</a>
-        <div id="SuperAdminSection" class="row collapse">
-            <div class="col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice from Physician to Company
-                    </div>
-                    @if (Model.Invoices.Count() == 0)
-                    {
-                        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
-                        <div class="panel-body">
-                            @using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
-                            {
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                <button type="submit" class="btn btn-primary">Create Invoice</button>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
-                    }
+    <div id="SuperAdminSection" class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Invoice from Physician to Company
                 </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice from Staff to Orvosi
-                    </div>
+                @if (Model.Invoices.Count() == 0)
+                {
+                    var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
                     <div class="panel-body">
-                        @if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
+                        @using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
                         {
-                            <div>No billable tasks have been completed.</div>
+                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+                            <button type="submit" class="btn btn-primary">Create Invoice</button>
                         }
                     </div>
+                }
+                else
+                {
+                    @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
+                }
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Invoice from Staff to Orvosi
+                </div>
+                <div class="panel-body">
+                    @if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
+                    {
+                        <div>No billable tasks have been completed.</div>
+                    }
                 </div>
             </div>
         </div>

@@ -71,14 +71,6 @@ namespace Model.Enums
         public const byte Closed = 11;
     }
 
-    public static class TaskStatuses
-    {
-        public const byte ToDo = 14;
-        public const byte InProgress = 15;
-        public const byte Done = 16;
-        public const byte Obsolete = 40;
-    }
-
     public static class EntityTypes
     {
         public const string Company = "COMPANY";
@@ -147,6 +139,18 @@ namespace Model.Enums
         public const byte CreateCaseFolder = 16;
         public const byte IntakeInterview = 12;
         public const byte SubmitInvoice = 24;
+        public const byte RespondToQAComments = 21;
+        public const byte ObtainFinalReportCompany = 28;
+        public const byte CloseCase = 30;
+    }
+
+    public static class TaskStatuses
+    {
+        public const byte ToDo = 14;
+        public const byte InProgress = 15;
+        public const byte Waiting = 16;
+        public const byte Done = 47;
+        public const byte Obsolete = 40;
     }
 
     public static class Timeline

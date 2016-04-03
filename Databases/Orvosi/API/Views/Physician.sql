@@ -7,6 +7,7 @@
 
 
 
+
 CREATE VIEW [API].[Physician]
 AS
 SELECT 
@@ -51,6 +52,7 @@ SELECT
 	,la.LocationName
 	,AddressName = la.Name
 	,PrimarySpecialtyName = s.ItemText
+	,u.ColorCode
 FROM API.[User] u
 LEFT JOIN dbo.Physician p ON u.Id = p.Id
 LEFT JOIN API.Location la ON p.PrimaryAddressId = la.Id

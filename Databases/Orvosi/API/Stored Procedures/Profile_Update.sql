@@ -8,6 +8,7 @@ CREATE PROC [API].[Profile_Update]
 	,@EmployeeId nvarchar(50)
 	,@ModifiedUser nvarchar(256)
 	,@IsTestRecord bit
+	,@ColorCode nvarchar(50)
 AS
 	
 	UPDATE dbo.AspNetUsers
@@ -19,4 +20,5 @@ AS
 		,[EmployeeId] = @EmployeeId
 		,[ModifiedUser] = @ModifiedUser
 		,[IsTestRecord] = @IsTestRecord
+		,[ColorCode] = @ColorCode
 	WHERE [Id] = @Id

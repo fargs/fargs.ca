@@ -15,7 +15,8 @@
 
 
 
-CREATE VIEW API.ServiceRequest
+
+CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
 AS (
@@ -157,6 +158,8 @@ SELECT
 	,sr.PhysicianId
 	,PhysicianDisplayName = p.DisplayName
 	,PhysicianUserName = p.UserName
+	,PhysicianInitials = dbo.GetInitials(p.FirstName, p.LastName)
+	,PhysicianColorCode = p.ColorCode
 	,CompanyGuid = c.ObjectGuid
 	,CompanyName = c.Name
 	,ParentCompanyName = c.ParentName
@@ -178,8 +181,14 @@ SELECT
 	,LocationId = a.LocationId
 	,LocationName = a.LocationName
 	,CaseCoordinatorName = dbo.GetDisplayName(cc.FirstName, cc.LastName, cc.Title)
+	,CaseCoordinatorInitials = dbo.GetInitials(cc.FirstName, cc.LastName)
+	,CaseCoordinatorColorCode = cc.ColorCode
 	,IntakeAssistantName = dbo.GetDisplayName(ia.FirstName, ia.LastName, ia.Title)
+	,IntakeAssistantInitials = dbo.GetInitials(ia.FirstName, ia.LastName)
+	,IntakeAssistantColorCode = ia.ColorCode
 	,DocumentReviewerName = dbo.GetDisplayName(dr.FirstName, dr.LastName, dr.Title)
+	,DocumentReviewerInitials = dbo.GetInitials(dr.FirstName, dr.LastName)
+	,DocumentReviewerColorCode = dr.ColorCode
 	,AppointmentDate = ad.[Day]
 	,sl.StartTime
 	,sl.Duration

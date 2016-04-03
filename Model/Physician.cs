@@ -55,5 +55,6 @@ namespace Model
         public string AddressName { get; set; }
         public string PrimarySpecialtyName { get; set; }
         public string LogoCssClass { get; set; }
+        public string ColorCode { get; set; }
     }
 }

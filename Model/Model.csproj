@@ -101,6 +101,9 @@
     <Compile Include="GetDashboardServiceRequest_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetMyTasks_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="GetPhysicianGoogleAccount_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -132,6 +135,9 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="LookupItem.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MyTask.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Orvosi.Context.cs">
@@ -204,6 +210,9 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="ServiceRequestTask.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceTask.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="SpecialRequest.cs">

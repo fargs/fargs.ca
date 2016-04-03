@@ -60,6 +60,8 @@ namespace Model
         public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
+        public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
+        public virtual DbSet<MyTask> MyTasks { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -302,7 +304,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Account_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, companyIdParameter, modifiedUserParameter, lastActivationDateParameter);
         }
     
-        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord)
+        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord, string colorCode)
         {
             var idParameter = id != null ?
                 new ObjectParameter("Id", id) :
@@ -336,7 +338,11 @@ namespace Model
                 new ObjectParameter("IsTestRecord", isTestRecord) :
                 new ObjectParameter("IsTestRecord", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter);
+            var colorCodeParameter = colorCode != null ?
+                new ObjectParameter("ColorCode", colorCode) :
+                new ObjectParameter("ColorCode", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter, colorCodeParameter);
         }
     
         public virtual int Service_Insert(string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)
@@ -1301,15 +1307,27 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Delete", idParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> ServiceRequestTask_Insert(Nullable<int> serviceRequestId, string taskName, string guidance, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser)
+        public virtual ObjectResult<Nullable<int>> ServiceRequestTask_Insert(Nullable<int> serviceRequestId, Nullable<int> taskId, string taskName, Nullable<byte> taskPhaseId, string taskPhaseName, string guidance, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, string dependsOn, Nullable<byte> dueDateBase, Nullable<short> dueDateDiff, string shortName, Nullable<bool> isCriticalPath, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser)
         {
             var serviceRequestIdParameter = serviceRequestId.HasValue ?
                 new ObjectParameter("ServiceRequestId", serviceRequestId) :
                 new ObjectParameter("ServiceRequestId", typeof(int));
     
+            var taskIdParameter = taskId.HasValue ?
+                new ObjectParameter("TaskId", taskId) :
+                new ObjectParameter("TaskId", typeof(int));
+    
             var taskNameParameter = taskName != null ?
                 new ObjectParameter("TaskName", taskName) :
                 new ObjectParameter("TaskName", typeof(string));
+    
+            var taskPhaseIdParameter = taskPhaseId.HasValue ?
+                new ObjectParameter("TaskPhaseId", taskPhaseId) :
+                new ObjectParameter("TaskPhaseId", typeof(byte));
+    
+            var taskPhaseNameParameter = taskPhaseName != null ?
+                new ObjectParameter("TaskPhaseName", taskPhaseName) :
+                new ObjectParameter("TaskPhaseName", typeof(string));
     
             var guidanceParameter = guidance != null ?
                 new ObjectParameter("Guidance", guidance) :
@@ -1330,6 +1348,26 @@ namespace Model
             var assignedToParameter = assignedTo != null ?
                 new ObjectParameter("AssignedTo", assignedTo) :
                 new ObjectParameter("AssignedTo", typeof(string));
+    
+            var dependsOnParameter = dependsOn != null ?
+                new ObjectParameter("DependsOn", dependsOn) :
+                new ObjectParameter("DependsOn", typeof(string));
+    
+            var dueDateBaseParameter = dueDateBase.HasValue ?
+                new ObjectParameter("DueDateBase", dueDateBase) :
+                new ObjectParameter("DueDateBase", typeof(byte));
+    
+            var dueDateDiffParameter = dueDateDiff.HasValue ?
+                new ObjectParameter("DueDateDiff", dueDateDiff) :
+                new ObjectParameter("DueDateDiff", typeof(short));
+    
+            var shortNameParameter = shortName != null ?
+                new ObjectParameter("ShortName", shortName) :
+                new ObjectParameter("ShortName", typeof(string));
+    
+            var isCriticalPathParameter = isCriticalPath.HasValue ?
+                new ObjectParameter("IsCriticalPath", isCriticalPath) :
+                new ObjectParameter("IsCriticalPath", typeof(bool));
     
             var isBillableParameter = isBillable.HasValue ?
                 new ObjectParameter("IsBillable", isBillable) :
@@ -1363,10 +1401,10 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ServiceRequestTask_Insert", serviceRequestIdParameter, taskNameParameter, guidanceParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ServiceRequestTask_Insert", serviceRequestIdParameter, taskIdParameter, taskNameParameter, taskPhaseIdParameter, taskPhaseNameParameter, guidanceParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, dependsOnParameter, dueDateBaseParameter, dueDateDiffParameter, shortNameParameter, isCriticalPathParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
         }
     
-        public virtual int ServiceRequestTask_Update(Nullable<int> id, Nullable<int> serviceRequestId, string taskName, string guidance, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser)
+        public virtual int ServiceRequestTask_Update(Nullable<int> id, Nullable<int> serviceRequestId, string taskName, string guidance, string responsibleRoleId, string responsibleRoleName, Nullable<short> sequence, string assignedTo, Nullable<bool> isBillable, Nullable<decimal> hourlyRate, Nullable<decimal> estimatedHours, Nullable<decimal> actualHours, Nullable<System.DateTime> completedDate, string notes, Nullable<short> invoiceItemId, string modifiedUser, string dependsOn)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -1432,7 +1470,11 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Update", idParameter, serviceRequestIdParameter, taskNameParameter, guidanceParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter);
+            var dependsOnParameter = dependsOn != null ?
+                new ObjectParameter("DependsOn", dependsOn) :
+                new ObjectParameter("DependsOn", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequestTask_Update", idParameter, serviceRequestIdParameter, taskNameParameter, guidanceParameter, responsibleRoleIdParameter, responsibleRoleNameParameter, sequenceParameter, assignedToParameter, isBillableParameter, hourlyRateParameter, estimatedHoursParameter, actualHoursParameter, completedDateParameter, notesParameter, invoiceItemIdParameter, modifiedUserParameter, dependsOnParameter);
         }
     
         public virtual ObjectResult<GetDashboardSchedule_Result> GetDashboardSchedule(Nullable<System.DateTime> now, string userId, Nullable<bool> isSuperAdmin)
@@ -1450,15 +1492,6 @@ namespace Model
                 new ObjectParameter("IsSuperAdmin", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardSchedule_Result>("GetDashboardSchedule", nowParameter, userIdParameter, isSuperAdminParameter);
-        }
-    
-        public virtual ObjectResult<GetDashboardServiceRequest_Result> GetDashboardServiceRequest(Nullable<System.DateTime> now)
-        {
-            var nowParameter = now.HasValue ?
-                new ObjectParameter("Now", now) :
-                new ObjectParameter("Now", typeof(System.DateTime));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", nowParameter);
         }
     
         public virtual int ServiceRequest_ToggleNoShow(Nullable<int> id)
@@ -1968,6 +2001,32 @@ namespace Model
         public virtual ObjectResult<string> GetNextInvoiceNumber()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetNextInvoiceNumber");
+        }
+    
+        public virtual ObjectResult<GetDashboardServiceRequest_Result> GetDashboardServiceRequest(Nullable<System.Guid> serviceProviderId, Nullable<System.DateTime> now)
+        {
+            var serviceProviderIdParameter = serviceProviderId.HasValue ?
+                new ObjectParameter("ServiceProviderId", serviceProviderId) :
+                new ObjectParameter("ServiceProviderId", typeof(System.Guid));
+    
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDashboardServiceRequest_Result>("GetDashboardServiceRequest", serviceProviderIdParameter, nowParameter);
+        }
+    
+        public virtual ObjectResult<GetMyTasks_Result> GetMyTasks(Nullable<System.Guid> assignedTo, Nullable<System.DateTime> now)
+        {
+            var assignedToParameter = assignedTo.HasValue ?
+                new ObjectParameter("AssignedTo", assignedTo) :
+                new ObjectParameter("AssignedTo", typeof(System.Guid));
+    
+            var nowParameter = now.HasValue ?
+                new ObjectParameter("Now", now) :
+                new ObjectParameter("Now", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMyTasks_Result>("GetMyTasks", assignedToParameter, nowParameter);
         }
     }
 }

@@ -8,6 +8,46 @@ namespace WebApp.Library.Helpers
 {
     public static class HtmlHelpers
     {
+        public static string GetTaskStatusCSS(this HtmlHelper helper, byte taskStatusId, string assignedTo)
+        {
+            if (taskStatusId == TaskStatuses.ToDo)
+            {
+                return "default";
+            }
+            else if (taskStatusId == TaskStatuses.Done)
+            {
+                return "success";
+            }
+            else if (taskStatusId == TaskStatuses.Waiting)
+            {
+                return "warning";
+            }
+            else if (string.IsNullOrEmpty(assignedTo))
+            {
+                return "danger";
+            }
+
+            return string.Empty;
+        }
+
+        public static string GetTaskStatusIcon(this HtmlHelper helper, byte taskStatusId)
+        {
+            if (taskStatusId == TaskStatuses.ToDo)
+            {
+                return string.Empty;
+            }
+            else if (taskStatusId == TaskStatuses.Done)
+            {
+                return "glyphicon glyphicon-ok";
+            }
+            else if (taskStatusId == TaskStatuses.Waiting)
+            {
+                return "glyphicon glyphicon-hourglass";
+            }
+
+            return string.Empty;
+        }
+
         public static string RenderPartialViewToString(Controller controller, string viewName, object model)
         {
             controller.ViewData.Model = model;

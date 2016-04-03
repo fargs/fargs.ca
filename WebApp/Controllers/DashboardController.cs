@@ -19,17 +19,20 @@ namespace WebApp.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // MVC
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string ServiceProviderId)
         {
+            Guid? serviceProviderGuid;
             var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
-            Guid? userGuid = new Guid(user.Id);
-
-            var requests = db.GetDashboardServiceRequest(SystemTime.Now().Date).ToList();
-
-            if (user.RoleId != Roles.SuperAdmin)
+            if (user.RoleId == Roles.SuperAdmin && ServiceProviderId != null)
             {
-                requests = requests.Where(c => c.PhysicianId == user.Id || c.CaseCoordinatorId == userGuid || c.DocumentReviewerId == userGuid || c.IntakeAssistantId == userGuid).ToList();
+                serviceProviderGuid = new Guid(ServiceProviderId);
             }
+            else
+            {
+                serviceProviderGuid = new Guid(user.Id);
+            }
+
+            var requests = db.GetDashboardServiceRequest(serviceProviderGuid, SystemTime.Now().Date).ToList();
 
             var vm = new vm.IndexViewModel();
             vm.User = user;
@@ -38,20 +41,24 @@ namespace WebApp.Controllers
             vm.NextWeekCards = GetCards(requests, 2);
             vm.NextWeekTotal = vm.NextWeekCards.Sum(c => c.Summary.RequestCount);
 
-            var tasks = db.DashboardTaskSummaries.Where(c => !c.CompletedDate.HasValue);
-            if (user.RoleId != Roles.SuperAdmin)
-            {
-                tasks = tasks.Where(c => c.AssignedToUserId == user.Id);
-            }
-            tasks.OrderBy(c => c.AssignedToUserId).ThenBy(c => c.TaskId).ToList();
+            //var tasks = db.ServiceRequestTasks.Where(srt => srt.CompletedDate == null);
+            //if (user.RoleId != Roles.SuperAdmin)
+            //{
+            //    tasks = tasks.Where(srt => srt.AssignedTo == user.Id);
+            //}
+            //vm.TaskCards = tasks.GroupBy(srt => new { srt.TaskId, srt.TaskName, srt.Sequence })
+            //    .Select(c => new vm.IndexViewModel.TaskCard() { CardId = c.Key.TaskId.ToString(), TaskName = c.Key.TaskName, Sequence = c.Key.Sequence.Value, Total = c.Count() })
+            //    .OrderBy(c => c.Sequence)
+            //    .ToList();
 
-            foreach (var item in tasks)
-            {
-                vm.AddTask(item);
-            }
+            //foreach (var item in tasks)
+            //{
+            //    vm.AddTask(item);
+            //}
 
             ViewBag.PhysicianName = user.DisplayName;
             ViewBag.UserId = user.Id;
+            ViewBag.ServiceProviderId = serviceProviderGuid;
 
             return View(vm);
         }
@@ -84,6 +91,15 @@ namespace WebApp.Controllers
                 });
             }
             return cards;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         // API
@@ -173,4 +189,5 @@ namespace WebApp.Controllers
         //    return Json(result);
         //}
     }
+
 }

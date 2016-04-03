@@ -303,6 +303,16 @@ body {
     border-left-color: #5bc0de;
 }
 
+.btn-circle.btn-sm {
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  padding: 4px 0;
+  font-size: 10px;
+  line-height: 1.428571429;
+  border-radius: 11px;
+}
+
 .btn-circle {
   width: 30px;
   height: 30px;
@@ -327,6 +337,10 @@ body {
   font-size: 24px;
   line-height: 1.33;
   border-radius: 35px;
+}
+
+.font-bold {
+    font-weight: bold;
 }
 
 /* Add form button to a dropdown menu item */

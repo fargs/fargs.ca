@@ -16,6 +16,7 @@ CREATE PROCEDURE [API].[ServiceRequestTask_Update]
 	,@Notes nvarchar(2000)
 	,@InvoiceItemId smallint
 	,@ModifiedUser nvarchar(100)
+	,@DependsOn nvarchar(50)
 AS
 
 DECLARE @Now DATETIME
@@ -39,5 +40,6 @@ SET
 	,[InvoiceItemId] = @InvoiceItemId
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser
+	,[DependsOn] = @DependsOn
 WHERE 
 	Id = @Id

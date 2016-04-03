@@ -1,9 +1,10 @@
 ﻿CREATE PROC API.GetDashboardServiceRequest
+	@ServiceProviderId uniqueidentifier,
 	@Now DATETIME
 AS
 
 DECLARE @weekday INT
-SELECT @weekday = DATEPART(WEEKDAY, GETDATE());
+SELECT @weekday = DATEPART(WEEKDAY, @Now);
 WITH DateRanges
 AS (
 	SELECT 
@@ -37,6 +38,7 @@ AS (
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.WeekStart AND dr.WeekEnd
+		AND @ServiceProviderId IN (sr.PhysicianId, sr.CaseCoordinatorId, sr.DocumentReviewerId, sr.IntakeAssistantId)
 		AND sr.CancelledDate IS NULL
 	UNION 
 	SELECT 2 as WeekNumber
@@ -56,6 +58,7 @@ AS (
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr
 	WHERE AppointmentDate BETWEEN dr.NextWeekStart AND dr.NextWeekEnd		
+		AND @ServiceProviderId IN (sr.PhysicianId, sr.CaseCoordinatorId, sr.DocumentReviewerId, sr.IntakeAssistantId)
 		AND sr.CancelledDate IS NULL
 )
 SELECT * FROM ServiceRequests

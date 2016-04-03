@@ -390,7 +390,7 @@ namespace WebApp.Controllers
 
             foreach (var item in invoice.InvoiceDetails)
             {
-                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId);
+                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId && !c.IsObsolete);
                 task.CompletedDate = SystemTime.Now();
                 await db.SaveChangesAsync();
             }
@@ -412,7 +412,7 @@ namespace WebApp.Controllers
 
             foreach (var item in invoice.InvoiceDetails)
             {
-                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId);
+                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId && !c.IsObsolete);
                 task.CompletedDate = null;
                 await db.SaveChangesAsync();
             }

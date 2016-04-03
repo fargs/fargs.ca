@@ -10,6 +10,12 @@
 
 
 
+
+
+
+
+
+
 CREATE VIEW [API].[ServiceRequestTask]
 AS
 SELECT 
@@ -35,9 +41,16 @@ SELECT
 	,st.[TaskPhaseId]
 	,st.[TaskPhaseName]
 	,AssignedToDisplayName = dbo.GetDisplayName(u.FirstName, u.LastName, u.Title)
+	,AssignedToInitials = dbo.GetInitials(u.FirstName, u.LastName)
 	,UserId = u.Id
 	,StaffHourlyRate = u.HourlyRate
 	,Cost = ActualHours * u.HourlyRate
+	,st.DependsOn
+	,st.DueDateBase
+	,st.DueDateDiff
+	,st.ShortName
+	,st.IsCriticalPath
+	,AssignedToColorCode = u.ColorCode
+	,st.IsObsolete
 FROM dbo.ServiceRequestTask st
 LEFT JOIN dbo.AspNetUsers u ON st.AssignedTo = u.Id
-WHERE IsObsolete = 0

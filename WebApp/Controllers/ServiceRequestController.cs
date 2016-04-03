@@ -125,7 +125,7 @@ namespace WebApp.Controllers
 
             vm.User = db.Users.Single(u => u.UserName == User.Identity.Name);
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
-            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Sequence).ToList();
+            vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id && !sr.IsObsolete).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
             vm.Invoices = db.Invoices.Join(db.InvoiceDetails.Where(ids => ids.ServiceRequestId == id),
                 i => i.Id,
@@ -351,45 +351,45 @@ namespace WebApp.Controllers
                     NOTE: Share permissions will be granted when the resources are assigned.
                 */
 
-                /***********************************
-                Dropbox
-                ***********************************/
-                var dropbox = new OrvosiDropbox();
-                var client = await dropbox.GetServiceAccountClientAsync();
-                Metadata folder = null;
-                List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
-                try
-                {
+                ///***********************************
+                //Dropbox
+                //***********************************/
+                //var dropbox = new OrvosiDropbox();
+                //var client = await dropbox.GetServiceAccountClientAsync();
+                //Metadata folder = null;
+                //List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
+                //try
+                //{
 
-                    // Copy the case template folder
-                    var destination = obj.DocumentFolderLink;
-                    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-                    // Share the folder
-                    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
-                    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-                    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+                //    // Copy the case template folder
+                //    var destination = obj.DocumentFolderLink;
+                //    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+                //    // Share the folder
+                //    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
+                //    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+                //    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
 
-                    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
-                    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-                    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
+                //    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
+                //    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
+                //    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
 
-                    // Get the folder
-                    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
+                //    // Get the folder
+                //    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
 
-                    // Get the shared folder members
-                    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+                //    // Get the shared folder members
+                //    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
-                }
-                catch (Exception ex)
-                {
-                    additionalErrors.Add(new ModelError(ex.Message));
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    additionalErrors.Add(new ModelError(ex.Message));
+                //}
                 // Create the calendar event
 
                 // mark the first task as complete
                 using (var db = new OrvosiEntities(User.Identity.Name))
                 {
-                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder);
+                    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
                     serviceRequestTask.CompletedDate = SystemTime.Now();
                     await db.SaveChangesAsync();
                 }
@@ -397,8 +397,8 @@ namespace WebApp.Controllers
                 var model = new CreateSuccessViewModel()
                 {
                     ServiceRequest = obj,
-                    Folder = folder,
-                    Members = members,
+                    Folder = null,// folder,
+                    Members = null, //members,
                     Invoice = invoice,
                     Errors = additionalErrors
                 };

@@ -150,86 +150,73 @@
                 </address>
             </div>
         </div>
+        @if (Model.User.RoleId == e.Roles.SuperAdmin || Model.User.RoleId == e.Roles.CaseCoordinator)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Google Calendar Integration
+                </div>
+                <div class="panel-body">
+                    <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
+                    <strong>Google Event Data</strong>
+                    <div>@Model.ServiceRequest.CalendarEventTitle</div>
+                    <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                    <div>@Model.ServiceRequest.StartTime</div>
+                    <div>@Model.ServiceRequest.EndTime</div>
+                    @*<dt>Effective Price</dt>
+                        <dd>
+                            <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">
+                                <strong class="text-success">@Model.EffectivePrice</strong>
+                            </a>
+                        </dd>*@
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Box Integration
+                </div>
+                <div class="panel-body">
+                    @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                    {
+                        <div>
+                            <p>@Model.ServiceRequest.Title</p>
+                        </div>
+
+                        if (Model.DropboxFolder == null)
+                        {
+                            if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                            {
+                                <div>
+                                    <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                        <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                                    </form>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="label label-success">Created</span>
+                                        <div class="h4">Folder Shared To:</div>
+                            if (Model.DropboxFolderMembers != null)
+                            {
+                                <ul>
+                                    @foreach (var item in Model.DropboxFolderMembers)
+                                    {
+                                        <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
+                                    }
+                                </ul>
+                                            <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
+                                                <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
+                                            </form>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        }
     </div>
 </div>
 
-@if (Model.User.RoleId == e.Roles.SuperAdmin || Model.User.RoleId == e.Roles.CaseCoordinator)
-{
-    <hr />
-    <div>
-        <a href="#AdminSection" data-toggle="collapse">Admin Section</a>
-        <div id="AdminSection" class="row collapse">
-            <div class="col-sm-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Google Calendar Integration
-                    </div>
-                    <div class="panel-body">
-                        <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
-                        <strong>Google Event Data</strong>
-                        <div>@Model.ServiceRequest.CalendarEventTitle</div>
-                        <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
-                        <div>@Model.ServiceRequest.StartTime</div>
-                        <div>@Model.ServiceRequest.EndTime</div>
-                        @*<dt>Effective Price</dt>
-                            <dd>
-                                <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">
-                                    <strong class="text-success">@Model.EffectivePrice</strong>
-                                </a>
-                            </dd>*@
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Box Integration
-                    </div>
-                    <div class="panel-body">
-                        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                        {
-                            <div>
-                                <p>@Model.ServiceRequest.Title</p>
-                            </div>
-
-                            if (Model.DropboxFolder == null)
-                            {
-                                if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                                {
-                                    <div>
-                                        <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                            <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                                        </form>
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <span class="label label-success">Created</span>
-                                <div class="h4">Folder Shared To:</div>
-                                if (Model.DropboxFolderMembers != null)
-                                {
-                                    <ul>
-                                        @foreach (var item in Model.DropboxFolderMembers)
-                                        {
-                                            <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                                        }
-                                    </ul>
-                                    <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
-                                        <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
-                                    </form>
-                                }
-                            }
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-
-            </div>
-        </div>
-    </div>
-}
 @if (Model.User.RoleId == e.Roles.SuperAdmin)
 {
     <div>

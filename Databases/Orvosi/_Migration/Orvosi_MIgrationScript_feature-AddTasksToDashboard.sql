@@ -1,4 +1,4 @@
-/*SELECT sr.Id
+SELECT sr.Id
 INTO #sr
 FROM API.ServiceRequest sr
 WHERE sr.ServiceRequestStatusId = 11 -- Closed
@@ -71,6 +71,6 @@ DELETE FROM dbo.ServiceRequestTask WHERE TaskId = 21 AND CompletedDate IS NULL A
 
 UPDATE dbo.ServiceRequestTask SET TaskName = 'Complete intake sections' WHERE TaskName = 'Conduct the intake interview'
 
-*/
+
 SELECT * FROM dbo.Task ORDER BY [Sequence]
 SELECT * FROM ServiceRequestTask WHERE TaskId IN (20,21) ORDER BY [SEquence]

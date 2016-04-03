@@ -39,7 +39,16 @@
         @if (User.IsInRole("Super Admin") || User.IsInRole("Case Coordinator"))
         {
             <p>
-                <a class="btn btn-primary" href="~/ServiceRequest/Availability">Book an Exam</a>
+                <div class="btn-group">
+                    <a class="btn btn-primary" href="~/ServiceRequest/Availability">Book an Exam</a>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Paper Review/Addendum</a></li>
+                    </ul>
+                </div>
             </p>
         }
         <div class="well well-sm">

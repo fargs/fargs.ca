@@ -3527,6 +3527,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="DueDate" Type="DateTime" Precision="3" />
         </EntityType>
         <ComplexType Name="GetMyTasks_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
           <Property Type="Int32" Name="ServiceRequestId" Nullable="false" />
           <Property Type="DateTime" Name="ReportDueDate" Nullable="true" Precision="23" />
           <Property Type="DateTime" Name="AppointmentDate" Nullable="true" />
@@ -3541,6 +3542,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="128" />
           <Property Type="Int16" Name="ServiceId" Nullable="true" />
           <Property Type="String" Name="ServiceName" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="ClaimantName" Nullable="true" MaxLength="128" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -4930,6 +4932,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="GetMyTasks" FunctionName="OrvosiModel.Store.GetMyTasks">
             <ResultMapping>
               <ComplexTypeMapping TypeName="OrvosiModel.GetMyTasks_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="ServiceRequestId" ColumnName="ServiceRequestId" />
                 <ScalarProperty Name="ReportDueDate" ColumnName="ReportDueDate" />
                 <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
@@ -4944,6 +4947,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+                <ScalarProperty Name="ClaimantName" ColumnName="ClaimantName" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

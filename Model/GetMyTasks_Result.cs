@@ -13,6 +13,7 @@ namespace Model
     
     public partial class GetMyTasks_Result
     {
+        public int Id { get; set; }
         public int ServiceRequestId { get; set; }
         public Nullable<System.DateTime> ReportDueDate { get; set; }
         public Nullable<System.DateTime> AppointmentDate { get; set; }
@@ -27,5 +28,6 @@ namespace Model
         public string CompanyName { get; set; }
         public Nullable<short> ServiceId { get; set; }
         public string ServiceName { get; set; }
+        public string ClaimantName { get; set; }
     }
 }

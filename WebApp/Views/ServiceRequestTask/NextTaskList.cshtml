@@ -1,11 +1,11 @@
-﻿@using WebApp.Library.Enums
+﻿@using Model.Enums
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model List<NextTaskViewModel>
 
 @foreach (var item in Model)
 {
     <div>
-        @if (item.StatusId == TaskStatuses.Active && item.AssignedTo.ToLower() == ViewBag.User.Id.ToLower())
+        @if (item.StatusId == TaskStatuses.ToDo && item.AssignedTo.ToLower() == ViewBag.User.Id.ToLower())
         {
             <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
                 @Html.AntiForgeryToken()

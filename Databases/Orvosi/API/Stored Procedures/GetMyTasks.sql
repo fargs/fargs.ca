@@ -6,7 +6,8 @@ CREATE PROC API.GetMyTasks
 AS
 WITH Requests 
 AS (
-	SELECT t.AssignedTo
+	SELECT t.Id
+		, t.AssignedTo
 		, t.ServiceRequestId
 		, t.TaskId
 		, t.TaskName
@@ -18,7 +19,8 @@ AS (
 		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
 	FROM
 	(
-		SELECT AssignedTo
+		SELECT Id
+			, AssignedTo
 			, ServiceRequestId
 			, TaskId 
 			, TaskName
@@ -36,7 +38,8 @@ AS (
 ) 
 , Tasks
 AS (
-SELECT t.AssignedTo
+SELECT t.Id
+	, t.AssignedTo
 	, t.ServiceRequestId
 	, t.TaskId
 	, t.TaskName
@@ -53,13 +56,15 @@ SELECT t.AssignedTo
 	, sr.StartTime
 	, sr.CompanyId
 	, sr.ServiceId
+	, sr.ClaimantName
 FROM Requests t
 LEFT JOIN dbo.ServiceRequestTask srt 
 	ON t.ServiceRequestId = srt.ServiceRequestId
 		AND CASE WHEN t.DependsOn = 'ExamDate' THEN NULL ELSE t.DependsOn END = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
 )
-SELECT t.ServiceRequestId
+SELECT t.Id
+	, t.ServiceRequestId
 	, t.ReportDueDate
 	, t.AppointmentDate
 	, t.StartTime
@@ -73,6 +78,7 @@ SELECT t.ServiceRequestId
 	, CompanyName = c.Name
 	, t.ServiceId
 	, ServiceName = s.Name
+	, t.ClaimantName
 FROM Tasks t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

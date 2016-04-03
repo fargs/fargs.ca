@@ -2,13 +2,70 @@
 @using Model.Enums
 @model List<Model.GetMyTasks_Result>
 
-<ul>
+<div class="list-group visible-xs-block">
     @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
     {
-        <li>
-            <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
-                @string.Format("{0}, {1}", item.TaskName, item.DueDate.ToOrvosiDateFormat())
-            </a>
-        </li>
+        <div class="list-group-item">
+            @if (item.TaskStatusId != Tasks.SubmitInvoice)
+            {
+                <div class="pull-left" style="padding-right: 10px">
+                    <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", item.Id)
+                        <button class="btn btn-sm btn-default btn-circle"></button>
+                    </form>
+                </div>
+            }
+            <div style="margin-left: 40px">
+                <h4 class="list-group-item-heading"> <a href="~/ServiceRequest/Details/@item.ServiceRequestId">@item.TaskName</a></h4>
+                <p class="list-group-item-text"><strong>Due:</strong> &nbsp; @item.DueDate.ToOrvosiDateFormat()</p>
+                <p class="list-group-item-text">
+                    <strong>Case:</strong>
+                    <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
+                        @string.Format("{0} - {1}", item.ClaimantName, item.CompanyName)
+                    </a>
+                </p>
+            </div>
+        </div>
     }
-</ul>
+</div>
+
+
+<table class="table table-condensed table-hover table-bordered hidden-xs">
+    <tr>
+        <th></th>
+        <th>Task</th>
+        <th>Due Date</th>
+        <th>Request</th>
+    </tr>
+    @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
+    {
+        <tr>
+            <td class="col-md-1">
+                @if (item.TaskStatusId != Tasks.SubmitInvoice)
+                {
+                    <div class="pull-left" style="padding-right: 10px">
+                        <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("id", item.Id)
+                            <button class="btn btn-sm btn-default btn-circle"></button>
+                        </form>
+                    </div>
+                }
+            </td>
+            <td>
+                <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
+                    @item.TaskName
+                </a>
+</td>
+            <td>
+                @item.DueDate.ToOrvosiDateFormat()
+            </td>
+            <td>
+                <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
+                    @string.Format("{0} - {1}", item.ClaimantName, item.CompanyName)
+                </a>
+            </td>
+        </tr>
+    }
+</table>

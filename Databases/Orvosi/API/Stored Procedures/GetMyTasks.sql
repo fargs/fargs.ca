@@ -31,7 +31,7 @@ AS (
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
 		FROM   dbo.ServiceRequestTask
 		WHERE IsObsolete = 0 AND CompletedDate IS NULL -- Because this is a stored proc, I want to control the amount of records returned here, not in the service layer.
-			AND AssignedTo = '8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c'
+			AND AssignedTo = @AssignedTo
 	)t
 	CROSS APPLY x.nodes('/XMLRoot/RowData')m(n)
 ) 

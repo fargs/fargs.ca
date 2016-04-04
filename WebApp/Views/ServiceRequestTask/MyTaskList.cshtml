@@ -2,7 +2,13 @@
 @using Model.Enums
 @model List<Model.GetMyTasks_Result>
 
-<div class="list-group visible-xs-block">
+<div class="thumbnail alert">
+    <div class="caption">
+        <div class="h1 text-center">@Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo).Count().ToString()</div>
+        <div class="text-muted text-center">Actionable Tasks</div>
+    </div>
+</div>
+<div class="list-group">
     @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
     {
         <div class="list-group-item">
@@ -34,7 +40,7 @@
 </div>
 
 
-<table class="table table-condensed table-hover table-bordered hidden-xs">
+<table class="table table-condensed table-hover table-bordered hidden">
     <tr>
         <th>Task</th>
         <th>Due Date</th>

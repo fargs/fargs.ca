@@ -28,5 +28,17 @@ namespace Model
         public Nullable<System.Guid> IntakeAssistantId { get; set; }
         public string ServiceName { get; set; }
         public string ClaimantName { get; set; }
+        public string PhysicianColorCode { get; set; }
+        public string PhysicianInitials { get; set; }
+        public string PhysicianDisplayName { get; set; }
+        public string CaseCoordinatorColorCode { get; set; }
+        public string CaseCoordinatorInitials { get; set; }
+        public string CaseCoordinatorName { get; set; }
+        public string DocumentReviewerColorCode { get; set; }
+        public string DocumentReviewerInitials { get; set; }
+        public string DocumentReviewerName { get; set; }
+        public string IntakeAssistantColorCode { get; set; }
+        public string IntakeAssistantInitials { get; set; }
+        public string IntakeAssistantName { get; set; }
     }
 }

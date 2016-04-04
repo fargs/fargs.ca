@@ -1,6 +1,6 @@
 ﻿
 
-CREATE PROC API.GetMyTasks
+CREATE PROC [API].[GetMyTasks]
 	@AssignedTo UNIQUEIDENTIFIER
 	, @Now DATETIME
 AS
@@ -57,6 +57,7 @@ SELECT t.Id
 	, sr.CompanyId
 	, sr.ServiceId
 	, sr.ClaimantName
+	, sr.PhysicianId
 FROM Requests t
 LEFT JOIN dbo.ServiceRequestTask srt 
 	ON t.ServiceRequestId = srt.ServiceRequestId
@@ -79,7 +80,12 @@ SELECT t.Id
 	, t.ServiceId
 	, ServiceName = s.Name
 	, t.ClaimantName
+	, t.PhysicianId
+	, PhysicianDisplayName = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
+	, PhysicianColorCode = p.ColorCode
+	, PhysicianInitials = dbo.GetInitials(p.FirstName, p.LastName)
 FROM Tasks t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id
 LEFT JOIN dbo.LookupItem li ON t.TaskStatusId = li.Id
+LEFT JOIN dbo.[AspNetUsers] p ON t.PhysicianId = p.Id

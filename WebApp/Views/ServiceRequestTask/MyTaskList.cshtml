@@ -15,6 +15,9 @@
                         <button class="btn btn-sm btn-default btn-circle"></button>
                     </form>
                 </div>
+                <div class="pull-right">
+                    <div class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @item.PhysicianColorCode;">@item.PhysicianInitials</div>
+                </div>
             }
             <div style="margin-left: 40px">
                 <h4 class="list-group-item-heading"> <a href="~/ServiceRequest/Details/@item.ServiceRequestId">@item.TaskName</a></h4>
@@ -33,7 +36,6 @@
 
 <table class="table table-condensed table-hover table-bordered hidden-xs">
     <tr>
-        <th></th>
         <th>Task</th>
         <th>Due Date</th>
         <th>Request</th>
@@ -41,29 +43,29 @@
     @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
     {
         <tr>
-            <td class="col-md-1">
-                @if (item.TaskStatusId != Tasks.SubmitInvoice)
-                {
-                    <div class="pull-left" style="padding-right: 10px">
-                        <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("id", item.Id)
-                            <button class="btn btn-sm btn-default btn-circle"></button>
-                        </form>
-                    </div>
-                }
-            </td>
             <td>
+                
+                    @if (item.TaskStatusId != Tasks.SubmitInvoice)
+                {
+                        <div class="pull-left" style="padding-right: 10px">
+                            <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id)
+                                <button class="btn btn-sm btn-default btn-circle"></button>
+                            </form>
+                        </div>
+                    }
                 <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
                     @item.TaskName
                 </a>
-</td>
+            </td>
             <td>
                 @item.DueDate.ToOrvosiDateFormat()
             </td>
             <td>
-                <a href="~/ServiceRequest/Details/@item.ServiceRequestId">
-                    @string.Format("{0} - {1}", item.ClaimantName, item.CompanyName)
+                <div title="@item.PhysicianDisplayName" class="pull-left btn btn-sm btn-circle disabled" style="cursor: default; color: white; background-color: @item.PhysicianColorCode;">@item.PhysicianInitials</div>
+                <a style="padding-left: 10px" href="~/ServiceRequest/Details/@item.ServiceRequestId">
+                    @string.Format(" {0} - {1}", item.ClaimantName, item.CompanyName)
                 </a>
             </td>
         </tr>

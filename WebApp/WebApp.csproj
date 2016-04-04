@@ -900,6 +900,8 @@
     <Content Include="Views\ServiceRequestTask\TaskList.cshtml" />
     <Content Include="Views\ServiceRequestTask\NextTaskList.cshtml" />
     <Content Include="Views\ServiceRequestTask\MyTaskList.cshtml" />
+    <Content Include="Views\ServiceRequest\_ResourceAssignments.cshtml" />
+    <Content Include="Views\Dashboard\_ResourceAssignments.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

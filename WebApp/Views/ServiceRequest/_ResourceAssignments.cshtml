@@ -1,0 +1,30 @@
+﻿@using m = Model
+@model m.ServiceRequest
+
+@if (Model.CaseCoordinatorId.HasValue)
+{
+    <span title="@Model.CaseCoordinatorName - Case Coordinator" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.CaseCoordinatorColorCode;">@Model.CaseCoordinatorInitials</span>
+}
+
+@if (Model.IntakeAssistantId.HasValue && Model.DocumentReviewerId.HasValue)
+{
+    if (Model.IntakeAssistantId == Model.DocumentReviewerId)
+    {
+        <span title="@Model.IntakeAssistantName - Intake Assistant & Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.IntakeAssistantColorCode;">@Model.IntakeAssistantInitials</span>
+    }
+    else
+    {
+        <span title="@Model.IntakeAssistantName - Intake Assistant" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.IntakeAssistantColorCode;">@Model.IntakeAssistantInitials</span>
+        <span title="@Model.DocumentReviewerName - Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.DocumentReviewerColorCode;">@Model.DocumentReviewerInitials</span>
+    }
+}
+else {
+    if (Model.IntakeAssistantId.HasValue)
+    {
+        <span title="@Model.IntakeAssistantName - Intake Assistant" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.IntakeAssistantColorCode;">@Model.IntakeAssistantInitials</span>
+    }
+    if (Model.DocumentReviewerId.HasValue)
+    {
+        <span title="@Model.DocumentReviewerName - Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.DocumentReviewerColorCode;">@Model.DocumentReviewerInitials</span>
+    }
+}

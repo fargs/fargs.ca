@@ -1,4 +1,4 @@
-﻿CREATE PROC API.GetDashboardServiceRequest
+﻿CREATE PROC [API].[GetDashboardServiceRequest]
 	@ServiceProviderId uniqueidentifier,
 	@Now DATETIME
 AS
@@ -31,9 +31,21 @@ AS (
 		, EndTime
 		, TimelineId = CASE WHEN AppointmentDate = dr.Today THEN 38 WHEN AppointmentDate < dr.Today THEN 37 ELSE 39 END
 		, PhysicianId
+		, PhysicianColorCode
+		, PhysicianInitials
+		, PhysicianDisplayName
 		, CaseCoordinatorId
+		, CaseCoordinatorColorCode
+		, CaseCoordinatorInitials
+		, CaseCoordinatorName
 		, DocumentReviewerId
+		, DocumentReviewerColorCode
+		, DocumentReviewerInitials
+		, DocumentReviewerName
 		, IntakeAssistantId
+		, IntakeAssistantColorCode
+		, IntakeAssistantInitials
+		, IntakeAssistantName
 		, ServiceName
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr
@@ -51,9 +63,21 @@ AS (
 		, EndTime
 		, TimelineId = 39 -- Always Future
 		, PhysicianId
+		, PhysicianColorCode
+		, PhysicianInitials
+		, PhysicianDisplayName
 		, CaseCoordinatorId
+		, CaseCoordinatorColorCode
+		, CaseCoordinatorInitials
+		, CaseCoordinatorName
 		, DocumentReviewerId
+		, DocumentReviewerColorCode
+		, DocumentReviewerInitials
+		, DocumentReviewerName
 		, IntakeAssistantId
+		, IntakeAssistantColorCode
+		, IntakeAssistantInitials
+		, IntakeAssistantName
 		, ServiceName
 		, ClaimantName
 	FROM API.ServiceRequest sr, DateRanges dr

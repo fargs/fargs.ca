@@ -71,18 +71,7 @@
         <div class="form-group">
             <label class="control-label">Assignments</label>
             <p class="form-control-static">
-                @if (Model.ServiceRequest.CaseCoordinatorId.HasValue)
-                {
-                    <span title="@Model.ServiceRequest.CaseCoordinatorName - Case Coordinator" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.ServiceRequest.CaseCoordinatorColorCode">@Model.ServiceRequest.CaseCoordinatorInitials</span>
-                }
-                @if (Model.ServiceRequest.IntakeAssistantId.HasValue)
-                {
-                    <span title="@Model.ServiceRequest.IntakeAssistantName - Intake Assistant" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.ServiceRequest.IntakeAssistantColorCode">@Model.ServiceRequest.IntakeAssistantInitials</span>
-                }
-                @if (Model.ServiceRequest.DocumentReviewerId.HasValue)
-                {
-                    <span title="@Model.ServiceRequest.DocumentReviewerName - Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.ServiceRequest.DocumentReviewerColorCode">@Model.ServiceRequest.DocumentReviewerInitials</span>
-                }
+                @Html.Partial("_ResourceAssignments", Model.ServiceRequest)
             </p>
         </div>
 

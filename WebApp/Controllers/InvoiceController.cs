@@ -26,7 +26,6 @@ namespace WebApp.Controllers
         public InvoiceController()
         {
             var serviceRequestController = new ServiceRequestController();
-            serviceRequestController.NoShowToggledEvent += new NoShowToggledHandler(NoShowToggled);
         }
 
         internal void NoShowToggled(object sender, EventArgs e)

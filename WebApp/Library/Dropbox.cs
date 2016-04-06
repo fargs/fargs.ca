@@ -5,6 +5,7 @@ using System.Web;
 using Dropbox.Api;
 using Dropbox.Api.Team;
 using System.Threading.Tasks;
+using Dropbox.Api.Files;
 
 namespace WebApp.Library
 {
@@ -29,7 +30,8 @@ namespace WebApp.Library
 
                 var members = await TeamClient.Team.MembersGetInfoAsync(args);
                 var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
-                return TeamClient.AsMember(teamMemberId);
+                _client = TeamClient.AsMember(teamMemberId);
+                return _client;
             }
             return _client;
         }

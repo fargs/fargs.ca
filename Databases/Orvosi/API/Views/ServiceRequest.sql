@@ -16,6 +16,7 @@
 
 
 
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
@@ -183,12 +184,15 @@ SELECT
 	,CaseCoordinatorName = dbo.GetDisplayName(cc.FirstName, cc.LastName, cc.Title)
 	,CaseCoordinatorInitials = dbo.GetInitials(cc.FirstName, cc.LastName)
 	,CaseCoordinatorColorCode = cc.ColorCode
+	,CaseCoordinatorUserName = cc.UserName
 	,IntakeAssistantName = dbo.GetDisplayName(ia.FirstName, ia.LastName, ia.Title)
 	,IntakeAssistantInitials = dbo.GetInitials(ia.FirstName, ia.LastName)
 	,IntakeAssistantColorCode = ia.ColorCode
+	,IntakeAssistantUserName = ia.UserName
 	,DocumentReviewerName = dbo.GetDisplayName(dr.FirstName, dr.LastName, dr.Title)
 	,DocumentReviewerInitials = dbo.GetInitials(dr.FirstName, dr.LastName)
 	,DocumentReviewerColorCode = dr.ColorCode
+	,DocumentReviewerUserName = dr.UserName
 	,AppointmentDate = ad.[Day]
 	,sl.StartTime
 	,sl.Duration

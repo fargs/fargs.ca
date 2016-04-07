@@ -102,6 +102,9 @@ namespace Model
         public string IntakeAssistantColorCode { get; set; }
         public string DocumentReviewerInitials { get; set; }
         public string DocumentReviewerColorCode { get; set; }
+        public string CaseCoordinatorUserName { get; set; }
+        public string IntakeAssistantUserName { get; set; }
+        public string DocumentReviewerUserName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }

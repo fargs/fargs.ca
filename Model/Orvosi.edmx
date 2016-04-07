@@ -733,12 +733,15 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="CaseCoordinatorName" Type="nvarchar" MaxLength="210" />
           <Property Name="CaseCoordinatorInitials" Type="nvarchar" MaxLength="4" />
           <Property Name="CaseCoordinatorColorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="CaseCoordinatorUserName" Type="nvarchar" MaxLength="256" />
           <Property Name="IntakeAssistantName" Type="nvarchar" MaxLength="210" />
           <Property Name="IntakeAssistantInitials" Type="nvarchar" MaxLength="4" />
           <Property Name="IntakeAssistantColorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="IntakeAssistantUserName" Type="nvarchar" MaxLength="256" />
           <Property Name="DocumentReviewerName" Type="nvarchar" MaxLength="210" />
           <Property Name="DocumentReviewerInitials" Type="nvarchar" MaxLength="4" />
           <Property Name="DocumentReviewerColorCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="DocumentReviewerUserName" Type="nvarchar" MaxLength="256" />
           <Property Name="AppointmentDate" Type="date" />
           <Property Name="StartTime" Type="time" Precision="7" />
           <Property Name="Duration" Type="smallint" />
@@ -1842,12 +1845,15 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[CaseCoordinatorName] AS [CaseCoordinatorName], 
     [ServiceRequest].[CaseCoordinatorInitials] AS [CaseCoordinatorInitials], 
     [ServiceRequest].[CaseCoordinatorColorCode] AS [CaseCoordinatorColorCode], 
+    [ServiceRequest].[CaseCoordinatorUserName] AS [CaseCoordinatorUserName], 
     [ServiceRequest].[IntakeAssistantName] AS [IntakeAssistantName], 
     [ServiceRequest].[IntakeAssistantInitials] AS [IntakeAssistantInitials], 
     [ServiceRequest].[IntakeAssistantColorCode] AS [IntakeAssistantColorCode], 
+    [ServiceRequest].[IntakeAssistantUserName] AS [IntakeAssistantUserName], 
     [ServiceRequest].[DocumentReviewerName] AS [DocumentReviewerName], 
     [ServiceRequest].[DocumentReviewerInitials] AS [DocumentReviewerInitials], 
     [ServiceRequest].[DocumentReviewerColorCode] AS [DocumentReviewerColorCode], 
+    [ServiceRequest].[DocumentReviewerUserName] AS [DocumentReviewerUserName], 
     [ServiceRequest].[AppointmentDate] AS [AppointmentDate], 
     [ServiceRequest].[StartTime] AS [StartTime], 
     [ServiceRequest].[Duration] AS [Duration], 
@@ -2873,6 +2879,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="IntakeAssistantColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DocumentReviewerInitials" Type="String" MaxLength="4" FixedLength="false" Unicode="true" />
           <Property Name="DocumentReviewerColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CaseCoordinatorUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="IntakeAssistantUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DocumentReviewerUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -3894,6 +3903,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="DocumentReviewerUserName" ColumnName="DocumentReviewerUserName" />
+                <ScalarProperty Name="IntakeAssistantUserName" ColumnName="IntakeAssistantUserName" />
+                <ScalarProperty Name="CaseCoordinatorUserName" ColumnName="CaseCoordinatorUserName" />
                 <ScalarProperty Name="DocumentReviewerColorCode" ColumnName="DocumentReviewerColorCode" />
                 <ScalarProperty Name="DocumentReviewerInitials" ColumnName="DocumentReviewerInitials" />
                 <ScalarProperty Name="IntakeAssistantColorCode" ColumnName="IntakeAssistantColorCode" />

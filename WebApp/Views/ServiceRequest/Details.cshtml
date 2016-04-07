@@ -123,24 +123,173 @@
         }
     </div>
     <div class="col-sm-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Location
-            </div>
-            <div class="panel-body">
-                <address>
-                    <strong>@Model.ServiceRequest.LocationName</strong><br>
-                    <strong>@Model.ServiceRequest.AddressName</strong><br>
-                    @Model.ServiceRequest.Address1<br>
-                    @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
-                    {
-                        @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
-                    }
-                </address>
-            </div>
-        </div>
-        @if (Model.User.RoleId == e.Roles.SuperAdmin || Model.User.RoleId == e.Roles.CaseCoordinator)
+        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
         {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Dropbox Integration
+                </div>
+                <div class="panel-body">
+                    @if (Model.DropboxFolder == null)
+                    {
+                        <div>
+                            <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
+                                <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <small><strong>@Model.DropboxFolder.AsFolder.Name</strong></small>
+                            </div>
+                        </div>
+                        if (Model.DropboxFolder.AsFolder.SharingInfo == null)
+                        {
+                            <div class="row top-buffer">
+                                <div class="col-sm-12">
+                                    <form action="~/ServiceRequest/ShareDropboxFolder" method="post">
+                                        @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                        <button class="btn btn-sm btn-primary">Share</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row top-buffer">
+                                <div class="col-sm-12">
+                                    <form action="~/ServiceRequest/UnshareDropboxFolder" method="post">
+                                        @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                        <button title="This is equivalent to unsharing the entire folder on dropbox." class="btn btn-sm btn-primary">Unshare Folder</button>
+                                    </form>
+                                </div>
+                            </div>
+                                <div class="row top-buffer">
+                                    <div class="col-sm-12">
+                                        @if (Model.ServiceRequest.PhysicianId != null)
+                                        {
+                                        <span title="@Model.ServiceRequest.PhysicianDisplayName - Physician" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.PhysicianColorCode;">@Model.ServiceRequest.PhysicianInitials</span>
+                                            if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.PhysicianUserName == null ? string.Empty : Model.ServiceRequest.PhysicianUserName))))
+                                            {
+                                                var physician = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.PhysicianUserName == null ? string.Empty : Model.ServiceRequest.PhysicianUserName)));
+                                        <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.PhysicianId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
+                                        </form>
+                                        <span>@physician.AsMemberInfo.Value.Profile.Name.DisplayName</span>
+                                        <em class="text-muted"> Physician</em>
+                                            }
+                                            else
+                                            {
+                                        <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.PhysicianId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                                        </form>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row top-buffer">
+                                    <div class="col-sm-12">
+                                        @if (Model.ServiceRequest.IntakeAssistantId != null)
+                                        {
+                                        <span title="@Model.ServiceRequest.IntakeAssistantName - Intake Assistant" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.IntakeAssistantColorCode;">@Model.ServiceRequest.IntakeAssistantInitials</span>
+                                            if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.IntakeAssistantUserName == null ? string.Empty : Model.ServiceRequest.IntakeAssistantUserName))))
+                                            {
+                                                var intake = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.IntakeAssistantUserName == null ? string.Empty : Model.ServiceRequest.IntakeAssistantUserName)));
+                                        <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.IntakeAssistantId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
+                                        </form>
+                                        <span>@intake.AsMemberInfo.Value.Profile.Name.DisplayName</span>
+                                        <em class="text-muted"> Intake Assistant</em>
+                                            }
+                                            else
+                                            {
+                                        <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.IntakeAssistantId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                                        </form>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row top-buffer">
+                                    <div class="col-sm-12">
+                                        @if (Model.ServiceRequest.DocumentReviewerId != null)
+                                            {
+                                            <span title="@Model.ServiceRequest.DocumentReviewerName - Document Reviewer" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.DocumentReviewerColorCode;">@Model.ServiceRequest.DocumentReviewerInitials</span>
+                                                if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.DocumentReviewerUserName == null ? string.Empty : Model.ServiceRequest.DocumentReviewerUserName))))
+                                                {
+                                                    var member = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.DocumentReviewerUserName == null ? string.Empty : Model.ServiceRequest.DocumentReviewerUserName)));
+                                            <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
+                                                @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                                @Html.Hidden("userId", Model.ServiceRequest.DocumentReviewerId)
+                                                @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                                <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
+                                            </form>
+                                            <span>@member.AsMemberInfo.Value.Profile.Name.DisplayName</span>
+                                            <em class="text-muted"> Document Reviewer</em>
+                                                }
+                                                else
+                                                {
+                                            <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
+                                                @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                                @Html.Hidden("userId", Model.ServiceRequest.DocumentReviewerId)
+                                                @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                                <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                                            </form>
+                                                }
+                                            }
+                                    </div>
+                                </div>
+                                    <div class="row top-buffer">
+                                        <div class="col-sm-12">
+                                            @if (Model.ServiceRequest.CaseCoordinatorId != null)
+                                        {
+                                        <span title="@Model.ServiceRequest.CaseCoordinatorName - Case Coordinator" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.CaseCoordinatorColorCode;">@Model.ServiceRequest.CaseCoordinatorInitials</span>
+                                            if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.CaseCoordinatorUserName == null ? string.Empty : Model.ServiceRequest.CaseCoordinatorUserName))))
+                                            {
+                                                var member = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.CaseCoordinatorUserName == null ? string.Empty : Model.ServiceRequest.CaseCoordinatorUserName)));
+                                        <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.CaseCoordinatorId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
+                                        </form>
+                                        <span>@member.AsMemberInfo.Value.Profile.Name.DisplayName</span>
+                                        <em class="text-muted"> Case Coordinator</em>
+                                            }
+                                            else
+                                            {
+                                        <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
+                                            @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
+                                            @Html.Hidden("userId", Model.ServiceRequest.CaseCoordinatorId)
+                                            @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                                        </form>
+                                            }
+                                        }
+                                        </div>
+                                    </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Google Calendar Integration
@@ -160,57 +309,23 @@
                         </dd>*@
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Dropbox Integration
-                </div>
-                <div class="panel-body">
-                    @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                    {
-                        <div>
-                            <small>@Model.ServiceRequest.Title</small>
-                            <form action="~/ServiceRequest/DropboxShareFolder" class="pull-right">
-                                @Html.Hidden("Id", Model.ServiceRequest.Id)
-                                @Html.Hidden("DocumentFormatLink", Model.ServiceRequest.DocumentFolderLink)
-                                <button class="btn btn-sm btn-primary">Share</button>
-                            </form>
-                        </div>
-
-                        if (Model.DropboxFolder == null)
-                        {
-                            if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
-                            {
-                                <div>
-                                    <form action="~/ServiceRequest/CreateDropboxFolder/@Model.ServiceRequest.Id" method="post">
-                                        <button type="submit" class="btn btn-primary">Create Dropbox Folder</button>
-                                    </form>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <span class="label label-success">Created</span>
-                            <div class="h4">Folder Shared To:</div>
-                            if (Model.DropboxFolderMembers != null)
-                            {
-                                <ul>
-                                    @foreach (var item in Model.DropboxFolderMembers)
-                                    {
-                                        <li>@item.AsMemberInfo.Value.Profile.Name.DisplayName</li>
-                                    }
-                                </ul>
-                                if (!Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith(Model.ServiceRequest.PhysicianUserName)))
-                                {
-                                    <form action="~/ServiceRequest/ShareFolderToPhysician/@Model.ServiceRequest.Id" method="post">
-                                        <button type="submit" class="btn btn-primary">Share Folder to Physician</button>
-                                    </form>
-                                }
-                            }
-                        }
-                    }
-                </div>
-            </div>
         }
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Location
+            </div>
+            <div class="panel-body">
+                <address>
+                    <strong>@Model.ServiceRequest.LocationName</strong><br>
+                    <strong>@Model.ServiceRequest.AddressName</strong><br>
+                    @Model.ServiceRequest.Address1<br>
+                    @if (!string.IsNullOrEmpty(Model.ServiceRequest.City))
+                    {
+                        @:@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName @Model.ServiceRequest.PostalCode<br>
+                    }
+                </address>
+            </div>
+        </div>
     </div>
 </div>
 

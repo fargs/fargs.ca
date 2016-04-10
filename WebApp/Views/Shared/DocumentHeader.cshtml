@@ -1,14 +1,14 @@
 ﻿@model Model.Invoice
 @{
     Layout = "~/Views/Shared/_LayoutPrint.cshtml";
-    ViewBag.Title = "Document Footer";
+    ViewBag.Title = "Document Header";
 }
 <div class="row">
-    <div class="col-sm-6">
-        <img src="@string.Format("{0}{1}", Url.Content("~/Content/images/Physician Branding/"), Model.ServiceProviderLogoCssClass)" height="100" width="500" />
+    <div class="col-xs-8">
+        <div class="@Model.ServiceProviderLogoCssClass"></div>
     </div>
-    <div class="col-sm-6">
-        <div class="pull-right well">
+    <div class="col-xs-4">
+        <div class="pull-right well well-sm">
             <strong>@Model.ServiceProviderName</strong>
             <p>
                 <div class="small">@Model.ServiceProviderAddress1</div>

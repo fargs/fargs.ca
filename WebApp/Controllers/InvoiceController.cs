@@ -16,6 +16,9 @@ using System.Text;
 using WebApp.Library.Extensions;
 using SelectPdf;
 using WebApp.Library.Helpers;
+using System.Collections.Specialized;
+using System.Net;
+using System.IO;
 
 namespace WebApp.Controllers
 {
@@ -317,60 +320,169 @@ namespace WebApp.Controllers
             return RedirectToAction("Details", new { id = invoice.Id });
         }
 
+        //[AllowAnonymous]
+        //public ActionResult DownloadReport(Guid id)
+        //{
+        //    var invoice = db.Invoices.Where(c => c.ObjectGuid == id);
+        //    if (invoice.FirstOrDefault() == null)
+        //    {
+        //        return new HttpNotFoundResult();
+        //    }
+        //    var invoiceDetails = db.InvoiceDetails.Where(c => c.InvoiceId == invoice.FirstOrDefault().Id);
+        //    var person = db.Users.SingleOrDefault(c => c.UserName == User.Identity.Name);
+
+        //    LocalReport localReport = new LocalReport();
+        //    localReport.ReportPath = Server.MapPath("~/Content/reports/Invoice.rdlc");
+        //    var invoiceDataSet = new ReportDataSource("Invoice", invoice);
+        //    var invoiceDetailDataSet = new ReportDataSource("InvoiceDetail", invoiceDetails);
+
+        //    localReport.DataSources.Add(invoiceDataSet);
+        //    localReport.DataSources.Add(invoiceDetailDataSet);
+        //    string reportType = "PDF";
+        //    string mimeType;
+        //    string encoding;
+        //    string fileNameExtension;
+
+        //    //The DeviceInfo settings should be changed based on the reportType
+        //    //http://msdn2.microsoft.com/en-us/library/ms155397.aspx
+        //    string deviceInfo =
+        //    "<DeviceInfo>" +
+        //    "  <OutputFormat>PDF</OutputFormat>" +
+        //    "  <PageWidth>11in</PageWidth>" +
+        //    "  <PageHeight>8.5in</PageHeight>" +
+        //    "  <MarginTop>0.5in</MarginTop>" +
+        //    "  <MarginLeft>1in</MarginLeft>" +
+        //    "  <MarginRight>1in</MarginRight>" +
+        //    "  <MarginBottom>0.5in</MarginBottom>" +
+        //    "</DeviceInfo>";
+
+        //    Warning[] warnings;
+        //    string[] streams;
+        //    byte[] renderedBytes;
+
+        //    //Render the report
+        //    renderedBytes = localReport.Render(
+        //        reportType,
+        //        deviceInfo,
+        //        out mimeType,
+        //        out encoding,
+        //        out fileNameExtension,
+        //        out streams,
+        //        out warnings);
+        //    //Response.AddHeader("content-disposition", "attachment; filename=NorthWindCustomers." + fileNameExtension);
+        //    return File(renderedBytes, mimeType);
+        //}
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DownloadHeader(Guid id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            return PartialView("DocumentHeader", invoice);
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DownloadBody(Guid id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            return PartialView("PrintableInvoice", invoice);
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DownloadFooter(Guid id)
+        {
+            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            return PartialView("DocumentFooter", invoice);
+        }
+
         [AllowAnonymous]
         public async Task<ActionResult> Download(Guid id)
         {
             var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
 
-            var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
-            var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
-            var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
-            
-            HtmlToPdf converter = new HtmlToPdf();
+            //var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
+            //var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
+            //var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
 
-            // header settings
-            converter.Options.DisplayHeader = true;
-            converter.Header.Height = 100;
+            string apiKey = "eedbadc1-0fe7-4712-8573-816115379e62";
+            using (var client = new WebClient())
+            {
+                NameValueCollection options = new NameValueCollection();
+                options.Add("apikey", apiKey);
+                options.Add("value", "http://orvosi.ca/invoice/downloadbody/" + id.ToString());
 
-            PdfHtmlSection headerHtml = new PdfHtmlSection(header, Request.GetBaseUrl());
-            headerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
-            converter.Header.Add(headerHtml);
+                options.Add("HeaderUrl", "http://orvosi.ca/invoice/downloadheader/" + id.ToString());
+                options.Add("FooterUrl", "http://orvosi.ca/invoice/downloadfooter/" + id.ToString());
 
-            // footer settings
-            converter.Options.DisplayFooter = true;
-            converter.Footer.Height = 30;
+                options.Add("MarginTop", "40");
+                options.Add("MarginBottom", "10");
+                options.Add("MarginLeft", "10");
+                options.Add("MarginRight", "10");
 
-            PdfHtmlSection footerHtml = new PdfHtmlSection(footer, Request.GetBaseUrl());
-            footerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
-            converter.Footer.Add(footerHtml);
+                // Call the API convert to a PDF
+                MemoryStream ms = new MemoryStream(client.UploadValues("http://api.html2pdfrocket.com/pdf", options));
 
-            PdfTextSection text = new PdfTextSection(0, 10,
-                    "Page {page_number} of {total_pages}  ",
-                    new System.Drawing.Font("Arial", 8));
-            text.HorizontalAlign = PdfTextHorizontalAlign.Right;
-            converter.Footer.Add(text);
+                // Make the file a downloadable attachment - comment this out to show it directly inside
+                HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename={0}.pdf", invoice.ServiceProviderName + "_" + invoice.InvoiceNumber));
 
-            converter.Options.PdfPageSize = PdfPageSize.A4;
-            converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-            converter.Options.MarginLeft = 30;
-            converter.Options.MarginRight = 30;
-            converter.Options.MarginTop = 30;
-            converter.Options.MarginBottom = 30;
-            
-            PdfDocument doc = converter.ConvertHtmlString(body, Request.GetBaseUrl());
-            var fileName = string.Format(@"Invoice_{0}_{1}_{2}.pdf", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.CustomerName);
-            var docBytes = doc.Save();
-            doc.Close();
-
-            invoice.DownloadDate = SystemTime.Now();
-            invoice.ModifiedUser = User.Identity.Name;
-            await db.SaveChangesAsync();
-
-            //// Confirm the examination was completed.
-            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
-
-            return File(docBytes, "application/pdf", fileName);
+                // Return the file as a PDF
+                return new FileStreamResult(ms, "application/pdf");
+            }
         }
+
+        //[AllowAnonymous]
+        //public async Task<ActionResult> Download(Guid id)
+        //{
+        //    var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+
+        //    var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
+        //    var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
+        //    var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
+
+        //    HtmlToPdf converter = new HtmlToPdf();
+
+        //    // header settings
+        //    converter.Options.DisplayHeader = true;
+        //    converter.Header.Height = 100;
+
+        //    PdfHtmlSection headerHtml = new PdfHtmlSection(header, Request.GetBaseUrl());
+        //    headerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
+        //    converter.Header.Add(headerHtml);
+
+        //    // footer settings
+        //    converter.Options.DisplayFooter = true;
+        //    converter.Footer.Height = 30;
+
+        //    PdfHtmlSection footerHtml = new PdfHtmlSection(footer, Request.GetBaseUrl());
+        //    footerHtml.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
+        //    converter.Footer.Add(footerHtml);
+
+        //    PdfTextSection text = new PdfTextSection(0, 10,
+        //            "Page {page_number} of {total_pages}  ",
+        //            new System.Drawing.Font("Arial", 8));
+        //    text.HorizontalAlign = PdfTextHorizontalAlign.Right;
+        //    converter.Footer.Add(text);
+
+        //    converter.Options.PdfPageSize = PdfPageSize.A4;
+        //    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+        //    converter.Options.MarginLeft = 30;
+        //    converter.Options.MarginRight = 30;
+        //    converter.Options.MarginTop = 30;
+        //    converter.Options.MarginBottom = 30;
+
+        //    PdfDocument doc = converter.ConvertHtmlString(body, Request.GetBaseUrl());
+        //    var fileName = string.Format(@"Invoice_{0}_{1}_{2}.pdf", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.CustomerName);
+        //    var docBytes = doc.Save();
+        //    doc.Close();
+
+        //    invoice.DownloadDate = SystemTime.Now();
+        //    invoice.ModifiedUser = User.Identity.Name;
+        //    await db.SaveChangesAsync();
+
+        //    //// Confirm the examination was completed.
+        //    //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+
+        //    return File(docBytes, "application/pdf", fileName);
+        //}
 
         [HttpPost]
         [Authorize(Roles = "Super Admin")]

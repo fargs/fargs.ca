@@ -435,6 +435,11 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public ActionResult CreateAddOn() => View();
+
+
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> ResourceAssignment(int? id)
         {
             if (id == null)

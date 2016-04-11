@@ -1,0 +1,183 @@
+﻿@using Model
+@using Model.Enums
+@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
+
+@{
+    ViewBag.Title = "Book an Exam - Details";
+
+    var db = new OrvosiEntities();
+
+    ViewBag.Services = db.Services
+        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.ServiceCategoryName }
+        }).ToList();
+
+    ViewBag.Companies = db.Companies
+        .Where(c => c.IsParent == false)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.ParentName }
+        }).ToList();
+
+    var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
+    ViewBag.Locations = l.Select(c => new SelectListItem()
+    {
+        Text = string.Format("{0} - {1}", c.LocationName, c.Name),
+        Value = c.Id.ToString(),
+        Group = new SelectListGroup() { Name = c.EntityDisplayName }
+    });
+
+    ViewBag.Requestors = db.Users
+        .Where(u => u.RoleCategoryId == RoleCategory.Company)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString()
+        }).ToList();
+
+    ViewBag.Staff = db.Users
+        .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString()
+        }).ToList();
+
+    ViewBag.Physicians = db.Users
+        .Where(u => u.RoleCategoryId == RoleCategory.Physician)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.DisplayName,
+            Value = c.Id.ToString()
+        }).ToList();
+}
+
+<h3>Create Paper Review/Addendum</h3>
+
+<form action="@Url.Content("~/ServiceRequest/CreateAddOn")" method="post" class="form-horizontal">
+
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Physician</label>
+        <div class="col-md-10">
+            @Html.DropDownList("PhysicianId", new SelectList(ViewBag.Physicians, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("PhysicianId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Company</label>
+        <div class="col-md-10">
+            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Service</label>
+        <div class="col-md-10">
+            @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Claimant</label>
+        <div class="col-md-10">
+            @Html.Editor("ClaimantName", new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessage("ClaimantName", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Due Date</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="DueDatePicker">
+                @Html.TextBox("DueDate", "", new { @class = "form-control", size = "16" })
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessage("DueDate", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Reference Id</label>
+        <div class="col-md-10">
+            @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Requested On</label>
+        <div class="col-md-10">
+            <div class="input-group date" style="width:100%" id="RequestedDatePicker">
+                <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Additional Notes</label>
+        <div class="col-md-10">
+            <textarea class="form-control" name="Notes" rows="3"></textarea>
+            @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Case Coordinator</label>
+        <div class="col-md-10">
+            @Html.DropDownList("CaseCoordinatorId", new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-push-2 col-md-10">
+            <button class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+
+</form>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        $(function () {
+
+            $('#DueDatePicker').datepicker({
+                startDate: '-1d',
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+
+            //var dueDate = $('#DueDate').datepicker();
+            $('#AppointmentDatePicker').datepicker({
+                startDate: '-1d',
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+
+            $('#RequestedDatePicker').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+        });
+
+    </script>
+}

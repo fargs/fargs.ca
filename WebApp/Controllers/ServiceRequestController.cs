@@ -279,7 +279,7 @@ namespace WebApp.Controllers
                     CompanyId = sr.CompanyId,
                     PhysicianId = sr.PhysicianId,
                     ServiceId = service.ServiceId,
-                    LocationId = service.LocationId,
+                    LocationId = (short?)service.LocationId,
                     ServiceCataloguePrice = service.Price,
                     NoShowRate = rates.NoShowRate,
                     LateCancellationRate = rates.LateCancellationRate,
@@ -437,8 +437,7 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult CreateAddOn() => View();
 
-
-
+       
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> ResourceAssignment(int? id)
         {

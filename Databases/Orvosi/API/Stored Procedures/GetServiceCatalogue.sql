@@ -13,7 +13,7 @@ AS (
 		,LocationName = l.ItemText
 		,ServicePrice = s.Price
 	FROM dbo.[Service] s
-	CROSS JOIN API.LocationArea l
+	CROSS JOIN (SELECT * FROM API.LocationArea UNION ALL SELECT 4, 'Locations', 0, NULL, NULL) l
 	WHERE s.ServicePortfolioId = 2 /* Physician */ 
 )
 , ServiceCatalogue

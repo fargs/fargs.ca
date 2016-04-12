@@ -96,6 +96,13 @@ namespace Model.Enums
         public const byte CMPA = 3;
     }
 
+    public static class Services
+    {
+        public const byte PaperReview = 16;
+        public const byte Addendum = 17;
+        public const byte TeleConference = 13;
+    }
+
     public static class ServiceCategories
     {
         public const byte IndependentMedicalExam = 5;

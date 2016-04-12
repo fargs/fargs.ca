@@ -3058,8 +3058,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <ComplexType Name="GetServiceCatalogue_Result">
           <Property Type="Int16" Name="ServiceId" Nullable="false" />
           <Property Type="String" Name="ServiceName" Nullable="false" MaxLength="128" />
-          <Property Type="Int16" Name="LocationId" Nullable="false" />
-          <Property Type="String" Name="LocationName" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="LocationId" Nullable="false" />
+          <Property Type="String" Name="LocationName" Nullable="true" MaxLength="128" />
           <Property Type="Decimal" Name="ServicePrice" Nullable="true" Precision="18" Scale="2" />
           <Property Type="Int16" Name="ServiceCatalogueId" Nullable="true" />
           <Property Type="Decimal" Name="Price" Nullable="true" Precision="18" Scale="2" />

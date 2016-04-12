@@ -25,7 +25,7 @@
             Group = new SelectListGroup() { Name = c.ParentName }
         }).ToList();
 
-    ViewBag.Services = db.Services
+    var services = db.Services
         .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
         .OrderBy(c => c.Name)
         .ToList();
@@ -33,6 +33,15 @@
     ViewBag.LocationAreas = db.LocationAreas
         .OrderBy(c => c.ItemText)
         .ToList();
+        
+    ViewBag.LocationAreas.Add(new LocationArea()
+        {
+            LookupId = 4,
+            LookupName = "Locations",
+            ItemId = 0,
+            ItemText = null,
+            ItemValue = null
+        });
 }
 
 
@@ -108,7 +117,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var service in ViewBag.Services)
+            @foreach (var service in services.OrderBy(c => c.ServiceCategoryId).ThenBy(c => c.Name))
             {
                 <tr>
                     <td>
@@ -117,23 +126,40 @@ else
                     @foreach (var location in ViewBag.LocationAreas)
                     {
                         <td>
-                            <a href="~/@(string.Format("ServiceCatalogue/Edit?UserId={0}&CompanyId={1}&LocationId={2}&ServiceId={3}", Model.FilterArgs.UserId, Model.FilterArgs.CompanyId, location.ItemId, service.Id))">
-                                @{
-                                    var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == service.Id && c.LocationId == location.ItemId);
-                                }
-                                @if (serviceCatalogueItem.ServiceCatalogueItem.Price.HasValue)
-                                {
-                                    <span>@serviceCatalogueItem.ServiceCatalogueItem.Price</span>
-                                }
-                                else
-                                {
-                                    <span>Edit</span>
-                                }
-                            </a>
+                            @{
+                                var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == service.Id && c.LocationId == location.ItemId);
+                            }
+                            @if ((serviceCatalogueItem.ServiceId == Services.PaperReview
+        || serviceCatalogueItem.ServiceId == Services.Addendum
+        || serviceCatalogueItem.ServiceId == Services.TeleConference)
+        && serviceCatalogueItem.LocationId != 0)
+                            {
+                                <span>N/A</span>
+                            }
+                            else if ((serviceCatalogueItem.ServiceId != Services.PaperReview
+                                && serviceCatalogueItem.ServiceId != Services.Addendum
+                                && serviceCatalogueItem.ServiceId != Services.TeleConference)
+                                && serviceCatalogueItem.LocationId == 0)
+                            {
+                                <span>N/A</span>
+                            }
+                            else
+                            {
+                                <a href="~/@(string.Format("ServiceCatalogue/Edit?UserId={0}&CompanyId={1}&LocationId={2}&ServiceId={3}", Model.FilterArgs.UserId, Model.FilterArgs.CompanyId, (location.ItemId == 0 ? null : location.ItemId), service.Id))">
+                                    @if (serviceCatalogueItem.Price.HasValue)
+                                    {
+                                        <span>@serviceCatalogueItem.Price</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Edit</span>
+                                    }
+                                </a>
+                            }
                         </td>
-                    }
+                                }
                 </tr>
-                }
+            }
         </tbody>
     </table>
 }

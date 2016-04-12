@@ -15,7 +15,7 @@ namespace Model
     {
         public short ServiceId { get; set; }
         public string ServiceName { get; set; }
-        public short LocationId { get; set; }
+        public int LocationId { get; set; }
         public string LocationName { get; set; }
         public Nullable<decimal> ServicePrice { get; set; }
         public Nullable<short> ServiceCatalogueId { get; set; }

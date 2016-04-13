@@ -99,11 +99,11 @@ namespace WebApp.Controllers
 
             if (filterArgs.Sort == "Newest")
             {
-                sr = sr.OrderByDescending(c => c.AppointmentDate.Value).ThenBy(c => c.StartTime.Value);
+                sr = sr.OrderByDescending(c => c.AppointmentDate).ThenBy(c => c.StartTime.Value);
             }
             else
             {
-                sr = sr.OrderBy(c => c.AppointmentDate.Value).ThenBy(c => c.StartTime.Value);
+                sr = sr.OrderBy(c => c.AppointmentDate).ThenBy(c => c.StartTime.Value);
             }
 
             // order the requests from oldest to newest
@@ -437,7 +437,67 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult CreateAddOn() => View();
 
-       
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [HttpPost]
+        public async Task<ActionResult> CreateAddOn(ServiceRequest sr)
+        {
+            if (sr.ServiceId != Services.Addendum && sr.ServiceId != Services.PaperReview)
+            {
+                this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
+            }
+
+            var company = await db.Companies.SingleOrDefaultAsync(c => c.Id == sr.CompanyId);
+
+            var serviceCatalogue = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+
+            var service = serviceCatalogue.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
+            if (service == null || !service.Price.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+            }
+
+            var rates = db.GetServiceCatalogueRate(new Guid(sr.PhysicianId), sr.CompanyGuid).First();
+            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var additionalErrors = new ModelErrorCollection();
+                var obj = new ServiceRequest()
+                {
+                    ServiceCatalogueId = service.ServiceCatalogueId,
+                    DueDate = sr.DueDate,
+                    CaseCoordinatorId = sr.CaseCoordinatorId,
+                    ClaimantName = sr.ClaimantName,
+                    CompanyReferenceId = sr.CompanyReferenceId,
+                    RequestedDate = sr.RequestedDate,
+                    CompanyId = sr.CompanyId,
+                    PhysicianId = sr.PhysicianId,
+                    ServiceId = service.ServiceId,
+                    LocationId = (short?)service.LocationId,
+                    ServiceCataloguePrice = service.Price,
+                    NoShowRate = rates.NoShowRate,
+                    LateCancellationRate = rates.LateCancellationRate,
+                    ModifiedUser = User.Identity.Name,
+                    ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
+                    PhysicianUserName = string.Empty, // same as ServiceName
+                    ModifiedDate = SystemTime.Now()
+                };
+
+                db.ServiceRequests.Add(obj);
+                await db.SaveChangesAsync();
+                await db.Entry(obj).ReloadAsync();
+
+                obj.DocumentFolderLink = string.Format("/cases/{0}/AddOns/{1}", obj.PhysicianUserName, obj.Title.Trim());
+
+                return RedirectToAction("Details", new { id = obj.Id });
+            }
+
+            return View(sr);
+        }
+
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> ResourceAssignment(int? id)
         {
@@ -765,11 +825,7 @@ namespace WebApp.Controllers
         {
             var obj = await db.ServiceRequests.FindAsync(id);
             var client = await dropbox.GetServiceAccountClientAsync();
-
-            var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-            obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-            await db.SaveChangesAsync();
-
+            
             // Get the destination folder name
             var destination = obj.DocumentFolderLink;
 

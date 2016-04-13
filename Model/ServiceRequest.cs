@@ -105,6 +105,7 @@ namespace Model
         public string CaseCoordinatorUserName { get; set; }
         public string IntakeAssistantUserName { get; set; }
         public string DocumentReviewerUserName { get; set; }
+        public Nullable<short> ServiceCategoryId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }

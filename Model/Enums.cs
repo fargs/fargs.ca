@@ -149,6 +149,7 @@ namespace Model.Enums
         public const byte RespondToQAComments = 21;
         public const byte ObtainFinalReportCompany = 28;
         public const byte CloseCase = 30;
+        public const byte CloseAddOn = 131;
     }
 
     public static class TaskStatuses

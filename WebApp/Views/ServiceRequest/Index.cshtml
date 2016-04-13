@@ -212,7 +212,10 @@
                             <div class="text-muted">@item.AddressName</div>
                         </td>
                         <td>
-                            <div><i class="glyphicon glyphicon-calendar"></i><span class="font-bold"> @item.AppointmentDate.Value.ToString("ddd, MMM dd")</span> @item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
+                            @if (item.ServiceCategoryId != e.ServiceCategories.AddOn)
+                            {
+                                <div><i class="glyphicon glyphicon-calendar"></i><span class="font-bold"> @item.AppointmentDate.Value.ToString("ddd, MMM dd")</span> @item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
+                            }
                             <div><i class="glyphicon glyphicon-file"></i><span class="@(item.DueDate.HasValue ? string.Empty : "text-muted")"> @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : "Not Set")</span></div>
                         </td>
                         <td>

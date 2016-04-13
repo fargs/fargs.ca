@@ -52,10 +52,13 @@
                 @Model.ServiceRequest.ServiceRequestStatusText
             </span>
         }
-        <div class="form-group">
-            <label class="control-label">Exam Date</label>
-            <p class="form-control-static"> @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</p>
-        </div>
+        @if (Model.ServiceRequest.ServiceCategoryId != e.ServiceCategories.AddOn)
+        {
+            <div class="form-group">
+                <label class="control-label">Exam Date</label>
+                <p class="form-control-static"> @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</p>
+            </div>
+        }
         <div class="form-group">
             <label class="control-label">Report Date</label>
             @if (Model.ServiceRequest.DueDate.HasValue)
@@ -298,7 +301,7 @@
                     <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
                     <strong>Google Event Data</strong>
                     <div>@Model.ServiceRequest.CalendarEventTitle</div>
-                    <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                    @*<div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>*@
                     <div>@Model.ServiceRequest.StartTime</div>
                     <div>@Model.ServiceRequest.EndTime</div>
                     @*<dt>Effective Price</dt>

@@ -675,7 +675,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="ClaimantName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServiceCatalogueId" Type="smallint" />
           <Property Name="HarvestProjectId" Type="bigint" />
-          <Property Name="Title" Type="nvarchar" MaxLength="773" />
+          <Property Name="Title" Type="nvarchar" MaxLength="210" />
           <Property Name="Body" Type="nvarchar(max)" />
           <Property Name="AddressId" Type="int" />
           <Property Name="RequestedDate" Type="datetime" />
@@ -703,6 +703,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="ServiceId" Type="smallint" />
           <Property Name="ServiceName" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ServiceCode" Type="nvarchar" MaxLength="10" />
+          <Property Name="ServiceCategoryId" Type="smallint" />
           <Property Name="ServiceCategoryName" Type="nvarchar" MaxLength="128" />
           <Property Name="ServicePortfolioName" Type="nvarchar" MaxLength="128" />
           <Property Name="PhysicianId" Type="nvarchar" MaxLength="128" />
@@ -1815,6 +1816,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [ServiceRequest].[ServiceId] AS [ServiceId], 
     [ServiceRequest].[ServiceName] AS [ServiceName], 
     [ServiceRequest].[ServiceCode] AS [ServiceCode], 
+    [ServiceRequest].[ServiceCategoryId] AS [ServiceCategoryId], 
     [ServiceRequest].[ServiceCategoryName] AS [ServiceCategoryName], 
     [ServiceRequest].[ServicePortfolioName] AS [ServicePortfolioName], 
     [ServiceRequest].[PhysicianId] AS [PhysicianId], 
@@ -2801,7 +2803,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CompanyReferenceId" MaxLength="128" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="ServiceCatalogueId" Type="Int16" />
           <Property Name="HarvestProjectId" Type="Int64" />
-          <Property Name="Title" MaxLength="773" FixedLength="false" Unicode="true" Type="String" />
+          <Property Name="Title" MaxLength="210" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="Body" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
           <Property Name="AddressId" Type="Int32" />
           <Property Name="RequestedDate" Precision="3" Type="DateTime" />
@@ -2882,6 +2884,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="CaseCoordinatorUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="IntakeAssistantUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="DocumentReviewerUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceCategoryId" Type="Int16" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -3903,6 +3906,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="ServiceRequests">
             <EntityTypeMapping TypeName="OrvosiModel.ServiceRequest">
               <MappingFragment StoreEntitySet="ServiceRequest">
+                <ScalarProperty Name="ServiceCategoryId" ColumnName="ServiceCategoryId" />
                 <ScalarProperty Name="DocumentReviewerUserName" ColumnName="DocumentReviewerUserName" />
                 <ScalarProperty Name="IntakeAssistantUserName" ColumnName="IntakeAssistantUserName" />
                 <ScalarProperty Name="CaseCoordinatorUserName" ColumnName="CaseCoordinatorUserName" />

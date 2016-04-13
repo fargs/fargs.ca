@@ -1,6 +1,6 @@
 ﻿@using Model
 @using Model.Enums
-@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
+@model Model.ServiceRequest
 
 @{
     ViewBag.Title = "Book an Exam - Details";
@@ -8,12 +8,11 @@
     var db = new OrvosiEntities();
 
     ViewBag.Services = db.Services
-        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician && c.ServiceCategoryId == ServiceCategories.AddOn)
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.ServiceCategoryName }
+            Value = c.Id.ToString()
         }).ToList();
 
     ViewBag.Companies = db.Companies
@@ -85,7 +84,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Service</label>
         <div class="col-md-10">
-            @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
         </div>
     </div>

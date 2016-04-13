@@ -29,7 +29,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public bool IsObsolete { get; set; } = false;
         public byte? DueDateBase { get; set; }
         public short? DueDateDiff { get; set; }
-        public DateTime ExamDate { get; set; }
+        public DateTime? AppointmentDate { get; set; }
         public DateTime ReportDate { get; set; }
         public string DependsOn { get; set; }
         public short? Sequence { get; set; }
@@ -49,7 +49,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
                 }
                 else if (this.DependsOn == "ExamDate")
                 {
-                    if (DateTime.Now >= this.ExamDate)
+                    if (DateTime.Now >= this.AppointmentDate)
                     {
                         return new TaskStatusViewModel(TaskStatuses.ToDo);
                     }

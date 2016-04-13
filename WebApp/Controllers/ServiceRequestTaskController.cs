@@ -117,7 +117,12 @@ namespace WebApp.Controllers
 
             var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : SystemTime.Now();
+
+            if (serviceRequest.ServiceCategoryId != ServiceCategories.AddOn)
+            {
+                dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+            }
 
             var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
                 .Select(t => new TaskViewModel()
@@ -135,7 +140,7 @@ namespace WebApp.Controllers
                     Initials = t.AssignedToInitials,
                     DueDateBase = t.DueDateBase,
                     DueDateDiff = t.DueDateDiff,
-                    ExamDate = serviceRequest.AppointmentDate.Value,
+                    AppointmentDate = serviceRequest.AppointmentDate,
                     ReportDate = dueDate,
                     DependsOn = t.DependsOn,
                     Sequence = t.Sequence
@@ -143,7 +148,7 @@ namespace WebApp.Controllers
                 .OrderBy(t => t.Sequence)
                 .ToList();
 
-            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
+            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
 
             BuildDependencies(closeOutTask, null, tasks);
 
@@ -187,7 +192,12 @@ namespace WebApp.Controllers
 
             var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : SystemTime.Now();
+
+            if (serviceRequest.ServiceCategoryId != ServiceCategories.AddOn)
+            {
+                dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
+            }
 
             var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
                 .Select(t => new TaskViewModel()
@@ -205,7 +215,7 @@ namespace WebApp.Controllers
                     Initials = t.AssignedToInitials,
                     DueDateBase = t.DueDateBase,
                     DueDateDiff = t.DueDateDiff,
-                    ExamDate = serviceRequest.AppointmentDate.Value,
+                    AppointmentDate = serviceRequest.AppointmentDate.Value,
                     ReportDate = dueDate,
                     DependsOn = t.DependsOn,
                     Sequence = t.Sequence
@@ -222,7 +232,7 @@ namespace WebApp.Controllers
                 return t;
             }).ToList();
 
-            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
+            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
 
             BuildDependencies(closeOutTask, null, tasks);
 

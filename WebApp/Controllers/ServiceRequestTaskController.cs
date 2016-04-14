@@ -192,13 +192,6 @@ namespace WebApp.Controllers
 
             var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : SystemTime.Now();
-
-            if (serviceRequest.ServiceCategoryId != ServiceCategories.AddOn)
-            {
-                dueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(5);
-            }
-
             var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
                 .Select(t => new TaskViewModel()
                 {

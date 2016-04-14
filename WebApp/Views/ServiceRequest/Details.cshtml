@@ -14,7 +14,10 @@
                 {
                     <ul class="dropdown-menu">
                         <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                        <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
+                        @if (Model.ServiceRequest.ServiceCategoryId != e.ServiceCategories.AddOn)
+                        {
+                            <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
+                        }
                         <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
                         @if (Model.ServiceRequest.ServiceStatusId != e.ServiceStatus.NoShow)
                         {

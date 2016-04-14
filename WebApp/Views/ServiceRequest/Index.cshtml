@@ -158,7 +158,10 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a href="~/ServiceRequest/Edit/@item.Id">Edit</a></li>
-                                        <li><a href="~/ServiceRequest/Reschedule/@item.Id">Reschedule</a></li>
+                                        @if (item.ServiceCategoryId != e.ServiceCategories.AddOn)
+                                        {
+                                            <li><a href="~/ServiceRequest/Reschedule/@item.Id">Reschedule</a></li>
+                                        }
                                         <li><a href="~/ServiceRequest/ResourceAssignment/@item.Id">Resource Assignment</a></li>
                                         @if (item.ServiceStatusId != e.ServiceStatus.NoShow)
                                         {

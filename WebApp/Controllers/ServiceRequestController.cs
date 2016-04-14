@@ -294,10 +294,6 @@ namespace WebApp.Controllers
                 await db.SaveChangesAsync();
                 await db.Entry(obj).ReloadAsync();
 
-                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-                obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-
-
                 //CREATE THE INVOICE
                 var serviceRequest = obj;
 
@@ -488,10 +484,7 @@ namespace WebApp.Controllers
 
                 db.ServiceRequests.Add(obj);
                 await db.SaveChangesAsync();
-                await db.Entry(obj).ReloadAsync();
-
-                obj.DocumentFolderLink = string.Format("/cases/{0}/AddOns/{1}", obj.PhysicianUserName, obj.Title.Trim());
-
+                
                 return RedirectToAction("Details", new { id = obj.Id });
             }
 
@@ -538,14 +531,6 @@ namespace WebApp.Controllers
                     obj.IntakeAssistantId = sr.IntakeAssistantId;
 
                     await db.SaveChangesAsync();
-
-                    // Dropbox Integration
-                    var dropbox = new OrvosiDropbox();
-                    var client = await dropbox.GetServiceAccountClientAsync();
-                    var folder = await client.Files.GetMetadataAsync(obj.DocumentFolderLink);
-                    var sharedFolderId = folder.AsFolder.SharingInfo.SharedFolderId;
-
-                    await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
 
                     return RedirectToAction("Details", new { id = sr.Id });
                 }
@@ -825,7 +810,19 @@ namespace WebApp.Controllers
         {
             var obj = await db.ServiceRequests.FindAsync(id);
             var client = await dropbox.GetServiceAccountClientAsync();
-            
+
+            if (obj.ServiceCategoryId == ServiceCategories.AddOn)
+            {
+                obj.DocumentFolderLink = string.Format("/cases/{0}/AddOns/{1}", obj.PhysicianUserName, obj.Title.Trim());
+            }
+            else
+            {
+                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+                obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+            }
+
+            await db.SaveChangesAsync();
+
             // Get the destination folder name
             var destination = obj.DocumentFolderLink;
 
@@ -850,18 +847,7 @@ namespace WebApp.Controllers
             }
 
             // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-
-            //string sharedFolderId = await DropboxShareFolder(client, folder);
-
-            //// Add the physician to the share
-            //var physician = await db.Users.SingleOrDefaultAsync(c => c.Id == obj.PhysicianId);
-            //if (physician != null)
-            //{
-            //    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
-            //}
-
-            //await ApplyMemberChangesToDropbox(obj, dropbox, client, sharedFolderId);
+            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_addonfoldertemplate", destination));
 
             return RedirectToAction("Details", new { id = id });
         }

@@ -30,7 +30,7 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public byte? DueDateBase { get; set; }
         public short? DueDateDiff { get; set; }
         public DateTime? AppointmentDate { get; set; }
-        public DateTime ReportDate { get; set; }
+        public DateTime? ReportDate { get; set; }
         public string DependsOn { get; set; }
         public short? Sequence { get; set; }
         public List<TaskViewModel> Dependencies { get; set; }

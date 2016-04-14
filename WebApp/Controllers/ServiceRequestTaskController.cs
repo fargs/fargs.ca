@@ -215,8 +215,8 @@ namespace WebApp.Controllers
                     Initials = t.AssignedToInitials,
                     DueDateBase = t.DueDateBase,
                     DueDateDiff = t.DueDateDiff,
-                    AppointmentDate = serviceRequest.AppointmentDate.Value,
-                    ReportDate = dueDate,
+                    AppointmentDate = serviceRequest.AppointmentDate,
+                    ReportDate = serviceRequest.DueDate,
                     DependsOn = t.DependsOn,
                     Sequence = t.Sequence
                 })
@@ -226,7 +226,7 @@ namespace WebApp.Controllers
             tasks.Select(t => {
                 if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue)
                 {
-                    var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(7);
+                    var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(3);
                     t.DueDate = t.DueDateBase == 1 ? serviceRequest.AppointmentDate.Value.AddDays(t.DueDateDiff.Value) : reportDueDate.AddDays(t.DueDateDiff.Value);
                 }
                 return t;
@@ -238,7 +238,7 @@ namespace WebApp.Controllers
 
             var nextTasks = tasks
                         .Where(c => c.Status.Id != TaskStatuses.Done)
-                        .OrderBy(o => o.DueDate)
+                        .OrderBy(o => o.Sequence)
                         .GroupBy(g => (string.IsNullOrEmpty(g.AssignedTo) ? string.Empty : g.AssignedTo.ToLower()))
                         .Select(s => new { s, Count = s.Count() })
                         .SelectMany(sm => sm.s.Select(s => s)

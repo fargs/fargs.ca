@@ -1,22 +1,4 @@
 ﻿
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
@@ -126,7 +108,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,[Title] = dbo.FormatDateTime(ad.[Day], 'yy-MM-dd') + '(' + LEFT(REPLACE(CONVERT(nvarchar(10), sl.StartTime), ':', ''),4) + ')-' + a.LocationShortName + '-' + sr.ClaimantName + ' (' + s.Code + '-' + p.UserName + ') ' + c.Code + '-' + CONVERT(nvarchar(10), sr.Id)
+	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, ad.[Day], sl.StartTime, a.LocationShortName, s.Code, c.Code, p.UserName, sr.ClaimantName)
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -154,6 +136,7 @@ SELECT
 	,sr.ServiceId
 	,ServiceName = s.Name
 	,ServiceCode = s.Code
+	,s.ServiceCategoryId
 	,s.ServiceCategoryName
 	,s.ServicePortfolioName
 	,sr.PhysicianId

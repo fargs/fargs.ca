@@ -279,6 +279,7 @@
     <Build Include="dbo\Functions\GetTaskDueDate.sql" />
     <Build Include="dbo\Functions\GetReportDueDate.sql" />
     <Build Include="API\Stored Procedures\GetMyTasks.sql" />
+    <Build Include="dbo\Functions\GetServiceRequestTitle.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

@@ -21,9 +21,9 @@
             <th>Company</th>
             <th>Invoice #</th>
             <th>Invoice Date</th>
-            <th>Total (Before tax)</th>
-            <th>Tax Rate</th>
-            <th>Total (After tax)</th>
+            <th>SubTotal</th>
+            <th>Tax (@Model.First().TaxRateHst.Value.ToString("0%"))</th>
+            <th>Total</th>
             <th>Submitted</th>
             <th>Payment Received</th>
         </tr>
@@ -90,7 +90,7 @@
                 <td>@invoice.InvoiceNumber</td>
                 <td>@invoice.InvoiceDate.ToOrvosiDateFormat()</td>
                 <td>@invoice.SubTotal.Value.ToString("C2")</td>
-                <td>@invoice.TaxRateHst.Value.ToString("0%")</td>
+                <td>@invoice.Hst.Value.ToString("C2")</td>
                 <td>@invoice.Total.Value.ToString("C2")</td>
                 <td>
                     @if (invoice.SentDate.HasValue)

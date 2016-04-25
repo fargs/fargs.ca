@@ -93,6 +93,7 @@ namespace WebApp.Library
 
         public static void ApplyHst(this Invoice invoice)
         {
+            invoice.Hst = 0;
             if (invoice.InvoiceDetails == null)
             {
                 invoice.SubTotal = 0;
@@ -101,7 +102,7 @@ namespace WebApp.Library
             {
                 invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
             }
-            invoice.Hst = invoice.SubTotal * (1 + invoice.TaxRateHst);
+            invoice.Hst = invoice.SubTotal * invoice.TaxRateHst;
         }
 
         public static void CalculateTotal(this Invoice invoice)

@@ -255,7 +255,7 @@ namespace WebApp.Controllers
                 {
                     invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
                 }
-
+                invoice.ApplyHst();
                 invoice.CalculateTotal();
                 db.Invoices.Add(invoice);
 

@@ -11,8 +11,7 @@
     [ResponsibleRoleId]        NVARCHAR (128)  NULL,
     [ModifiedDate]             DATETIME        CONSTRAINT [DF_ServiceRequestTemplateTask_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]             NVARCHAR (100)  CONSTRAINT [DF_ServiceRequestTemplateTask_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
+    [DependsOn]                NVARCHAR (50)   NULL,
     CONSTRAINT [PK_ServiceRequestTemplateTask] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
-
-
 

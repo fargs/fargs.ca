@@ -41,7 +41,6 @@
         <AssociationConnector Association="OrvosiModel.ServiceRequestInvoiceDetail" />
         <EntityTypeShape EntityType="OrvosiModel.AddressType" Width="1.5" PointX="11.375" PointY="7.75" />
         <EntityTypeShape EntityType="OrvosiModel.ServiceTask" Width="1.5" PointX="19.375" PointY="0.75" />
-        <EntityTypeShape EntityType="OrvosiModel.MyTask" Width="1.5" PointX="3.375" PointY="19.75" />
       </Diagram>
       <Diagram DiagramId="c6d199a4e950459da86a512ea26e752f" Name="Physician" ZoomLevel="55" >
         <EntityTypeShape EntityType="OrvosiModel.PhysicianCompany" Width="1.5" PointX="4.375" PointY="0.875" />

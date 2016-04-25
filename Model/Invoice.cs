@@ -58,6 +58,7 @@ namespace Model
         public Nullable<System.DateTime> SentDate { get; set; }
         public System.Guid ObjectGuid { get; set; }
         public Nullable<System.DateTime> DownloadDate { get; set; }
+        public Nullable<decimal> Hst { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }

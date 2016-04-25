@@ -91,6 +91,19 @@ namespace WebApp.Library
             }
         }
 
+        public static void ApplyHst(this Invoice invoice)
+        {
+            if (invoice.InvoiceDetails == null)
+            {
+                invoice.SubTotal = 0;
+            }
+            else
+            {
+                invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
+            }
+            invoice.Hst = invoice.SubTotal * (1 + invoice.TaxRateHst);
+        }
+
         public static void CalculateTotal(this Invoice invoice)
         {
             if (invoice.InvoiceDetails == null)
@@ -101,7 +114,7 @@ namespace WebApp.Library
             {
                 invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
             }
-            invoice.Total = invoice.SubTotal * (1 + invoice.TaxRateHst);
+            invoice.Total = invoice.SubTotal + invoice.Hst;
         }
 
         public static void CalculateTotal(this InvoiceDetail invoiceDetail)

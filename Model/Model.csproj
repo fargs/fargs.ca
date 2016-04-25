@@ -137,9 +137,6 @@
     <Compile Include="LookupItem.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="MyTask.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Orvosi.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

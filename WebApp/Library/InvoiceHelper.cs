@@ -59,7 +59,7 @@ namespace WebApp.Library
             invoiceDetail.ModifiedUser = userName;
 
             var description = new StringBuilder();
-            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat()));
+            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam ? serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat() : string.Empty));
             description.AppendLine(serviceRequest.ServiceName);
             description.AppendLine(serviceRequest.City);
             invoiceDetail.Description = description.ToString();

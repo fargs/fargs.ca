@@ -1,6 +1,14 @@
 ﻿@using WebApp.Library.Extensions
 @using e = Model.Enums
-@model List<Model.Invoice>
+@using Model
+@model List<Invoice>
+
+@{ 
+    using (var db = new OrvosiEntities())
+    {
+        ViewBag.User = db.Users.Single(u => u.UserName == User.Identity.Name);
+    }
+}
 
 <table class="table table-condensed table-hover table-responsive">
     <thead>

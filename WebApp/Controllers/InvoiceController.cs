@@ -211,8 +211,6 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin,Case Coordinator,Physician")]
         public ActionResult Table(List<Invoice> invoices)
         {
-            ViewBag.User = db.Users.Single(u => u.UserName == User.Identity.Name);
-
             return PartialView("_Table", invoices);
         }
 
@@ -236,7 +234,12 @@ namespace WebApp.Controllers
                 var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
 
                 var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
-                var invoiceDate = serviceRequest.AppointmentDate.Value;
+
+                var invoiceDate = SystemTime.Now();
+                if (serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+                {
+                    invoiceDate = serviceRequest.AppointmentDate.Value;
+                }
 
                 var invoice = new Invoice();
                 invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
@@ -261,8 +264,11 @@ namespace WebApp.Controllers
 
                 if (db.GetValidationErrors().Count() == 0)
                 {
+
                     await db.SaveChangesAsync();
-                    return PartialView("_InvoiceTable", invoice.InvoiceDetails.ToList());
+                    var invoices = new List<Invoice>();
+                    invoices.Add(invoice);
+                    return PartialView("_Table", invoices);
                 }
                 return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
             }

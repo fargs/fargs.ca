@@ -667,6 +667,7 @@ namespace WebApp.Controllers
                     {
                         detail.RemoveDiscount();
                     }
+                    detail.Invoice.ApplyHst();
                     detail.Invoice.CalculateTotal();
                     await db.SaveChangesAsync();
                 }
@@ -694,6 +695,7 @@ namespace WebApp.Controllers
             {
                 var detail = serviceRequest.InvoiceDetails.First();
                 detail.RemoveDiscount();
+                detail.Invoice.ApplyHst();
                 detail.Invoice.CalculateTotal();
                 await db.SaveChangesAsync();
             }
@@ -752,6 +754,7 @@ namespace WebApp.Controllers
                 {
                     detail.RemoveDiscount();
                 }
+                detail.Invoice.ApplyHst();
                 detail.Invoice.CalculateTotal();
                 await db.SaveChangesAsync();
             }

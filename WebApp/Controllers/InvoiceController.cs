@@ -313,6 +313,7 @@ namespace WebApp.Controllers
             invoiceDetail.CalculateTotal();
             invoiceDetail.AdditionalNotes = updatedInvoiceDetail.AdditionalNotes;
 
+            invoice.ApplyHst();
             invoice.CalculateTotal();
 
             invoice.ModifiedUser = User.Identity.Name;

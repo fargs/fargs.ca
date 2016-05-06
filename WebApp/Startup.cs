@@ -17,8 +17,6 @@ namespace WebApp
             //SystemTime.Now = () => new DateTime(2016, 01, 13, 00, 00, 00);
 
             ConfigureAuth(app);
-
-            Mapper.CreateMap<SpecialRequestFormViewModel, SpecialRequest>();
         }
     }
 }

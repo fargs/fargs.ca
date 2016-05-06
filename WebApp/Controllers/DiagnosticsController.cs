@@ -2,6 +2,7 @@
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
 using Microsoft.AspNet.Identity.Owin;
+using Model;
 using Model.Enums;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,22 @@ namespace WebApp.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult ConnectToBox()
+        {
+            return PartialView();
+        }
+
+        public ActionResult CreateBoxFolder()
+        {
+            var box = new BoxManager();
+            using (var db = new OrvosiEntities(User.Identity.Name))
+            {
+                var request = db.ServiceRequests.Single(sr => sr.Id == 131);
+                var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title);
+                return PartialView(caseFolder);
+            }
         }
 
         // GET: Diagnostics

@@ -10,6 +10,7 @@ using Model.Enums;
 using System.Security.Principal;
 using System.Security.Claims;
 using System.Text;
+using Box.V2.Models;
 
 namespace WebApp.Library.Extensions
 {
@@ -37,6 +38,16 @@ namespace WebApp.Library.Extensions
                 return request.Url.Scheme + "://" + request.Url.Authority + VirtualPathUtility.ToAbsolute("~/");
         }
 
+        public static string ToMonthFolderName(this DateTime value)
+        {
+            return string.Format("{0} {1}", value.Month.ToString().PadLeft(2, '0'), value.ToString("MMM").ToUpper());
+        }
+
+        public static string ToWeekFolderName(this DateTime value)
+        {
+            return string.Format("{0} {1}-{2}", value.ToString("MMM").ToUpper(), value.GetStartOfWeek().Day.ToString().PadLeft(2, '0'), value.GetEndOfWeek().Day.ToString().PadLeft(2, '0'));
+        }
+
         public static string ToOrvosiDateFormat(this DateTime value)
         {
             return value.ToString("yyyy-MM-dd");
@@ -45,6 +56,11 @@ namespace WebApp.Library.Extensions
         public static string ToOrvosiDateFormat(this DateTime? value)
         {
             return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
+        }
+
+        public static List<BoxItem> Entries(this BoxFolder value)
+        {
+            return value.ItemCollection == null ? new List<BoxItem>() : value.ItemCollection.Entries;
         }
 
         public static string ToJson(this object obj)

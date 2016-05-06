@@ -5,7 +5,11 @@
 @foreach (var item in Model)
 {
     <div>
-        @if (item.StatusId == TaskStatuses.ToDo && item.AssignedTo.ToLower() == ViewBag.User.Id.ToLower())
+        @if (item == null)
+        {
+            <div>test</div>
+        }
+        @if (item.StatusId == TaskStatuses.ToDo && (string.IsNullOrEmpty(item.AssignedTo) ? string.Empty : item.AssignedTo.ToLower()) == ViewBag.User.Id.ToLower())
         {
             <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
                 @Html.AntiForgeryToken()

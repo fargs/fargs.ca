@@ -258,7 +258,6 @@ namespace WebApp.Controllers
                 {
                     invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
                 }
-                invoice.ApplyHst();
                 invoice.CalculateTotal();
                 db.Invoices.Add(invoice);
 
@@ -313,7 +312,6 @@ namespace WebApp.Controllers
             invoiceDetail.CalculateTotal();
             invoiceDetail.AdditionalNotes = updatedInvoiceDetail.AdditionalNotes;
 
-            invoice.ApplyHst();
             invoice.CalculateTotal();
 
             invoice.ModifiedUser = User.Identity.Name;

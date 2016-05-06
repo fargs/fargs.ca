@@ -91,30 +91,16 @@ namespace WebApp.Library
             }
         }
 
-        public static void ApplyHst(this Invoice invoice)
+        public static void CalculateTotal(this Invoice invoice)
         {
+            invoice.SubTotal = 0;
             invoice.Hst = 0;
-            if (invoice.InvoiceDetails == null)
-            {
-                invoice.SubTotal = 0;
-            }
-            else
+            invoice.Total = 0;
+            if (invoice.InvoiceDetails != null)
             {
                 invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
             }
             invoice.Hst = invoice.SubTotal * invoice.TaxRateHst;
-        }
-
-        public static void CalculateTotal(this Invoice invoice)
-        {
-            if (invoice.InvoiceDetails == null)
-            {
-                invoice.SubTotal = 0;
-            }
-            else
-            {
-                invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
-            }
             invoice.Total = invoice.SubTotal + invoice.Hst;
         }
 

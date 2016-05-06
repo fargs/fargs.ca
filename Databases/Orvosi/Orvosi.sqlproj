@@ -76,6 +76,7 @@
     <Folder Include="Harvest\" />
     <Folder Include="Harvest\Tables\" />
     <Folder Include="dbo\Sequences\" />
+    <Folder Include="_Migrations" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -241,6 +242,9 @@
     <Build Include="API\Stored Procedures\GetServiceRequestTasks.sql" />
     <Build Include="dbo\Tables\ServiceRequestTemplateTask.sql" />
     <Build Include="dbo\Tables\ServiceRequestTemplate.sql" />
+    <Build Include="_Migrations\Orvosi_MIgrationScript_feature-AddTasksToDashboard.sql" />
+    <Build Include="_Migrations\Orvosi_MIgrationScript_feature-AddTasksToDashboard_Data.sql" />
+    <Build Include="_Migrations\Orvosi_MigrationScript_Invoice_TaxFix.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

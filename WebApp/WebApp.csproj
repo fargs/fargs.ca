@@ -773,11 +773,6 @@
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="Areas\Admin\Views\User\UserProfile.cshtml" />
-    <Content Include="Areas\Admin\Views\City\Create.cshtml" />
-    <Content Include="Areas\Admin\Views\City\Delete.cshtml" />
-    <Content Include="Areas\Admin\Views\City\Details.cshtml" />
-    <Content Include="Areas\Admin\Views\City\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\City\Index.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

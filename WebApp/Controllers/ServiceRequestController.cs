@@ -160,6 +160,10 @@ namespace WebApp.Controllers
                 if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
                     throw;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             if (vm.DropboxFolder != null)
             {

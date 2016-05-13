@@ -61,7 +61,6 @@ namespace Model
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
-        public virtual DbSet<MyTask> MyTasks { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)

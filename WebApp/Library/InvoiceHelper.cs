@@ -59,7 +59,7 @@ namespace WebApp.Library
             invoiceDetail.ModifiedUser = userName;
 
             var description = new StringBuilder();
-            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat()));
+            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam ? serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat() : string.Empty));
             description.AppendLine(serviceRequest.ServiceName);
             description.AppendLine(serviceRequest.City);
             invoiceDetail.Description = description.ToString();
@@ -93,15 +93,15 @@ namespace WebApp.Library
 
         public static void CalculateTotal(this Invoice invoice)
         {
-            if (invoice.InvoiceDetails == null)
-            {
-                invoice.SubTotal = 0;
-            }
-            else
+            invoice.SubTotal = 0;
+            invoice.Hst = 0;
+            invoice.Total = 0;
+            if (invoice.InvoiceDetails != null)
             {
                 invoice.SubTotal = invoice.InvoiceDetails.Sum(c => c.Total);
             }
-            invoice.Total = invoice.SubTotal * (1 + invoice.TaxRateHst);
+            invoice.Hst = invoice.SubTotal * invoice.TaxRateHst;
+            invoice.Total = invoice.SubTotal + invoice.Hst;
         }
 
         public static void CalculateTotal(this InvoiceDetail invoiceDetail)

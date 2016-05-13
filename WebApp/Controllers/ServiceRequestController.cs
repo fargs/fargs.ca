@@ -160,6 +160,10 @@ namespace WebApp.Controllers
                 if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
                     throw;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             if (vm.DropboxFolder != null)
             {
@@ -667,6 +671,7 @@ namespace WebApp.Controllers
                     {
                         detail.RemoveDiscount();
                     }
+
                     detail.Invoice.CalculateTotal();
                     await db.SaveChangesAsync();
                 }
@@ -752,6 +757,7 @@ namespace WebApp.Controllers
                 {
                     detail.RemoveDiscount();
                 }
+
                 detail.Invoice.CalculateTotal();
                 await db.SaveChangesAsync();
             }

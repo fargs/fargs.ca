@@ -23,17 +23,25 @@ namespace WebApp.Library
 
         public async Task<DropboxClient> GetServiceAccountClientAsync()
         {
-            if (_client == null)
+            try
             {
-                List<UserSelectorArg> args = new List<UserSelectorArg>();
-                args.Add(new UserSelectorArg.Email("lfarago@orvosi.ca"));
+                if (_client == null)
+                {
+                    List<UserSelectorArg> args = new List<UserSelectorArg>();
+                    args.Add(new UserSelectorArg.Email("lfarago@orvosi.ca"));
 
-                var members = await TeamClient.Team.MembersGetInfoAsync(args);
-                var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
-                _client = TeamClient.AsMember(teamMemberId);
+                    var members = await TeamClient.Team.MembersGetInfoAsync(args);
+                    var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
+                    _client = TeamClient.AsMember(teamMemberId);
+                    return _client;
+                }
                 return _client;
             }
-            return _client;
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return null;
         }
 
         internal async Task<DropboxClient> GetTeamMemberClientAsync(string email)
@@ -41,9 +49,17 @@ namespace WebApp.Library
             List<UserSelectorArg> args = new List<UserSelectorArg>();
             args.Add(new UserSelectorArg.Email(email));
 
-            var members = await TeamClient.Team.MembersGetInfoAsync(args);
-            var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
-            return TeamClient.AsMember(teamMemberId);
+            try
+            {
+                var members = await TeamClient.Team.MembersGetInfoAsync(args);
+                var teamMemberId = members.First().AsMemberInfo.Value.Profile.TeamMemberId;
+                return TeamClient.AsMember(teamMemberId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return null;
         }
     }
 }

@@ -1084,7 +1084,7 @@ namespace WebApp.Controllers
 
                 // Create the case folder
                 var box = new BoxManager();
-                var caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title);
+                var caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.BoxCaseTemplateFolderId);
 
                 // Persist the new case folder Id to the database.
                 request.BoxCaseFolderId = caseFolder.Id;

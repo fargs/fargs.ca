@@ -430,6 +430,8 @@ warning 6002: The table/view 'Orvosi.API.Physician' does not have a primary key 
           <Property Name="ColorCode" Type="nvarchar" MaxLength="50" />
           <Property Name="BoxFolderId" Type="nvarchar" MaxLength="128" />
           <Property Name="BoxUserId" Type="nvarchar" MaxLength="50" />
+          <Property Name="BoxAddOnTemplateFolderId" Type="nvarchar" MaxLength="128" />
+          <Property Name="BoxCaseTemplateFolderId" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Orvosi.API.PhysicianCompany' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -1588,7 +1590,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
     [Physician].[PrimarySpecialtyName] AS [PrimarySpecialtyName], 
     [Physician].[ColorCode] AS [ColorCode], 
     [Physician].[BoxFolderId] AS [BoxFolderId], 
-    [Physician].[BoxUserId] AS [BoxUserId]
+    [Physician].[BoxUserId] AS [BoxUserId], 
+    [Physician].[BoxAddOnTemplateFolderId] AS [BoxAddOnTemplateFolderId], 
+    [Physician].[BoxCaseTemplateFolderId] AS [BoxCaseTemplateFolderId]
     FROM [API].[Physician] AS [Physician]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="PhysicianCompany" EntityType="Self.PhysicianCompany" store:Type="Views" store:Schema="API">
@@ -2519,7 +2523,7 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           </FunctionImport>
           <EntitySet Name="ServiceRequestBoxCollaborations" EntityType="OrvosiModel.ServiceRequestBoxCollaboration" />
           <FunctionImport Name="GetBoxTokens" ReturnType="Collection(OrvosiModel.GetBoxTokens_Result)">
-            <Parameter Name="UserId" Mode="In" Type="String" />
+          <Parameter Name="UserId" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="SaveBoxTokens">
             <Parameter Name="AccessToken" Mode="In" Type="String" />
@@ -3220,6 +3224,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <Property Name="ColorCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BoxFolderId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="BoxUserId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BoxAddOnTemplateFolderId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="BoxCaseTemplateFolderId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="DashboardTaskSummary">
           <Key>
@@ -4613,6 +4619,8 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
           <EntitySetMapping Name="Physicians">
             <EntityTypeMapping TypeName="OrvosiModel.Physician">
               <MappingFragment StoreEntitySet="Physician">
+                <ScalarProperty Name="BoxCaseTemplateFolderId" ColumnName="BoxCaseTemplateFolderId" />
+                <ScalarProperty Name="BoxAddOnTemplateFolderId" ColumnName="BoxAddOnTemplateFolderId" />
                 <ScalarProperty Name="BoxUserId" ColumnName="BoxUserId" />
                 <ScalarProperty Name="BoxFolderId" ColumnName="BoxFolderId" />
                 <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />

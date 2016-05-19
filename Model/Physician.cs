@@ -58,5 +58,7 @@ namespace Model
         public string ColorCode { get; set; }
         public string BoxFolderId { get; set; }
         public string BoxUserId { get; set; }
+        public string BoxAddOnTemplateFolderId { get; set; }
+        public string BoxCaseTemplateFolderId { get; set; }
     }
 }

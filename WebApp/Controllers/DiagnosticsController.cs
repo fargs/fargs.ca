@@ -31,13 +31,14 @@ namespace WebApp.Controllers
 
         public ActionResult CreateBoxFolder()
         {
-            var box = new BoxManager();
-            using (var db = new OrvosiEntities(User.Identity.Name))
-            {
-                var request = db.ServiceRequests.Single(sr => sr.Id == 131);
-                var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title);
-                return PartialView(caseFolder);
-            }
+            //var box = new BoxManager();
+            //using (var db = new OrvosiEntities(User.Identity.Name))
+            //{
+            //    var request = db.ServiceRequests.Single(sr => sr.Id == 131);
+            //    var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title, );
+            //    return PartialView(caseFolder);
+            //}
+            return new HttpNotFoundResult();
         }
 
         // GET: Diagnostics

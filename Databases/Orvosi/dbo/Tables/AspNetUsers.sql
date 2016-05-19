@@ -24,9 +24,15 @@
     [RoleLevelId]          TINYINT         NULL,
     [HourlyRate]           DECIMAL (18, 2) NULL,
     [LogoCssClass]         NVARCHAR (50)   NULL,
-	[ColorCode]			   NVARCHAR (50)   NULL,
+    [ColorCode]            NVARCHAR (50)   NULL,
+    [BoxFolderId]          NVARCHAR (128)  NULL,
+    [BoxUserId]            NVARCHAR (50)   NULL,
+    [BoxAccessToken]       NVARCHAR (128)  NULL,
+    [BoxRefreshToken]      NVARCHAR (128)  NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

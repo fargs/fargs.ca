@@ -17,14 +17,14 @@ BEGIN
 	DECLARE @Result nvarchar(210)
 
 	-- Add the T-SQL statements to compute the return value here
-	IF (ISNULL(@Title, '') <> '')
-		SET @Result = @Title
-
 	IF (ISNULL(@FirstName, '') <> '') 
-		SET @Result = ISNULL(@Result,'') + ' ' + @FirstName
+		SET @Result = @FirstName
 
 	IF (ISNULL(@LastName, '') <> '')
 		SET @Result = ISNULL(@Result,'') + ' ' + @LastName
+
+	IF (ISNULL(@Title, '') <> '')
+		SET @Result = @Title + ' ' + ISNULL(@Result,'')
 
 	-- Return the result of the function
 	RETURN @Result

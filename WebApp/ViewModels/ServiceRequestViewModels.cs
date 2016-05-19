@@ -7,6 +7,8 @@ using System.Web;
 using Dropbox.Api.Files;
 using Dropbox.Api.Team;
 using System.Web.Mvc;
+using Box.V2.Models;
+using System.Data.Entity.Core.Objects;
 
 namespace WebApp.ViewModels.ServiceRequestViewModels
 {
@@ -47,6 +49,10 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
 
     public class DetailsViewModel
     {
+        public DetailsViewModel()
+        {
+            this.Resources = new List<Resource>();
+        }
         public User User { get; set; }
         public ServiceRequest ServiceRequest { get; set; }
         public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
@@ -54,6 +60,9 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public Metadata DropboxFolder { get; internal set; }
         public List<MembersGetInfoItem> DropboxFolderMembers { get; internal set; }
         public IQueryable<Invoice> Invoices { get; set; }
+        public BoxFolder BoxFolder { get; set; }
+        public BoxCollection<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
+        public List<Resource> Resources { get; internal set; }
     }
 
     public class EditViewModel
@@ -138,5 +147,11 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public bool IsAvailableDaySelected { get; set; }
         public bool IsAvailable { get; set; }
         
+    }
+
+    public class Resource
+    {
+        public GetServiceRequestResources_Result ResourceFromTask { get; set; }
+        public BoxFolder BoxFolder { get; set; }
     }
 }

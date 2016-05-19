@@ -33,7 +33,10 @@
 	[PhysicianId]		   NVARCHAR (128)   NULL,
 	[ServiceId]			   SMALLINT			NULL,
 	[LocationId]		   SMALLINT			NULL,
-	[ServiceCataloguePrice] DECIMAL(18,2)	NULL,	
+	[ServiceCataloguePrice] DECIMAL(18,2)	NULL,
+	[BoxCaseFolderId]		NVARCHAR(128)	NULL,
+    [IntakeAssistantBoxCollaborationId] NVARCHAR(50) NULL, 
+    [DocumentReviewerBoxCollaborationId] NVARCHAR(50) NULL, 
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

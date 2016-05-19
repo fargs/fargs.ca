@@ -16,6 +16,7 @@ using Dropbox.Api;
 using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
+using Box.V2.Models;
 
 namespace WebApp.Controllers
 {
@@ -171,6 +172,20 @@ namespace WebApp.Controllers
                 {
                     // Get the shared folder members
                     vm.DropboxFolderMembers = await GetSharedFolderMembers(dropbox, client, vm.DropboxFolder.AsFolder.SharingInfo.SharedFolderId);
+                }
+            }
+
+            var ResourcesFromTasks = db.GetServiceRequestResources(id);
+            var box = new BoxManager();
+            if (!string.IsNullOrEmpty(vm.ServiceRequest.BoxCaseFolderId))
+            {
+                vm.BoxFolder = box.GetFolder(vm.ServiceRequest.BoxCaseFolderId);
+                vm.BoxFolderCollaborations = box.GetCollaborations(vm.ServiceRequest.BoxCaseFolderId);
+                foreach (var item in ResourcesFromTasks)
+                {
+                    var resource = new Resource() { ResourceFromTask = item };
+                    resource.BoxFolder = await box.GetFolder(vm.ServiceRequest.BoxCaseFolderId, resource.ResourceFromTask.BoxUserId);
+                    vm.Resources.Add(resource);
                 }
             }
 
@@ -488,7 +503,7 @@ namespace WebApp.Controllers
 
                 db.ServiceRequests.Add(obj);
                 await db.SaveChangesAsync();
-                
+
                 return RedirectToAction("Details", new { id = obj.Id });
             }
 
@@ -1043,7 +1058,117 @@ namespace WebApp.Controllers
                 }
             }
         }
-        
+
+        #endregion
+
+
+        #region Box
+
+        [HttpPost]
+        public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
+        {
+            using (var db = new OrvosiEntities(User.Identity.Name))
+            {
+                // Get the request
+                var request = db.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
+
+                // Get the request and assert they have a Box Folder Id
+                var physician = db.Physicians.Single(p => p.Id == request.PhysicianId);
+                //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
+                var physicianBoxFolderId = physician.BoxFolderId;
+                if (string.IsNullOrEmpty(physicianBoxFolderId))
+                    return PartialView("Error", "Physician does not have a cases folder setup in Box.");
+
+                // Get the province which is used in the case folder path
+                var province = db.Provinces.Single(p => p.Id == request.ProvinceId);
+
+                // Create the case folder
+                var box = new BoxManager();
+                var caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title);
+
+                // Persist the new case folder Id to the database.
+                request.BoxCaseFolderId = caseFolder.Id;
+                db.SaveChanges();
+
+                // Redirect to display the Box Folder
+                return RedirectToAction("Details", new { id = ServiceRequestId });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, string UserId)
+        {
+            using (var db = new OrvosiEntities())
+            {
+                var resources = db.GetServiceRequestResources(ServiceRequestId);
+                var resource = resources.Single(r => r.Id == UserId);
+
+                var box = new BoxManager();
+                var collaboration = box.AddCollaboration(FolderId, resource.BoxUserId, resource.Email);
+                db.ServiceRequestBoxCollaborations.Add(
+                    new ServiceRequestBoxCollaboration()
+                    {
+                        BoxCollaborationId = collaboration.Id,
+                        ServiceRequestId = ServiceRequestId,
+                        UserId = UserId,
+                        ModifiedUser = User.Identity.Name,
+                        ModifiedDate = SystemTime.Now()
+                    }
+                );
+                db.SaveChanges();
+
+                box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
+
+                return RedirectToAction("Details", new { id = ServiceRequestId });
+            }
+        }
+
+        public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
+        {
+            using (var db = new OrvosiEntities())
+            {
+                var box = new BoxManager();
+                var success = box.RemoveCollaboration(CollaborationId);
+
+                if (success)
+                {
+                    var collaboration = db.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
+                    db.ServiceRequestBoxCollaborations.Remove(collaboration);
+                    db.SaveChanges();
+                }
+                return RedirectToAction("Details", new { id = ServiceRequestId });
+            }
+        }
+
+        public ActionResult AcceptBoxFolder(int ServiceRequestId, string UserId, string CollaborationId)
+        {
+            string boxUserId;
+            using (var db = new OrvosiEntities())
+            {
+                var user = db.Profiles.Single(p => p.Id == UserId);
+                boxUserId = user.BoxUserId;
+            }
+            var box = new BoxManager();
+            var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
+            return RedirectToAction("Details", new { id = ServiceRequestId });
+        }
+
+        [HttpPost]
+        public ActionResult UnsyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
+        {
+            var box = new BoxManager();
+            box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
+            return RedirectToAction("Details", new { id = ServiceRequestId });
+        }
+
+        [HttpPost]
+        public ActionResult SyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
+        {
+            var box = new BoxManager();
+            box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
+            return RedirectToAction("Details", new { id = ServiceRequestId });
+        }
+
         #endregion
 
         private async Task GetPhysicianDropDownData()
@@ -1120,7 +1245,7 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 }).ToListAsync();
         }
-        
+
 
         protected override void Dispose(bool disposing)
         {

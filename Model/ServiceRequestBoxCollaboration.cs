@@ -12,18 +12,13 @@ namespace Model
     using System;
     using System.Collections.Generic;
     
-    public partial class SpecialRequest
+    public partial class ServiceRequestBoxCollaboration
     {
-        public short Id { get; set; }
-        public Nullable<System.Guid> ObjectGuid { get; set; }
-        public string PhysicianId { get; set; }
-        public Nullable<int> ServiceId { get; set; }
-        public string Timeframe { get; set; }
-        public string AdditionalNotes { get; set; }
+        public int Id { get; set; }
+        public string UserId { get; set; }
+        public int ServiceRequestId { get; set; }
+        public string BoxCollaborationId { get; set; }
         public System.DateTime ModifiedDate { get; set; }
-        public string ModifiedUserName { get; set; }
-        public string ModifiedUserId { get; set; }
-        public string PhysicianDisplayName { get; set; }
-        public string ServiceName { get; set; }
+        public string ModifiedUser { get; set; }
     }
 }

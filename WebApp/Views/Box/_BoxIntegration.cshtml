@@ -1,0 +1,34 @@
+﻿@using WebApp.Library.Extensions
+@using Box.V2.Models
+@model Box.V2.Models.BoxFolder
+
+<h2>Box Integration</h2>
+<button>Authenticate</button>
+
+@if (Model == null)
+{
+    <form method="post" action="~/Box/CreateCaseFolder" role="form">
+        <button type="submit" class="btn btn-primary">Create a folder on Box</button>
+    </form>
+}
+@*@Model.Auth.Session.TokenType
+<div>@Model.Auth.Session.RestrictedTo</div>
+<div>@Model.Auth.Session.AuthVersion</div>
+<div>@Model.Auth.Session.AccessToken</div>
+<div>@Model.Auth.Session.RefreshToken</div>
+<div>@Model.Auth.Session.ExpiresIn</div>
+<div>@Model.UsersManager.GetCurrentUserInformationAsync().Result.Name</div>*@
+
+<ul class="breadcrumb">
+    @foreach (var item in Model.PathCollection.Entries)
+    {
+        <li>@item.Name</li>
+    }
+</ul>
+<h3>Folder Contents</h3>
+<ul>
+    @foreach (var item in Model.Entries())
+    {
+        <li>@item.Name - @item.Id</li>
+    }
+</ul>

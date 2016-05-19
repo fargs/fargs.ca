@@ -10,13 +10,17 @@
 namespace Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Province
+    public partial class GetServiceRequestResources_Result
     {
-        public short Id { get; set; }
-        public short CountryId { get; set; }
-        public string ProvinceName { get; set; }
-        public string ProvinceCode { get; set; }
+        public string Id { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string DisplayName { get; set; }
+        public string Initials { get; set; }
+        public string ColorCode { get; set; }
+        public string BoxUserId { get; set; }
+        public string BoxCollaborationId { get; set; }
+        public string Roles { get; set; }
     }
 }

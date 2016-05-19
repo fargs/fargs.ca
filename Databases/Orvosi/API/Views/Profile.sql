@@ -35,6 +35,8 @@ SELECT u.[Id]
 	  ,CompanyName = c.Name
 	  ,u.LogoCssClass
 	  ,u.ColorCode
+	  ,u.BoxFolderId
+	  ,u.BoxUserId
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.Company c ON u.CompanyId = c.Id

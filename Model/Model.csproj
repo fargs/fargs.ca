@@ -70,9 +70,6 @@
     <Compile Include="BillableEntity.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="City.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Company.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -95,6 +92,9 @@
     <Compile Include="fn_Weekdays_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetBoxTokens_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="GetDashboardSchedule_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -114,6 +114,9 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="GetServiceCatalogue_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetServiceRequestResources_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Invoice.cs">
@@ -203,6 +206,9 @@
     <Compile Include="ServiceRequest.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="ServiceRequestBoxCollaboration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="ServiceRequestCostRollUp.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -210,9 +216,6 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="ServiceTask.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SpecialRequest.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
@@ -226,7 +229,9 @@
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Config" />
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Orvosi.edmx.diagram">
       <DependentUpon>Orvosi.edmx</DependentUpon>
     </None>

@@ -33,7 +33,6 @@ namespace Model
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<SpecialRequest> SpecialRequests { get; set; }
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<ServiceCategory> ServiceCategories { get; set; }
         public virtual DbSet<ServicePortfolio> ServicePortfolios { get; set; }
@@ -58,9 +57,9 @@ namespace Model
         public virtual DbSet<ServiceCatalogueRate> ServiceCatalogueRates { get; set; }
         public virtual DbSet<Invoice> Invoices { get; set; }
         public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
-        public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
+        public virtual DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; }
     
         [DbFunction("OrvosiEntities", "fn_Weekdays")]
         public virtual IQueryable<fn_Weekdays_Result> fn_Weekdays(Nullable<System.DateTime> startDate)
@@ -97,72 +96,6 @@ namespace Model
                 new ObjectParameter("id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPhysicianGoogleAccount_Result>("GetPhysicianGoogleAccount", idParameter);
-        }
-    
-        public virtual int SpecialRequest_Insert(string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, string modifiedUserName, string modifiedUserId)
-        {
-            var physicianIdParameter = physicianId != null ?
-                new ObjectParameter("PhysicianId", physicianId) :
-                new ObjectParameter("PhysicianId", typeof(string));
-    
-            var serviceIdParameter = serviceId.HasValue ?
-                new ObjectParameter("ServiceId", serviceId) :
-                new ObjectParameter("ServiceId", typeof(int));
-    
-            var timeframeParameter = timeframe != null ?
-                new ObjectParameter("Timeframe", timeframe) :
-                new ObjectParameter("Timeframe", typeof(string));
-    
-            var additionalNotesParameter = additionalNotes != null ?
-                new ObjectParameter("AdditionalNotes", additionalNotes) :
-                new ObjectParameter("AdditionalNotes", typeof(string));
-    
-            var modifiedUserNameParameter = modifiedUserName != null ?
-                new ObjectParameter("ModifiedUserName", modifiedUserName) :
-                new ObjectParameter("ModifiedUserName", typeof(string));
-    
-            var modifiedUserIdParameter = modifiedUserId != null ?
-                new ObjectParameter("ModifiedUserId", modifiedUserId) :
-                new ObjectParameter("ModifiedUserId", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Insert", physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedUserNameParameter, modifiedUserIdParameter);
-        }
-    
-        public virtual int SpecialRequest_Update(Nullable<short> id, string physicianId, Nullable<int> serviceId, string timeframe, string additionalNotes, Nullable<System.DateTime> modifiedDate, string modifiedUserName, string modifiedUserId)
-        {
-            var idParameter = id.HasValue ?
-                new ObjectParameter("Id", id) :
-                new ObjectParameter("Id", typeof(short));
-    
-            var physicianIdParameter = physicianId != null ?
-                new ObjectParameter("PhysicianId", physicianId) :
-                new ObjectParameter("PhysicianId", typeof(string));
-    
-            var serviceIdParameter = serviceId.HasValue ?
-                new ObjectParameter("ServiceId", serviceId) :
-                new ObjectParameter("ServiceId", typeof(int));
-    
-            var timeframeParameter = timeframe != null ?
-                new ObjectParameter("Timeframe", timeframe) :
-                new ObjectParameter("Timeframe", typeof(string));
-    
-            var additionalNotesParameter = additionalNotes != null ?
-                new ObjectParameter("AdditionalNotes", additionalNotes) :
-                new ObjectParameter("AdditionalNotes", typeof(string));
-    
-            var modifiedDateParameter = modifiedDate.HasValue ?
-                new ObjectParameter("ModifiedDate", modifiedDate) :
-                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
-    
-            var modifiedUserNameParameter = modifiedUserName != null ?
-                new ObjectParameter("ModifiedUserName", modifiedUserName) :
-                new ObjectParameter("ModifiedUserName", typeof(string));
-    
-            var modifiedUserIdParameter = modifiedUserId != null ?
-                new ObjectParameter("ModifiedUserId", modifiedUserId) :
-                new ObjectParameter("ModifiedUserId", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpecialRequest_Update", idParameter, physicianIdParameter, serviceIdParameter, timeframeParameter, additionalNotesParameter, modifiedDateParameter, modifiedUserNameParameter, modifiedUserIdParameter);
         }
     
         public virtual int AspNetUsers_Update(string id, string email, Nullable<bool> emailConfirmed, string phoneNumber, Nullable<bool> phoneNumberConfirmed, Nullable<bool> twoFactorEnabled, Nullable<System.DateTime> lockoutEndDateUtc, Nullable<bool> lockoutEnabled, Nullable<int> accessFailedCount, string userName, string title, string firstName, string lastName, string employeeId, Nullable<short> companyId, string companyName, string modifiedUser, Nullable<System.DateTime> lastActivationDate, Nullable<bool> isTestRecord)
@@ -303,7 +236,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Account_Update", idParameter, emailParameter, emailConfirmedParameter, phoneNumberParameter, phoneNumberConfirmedParameter, twoFactorEnabledParameter, lockoutEndDateUtcParameter, lockoutEnabledParameter, accessFailedCountParameter, userNameParameter, companyIdParameter, modifiedUserParameter, lastActivationDateParameter);
         }
     
-        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord, string colorCode)
+        public virtual int Profile_Update(string id, string title, string firstName, string lastName, string logoCssClass, string employeeId, string modifiedUser, Nullable<bool> isTestRecord, string colorCode, string boxUserId, string boxFolderId)
         {
             var idParameter = id != null ?
                 new ObjectParameter("Id", id) :
@@ -341,7 +274,15 @@ namespace Model
                 new ObjectParameter("ColorCode", colorCode) :
                 new ObjectParameter("ColorCode", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter, colorCodeParameter);
+            var boxUserIdParameter = boxUserId != null ?
+                new ObjectParameter("BoxUserId", boxUserId) :
+                new ObjectParameter("BoxUserId", typeof(string));
+    
+            var boxFolderIdParameter = boxFolderId != null ?
+                new ObjectParameter("BoxFolderId", boxFolderId) :
+                new ObjectParameter("BoxFolderId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Profile_Update", idParameter, titleParameter, firstNameParameter, lastNameParameter, logoCssClassParameter, employeeIdParameter, modifiedUserParameter, isTestRecordParameter, colorCodeParameter, boxUserIdParameter, boxFolderIdParameter);
         }
     
         public virtual int Service_Insert(string name, string description, string code, Nullable<decimal> price, Nullable<short> serviceCategoryId, Nullable<short> servicePortfolioId, string modifiedUser)
@@ -517,7 +458,7 @@ namespace Model
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Delete", idParameter);
         }
     
-        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string physicianId, Nullable<short> serviceId, Nullable<short> locationId, Nullable<decimal> serviceCataloguePrice, string modifiedUser)
+        public virtual int ServiceRequest_Insert(string companyReferenceId, string claimantName, Nullable<short> serviceCatalogueId, Nullable<int> addressId, Nullable<long> harvestProjectId, string title, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string physicianId, Nullable<short> serviceId, Nullable<short> locationId, Nullable<decimal> serviceCataloguePrice, string modifiedUser, string boxCaseFolderId)
         {
             var companyReferenceIdParameter = companyReferenceId != null ?
                 new ObjectParameter("CompanyReferenceId", companyReferenceId) :
@@ -643,10 +584,14 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, physicianIdParameter, serviceIdParameter, locationIdParameter, serviceCataloguePriceParameter, modifiedUserParameter);
+            var boxCaseFolderIdParameter = boxCaseFolderId != null ?
+                new ObjectParameter("BoxCaseFolderId", boxCaseFolderId) :
+                new ObjectParameter("BoxCaseFolderId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Insert", companyReferenceIdParameter, claimantNameParameter, serviceCatalogueIdParameter, addressIdParameter, harvestProjectIdParameter, titleParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, physicianIdParameter, serviceIdParameter, locationIdParameter, serviceCataloguePriceParameter, modifiedUserParameter, boxCaseFolderIdParameter);
         }
     
-        public virtual int ServiceRequest_Update(Nullable<int> id, string companyReferenceId, string claimantName, Nullable<int> addressId, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser)
+        public virtual int ServiceRequest_Update(Nullable<int> id, string companyReferenceId, string claimantName, Nullable<int> addressId, string body, Nullable<System.DateTime> requestedDate, Nullable<System.Guid> requestedBy, Nullable<System.DateTime> cancelledDate, Nullable<System.Guid> caseCoordinatorId, Nullable<System.Guid> intakeAssistantId, Nullable<System.Guid> documentReviewerId, Nullable<short> availableSlotId, Nullable<System.DateTime> appointmentDate, Nullable<System.TimeSpan> startTime, Nullable<System.TimeSpan> endTime, Nullable<System.DateTime> dueDate, Nullable<decimal> price, string notes, string documentFolderLink, Nullable<short> companyId, Nullable<bool> isLateCancellation, Nullable<bool> isNoShow, Nullable<decimal> noShowRate, Nullable<decimal> lateCancellationRate, string modifiedUser, string boxCaseFolderId, string intakeAssistantBoxCollaborationId, string documentReviewerBoxCollaborationId)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -748,7 +693,19 @@ namespace Model
                 new ObjectParameter("ModifiedUser", modifiedUser) :
                 new ObjectParameter("ModifiedUser", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, companyReferenceIdParameter, claimantNameParameter, addressIdParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter);
+            var boxCaseFolderIdParameter = boxCaseFolderId != null ?
+                new ObjectParameter("BoxCaseFolderId", boxCaseFolderId) :
+                new ObjectParameter("BoxCaseFolderId", typeof(string));
+    
+            var intakeAssistantBoxCollaborationIdParameter = intakeAssistantBoxCollaborationId != null ?
+                new ObjectParameter("IntakeAssistantBoxCollaborationId", intakeAssistantBoxCollaborationId) :
+                new ObjectParameter("IntakeAssistantBoxCollaborationId", typeof(string));
+    
+            var documentReviewerBoxCollaborationIdParameter = documentReviewerBoxCollaborationId != null ?
+                new ObjectParameter("DocumentReviewerBoxCollaborationId", documentReviewerBoxCollaborationId) :
+                new ObjectParameter("DocumentReviewerBoxCollaborationId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ServiceRequest_Update", idParameter, companyReferenceIdParameter, claimantNameParameter, addressIdParameter, bodyParameter, requestedDateParameter, requestedByParameter, cancelledDateParameter, caseCoordinatorIdParameter, intakeAssistantIdParameter, documentReviewerIdParameter, availableSlotIdParameter, appointmentDateParameter, startTimeParameter, endTimeParameter, dueDateParameter, priceParameter, notesParameter, documentFolderLinkParameter, companyIdParameter, isLateCancellationParameter, isNoShowParameter, noShowRateParameter, lateCancellationRateParameter, modifiedUserParameter, boxCaseFolderIdParameter, intakeAssistantBoxCollaborationIdParameter, documentReviewerBoxCollaborationIdParameter);
         }
     
         public virtual ObjectResult<Location_Select_PhysicianAndCompany_Result> Location_Select_PhysicianAndCompany(string physicianId, Nullable<short> companyId)
@@ -2026,6 +1983,41 @@ namespace Model
                 new ObjectParameter("Now", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMyTasks_Result>("GetMyTasks", assignedToParameter, nowParameter);
+        }
+    
+        public virtual ObjectResult<GetServiceRequestResources_Result> GetServiceRequestResources(Nullable<int> serviceRequestId)
+        {
+            var serviceRequestIdParameter = serviceRequestId.HasValue ?
+                new ObjectParameter("ServiceRequestId", serviceRequestId) :
+                new ObjectParameter("ServiceRequestId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetServiceRequestResources_Result>("GetServiceRequestResources", serviceRequestIdParameter);
+        }
+    
+        public virtual ObjectResult<GetBoxTokens_Result> GetBoxTokens(string userId)
+        {
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetBoxTokens_Result>("GetBoxTokens", userIdParameter);
+        }
+    
+        public virtual int SaveBoxTokens(string accessToken, string refreshToken, string userId)
+        {
+            var accessTokenParameter = accessToken != null ?
+                new ObjectParameter("AccessToken", accessToken) :
+                new ObjectParameter("AccessToken", typeof(string));
+    
+            var refreshTokenParameter = refreshToken != null ?
+                new ObjectParameter("RefreshToken", refreshToken) :
+                new ObjectParameter("RefreshToken", typeof(string));
+    
+            var userIdParameter = userId != null ?
+                new ObjectParameter("UserId", userId) :
+                new ObjectParameter("UserId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveBoxTokens", accessTokenParameter, refreshTokenParameter, userIdParameter);
         }
     }
 }

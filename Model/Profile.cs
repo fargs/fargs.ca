@@ -32,5 +32,7 @@ namespace Model
         public string CompanyName { get; set; }
         public string LogoCssClass { get; set; }
         public string ColorCode { get; set; }
+        public string BoxFolderId { get; set; }
+        public string BoxUserId { get; set; }
     }
 }

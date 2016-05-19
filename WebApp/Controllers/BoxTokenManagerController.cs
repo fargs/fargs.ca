@@ -6,15 +6,28 @@ using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.Exceptions;
 using WebApp.Models.BoxModels;
+using Model;
+using System.Configuration;
+using WebApp.Library;
+using System.Linq;
 
 namespace WebApp.Controllers
 {
     public class BoxTokenManagerController : Controller
     {
-        private const string ClientId = "lm6h6x8il745vi1g49yqjcwaspeiqj6r";
-        private const string ClientSecret = "RRTxW9neXNVlA5u5Uz86GfGDqrbwYpBC";
+        private string clientId;
+        private string clientSecret;
+        private Uri redirectUri;
+        private string adminUserId;
         private const string AntiforgeryToken = "state";
-        private static Uri redirectUri = new Uri("https://localhost:43200/BoxTokenManager/Token");
+
+        public BoxTokenManagerController()
+        {
+            clientId = ConfigurationManager.AppSettings["BoxClientId"];
+            clientSecret = ConfigurationManager.AppSettings["BoxClientSecret"];
+            redirectUri = new Uri(ConfigurationManager.AppSettings["BoxRedirectUri"]);
+            adminUserId = ConfigurationManager.AppSettings["BoxAdminUserId"];
+        }
 
         // GET /Index
         public async Task<ActionResult> Index()
@@ -23,7 +36,13 @@ namespace WebApp.Controllers
             if (IsCode()) return await Token(Request.QueryString["code"], Request.QueryString["state"]);
 
             ClearSession();
-            return View();
+
+            GetBoxTokens_Result tokens;
+            using (var db = new OrvosiEntities())
+            {
+                tokens = db.GetBoxTokens(adminUserId).First();
+            }
+            return View(new AuthModel() { ClientId = clientId, ClientSecret = clientSecret, AuthTokenFromDatabase = tokens.BoxAccessToken, RefreshTokenFromDatabase = tokens.BoxRefreshToken });
         }
 
         /// <summary>
@@ -37,12 +56,29 @@ namespace WebApp.Controllers
             Session[AntiforgeryToken] = antiforgeryToken;
 
             // Stash the Client ID/Secret for easy access when the user is redirected back to this page.
-            Session[ClientId] = authModel.ClientId;
-            Session[ClientSecret] = authModel.ClientSecret;
+            //Session["ClientId"] = authModel.ClientId;
+            //Session["ClientSecret"] = authModel.ClientSecret;
 
             // Redirect the user to Box's OAuth2 authorization page
             string authUrl = string.Format("https://app.box.com/api/oauth2/authorize?response_type=code&client_id={0}&state={1}", authModel.ClientId, antiforgeryToken);
             return new RedirectResult(authUrl);
+        }
+
+        public async Task<ActionResult> Refresh()
+        {
+            OAuthSession session;
+            GetBoxTokens_Result tokens;
+            using (var db = new OrvosiEntities())
+            {
+                tokens = db.GetBoxTokens(adminUserId).First();
+
+                var boxClient = new BoxClient(new BoxConfig(clientId, clientSecret, redirectUri));
+                session = await boxClient.Auth.RefreshAccessTokenAsync(tokens.BoxAccessToken);
+
+                db.SaveBoxTokens(session.AccessToken, session.RefreshToken, adminUserId);
+            }
+            var authModel = new AuthModel() { ClientId = clientId, ClientSecret = clientSecret, AuthToken = session.AccessToken, RefreshToken = session.RefreshToken, AuthTokenFromDatabase = tokens.BoxAccessToken, RefreshTokenFromDatabase = tokens.BoxRefreshToken };
+            return View("Index", authModel);
         }
 
         /// <summary>
@@ -60,8 +96,9 @@ namespace WebApp.Controllers
                 }
 
                 // Fetch the stashed Client ID/Secret from the Session
-                var clientId = Session[ClientId] as string;
-                var clientSecret = Session[ClientSecret] as string;
+                //var clientId = Session["ClientId"] as string;
+                //var clientSecret = Session["ClientSecret"] as string;
+                //var adminUserId = Session["AdminUserId"] as string;
 
                 // Exchange the 'code' for an authorization/refresh token pair
                 var authSession = await ExchangeCodeForTokenPair(code, clientId, clientSecret);
@@ -69,7 +106,15 @@ namespace WebApp.Controllers
                 // Clear out the session variables for security
                 ClearSession();
 
-                var authInfo = new AuthModel { ClientId = clientId, ClientSecret = clientSecret, AuthToken = authSession.AccessToken, RefreshToken = authSession.RefreshToken };
+                GetBoxTokens_Result tokens;
+                using (var db = new OrvosiEntities())
+                {
+                    db.SaveBoxTokens(authSession.AccessToken, authSession.RefreshToken, adminUserId);
+                    tokens = db.GetBoxTokens(adminUserId).First();
+                }
+
+                var authInfo = new AuthModel { ClientId = clientId, ClientSecret = clientSecret, AuthToken = authSession.AccessToken, RefreshToken = authSession.RefreshToken, AuthTokenFromDatabase = tokens.BoxAccessToken, RefreshTokenFromDatabase = tokens.BoxRefreshToken };
+
                 return View("Index", authInfo);
             }
             catch (BoxException e)
@@ -90,7 +135,7 @@ namespace WebApp.Controllers
         /// <param name="code">The Box authorization code provided when the user is redirected back to this site from Box</param>
         /// <param name="clientId">The Box application's client ID</param>
         /// <param name="clientSecret">The Box application's client secret</param>
-        private static async Task<OAuthSession> ExchangeCodeForTokenPair(string code, string clientId, string clientSecret)
+        private async Task<OAuthSession> ExchangeCodeForTokenPair(string code, string clientId, string clientSecret)
         {
             var boxClient = new BoxClient(new BoxConfig(clientId, clientSecret, redirectUri));
             OAuthSession authSession = await boxClient.Auth.AuthenticateAsync(code);
@@ -110,8 +155,8 @@ namespace WebApp.Controllers
 
         private void ClearSession()
         {
-            Session[ClientId] = null;
-            Session[ClientSecret] = null;
+            //Session["ClientId"] = null;
+            //Session["ClientSecret"] = null;
             Session[AntiforgeryToken] = null;
         }
 

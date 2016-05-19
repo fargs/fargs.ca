@@ -10,17 +10,10 @@
 namespace Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class City
+    public partial class GetBoxTokens_Result
     {
-        public short Id { get; set; }
-        public string Name { get; set; }
-        public string Code { get; set; }
-        public short ProvinceId { get; set; }
-        public System.DateTime ModifiedDate { get; set; }
-        public string ModifiedUser { get; set; }
-    
-        public virtual Province Province { get; set; }
+        public string BoxAccessToken { get; set; }
+        public string BoxRefreshToken { get; set; }
     }
 }

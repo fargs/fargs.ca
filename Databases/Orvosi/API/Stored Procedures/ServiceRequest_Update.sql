@@ -25,6 +25,9 @@ CREATE PROCEDURE [API].[ServiceRequest_Update]
 	,@NoShowRate decimal(18,2)
 	,@LateCancellationRate decimal(18,2)
 	,@ModifiedUser nvarchar(100)
+	,@BoxCaseFolderId nvarchar(128)	
+	,@IntakeAssistantBoxCollaborationId nvarchar(50)
+	,@DocumentReviewerBoxCollaborationId nvarchar(50)
 AS
 
 DECLARE @Now DATETIME
@@ -57,6 +60,9 @@ SET
 	,[LateCancellationRate] = @LateCancellationRate
 	,[ModifiedDate] = @Now
 	,[ModifiedUser] = @ModifiedUser
+	,[BoxCaseFolderId] = @BoxCaseFolderId
+	,[IntakeAssistantBoxCollaborationId] = @IntakeAssistantBoxCollaborationId
+	,[DocumentReviewerBoxCollaborationId] = @DocumentReviewerBoxCollaborationId
 WHERE 
 	Id = @Id
 

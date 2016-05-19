@@ -106,6 +106,12 @@ namespace Model
         public string IntakeAssistantUserName { get; set; }
         public string DocumentReviewerUserName { get; set; }
         public Nullable<short> ServiceCategoryId { get; set; }
+        public string BoxCaseFolderId { get; set; }
+        public string BoxPhysicianFolderId { get; set; }
+        public string IntakeAssistantBoxCollaborationId { get; set; }
+        public string DocumentReviewerBoxCollaborationId { get; set; }
+        public string IntakeAssistantBoxUserId { get; set; }
+        public string DocumentReviewerBoxUserId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; }

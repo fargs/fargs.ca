@@ -310,7 +310,6 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AvailabilityController.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
-    <Compile Include="Areas\Admin\Controllers\CityController.cs" />
     <Compile Include="Areas\Admin\Controllers\CompanyController.cs" />
     <Compile Include="Areas\Admin\Controllers\DocumentController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
@@ -360,6 +359,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
+    <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
@@ -934,6 +934,9 @@
     <Content Include="Views\Box\_BoxIntegration.cshtml" />
     <Content Include="Views\Diagnostics\ConnectToBox.cshtml" />
     <Content Include="Views\BoxTokenManager\Index.cshtml" />
+    <Content Include="Views\Box\_BoxFolder.cshtml" />
+    <Content Include="Views\Box\Users.cshtml" />
+    <Content Include="Views\Box\LogInAs.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

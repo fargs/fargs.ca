@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Box.V2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,8 @@ namespace WebApp.Models.BoxModels
         public string ClientSecret { get; set; }
         public string AuthToken { get; set; }
         public string RefreshToken { get; set; }
+        public string AuthTokenFromDatabase { get; set; }
+        public string RefreshTokenFromDatabase { get; set; }
     }
 
     public class ErrorModel

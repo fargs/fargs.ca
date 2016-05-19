@@ -31,6 +31,7 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@LocationId SMALLINT
 	,@ServiceCataloguePrice DECIMAL(18,2)	
 	,@ModifiedUser nvarchar(100)
+	,@BoxCaseFolderId nvarchar(128)
 AS
 
 DECLARE @Now DATETIME
@@ -67,6 +68,7 @@ INSERT INTO dbo.[ServiceRequest]
 	,[ServiceId]	
 	,[LocationId]
 	,[ServiceCataloguePrice] 
+	,[BoxCaseFolderId]
 )
 VALUES 
 (
@@ -99,6 +101,7 @@ VALUES
 	,@ServiceId
 	,@LocationId
 	,@ServiceCataloguePrice
+	,@BoxCaseFolderId
 )
 
 DECLARE @Id INT

@@ -16,17 +16,23 @@
     You will then be redirected back to this site with an authorization code. This will be exchanged for an authorization/refresh token pair and presented to you.
 </p>
 
+<p>
+    Current access token: @Model.AuthTokenFromDatabase<br />
+    Current refresh token: @Model.RefreshTokenFromDatabase
+</p>
+<a href="~/BoxTokenManager/Refresh" class="btn btn-primary">Refresh</a>
+
 <div style="margin: 2em 0;">
     @using (Html.BeginForm("Authorize", "BoxTokenManager", FormMethod.Post, new { @class = "form-horizontal" }))
     {
         <fieldset>
             <div class="form-group">
                 @Html.LabelFor(info => info.ClientId, "Client ID", new { @class = "control-label col-md-2 required" })
-                <div class="col-md-4">@Html.TextBoxFor(info => info.ClientId, new { @class = "form-control", @Value = "lm6h6x8il745vi1g49yqjcwaspeiqj6r" })</div>
+                <div class="col-md-4">@Html.TextBoxFor(info => info.ClientId, new { @class = "form-control", @Value = Model.ClientId })</div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(info => info.ClientSecret, "Client Secret", new { @class = "control-label col-md-2 required" })
-                <div class="col-md-4">@Html.TextBoxFor(info => info.ClientSecret, new { @class = "form-control", @Value = "RRTxW9neXNVlA5u5Uz86GfGDqrbwYpBC" })</div>
+                <div class="col-md-4">@Html.TextBoxFor(info => info.ClientSecret, new { @class = "form-control", @Value = Model.ClientSecret })</div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(info => info.AuthToken, "Authorization Token", new { @class = "control-label col-md-2" })
@@ -40,7 +46,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-3">
                 <input type="submit" class="btn btn-primary" value="Authorize" />
-                @Html.ActionLink("Reset", "Index", "Home", null, new { style = "margin-left:1em;" })
+                @Html.ActionLink("Reset", "Index", "BoxTokenManager", null, new { style = "margin-left:1em;" })
             </div>
         </div>
     }

@@ -11,6 +11,7 @@ using System.Security.Principal;
 using System.Security.Claims;
 using System.Text;
 using Box.V2.Models;
+using System.Threading.Tasks;
 
 namespace WebApp.Library.Extensions
 {
@@ -203,5 +204,12 @@ namespace WebApp.Library.Extensions.Model
         {
             return obj.ParentId == ParentCompanies.SCM ? true : false;
         }
+
+        public static BoxFolder GetBoxFolder(this GetServiceRequestResources_Result obj, string folderId)
+        {
+            var box = new BoxManager();
+            return box.GetFolder(folderId, obj.BoxUserId).Result;
+        }
     }
+    
 }

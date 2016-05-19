@@ -51,6 +51,8 @@ SELECT u.[Id]
 	  ,u.HourlyRate
 	  ,u.LogoCssClass
 	  ,u.ColorCode
+	  ,u.BoxFolderId
+	  ,u.BoxUserId
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.RoleCategory rc ON r.RoleCategoryId = rc.Id

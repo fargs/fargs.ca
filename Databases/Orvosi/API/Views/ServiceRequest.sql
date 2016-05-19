@@ -172,10 +172,14 @@ SELECT
 	,IntakeAssistantInitials = dbo.GetInitials(ia.FirstName, ia.LastName)
 	,IntakeAssistantColorCode = ia.ColorCode
 	,IntakeAssistantUserName = ia.UserName
+	,IntakeAssistantBoxCollaborationId = sr.IntakeAssistantBoxCollaborationId
+	,IntakeAssistantBoxUserId = ia.BoxUserId
 	,DocumentReviewerName = dbo.GetDisplayName(dr.FirstName, dr.LastName, dr.Title)
 	,DocumentReviewerInitials = dbo.GetInitials(dr.FirstName, dr.LastName)
 	,DocumentReviewerColorCode = dr.ColorCode
 	,DocumentReviewerUserName = dr.UserName
+	,DocumentReviewerBoxCollaborationId = sr.DocumentReviewerBoxCollaborationId
+	,DocumentReviewerBoxUserId = dr.BoxUserId
 	,AppointmentDate = ad.[Day]
 	,sl.StartTime
 	,sl.Duration
@@ -188,6 +192,8 @@ SELECT
 	,NextTaskName = nt.TaskName
 	,NextTaskAssignedTo = nt.AssignedTo
 	,NextTaskAssignedtoName = nt.AssignedToName
+	,BoxCaseFolderId
+	,BoxPhysicianFolderId = p.BoxFolderId
 	--,NextPrepTaskId = npt.Id
 	--,NextPrepTaskName = npt.TaskName
 	--,NextPrepTaskAssignedTo = npt.AssignedTo

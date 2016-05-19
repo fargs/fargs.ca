@@ -8,6 +8,7 @@
 
 
 
+
 CREATE VIEW [API].[Physician]
 AS
 SELECT 
@@ -55,6 +56,8 @@ SELECT
 	,u.ColorCode
 	,u.BoxFolderId
 	,u.BoxUserId
+	,p.BoxAddOnTemplateFolderId
+	,p.BoxCaseTemplateFolderId
 FROM API.[User] u
 LEFT JOIN dbo.Physician p ON u.Id = p.Id
 LEFT JOIN API.Location la ON p.PrimaryAddressId = la.Id

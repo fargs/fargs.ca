@@ -166,7 +166,7 @@ namespace WebApp.Library
         {
             var physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
 
-            var addOnFolderName = "Paper Reviews and Addendums";
+            var addOnFolderName = "Addendums and Paper Reviews";
             var addOnFolder = Client().FoldersManager.GetFolderItemsAsync(physicianFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == addOnFolderName.ToUpper()) as BoxFolder;
             if (addOnFolder == null)
             {
@@ -176,7 +176,7 @@ namespace WebApp.Library
                 addOnFolder = Client().FoldersManager.CreateAsync(request).Result;
             }
 
-            var provinceYearFolderName = string.Format("{0}", ProvinceName, DueDate.ToString("yyyy"));
+            var provinceYearFolderName = string.Format("{0} {1}", ProvinceName, DueDate.ToString("yyyy"));
             var provinceYearFolder = addOnFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
             if (provinceYearFolder == null)
             {

@@ -1079,12 +1079,24 @@ namespace WebApp.Controllers
                 if (string.IsNullOrEmpty(physicianBoxFolderId))
                     return PartialView("Error", "Physician does not have a cases folder setup in Box.");
 
-                // Get the province which is used in the case folder path
-                var province = db.Provinces.Single(p => p.Id == request.ProvinceId);
-
                 // Create the case folder
                 var box = new BoxManager();
-                var caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.BoxCaseTemplateFolderId);
+                BoxFolder caseFolder;
+                if (request.ServiceCategoryId == ServiceCategories.AddOn)
+                {
+                    var province = db.GetCompanyProvince(request.CompanyId).FirstOrDefault();
+                    if (province == null)
+                    {
+                        province = new GetCompanyProvince_Result() { ProvinceID = 0, ProvinceName = "Ontario" };
+                    }
+                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.Title, physician.BoxAddOnTemplateFolderId);
+                }
+                else
+                {
+                    // Get the province which is used in the case folder path
+                    var province = db.Provinces.Single(p => p.Id == request.ProvinceId);
+                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.BoxCaseTemplateFolderId);
+                }
 
                 // Persist the new case folder Id to the database.
                 request.BoxCaseFolderId = caseFolder.Id;

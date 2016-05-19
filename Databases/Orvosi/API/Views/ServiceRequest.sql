@@ -1,4 +1,5 @@
 ﻿
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
@@ -108,7 +109,7 @@ SELECT
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
 	,sr.[HarvestProjectId]
-	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, ad.[Day], sl.StartTime, a.LocationShortName, s.Code, c.Code, p.UserName, sr.ClaimantName)
+	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, sr.AppointmentDate, sr.DueDate, sr.StartTime, a.LocationShortName, s.Code, c.Code, p.UserName, sr.ClaimantName)
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
@@ -180,10 +181,10 @@ SELECT
 	,DocumentReviewerUserName = dr.UserName
 	,DocumentReviewerBoxCollaborationId = sr.DocumentReviewerBoxCollaborationId
 	,DocumentReviewerBoxUserId = dr.BoxUserId
-	,AppointmentDate = ad.[Day]
-	,sl.StartTime
-	,sl.Duration
-	,sl.EndTime
+	,sr.AppointmentDate
+	,sr.StartTime
+	,Duration = NULL -- Obsolete
+	,sr.EndTime
 	,CalendarEventTitle = a.LocationShortName + ': ' + sr.ClaimantName + ' (' + s.Code + ') ' + c.Code + '-' + CONVERT(nvarchar(10), sr.Id)
 	,ts.TotalTasks
 	,ts.ClosedTasks
@@ -215,8 +216,6 @@ LEFT JOIN dbo.[AspNetUsers] ia ON ia.Id = sr.IntakeAssistantId
 LEFT JOIN dbo.[AspNetUsers] dr ON dr.Id = sr.DocumentReviewerId
 LEFT JOIN dbo.[AspNetUsers] rb ON rb.Id = sr.RequestedBy
 LEFT JOIN API.[Location] a ON sr.AddressId = a.Id
-LEFT JOIN dbo.AvailableSlot sl ON sr.AvailableSlotId = sl.Id
-LEFT JOIN dbo.AvailableDay ad ON sl.AvailableDayId = ad.Id
 LEFT JOIN Tasks ts ON sr.Id = ts.ServiceRequestId
 LEFT JOIN ServicePhaseTasks spt ON sr.Id = spt.ServiceRequestId
 LEFT JOIN NextTask nt ON sr.Id = nt.ServiceRequestId

@@ -95,6 +95,9 @@
     <Compile Include="GetBoxTokens_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetCompanyProvince_Result.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="GetDashboardSchedule_Result.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

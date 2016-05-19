@@ -742,7 +742,7 @@ warning 6002: The table/view 'Orvosi.API.ServiceRequest' does not have a primary
           <Property Name="DocumentReviewerBoxUserId" Type="nvarchar" MaxLength="50" />
           <Property Name="AppointmentDate" Type="date" />
           <Property Name="StartTime" Type="time" Precision="7" />
-          <Property Name="Duration" Type="smallint" />
+          <Property Name="Duration" Type="int" />
           <Property Name="EndTime" Type="time" Precision="7" />
           <Property Name="CalendarEventTitle" Type="nvarchar" MaxLength="255" />
           <Property Name="TotalTasks" Type="int" />
@@ -1023,6 +1023,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         </Function>
         <Function Name="GetBoxTokens" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="UserId" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="GetCompanyProvince" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
+          <Parameter Name="CompanyId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetDashboardSchedule" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="API">
           <Parameter Name="Now" Type="datetime" Mode="In" />
@@ -2530,6 +2533,9 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             <Parameter Name="RefreshToken" Mode="In" Type="String" />
             <Parameter Name="UserId" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="GetCompanyProvince" ReturnType="Collection(OrvosiModel.GetCompanyProvince_Result)">
+            <Parameter Name="CompanyId" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="fn_Weekdays_Result">
           <Property Type="DateTime" Name="PK_Date" Nullable="true" Precision="10" />
@@ -3516,6 +3522,10 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
         <ComplexType Name="GetBoxTokens_Result">
           <Property Type="String" Name="BoxAccessToken" Nullable="true" MaxLength="128" />
           <Property Type="String" Name="BoxRefreshToken" Nullable="true" MaxLength="128" />
+        </ComplexType>
+        <ComplexType Name="GetCompanyProvince_Result">
+          <Property Type="Int16" Name="ProvinceID" Nullable="true" />
+          <Property Type="String" Name="ProvinceName" Nullable="true" MaxLength="100" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -4944,6 +4954,14 @@ warning 6002: The table/view 'Orvosi.API.User' does not have a primary key defin
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="SaveBoxTokens" FunctionName="OrvosiModel.Store.SaveBoxTokens" />
+          <FunctionImportMapping FunctionImportName="GetCompanyProvince" FunctionName="OrvosiModel.Store.GetCompanyProvince">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OrvosiModel.GetCompanyProvince_Result">
+                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -246,6 +246,7 @@
     <Build Include="API\Stored Procedures\SaveBoxTokens.sql" />
     <Build Include="API\Stored Procedures\GetServiceRequestResources.sql" />
     <Build Include="API\Stored Procedures\GetBoxTokens.sql" />
+    <Build Include="API\Stored Procedures\GetCompanyProvince.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

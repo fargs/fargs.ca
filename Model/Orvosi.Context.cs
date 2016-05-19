@@ -2019,5 +2019,14 @@ namespace Model
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveBoxTokens", accessTokenParameter, refreshTokenParameter, userIdParameter);
         }
+    
+        public virtual ObjectResult<GetCompanyProvince_Result> GetCompanyProvince(Nullable<int> companyId)
+        {
+            var companyIdParameter = companyId.HasValue ?
+                new ObjectParameter("CompanyId", companyId) :
+                new ObjectParameter("CompanyId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCompanyProvince_Result>("GetCompanyProvince", companyIdParameter);
+        }
     }
 }

@@ -162,18 +162,50 @@ namespace WebApp.Library
             return string.Format("{0} {1}/{2}/{3}/{4}", ProvinceName, AppointmentDate.ToString("yyyy"), AppointmentDate.ToMonthFolderName(), AppointmentDate.ToWeekFolderName(), CaseFolderName);
         }
 
+        public BoxFolder CreateAddOnFolder(string PhysicianFolderId, string ProvinceName, DateTime DueDate, string CaseFolderName, string FolderTemplateId)
+        {
+            var physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
+
+            var addOnFolderName = "Paper Reviews and Addendums";
+            var addOnFolder = Client().FoldersManager.GetFolderItemsAsync(physicianFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == addOnFolderName.ToUpper()) as BoxFolder;
+            if (addOnFolder == null)
+            {
+                var request = new BoxFolderRequest();
+                request.Parent = new BoxRequestEntity() { Id = physicianFolder.Id };
+                request.Name = addOnFolderName;
+                addOnFolder = Client().FoldersManager.CreateAsync(request).Result;
+            }
+
+            var provinceYearFolderName = string.Format("{0}", ProvinceName, DueDate.ToString("yyyy"));
+            var provinceYearFolder = addOnFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
+            if (provinceYearFolder == null)
+            {
+                var request = new BoxFolderRequest();
+                request.Parent = new BoxRequestEntity() { Id = addOnFolder.Id };
+                request.Name = provinceYearFolderName;
+                provinceYearFolder = Client().FoldersManager.CreateAsync(request).Result;
+            }
+
+            var caseFolderName = CaseFolderName;
+            var caseFolder = Client().FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
+            if (caseFolder == null)
+            {
+                var request = new BoxFolderRequest();
+                request.Id = FolderTemplateId;
+                request.Parent = new BoxRequestEntity() { Id = provinceYearFolder.Id };
+                request.Name = caseFolderName;
+                caseFolder = Client().FoldersManager.CopyAsync(request).Result;
+            }
+
+            return Client().FoldersManager.GetInformationAsync(caseFolder.Id).Result;
+        }
+
         public BoxFolder CreateCaseFolder(string PhysicianFolderId, string ProvinceName, DateTime AppointmentDate, string CaseFolderName, string FolderTemplateId)
         {
-            BoxFolder physicianFolder = null;
-            BoxFolder provinceYearFolder = null;
-            BoxFolder monthFolder = null;
-            BoxFolder weekFolder = null;
-            BoxFolder caseFolder = null;
-
-            physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
+            var physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
 
             var provinceYearFolderName = string.Format("{0} {1}", ProvinceName, AppointmentDate.ToString("yyyy"));
-            provinceYearFolder = physicianFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
+            var provinceYearFolder = physicianFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
             if (provinceYearFolder == null)
             {
                 var request = new BoxFolderRequest();
@@ -183,7 +215,7 @@ namespace WebApp.Library
             }
 
             var monthFolderName = AppointmentDate.ToMonthFolderName();
-            monthFolder = Client().FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == monthFolderName.ToUpper()) as BoxFolder;
+            var monthFolder = Client().FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == monthFolderName.ToUpper()) as BoxFolder;
             if (monthFolder == null)
             {
                 var request = new BoxFolderRequest();
@@ -193,7 +225,7 @@ namespace WebApp.Library
             }
 
             var weekFolderName = AppointmentDate.ToWeekFolderName();
-            weekFolder = Client().FoldersManager.GetFolderItemsAsync(monthFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == weekFolderName.ToUpper()) as BoxFolder;
+            var weekFolder = Client().FoldersManager.GetFolderItemsAsync(monthFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == weekFolderName.ToUpper()) as BoxFolder;
             if (weekFolder == null)
             {
                 var request = new BoxFolderRequest();
@@ -203,7 +235,7 @@ namespace WebApp.Library
             }
 
             var caseFolderName = CaseFolderName;
-            caseFolder = Client().FoldersManager.GetFolderItemsAsync(weekFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
+            var caseFolder = Client().FoldersManager.GetFolderItemsAsync(weekFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
             if (caseFolder == null)
             {
                 var request = new BoxFolderRequest();

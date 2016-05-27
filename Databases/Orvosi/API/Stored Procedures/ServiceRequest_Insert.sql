@@ -37,6 +37,12 @@ AS
 DECLARE @Now DATETIME
 SET @Now = GETDATE()
 
+-- This is a patch that is in place to set the start time
+SELECT @StartTime = StartTime 
+	, @EndTime = EndTime
+FROM dbo.AvailableSlot 
+WHERE Id = @AvailableSlotId
+
 INSERT INTO dbo.[ServiceRequest]
 (
 	 [CompanyReferenceId]

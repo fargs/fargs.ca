@@ -305,7 +305,8 @@ namespace WebApp.Controllers
                     ModifiedUser = User.Identity.Name,
                     ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
                     PhysicianUserName = string.Empty, // same as ServiceName
-                    ModifiedDate = SystemTime.Now()
+                    ModifiedDate = SystemTime.Now(),
+
 
                 };
 

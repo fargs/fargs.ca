@@ -177,7 +177,7 @@ namespace WebApp.Library
             }
 
             var provinceYearFolderName = string.Format("{0} {1}", ProvinceName, DueDate.ToString("yyyy"));
-            var provinceYearFolder = addOnFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
+            var provinceYearFolder = Client().FoldersManager.GetFolderItemsAsync(addOnFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
             if (provinceYearFolder == null)
             {
                 var request = new BoxFolderRequest();

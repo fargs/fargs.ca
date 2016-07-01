@@ -7,6 +7,8 @@
 
 
 
+
+
 CREATE VIEW [API].[Address]
 AS
 SELECT 
@@ -29,7 +31,11 @@ SELECT
 	,CountryCode = c.ISO3CountryCode
 	,ProvinceName = p.ProvinceName
 	,ProvinceCode = p.ProvinceCode
+	,a.LocationId
+	,LocationName = l.[Text]
+	,LocationShortName = l.ShortText
 FROM [dbo].[Address] a
 LEFT JOIN dbo.[AddressType] at ON a.AddressTypeId = at.Id
 LEFT JOIN dbo.Country c ON a.CountryId = c.Id
 LEFT JOIN dbo.Province p ON a.ProvinceId = p.Id
+LEFT JOIN dbo.LookupItem l ON a.LocationId = l.Id

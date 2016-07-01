@@ -7,8 +7,11 @@
     [LocationId]   SMALLINT       NULL,
     [ModifiedDate] DATETIME       CONSTRAINT [DF_AvailableDay_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser] NVARCHAR (100) CONSTRAINT [DF_AvailableDay_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
-    CONSTRAINT [PK_AvailableDay] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_AvailableDay] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_AvailableDay_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id])
 );
+
+
 
 
 

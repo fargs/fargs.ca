@@ -9,8 +9,12 @@
     [ServicePortfolioId] SMALLINT         NULL,
     [ModifiedDate]       DATETIME         CONSTRAINT [DF_Service_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]       NVARCHAR (100)   CONSTRAINT [DF_Service_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
-    CONSTRAINT [PK_Service] PRIMARY KEY CLUSTERED ([Id] ASC)
+    [IsLocationRequired] BIT              CONSTRAINT [DF_Service_IsLocationRequired] DEFAULT ((1)) NOT NULL,
+    CONSTRAINT [PK_Service] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Service_ServiceCategory] FOREIGN KEY ([ServiceCategoryId]) REFERENCES [dbo].[ServiceCategory] ([Id])
 );
+
+
 
 
 

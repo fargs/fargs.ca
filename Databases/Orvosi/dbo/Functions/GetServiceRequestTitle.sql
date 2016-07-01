@@ -25,9 +25,9 @@ BEGIN
 
 	-- Add the T-SQL statements to compute the return value here
 	IF (@ServiceId IN (16,17)) -- Paper Review or Addendum
-		SET @Result = dbo.FormatDateTime(@DueDate, 'yy-MM-dd') + ' ' + @ClaimantName + ' (' + @ServiceCode + '-' + @PhysicianUserName + ') ' + @CompanyCode + '-' + CONVERT(nvarchar(10), @ServiceRequestId)
+		SET @Result = CONVERT(VARCHAR(10), @DueDate, 126) + ' ' + @ClaimantName + ' (' + @ServiceCode + '-' + @PhysicianUserName + ') ' + @CompanyCode + '-' + CONVERT(nvarchar(10), @ServiceRequestId)
 	ELSE
-		SET @Result = dbo.FormatDateTime(@AppointmentDate, 'yy-MM-dd') + '(' + LEFT(REPLACE(CONVERT(nvarchar(10), @StartTime), ':', ''),4) + ')-' + @LocationShortName + '-' + @ClaimantName + ' (' + @ServiceCode + '-' + @PhysicianUserName + ') ' + @CompanyCode + '-' + CONVERT(nvarchar(10), @ServiceRequestId)
+		SET @Result = CONVERT(VARCHAR(10), @AppointmentDate, 126) + '(' + LEFT(REPLACE(CONVERT(nvarchar(10), @StartTime), ':', ''),4) + ')-' + @LocationShortName + '-' + @ClaimantName + ' (' + @ServiceCode + '-' + @PhysicianUserName + ') ' + @CompanyCode + '-' + CONVERT(nvarchar(10), @ServiceRequestId)
 
 	-- Return the result of the function
 	RETURN @Result

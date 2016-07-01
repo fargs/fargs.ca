@@ -28,8 +28,16 @@
     [IsCriticalPath]        BIT              CONSTRAINT [DF_ServiceRequestTask_IsCriticalPath] DEFAULT ((0)) NOT NULL,
     [IsDependentOnExamDate] AS               (case when [DependsOn]='ExamDate' then (1) else (0) end),
     CONSTRAINT [PK_ServiceRequestTask] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_ServiceRequestTask_ServiceRequest] FOREIGN KEY ([ServiceRequestId]) REFERENCES [dbo].[ServiceRequest] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_ServiceRequestTask_AspNetUsers] FOREIGN KEY ([AssignedTo]) REFERENCES [dbo].[AspNetUsers] ([Id]),
+    CONSTRAINT [FK_ServiceRequestTask_ServiceRequest] FOREIGN KEY ([ServiceRequestId]) REFERENCES [dbo].[ServiceRequest] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_ServiceRequestTask_Task] FOREIGN KEY ([TaskId]) REFERENCES [dbo].[Task] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers];
+
+
 
 
 

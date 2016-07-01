@@ -12,6 +12,12 @@
     [ModifiedDate]             DATETIME        CONSTRAINT [DF_ServiceRequestTemplateTask_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]             NVARCHAR (100)  CONSTRAINT [DF_ServiceRequestTemplateTask_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     [DependsOn]                NVARCHAR (50)   NULL,
-    CONSTRAINT [PK_ServiceRequestTemplateTask] PRIMARY KEY CLUSTERED ([Id] ASC)
+    [ParentId]                 SMALLINT        NULL,
+    [TaskId]                   SMALLINT        NULL,
+    CONSTRAINT [PK_ServiceRequestTemplateTask] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_ServiceRequestTemplateTask_ServiceRequestTemplate] FOREIGN KEY ([ServiceRequestTemplateId]) REFERENCES [dbo].[ServiceRequestTemplate] ([Id]),
+    CONSTRAINT [FK_ServiceRequestTemplateTask_Task] FOREIGN KEY ([TaskId]) REFERENCES [dbo].[Task] ([Id])
 );
+
+
 

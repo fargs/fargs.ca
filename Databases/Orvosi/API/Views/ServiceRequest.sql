@@ -1,6 +1,4 @@
-﻿
-
-CREATE VIEW [API].[ServiceRequest]
+﻿CREATE VIEW API.ServiceRequest
 AS
 WITH Tasks
 AS (
@@ -14,7 +12,7 @@ AS (
 ),
 NextTask
 AS (
-	SELECT *
+	SELECT ServiceRequestId, Id, TaskName, AssignedTo, AssignedToName
 	FROM (
 		SELECT t.ServiceRequestId
 			, t.Id
@@ -42,83 +40,17 @@ AS (
 	WHERE t.TaskPhaseId = 34 AND IsObsolete = 0
 	GROUP BY t.ServiceRequestId
 )
---NextPrepTask
---AS (
---	SELECT *
---	FROM (
---		SELECT t.ServiceRequestId
---			, t.Id
---			, t.TaskName
---			, t.TaskPhaseId
---			, t.TaskPhaseName
---			, t.ResponsibleRoleId
---			, t.ResponsibleRoleName
---			, t.AssignedTo
---			, AssignedToName = dbo.GetDisplayName(u.FirstName, u.LastName, u.Title)
---			, RowNum = ROW_NUMBER() OVER(PARTITION BY t.ServiceRequestId ORDER BY t.[Sequence])
---		FROM dbo.ServiceRequestTask t
---		LEFT JOIN dbo.AspNetUsers u ON t.AssignedTo = u.Id
---		WHERE t.CompletedDate IS NULL AND t.TaskPhaseId = 33
---	) t
---	WHERE RowNum = 1
---),
---NextServiceTask
---AS (
---	SELECT *
---	FROM (
---		SELECT t.ServiceRequestId
---			, t.Id
---			, t.TaskName
---			, t.TaskPhaseId
---			, t.TaskPhaseName
---			, t.ResponsibleRoleId
---			, t.ResponsibleRoleName
---			, t.AssignedTo
---			, AssignedToName = dbo.GetDisplayName(u.FirstName, u.LastName, u.Title)
---			, RowNum = ROW_NUMBER() OVER(PARTITION BY t.ServiceRequestId ORDER BY t.[Sequence])
---		FROM dbo.ServiceRequestTask t
---		LEFT JOIN dbo.AspNetUsers u ON t.AssignedTo = u.Id
---		WHERE t.CompletedDate IS NULL AND t.TaskPhaseId = 34
---	) t
---	WHERE RowNum = 1
---),
---NextCloseoutTask
---AS (
---	SELECT *
---	FROM (
---		SELECT t.ServiceRequestId
---			, t.Id
---			, t.TaskName
---			, t.TaskPhaseId
---			, t.TaskPhaseName
---			, t.ResponsibleRoleId
---			, t.ResponsibleRoleName
---			, t.AssignedTo
---			, AssignedToName = dbo.GetDisplayName(u.FirstName, u.LastName, u.Title)
---			, RowNum = ROW_NUMBER() OVER(PARTITION BY t.ServiceRequestId ORDER BY t.[Sequence])
---		FROM dbo.ServiceRequestTask t
---		LEFT JOIN dbo.AspNetUsers u ON t.AssignedTo = u.Id
---		WHERE t.CompletedDate IS NULL AND t.TaskPhaseId = 35
---	) t
---	WHERE RowNum = 1
---)
 SELECT
 	 sr.[Id] 
 	,sr.[ObjectGuid]
 	,sr.[CompanyReferenceId]
 	,sr.[ClaimantName]
 	,sr.[ServiceCatalogueId]
-	,sr.[HarvestProjectId]
-	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, sr.AppointmentDate, sr.DueDate, sr.StartTime, a.LocationShortName, s.Code, c.Code, p.UserName, sr.ClaimantName)
 	,sr.[Body]
 	,sr.[AddressId]
 	,sr.[RequestedDate]
 	,sr.[RequestedBy]
 	,sr.[CancelledDate]
-	,ServiceRequestStatusId = dbo.GetServiceRequestStatusId(ts.OpenTasks)
-	,ServiceRequestStatusText = lisr.[Text]
-	,ServiceStatusId = dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow, spt.OpenTasks)
-	,ServiceStatusText = lis.[Text]
 	,sr.[AvailableSlotId]
 	,sr.[DueDate]
 	,sr.CaseCoordinatorId
@@ -126,8 +58,7 @@ SELECT
 	,sr.DocumentReviewerId
 	,ServiceRequestPrice = sr.[Price]
 	,sr.Notes
-	,sr.DocumentFolderLink
-	,CompanyId = ISNULL(sr.CompanyId, sr.CompanyId)
+	,sr.CompanyId
 	,sr.IsNoShow
 	,sr.IsLateCancellation
 	,sr.NoShowRate
@@ -135,22 +66,29 @@ SELECT
 	,sr.[ModifiedDate]
 	,sr.[ModifiedUser]
 	,sr.ServiceId
+	,sr.AppointmentDate
+	,sr.StartTime
+	,Duration = NULL -- Obsolete
+	,sr.EndTime
+	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, sr.AppointmentDate, sr.DueDate, sr.StartTime, l.ShortText, s.Code, c.Code, p.UserName, sr.ClaimantName)
+	,ServiceRequestStatusId = dbo.GetServiceRequestStatusId(ts.OpenTasks)
+	,ServiceRequestStatusText = lisr.[Text]
+	,ServiceStatusId = dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow, spt.OpenTasks)
+	,ServiceStatusText = lis.[Text]
 	,ServiceName = s.Name
 	,ServiceCode = s.Code
+	,ServicePrice = s.Price
 	,s.ServiceCategoryId
-	,s.ServiceCategoryName
-	,s.ServicePortfolioName
 	,sr.PhysicianId
-	,PhysicianDisplayName = p.DisplayName
+	,PhysicianDisplayName = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
 	,PhysicianUserName = p.UserName
 	,PhysicianInitials = dbo.GetInitials(p.FirstName, p.LastName)
 	,PhysicianColorCode = p.ColorCode
 	,CompanyGuid = c.ObjectGuid
 	,CompanyName = c.Name
-	,ParentCompanyName = c.ParentName
-	,ServicePrice = s.DefaultPrice
+	,ParentCompanyName = cp.Name
 	,ServiceCataloguePrice = sr.ServiceCataloguePrice
-	,EffectivePrice = COALESCE(sr.Price, sr.ServiceCataloguePrice, s.DefaultPrice)
+	,EffectivePrice = COALESCE(sr.Price, sr.Price, s.Price)
 	,RequestedByName = dbo.GetDisplayName(rb.FirstName, rb.LastName, rb.Title)
 	,AddressName = a.Name
 	,AddressTypeId = a.AddressTypeId
@@ -164,7 +102,6 @@ SELECT
 	,CountryId = a.CountryId
 	,CountryName = a.CountryCode
 	,LocationId = a.LocationId
-	,LocationName = a.LocationName
 	,CaseCoordinatorName = dbo.GetDisplayName(cc.FirstName, cc.LastName, cc.Title)
 	,CaseCoordinatorInitials = dbo.GetInitials(cc.FirstName, cc.LastName)
 	,CaseCoordinatorColorCode = cc.ColorCode
@@ -181,10 +118,6 @@ SELECT
 	,DocumentReviewerUserName = dr.UserName
 	,DocumentReviewerBoxCollaborationId = sr.DocumentReviewerBoxCollaborationId
 	,DocumentReviewerBoxUserId = dr.BoxUserId
-	,sr.AppointmentDate
-	,sr.StartTime
-	,Duration = NULL -- Obsolete
-	,sr.EndTime
 	,CalendarEventTitle = a.LocationShortName + ': ' + sr.ClaimantName + ' (' + s.Code + ') ' + c.Code + '-' + CONVERT(nvarchar(10), sr.Id)
 	,ts.TotalTasks
 	,ts.ClosedTasks
@@ -195,32 +128,24 @@ SELECT
 	,NextTaskAssignedtoName = nt.AssignedToName
 	,BoxCaseFolderId
 	,BoxPhysicianFolderId = p.BoxFolderId
-	--,NextPrepTaskId = npt.Id
-	--,NextPrepTaskName = npt.TaskName
-	--,NextPrepTaskAssignedTo = npt.AssignedTo
-	--,NextPrepTaskAssignedtoName = npt.AssignedToName
-	--,NextServiceTaskId = nst.Id
-	--,NextServiceTaskName = nst.TaskName
-	--,NextServiceTaskAssignedTo = nst.AssignedTo
-	--,NextServiceTaskAssignedtoName = nst.AssignedToName
-	--,NextCloseoutTaskId = nct.Id
-	--,NextCloseoutTaskName = nct.TaskName
-	--,NextCloseoutTaskAssignedTo = nct.AssignedTo
-	--,NextCloseoutTaskAssignedtoName = nct.AssignedToName
+	,HarvestProjectId = null
+	,ServiceCategoryName = null
+	,DocumentFolderLink = null
+	,ServicePortfolioName = null
+	,LocationName = null
 FROM dbo.ServiceRequest sr
-INNER JOIN API.[Service] s ON s.Id = sr.ServiceId
-INNER JOIN API.Physician p ON sr.PhysicianId = p.Id
-INNER JOIN API.Company c ON ISNULL(sr.CompanyId, sr.CompanyId) = c.Id
+INNER JOIN dbo.[Service] s ON s.Id = sr.ServiceId
+INNER JOIN dbo.[AspNetUsers] p ON sr.PhysicianId = p.Id
+INNER JOIN dbo.Company c ON sr.CompanyId = c.Id
+LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
 LEFT JOIN dbo.[AspNetUsers] cc ON cc.Id = sr.CaseCoordinatorId
 LEFT JOIN dbo.[AspNetUsers] ia ON ia.Id = sr.IntakeAssistantId
 LEFT JOIN dbo.[AspNetUsers] dr ON dr.Id = sr.DocumentReviewerId
 LEFT JOIN dbo.[AspNetUsers] rb ON rb.Id = sr.RequestedBy
-LEFT JOIN API.[Location] a ON sr.AddressId = a.Id
+LEFT JOIN API.[Address] a ON sr.AddressId = a.Id
+LEFT JOIN dbo.LookupItem l ON a.LocationId = l.Id
 LEFT JOIN Tasks ts ON sr.Id = ts.ServiceRequestId
 LEFT JOIN ServicePhaseTasks spt ON sr.Id = spt.ServiceRequestId
 LEFT JOIN NextTask nt ON sr.Id = nt.ServiceRequestId
 LEFT JOIN dbo.LookupItem lisr ON dbo.GetServiceRequestStatusId(ts.OpenTasks) = lisr.Id
 LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow, spt.OpenTasks) = lis.Id
---LEFT JOIN NextPrepTask npt ON sr.Id = npt.ServiceRequestId
---LEFT JOIN NextServiceTask nst ON sr.Id = nst.ServiceRequestId
---LEFT JOIN NextCloseoutTask nct ON sr.Id = nct.ServiceRequestId

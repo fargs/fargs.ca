@@ -171,10 +171,11 @@ namespace WebApp.Controllers
             return PartialView("TaskList", tasks);
         }
 
-        public ActionResult NextTaskList(int? serviceRequestId)
+        [ChildActionOnly]
+        public ActionResult NextTaskList(ServiceRequest serviceRequest, User currentUser)
         {
             // get the user
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+            var user = currentUser;
 
             if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
             {
@@ -183,9 +184,9 @@ namespace WebApp.Controllers
 
             ViewBag.User = user;
 
-            var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
+            //var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
+            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequest.Id && !t.IsObsolete)
                 .Select(t => new TaskViewModel()
                 {
                     Id = t.Id,

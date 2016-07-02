@@ -53,19 +53,9 @@
         }
         <div class="well well-sm">
             <form action="@Url.Content("~/ServiceRequest/Index")" method="get">
-                @*<div class="input-group">
-                        <input type="text" class="form-control" name="Search" value="" placeholder="Search for ..." />
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"><i class="glyphicon glyphicon-search"></i></button>
-                        </span>
-                    </div>*@
                 <div class="form-group form-group-sm">
                     <label class="control-label small">Claimant / Reference Id</label>
                     <input type="text" class="form-control" name="FilterArgs.ClaimantName" value="@Model.FilterArgs.ClaimantName" />
-                </div>
-                <div class="form-group form-group-sm">
-                    <label class="control-label small">Next Task</label>
-                    @Html.DropDownList("FilterArgs.NextTask", new SelectList(ViewBag.Staff, "Value", "Text", Model.FilterArgs.NextTask), string.Empty, new { @class = "form-control" })
                 </div>
                 <div class="form-group form-group-sm">
                     <label class="control-label small">Id(s) (csv)</label>
@@ -222,7 +212,7 @@
                             <div><i class="glyphicon glyphicon-file"></i><span class="@(item.DueDate.HasValue ? string.Empty : "text-muted")"> @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : "Not Set")</span></div>
                         </td>
                         <td>
-                            @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequestId = item.Id })
+                            @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequest = item, currentUser = Model.User })
                             @*<div class="label label-@(item.ServiceStatusId == e.ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>
                             <div>
                                 <div class="progress" style="margin-bottom: 0">

@@ -24,6 +24,12 @@ namespace WebApp.Controllers
             return View();
         }
 
+        public ActionResult CodeFirstContextTests()
+        {
+            var db = new Orvosi.Data.OrvosiDbContext();
+            return View(db.Invoices.First());
+        }
+
         public ActionResult ConnectToBox()
         {
             return PartialView();

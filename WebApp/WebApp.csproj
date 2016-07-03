@@ -975,6 +975,7 @@
     <Content Include="Views\Box\Users.cshtml" />
     <Content Include="Views\Box\LogInAs.cshtml" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\Diagnostics\CodeFirstContextTests.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
@@ -1005,6 +1006,10 @@
     <ProjectReference Include="..\Model\Model.csproj">
       <Project>{57efe4ba-d313-4e8a-93e4-7e3d9443103b}</Project>
       <Name>Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orvosi.Data\Orvosi.Data.csproj">
+      <Project>{46992733-a03d-41c3-93ce-1726ad978260}</Project>
+      <Name>Orvosi.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

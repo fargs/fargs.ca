@@ -12,16 +12,16 @@
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Actions <span class="caret"></span>
                 </button>
-                @if (Model.User.RoleId == e.Roles.CaseCoordinator || Model.User.RoleId == e.Roles.SuperAdmin)
+                @if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.CaseCoordinator || Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
                 {
                     <ul class="dropdown-menu">
                         <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                        @if (Model.ServiceRequest.ServiceCategoryId != e.ServiceCategories.AddOn)
+                        @if (Model.ServiceRequest.Service.ServiceCategory.Id != e.ServiceCategories.AddOn)
                         {
                             <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
                         }
                         <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
-                        @if (Model.ServiceRequest.ServiceStatusId != e.ServiceStatus.NoShow)
+                        @if (Model.ServiceRequest.ServiceStatusId() != e.ServiceStatus.NoShow)
                         {
                             <li role="separator" class="divider"></li>
                             if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
@@ -50,22 +50,22 @@
         <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.PhysicianColorCode">@Model.ServiceRequest.PhysicianInitials </span> @Model.ServiceRequest.PhysicianDisplayName</h4>
         <hr />
         <h3>@Model.ServiceRequest.ClaimantName</h3>
-        <p class="small text-muted">@Model.ServiceRequest.ServiceName, @Model.ServiceRequest.CompanyName</p>
+        <p class="small text-muted">@Model.ServiceRequest.Service.Name, @Model.ServiceRequest.Company.Name</p>
         @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
         {
             <span class="label label-danger">
                 @Model.ServiceRequest.ServiceRequestStatusText
             </span>
         }
-        @if (Model.ServiceRequest.ServiceCategoryId != e.ServiceCategories.AddOn)
+        @if (Model.ServiceRequest.Service.ServiceCategory.Id != e.ServiceCategories.AddOn)
         {
             <div class="form-group">
                 <label class="control-label">Exam</label>
                 <p class="form-control-static">
                     @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")
                     <br />
-                    <strong><small class="text-muted">@Model.ServiceRequest.AddressName</small></strong><br />
-                    <small>@Model.ServiceRequest.City, @Model.ServiceRequest.ProvinceName</small>
+                    <strong><small class="text-muted">@Model.ServiceRequest.Address.Name</small></strong><br />
+                    <small>@Model.ServiceRequest.Address.City, @Model.ServiceRequest.Address.Province.ProvinceCode</small>
 
                 </p>
             </div>
@@ -128,7 +128,7 @@
                 @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = false, collapsed = true })
             </div>
         </div>
-        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+        @if (Model.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
         {
             <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
                 @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
@@ -137,7 +137,7 @@
         }
     </div>
     <div class="col-sm-4">
-        @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+        @if (Model.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
         {
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -409,14 +409,14 @@
                         </dd>*@
                 </div>
             </div>
-            if (Model.User.RoleId == e.Roles.SuperAdmin)
+            if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
             { 
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Invoice
                 </div>
                 <div class="panel-body">
-                    @if (Model.Invoice == null)
+                    @if (!Model.ServiceRequest.InvoiceDetails.Any())
                     {
                         var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
                         <div class="panel-body">
@@ -429,52 +429,13 @@
                     }
                     else
                     {
-                        @Html.Action("ReadOnly", "Invoice", Model.Invoice)
+                        @Html.Action("ReadOnly", "Invoice", Model.ServiceRequest.InvoiceDetails.First().Invoice)
                     }
                 </div>
             </div>
             }
         }
     </div>
-    @*@if (Model.User.RoleId == e.Roles.SuperAdmin)
-            {
-        <div id="SuperAdminSection" class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice from Physician to Company
-                    </div>
-                    @if (Model.Invoices.Count() == 0)
-                    {
-                        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
-                        <div class="panel-body">
-                            @using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
-                            {
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                <button type="submit" class="btn btn-primary">Create Invoice</button>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices.ToList() })
-                    }
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice from Staff to Orvosi
-                    </div>
-                    <div class="panel-body">
-                        @if ((Model.ServiceRequest.ClosedTasks.HasValue ? Model.ServiceRequest.ClosedTasks.Value : 0) == 0)
-                        {
-                            <div>No billable tasks have been completed.</div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    }*@
 
 
     @section Scripts {

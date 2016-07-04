@@ -53,13 +53,12 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         {
             this.Resources = new List<Resource>();
         }
-        public User User { get; set; }
-        public ServiceRequest ServiceRequest { get; set; }
-        public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
-        public List<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
+        public Orvosi.Data.AspNetUser User { get; set; }
+        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        //public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
         public Metadata DropboxFolder { get; internal set; }
         public List<MembersGetInfoItem> DropboxFolderMembers { get; internal set; }
-        public Orvosi.Data.Invoice Invoice { get; set; }
+        //public Orvosi.Data.Invoice Invoice { get; set; }
         public BoxFolder BoxFolder { get; set; }
         public BoxCollection<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
         public List<Resource> Resources { get; internal set; }

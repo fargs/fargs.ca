@@ -275,6 +275,12 @@ namespace WebApp.Controllers
             //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
         }
 
+        [ChildActionOnly]
+        public ActionResult ReadOnly(Orvosi.Data.Invoice invoice)
+        {
+            return PartialView("_ReadOnly", invoice);
+        }
+
         [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
         public async Task<ActionResult> Details(int id)
         {
@@ -493,47 +499,49 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Submit(int id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
-
-            //var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            //await messageService.SendInvoice(invoice, Request.GetBaseUrl());
-
-            invoice.SentDate = SystemTime.Now();
-            invoice.ModifiedDate = SystemTime.Now();
-            invoice.ModifiedUser = User.Identity.Name;
-
-            await db.SaveChangesAsync();
-
-            foreach (var item in invoice.InvoiceDetails)
+            using (var context = new Orvosi.Data.OrvosiDbContext())
             {
-                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId && !c.IsObsolete);
-                task.CompletedDate = SystemTime.Now();
-                await db.SaveChangesAsync();
-            }
+                var invoice = await context.Invoices.SingleOrDefaultAsync(c => c.Id == id);
 
-            return Redirect(Request.UrlReferrer.ToString());
+                //var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
+                //await messageService.SendInvoice(invoice, Request.GetBaseUrl());
+
+                invoice.SentDate = SystemTime.Now();
+                invoice.ModifiedDate = SystemTime.Now();
+                invoice.ModifiedUser = User.Identity.Name;
+
+                foreach (var item in invoice.InvoiceDetails)
+                {
+                    var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice);
+                    task.CompletedDate = SystemTime.Now();
+                }
+                await context.SaveChangesAsync();
+
+                return Redirect(Request.UrlReferrer.ToString());
+            }
         }
 
         [HttpPost]
         [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Unsubmit(int id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.Id == id);
-            
-            invoice.SentDate = null;
-            invoice.ModifiedDate = SystemTime.Now();
-            invoice.ModifiedUser = User.Identity.Name;
-
-            await db.SaveChangesAsync();
-
-            foreach (var item in invoice.InvoiceDetails)
+            using (var context = new Orvosi.Data.OrvosiDbContext())
             {
-                var task = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.TaskId == Tasks.SubmitInvoice && c.ServiceRequestId == item.ServiceRequestId && !c.IsObsolete);
-                task.CompletedDate = null;
-                await db.SaveChangesAsync();
-            }
+                var invoice = await context.Invoices.FirstOrDefaultAsync(c => c.Id == id);
+            
+                invoice.SentDate = null;
+                invoice.ModifiedDate = SystemTime.Now();
+                invoice.ModifiedUser = User.Identity.Name;
 
-            return Redirect(Request.UrlReferrer.ToString());
+                foreach (var item in invoice.InvoiceDetails)
+                {
+                    var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice);
+                    task.CompletedDate = null;
+                }
+                await context.SaveChangesAsync();
+
+                return Redirect(Request.UrlReferrer.ToString());
+            }
         }
 
         [Authorize(Roles = "Super Admin, Case Coordinator")]

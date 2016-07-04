@@ -33,6 +33,7 @@ namespace Orvosi.Data
 
         // Foreign keys
         public virtual Invoice Invoice { get; set; } // FK_InvoiceDetail_Invoice
+        public virtual ServiceRequest ServiceRequest { get; set; } // FK_InvoiceDetail_ServiceRequest
 
         public InvoiceDetail()
         {

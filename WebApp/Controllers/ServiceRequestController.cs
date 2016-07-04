@@ -140,10 +140,9 @@ namespace WebApp.Controllers
             vm.ServiceRequest = await db.ServiceRequests.FindAsync(id);
             vm.ServiceRequestTasks = db.ServiceRequestTasks.Where(sr => sr.ServiceRequestId == id && !sr.IsObsolete).OrderBy(c => c.Sequence).ToList();
             vm.ServiceRequestCostRollUps = db.ServiceRequestCostRollUps.Where(sr => sr.ServiceRequestId == id).OrderBy(c => c.Id).ToList();
-            vm.Invoices = db.Invoices.Join(db.InvoiceDetails.Where(ids => ids.ServiceRequestId == id),
-                i => i.Id,
-                ids => ids.InvoiceId,
-                (i, ids) => i);
+
+            var context = new Orvosi.Data.OrvosiDbContext();
+            vm.Invoice = context.Invoices.FirstOrDefault(i => i.InvoiceDetails.Any(ids => ids.ServiceRequestId == id));
 
             var dropbox = new OrvosiDropbox();
             var client = await dropbox.GetServiceAccountClientAsync();

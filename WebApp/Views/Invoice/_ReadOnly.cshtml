@@ -1,0 +1,55 @@
+﻿@using WebApp.Library.Extensions
+@using e = Model.Enums
+@model Orvosi.Data.Invoice
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="pull-left">
+            @if (Model.SentDate.HasValue)
+            {
+                <form action="~/Invoice/Unsubmit" method="post" class="pull-left">
+                    @Html.Hidden("Id", Model.Id)
+                    <input type="submit" class="btn btn-link btn-sm" name="Unsubmit" value="Unsubmit" />
+                </form>
+            }
+            else
+            {
+                <form action="~/Invoice/Submit" method="post" class="pull-left">
+                    @Html.Hidden("Id", Model.Id)
+                    <input type="submit" class="btn btn-link btn-sm" name="submit" value="Submit" />
+                </form>
+            }
+        </div>
+        <div class="pull-right">
+            <a href="~/Invoice/Details/@Model.Id" class="btn btn-sm">View</a>
+            <a href="~/Invoice/Edit/@Model.Id" class="btn btn-sm">Edit</a>
+            <a href="~/Invoice/Download/@Model.ObjectGuid" class="btn btn-sm">Download</a>
+        </div>
+    </div>
+</div>
+<hr />
+@if (Model.SentDate.HasValue)
+{
+    <dl class="dl-horizontal">
+        <dt>Submitted Date</dt>
+        <dd><span class="alert alert-success"><i class="glyphicon glyphicon-ok"></i> @Model.SentDate.ToOrvosiDateFormat()</span></dd>
+    </dl>
+}
+<dl class="dl-horizontal dl-clear-margins">
+    <dt>Invoice Number</dt>
+    <dd>@Model.InvoiceNumber</dd>
+    <dt>Invoice Date</dt>
+    <dd>@Model.InvoiceDate.ToOrvosiDateFormat()</dd>
+</dl>
+<hr class="hr-smaller-margins"/>
+<dl class="dl-horizontal dl-clear-margins">
+    <dt>Sub Total</dt>
+    <dd>@Model.SubTotal</dd>
+    <dt>Tax (@(Model.TaxRateHst)%)</dt>
+    <dd>@Model.Hst</dd>
+</dl>
+<hr class="hr-smaller-margins" />
+<dl class="dl-horizontal dl-clear-margins">
+    <dt>Total</dt>
+    <dd>@Model.Total</dd>
+</dl>

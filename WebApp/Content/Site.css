@@ -401,11 +401,20 @@ dd {
         width: 150px;
         overflow: hidden;
         clear: left;
-        text-align: right;
+        text-align: left;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     .dl-horizontal dd {
         margin-left: 180px;
     }
+}
+
+.dl-clear-margins {
+    margin: 0px;
+}
+
+.hr-smaller-margins {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

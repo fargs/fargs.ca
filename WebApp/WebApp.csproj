@@ -976,6 +976,8 @@
     <Content Include="Views\Box\LogInAs.cshtml" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Diagnostics\CodeFirstContextTests.cshtml" />
+    <Content Include="Views\Invoice\_ReadOnly.cshtml" />
+    <Content Include="Views\ServiceRequest\ResourceAssignment.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

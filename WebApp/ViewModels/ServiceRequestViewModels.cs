@@ -59,7 +59,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public List<ServiceRequestCostRollUp> ServiceRequestCostRollUps { get; set; }
         public Metadata DropboxFolder { get; internal set; }
         public List<MembersGetInfoItem> DropboxFolderMembers { get; internal set; }
-        public IQueryable<Invoice> Invoices { get; set; }
+        public Orvosi.Data.Invoice Invoice { get; set; }
         public BoxFolder BoxFolder { get; set; }
         public BoxCollection<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
         public List<Resource> Resources { get; internal set; }

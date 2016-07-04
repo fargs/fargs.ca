@@ -42,6 +42,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
 
             // Foreign keys
+            HasOptional(a => a.ServiceRequest).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_InvoiceDetail_ServiceRequest
             HasRequired(a => a.Invoice).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.InvoiceId); // FK_InvoiceDetail_Invoice
             InitializePartial();
         }

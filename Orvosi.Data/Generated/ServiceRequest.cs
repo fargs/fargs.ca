@@ -57,6 +57,7 @@ namespace Orvosi.Data
         public string DocumentReviewerBoxCollaborationId { get; set; } // DocumentReviewerBoxCollaborationId (length: 50)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequest
 
@@ -73,6 +74,7 @@ namespace Orvosi.Data
             IsLateCancellation = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();

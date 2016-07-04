@@ -10,6 +10,6 @@ SELECT
 	,a.ModifiedDate
 	,a.ModifiedUser
 	,ServiceRequestId = sr.Id
-	,Title = CASE WHEN sr.Id IS NULL THEN 'Available' ELSE ISNULL(sr.ServiceName, '[Service Not Set]') + ' - ' + ISNULL(sr.CompanyName, '[Company Not Set]') + ' - ' + ISNULL(sr.LocationName, '[Location Not Set]') END
+	,Title = CASE WHEN sr.Id IS NULL THEN 'Available' ELSE ISNULL(sr.ServiceName, '[Service Not Set]') + ' - ' + ISNULL(sr.CompanyName, '[Company Not Set]') + ' - ' + ISNULL(sr.AddressName, '[Location Not Set]') END
 FROM [dbo].[AvailableSlot] a
 LEFT JOIN [API].[ServiceRequest] sr ON sr.AvailableSlotId = a.Id

@@ -48,7 +48,7 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public decimal? NoShowRate { get; set; } // NoShowRate
         public decimal? LateCancellationRate { get; set; } // LateCancellationRate
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid PhysicianId { get; set; } // PhysicianId
         public short? ServiceId { get; set; } // ServiceId
         public int? LocationId { get; set; } // LocationId
         public decimal? ServiceCataloguePrice { get; set; } // ServiceCataloguePrice
@@ -63,8 +63,12 @@ namespace Orvosi.Data
 
         // Foreign keys
         public virtual Address Address { get; set; } // FK_ServiceRequest_Address
+        public virtual AspNetUser CaseCoordinator { get; set; } // FK_ServiceRequest_CaseCoordinator
+        public virtual AspNetUser DocumentReviewer { get; set; } // FK_ServiceRequest_DocumentReviewer
+        public virtual AspNetUser IntakeAssistant { get; set; } // FK_ServiceRequest_IntakeAssistant
         public virtual AvailableSlot AvailableSlot { get; set; } // FK_ServiceRequest_AvailableSlot
         public virtual Company Company { get; set; } // FK_ServiceRequest_Company
+        public virtual Physician Physician { get; set; } // FK_ServiceRequest_Physician
         public virtual Service Service { get; set; } // FK_ServiceRequest_Service
 
         public ServiceRequest()

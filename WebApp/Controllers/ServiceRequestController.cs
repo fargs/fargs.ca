@@ -17,6 +17,7 @@ using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
 using Box.V2.Models;
+using e = Orvosi.Shared.Enums;
 
 namespace WebApp.Controllers
 {
@@ -26,6 +27,7 @@ namespace WebApp.Controllers
     public class ServiceRequestController : Controller
     {
         private OrvosiEntities context = new OrvosiEntities();
+        private Orvosi.Data.OrvosiDbContext ctx = new Orvosi.Data.OrvosiDbContext();
         private OrvosiDropbox _dropbox;
 
         public OrvosiDropbox dropbox
@@ -49,7 +51,7 @@ namespace WebApp.Controllers
 
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
-            filterArgs.StatusId = (filterArgs.StatusId ?? ServiceRequestStatus.Open);
+            filterArgs.StatusId = (filterArgs.StatusId ?? e.ServiceRequestStatus.Open);
 
             var sr = context.ServiceRequests.AsQueryable();
 
@@ -77,25 +79,18 @@ namespace WebApp.Controllers
                 sr = sr.Where(c => c.ClaimantName.Contains(filterArgs.ClaimantName) || c.CompanyReferenceId.Contains(filterArgs.ClaimantName));
             }
 
-            var userGuid = new Guid(vm.User.Id);
-
             // if the user is an administrator and the option showAll is true, then show all
             if (vm.User.RoleCategoryId != RoleCategory.Admin || (vm.User.RoleCategoryId != RoleCategory.Admin && filterArgs.ShowAll == false))
             {
-                sr = sr.Where(c => c.CaseCoordinatorId == userGuid || c.IntakeAssistantId == userGuid || c.DocumentReviewerId == userGuid || c.PhysicianId == vm.User.Id);
+                sr = sr.Where(c => c.CaseCoordinatorId == vm.User.Id || c.IntakeAssistantId == vm.User.Id || c.DocumentReviewerId == vm.User.Id || c.PhysicianId == vm.User.Id);
             }
 
             if (vm.User.RoleCategoryId == RoleCategory.Admin || vm.User.RoleCategoryId == RoleCategory.Staff)
             {
-                if (!string.IsNullOrEmpty(filterArgs.PhysicianId))
+                if (filterArgs.PhysicianId.HasValue)
                 {
                     sr = sr.Where(c => c.PhysicianId == filterArgs.PhysicianId);
                 }
-            }
-
-            if (!string.IsNullOrEmpty(filterArgs.NextTask))
-            {
-                sr = sr.Where(c => c.NextTaskAssignedTo == filterArgs.NextTask);
             }
 
             if (filterArgs.Sort == "Newest")
@@ -120,80 +115,51 @@ namespace WebApp.Controllers
             var user = context.Users.Single(u => u.UserName == User.Identity.Name);
 
             var list = await context.ServiceRequests
-                .Where(sr => sr.CaseCoordinatorId == new Guid(user.Id) || sr.IntakeAssistantId == new Guid(user.Id) || sr.DocumentReviewerId == new Guid(user.Id) || sr.PhysicianId == user.Id)
+                .Where(sr => sr.CaseCoordinatorId == user.Id || sr.IntakeAssistantId == user.Id || sr.DocumentReviewerId == user.Id || sr.PhysicianId == user.Id)
                 .ToListAsync();
 
             return View(list);
         }
 
         // GET: ServiceRequest/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int id)
         {
-            if (id == null)
+            var vm = new DetailsViewModel();
+            vm.ServiceRequest = await ctx.ServiceRequests.FirstAsync(sr => sr.Id == id);
+
+            if (vm.ServiceRequest == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HttpNotFound();
             }
 
-            using (var context = new Orvosi.Data.OrvosiDbContext())
+            vm.User = ctx.AspNetUsers.Single(u => u.UserName == User.Identity.Name);
+
+            return View(vm);
+        }
+
+        public async Task<ActionResult> BoxManager(int serviceRequestId)
+        {
+            var serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
+            var resources = serviceRequest.ServiceRequestTasks.Select(sr => sr.AspNetUser).Distinct();
+
+            var boxCaseFolderId = ctx.ServiceRequests.First(sr => sr.Id == serviceRequestId).BoxCaseFolderId;
+
+            var vm = new BoxManagerViewModel();
+            vm.ServiceRequestId = serviceRequestId;
+
+            var box = new BoxManager();
+            if (!string.IsNullOrEmpty(boxCaseFolderId))
             {
-                var vm = new DetailsViewModel();
-                vm.ServiceRequest = await context.ServiceRequests.FindAsync(id);
-                if (vm.ServiceRequest == null)
+                vm.BoxFolder = box.GetFolder(boxCaseFolderId);
+                vm.BoxFolderCollaborations = box.GetCollaborations(boxCaseFolderId);
+                foreach (var resource in resources)
                 {
-                    return HttpNotFound();
+                    var boxResource = new BoxResource() { Resource = resource };
+                    boxResource.BoxFolder = await box.GetFolder(boxCaseFolderId, resource.BoxUserId);
+                    vm.Resources.Add(boxResource);
                 }
-
-                vm.User = context.AspNetUsers.Single(u => u.UserName == User.Identity.Name);
-
-                if (vm.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == RoleCategory.Admin)
-                {
-                    var dropbox = new OrvosiDropbox();
-                    var client = await dropbox.GetServiceAccountClientAsync();
-
-                    // Copy the case template folder
-                    var destination = vm.ServiceRequest.DocumentFolderLink ?? "/qwertypoiu";
-
-                    try
-                    {
-                        // Get the folder
-                        vm.DropboxFolder = await client.Files.GetMetadataAsync(destination);
-                    }
-                    catch (Dropbox.Api.ApiException<Dropbox.Api.Files.GetMetadataError> ex)
-                    {
-                        if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
-                            throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-
-                    if (vm.DropboxFolder != null)
-                    {
-                        if (vm.DropboxFolder.AsFolder.SharingInfo != null)
-                        {
-                            // Get the shared folder members
-                            vm.DropboxFolderMembers = await GetSharedFolderMembers(dropbox, client, vm.DropboxFolder.AsFolder.SharingInfo.SharedFolderId);
-                        }
-                    }
-                }
-
-                var ResourcesFromTasks = this.context.GetServiceRequestResources(id);
-                var box = new BoxManager();
-                if (!string.IsNullOrEmpty(vm.ServiceRequest.BoxCaseFolderId))
-                {
-                    vm.BoxFolder = box.GetFolder(vm.ServiceRequest.BoxCaseFolderId);
-                    vm.BoxFolderCollaborations = box.GetCollaborations(vm.ServiceRequest.BoxCaseFolderId);
-                    foreach (var item in ResourcesFromTasks)
-                    {
-                        var resource = new Resource() { ResourceFromTask = item };
-                        resource.BoxFolder = await box.GetFolder(vm.ServiceRequest.BoxCaseFolderId, resource.ResourceFromTask.BoxUserId);
-                        vm.Resources.Add(resource);
-                    }
-                }
-
-                return View(vm);
             }
+            return View(vm);
         }
 
 
@@ -230,48 +196,106 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Availability(AvailabilityForm form)
         {
-            var ad = await context.AvailableDays
-                .SingleOrDefaultAsync(c => c.PhysicianId == form.PhysicianId && c.Day == form.AppointmentDate);
-
-            var p = await context.Physicians.SingleOrDefaultAsync(c => c.Id == form.PhysicianId);
+            var ad = await ctx.AvailableDays
+                .FirstOrDefaultAsync(c => c.PhysicianId == form.PhysicianId && c.Day == form.AppointmentDate);
 
             if (ad == null)
             {
-                this.ModelState.AddModelError("AppointmentDate", string.Format("{0} is not available on this day.", p.DisplayName));
+                this.ModelState.AddModelError("AppointmentDate", string.Format("Not available on this day."));
             }
 
             if (ModelState.IsValid)
             {
-                var vm = new CreateViewModel();
-                vm.AvailableDay = ad;
-                vm.Physician = p;
-                vm.ServiceRequest.PhysicianId = p.Id;
-                vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
-                vm.ServiceRequest.AppointmentDate = ad.Day;
-
-                return View("Create", vm);
+                return RedirectToAction("Create", new { availableDayId = ad.Id, physicianId = form.PhysicianId });
             }
-            return View(form);
+            return Availability();
         }
 
-        // POST: Admin/ServiceRequest/Create
+        [HttpGet]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        [HttpPost]
-        public async Task<ActionResult> Create(ServiceRequest sr)
+        public async Task<ActionResult> Create(int availableDayId, Guid physicianId)
         {
-            var company = await context.Companies.SingleOrDefaultAsync(c => c.Id == sr.CompanyId);
+            var availableDay = await ctx.AvailableDays.FindAsync(availableDayId);
+            var physician = await ctx.Physicians.FindAsync(physicianId);
+            var serviceRequest = new Orvosi.Data.ServiceRequest();
+            serviceRequest.PhysicianId = physicianId;
+            serviceRequest.AppointmentDate = availableDay.Day;
 
-            var location = await context.Locations.SingleOrDefaultAsync(c => c.Id == sr.LocationId);
+            var vm = new CreateViewModel();
 
-            var serviceCatalogue = context.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            vm.SelectedAvailableDay = availableDay;
+            vm.SelectedPhysician = physician;
+            vm.ServiceRequest = serviceRequest;
 
-            var service = serviceCatalogue.SingleOrDefault(c => c.LocationId == location.LocationId && c.ServiceId == sr.ServiceId);
-            if (service == null || !service.Price.HasValue)
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
+                });
+
+            vm.AvailableSlotSelectList = ctx.AvailableSlots
+                .Where(c => c.AvailableDayId == availableDayId)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.GetTitle(),
+                    Value = c.Id.ToString()
+                })
+                .OrderBy(c => c.Text);
+
+            vm.CompanySelectList = ctx.Companies
+                .Where(c => c.IsParent == false)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
+                });
+
+            vm.AddressSelectList = ctx.Addresses
+                .Where(loc => loc.AddressTypeId != e.AddressTypes.BillingAddress)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = string.Format("{0}", c.Name),
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.City_CityId.Name }
+                });
+
+            vm.StaffSelectList = ctx.AspNetUsers
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.GetDisplayName(),
+                    Value = c.Id.ToString()
+                });
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> Create(Orvosi.Data.ServiceRequest sr)
+        {
+            // These are the original parameters required by the Get method. AvailableDayId is not a property on ServiceRequest so it was added as a hidden field on the form. PhysicianId was added to be consistent.
+            var selectedAvailableDayId = int.Parse(Request.Form.Get("SelectedAvailableDayId"));
+            var selectedPhysicianId = new Guid(Request.Form.Get("SelectedPhysicianId"));
+
+            // Get the service catalogue
+            var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == sr.AddressId);
+            var serviceCatalogues = context.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == sr.ServiceId);
+            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
-            var rates = context.GetServiceCatalogueRate(new Guid(sr.PhysicianId), sr.CompanyGuid).First();
+            // Get the no show and late cancellation rates for this company
+            var company = ctx.Companies.FirstOrDefault(c => c.Id == sr.CompanyId);
+            var rates = context.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
@@ -279,169 +303,166 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var additionalErrors = new ModelErrorCollection();
-                var obj = new ServiceRequest()
+                var slot = await ctx.AvailableSlots.FindAsync(sr.AvailableSlotId);
+                sr.ServiceId = serviceCatalogue.ServiceId;
+                sr.PhysicianId = selectedPhysicianId;
+                sr.CompanyId = company.Id;
+                sr.AddressId = address.Id;
+                sr.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+                sr.AvailableSlotId = sr.AvailableSlotId;
+                sr.StartTime = slot.StartTime;
+                sr.EndTime = slot.EndTime;
+                sr.ServiceCataloguePrice = serviceCatalogue.Price;
+                sr.NoShowRate = rates.NoShowRate;
+                sr.LateCancellationRate = rates.LateCancellationRate;
+                sr.ModifiedUser = User.Identity.Name;
+                sr.ModifiedDate = SystemTime.Now();
+
+                var service = await ctx.Services.FindAsync(serviceCatalogue.ServiceId);
+                var tasks = ctx.Tasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
+
+                foreach (var task in tasks)
                 {
-                    ServiceCatalogueId = service.ServiceCatalogueId,
-                    AppointmentDate = sr.AppointmentDate,
-                    AvailableSlotId = sr.AvailableSlotId,
-                    DueDate = sr.DueDate,
-                    AddressId = location.Id,
-                    CaseCoordinatorId = sr.CaseCoordinatorId,
-                    IntakeAssistantId = sr.IntakeAssistantId,
-                    DocumentReviewerId = sr.DocumentReviewerId,
-                    ClaimantName = sr.ClaimantName,
-                    CompanyReferenceId = sr.CompanyReferenceId,
-                    RequestedBy = sr.RequestedBy,
-                    RequestedDate = sr.RequestedDate,
-                    DocumentFolderLink = sr.DocumentFolderLink,
-                    CompanyId = sr.CompanyId,
-                    PhysicianId = sr.PhysicianId,
-                    ServiceId = service.ServiceId,
-                    LocationId = (short?)service.LocationId,
-                    ServiceCataloguePrice = service.Price,
-                    NoShowRate = rates.NoShowRate,
-                    LateCancellationRate = rates.LateCancellationRate,
-                    ModifiedUser = User.Identity.Name,
-                    ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
-                    PhysicianUserName = string.Empty, // same as ServiceName
-                    ModifiedDate = SystemTime.Now(),
-
-
-                };
-
-                context.ServiceRequests.Add(obj);
-                await context.SaveChangesAsync();
-                await context.Entry(obj).ReloadAsync();
-
-                //CREATE THE INVOICE
-                var serviceRequest = obj;
-
-                var serviceProvider = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid.ToString() == serviceRequest.PhysicianId);
-                var customer = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
-
-                var invoiceNumber = context.GetNextInvoiceNumber().SingleOrDefault();
-                var invoiceDate = serviceRequest.AppointmentDate.Value;
-
-                var invoice = new Invoice();
-                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
-
-                // Create or update the invoice detail for the service request
-                InvoiceDetail invoiceDetail;
-
-                invoiceDetail = context.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
-                if (invoiceDetail == null)
-                {
-                    invoiceDetail = new InvoiceDetail();
-                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-                    invoice.InvoiceDetails.Add(invoiceDetail);
-                }
-                else
-                {
-                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                    var st = new Orvosi.Data.ServiceRequestTask();
+                    st.DependsOn = task.DependsOn;
+                    st.DueDateBase = task.DueDateBase;
+                    st.DueDateDiff = task.DueDateDiff;
+                    st.Guidance = task.Guidance;
+                    st.ObjectGuid = task.ObjectGuid;
+                    st.ResponsibleRoleId = task.ResponsibleRoleId;
+                    st.Sequence = task.Sequence;
+                    st.ShortName = task.ShortName;
+                    st.TaskId = task.Id;
+                    st.TaskName = task.Name;
+                    st.ModifiedDate = SystemTime.Now();
+                    st.ModifiedUser = User.Identity.Name;
+                    sr.ServiceRequestTasks.Add(st);
                 }
 
-                invoice.CalculateTotal();
-                context.Invoices.Add(invoice);
+                ctx.ServiceRequests.Add(sr);
+                await ctx.SaveChangesAsync();
 
-                var validationResults = context.GetValidationErrors();
-                if (validationResults.Count() > 0)
-                {
-                    foreach (var validationResult in validationResults)
-                    {
-                        foreach (var error in validationResult.ValidationErrors)
-                        {
-                            additionalErrors.Add(new ModelError(error.ErrorMessage));
-                        }
-                    }
-                }
-                else
-                {
-                    await context.SaveChangesAsync();
-                }
-
-                /*  TODO: Create the calendar event in the physician booking calendar.
-                    TITLE will equal the Calendar Title field.
-                    WHERE will be populated with the location address.
-                    DESCRIPTION will be populated with:
-                        Case Details: 
-                        https://orvosi.ca/servicerequest/details/[id]
-
-                        Case Folder:
-                        [Case Folder Name field]
-
-                    NOTE: Invitees will be set with the resources are assigned. Not now.
-
-                    TODO: Create the DropBox folder.
-                    TITLE will equal the Case Folder Name field.
-                    PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
-
-                    NOTE: Share permissions will be granted when the resources are assigned.
-                */
-
-                ///***********************************
-                //Dropbox
-                //***********************************/
-                //var dropbox = new OrvosiDropbox();
-                //var client = await dropbox.GetServiceAccountClientAsync();
-                //Metadata folder = null;
-                //List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
-                //try
-                //{
-
-                //    // Copy the case template folder
-                //    var destination = obj.DocumentFolderLink;
-                //    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-                //    // Share the folder
-                //    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
-                //    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-                //    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-
-                //    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
-                //    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-                //    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
-
-                //    // Get the folder
-                //    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
-
-                //    // Get the shared folder members
-                //    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
-
-                //}
-                //catch (Exception ex)
-                //{
-                //    additionalErrors.Add(new ModelError(ex.Message));
-                //}
-                // Create the calendar event
-
-                //// mark the first task as complete
-                //using (var db = new OrvosiEntities(User.Identity.Name))
-                //{
-                //    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
-                //    serviceRequestTask.CompletedDate = SystemTime.Now();
-                //    await db.SaveChangesAsync();
-                //}
-
-                //var model = new CreateSuccessViewModel()
-                //{
-                //    ServiceRequest = obj,
-                //    Folder = null,// folder,
-                //    Members = null, //members,
-                //    Invoice = invoice,
-                //    Errors = additionalErrors
-                //};
-                return RedirectToAction("Details", new { id = obj.Id });
+                return RedirectToAction("Details", new { id = sr.Id });
             }
+            return await Create(selectedAvailableDayId, selectedPhysicianId);
 
-            var vm = new CreateViewModel();
-            vm.AvailableDay = context.AvailableSlots.First(c => c.Id == sr.AvailableSlotId).AvailableDay;
-            vm.Physician = context.Physicians.SingleOrDefault(c => c.Id == sr.PhysicianId);
-            vm.ServiceRequest.AvailableSlotId = sr.AvailableSlotId;
-            vm.ServiceRequest.PhysicianId = sr.PhysicianId;
-            vm.ServiceRequest.PhysicianDisplayName = vm.Physician.DisplayName;
-            vm.ServiceRequest.AppointmentDate = sr.AppointmentDate;
+            ////CREATE THE INVOICE
+            //var serviceRequest = obj;
 
-            return View(vm);
+            //var serviceProvider = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.PhysicianId);
+            //var customer = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
+
+            //var invoiceNumber = context.GetNextInvoiceNumber().SingleOrDefault();
+            //var invoiceDate = serviceRequest.AppointmentDate.Value;
+
+            //var invoice = new Invoice();
+            //invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+
+            //// Create or update the invoice detail for the service request
+            //InvoiceDetail invoiceDetail;
+
+            //invoiceDetail = context.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+            //if (invoiceDetail == null)
+            //{
+            //    invoiceDetail = new InvoiceDetail();
+            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+            //    invoice.InvoiceDetails.Add(invoiceDetail);
+            //}
+            //else
+            //{
+            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+            //}
+
+            //invoice.CalculateTotal();
+            //context.Invoices.Add(invoice);
+
+            //var validationResults = context.GetValidationErrors();
+            //if (validationResults.Count() > 0)
+            //{
+            //    foreach (var validationResult in validationResults)
+            //    {
+            //        foreach (var error in validationResult.ValidationErrors)
+            //        {
+            //            additionalErrors.Add(new ModelError(error.ErrorMessage));
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    await context.SaveChangesAsync();
+            //}
+
+            /*  TODO: Create the calendar event in the physician booking calendar.
+                TITLE will equal the Calendar Title field.
+                WHERE will be populated with the location address.
+                DESCRIPTION will be populated with:
+                    Case Details: 
+                    https://orvosi.ca/servicerequest/details/[id]
+
+                    Case Folder:
+                    [Case Folder Name field]
+
+                NOTE: Invitees will be set with the resources are assigned. Not now.
+
+                TODO: Create the DropBox folder.
+                TITLE will equal the Case Folder Name field.
+                PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
+
+                NOTE: Share permissions will be granted when the resources are assigned.
+            */
+
+            ///***********************************
+            //Dropbox
+            //***********************************/
+            //var dropbox = new OrvosiDropbox();
+            //var client = await dropbox.GetServiceAccountClientAsync();
+            //Metadata folder = null;
+            //List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
+            //try
+            //{
+
+            //    // Copy the case template folder
+            //    var destination = obj.DocumentFolderLink;
+            //    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
+            //    // Share the folder
+            //    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
+            //    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+            //    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
+
+            //    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
+            //    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
+            //    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
+
+            //    // Get the folder
+            //    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
+
+            //    // Get the shared folder members
+            //    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    additionalErrors.Add(new ModelError(ex.Message));
+            //}
+            // Create the calendar event
+
+            //// mark the first task as complete
+            //using (var db = new OrvosiEntities(User.Identity.Name))
+            //{
+            //    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
+            //    serviceRequestTask.CompletedDate = SystemTime.Now();
+            //    await db.SaveChangesAsync();
+            //}
+
+            //var model = new CreateSuccessViewModel()
+            //{
+            //    ServiceRequest = obj,
+            //    Folder = null,// folder,
+            //    Members = null, //members,
+            //    Invoice = invoice,
+            //    Errors = additionalErrors
+            //};
+
         }
 
         [HttpGet]
@@ -451,28 +472,68 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public ActionResult CreateAddOn() => View();
+        public ActionResult CreateAddOn()
+        {
+            var vm = new CreateViewModel();
+
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
+                });
+
+            vm.CompanySelectList = ctx.Companies
+                .Where(c => c.IsParent == false)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
+                });
+
+            vm.PhysicianSelectList = ctx.AspNetUsers
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Physician)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.GetDisplayName(),
+                    Value = c.Id.ToString()
+                });
+
+            vm.StaffSelectList = ctx.AspNetUsers
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.GetDisplayName(),
+                    Value = c.Id.ToString()
+                });
+
+            return View(vm);
+        }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         [HttpPost]
-        public async Task<ActionResult> CreateAddOn(ServiceRequest sr)
+        public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
             if (sr.ServiceId != Services.Addendum && sr.ServiceId != Services.PaperReview)
             {
                 this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
             }
 
-            var company = await context.Companies.SingleOrDefaultAsync(c => c.Id == sr.CompanyId);
+            var company = await ctx.Companies.FirstOrDefaultAsync(c => c.Id == sr.CompanyId);
 
-            var serviceCatalogue = context.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            var serviceCatalogues = context.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
-            var service = serviceCatalogue.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
-            if (service == null || !service.Price.HasValue)
+            var serviceCatalogue = serviceCatalogues.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
+            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
             }
 
-            var rates = context.GetServiceCatalogueRate(new Guid(sr.PhysicianId), sr.CompanyGuid).First();
+            var rates = context.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
@@ -480,35 +541,67 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var additionalErrors = new ModelErrorCollection();
-                var obj = new ServiceRequest()
+                sr.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+                sr.DueDate = sr.DueDate;
+                sr.CaseCoordinatorId = sr.CaseCoordinatorId;
+                sr.ClaimantName = sr.ClaimantName;
+                sr.CompanyReferenceId = sr.CompanyReferenceId;
+                sr.RequestedDate = sr.RequestedDate;
+                sr.CompanyId = sr.CompanyId;
+                sr.PhysicianId = sr.PhysicianId;
+                sr.ServiceId = serviceCatalogue.ServiceId;
+                sr.ServiceCataloguePrice = serviceCatalogue.Price;
+                sr.NoShowRate = rates.NoShowRate;
+                sr.LateCancellationRate = rates.LateCancellationRate;
+                sr.ModifiedUser = User.Identity.Name;
+                sr.ModifiedDate = SystemTime.Now();
+
+                var service = await ctx.Services.FindAsync(serviceCatalogue.ServiceId);
+                var tasks = ctx.Tasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
+
+                foreach (var task in tasks)
                 {
-                    ServiceCatalogueId = service.ServiceCatalogueId,
-                    DueDate = sr.DueDate,
-                    CaseCoordinatorId = sr.CaseCoordinatorId,
-                    ClaimantName = sr.ClaimantName,
-                    CompanyReferenceId = sr.CompanyReferenceId,
-                    RequestedDate = sr.RequestedDate,
-                    CompanyId = sr.CompanyId,
-                    PhysicianId = sr.PhysicianId,
-                    ServiceId = service.ServiceId,
-                    LocationId = (short?)service.LocationId,
-                    ServiceCataloguePrice = service.Price,
-                    NoShowRate = rates.NoShowRate,
-                    LateCancellationRate = rates.LateCancellationRate,
-                    ModifiedUser = User.Identity.Name,
-                    ServiceName = string.Empty, // this should not be needed but edmx is making it non nullable
-                    PhysicianUserName = string.Empty, // same as ServiceName
-                    ModifiedDate = SystemTime.Now()
-                };
+                    var st = new Orvosi.Data.ServiceRequestTask();
+                    st.DependsOn = task.DependsOn;
+                    st.DueDateBase = task.DueDateBase;
+                    st.DueDateDiff = task.DueDateDiff;
+                    st.Guidance = task.Guidance;
+                    st.ObjectGuid = task.ObjectGuid;
+                    st.ResponsibleRoleId = task.ResponsibleRoleId;
+                    st.AssignedTo = GetTaskAssignment(task.ResponsibleRoleId, sr.PhysicianId, sr.CaseCoordinatorId);
+                    st.Sequence = task.Sequence;
+                    st.ShortName = task.ShortName;
+                    st.TaskId = task.Id;
+                    st.TaskName = task.Name;
+                    st.ModifiedDate = SystemTime.Now();
+                    st.ModifiedUser = User.Identity.Name;
 
-                context.ServiceRequests.Add(obj);
-                await context.SaveChangesAsync();
+                    sr.ServiceRequestTasks.Add(st);
+                }
 
-                return RedirectToAction("Details", new { id = obj.Id });
+                ctx.ServiceRequests.Add(sr);
+                await ctx.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { id = sr.Id });
             }
 
-            return View(sr);
+            return CreateAddOn();
+        }
+
+        private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId)
+        {
+            if (responsibleRoleId == Roles.Physician)
+            {
+                return physicianId;
+            }
+            else if (responsibleRoleId == Roles.CaseCoordinator)
+            {
+                return caseCoordinatorId;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
@@ -519,7 +612,7 @@ namespace WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ServiceRequest serviceRequest = await context.ServiceRequests.FindAsync(id);
+            var serviceRequest = await ctx.ServiceRequests.FindAsync(id);
 
             if (serviceRequest == null)
             {
@@ -540,20 +633,29 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (context = new OrvosiEntities(User.Identity.Name))
+                // get the tracked object from the database
+                var obj = await ctx.ServiceRequests.FindAsync(sr.Id);
+
+                // update the resource assignments
+                obj.CaseCoordinatorId = sr.CaseCoordinatorId;
+                obj.DocumentReviewerId = sr.DocumentReviewerId;
+                obj.IntakeAssistantId = sr.IntakeAssistantId;
+
+                foreach (var task in obj.ServiceRequestTasks)
                 {
-                    // get the tracked object from the database
-                    var obj = await context.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
-
-                    // update the resource assignments
-                    obj.CaseCoordinatorId = sr.CaseCoordinatorId;
-                    obj.DocumentReviewerId = sr.DocumentReviewerId;
-                    obj.IntakeAssistantId = sr.IntakeAssistantId;
-
-                    await context.SaveChangesAsync();
-
-                    return RedirectToAction("Details", new { id = sr.Id });
+                    if (task.ResponsibleRoleId == Roles.CaseCoordinator)
+                        task.AssignedTo = obj.CaseCoordinatorId;
+                    else if (task.ResponsibleRoleId == Roles.IntakeAssistant)
+                        task.AssignedTo = obj.IntakeAssistantId;
+                    else if (task.ResponsibleRoleId == Roles.DocumentReviewer)
+                        task.AssignedTo = obj.DocumentReviewerId;
+                    else if (task.ResponsibleRoleId == Roles.Physician)
+                        task.AssignedTo = obj.PhysicianId;
                 }
+
+                await ctx.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { id = obj.Id });
             }
             return View(sr);
         }
@@ -721,29 +823,7 @@ namespace WebApp.Controllers
 
             return Redirect(Request.UrlReferrer.ToString());
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> MarkAsComplete(int? id, decimal? hours, string notes)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(id);
-            if (serviceRequestTask == null)
-            {
-                return HttpNotFound();
-            }
-            serviceRequestTask.CompletedDate = DateTime.UtcNow;
-            serviceRequestTask.ActualHours = hours;
-            serviceRequestTask.Notes = notes;
-            serviceRequestTask.ModifiedDate = DateTime.UtcNow;
-            serviceRequestTask.ModifiedUser = User.Identity.Name;
-            await context.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ToggleNoShow(int? id)
@@ -781,48 +861,48 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Staff, Super Admin")]
-        public async Task<ActionResult> GetAvailability([Bind(Include = "PhysicianId, AppointmentDate")] ServiceRequest serviceRequest)
-        {
-            var ad = await context.AvailableDays
-                .SingleOrDefaultAsync(c => c.PhysicianId == serviceRequest.PhysicianId && c.Day == serviceRequest.AppointmentDate);
+        //[HttpPost]
+        //[Authorize(Roles = "Staff, Super Admin")]
+        //public async Task<ActionResult> GetAvailability([Bind(Include = "PhysicianId, AppointmentDate")] ServiceRequest serviceRequest)
+        //{
+        //    var ad = await context.AvailableDays
+        //        .SingleOrDefaultAsync(c => c.PhysicianId == serviceRequest.PhysicianId && c.Day == serviceRequest.AppointmentDate);
 
-            var p = await context.Physicians.SingleOrDefaultAsync(c => c.Id == serviceRequest.PhysicianId);
+        //    var p = await context.Physicians.SingleOrDefaultAsync(c => c.Id == serviceRequest.PhysicianId);
 
-            var vm = new CreateViewModel();
-            vm.ServiceRequest = serviceRequest;
-            vm.IsAvailableDaySelected = true;
+        //    var vm = new CreateViewModel();
+        //    vm.ServiceRequest = serviceRequest;
+        //    vm.IsAvailableDaySelected = true;
 
-            if (ad != null)
-            {
-                vm.AvailableDay = ad;
-                vm.IsAvailable = true;
+        //    if (ad != null)
+        //    {
+        //        vm.AvailableDay = ad;
+        //        vm.IsAvailable = true;
 
-                if (ad.LocationId != null)
-                {
-                    vm.ServiceRequest.LocationId = ad.LocationId;
-                    vm.ServiceRequest.LocationName = ad.LocationName;
-                }
+        //        if (ad.LocationId != null)
+        //        {
+        //            vm.ServiceRequest.LocationId = ad.LocationId;
+        //            vm.ServiceRequest.LocationName = ad.LocationName;
+        //        }
 
-                if (ad.IsPrebook)
-                {
-                    vm.ServiceRequest.CompanyId = ad.CompanyId;
-                    vm.ServiceRequest.CompanyName = ad.CompanyName;
-                }
-            }
-            else
-            {
-                vm.IsAvailable = false;
+        //        if (ad.IsPrebook)
+        //        {
+        //            vm.ServiceRequest.CompanyId = ad.CompanyId;
+        //            vm.ServiceRequest.CompanyName = ad.CompanyName;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        vm.IsAvailable = false;
 
-            }
-            // this will be null if they are not available
-            vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
+        //    }
+        //    // this will be null if they are not available
+        //    vm.ServiceRequest.PhysicianDisplayName = p.DisplayName;
 
-            await GetCreateDropdownlistData(vm.AvailableDay);
+        //    await GetCreateDropdownlistData(vm.AvailableDay);
 
-            return View("Create", vm);
-        }
+        //    return View("Create", vm);
+        //}
 
         #region Dropbox
 
@@ -904,7 +984,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> ShareDropboxFolderToMember(string folderId, string userId, short serviceRequestId)
+        public async Task<ActionResult> ShareDropboxFolderToMember(string folderId, Guid userId, short serviceRequestId)
         {
             var client = await dropbox.GetServiceAccountClientAsync();
 
@@ -928,7 +1008,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> UnshareDropboxFolderFromMember(string folderId, string userId, short serviceRequestId)
+        public async Task<ActionResult> UnshareDropboxFolderFromMember(string folderId, Guid userId, short serviceRequestId)
         {
             var client = await dropbox.GetServiceAccountClientAsync();
 
@@ -1024,14 +1104,14 @@ namespace WebApp.Controllers
 
         private async Task ApplyMemberChangesToDropbox(ServiceRequest request, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
         {
-            string[] resources = new string[3]
+            Guid?[] resources = new Guid?[3]
                     {
-                        request.CaseCoordinatorId.ToString(),
-                        request.DocumentReviewerId.ToString(),
-                        request.IntakeAssistantId.ToString()
+                        request.CaseCoordinatorId,
+                        request.DocumentReviewerId,
+                        request.IntakeAssistantId
                     };
 
-            var list = resources.Where(r => !string.IsNullOrEmpty(r)).Distinct().ToList();
+            var list = resources.Where(r => r.HasValue).Distinct().ToList();
             var users = context.Users.Where(c => list.Contains(c.Id)).ToList();
 
             var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
@@ -1109,7 +1189,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, string UserId)
+        public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
             using (var db = new OrvosiEntities())
             {
@@ -1153,7 +1233,7 @@ namespace WebApp.Controllers
             }
         }
 
-        public ActionResult AcceptBoxFolder(int ServiceRequestId, string UserId, string CollaborationId)
+        public ActionResult AcceptBoxFolder(int ServiceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
             using (var db = new OrvosiEntities())

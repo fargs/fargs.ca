@@ -14,7 +14,7 @@ namespace WebApp.Areas.Admin.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // GET: Admin/Availability
-        public ActionResult Index(string physicianId)
+        public ActionResult Index(Guid physicianId)
         {
             var physician = db.Physicians.Single(u => u.Id == physicianId);
             if (physician == null)

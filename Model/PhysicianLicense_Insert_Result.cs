@@ -14,7 +14,7 @@ namespace Model
     public partial class PhysicianLicense_Insert_Result
     {
         public short Id { get; set; }
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public string CollegeName { get; set; }
         public string LongName { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }

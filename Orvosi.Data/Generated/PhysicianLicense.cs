@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class PhysicianLicense
     {
         public short Id { get; set; } // Id (Primary key)
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid PhysicianId { get; set; } // PhysicianId
         public string CollegeName { get; set; } // CollegeName (length: 128)
         public string LongName { get; set; } // LongName (length: 2000)
         public System.DateTime? ExpiryDate { get; set; } // ExpiryDate

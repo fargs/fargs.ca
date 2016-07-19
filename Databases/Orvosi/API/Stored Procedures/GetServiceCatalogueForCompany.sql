@@ -1,7 +1,7 @@
 ﻿
 
 CREATE PROC [API].[GetServiceCatalogueForCompany]
-	@PhysicianId NVARCHAR(128),
+	@PhysicianId uniqueidentifier,
 	@CompanyId SMALLINT
 AS
 

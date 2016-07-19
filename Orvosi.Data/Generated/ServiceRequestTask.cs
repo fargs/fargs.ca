@@ -22,10 +22,10 @@ namespace Orvosi.Data
         public int ServiceRequestId { get; set; } // ServiceRequestId
         public short? TaskId { get; set; } // TaskId
         public string TaskName { get; set; } // TaskName (length: 128)
-        public string ResponsibleRoleId { get; set; } // ResponsibleRoleId (length: 128)
+        public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
         public string ResponsibleRoleName { get; set; } // ResponsibleRoleName (length: 128)
         public short? Sequence { get; set; } // Sequence
-        public string AssignedTo { get; set; } // AssignedTo (length: 128)
+        public System.Guid? AssignedTo { get; set; } // AssignedTo
         public bool IsBillable { get; set; } // IsBillable
         public decimal? HourlyRate { get; set; } // HourlyRate
         public decimal? EstimatedHours { get; set; } // EstimatedHours
@@ -44,7 +44,7 @@ namespace Orvosi.Data
         public short? DueDateDiff { get; set; } // DueDateDiff
         public string ShortName { get; set; } // ShortName (length: 50)
         public bool IsCriticalPath { get; set; } // IsCriticalPath
-        public int IsDependentOnExamDate { get; private set; } // IsDependentOnExamDate
+        public bool? IsDependentOnExamDate { get; private set; } // IsDependentOnExamDate
 
         // Foreign keys
         public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceRequestTask_AspNetUsers

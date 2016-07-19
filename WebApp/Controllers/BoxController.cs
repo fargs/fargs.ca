@@ -3,6 +3,7 @@ using Box.V2.JWTAuth;
 using Box.V2.Models;
 using Model;
 using Model.Enums;
+using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,23 +16,22 @@ namespace WebApp.Controllers
 {
     public class BoxController : Controller
     {
+        private OrvosiDbContext context = new OrvosiDbContext();
         [ChildActionOnly]
         public ActionResult _BoxIntegration(BoxFolder folder) => PartialView(folder);
 
         public ActionResult Users()
         {
-            using (var db = new OrvosiEntities(User.Identity.Name))
-            {
                 var box = new BoxManager();
-                var users = box.GetUsers();
-                foreach (var item in users.Entries)
+                var boxUsers = box.GetUsers();
+                var users = context.AspNetUsers.Where(u => boxUsers.Entries.Select(bu => bu.Login).Contains(u.Email));
+                foreach (var user in users)
                 {
-                    var user = db.Profiles.Single(u => u.Email == item.Login);
-                    user.BoxUserId = item.Id;
+                    var boxUser = boxUsers.Entries.First(bu => bu.Login == user.Email);
+                    user.BoxUserId = boxUser.Id;
                 }
-                db.SaveChanges();
+                context.SaveChanges();
                 return View(users);
-            }
         }
 
         public ActionResult LogInAs(string id)

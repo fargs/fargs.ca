@@ -22,7 +22,7 @@ namespace Orvosi.Data
         public string Name { get; set; } // Name (length: 128)
         public string Code { get; set; } // Code (length: 50)
         public bool IsParent { get; set; } // IsParent
-        public int? ParentId { get; set; } // ParentId
+        public short? ParentId { get; set; } // ParentId
         public string LogoCssClass { get; set; } // LogoCssClass (length: 50)
         public string BillingEmail { get; set; } // BillingEmail (length: 128)
         public string ReportsEmail { get; set; } // ReportsEmail (length: 128)
@@ -32,7 +32,11 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Company
+        public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_Company
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Company
+
+        // Foreign keys
+        public virtual Company Parent { get; set; } // FK_Company_Company
 
         public Company()
         {
@@ -41,6 +45,7 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             AvailableDays = new System.Collections.Generic.List<AvailableDay>();
+            Companies = new System.Collections.Generic.List<Company>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

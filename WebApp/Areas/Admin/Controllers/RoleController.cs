@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity.Owin;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
 using WebApp.Areas.Admin.ViewModels.Role;
+using WebApp.Models;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -67,21 +68,21 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Role
         public ActionResult Index()
         {
-            var vm = new IndexViewModel()
+            var vm = new Areas.Admin.ViewModels.Role.IndexViewModel()
             {
                 Roles = GetList()
             };
             return View(vm);
         }
 
-        public async Task<ActionResult> Remove(string id)
+        public async Task<ActionResult> Remove(Guid id)
         {
             var obj = await this.RoleManager.FindByIdAsync(id);
             var result = await this.RoleManager.DeleteAsync(obj);
             return Json(id, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> Update(string id, string name)
+        public async Task<ActionResult> Update(Guid id, string name)
         {
             var obj = await this.RoleManager.FindByIdAsync(id);
             obj.Name = name;
@@ -97,7 +98,7 @@ namespace WebApp.Areas.Admin.Controllers
 
         public async Task<ActionResult> Insert(string name)
         {
-            var obj = new IdentityRole() { Name = name };
+            var obj = new ApplicationRole() { Name = name };
             var result = await this.RoleManager.CreateAsync(obj);
             var list = GetList();
             var vm = new
@@ -109,14 +110,14 @@ namespace WebApp.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> AssignUsers(string id)
+        public async Task<ActionResult> AssignUsers(Guid id)
         {
             var vm = await GetAssignUsersViewModel(id);
             return View(vm);
         }
 
         [HttpPost]
-        public async Task<PartialViewResult> AssignUser (string roleID, string userID, bool isAssigned)
+        public async Task<PartialViewResult> AssignUser (Guid roleID, Guid userID, bool isAssigned)
         {
             var role = await this.RoleManager.FindByIdAsync(roleID);
             var userRole = role.Users.SingleOrDefault(c => c.RoleId == roleID && c.UserId == userID);
@@ -127,7 +128,7 @@ namespace WebApp.Areas.Admin.Controllers
                 {
                     throw new Exception("User role assignment being added already exists.");
                 }
-                userRole = new IdentityUserRole() { UserId = userID, RoleId = roleID };
+                userRole = new ApplicationUserRole() { UserId = userID, RoleId = roleID };
                 role.Users.Add(userRole);
             }
             else if (!isAssigned)
@@ -160,7 +161,7 @@ namespace WebApp.Areas.Admin.Controllers
             return list;
         }
 
-        private async Task<AssignUsersViewModel> GetAssignUsersViewModel(string roleID)
+        private async Task<AssignUsersViewModel> GetAssignUsersViewModel(Guid roleID)
         {
             var vm = new AssignUsersViewModel();
 

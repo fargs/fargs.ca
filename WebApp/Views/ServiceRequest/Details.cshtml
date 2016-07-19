@@ -1,5 +1,6 @@
 ﻿@using WebApp.Library.Extensions.Model
-@using e = Model.Enums
+@using WebApp.Library;
+@using e = Orvosi.Shared.Enums
 @using Box.V2.Models
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
@@ -16,22 +17,20 @@
                 {
                     <ul class="dropdown-menu">
                         <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                        @if (Model.ServiceRequest.Service.ServiceCategory.Id != e.ServiceCategories.AddOn)
+                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
+                        @if (Model.ServiceRequest.CanBeRescheduled(SystemTime.Now()))
                         {
                             <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
                         }
-                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
-                        @if (Model.ServiceRequest.ServiceStatusId() != e.ServiceStatus.NoShow)
+
+                        @if (Model.ServiceRequest.CanBeUncancelled(SystemTime.Now()))
                         {
                             <li role="separator" class="divider"></li>
-                            if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-                            {
-                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
-                            }
-                            else
-                            {
-                                <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
-                            }
+                            <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
+                        }
+                        else if (Model.ServiceRequest.CanBeCancelled(SystemTime.Now()))
+                        {
+                            <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
                         }
                     </ul>
                 }
@@ -47,40 +46,43 @@
 
 <div class="row">
     <div class="col-sm-3">
-        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.PhysicianColorCode">@Model.ServiceRequest.PhysicianInitials </span> @Model.ServiceRequest.PhysicianDisplayName</h4>
+        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.Physician.AspNetUser.ColorCode">@Model.ServiceRequest.Physician.AspNetUser.GetInitials() </span> @Model.ServiceRequest.Physician.AspNetUser.GetDisplayName()</h4>
         <hr />
         <h3>@Model.ServiceRequest.ClaimantName</h3>
         <p class="small text-muted">@Model.ServiceRequest.Service.Name, @Model.ServiceRequest.Company.Name</p>
-        @if (Model.ServiceRequest.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
+        @if (Model.ServiceRequest.IsClosed())
         {
             <span class="label label-danger">
-                @Model.ServiceRequest.ServiceRequestStatusText
+                Closed
             </span>
         }
-        @if (Model.ServiceRequest.Service.ServiceCategory.Id != e.ServiceCategories.AddOn)
+        @if (Model.ServiceRequest.Service.HasAppointment())
         {
             <div class="form-group">
-                <label class="control-label">Exam</label>
+                <label class="control-label">Appointment</label>
                 <p class="form-control-static">
                     @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")
                     <br />
                     <strong><small class="text-muted">@Model.ServiceRequest.Address.Name</small></strong><br />
-                    <small>@Model.ServiceRequest.Address.City, @Model.ServiceRequest.Address.Province.ProvinceCode</small>
+                    <small><mark>@Model.ServiceRequest.Address.City</mark>, @Model.ServiceRequest.Address.Province.ProvinceCode</small>
 
                 </p>
             </div>
         }
-        <div class="form-group">
-            <label class="control-label">Report Due</label>
-            @if (Model.ServiceRequest.DueDate.HasValue)
-            {
-                <p class="form-control-static">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
-            }
-            else
-            {
-                <p class="form-control-static">Not Set</p>
-            }
-        </div>
+        @if (Model.ServiceRequest.Service.HasReportDeliverable())
+        {
+            <div class="form-group">
+                <label class="control-label">Report</label>
+                @if (Model.ServiceRequest.DueDate.HasValue)
+                {
+                    <p class="form-control-static">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
+                }
+                else
+                {
+                    <p class="form-control-static">Not Set</p>
+                }
+            </div>
+        }
 
         <div class="form-group">
             <label class="control-label">Assignments</label>
@@ -91,12 +93,7 @@
 
         <div class="row">
             <div class="col-md-12">
-                @if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.Cancellation || Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.LateCancellation)
-                {
-                    <span class="alert alert-danger"><i class="glyphicon glyphicon-info-sign"></i> This case was a <strong>@(Model.ServiceRequest.IsLateCancellation ? "Late " : "")Cancellation</strong></span>
-                    @Html.ActionLink("Undo", "UndoCancel", new { id = Model.ServiceRequest.Id })
-                }
-                else if (Model.ServiceRequest.ServiceStatusId == e.ServiceStatus.NoShow)
+                @if (Model.ServiceRequest.CanNoShowBeUndone(SystemTime.Now()))
                 {
                     <form action="~/ServiceRequest/ToggleNoShow" method="post">
                         @Html.AntiForgeryToken()
@@ -105,7 +102,7 @@
                         <span><button class="btn btn-link">Undo</button></span>
                     </form>
                 }
-                else
+                else if (Model.ServiceRequest.CanBeNoShow(SystemTime.Now()))
                 {
                     <form action="~/ServiceRequest/ToggleNoShow" method="post">
                         @Html.AntiForgeryToken()
@@ -119,22 +116,33 @@
     </div>
     <div class="col-sm-5">
         <div class="panel panel-success">
-            <div class="panel-heading"><strong>My Tasks</strong></div>
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, collapsed = true })
+            <div class="panel-heading">
+                <strong>My Tasks</strong>
+                <div class="pull-right">
+                    <form action="~/ServiceRequestTask/MarkAllComplete" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
+                        <input type="submit" value="Mark All Complete" class="btn btn-xs btn-primary" />
+                    </form>
+                </div>
+            </div>
+                   @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequest = Model.ServiceRequest, currentUser = Model.User, collapsed = true })
+   
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading"><a href="#AllTasks" data-toggle="collapse">All Tasks</a></div>
-            <div id="AllTasks" class="panel-collapse collapse">
-                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, myTasksOnly = false, collapsed = true })
+            <div class="panel-heading">
+                <a href="#AllTasks" data-toggle="collapse">All Tasks</a>
+                @if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.CaseCoordinator || Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
+                {
+                    <div class="pull-right">
+                        @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
+                    </div>
+                }
+            </div>
+            <div id="AllTasks" class="panel-collapse">
+                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequest = Model.ServiceRequest, currentUser = Model.User, myTasksOnly = false, collapsed = true })
             </div>
         </div>
-        @if (Model.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
-        {
-            <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
-                @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                <input type="submit" value="Add Physician Task - Respond To QA Comments" class="btn btn-primary" />
-            </form>
-        }
     </div>
     <div class="col-sm-4">
         @if (Model.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
@@ -144,7 +152,14 @@
                     Box Integration
                 </div>
                 <div class="panel-body">
-                    @if (Model.BoxFolder == null)
+                    @if (Model.ServiceRequest.BoxCaseFolderId != null)
+                    {
+                        <div class="alert alert-success">
+                            Box folder has been created<br />
+                        </div>
+                        <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
+                    }
+                    else
                     {
                         <div>
                             <form action="~/ServiceRequest/CreateBoxCaseFolder?ServiceRequestId=@Model.ServiceRequest.Id" method="post">
@@ -152,295 +167,54 @@
                             </form>
                         </div>
                     }
-                    else
-                    {
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <small><strong>@Model.BoxFolder.Name</strong></small>
-                            </div>
-                        </div>
-                        foreach (var item in Model.Resources)
-                        {
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    <span title="@string.Concat(item.ResourceFromTask.DisplayName, " - ", string.Join(" & ", item.ResourceFromTask.Roles.Split('|')))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.ResourceFromTask.ColorCode;">@item.ResourceFromTask.Initials</span>
-                                    @if (item.BoxFolder == null)
-                                    {
-                                        <form action="~/ServiceRequest/ShareBoxFolder" method="post">
-                                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                            @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                            @Html.Hidden("UserId", item.ResourceFromTask.Id)
-                                            &nbsp;
-                                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                                        </form>
-                                    }
-                                    else if (item.BoxFolder != null && item.ResourceFromTask.BoxCollaborationId != null)
-                                    {
-                                        var collaboration = Model.BoxFolderCollaborations.Entries.SingleOrDefault(c => c.Id == item.ResourceFromTask.BoxCollaborationId);
-                                        <form action="~/ServiceRequest/UnshareBoxFolder" method="post" class="pull-left">
-                                            @Html.Hidden("CollaborationId", item.ResourceFromTask.BoxCollaborationId)
-                                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                            &nbsp;
-                                            <button type="submit" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
-                                        </form>
-                                        if (item.BoxFolder.SyncState == "synced")
-                                        {
-                                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
-                                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                                @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                                &nbsp;
-                                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
-                                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                                @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                                &nbsp;
-                                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
-                                            </form>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="small">&nbsp;Already has higher level access.</span>
-                                        if (item.BoxFolder.SyncState == "synced")
-                                        {
-                                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
-                                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                                @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                                &nbsp;
-                                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
-                                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                                @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                                &nbsp;
-                                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
-                                            </form>
-                                        }
-                                    }
-                                </div>
-                            </div>
-
-                        }
-                    }
                 </div>
             </div>
-            if (Model.DropboxFolder != null)
+
+            if (Model.ServiceRequest.Service.HasAppointment())
             {
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Dropbox Integration
+                        Google Calendar Integration
                     </div>
                     <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <small><strong>@Model.DropboxFolder.AsFolder.Name</strong></small>
-                            </div>
-                        </div>
-                        @if (Model.DropboxFolder.AsFolder.SharingInfo == null)
-                        {
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    <form action="~/ServiceRequest/ShareDropboxFolder" method="post">
-                                        @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                        <button class="btn btn-sm btn-primary">Share</button>
-                                    </form>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    <form action="~/ServiceRequest/UnshareDropboxFolder" method="post">
-                                        @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                        <button title="This is equivalent to unsharing the entire folder on dropbox." class="btn btn-sm btn-primary">Unshare Folder</button>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    @if (Model.ServiceRequest.PhysicianId != null)
-                                    {
-                                <span title="@Model.ServiceRequest.PhysicianDisplayName - Physician" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.PhysicianColorCode;">@Model.ServiceRequest.PhysicianInitials</span>
-                                        if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.PhysicianUserName == null ? string.Empty : Model.ServiceRequest.PhysicianUserName))))
-                                        {
-                                            var physician = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.PhysicianUserName == null ? string.Empty : Model.ServiceRequest.PhysicianUserName)));
-                                <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.PhysicianId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
-                                </form>
-                                <span>@physician.AsMemberInfo.Value.Profile.Name.DisplayName</span>
-                                <em class="text-muted"> Physician</em>
-                                        }
-                                        else
-                                        {
-                                <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.PhysicianId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                                </form>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    @if (Model.ServiceRequest.IntakeAssistantId != null)
-                                    {
-                                <span title="@Model.ServiceRequest.IntakeAssistantName - Intake Assistant" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.IntakeAssistantColorCode;">@Model.ServiceRequest.IntakeAssistantInitials</span>
-                                        if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.IntakeAssistantUserName == null ? string.Empty : Model.ServiceRequest.IntakeAssistantUserName))))
-                                        {
-                                            var intake = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.IntakeAssistantUserName == null ? string.Empty : Model.ServiceRequest.IntakeAssistantUserName)));
-                                <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.IntakeAssistantId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
-                                </form>
-                                <span>@intake.AsMemberInfo.Value.Profile.Name.DisplayName</span>
-                                <em class="text-muted"> Intake Assistant</em>
-                                        }
-                                        else
-                                        {
-                                <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.IntakeAssistantId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                                </form>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    @if (Model.ServiceRequest.DocumentReviewerId != null)
-                                    {
-                                <span title="@Model.ServiceRequest.DocumentReviewerName - Document Reviewer" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.DocumentReviewerColorCode;">@Model.ServiceRequest.DocumentReviewerInitials</span>
-                                        if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.DocumentReviewerUserName == null ? string.Empty : Model.ServiceRequest.DocumentReviewerUserName))))
-                                        {
-                                            var member = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.DocumentReviewerUserName == null ? string.Empty : Model.ServiceRequest.DocumentReviewerUserName)));
-                                <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.DocumentReviewerId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
-                                </form>
-                                <span>@member.AsMemberInfo.Value.Profile.Name.DisplayName</span>
-                                <em class="text-muted"> Document Reviewer</em>
-                                        }
-                                        else
-                                        {
-                                <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.DocumentReviewerId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                                </form>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="row top-buffer">
-                                <div class="col-sm-12">
-                                    @if (Model.ServiceRequest.CaseCoordinatorId != null)
-                                    {
-                                <span title="@Model.ServiceRequest.CaseCoordinatorName - Case Coordinator" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @Model.ServiceRequest.CaseCoordinatorColorCode;">@Model.ServiceRequest.CaseCoordinatorInitials</span>
-                                        if (Model.DropboxFolderMembers != null && Model.DropboxFolderMembers.Exists(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.CaseCoordinatorUserName == null ? string.Empty : Model.ServiceRequest.CaseCoordinatorUserName))))
-                                        {
-                                            var member = Model.DropboxFolderMembers.Single(c => c.AsMemberInfo.Value.Profile.Email.StartsWith((Model.ServiceRequest.CaseCoordinatorUserName == null ? string.Empty : Model.ServiceRequest.CaseCoordinatorUserName)));
-                                <form action="~/ServiceRequest/UnshareDropboxFolderFromMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.CaseCoordinatorId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Unshare</button>
-                                </form>
-                                <span>@member.AsMemberInfo.Value.Profile.Name.DisplayName</span>
-                                <em class="text-muted"> Case Coordinator</em>
-                                        }
-                                        else
-                                        {
-                                <form action="~/ServiceRequest/ShareDropboxFolderToMember" method="post" class="pull-left">
-                                    @Html.Hidden("folderId", Model.DropboxFolder.AsFolder.Id)
-                                    @Html.Hidden("userId", Model.ServiceRequest.CaseCoordinatorId)
-                                    @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                                    <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                                </form>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        }
+                        <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
+                        <strong>Google Event Data</strong>
+                        <div>@Model.ServiceRequest.GetCalendarEventTitle()</div>
+                        <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                        <div>@Model.ServiceRequest.StartTime</div>
+                        <div>@Model.ServiceRequest.EndTime</div>
                     </div>
                 </div>
             }
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Google Calendar Integration
-                </div>
-                <div class="panel-body">
-                    <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
-                    <strong>Google Event Data</strong>
-                    <div>@Model.ServiceRequest.CalendarEventTitle</div>
-                    @*<div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>*@
-                    <div>@Model.ServiceRequest.StartTime</div>
-                    <div>@Model.ServiceRequest.EndTime</div>
-                    @*<dt>Effective Price</dt>
-                        <dd>
-                            <a data-toggle="popover" data-trigger="click" title="Price Details" data-placement="left" data-content="@Html.Partial("_PriceDetails", Model)">
-                                <strong class="text-success">@Model.EffectivePrice</strong>
-                            </a>
-                        </dd>*@
-                </div>
-            </div>
             if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
-            { 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Invoice
-                </div>
-                <div class="panel-body">
-                    @if (!Model.ServiceRequest.InvoiceDetails.Any())
-                    {
-                        var newInvoiceFormOptions = new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "create-invoice-form" };
-                        <div class="panel-body">
-                            @using (Ajax.BeginForm("Create", "Invoice", new { }, newInvoiceFormOptions, new { id = "create-invoice-form" }))
-                            {
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                                <button type="submit" class="btn btn-primary">Create Invoice</button>
-                            }
+            {
+                <form action="~/Invoice/Create" method="post">
+                    @Html.Hidden("Id", Model.ServiceRequest.Id)
+                    <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
+                </form>
+                foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Invoice @invoiceDetail.Invoice.InvoiceNumber
+                            <div class="pull-right">
+                                @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
+                            </div>
                         </div>
-                    }
-                    else
-                    {
-                        @Html.Action("ReadOnly", "Invoice", Model.ServiceRequest.InvoiceDetails.First().Invoice)
-                    }
-                </div>
-            </div>
+                        <div class="panel-body">
+                            @Html.Action("ReadOnly", "Invoice", invoiceDetail.Invoice)
+                        </div>
+                    </div>
+                }
             }
         }
     </div>
 
+            </div>
 
-    @section Scripts {
-        <script type="text/javascript">
-            $(function () {
-            })
-        </script>
-    }
+            @section Scripts {
+                <script type="text/javascript">
+                    $(function () {
+                    })
+                </script>
+            }

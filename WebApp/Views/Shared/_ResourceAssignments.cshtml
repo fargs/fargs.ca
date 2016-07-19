@@ -1,0 +1,29 @@
+﻿@using Orvosi.Data
+@using WebApp.Library.Extensions
+@model ServiceRequest
+
+@if (Model.PhysicianId != User.Identity.GetGuidUserId())
+{
+    <span title="@Model.Physician.AspNetUser.GetDisplayName() - Physician" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.Physician.AspNetUser.ColorCode;">@Model.Physician.AspNetUser.GetInitials()</span>
+}
+
+@if (Model.CaseCoordinatorId.HasValue && Model.CaseCoordinatorId != User.Identity.GetGuidUserId())
+{
+    <span title="@Model.CaseCoordinator.GetDisplayName() - Case Coordinator" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.CaseCoordinator.ColorCode;">@Model.CaseCoordinator.GetInitials()</span>
+}
+
+@if (Model.IntakeAssistantId == Model.DocumentReviewerId && Model.IntakeAssistantId != User.Identity.GetGuidUserId())
+{
+    <span title="@Model.IntakeAssistant.GetDisplayName() - Intake Assistant & Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.IntakeAssistant.ColorCode;">@Model.IntakeAssistant.GetInitials()</span>
+}
+else
+{
+    if (Model.IntakeAssistantId.HasValue && Model.IntakeAssistantId != User.Identity.GetGuidUserId())
+    {
+        <span title="@Model.IntakeAssistant.GetDisplayName() - Intake Assistant" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.IntakeAssistant.ColorCode;">@Model.IntakeAssistant.GetInitials()</span>
+    }
+    if (Model.DocumentReviewerId.HasValue && Model.DocumentReviewerId != User.Identity.GetGuidUserId())
+    {
+        <span title="@Model.DocumentReviewer.GetDisplayName() - Document Reviewer" class="btn btn-circle disabled" style="cursor: default; color: white; background-color: @Model.DocumentReviewer.ColorCode;">@Model.DocumentReviewer.GetInitials()</span>
+    }
+}

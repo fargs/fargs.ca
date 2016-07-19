@@ -25,14 +25,12 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Service> Services { get; set; } // Service.FK_Service_ServiceCategory
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate.FK_ServiceRequestTemplate_ServiceCategory
 
         public ServiceCategory()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             Services = new System.Collections.Generic.List<Service>();
-            ServiceRequestTemplates = new System.Collections.Generic.List<ServiceRequestTemplate>();
             InitializePartial();
         }
 

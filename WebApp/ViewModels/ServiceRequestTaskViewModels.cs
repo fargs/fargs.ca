@@ -14,6 +14,33 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public FilterArgs FilterArgs { get; set; }
     }
 
+    public class ServiceRequestTaskViewModel
+    {
+        public List<ServiceRequest> ServiceRequests { get; set; }
+
+        public class ServiceRequest
+        {
+            public int Id { get; set; }
+            public DateTime DueDate { get; set; }
+            public string ClaimantName { get; set; }
+            public List<ServiceRequestTask> ServiceRequestTasks { get; set; }
+        }
+
+        public class ServiceRequestTask
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string ShortName { get; set; }
+            public int Status { get; set; }
+        }
+    }
+
+    public class AssessmentTaskViewModel : ServiceRequestTaskViewModel
+    {
+        public DateTime AppointmentDate { get; set; }
+        public TimeSpan StartTime { get; set; }
+    }
+
 
     public class TaskViewModel
     {
@@ -22,8 +49,8 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public short? TaskId { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
-        public string AssignedTo { get; set; }
-        public string AssignedToRoleId { get; set; }
+        public Guid? AssignedTo { get; set; }
+        public Guid? AssignedToRoleId { get; set; }
         public string Initials { get; set; }
         public DateTime? CompletedDate { get; set; }
         public bool IsObsolete { get; set; } = false;
@@ -92,8 +119,8 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         public string ShortName { get; set; }
         public byte StatusId { get; set; }
         public string StatusName { get; set; }
-        public string AssignedTo { get; set; }
-        public string AssignedToRoleId { get; set; }
+        public Guid? AssignedTo { get; set; }
+        public Guid? AssignedToRoleId { get; set; }
         public string Initials { get; set; }
         public string AssignedToDisplayName { get; internal set; }
         public string AssignedToColorCode { get; internal set; }

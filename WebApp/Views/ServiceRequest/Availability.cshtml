@@ -1,15 +1,15 @@
-﻿@using Model
-@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
+﻿@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
 
 @{
     ViewBag.Title = "Create Booking - Availability";
-    var db = new OrvosiEntities();
+    var db = new Orvosi.Data.OrvosiDbContext();
     ViewBag.Physicians = db.Physicians
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
+            Text = c.AspNetUser.GetDisplayName(),
             Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.PrimarySpecialtyName }
+            Group = new SelectListGroup() { Name = c.PhysicianSpeciality.Name }
         }).ToList();
 }
 

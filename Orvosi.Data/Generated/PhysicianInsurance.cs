@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class PhysicianInsurance
     {
         public short Id { get; set; } // Id (Primary key)
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid PhysicianId { get; set; } // PhysicianId
         public string Insurer { get; set; } // Insurer (length: 256)
         public string PolicyNumber { get; set; } // PolicyNumber (length: 128)
         public System.DateTime? ExpiryDate { get; set; } // ExpiryDate

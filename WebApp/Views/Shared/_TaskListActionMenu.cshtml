@@ -1,0 +1,16 @@
+﻿@using e = Orvosi.Shared.Enums
+@model int
+<div class="btn-group btn-group-xs">
+    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="glyphicon glyphicon-plus"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <li>
+            <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
+                @Html.Hidden("serviceRequestId", Model)
+                <input type="submit" value="Respond To QA Comments - Physician" class="btn btn-link" />
+            </form>
+        </li>
+    </ul>
+</div>
+

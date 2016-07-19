@@ -1,157 +1,169 @@
-﻿@using Model
-@using e = Model.Enums
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
-@{
-    var db = new OrvosiEntities();
-
-    ViewBag.Users = db.Users
-        .Select(c => new SelectListItem()
-        {
-            Text = c.DisplayName,
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.RoleName }
-        }).ToList();
-}
-
-@if (Model.User.RoleId == e.Roles.SuperAdmin)
+@if (User.Identity.IsAdmin())
 {
     <div class="row" style="margin-bottom:20px">
         <div class="col-md-12">
             <form action="~/Dashboard/Index/" method="get" class="form-inline">
                 <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.Users, "Value", "Text", "Group.Name", ViewBag.ServiceProviderId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                    @Html.DropDownList("ServiceProviderId", new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", Model.SelectedUserId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
             </form>
         </div>
     </div>
 }
 
-<div class="row">
-    <div class="col-md-4">
-        @Html.Action("MyTaskList", "ServiceRequestTask")
-    </div>
-    <div class="col-md-push-1 col-md-3">
-        <div class="thumbnail alert" style="border-bottom: 1px solid darkgray">
-            <div class="caption">
-                <div class="h1 text-center">@Model.ThisWeekTotal</div>
-                <div class="text-muted text-center">Exams <strong>THIS</strong> week</div>
-            </div>
-        </div>
-        @foreach (var item in Model.ThisWeekCards)
-            {
-            <div class="h2">@item.Summary.AppointmentDate.Value.ToString("dddd")<span class="lead"> @item.Summary.AppointmentDate.Value.ToString("MMM dd")</span></div>
-            <div class="panel @(item.Summary.TimelineId == e.Timeline.Present ? "panel-info" : item.Summary.TimelineId == e.Timeline.Past ? "panel-success" : "panel-default")">
-                <div class="panel-heading">
-                    <strong class="panel-title">@item.Summary.City</strong><span class="pull-right">@item.Summary.CompanyName</span>
-                </div>
-                <div class="panel-body" )>
-                    <div class="pull-left">
-                        <div>
-                            <small class="text-muted">@item.Summary.AddressName</small>
+    <div class="row">
+        <div class="col-md-12">
+            @*<div class="thumbnail alert">
+                        <div class="caption">
+                            <div class="h1 text-center">@(Model.PastAssessments.AssessmentCount)</div>
+                            <div class="text-muted text-center">Outstanding</div>
                         </div>
-                        @if (item.Summary.TimelineId == e.Timeline.Past)
-                        {
-                            <div class="glyphicon glyphicon-ok" style="font-size: 300%; padding-top: 10px"></div>
-                        }
-                        else
-                        {
-                            <div style="display: inline-block">
-                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.StartTime.Value).ToShortTimeString()</div>
-                                <div class="text-center">to</div>
-                                <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.EndTime.Value).ToShortTimeString()</div>
-                            </div>
-                        }
                     </div>
-                    <div class="pull-right">
-                        <a data-toggle="collapse" href="#@item.Summary.AppointmentDate.Value.Ticks" class="btn btn-sm btn-default" style="border: none; line-height: normal"><div style="font-size: 500%">@item.Summary.RequestCount</div><div class="lead">Exams</div></a>
-                    </div>
-                </div>
-
-                <div class="panel-body" style="padding-top: 0;">
-                    <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
-                        @foreach (var request in item.ServiceRequests)
-                        {
-                            <div class="row" style="padding-top: 15px;">
-                                <div class="col-md-12">
-                                    <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
-                                    <div class="pull-right">
-                                        @Html.Partial("_ResourceAssignments", request)
-                                    </div>
-                                    <div><strong>@request.ServiceName</strong></div>
-                                    <div>@request.ClaimantName</div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-    <div class="col-md-push-2 col-md-3">
-        <div class="thumbnail alert">
-            <div class="caption">
-                <div class="h1 text-center">@Model.NextWeekTotal</div>
-                <div class="text-muted text-center">Exams <strong>NEXT</strong> week</div>
-            </div>
-        </div>
-        @foreach (var item in Model.NextWeekCards)
-        {
-            <div class="h2">@item.Summary.AppointmentDate.Value.ToString("dddd")<span class="lead"> @item.Summary.AppointmentDate.Value.ToString("MMM dd")</span></div>
-            <div class="panel @(item.Summary.TimelineId == e.Timeline.Present ? "panel-info" : item.Summary.TimelineId == e.Timeline.Past ? "panel-success" : "panel-default")">
-                <div class="panel-heading">
-                    <strong class="panel-title">@item.Summary.City</strong><span class="pull-right">@item.Summary.CompanyName</span>
-                </div>
-                <div class="panel-body" )>
-                    <div class="pull-left">
-                        <div>
-                            <small class="text-muted">@item.Summary.AddressName</small>
+                    <ul class="nav nav-tabs nav-justified" role="tablist">
+                        <li role="presentation" class="active"><a href="#Exams" aria-controls="Exams" role="tab" data-toggle="tab">Exams <span class="badge">@Model.</span></a></li>
+                        <li role="presentation"><a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">ADD/PR <span class="badge">@Model.OpenAddOnCount</span></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active panel-body" id="Exams">
+                            @Html.Partial("_WeekFolder", Model.PastAssessments.WeekFolders)
                         </div>
-                        @if (item.Summary.TimelineId == e.Timeline.Past)
-                                {
-                                <div class="glyphicon glyphicon-ok" style="font-size: 300%; padding-top: 10px"></div>
-                                }
-                                else
-                                {
-                                <div style="display: inline-block">
-                                    <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.StartTime.Value).ToShortTimeString()</div>
-                                    <div class="text-center">to</div>
-                                    <div style="font-size: x-large">@item.Summary.AppointmentDate.Value.Add(item.Summary.EndTime.Value).ToShortTimeString()</div>
-                                </div>
-                                }
-                    </div>
-                    <div class="pull-right">
-                        <a data-toggle="collapse" href="#@item.Summary.AppointmentDate.Value.Ticks" class="btn btn-sm btn-default" style="border: none; line-height: normal"><div style="font-size: 500%">@item.Summary.RequestCount</div><div class="lead">Exams</div></a>
+                        <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
+                            Html.Partial("_TaskList_AddOn", Model.OpenAddOns)
+                        </div>
                     </div>
                 </div>
-
-                <div class="panel-body" style="padding-top: 0;">
-                    <div id="@item.Summary.AppointmentDate.Value.Ticks" class="collapse">
-                        @foreach (var request in item.ServiceRequests)
-                                {
-                                <div class="row" style="padding-top: 15px;">
-                                    <div class="col-md-12">
-                                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">@string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())</a>
-                                        <div class="pull-right">
-                                            @Html.Partial("_ResourceAssignments", request)
+                <div class="col-md-push-1 col-md-3">
+                    <div class="thumbnail alert" style="border-bottom: 1px solid darkgray">
+                        <div class="caption">
+                            <div class="h1 text-center">@Model.PresentAssessments.AssessmentCount</div>
+                            <div class="text-muted text-center">Exams <strong>THIS</strong> week</div>
+                        </div>
+                    </div>*@
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
+                        <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+                        <div class="text-muted text-center">Assessments</div>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
+                        <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+                        <div class="text-muted text-center">Addendums / Paper Reviews</div>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
+                    <div id="week-folders" class="panel-group">
+                        @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="Header-WeekFolder-@weekFolder.StartDate.Ticks">
+                                    <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#WeekFolder-@weekFolder.StartDate.Ticks">
+                                        <div class="panel-title">
+                                            <div class="row">
+                                                <span class="col-sm-3">
+                                                    @weekFolder.WeekFolderName
+                                                </span>
+                                                <span class="col-sm-3">
+                                                    @weekFolder.AssessmentCount <span class="small text-muted">Assessments</span>
+                                                </span>
+                                                <span class="col-sm-3">
+                                                    @weekFolder.ToDoCount <span class="small text-muted">To Do</span>
+                                                </span>
+                                                <span class="col-sm-3">
+                                                    @weekFolder.WaitingCount <span class="small text-muted">Waiting</span>
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div><strong>@request.ServiceName</strong></div>
-                                        <div>@request.ClaimantName</div>
+                                    </a>
+                                </div>
+                                <div id="WeekFolder-@weekFolder.StartDate.Ticks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            @foreach (var dayFolder in weekFolder.DayFolders)
+                                            {
+                                                <div class="col-sm-3">
+                                                    <strong>
+                                                        @dayFolder.Day.ToString("dddd")<span class="small"> @dayFolder.Day.ToString("MMM dd")</span>
+                                                    </strong>
+                                                    <div>
+                                                        @dayFolder.Address
+                                                    </div>
+                                                    <div class="small text-muted">
+                                                        @dayFolder.City
+                                                    </div>
+                                                    @*<h5><u>@dayFolder.ToDoCount To Do and @dayFolder.WaitingCount Waiting</u></h5>*@
+                                                    <hr />
+                                                    <div id="dayfolder-@dayFolder.Day.Ticks">
+                                                        @foreach (var assessment in dayFolder.Assessments)
+                                                        {
+                                                            <div style="padding-bottom:10px;">
+                                                                <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.StartTime.ToString(@"hh\:mm") - @assessment.ClaimantName</a>
+                                                                <div>
+                                                                    <a target="_blank" href="https://orvosi.app.box.com/files/0/f/@assessment.BoxCaseFolderId">Case Folder on Box</a>
+                                                                </div>
+                                                                <div>
+                                                                    @foreach (var person in assessment.People)
+                                                                    {
+                                                                        <a class="" data-toggle="popover" title="@person.DisplayName" data-container="body" data-placement="bottom" data-content="@Html.Partial("_Person", person)">
+                                                                            <span title="@person.DisplayName"
+                                                                                  class="btn btn-circle disabled"
+                                                                                  style="cursor: default; color: white; background-color: @person.ColorCode">
+                                                                                <span class="small">@person.Initials</span>
+                                                                            </span>
+                                                                        </a>
+                                                                    }
+                                                                    @foreach (var task in assessment.People.First(c => c.Id == Model.SelectedUserId).Tasks)
+                                                                    {
+                                                                        <form action="~/Dashboard/UpdateTaskStatus">
+                                                                            <div class="checkbox">
+                                                                                <label>
+                                                                                    <input type="checkbox"> @task.Name - @Html.Partial("_TaskStatusLabel", task.StatusId)
+                                                                                </label>
+                                                                            </div>
+                                                                        </form>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
-                                }
+                            </div>
+    
+                        }
                     </div>
                 </div>
+                <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
+                    <h1>Add Ons</h1>
+                </div>
             </div>
-        }
+        </div>
+        @*<div class="col-md-push-2 col-md-3">
+                <div class="thumbnail alert">
+                    <div class="caption">
+                        <div class="h1 text-center">Model.NextWeekTotal</div>
+                        <div class="text-muted text-center">Exams <strong>NEXT</strong> week</div>
+                    </div>
+                </div>
+                @foreach (var card in Model.OutstandingCards)//NextWeekCards)
+                {
+                    @Html.Partial("_DateCard", card)
+                }
+            </div>*@
     </div>
-</div>
 
 
-    @section scripts{
-        <script type="text/javascript">
-            $('.card-showitemslink').click(function (e) {
-                e.text = (e.text == 'Show Items' ? 'Hide Items' : 'Show Items');
-            });
-        </script>
+    @section Scripts{
+        @Scripts.Render("~/bundles/knockout")
+        @Html.Partial("Index_js", Model)
     }

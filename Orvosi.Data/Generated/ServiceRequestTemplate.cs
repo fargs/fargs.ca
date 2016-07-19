@@ -18,26 +18,19 @@ namespace Orvosi.Data
     public partial class ServiceRequestTemplate
     {
         public short Id { get; set; } // Id (Primary key)
-        public short? ServiceCatelogueId { get; set; } // ServiceCatelogueId
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
-        public short? ServiceCategoryId { get; set; } // ServiceCategoryId
-        public short? ServiceId { get; set; } // ServiceId
-        public short? CompanyId { get; set; } // CompanyId
-        public short? LocationId { get; set; } // LocationId
+        public string Name { get; set; } // Name (length: 128)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_ServiceRequestTemplate
-
-        // Foreign keys
-        public virtual Service Service { get; set; } // FK_ServiceRequestTemplate_Service
-        public virtual ServiceCategory ServiceCategory { get; set; } // FK_ServiceRequestTemplate_ServiceCategory
 
         public ServiceRequestTemplate()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            PhysicianServiceRequestTemplates = new System.Collections.Generic.List<PhysicianServiceRequestTemplate>();
             ServiceRequestTemplateTasks = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             InitializePartial();
         }

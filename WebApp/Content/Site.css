@@ -303,6 +303,16 @@ body {
     padding-left: 140px; /* Equal to width of new image */
 }
 
+.image-box {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wDEAAYGBgYHBgcICAcKCwoLCg8ODAwODxYQERAREBYiFRkVFRkVIh4kHhweJB42KiYmKjY+NDI0PkxERExfWl98fKcRAA0ADQANAA0ADgANAA4AEAAQAA4AFAAWABMAFgAUAB4AGwAZABkAGwAeAC0AIAAiACAAIgAgAC0ARAAqADIAKgAqADIAKgBEADwASQA7ADcAOwBJADwAbABVAEsASwBVAGwAfQBpAGMAaQB9AJcAhwCHAJcAvgC1AL4A+QD5AU7/wgARCAAiACIDASIAAhEBAxEB/8QAHAAAAQQDAQAAAAAAAAAAAAAABQEEBwgAAgYD/9oACAEBAAAAACY7EsDBolWdi4TMac/OtbRq+VpXjfE6z//EABcBAQEBAQAAAAAAAAAAAAAAAAUBAgP/2gAIAQIQAAAAX2Who6Xj/8QAFwEBAQEBAAAAAAAAAAAAAAAABAECBf/aAAgBAxAAAADjZYeK3Ff/xAAxEAACAQMBBQUGBwAAAAAAAAABAgMABAURBhIhVZQiJmF00RMVFjFRsxQlMjNxdbL/2gAIAQEAAT8AzOYy4zWUAyd4oW7lVVWZ1AVXIAABr3zl+a33USete+cvzS+6iT1o5nMc1vuok9awlzNNhcXLLIXd7SFnY/MkoCSaaxXI7V5W1LuutzeMCvE6x7zVPi8pbGBZ7C5jaZgsYZD2z9BU2KykDsk1jcIyxNKQyH9tOBb+BrUkU6QxTNG4jk3vZuRwfdOh0+ulbPH8gw/kYP8AAqDKxYzba+upmdUW+u0Z1GpTfLLvaeFYe/tMRb5CG52jimkvezDJbs8wgfRtZ5C2hVjWLvLLGQ20M+eglaG6N0xgdpUESoUMKFtN55S36a2oyNrfz2l5azKsL26otnwH4T2fZMYA4bp+YNbON3ew3kLf7YrPv3gzPn7j7hoTeNGXxppK2abu5hP6+3+2KvMDg57mWWbE2Ukj8WdoEZifEkV8N7O8lsOnj9K+G9neS2HTx+lHZrZ3kth08fpSIiIqIoVVACqBoABX/8QAHxEAAgIBBAMAAAAAAAAAAAAAAQIAEQMSEyExEEJR/9oACAECAQE/AE2qUELekSsZ6CwgWZtB1Xn1EXEFbVZuHswE0OZZ++P/xAAeEQABAwUBAQAAAAAAAAAAAAABAAIRAxASEzEhQf/aAAgBAwEBPwB2ySZMSpqDpKly2Fjj59KNUluOMCx6b//Z) no-repeat;
+    width: 20px; /* Width of new image */
+    height: 20px; /* Height of new image */
+    padding-left: 20px; /* Equal to width of new image */
+}
+
 .border-left-warning {
     border-left-width: 10px;
     border-left-style: solid;
@@ -381,6 +391,10 @@ body {
     height: 26px;
 }
 
+.dropdown-menu-large {
+    width: 300px !important;
+}
+
 .dropdown-menu .btn-sm:hover {
     text-decoration: none;
     background-color: #e8e8e8;
@@ -417,4 +431,8 @@ dd {
 .hr-smaller-margins {
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.alert-sm {
+    padding: 5px;
 }

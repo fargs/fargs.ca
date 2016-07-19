@@ -1,74 +1,65 @@
-﻿using Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using Dropbox.Api.Files;
-using Dropbox.Api.Team;
 using System.Web.Mvc;
 using Box.V2.Models;
-using System.Data.Entity.Core.Objects;
+using Orvosi.Data;
+using Model;
 
 namespace WebApp.ViewModels.ServiceRequestViewModels
-{
+{ 
+
     public class IndexViewModel
     {
         public User User { get; set; }
-        public List<ServiceRequest> ServiceRequests { get; set; }
+        public List<Model.ServiceRequest> ServiceRequests { get; set; }
         public FilterArgs FilterArgs { get; set; }
     }
 
     public class DashboardViewModel
     {
-        public User User { get; set; }
-        public List<ServiceRequest> Today { get; set; }
-        public List<ServiceRequest> Upcoming { get; set; }
+        public AspNetUser User { get; set; }
+        public List<Orvosi.Data.ServiceRequest> Today { get; set; }
+        public List<Orvosi.Data.ServiceRequest> Upcoming { get; set; }
     }
 
     public class CreateViewModel
     {
-        public CreateViewModel()
-        {
-            this.IsAvailableDaySelected = false;
-            this.IsAvailable = false;
-            this.ServiceRequest = new ServiceRequest();
-            this.AvailableDay = new AvailableDay();
-            this.Physician = new Model.Physician();
-            this.ServiceCatalogueSelected = new ServiceCatalogue();
-        }
-        public ServiceRequest ServiceRequest { get; set; }
-        public AvailableDay AvailableDay { get; set; }
-        public Model.Physician Physician { get; set; }
-        public bool IsAvailableDaySelected { get; set; }
-        public bool IsAvailable { get; set; }
-        public bool HasCommittedToLocation { get; set; }
-        public ServiceCatalogue ServiceCatalogueSelected { get; set; }
-        
+        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        public Orvosi.Data.AvailableDay SelectedAvailableDay { get; set; }
+        public Orvosi.Data.Physician SelectedPhysician { get; set; }
+        public IEnumerable<SelectListItem> ServiceSelectList { get; set; }
+        public IEnumerable<SelectListItem> AvailableSlotSelectList { get; set; }
+        public IEnumerable<SelectListItem> CompanySelectList { get; set; }
+        public IEnumerable<SelectListItem> AddressSelectList { get; set; }
+        public IEnumerable<SelectListItem> StaffSelectList { get; set; }
+        public IEnumerable<SelectListItem> PhysicianSelectList { get; set; }
+
     }
 
     public class DetailsViewModel
     {
-        public DetailsViewModel()
-        {
-            this.Resources = new List<Resource>();
-        }
-        public Orvosi.Data.AspNetUser User { get; set; }
+        public AspNetUser User { get; set; }
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
-        //public List<ServiceRequestTask> ServiceRequestTasks{ get; set; }
-        public Metadata DropboxFolder { get; internal set; }
-        public List<MembersGetInfoItem> DropboxFolderMembers { get; internal set; }
-        //public Orvosi.Data.Invoice Invoice { get; set; }
+    }
+
+    public class BoxManagerViewModel
+    {
+        public BoxManagerViewModel()
+        {
+            this.Resources = new List<BoxResource>();
+        }
+        public int ServiceRequestId { get; set; }
         public BoxFolder BoxFolder { get; set; }
         public BoxCollection<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
-        public List<Resource> Resources { get; internal set; }
+        public List<BoxResource> Resources { get; internal set; }
     }
 
     public class EditViewModel
     {
-        public User User { get; set; }
-        public ServiceRequest ServiceRequest { get; set; }
-        public List<ServiceRequestTask> ServiceRequestTasks { get; set; }
+        public AspNetUser User { get; set; }
+        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        public List<Orvosi.Data.ServiceRequestTask> ServiceRequestTasks { get; set; }
     }
 
     public class CreateSuccessViewModel
@@ -77,8 +68,8 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         {
             this.Errors = new ModelErrorCollection();
         }
-        public ServiceRequest ServiceRequest { get; set; }
-        public Invoice Invoice { get; set; }
+        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        public Orvosi.Data.Invoice Invoice { get; set; }
         public Dropbox.Api.Files.Metadata Folder { get; set; }
         public List<Dropbox.Api.Team.MembersGetInfoItem> Members { get; set; }
         public ModelErrorCollection Errors { get; set; }
@@ -92,7 +83,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public string NextTask { get; set; }
         public string Ids { get; set; }
         public string ClaimantName { get; set; }
-        public string PhysicianId { get; set; }
+        public Guid? PhysicianId { get; set; }
         public bool? ShowAll { get; set; }
     }
 
@@ -110,7 +101,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     public class AvailabilityForm
     {
         [Required]
-        public string PhysicianId { get; set; }
+        public Guid PhysicianId { get; set; }
         [Required]
         public DateTime AppointmentDate { get; set; }
     }
@@ -124,7 +115,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public DateTime AppointmentDate { get; set; }
         [Required]
         public short? CompanyId { get; set; }
-        public AvailableDay AvailableDay { get; set; }
+        public Orvosi.Data.AvailableDay AvailableDay { get; set; }
     }
 
     public class LocationForm
@@ -142,15 +133,15 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public string CompanyName { get; set; }
         public bool? IsParentCompany { get; set; }
         public bool IsPrebook { get; internal set; }
-        public AvailableDay AvailableDay { get; set; }
+        public Orvosi.Data.AvailableDay AvailableDay { get; set; }
         public bool IsAvailableDaySelected { get; set; }
         public bool IsAvailable { get; set; }
         
     }
 
-    public class Resource
+    public class BoxResource
     {
-        public GetServiceRequestResources_Result ResourceFromTask { get; set; }
+        public AspNetUser Resource { get; set; }
         public BoxFolder BoxFolder { get; set; }
     }
 }

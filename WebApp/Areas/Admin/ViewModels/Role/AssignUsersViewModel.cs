@@ -7,7 +7,7 @@ namespace WebApp.Areas.Admin.ViewModels.Role
 {
     public class AssignUsersViewModel
     {
-        public string RoleId { get; set; }
+        public Guid RoleId { get; set; }
         public string RoleName { get; set; }
 
         public List<User> Users { get; set; }
@@ -15,7 +15,7 @@ namespace WebApp.Areas.Admin.ViewModels.Role
 
     public class User
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public string DisplayName { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }

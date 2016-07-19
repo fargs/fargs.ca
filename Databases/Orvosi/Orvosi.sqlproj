@@ -247,6 +247,12 @@
     <Build Include="API\Stored Procedures\GetServiceRequestResources.sql" />
     <Build Include="API\Stored Procedures\GetBoxTokens.sql" />
     <Build Include="API\Stored Procedures\GetCompanyProvince.sql" />
+    <Build Include="dbo\Tables\PhysicianSpeciality.sql" />
+    <Build Include="dbo\Tables\Physician_ServiceRequestTemplate.sql" />
+    <Build Include="dbo\Tables\City.sql" />
+    <Build Include="dbo\Views\OpenServiceRequestIdWithAssignedTo.sql" />
+    <Build Include="dbo\Views\OpenServiceRequestIds.sql" />
+    <Build Include="API\Stored Procedures\GetAssignedServiceRequests.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

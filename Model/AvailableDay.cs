@@ -21,7 +21,7 @@ namespace Model
         }
     
         public short Id { get; set; }
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public System.DateTime Day { get; set; }
         public Nullable<short> CompanyId { get; set; }
         public Nullable<short> LocationId { get; set; }
@@ -30,7 +30,7 @@ namespace Model
         public string CompanyName { get; set; }
         public string LocationName { get; set; }
         public string LocationOwnerDisplayName { get; set; }
-        public string LocationOwnerId { get; set; }
+        public Nullable<System.Guid> LocationOwnerId { get; set; }
         public string PhysicianName { get; set; }
         public bool IsPrebook { get; set; }
         public Nullable<bool> CompanyIsParent { get; set; }

@@ -30,7 +30,7 @@
     [ModifiedUser]                       NVARCHAR (100)   CONSTRAINT [DF_ServiceRequest_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     [NoShowRate]                         DECIMAL (18, 2)  NULL,
     [LateCancellationRate]               DECIMAL (18, 2)  NULL,
-    [PhysicianId]                        NVARCHAR (128)   NULL,
+    [PhysicianId]                        UNIQUEIDENTIFIER NOT NULL,
     [ServiceId]                          SMALLINT         NULL,
     [LocationId]                         INT              NULL,
     [ServiceCataloguePrice]              DECIMAL (18, 2)  NULL,
@@ -40,9 +40,15 @@
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequest_Address] FOREIGN KEY ([AddressId]) REFERENCES [dbo].[Address] ([Id]),
     CONSTRAINT [FK_ServiceRequest_AvailableSlot] FOREIGN KEY ([AvailableSlotId]) REFERENCES [dbo].[AvailableSlot] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_CaseCoordinator] FOREIGN KEY ([CaseCoordinatorId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_DocumentReviewer] FOREIGN KEY ([DocumentReviewerId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_IntakeAssistant] FOREIGN KEY ([IntakeAssistantId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id])
 );
+
+
 
 
 

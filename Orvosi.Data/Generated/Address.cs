@@ -26,6 +26,7 @@ namespace Orvosi.Data
         public string Address1 { get; set; } // Address1 (length: 255)
         public string Address2 { get; set; } // Address2 (length: 255)
         public string City { get; set; } // City (length: 50)
+        public short? CityId { get; set; } // CityId
         public string PostalCode { get; set; } // PostalCode (length: 50)
         public short CountryId { get; set; } // CountryID
         public short? ProvinceId { get; set; } // ProvinceID
@@ -34,10 +35,12 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 256)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_AvailableDay
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Address
 
         // Foreign keys
         public virtual AddressType AddressType { get; set; } // FK_Address_AddressType
+        public virtual City City_CityId { get; set; } // FK_Address_City
         public virtual Country Country { get; set; } // FK_Address_Countries
         public virtual Province Province { get; set; } // FK_Address_Provinces
 
@@ -47,6 +50,7 @@ namespace Orvosi.Data
             CountryId = 124;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

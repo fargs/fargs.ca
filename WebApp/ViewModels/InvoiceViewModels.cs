@@ -47,6 +47,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public Guid? CustomerId { get; set; }
         public int? Year { get; set; }
         public int? Month { get; set; }
+        public bool ShowSubmitted { get; set; } = false;
         public DateTime FilterDate { get; set; }
     }
 }

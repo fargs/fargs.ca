@@ -1,6 +1,6 @@
 ﻿
 CREATE PROC [API].[Profile_Update]
-	 @Id nvarchar(128)
+	 @Id uniqueidentifier
 	,@Title nvarchar(50)
 	,@FirstName nvarchar(128)
 	,@LastName nvarchar(128)

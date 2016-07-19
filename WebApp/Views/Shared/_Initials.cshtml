@@ -1,0 +1,10 @@
+﻿@model Orvosi.Data.AspNetUser
+
+@if (Model != null)
+{
+<span title="@Model.GetDisplayName() - @Model.AspNetUserRoles.First().AspNetRole.Name" 
+      class="btn btn-circle disabled" 
+      style="cursor: default; color: white; background-color: @(string.IsNullOrEmpty(Model.ColorCode) ? "gray" : Model.ColorCode);">
+    <span class="small">@(string.IsNullOrEmpty(Model.GetInitials()) ? "?" : Model.GetInitials())</span>
+</span>
+}

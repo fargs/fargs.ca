@@ -99,7 +99,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult UserProfile(string id)
+        public ActionResult UserProfile(Guid id)
         {
             using (var db = new OrvosiEntities(User.Identity.GetUserId()))
             {
@@ -143,7 +143,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Account(string id)
+        public ActionResult Account(Guid id)
         {
             using (var db = new OrvosiEntities(User.Identity.GetUserId()))
             {
@@ -188,7 +188,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult Companies(string userId, Nullable<byte> parentId = null)
+        public ActionResult Companies(Guid userId, Nullable<byte> parentId = null)
         {
             using (var db = new OrvosiEntities(User.Identity.GetUserId()))
             {
@@ -266,7 +266,7 @@ namespace WebApp.Areas.Admin.Controllers
         //    return View();
         //}
 
-        public async Task<ActionResult> Delete(string id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             var user = await this.UserManager.FindByIdAsync(id);
             if (user == null)
@@ -300,7 +300,7 @@ namespace WebApp.Areas.Admin.Controllers
         //    return View(vm);
         //}
 
-        public async Task<ActionResult> SendActivationEmail(string userId)
+        public async Task<ActionResult> SendActivationEmail(Guid userId)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByIdAsync(userId);
@@ -313,7 +313,7 @@ namespace WebApp.Areas.Admin.Controllers
             return RedirectToAction("Index", new { parentId = 1 });
         }
 
-        public async Task<ActionResult> ResetPassword(string userId)
+        public async Task<ActionResult> ResetPassword(Guid userId)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByIdAsync(userId);
@@ -326,7 +326,7 @@ namespace WebApp.Areas.Admin.Controllers
             return RedirectToAction("Index", new { parentId = 1 });
         }
 
-        public ActionResult ChangePassword(string id)
+        public ActionResult ChangePassword(Guid id)
         {
             var vm = new ViewModels.ChangePasswordViewModel() { UserId = id };
             return View(vm);

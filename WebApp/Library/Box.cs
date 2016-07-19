@@ -21,7 +21,7 @@ namespace WebApp.Library
         private string clientId;
         private string clientSecret;
         private Uri redirectUri;
-        private string adminUserId;
+        private Guid adminUserId;
         private string enterpriseId = "785477";
         private string privateKey = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "private_key.pem"));
         private string jwtPrivateKeyPassword = "Orvosi2015";
@@ -40,7 +40,7 @@ namespace WebApp.Library
             clientId = ConfigurationManager.AppSettings["BoxClientId"];
             clientSecret = ConfigurationManager.AppSettings["BoxClientSecret"];
             redirectUri = new Uri(ConfigurationManager.AppSettings["BoxRedirectUri"]);
-            adminUserId = ConfigurationManager.AppSettings["BoxAdminUserId"];
+            adminUserId = new Guid(ConfigurationManager.AppSettings["BoxAdminUserId"]);
             boxConfig = new BoxConfig(clientId, clientSecret, redirectUri);
         }
 

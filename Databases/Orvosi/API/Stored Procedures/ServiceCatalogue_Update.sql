@@ -1,7 +1,7 @@
 ﻿
 CREATE PROCEDURE [API].[ServiceCatalogue_Update]
 	 @Id int
-	,@PhysicianId nvarchar(128)
+	,@PhysicianId uniqueidentifier
 	,@ServiceId smallint
 	,@CompanyId smallint
 	,@LocationId smallint

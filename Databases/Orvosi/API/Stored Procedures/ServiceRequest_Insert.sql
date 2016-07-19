@@ -4,7 +4,6 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@ClaimantName nvarchar(128)
 	,@ServiceCatalogueId smallint
 	,@AddressId int
-	,@HarvestProjectId bigint
 	,@Title nvarchar(256)
 	,@Body nvarchar(max)
 	,@RequestedDate datetime
@@ -26,7 +25,7 @@ CREATE PROCEDURE [API].[ServiceRequest_Insert]
 	,@IsNoShow bit
 	,@NoShowRate decimal(18,2)
 	,@LateCancellationRate decimal(18,2)
-	,@PhysicianId NVARCHAR (128)
+	,@PhysicianId uniqueidentifier
 	,@ServiceId SMALLINT
 	,@LocationId SMALLINT
 	,@ServiceCataloguePrice DECIMAL(18,2)	

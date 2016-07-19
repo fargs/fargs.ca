@@ -4,11 +4,13 @@ using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
 using System.Net;
 using System.Threading.Tasks;
 using WebApp.Library;
+using WebApp.Library.Extensions;
 using MoreLinq;
 
 namespace WebApp.Controllers
@@ -17,6 +19,8 @@ namespace WebApp.Controllers
     public class ServiceRequestTaskController : Controller
     {
         private OrvosiEntities db = new OrvosiEntities();
+        private Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
+
         // GET: ServiceRequestTasks
         public ActionResult Index(FilterArgs filterArgs)
         {
@@ -66,41 +70,21 @@ namespace WebApp.Controllers
 
             db.ServiceRequestTasks.Add(task);
 
-            var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
-            obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
+            //var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
+            //obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
             db.SaveChanges();
             
             return Redirect(Request.UrlReferrer.ToString());
         }
 
-        public ActionResult MyTaskList(string serviceProviderId)
+        [ChildActionOnly]
+        public ActionResult MyTaskList(Guid serviceProviderId, byte serviceRequestCategoryId)
         {
-            // get the user
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
-
-            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
-
-            Guid? serviceProviderGuid;
-            if (user.RoleId == Roles.SuperAdmin && !string.IsNullOrEmpty(serviceProviderId))
-            {
-                serviceProviderGuid = new Guid(serviceProviderId);
-            }
-            else
-            {
-                serviceProviderGuid = new Guid(user.Id);
-            }
-
-            var tasks = db.GetMyTasks(serviceProviderGuid, SystemTime.Now())
-                .OrderBy(t => t.DueDate)
-                .ToList();
-
-            return PartialView("MyTaskList", tasks);
+            return PartialView("MyTaskList");
         }
 
-        public ActionResult TaskList(int? serviceRequestId, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
+        [ChildActionOnly]
+        public ActionResult TaskList(Orvosi.Data.ServiceRequest serviceRequest, Orvosi.Data.AspNetUser currentUser, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;
             ViewBag.UseShortName = useShortName;
@@ -108,47 +92,51 @@ namespace WebApp.Controllers
             ViewBag.Collapsed = collapsed;
 
             // get the user
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+            var user = currentUser;
 
-            if (user.RoleId != Roles.SuperAdmin && user.RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
+            if (user.AspNetUserRoles.First().RoleId != Roles.SuperAdmin && user.AspNetUserRoles.First().RoleId != Roles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == user.Id && !srt.IsObsolete))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
 
-            var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
-
-            var tasks = db.ServiceRequestTasks.Where(t => t.ServiceRequestId == serviceRequestId && !t.IsObsolete)
-                .Select(t => new TaskViewModel()
-                {
-                    Id = t.Id,
-                    ServiceRequestId = t.ServiceRequestId,
-                    TaskId = t.TaskId,
-                    Name = t.TaskName,
-                    ShortName = t.ShortName,
-                    CompletedDate = t.CompletedDate,
-                    AssignedToDisplayName = t.AssignedToDisplayName,
-                    AssignedTo = t.AssignedTo,
-                    AssignedToRoleId = t.ResponsibleRoleId,
-                    AssignedToColorCode = t.AssignedToColorCode,
-                    Initials = t.AssignedToInitials,
-                    DueDateBase = t.DueDateBase,
-                    DueDateDiff = t.DueDateDiff,
-                    AppointmentDate = serviceRequest.AppointmentDate,
-                    ReportDate = serviceRequest.DueDate,
-                    DependsOn = t.DependsOn,
-                    Sequence = t.Sequence
-                })
-                .OrderBy(t => t.Sequence)
-                .ToList();
-
-            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
-
-            BuildDependencies(closeOutTask, null, tasks);
-
-            if (myTasksOnly)
+            var tasks = serviceRequest.ServiceRequestTasks.OrderBy(srt => srt.Sequence).AsEnumerable();
+            if (myTasksOnly) 
             {
-                tasks = tasks.Where(t => (t.AssignedTo ?? string.Empty).ToLower() == user.Id.ToLower()).ToList();
+                tasks = tasks.Where(t => t.AssignedTo == user.Id);
             }
+
+            //var tasks = serviceRequest.ServiceRequestTasks.Where(t => !t.IsObsolete)
+            //    .Select(t => new TaskViewModel()
+            //    {
+            //        Id = t.Id,
+            //        ServiceRequestId = t.ServiceRequestId,
+            //        TaskId = t.TaskId,
+            //        Name = t.TaskName,
+            //        ShortName = t.ShortName,
+            //        CompletedDate = t.CompletedDate,
+            //        AssignedToDisplayName = t.AspNetUser.GetDisplayName(),
+            //        AssignedTo = t.AssignedTo,
+            //        AssignedToRoleId = t.ResponsibleRoleId,
+            //        AssignedToColorCode = t.AspNetUser.ColorCode,
+            //        Initials = t.AspNetUser.GetInitials(),
+            //        DueDateBase = t.DueDateBase,
+            //        DueDateDiff = t.DueDateDiff,
+            //        AppointmentDate = serviceRequest.AppointmentDate,
+            //        ReportDate = serviceRequest.DueDate,
+            //        DependsOn = t.DependsOn,
+            //        Sequence = t.Sequence
+            //    })
+            //    .OrderBy(t => t.Sequence)
+            //    .ToList();
+
+            //var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
+
+            //BuildDependencies(closeOutTask, null, tasks);
+
+            //if (myTasksOnly)
+            //{
+            //    tasks = tasks.Where(t => (t.AssignedTo ?? string.Empty).ToLower() == user.Id.ToLower()).ToList();
+            //}
 
             //var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId)
             //    .GroupBy(srt => new
@@ -226,7 +214,7 @@ namespace WebApp.Controllers
             var nextTasks = tasks
                         .Where(c => c.Status.Id != TaskStatuses.Done)
                         .OrderBy(o => o.Sequence)
-                        .GroupBy(g => (string.IsNullOrEmpty(g.AssignedTo) ? string.Empty : g.AssignedTo.ToLower()))
+                        .GroupBy(g => g.AssignedTo)
                         .Select(s => new { s, Count = s.Count() })
                         .SelectMany(sm => sm.s.Select(s => s)
                                           .Zip(Enumerable.Range(1, sm.Count), (task, index)
@@ -290,9 +278,29 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<ActionResult> MarkAllComplete(int serviceRequestId)
+        {
+            var userId = User.Identity.GetGuidUserId();
+            var serviceRequestTasks = context.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId && srt.AssignedTo == userId);
+
+            foreach (var serviceRequestTask in serviceRequestTasks)
+            {
+                if (!serviceRequestTask.IsComplete())
+                {
+                    serviceRequestTask.CompletedDate = SystemTime.Now();
+                    serviceRequestTask.ModifiedDate = SystemTime.Now();
+                    serviceRequestTask.ModifiedUser = User.Identity.Name;
+                }
+            }
+            await context.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> MarkAsComplete(int id)
         {
-            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(id);
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(id);
             if (serviceRequestTask == null)
             {
                 return HttpNotFound();
@@ -300,7 +308,23 @@ namespace WebApp.Controllers
             serviceRequestTask.CompletedDate = SystemTime.Now();
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
-            await db.SaveChangesAsync();
+            await context.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ToggleObsolete(int serviceRequestTaskId)
+        {
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            if (serviceRequestTask == null)
+            {
+                return HttpNotFound();
+            }
+            serviceRequestTask.IsObsolete = !serviceRequestTask.IsObsolete;
+            serviceRequestTask.ModifiedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
 
@@ -308,7 +332,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> MarkAsIncomplete(int id)
         {
-            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(id);
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(id);
             if (serviceRequestTask == null)
             {
                 return HttpNotFound();
@@ -316,7 +340,33 @@ namespace WebApp.Controllers
             serviceRequestTask.CompletedDate = null;
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
-            await db.SaveChangesAsync();
+            await context.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> PickUp(int serviceRequestTaskId)
+        {
+            var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            var userId = User.Identity.GetGuidUserId();
+            task.AssignedTo = userId;
+            task.ModifiedDate = SystemTime.Now();
+            task.ModifiedUser = User.Identity.Name;
+            await context.SaveChangesAsync();
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid AssignedTo)
+        {
+            var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            var userId = User.Identity.GetGuidUserId();
+            task.AssignedTo = AssignedTo;
+            task.ModifiedDate = SystemTime.Now();
+            task.ModifiedUser = User.Identity.Name;
+            await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
 

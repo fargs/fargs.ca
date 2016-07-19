@@ -15,7 +15,7 @@ namespace Model
     public partial class PhysicianLocationArea
     {
         public short Id { get; set; }
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public short LocationId { get; set; }
         public Nullable<byte> StatusId { get; set; }
         public string StatusText { get; set; }

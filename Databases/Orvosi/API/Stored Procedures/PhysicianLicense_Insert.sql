@@ -1,6 +1,6 @@
 ﻿
 CREATE PROCEDURE [API].[PhysicianLicense_Insert]
-	 @PhysicianId nvarchar(128)
+	 @PhysicianId uniqueidentifier
 	,@CollegeName nvarchar(128)
 	,@LongName nvarchar(2000)
 	,@ExpiryDate date

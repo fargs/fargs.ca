@@ -1,24 +1,16 @@
-﻿@model Model.Invoice
+﻿@model Orvosi.Data.Invoice
 @using e = Model.Enums
 
 <div class="container">
     @Html.Partial("DocumentHeader", Model)
     @Html.Partial("_Invoice", Model)
-    <div class="row">
-        <div class="col-sm-4">
-            <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-primary">Back to Service Request</a>
-            <a href="~/Invoice/Dashboard" class="btn btn-primary">Back to Invoices Dashboard</a>
+    <div class="btn-toolbar">
+        <div class="btn-group">
+            <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-default">Close</a>
         </div>
-        <div class="col-sm-4">
-
-        </div>
-        <div class="col-sm-4">
-            @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
-            {
-                <div class="pull-right">
-                    <a href="~/Invoice/Edit/@Model.Id" class="btn btn-primary">Edit</a>
-                </div>
-            }
+        <div class="btn-group pull-right">
+            <a href="~/Invoice/Edit/@Model.Id" class="btn btn-default">Edit</a>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </div>
 </div>

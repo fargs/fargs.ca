@@ -18,11 +18,11 @@ namespace Orvosi.Data
     public partial class AvailableDay
     {
         public short Id { get; set; } // Id (Primary key)
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid PhysicianId { get; set; } // PhysicianId
         public System.DateTime Day { get; set; } // Day
         public bool IsPrebook { get; set; } // IsPrebook
         public short? CompanyId { get; set; } // CompanyId
-        public short? LocationId { get; set; } // LocationId
+        public int? LocationId { get; set; } // LocationId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
@@ -30,6 +30,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot.FK_AvailableDay_AvailableSlot
 
         // Foreign keys
+        public virtual Address Address { get; set; } // FK_AvailableDay_AvailableDay
         public virtual Company Company { get; set; } // FK_AvailableDay_Company
 
         public AvailableDay()

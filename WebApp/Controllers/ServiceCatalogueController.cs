@@ -31,7 +31,7 @@ namespace WebApp.Controllers
             if (vm.SelectedUser != null)
             {
                 vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
-                var userGuid = new Guid(args.UserId);
+                var userGuid = args.UserId;
                 if (vm.SelectedCompany != null)
                 {
                     vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(args.UserId, args.CompanyId).OrderBy(c => c.LocationName).ToList();
@@ -100,17 +100,16 @@ namespace WebApp.Controllers
             return RedirectToAction("Index", new FilterArgs() { CompanyId = form.CompanyId, UserId = form.PhysicianId });
         }
 
-        public async Task<ActionResult> EditRates(string ServiceProviderGuid, string CustomerGuid)
+        public async Task<ActionResult> EditRates(Guid ServiceProviderGuid, Guid? CustomerGuid)
         {
             var serviceCatalogueRate = new ServiceCatalogueRate();
 
             var serviceProvider = await db.Users.SingleOrDefaultAsync(u => u.Id == ServiceProviderGuid);
             if (serviceProvider != null)
             {
-                var serviceProviderGuid = new Guid(serviceProvider.Id);
-                Guid? customerGuid = string.IsNullOrEmpty(CustomerGuid) ? Guid.Empty : new Guid(CustomerGuid);
+                var serviceProviderGuid = serviceProvider.Id;
 
-                var customer = await db.Companies.SingleOrDefaultAsync(c => c.ObjectGuid == customerGuid);
+                var customer = await db.Companies.SingleOrDefaultAsync(c => c.ObjectGuid == CustomerGuid);
                 if (customer != null)
                 {
                     serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == serviceProviderGuid && c.CustomerGuid == customer.ObjectGuid);
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                         serviceCatalogueRate = new ServiceCatalogueRate()
                         {
                             ServiceProviderGuid = serviceProviderGuid,
-                            CustomerGuid = customerGuid
+                            CustomerGuid = CustomerGuid
                         };
                     }
                 }
@@ -131,11 +130,11 @@ namespace WebApp.Controllers
                         serviceCatalogueRate = new ServiceCatalogueRate()
                         {
                             ServiceProviderGuid = serviceProviderGuid,
-                            CustomerGuid = customerGuid
+                            CustomerGuid = CustomerGuid
                         };
                     }
                 }
-                var inheritedValues = db.GetServiceCatalogueRate(serviceProviderGuid, customerGuid).First();
+                var inheritedValues = db.GetServiceCatalogueRate(serviceProviderGuid, CustomerGuid).First();
                 serviceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
                 serviceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
             }

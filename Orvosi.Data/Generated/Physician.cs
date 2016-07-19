@@ -17,7 +17,7 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class Physician
     {
-        public string Id { get; set; } // Id (Primary key) (length: 128)
+        public System.Guid Id { get; set; } // Id (Primary key)
         public string Designations { get; set; } // Designations (length: 128)
         public byte? SpecialtyId { get; set; } // SpecialtyId
         public string OtherSpecialties { get; set; } // OtherSpecialties (length: 2000)
@@ -31,10 +31,18 @@ namespace Orvosi.Data
         public string BoxCaseTemplateFolderId { get; set; } // BoxCaseTemplateFolderId (length: 128)
         public string BoxAddOnTemplateFolderId { get; set; } // BoxAddOnTemplateFolderId (length: 128)
 
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Physician
+
+        // Foreign keys
+        public virtual AspNetUser AspNetUser { get; set; } // FK_Physician_AspNetUsers
+        public virtual PhysicianSpeciality PhysicianSpeciality { get; set; } // FK_Physician_PhysicianSpeciality
+
         public Physician()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }
 

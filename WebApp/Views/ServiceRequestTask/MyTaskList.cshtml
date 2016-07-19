@@ -1,8 +1,8 @@
 ﻿@using WebApp.Library.Extensions
 @using Model.Enums
-@model List<Model.GetMyTasks_Result>
+@model List<WebApp.ViewModels.ServiceRequestTaskViewModels.AssessmentTaskViewModel>
 
-<div class="thumbnail alert">
+@*<div class="thumbnail alert">
     <div class="caption">
         <div class="h1 text-center">@Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo).Count().ToString()</div>
         <div class="text-muted text-center">Actionable Tasks</div>
@@ -37,10 +37,10 @@
             </div>
         </div>
     }
-</div>
+</div>*@
 
 
-<table class="table table-condensed table-hover table-bordered hidden">
+@*<table class="table table-condensed table-hover table-bordered hidden">
     <tr>
         <th>Task</th>
         <th>Due Date</th>
@@ -76,4 +76,4 @@
             </td>
         </tr>
     }
-</table>
+</table>*@

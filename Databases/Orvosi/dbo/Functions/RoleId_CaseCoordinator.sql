@@ -5,7 +5,7 @@
 -- Description:	
 -- =============================================
 CREATE FUNCTION [dbo].[RoleId_CaseCoordinator] ()
-RETURNS nvarchar(128)
+RETURNS uniqueidentifier
 AS
 BEGIN
 	-- Return the result of the function

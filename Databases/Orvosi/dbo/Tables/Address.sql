@@ -8,6 +8,7 @@
     [Address1]      NVARCHAR (255)   NOT NULL,
     [Address2]      NVARCHAR (255)   NULL,
     [City]          NVARCHAR (50)    NOT NULL,
+    [CityId]        SMALLINT         NULL,
     [PostalCode]    NVARCHAR (50)    NULL,
     [CountryID]     SMALLINT         CONSTRAINT [DF_Address_CountryID] DEFAULT ((124)) NOT NULL,
     [ProvinceID]    SMALLINT         NULL,
@@ -16,9 +17,12 @@
     [ModifiedUser]  NVARCHAR (256)   CONSTRAINT [DF_Address_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_Address] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Address_AddressType] FOREIGN KEY ([AddressTypeID]) REFERENCES [dbo].[AddressType] ([Id]),
+    CONSTRAINT [FK_Address_City] FOREIGN KEY ([CityId]) REFERENCES [dbo].[City] ([Id]),
     CONSTRAINT [FK_Address_Countries] FOREIGN KEY ([CountryID]) REFERENCES [dbo].[Country] ([Id]),
     CONSTRAINT [FK_Address_Provinces] FOREIGN KEY ([ProvinceID]) REFERENCES [dbo].[Province] ([Id])
 );
+
+
 
 
 

@@ -1,7 +1,7 @@
 ﻿
 CREATE PROCEDURE [API].[PhysicianInsurance_Update]
 	 @Id smallint
-	,@PhysicianId nvarchar(128)
+	,@PhysicianId uniqueidentifier
 	,@Insurer nvarchar(256)
 	,@PolicyNumber nvarchar(128)
 	,@ExpiryDate date

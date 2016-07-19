@@ -1,0 +1,44 @@
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@using WebApp.Library
+@using WebApp.Library.Extensions
+@model IEnumerable<ServiceRequest>
+
+@if (Model.Count() == 0)
+{
+    <div>No tasks are assigned to you.</div>
+}
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div>
+                        <strong>@item.ClaimantName</strong>
+                        <div class="text-muted">
+                            @item.Company.Name<br />
+                            @item.Service.Name<br />
+                            @(item.DueDate.ToOrvosiDateTimeFormat())
+                        </div>
+                    </div>
+                    @foreach (var task in item.ServiceRequestTasks.Where(srt => srt.GetStatus(SystemTime.Now()) == TaskStatuses.ToDo))
+                    {
+                        <span class="pull-left" style="margin-right: 5px;">
+                            @Html.Partial("_TaskButton", task)
+                        </span>
+                        <span>
+                            @task.TaskName
+                        </span>
+                        <span class="pull-right" style="margin-left: 5px;">
+                            @Html.Partial("_TaskActionMenu", task)
+                        </span>
+                        <span class="pull-right" style="margin-left: 5px;">
+                            @Html.Partial("_Initials", task.AspNetUser)
+                        </span>
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>

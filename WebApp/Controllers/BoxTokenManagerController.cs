@@ -18,7 +18,7 @@ namespace WebApp.Controllers
         private string clientId;
         private string clientSecret;
         private Uri redirectUri;
-        private string adminUserId;
+        private Guid adminUserId;
         private const string AntiforgeryToken = "state";
 
         public BoxTokenManagerController()
@@ -26,7 +26,7 @@ namespace WebApp.Controllers
             clientId = ConfigurationManager.AppSettings["BoxClientId"];
             clientSecret = ConfigurationManager.AppSettings["BoxClientSecret"];
             redirectUri = new Uri(ConfigurationManager.AppSettings["BoxRedirectUri"]);
-            adminUserId = ConfigurationManager.AppSettings["BoxAdminUserId"];
+            adminUserId = new Guid(ConfigurationManager.AppSettings["BoxAdminUserId"]);
         }
 
         // GET /Index

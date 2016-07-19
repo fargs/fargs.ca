@@ -24,7 +24,7 @@ namespace Orvosi.Data
         public string Name { get; set; } // Name (length: 128)
         public string Guidance { get; set; } // Guidance (length: 1000)
         public byte? TaskPhaseId { get; set; } // TaskPhaseId
-        public string ResponsibleRoleId { get; set; } // ResponsibleRoleId (length: 128)
+        public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
         public bool? IsBillable { get; set; } // IsBillable
         public decimal? HourlyRate { get; set; } // HourlyRate
         public decimal? EstimatedHours { get; set; } // EstimatedHours

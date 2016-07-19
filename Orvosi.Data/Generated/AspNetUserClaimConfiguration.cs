@@ -28,7 +28,7 @@ namespace Orvosi.Data
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("int").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            Property(x => x.UserId).HasColumnName(@"UserId").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.UserId).HasColumnName(@"UserId").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.ClaimType).HasColumnName(@"ClaimType").IsOptional().HasColumnType("nvarchar");
             Property(x => x.ClaimValue).HasColumnName(@"ClaimValue").IsOptional().HasColumnType("nvarchar");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");

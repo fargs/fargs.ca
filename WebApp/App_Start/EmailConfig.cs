@@ -6,8 +6,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
-using Model.Enums;
-using Model;
+using System;
+using Orvosi.Shared.Enums;
 
 namespace WebApp
 {
@@ -46,7 +46,7 @@ namespace WebApp
             return CreateService();
         }
 
-        public async Task<bool> SendActivationEmail(string email, string userName, string callbackUrl, string role)
+        public async Task<bool> SendActivationEmail(string email, string userName, string callbackUrl, Guid role)
         {
             var message = new MailMessage();
             message.To.Add(email);
@@ -56,17 +56,12 @@ namespace WebApp
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 
             var templatePath = string.Empty;
-            switch (role)
-            {
-                case Roles.Physician:
-                    templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
-                    break;
-                case Roles.Company:
-                    templatePath = Path.Combine(_templateFolder, "CompanyAccountActivation.html");
-                    break;
-                default:
-                    throw new System.Exception("Role activation not currently supported");
-            }
+            if (role == Roles.Physician)
+                templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
+            else if (role == Roles.Company)
+                templatePath = Path.Combine(_templateFolder, "CompanyAccountActivation.html");
+            else 
+                throw new System.Exception("Role activation not currently supported");
 
             StreamReader sr = File.OpenText(templatePath);
             while (sr.Peek() >= 0)
@@ -102,7 +97,7 @@ namespace WebApp
             return true;
         }
 
-        public async Task<bool> SendInvoice(Invoice invoice, string callbackUrlBase)
+        public async Task<bool> SendInvoice(Orvosi.Data.Invoice invoice, string callbackUrlBase)
         {
             var message = new MailMessage();
             message.To.Add(invoice.CustomerEmail);

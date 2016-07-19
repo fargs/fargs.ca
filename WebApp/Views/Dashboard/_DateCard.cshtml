@@ -1,0 +1,55 @@
+﻿@using WebApp.Library
+@model WebApp.ViewModels.DashboardViewModels.IndexViewModel.DateCard
+
+<div class="h2">@Model.Day.ToString("dddd")<span class="lead"> @Model.Day.ToString("MMM dd")</span></div>
+<div class="panel @(Model.IsToday() ? "panel-info" : !Model.IsPast() ? "panel-success" : "panel-default")">
+    <div class="panel-heading">
+        <strong class="panel-title">@Model.City</strong><span class="pull-right">@Model.Company</span>
+    </div>
+    <div class="panel-body" )>
+        <div class="pull-left">
+            <div>
+                <small class="text-muted">@Model.Address</small>
+            </div>
+            @if (!Model.IsPast())
+            {
+                <div class="glyphicon glyphicon-ok" style="font-size: 300%; padding-top: 10px"></div>
+            }
+            else
+            {
+                <div style="display: inline-block">
+                    <div style="font-size: x-large">@Model.Day.Add(Model.StartTime).ToShortTimeString()</div>
+                    <div class="text-center">to</div>
+                    <div style="font-size: x-large">@Model.Day.Add(Model.EndTime).ToShortTimeString()</div>
+                </div>
+            }
+        </div>
+        <div class="pull-right">
+            <a data-toggle="collapse" href="#@Model.Day.Ticks" class="btn btn-sm btn-default" style="border: none; line-height: normal">
+                <div style="font-size: 500%">@Model.RequestCount</div><div class="lead">Assessments</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="panel-body" style="padding-top: 0;">
+        <div id="@Model.Day.Ticks" class="collapse">
+            @foreach (var request in Model.ServiceRequests)
+            {
+                <div class="row" style="padding-top: 15px;">
+                    <div class="col-md-12">
+                        <a class="lead" href="@Url.Content("~/servicerequest/Details/" + request.Id)">
+                            @string.Format("{0}", request.AppointmentDate.Value.Add(request.StartTime.Value).ToShortTimeString())
+                        </a>
+                        <span>@Html.Partial("_ServiceStatusLabel", request.GetExaminationStatusId(SystemTime.Now()))</span>
+                        <div class="pull-right">
+                            @Html.Partial("_ResourceAssignments", request)
+                        </div>
+                        <div><strong>@request.Service.Name</strong></div>
+                        <div>@request.ClaimantName</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

@@ -28,15 +28,16 @@ namespace Orvosi.Data
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.Day).HasColumnName(@"Day").IsRequired().HasColumnType("date");
             Property(x => x.IsPrebook).HasColumnName(@"IsPrebook").IsRequired().HasColumnType("bit");
             Property(x => x.CompanyId).HasColumnName(@"CompanyId").IsOptional().HasColumnType("smallint");
-            Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("smallint");
+            Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("int");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
 
             // Foreign keys
+            HasOptional(a => a.Address).WithMany(b => b.AvailableDays).HasForeignKey(c => c.LocationId).WillCascadeOnDelete(false); // FK_AvailableDay_AvailableDay
             HasOptional(a => a.Company).WithMany(b => b.AvailableDays).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_AvailableDay_Company
             InitializePartial();
         }

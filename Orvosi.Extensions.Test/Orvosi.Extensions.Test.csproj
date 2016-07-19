@@ -61,9 +61,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Extensions.csproj">
+    <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Shared.csproj">
       <Project>{cbbca8f3-b69a-474c-9d17-90a433c5a3f3}</Project>
-      <Name>Orvosi.Extensions</Name>
+      <Name>Orvosi.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebApp\WebApp.csproj">
       <Project>{6b72176d-e6d3-4caf-9bc0-e281700840a9}</Project>

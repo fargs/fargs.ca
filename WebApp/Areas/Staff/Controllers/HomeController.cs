@@ -20,14 +20,14 @@ namespace WebApp.Areas.Staff.Controllers
             var now = DateTime.Today;
             var lookAheadDate = now.AddDays(lookAhead);
             var vm = new IndexViewModel();
-            vm.Today = db.ServiceRequests.Where(p => (p.IntakeAssistantId == staffId || p.CaseCoordinatorId == staffId || p.DocumentReviewerId == staffId) && p.AppointmentDate == now)
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
-            vm.Upcoming = db.ServiceRequests.Where(p => (p.IntakeAssistantId == staffId || p.CaseCoordinatorId == staffId || p.DocumentReviewerId == staffId) && p.AppointmentDate > now && p.AppointmentDate <= lookAheadDate)
-                .OrderBy(c => c.AppointmentDate)
-                .OrderBy(c => c.StartTime)
-                .ToList();
+            //vm.Today = db.ServiceRequests.Where(p => (p.IntakeAssistantId == staffId || p.CaseCoordinatorId == staffId || p.DocumentReviewerId == staffId) && p.AppointmentDate == now)
+            //    .OrderBy(c => c.AppointmentDate)
+            //    .OrderBy(c => c.StartTime)
+            //    .ToList();
+            //vm.Upcoming = db.ServiceRequests.Where(p => (p.IntakeAssistantId == staffId || p.CaseCoordinatorId == staffId || p.DocumentReviewerId == staffId) && p.AppointmentDate > now && p.AppointmentDate <= lookAheadDate)
+            //    .OrderBy(c => c.AppointmentDate)
+            //    .OrderBy(c => c.StartTime)
+            //    .ToList();
 
             ViewBag.LookAhead = lookAhead;
             ViewBag.StaffName = (User.Identity as ClaimsIdentity).FindFirst("DisplayName").Value;

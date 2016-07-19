@@ -13,6 +13,7 @@
 namespace Orvosi.Data
 {
 
+    using System.Linq;
 
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class OrvosiDbContext : System.Data.Entity.DbContext, IOrvosiDbContext
@@ -26,6 +27,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
         public System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
         public System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
+        public System.Data.Entity.DbSet<City> Cities { get; set; } // City
         public System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         public System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
@@ -42,6 +44,8 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
         public System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         public System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
+        public System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
+        public System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         public System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         public System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
@@ -121,6 +125,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration());
             modelBuilder.Configurations.Add(new AvailableDayConfiguration());
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration());
+            modelBuilder.Configurations.Add(new CityConfiguration());
             modelBuilder.Configurations.Add(new CompanyConfiguration());
             modelBuilder.Configurations.Add(new CountryConfiguration());
             modelBuilder.Configurations.Add(new DocumentConfiguration());
@@ -137,6 +142,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration());
             modelBuilder.Configurations.Add(new PriceConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
             modelBuilder.Configurations.Add(new RefactorLogConfiguration());
@@ -168,6 +175,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableDayConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration(schema));
+            modelBuilder.Configurations.Add(new CityConfiguration(schema));
             modelBuilder.Configurations.Add(new CompanyConfiguration(schema));
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentConfiguration(schema));
@@ -184,6 +192,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration(schema));
             modelBuilder.Configurations.Add(new PriceConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));
             modelBuilder.Configurations.Add(new RefactorLogConfiguration(schema));
@@ -205,6 +215,46 @@ namespace Orvosi.Data
 
         partial void InitializePartial();
         partial void OnModelCreatingPartial(System.Data.Entity.DbModelBuilder modelBuilder);
+        
+        // Stored Procedures
+        public System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now)
+        {
+            int procResult;
+            return API_GetAssignedServiceRequests(assignedTo, now, out procResult);
+        }
+
+        public System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, out int procResult)
+        {
+            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
+            if (!assignedTo.HasValue)
+                assignedToParam.Value = System.DBNull.Value;
+
+            var nowParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Now", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = now.GetValueOrDefault() };
+            if (!now.HasValue)
+                nowParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<API_GetAssignedServiceRequestsReturnModel>("EXEC @procResult = [API].[GetAssignedServiceRequests] @AssignedTo, @Now", assignedToParam, nowParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel>> API_GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now)
+        {
+            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
+            if (!assignedTo.HasValue)
+                assignedToParam.Value = System.DBNull.Value;
+
+            var nowParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Now", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = now.GetValueOrDefault() };
+            if (!now.HasValue)
+                nowParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<API_GetAssignedServiceRequestsReturnModel>("EXEC [API].[GetAssignedServiceRequests] @AssignedTo, @Now", assignedToParam, nowParam).ToListAsync();
+
+            return procResultData;
+        }
+
     }
 }
 // </auto-generated>

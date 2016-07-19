@@ -1,4 +1,5 @@
-﻿CREATE VIEW API.ServiceRequest
+﻿
+CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
 AS (
@@ -128,11 +129,10 @@ SELECT
 	,NextTaskAssignedtoName = nt.AssignedToName
 	,BoxCaseFolderId
 	,BoxPhysicianFolderId = p.BoxFolderId
-	,HarvestProjectId = null
-	,ServiceCategoryName = null
-	,DocumentFolderLink = null
-	,ServicePortfolioName = null
-	,LocationName = null
+	,ServiceCategoryName = CONVERT(varchar(2),null)
+	,DocumentFolderLink = CONVERT(varchar(2),null)
+	,ServicePortfolioName = CONVERT(varchar(2),null)
+	,LocationName = CONVERT(varchar(2),null)
 FROM dbo.ServiceRequest sr
 INNER JOIN dbo.[Service] s ON s.Id = sr.ServiceId
 INNER JOIN dbo.[AspNetUsers] p ON sr.PhysicianId = p.Id

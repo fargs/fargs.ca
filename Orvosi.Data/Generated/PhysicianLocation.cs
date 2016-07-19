@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class PhysicianLocation
     {
         public short Id { get; set; } // Id (Primary key)
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid PhysicianId { get; set; } // PhysicianId
         public short LocationId { get; set; } // LocationId
         public byte? StatusId { get; set; } // StatusId
         public decimal? Price { get; set; } // Price

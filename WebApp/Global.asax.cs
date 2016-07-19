@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentValidation.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace WebApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             MappingConfig.RegisterMaps();
-
+            FluentValidationModelValidatorProvider.Configure();
             // This turns off code first migrations on the database
             Database.SetInitializer<Models.ApplicationDbContext>(null);
         }

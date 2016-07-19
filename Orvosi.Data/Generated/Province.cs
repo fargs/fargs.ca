@@ -27,12 +27,14 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_Provinces
+        public virtual System.Collections.Generic.ICollection<City> Cities { get; set; } // City.FK_City_Province
 
         public Province()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             Addresses = new System.Collections.Generic.List<Address>();
+            Cities = new System.Collections.Generic.List<City>();
             InitializePartial();
         }
 

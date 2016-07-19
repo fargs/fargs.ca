@@ -15,7 +15,7 @@ namespace Model
     public partial class ServiceRequestBoxCollaboration
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
+        public System.Guid UserId { get; set; }
         public int ServiceRequestId { get; set; }
         public string BoxCollaborationId { get; set; }
         public System.DateTime ModifiedDate { get; set; }

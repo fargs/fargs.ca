@@ -1,4 +1,6 @@
 ﻿
+--EXEC API.GetMyTasks '8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9', '2016-07-11'
+
 CREATE PROC [API].[GetMyTasks]
 	@AssignedTo UNIQUEIDENTIFIER
 	, @Now DATETIME
@@ -13,8 +15,6 @@ AS (
 		, t.CompletedDate
 		, t.IsObsolete
 		, t.IsDependentOnExamDate
-		, DueDateBase
-		, DueDateDiff
 		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
 	FROM
 	(
@@ -26,13 +26,12 @@ AS (
 			, CompletedDate
 			, IsObsolete
 			, IsDependentOnExamDate
-			, DueDateBase
-			, DueDateDiff
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
-		FROM   dbo.ServiceRequestTask
-		WHERE IsObsolete = 0 AND CompletedDate IS NULL -- Because this is a stored proc, I want to control the amount of records returned here, not in the service layer.
-			AND AssignedTo = @AssignedTo
-	)t
+		FROM dbo.ServiceRequestTask
+		WHERE ServiceRequestId IN (
+			SELECT ServiceRequestId FROM dbo.OpenServiceRequestIdWithAssignedTo WHERE AssignedTo = @AssignedTo
+		)
+	) t
 	CROSS APPLY x.nodes('/XMLRoot/RowData')m(n)
 ) 
 , Tasks
@@ -44,14 +43,8 @@ SELECT t.Id
 	, t.TaskName
 	, TaskStatusId = dbo.GetTaskStatusId(t.CompletedDate, t.IsObsolete, srt.CompletedDate, srt.IsObsolete, @Now, sr.AppointmentDate, t.IsDependentOnExamDate)
 	, t.IsObsolete
-	, DependentCompletedDate = srt.CompletedDate
-	, DependentIsObsolete = srt.IsObsolete
 	, sr.AppointmentDate
-	, ReportDueDate = dbo.GetReportDueDate(sr.DueDate, sr.AppointmentDate, 7)
-	, DueDate = dbo.GetTaskDueDate(sr.AppointmentDate
-									, dbo.GetReportDueDate(sr.DueDate, sr.AppointmentDate, 7)
-									, t.DueDateBase
-									, t.DueDateDiff)
+	, sr.DueDate
 	, sr.StartTime
 	, sr.CompanyId
 	, sr.ServiceId
@@ -63,9 +56,43 @@ LEFT JOIN dbo.ServiceRequestTask srt
 		AND CASE WHEN t.DependsOn = 'ExamDate' THEN NULL ELSE t.DependsOn END = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
 )
+, TasksWithStatus
+AS
+(
+	SELECT 
+	  Id
+	, AssignedTo
+	, ServiceRequestId
+	, TaskId
+	, TaskName
+	, IsObsolete
+	, AppointmentDate
+	, DueDate
+	, StartTime
+	, CompanyId
+	, ServiceId
+	, ClaimantName
+	, PhysicianId
+	, TaskStatusId = MIN(TaskStatusId)
+FROM Tasks
+GROUP BY 
+	  Id
+	, AssignedTo
+	, ServiceRequestId
+	, TaskId
+	, TaskName
+	, IsObsolete
+	, AppointmentDate
+	, DueDate
+	, StartTime
+	, CompanyId
+	, ServiceId
+	, ClaimantName
+	, PhysicianId
+)
 SELECT t.Id
 	, t.ServiceRequestId
-	, t.ReportDueDate
+	, ReportDueDate = t.DueDate
 	, t.AppointmentDate
 	, t.StartTime
 	, t.TaskId
@@ -83,8 +110,13 @@ SELECT t.Id
 	, PhysicianDisplayName = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
 	, PhysicianColorCode = p.ColorCode
 	, PhysicianInitials = dbo.GetInitials(p.FirstName, p.LastName)
-FROM Tasks t
+	, t.AssignedTo
+	, AssignedToDisplayName = dbo.GetDisplayName(ast.FirstName, ast.LastName, ast.Title)
+	, AssignedToColorCode = ast.ColorCode
+	, AssignedToInitials = dbo.GetInitials(ast.FirstName, ast.LastName)
+FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id
 LEFT JOIN dbo.LookupItem li ON t.TaskStatusId = li.Id
 LEFT JOIN dbo.[AspNetUsers] p ON t.PhysicianId = p.Id
+LEFT JOIN dbo.[AspNetUSers] ast ON t.AssignedTo = ast.Id

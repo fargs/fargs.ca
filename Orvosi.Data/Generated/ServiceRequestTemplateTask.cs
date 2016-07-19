@@ -18,20 +18,12 @@ namespace Orvosi.Data
     public partial class ServiceRequestTemplateTask
     {
         public short Id { get; set; } // Id (Primary key)
-        public short ServiceRequestTemplateId { get; set; } // ServiceRequestTemplateId
-        public byte? TaskPhaseId { get; set; } // TaskPhaseId
-        public string TaskName { get; set; } // TaskName (length: 128)
-        public string Guidance { get; set; } // Guidance (length: 1000)
+        public short? ParentId { get; set; } // ParentId
         public short? Sequence { get; set; } // Sequence
-        public bool IsBillable { get; set; } // IsBillable
-        public decimal? EstimatedHours { get; set; } // EstimatedHours
-        public decimal? HourlyRate { get; set; } // HourlyRate
-        public string ResponsibleRoleId { get; set; } // ResponsibleRoleId (length: 128)
+        public short ServiceRequestTemplateId { get; set; } // ServiceRequestTemplateId
+        public short? TaskId { get; set; } // TaskId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
-        public string DependsOn { get; set; } // DependsOn (length: 50)
-        public short? ParentId { get; set; } // ParentId
-        public short? TaskId { get; set; } // TaskId
 
         // Foreign keys
         public virtual ServiceRequestTemplate ServiceRequestTemplate { get; set; } // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
@@ -39,7 +31,6 @@ namespace Orvosi.Data
 
         public ServiceRequestTemplateTask()
         {
-            IsBillable = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             InitializePartial();

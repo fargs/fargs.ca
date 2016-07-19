@@ -14,7 +14,7 @@ namespace WebApp.Areas.Admin.Controllers
         OrvosiEntities db = new OrvosiEntities();
         
         // GET: Admin/ServiceCatalogue
-        public ActionResult Index(string physicianId, short? companyId)
+        public ActionResult Index(Guid physicianId, short? companyId)
         {
             var vm = new IndexViewModel();
 

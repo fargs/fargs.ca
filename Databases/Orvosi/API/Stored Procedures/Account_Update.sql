@@ -1,6 +1,6 @@
 ﻿
 CREATE PROC [API].[Account_Update]
-	 @Id nvarchar(128)
+	 @Id uniqueidentifier
 	,@Email nvarchar(256)
 	,@EmailConfirmed bit
 	,@PhoneNumber nvarchar(128)

@@ -11,10 +11,15 @@ using Model.Enums;
 
 namespace WebApp.Models
 {
+    public class ApplicationUserLogin : IdentityUserLogin<Guid> { }
+    public class ApplicationUserClaim : IdentityUserClaim<Guid> { }
+    public class ApplicationUserRole : IdentityUserRole<Guid> { }
+    public class ApplicationRole : IdentityRole<Guid, ApplicationUserRole> { }
+ 
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<Guid, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>
     {
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser, Guid> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
@@ -22,7 +27,7 @@ namespace WebApp.Models
             userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
-            userIdentity.AddClaim(new Claim("RoleId", this.Roles.FirstOrDefault().RoleId));
+            userIdentity.AddClaim(new Claim("RoleId", Roles.First().RoleId.ToString()));
 
             return userIdentity;
         }
@@ -33,7 +38,7 @@ namespace WebApp.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
-        public Nullable<DateTime> LastActivationDate { get; set; }
+        public DateTime? LastActivationDate { get; set; }
         public bool IsTestRecord { get; set; }
         public string DisplayName
         {
@@ -53,10 +58,10 @@ namespace WebApp.Models
         }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("DefaultConnection")
         {
 
         }

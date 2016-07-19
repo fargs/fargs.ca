@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class ServiceCatalogue
     {
         public short Id { get; set; } // Id (Primary key)
-        public string PhysicianId { get; set; } // PhysicianId (length: 128)
+        public System.Guid? PhysicianId { get; set; } // PhysicianId
         public short? ServiceId { get; set; } // ServiceId
         public short? CompanyId { get; set; } // CompanyId
         public short? LocationId { get; set; } // LocationId

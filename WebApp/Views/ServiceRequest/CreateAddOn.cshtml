@@ -1,60 +1,8 @@
-﻿@using Model
-@using Model.Enums
-@model Model.ServiceRequest
+﻿@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
 
 @{
     ViewBag.Title = "Book an Exam - Details";
-
-    var db = new OrvosiEntities();
-
-    ViewBag.Services = db.Services
-        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician && c.ServiceCategoryId == ServiceCategories.AddOn)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.Name,
-            Value = c.Id.ToString()
-        }).ToList();
-
-    ViewBag.Companies = db.Companies
-        .Where(c => c.IsParent == false)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.Name,
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.ParentName }
-        }).ToList();
-
-    var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
-    ViewBag.Locations = l.Select(c => new SelectListItem()
-    {
-        Text = string.Format("{0} - {1}", c.LocationName, c.Name),
-        Value = c.Id.ToString(),
-        Group = new SelectListGroup() { Name = c.EntityDisplayName }
-    });
-
-    ViewBag.Requestors = db.Users
-        .Where(u => u.RoleCategoryId == RoleCategory.Company)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.DisplayName,
-            Value = c.Id.ToString()
-        }).ToList();
-
-    ViewBag.Staff = db.Users
-        .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.DisplayName,
-            Value = c.Id.ToString()
-        }).ToList();
-
-    ViewBag.Physicians = db.Users
-        .Where(u => u.RoleCategoryId == RoleCategory.Physician)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.DisplayName,
-            Value = c.Id.ToString()
-        }).ToList();
+    
 }
 
 <h3>Create Paper Review/Addendum</h3>
@@ -68,7 +16,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Physician</label>
         <div class="col-md-10">
-            @Html.DropDownList("PhysicianId", new SelectList(ViewBag.Physicians, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("PhysicianId", new SelectList(Model.PhysicianSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("PhysicianId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -76,7 +24,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Company</label>
         <div class="col-md-10">
-            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CompanyId", new SelectList(Model.CompanySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -84,7 +32,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Service</label>
         <div class="col-md-10">
-            @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceId", new SelectList(Model.ServiceSelectList, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -137,7 +85,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Case Coordinator</label>
         <div class="col-md-10">
-            @Html.DropDownList("CaseCoordinatorId", new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CaseCoordinatorId", new SelectList(Model.StaffSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
         </div>
     </div>

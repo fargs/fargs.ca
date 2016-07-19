@@ -86,6 +86,14 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.MVC5.6.2.1.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.9.2.27817, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.9.2\lib\net40\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -175,8 +183,8 @@
       <HintPath>..\packages\morelinq.2.0.0-beta03\lib\net35\MoreLinq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=2.1.3.0, Culture=neutral, PublicKeyToken=09d695329ca273b7, processorArchitecture=MSIL">
@@ -281,6 +289,18 @@
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Westwind.Utilities, Version=2.68.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Westwind.Utilities.2.68\lib\net45\Westwind.Utilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Westwind.Web, Version=2.68.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Westwind.Web.2.68\lib\net45\Westwind.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Westwind.Web.Mvc, Version=2.68.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Westwind.Web.Mvc.2.68\lib\net45\Westwind.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
@@ -413,6 +433,8 @@
     <Compile Include="Areas\Admin\ViewModels\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\TaskListItemViewModel.cs" />
+    <Compile Include="ViewModels\UserInitialsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeTemplates\AddController\ApiController.tt" />
@@ -454,6 +476,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\fullcalendar.css" />
     <Content Include="Content\fullcalendar.print.css" />
+    <Content Include="Content\images\box.jpg" />
     <Content Include="Content\images\Company Branding\logo-dime-md.png" />
     <Content Include="Content\images\Company Branding\logo-ima-md.png" />
     <Content Include="Content\images\Company Branding\logo-scm-md.jpg" />
@@ -836,6 +859,10 @@
     <Content Include="Areas\Staff\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Physicians\Views\Home\Details.cshtml" />
     <Content Include="Areas\Staff\Views\Home\Details.cshtml" />
+    <Content Include="Scripts\ww.jquery.js" />
+    <Content Include="Scripts\ww.jquery.min.js" />
+    <Content Include="Views\Dashboard\IndexKO.cshtml" />
+    <None Include="Views\Dashboard\Index_js.cshtml" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="Areas\Admin\Views\User\UserProfile.cshtml" />
@@ -965,8 +992,7 @@
     <Content Include="Views\ServiceRequestTask\TaskList.cshtml" />
     <Content Include="Views\ServiceRequestTask\NextTaskList.cshtml" />
     <Content Include="Views\ServiceRequestTask\MyTaskList.cshtml" />
-    <Content Include="Views\ServiceRequest\_ResourceAssignments.cshtml" />
-    <Content Include="Views\Dashboard\_ResourceAssignments.cshtml" />
+    <Content Include="Views\Shared\_ResourceAssignments.cshtml" />
     <Content Include="Views\ServiceRequest\CreateAddOn.cshtml" />
     <Content Include="Views\Box\_BoxIntegration.cshtml" />
     <Content Include="Views\Diagnostics\ConnectToBox.cshtml" />
@@ -978,11 +1004,31 @@
     <Content Include="Views\Diagnostics\CodeFirstContextTests.cshtml" />
     <Content Include="Views\Invoice\_ReadOnly.cshtml" />
     <Content Include="Views\ServiceRequest\ResourceAssignment.cshtml" />
+    <Content Include="Views\Shared\_TaskListActionMenu.cshtml" />
+    <Content Include="Views\ServiceRequestTask\_TaskListItem.cshtml" />
+    <Content Include="Views\Shared\_TaskButton.cshtml" />
+    <Content Include="Views\ServiceRequest\BoxManager.cshtml" />
+    <Content Include="Views\Shared\_TaskActionMenu.cshtml" />
+    <Content Include="Views\Dashboard\_DateCard.cshtml" />
+    <Content Include="Views\Dashboard\_Task.cshtml" />
+    <Content Include="Views\Dashboard\_TaskButton.cshtml" />
+    <Content Include="Views\Dashboard\_TaskActionMenu.cshtml" />
+    <Content Include="Views\Dashboard\_TaskStatusLabel.cshtml" />
+    <Content Include="Views\Dashboard\_WeekFolder.cshtml" />
+    <Content Include="Views\Dashboard\_Initials.cshtml" />
+    <Content Include="Views\Dashboard\_Person.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
     <Content Include="Views\Shared\DocumentHeader.cshtml" />
     <Content Include="Views\Shared\DocumentFooter.cshtml" />
+    <Content Include="Views\Shared\_UserInitials.cshtml" />
+    <Content Include="Views\Shared\_Initials.cshtml" />
+    <Content Include="Views\Shared\_InvoiceActionMenu.cshtml" />
+    <Content Include="Views\Shared\_ServiceStatusLabel.cshtml" />
+    <Content Include="Views\Shared\_TaskList_IME.cshtml" />
+    <Content Include="Views\Shared\_TaskList_AddOn.cshtml" />
+    <Content Include="Views\Shared\_TaskStatusLabel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1012,6 +1058,10 @@
     <ProjectReference Include="..\Orvosi.Data\Orvosi.Data.csproj">
       <Project>{46992733-a03d-41c3-93ce-1726ad978260}</Project>
       <Name>Orvosi.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Shared.csproj">
+      <Project>{cbbca8f3-b69a-474c-9d17-90a433c5a3f3}</Project>
+      <Name>Orvosi.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

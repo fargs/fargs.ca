@@ -17,7 +17,7 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class AspNetUser
     {
-        public string Id { get; set; } // Id (Primary key) (length: 128)
+        public System.Guid Id { get; set; } // Id (Primary key)
         public string Email { get; set; } // Email (length: 256)
         public bool EmailConfirmed { get; set; } // EmailConfirmed
         public string PasswordHash { get; set; } // PasswordHash
@@ -49,9 +49,13 @@ namespace Orvosi.Data
         public string BoxRefreshToken { get; set; } // BoxRefreshToken (length: 128)
 
         // Reverse navigation
+        public virtual Physician Physician { get; set; } // Physician.FK_Physician_AspNetUsers
         public virtual System.Collections.Generic.ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims.FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId
         public virtual System.Collections.Generic.ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> CaseCoordinator { get; set; } // ServiceRequest.FK_ServiceRequest_CaseCoordinator
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> DocumentReviewer { get; set; } // ServiceRequest.FK_ServiceRequest_DocumentReviewer
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
 
         public AspNetUser()
@@ -62,6 +66,9 @@ namespace Orvosi.Data
             AspNetUserClaims = new System.Collections.Generic.List<AspNetUserClaim>();
             AspNetUserLogins = new System.Collections.Generic.List<AspNetUserLogin>();
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
+            CaseCoordinator = new System.Collections.Generic.List<ServiceRequest>();
+            DocumentReviewer = new System.Collections.Generic.List<ServiceRequest>();
+            IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();
         }

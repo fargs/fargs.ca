@@ -11,13 +11,15 @@ using WebApp.ViewModels.AvailabilityViewModels;
 using System.Globalization;
 using WebApp.Library;
 using System.Net;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
     [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class AvailabilityController : Controller
     {
-        OrvosiEntities db = new OrvosiEntities();
+        //OrvosiEntities db = new OrvosiEntities();
+        Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
 
         // GET: Availability
         public async Task<ActionResult> Index(FilterArgs args)
@@ -33,24 +35,23 @@ namespace WebApp.Controllers
             args.Month = thisMonth.Month;
             args.FilterDate = thisMonth;
 
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
+            var user = context.AspNetUsers.Single(u => u.UserName == User.Identity.Name);
 
             //TODO: this will not be limited to just physicians, intakes should be able to manage their availability as well.
             // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
-            if (user.RoleCategoryId == RoleCategory.Admin && !string.IsNullOrEmpty(args.PhysicianId))
+            if (user.AspNetUserRoles.First().AspNetRole.RoleCategoryId == RoleCategory.Admin && args.PhysicianId.HasValue)
             {
                 args.PhysicianId = args.PhysicianId;
             }
             else
             {
-                args.PhysicianId= user.Id;
+                args.PhysicianId = user.Id;
             }
 
-            var availableDays = await db.AvailableDays
-                .Where(c => c.PhysicianId == args.PhysicianId && (c.Day >= thisMonth && c.Day < nextMonth))
-                .ToListAsync();
+            var availableDays = context.AvailableDays
+                .Where(c => c.PhysicianId == args.PhysicianId && (c.Day >= thisMonth && c.Day < nextMonth));
 
-            var selectedUser = await db.Users.SingleOrDefaultAsync(c => c.Id == args.PhysicianId);
+            var selectedUser = await context.AspNetUsers.SingleOrDefaultAsync(c => c.Id == args.PhysicianId);
 
             var model = new IndexViewModel()
             {
@@ -61,21 +62,16 @@ namespace WebApp.Controllers
                 Today = SystemTime.Now(),
                 FilterArgs = args
             };
-            
+
             return View(model);
         }
 
         [HttpGet]
-        public async Task<ActionResult> AddDay(string id)
+        public async Task<ActionResult> AddDay(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            var physician = context.AspNetUsers.Single(c => c.Id == id);
 
-            var physician = db.Users.Single(c => c.Id == id);
-
-            var availableDays = await db.AvailableDays.Where(c => c.PhysicianId == id).ToListAsync();
+            var availableDays = await context.AvailableDays.Where(c => c.PhysicianId == id).ToListAsync();
 
             var arr = availableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray<string>();
             ViewBag.AvailableDaysCSV = MvcHtmlString.Create(string.Join(",", arr));
@@ -83,7 +79,7 @@ namespace WebApp.Controllers
             var model = new AvailableDay()
             {
                 PhysicianId = id,
-                PhysicianName = physician.DisplayName,
+                PhysicianName = physician.GetDisplayName(),
                 Day = SystemTime.Now()
             };
             return View(model);
@@ -92,33 +88,22 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> AddDay(AvailableDay model)
         {
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
-
-            // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
-            if (user.RoleCategoryId != RoleCategory.Admin && model.PhysicianId != user.Id)
-            {
-                throw new Exception("You are not allowed to update this users information.");
-            }
-
             if (ModelState.IsValid)
             {
-                using (var db = new OrvosiEntities(User.Identity.Name))
+                var dates = Request.Form["AvailableDays"].Split(',');
+                foreach (var item in dates)
                 {
-                    var dates = Request.Form["AvailableDays"].Split(',');
-                    foreach (var item in dates)
+                    var day = new Orvosi.Data.AvailableDay()
                     {
-                        var day = new AvailableDay()
-                        {
-                            Day = DateTime.Parse(item),
-                            PhysicianId = model.PhysicianId,
-                            CompanyId = model.CompanyId,
-                            LocationId = model.LocationId,
-                            IsPrebook = model.IsPrebook
-                        };
-                        db.AvailableDays.Add(day);
-                    }
-                    await db.SaveChangesAsync();
+                        Day = DateTime.Parse(item),
+                        PhysicianId = model.PhysicianId,
+                        CompanyId = model.CompanyId,
+                        LocationId = model.LocationId,
+                        IsPrebook = model.IsPrebook
+                    };
+                    context.AvailableDays.Add(day);
                 }
+                await context.SaveChangesAsync();
                 return RedirectToAction("Index", new { id = model.PhysicianId });
             }
             return View(model);
@@ -128,23 +113,19 @@ namespace WebApp.Controllers
         public async Task<ActionResult> AddSlots(short AvailableDayId, short StartHour, short StartMinute, short Duration, byte Repeat)
         {
             var firstStartTime = new TimeSpan(StartHour, StartMinute, 0);
-            using (var db = new OrvosiEntities(User.Identity.Name))
-            {
                 for (int i = 0; i < Repeat; i++)
                 {
                     var startTime = firstStartTime.Add(new TimeSpan(0, Duration * i, 0));
                     var endTime = startTime.Add(new TimeSpan(0, Duration, 0));
-                    var obj = new AvailableSlot()
+                    var slot = new Orvosi.Data.AvailableSlot()
                     {
                         AvailableDayId = AvailableDayId,
                         StartTime = startTime,
                         EndTime = endTime,
-                        Duration = Duration,
-                        Title = string.Empty // Needed because the view makes this non nullable.
+                        Duration = Duration
                     };
-                    db.AvailableSlots.Add(obj);
-                }
-                await db.SaveChangesAsync();
+                context.AvailableSlots.Add(slot);
+                await context.SaveChangesAsync();
             }
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -152,42 +133,28 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CancelDay(int id)
         {
-            var day = await db.AvailableDays.SingleOrDefaultAsync(c => c.Id == id);
-            if (day == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            var day = await context.AvailableDays.FirstAsync(c => c.Id == id);
 
-            if (day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null)
+            if (context.ServiceRequests.Any(sr => day.AvailableSlots.Contains(sr.AvailableSlot)))
             {
                 ModelState.AddModelError("", "Slots have already been booked.");
             }
-
-            db.AvailableDays.Remove(day);
-
-            await db.SaveChangesAsync();
-
+            context.AvailableDays.Remove(day);
+            await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
 
         [HttpPost]
         public async Task<ActionResult> CancelSlot(int id)
         {
-            var slot = await db.AvailableSlots.SingleOrDefaultAsync(c => c.Id == id);
-            if (slot == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            var slot = await context.AvailableSlots.FirstAsync(c => c.Id == id);
 
-            if (slot.ServiceRequestId != null)
+            if (context.ServiceRequests.Any(sr => sr.AvailableSlot == slot))
             {
                 ModelState.AddModelError("", "Slot has already been booked.");
             }
-
-            db.AvailableSlots.Remove(slot);
-
-            await db.SaveChangesAsync();
-
+            context.AvailableSlots.Remove(slot);
+            await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
     }

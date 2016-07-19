@@ -1,0 +1,12 @@
+﻿@using WebApp.ViewModels.DashboardViewModels
+@model Person
+
+
+@foreach (var task in Model.Tasks)
+{
+    <div>
+        @task.Name @*- @Html.Partial("_TaskStatusLabel", task.StatusId)*@
+    </div>
+}
+
+

@@ -1,0 +1,155 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+
+
+@if (User.Identity.IsAdmin())
+{
+    <div class="row" style="margin-bottom:20px">
+        <div class="col-md-12">
+            <form action="~/Dashboard/Index/" method="get" class="form-inline">
+                <div class="form-group">
+                    <select class="form-control" data-bind="options: Model.UserSelectList,
+                        optionsText: 'Text',
+                        optionsValue: 'Value',
+                        value: Model.SelectedUserId,
+                        optionsCaption: 'Choose...'"></select>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div data-bind="visible: Model.SelectedUserId">
+    <span data-bind="text: Model.SelectedUserId"></span>
+    <div data-bind="text: Model.WeekFolders().length"></div>
+</div>
+
+<ul class="nav nav-tabs nav-justified" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
+            <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+            <div class="text-muted text-center">Assessments</div>
+        </a>
+    </li>
+    <li role="presentation">
+        <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
+            <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+            <div class="text-muted text-center">Addendums / Paper Reviews</div>
+        </a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
+        <div id="week-folders" class="panel-group" data-bind="foreach: Model.WeekFolders">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" data-bind="attr: { id: 'Header-WeekFolder-' + StartDateTicks() }">
+                    <a role="button" data-toggle="collapse" data-parent="#week-folders" data-bind="attr: { href: '#WeekFolder-' + StartDateTicks() }">
+                        <div class="panel-title">
+                            <div class="row">
+                                <span class="col-sm-3" data-bind="text: WeekFolderName"></span>
+                                <div class="col-sm-3">
+                                    <span data-bind="text: AssessmentCount()"></span>
+                                    <span class="small text-muted">Assessments</span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-bind="text: ToDoCount()"></span>
+                                    <span class="small text-muted">To Do</span>
+                                </div>
+                                <span class="col-sm-3">
+                                    <span data-bind="text: WaitingCount()"></span>
+                                    <span class="small text-muted">Waiting</span>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div data-bind="attr: { id: 'WeekFolder-' + StartDateTicks() }" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="row" data-bind="foreach: DayFolders">
+                            <div class="col-sm-3">
+                                <strong data-bind="text: DayFormatted_dddd()"></strong>&nbsp;
+                                <span class="small" data-bind="text: DayFormatted_MMMdd()"></span>
+                                <div data-bind="text: Address"></div>
+                                <div data-bind="text: City" class="small text-muted"></div>
+                                <hr />
+                                <div data-bind="foreach: Assessments">
+                                    <div style="padding-bottom:10px;">
+                                        <div>
+                                            <a target="_blank" data-bind="text: Title, attr: { href: URL }"></a>
+                                        </div>
+                                        <div class="btn-toolbar">
+                                            <div class="btn-group">
+                                                <a class="btn" href="#MyTasks" aria-controls="MyTasks" role="tab" data-toggle="tab">
+                                                    <i class="glyphicon glyphicon-tasks"></i>
+                                                </a>
+                                                <a class="btn" href="#People" aria-controls="People" role="tab" data-toggle="tab">
+                                                    <i class="glyphicon glyphicon-user"></i>
+                                                </a>
+                                                <a class="btn" target="_blank" data-bind="attr: { href: BoxCaseFolderURL }">
+                                                    <img width="18" height="18" src="https://localhost:44302/Content/images/box.jpg" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="People">
+                                            <div data-bind="foreach: { data: People, as: 'person' }">
+                                                <span data-bind="style: { cursor: 'default', color: 'white', backgroundColor: person.ColorCode }, attr: { title: person.DisplayName }"
+                                                      class="btn btn-circle disabled">
+                                                    <span data-bind="text: person.Initials()"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div id="MyTasks" data-bind="foreach: MyTasks">
+                                            <form action="~/Dashboard/UpdateTaskStatus">
+                                                <input type="hidden" data-bind="value: Id" />
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" data-bind="checked: IsComplete()" />
+                                                        <span data-bind="text: Name"></span>
+                                                    </label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                                @*    <div>
+                        <a target="_blank" href="https://orvosi.app.box.com/files/0/f/@assessment.BoxCaseFolderId">Case Folder on Box</a>
+                    </div>
+                    <div>
+                        @foreach (var person in assessment.People)
+                        {
+                            <a class="" data-toggle="popover" title="@person.DisplayName" data-container="body" data-placement="bottom" data-content="@Html.Partial("_Person", person)">
+                                <span title="@person.DisplayName"
+                                        class="btn btn-circle disabled"
+                                        style="cursor: default; color: white; background-color: @person.ColorCode">
+                                    <span class="small">@person.Initials</span>
+                                </span>
+                            </a>
+                        }
+                        @foreach (var task in assessment.People.First(c => c.Id == Model.SelectedUserId).Tasks)
+                        {
+                            <form action="~/Dashboard/UpdateTaskStatus">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"> @task.Name - @Html.Partial("_TaskStatusLabel", task.StatusId)
+                                    </label>
+                                </div>
+                            </form>
+                        }
+                    </div>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
+        <h1>Add Ons</h1>
+    </div>
+</div>
+
+    @section Scripts{
+        @Scripts.Render("~/bundles/knockout")
+        @Html.Partial("Index_js", Model)
+    }

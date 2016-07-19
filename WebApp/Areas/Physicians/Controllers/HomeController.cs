@@ -15,7 +15,7 @@ namespace WebApp.Areas.Physicians.Controllers
     {
         OrvosiEntities db = new OrvosiEntities();
         // GET: Physician/Home
-        public ActionResult Index(string physicianId, byte lookAhead)
+        public ActionResult Index(Guid physicianId, byte lookAhead)
         {
             var now = DateTime.Today;
             var lookAheadDate = now.AddDays(lookAhead);

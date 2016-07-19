@@ -31,7 +31,6 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Service
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate.FK_ServiceRequestTemplate_Service
 
         // Foreign keys
         public virtual ServiceCategory ServiceCategory { get; set; } // FK_Service_ServiceCategory
@@ -43,7 +42,6 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsLocationRequired = true;
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
-            ServiceRequestTemplates = new System.Collections.Generic.List<ServiceRequestTemplate>();
             InitializePartial();
         }
 

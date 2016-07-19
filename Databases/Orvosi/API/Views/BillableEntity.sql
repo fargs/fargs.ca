@@ -4,6 +4,7 @@
 
 
 
+
 CREATE VIEW [API].[BillableEntity]
 AS
 
@@ -18,7 +19,7 @@ AS (
 		, Phone
 	FROM dbo.Company
 	UNION
-	SELECT Id
+	SELECT CONVERT(NVARCHAR(128), Id)
 		, Id
 		, u.MyCompanyName
 		, 'PHYSICIAN'

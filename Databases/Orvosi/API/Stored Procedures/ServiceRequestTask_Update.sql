@@ -4,10 +4,10 @@ CREATE PROCEDURE [API].[ServiceRequestTask_Update]
 	,@ServiceRequestId int
 	,@TaskName nvarchar(128)
 	,@Guidance nvarchar(1000)
-	,@ResponsibleRoleId nvarchar(128)
+	,@ResponsibleRoleId uniqueidentifier
 	,@ResponsibleRoleName nvarchar(128)
 	,@Sequence smallint
-	,@AssignedTo nvarchar(128)
+	,@AssignedTo uniqueidentifier
 	,@IsBillable bit
 	,@HourlyRate decimal(18,2)
 	,@EstimatedHours decimal(18,2)

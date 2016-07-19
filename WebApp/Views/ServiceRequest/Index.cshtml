@@ -176,18 +176,7 @@
                             <div class="text-muted">
                                 <strong>Closed</strong>
                                 @item.Title
-                                @if (item.ServiceStatusId == e.ServiceStatus.NoShow)
-                                {
-                                    <span class="label label-danger"><strong>No Show</strong></span>
-                                }
-                                else if (item.ServiceStatusId == e.ServiceStatus.Cancellation)
-                                {
-                                    <span class="label label-warning"><strong>Cancellation</strong></span>
-                                }
-                                else if (item.ServiceStatusId == e.ServiceStatus.LateCancellation)
-                                {
-                                    <span class="label label-danger"><strong>Late Cancellation</strong></span>
-                                }
+                                @Html.Partial("_ServiceStatusLabel", item.ServiceStatusId)
                             </div>
                         </td>
                     }
@@ -195,6 +184,18 @@
                     {
                         <td>
                             <strong>@item.ClaimantName</strong>
+                            @if (item.ServiceStatusId == e.ServiceStatus.NoShow)
+                            {
+                                <span class="label label-danger"><strong>No Show</strong></span>
+                            }
+                            else if (item.ServiceStatusId == e.ServiceStatus.Cancellation)
+                            {
+                                <span class="label label-warning"><strong>Cancellation</strong></span>
+                            }
+                            else if (item.ServiceStatusId == e.ServiceStatus.LateCancellation)
+                            {
+                                <span class="label label-danger"><strong>Late Cancellation</strong></span>
+                            }
                             <div class="text-muted">
                                 @item.CompanyName<br />
                                 @item.ServiceName
@@ -213,27 +214,7 @@
                         </td>
                         <td>
                             @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequest = item, currentUser = Model.User })
-                            @*<div class="label label-@(item.ServiceStatusId == e.ServiceStatus.Completed ? "success" : "danger")">@item.ServiceStatusText</div>
-                            <div>
-                                <div class="progress" style="margin-bottom: 0">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="@item.ClosedTasks" aria-valuemin="0" aria-valuemax="@item.TotalTasks" style="width: @(item.ClosedTasks * 100 / item.TotalTasks)%;">
-                                    </div>
-                                </div>
-                                <small class="text-muted">@item.ClosedTasks out of @item.TotalTasks completed</small>
-                            </div>
-                            <div>
-                                <small class="text-muted">Next Task: </small><small><strong>@item.NextTaskName</strong></small>
-                            </div>
-                            <div>
-                                <small class="text-muted">Assigned To: <strong>@(string.IsNullOrEmpty(item.NextTaskAssignedTo) ? "<Not Assigned>" : item.NextTaskAssignedtoName)</strong></small>
-                            </div>*@
                         </td>
-                        @*<td>
-                                <strong>@item.PhysicianDisplayName</strong><br />
-                                @item.CaseCoordinatorName <small class="text-muted">(Case Coordinator)</small><br />
-                                @item.DocumentReviewerName <small class="text-muted">(Document Reviewer)</small><br />
-                                @item.IntakeAssistantName <small class="text-muted">(Intake Assistant)</small><br />
-                            </td>*@
                         <td>
                             <div class="btn btn-circle disabled" style="color: white; background-color: @item.PhysicianColorCode;">@item.PhysicianInitials</div>
                             <div><strong>@item.Id</strong></div>

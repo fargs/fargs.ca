@@ -24,6 +24,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
         System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
         System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
+        System.Data.Entity.DbSet<City> Cities { get; set; } // City
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
@@ -40,6 +41,8 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
         System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
+        System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
+        System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
@@ -60,6 +63,12 @@ namespace Orvosi.Data
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync();
         System.Threading.Tasks.Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken);
+        
+        // Stored Procedures
+        System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now);
+        System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel>> API_GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now);
+
     }
 
 }

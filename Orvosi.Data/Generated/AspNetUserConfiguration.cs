@@ -27,7 +27,7 @@ namespace Orvosi.Data
             ToTable(schema + ".AspNetUsers");
             HasKey(x => x.Id);
 
-            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("nvarchar").HasMaxLength(128).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("uniqueidentifier").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Email).HasColumnName(@"Email").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
             Property(x => x.EmailConfirmed).HasColumnName(@"EmailConfirmed").IsRequired().HasColumnType("bit");
             Property(x => x.PasswordHash).HasColumnName(@"PasswordHash").IsOptional().HasColumnType("nvarchar");

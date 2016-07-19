@@ -32,13 +32,16 @@ namespace Orvosi.Data
             Property(x => x.Name).HasColumnName(@"Name").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.Code).HasColumnName(@"Code").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsParent).HasColumnName(@"IsParent").IsRequired().HasColumnType("bit");
-            Property(x => x.ParentId).HasColumnName(@"ParentId").IsOptional().HasColumnType("int");
+            Property(x => x.ParentId).HasColumnName(@"ParentId").IsOptional().HasColumnType("smallint");
             Property(x => x.LogoCssClass).HasColumnName(@"LogoCssClass").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.BillingEmail).HasColumnName(@"BillingEmail").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.ReportsEmail).HasColumnName(@"ReportsEmail").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.Phone).HasColumnName(@"Phone").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(256);
+
+            // Foreign keys
+            HasOptional(a => a.Parent).WithMany(b => b.Companies).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_Company_Company
             InitializePartial();
         }
         partial void InitializePartial();

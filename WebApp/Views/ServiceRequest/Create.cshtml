@@ -1,64 +1,10 @@
-﻿@using Model
-@using Model.Enums
-    @model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
+﻿@using Orvosi.Data
+@using e = Orvosi.Shared.Enums
+@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
 
     @{
         ViewBag.Title = "Book an Exam - Details";
-
-        var db = new OrvosiEntities();
-
-        ViewBag.Services = db.Services
-            .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
-            .Select(c => new SelectListItem()
-            {
-                Text = c.Name,
-                Value = c.Id.ToString(),
-                Group = new SelectListGroup() { Name = c.ServiceCategoryName }
-            }).ToList();
-
-        var slots = db.AvailableSlots
-            .Where(c => c.AvailableDayId == Model.AvailableDay.Id).ToList();
-
-        ViewBag.AvailableSlots = slots.Select(c => new SelectListItem()
-        {
-            Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.Title,
-            Value = c.Id.ToString()
-        })
-        .OrderBy(c => c.Text)
-        .ToList();
-
-        ViewBag.Companies = db.Companies
-            .Where(c => c.IsParent == false)
-            .Select(c => new SelectListItem()
-            {
-                Text = c.Name,
-                Value = c.Id.ToString(),
-                Group = new SelectListGroup() { Name = c.ParentName }
-            }).ToList();
-
-        var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
-        ViewBag.Locations = l.Select(c => new SelectListItem()
-        {
-            Text = string.Format("{0} - {1}", c.LocationName, c.Name),
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.EntityDisplayName }
-        });
-
-        ViewBag.Requestors = db.Users
-            .Where(u => u.RoleCategoryId == RoleCategory.Company)
-            .Select(c => new SelectListItem()
-            {
-                Text = c.DisplayName,
-                Value = c.Id.ToString()
-            }).ToList();
-
-        ViewBag.Staff = db.Users
-            .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-            .Select(c => new SelectListItem()
-            {
-                Text = c.DisplayName,
-                Value = c.Id.ToString()
-            }).ToList();
+        var physicianDisplayName = Model.SelectedPhysician.AspNetUser.GetDisplayName();
     }
 
     <h3>Book an Exam</h3>
@@ -70,35 +16,38 @@
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        @Html.Hidden("PhysicianId")
+        <input type="hidden" name="SelectedAvailableDayId" value="@Model.SelectedAvailableDay.Id" />
+        <input type="hidden" name="SelectedPhysicianId" value="@Model.SelectedPhysician.Id" />
+
+        @Html.Hidden("PhysicianId", Model.SelectedPhysician.Id)
         <div class="form-group">
             <label class="col-sm-2 control-label">Physician</label>
             <div class="col-sm-10">
-                <p class="form-control-static">@Model.ServiceRequest.PhysicianDisplayName</p>
+                <p class="form-control-static">@physicianDisplayName</p>
             </div>
         </div>
 
-        @Html.Hidden("AppointmentDate")
+        @Html.Hidden("AppointmentDate", Model.SelectedAvailableDay.Day)
         <div class="form-group">
             <label class="col-sm-2 control-label">Appointment Date</label>
             <div class="col-sm-10">
-                <p class="form-control-static">@Model.ServiceRequest.AppointmentDate.Value.ToLongDateString()</p>
+                <p class="form-control-static">@Model.SelectedAvailableDay.Day.ToLongDateString()</p>
             </div>
         </div>
 
-        @if (Model.AvailableDay.IsPrebook)
+        @if (Model.SelectedAvailableDay.IsPrebook)
         {
             <div class="form-group">
                 <div class="col-md-push-2 col-md-10 text-info">
-                    @Model.ServiceRequest.PhysicianDisplayName has a <strong>prebook agreement</strong> in place with <strong>@Model.AvailableDay.CompanyName</strong> on this day
+                    @physicianDisplayName has a <strong>prebook agreement</strong> in place with <strong>@Model.SelectedAvailableDay.Company.Name</strong> on this day
                 </div>
             </div>
         }
-        else if (Model.AvailableDay.CompanyId != null)
+        else if (Model.SelectedAvailableDay.CompanyId != null)
         {
             <div class="form-group">
                 <div class="col-md-push-2 col-md-10 text-info">
-                    @Model.ServiceRequest.PhysicianDisplayName has offered this day to <strong>@Model.AvailableDay.CompanyName</strong>
+                    @physicianDisplayName has offered this day to <strong>@Model.SelectedAvailableDay.Company.Name</strong>
                 </div>
             </div>
         }
@@ -106,7 +55,7 @@
         {
             <div class="form-group">
                 <div class="col-md-push-2 col-md-10 text-info">
-                    @Model.ServiceRequest.PhysicianDisplayName <strong>is available</strong> to <strong>all</strong> companies
+                    @physicianDisplayName <strong>is available</strong> to <strong>all</strong> companies
                 </div>
             </div>
         }
@@ -114,24 +63,24 @@
         <div class="form-group">
             <label class="control-label col-md-2">Company</label>
             <div class="col-md-10">
-                @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownList("CompanyId", new SelectList(Model.CompanySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
             </div>
         </div>
 
-        @if (Model.AvailableDay.LocationId != null)
+        @if (Model.SelectedAvailableDay.Address != null)
         {
             <div class="form-group">
                 <div class="col-md-push-2 col-md-10 text-info">
-                    @Model.ServiceRequest.PhysicianDisplayName has committed to a location on this day
+                    @physicianDisplayName has committed to a location on this day
                 </div>
             </div>
 
-            @Html.Hidden("LocationId", Model.AvailableDay.LocationId)
+            @Html.Hidden("AddressId", Model.SelectedAvailableDay.Address.Id)
             <div class="form-group">
                 <label class="col-sm-2 control-label">Location</label>
                 <div class="col-sm-10">
-                    <p class="form-control-static">@string.Format("{0}'s", Model.AvailableDay.LocationOwnerDisplayName) @Model.AvailableDay.LocationName</p>
+                    <p class="form-control-static">@string.Format("{0}", Model.SelectedAvailableDay.Address.Name)</p>
                 </div>
             </div>
         }
@@ -146,8 +95,8 @@
             <div class="form-group">
                 <label class="control-label col-md-2">Location</label>
                 <div class="col-md-10">
-                    @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-                    @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
+                    @Html.DropDownList("AddressId", new SelectList(Model.AddressSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                    @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -155,7 +104,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Time Slot</label>
             <div class="col-md-10">
-                @Html.DropDownList("AvailableSlotId", new SelectList(ViewBag.AvailableSlots, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownList("AvailableSlotId", new SelectList(Model.AvailableSlotSelectList, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
             </div>
         </div>
@@ -163,7 +112,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Service</label>
             <div class="col-md-10">
-                @Html.DropDownList("ServiceId", new SelectList(ViewBag.Services, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownList("ServiceId", new SelectList(Model.ServiceSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
             </div>
         </div>
@@ -224,7 +173,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Case Coordinator</label>
             <div class="col-md-10">
-                @Html.DropDownList("CaseCoordinatorId", new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.DropDownList("CaseCoordinatorId", new SelectList(Model.StaffSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
             </div>
         </div>

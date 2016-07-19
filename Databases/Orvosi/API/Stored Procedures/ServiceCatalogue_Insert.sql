@@ -1,6 +1,6 @@
 ﻿
 CREATE PROCEDURE [API].[ServiceCatalogue_Insert]
-	 @PhysicianId nvarchar(128)
+	 @PhysicianId uniqueidentifier
 	,@ServiceId smallint
 	,@CompanyId smallint
 	,@LocationId smallint

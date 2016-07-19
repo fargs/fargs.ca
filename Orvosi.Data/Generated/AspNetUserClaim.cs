@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class AspNetUserClaim
     {
         public int Id { get; set; } // Id (Primary key)
-        public string UserId { get; set; } // UserId (length: 128)
+        public System.Guid UserId { get; set; } // UserId
         public string ClaimType { get; set; } // ClaimType
         public string ClaimValue { get; set; } // ClaimValue
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate

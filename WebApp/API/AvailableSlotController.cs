@@ -15,7 +15,7 @@ namespace WebApp.API
         OrvosiEntities db = new OrvosiEntities();
         
         [Route("api/physician/{physicianId}/day/{day}/slots")]
-        public HttpResponseMessage GetByAvailableDay(DateTime day, string physicianId)
+        public HttpResponseMessage GetByAvailableDay(DateTime day, Guid physicianId)
         {
             var ad = db.AvailableDays
                 .SingleOrDefault(c => c.PhysicianId == physicianId && c.Day == day);

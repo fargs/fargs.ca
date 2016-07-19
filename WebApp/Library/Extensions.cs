@@ -12,12 +12,14 @@ using System.Security.Claims;
 using System.Text;
 using Box.V2.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
+using WebApp.Models;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApp.Library.Extensions
 {
     public static class Extensions
     {
-
         public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
         {
             var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);
@@ -29,6 +31,16 @@ namespace WebApp.Library.Extensions
         public static int Quarter(this DateTime dateTime)
         {
             return Convert.ToInt16((dateTime.Month - 1) / 3) + 1;
+        }
+
+        public static byte ToTimeline(this DateTime value, DateTime now)
+        {
+            byte result = Timeline.Future;
+            if (value < now)
+                result = Timeline.Past;
+            else if (value == now)
+                result = Timeline.Present;
+            return result;
         }
 
         public static string GetBaseUrl(this HttpRequestBase request)
@@ -46,7 +58,7 @@ namespace WebApp.Library.Extensions
 
         public static string ToWeekFolderName(this DateTime value)
         {
-            return string.Format("{0} {1}-{2}", value.ToString("MMM").ToUpper(), value.GetStartOfWeek().Day.ToString().PadLeft(2, '0'), value.GetEndOfWeek().Day.ToString().PadLeft(2, '0'));
+            return string.Format("{0} {1}-{2}", value.ToString("MMM").ToUpper(), value.GetStartOfWeekWithinMonth().Day.ToString().PadLeft(2, '0'), value.GetEndOfWeekWithinMonth().Day.ToString().PadLeft(2, '0'));
         }
 
         public static string ToOrvosiDateFormat(this DateTime value)
@@ -57,6 +69,16 @@ namespace WebApp.Library.Extensions
         public static string ToOrvosiDateFormat(this DateTime? value)
         {
             return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
+        }
+
+        public static string ToOrvosiDateTimeFormat(this DateTime value)
+        {
+            return value.ToString("yyyy-MM-dd HH:mm");
+        }
+
+        public static string ToOrvosiDateTimeFormat(this DateTime? value)
+        {
+            return value.HasValue ? value.Value.ToString("yyyy-MM-dd HH:mm") : string.Empty;
         }
 
         public static List<BoxItem> Entries(this BoxFolder value)
@@ -70,22 +92,6 @@ namespace WebApp.Library.Extensions
             var jw = new StringWriter();
             js.Serialize(jw, obj);
             return jw.ToString();
-        }
-
-        public static ClaimsIdentity GetClaimsIdentity(this IIdentity obj)
-        {
-            return obj as ClaimsIdentity;
-        }
-
-        public static string GetRoleId(this IIdentity obj)
-        {
-            var claim = obj.GetClaimsIdentity().Claims.SingleOrDefault(c => c.Type == "RoleId");
-            if (claim == null)
-            {
-                return string.Empty;
-            }
-            return claim.Value;
-
         }
 
         public static int GetRestOfWeek(this DateTime obj)
@@ -117,6 +123,19 @@ namespace WebApp.Library.Extensions
                 default:
                     restOfWeek = 0;
                     break;
+            }
+            return restOfWeek;
+        }
+
+        public static int GetRestOfWeekWithinMonth(this DateTime obj)
+        {
+            var restOfWeek = obj.GetRestOfWeek();
+            var daysInMonth = DateTime.DaysInMonth(obj.Year, obj.Month);
+
+            // if the end of the month falls in the week
+            if (obj.Day + restOfWeek > daysInMonth)
+            {
+                restOfWeek = daysInMonth - obj.Day;
             }
             return restOfWeek;
         }
@@ -159,9 +178,34 @@ namespace WebApp.Library.Extensions
             return obj.AddDays(obj.GetRestOfWeek());
         }
 
+        public static DateTime GetEndOfWeekWithinMonth(this DateTime obj)
+        {
+            return obj.AddDays(obj.GetRestOfWeekWithinMonth());
+        }
+
         public static DateTime GetStartOfWeek(this DateTime obj)
         {
             return obj.AddDays(obj.GetDaysOfWeekPast() * -1);
+        }
+
+        public static DateTime GetStartOfWeekWithinMonth(this DateTime obj)
+        {
+            var daysPast = obj.GetDaysOfWeekPast();
+            if (daysPast > obj.Day) // number of days since monday is greater than the current day number
+            {
+                return new DateTime(obj.Year, obj.Month, 1);
+            }
+            return obj.AddDays(obj.GetDaysOfWeekPast() * -1);
+        }
+
+        public static DateTime GetStartOfNextWeek(this DateTime obj)
+        {
+            return obj.AddDays(obj.GetRestOfWeek() + 1);
+        }
+
+        public static DateTime GetEndOfNextWeek(this DateTime obj)
+        {
+            return obj.AddDays(obj.GetRestOfWeek() + 7);
         }
 
         public static StringBuilder RemoveLine(this StringBuilder @this, string lineText)
@@ -178,6 +222,52 @@ namespace WebApp.Library.Extensions
             var result = new HtmlString("'" + string.Join("','", values) + "'");
             return result;
         }
+
+        #region IIdentity
+
+        public static bool IsAdmin(this IIdentity identity)
+        {
+            var adminRoles = new Guid[2] 
+            {
+                Roles.CaseCoordinator,
+                Roles.SuperAdmin
+            };
+            return adminRoles.Contains(identity.GetRoleId());
+        }
+        public static Guid GetGuidUserId(this IIdentity identity)
+        {
+            Guid result = Guid.Empty;
+            Guid.TryParse(identity.GetUserId(), out result);
+            return result;
+        }
+
+        public static ClaimsIdentity GetClaimsIdentity(this IIdentity obj)
+        {
+            return obj as ClaimsIdentity;
+        }
+
+        public static ApplicationUser GetApplicationUser(this IIdentity obj)
+        {
+            return obj as ApplicationUser;
+        }
+
+        public static Guid GetRoleId(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().Claims.SingleOrDefault(c => c.Type == "RoleId");
+            if (claim == null)
+            {
+                return Guid.Empty;
+            }
+            return new Guid(claim.Value);
+
+        }
+
+        public static bool IOwnThis(this IIdentity identity, Guid ownerId)
+        {
+            return identity.GetGuidUserId() == ownerId;
+        }
+
+        #endregion
     }
 }
 

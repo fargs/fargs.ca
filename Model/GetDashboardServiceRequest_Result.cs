@@ -22,7 +22,7 @@ namespace Model
         public Nullable<System.TimeSpan> StartTime { get; set; }
         public Nullable<System.TimeSpan> EndTime { get; set; }
         public int TimelineId { get; set; }
-        public string PhysicianId { get; set; }
+        public Nullable<System.Guid> PhysicianId { get; set; }
         public Nullable<System.Guid> CaseCoordinatorId { get; set; }
         public Nullable<System.Guid> DocumentReviewerId { get; set; }
         public Nullable<System.Guid> IntakeAssistantId { get; set; }

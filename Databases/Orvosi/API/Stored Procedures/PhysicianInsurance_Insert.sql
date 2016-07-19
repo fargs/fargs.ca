@@ -1,6 +1,6 @@
 ﻿
 CREATE PROCEDURE [API].[PhysicianInsurance_Insert]
-	 @PhysicianId nvarchar(128)
+	 @PhysicianId uniqueidentifier
 	,@Insurer nvarchar(256)
 	,@PolicyNumber nvarchar(128)
 	,@ExpiryDate date

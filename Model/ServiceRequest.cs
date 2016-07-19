@@ -24,7 +24,6 @@ namespace Model
         public System.Guid ObjectGuid { get; set; }
         public string CompanyReferenceId { get; set; }
         public Nullable<short> ServiceCatalogueId { get; set; }
-        public Nullable<long> HarvestProjectId { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
         public Nullable<int> AddressId { get; set; }
@@ -74,7 +73,7 @@ namespace Model
         public string DocumentFolderLink { get; set; }
         public string ServiceCode { get; set; }
         public Nullable<short> ServiceId { get; set; }
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public Nullable<short> CompanyId { get; set; }
         public string Notes { get; set; }
         public bool IsNoShow { get; set; }
@@ -84,7 +83,7 @@ namespace Model
         public bool IsLateCancellation { get; set; }
         public Nullable<int> NextTaskId { get; set; }
         public string NextTaskName { get; set; }
-        public string NextTaskAssignedTo { get; set; }
+        public Nullable<System.Guid> NextTaskAssignedTo { get; set; }
         public string NextTaskAssignedtoName { get; set; }
         public Nullable<byte> ServiceRequestStatusId { get; set; }
         public Nullable<byte> ServiceStatusId { get; set; }

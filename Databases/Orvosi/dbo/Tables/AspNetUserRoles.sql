@@ -1,12 +1,14 @@
 ﻿CREATE TABLE [dbo].[AspNetUserRoles] (
-    [UserId]       NVARCHAR (128) NOT NULL,
-    [RoleId]       NVARCHAR (128) NOT NULL,
-    [ModifiedDate] DATETIME       CONSTRAINT [DF_AspNetUserRoles_ModifiedDate] DEFAULT (getdate()) NOT NULL,
-    [ModifiedUser] NVARCHAR (256) CONSTRAINT [DF_AspNetUserRoles_ModifiedUser] DEFAULT (suser_name()) NULL,
+    [UserId]       UNIQUEIDENTIFIER NOT NULL,
+    [RoleId]       UNIQUEIDENTIFIER NOT NULL,
+    [ModifiedDate] DATETIME         CONSTRAINT [DF_AspNetUserRoles_ModifiedDate] DEFAULT (getdate()) NOT NULL,
+    [ModifiedUser] NVARCHAR (256)   CONSTRAINT [DF_AspNetUserRoles_ModifiedUser] DEFAULT (suser_name()) NULL,
     CONSTRAINT [PK_dbo.AspNetUserRoles] PRIMARY KEY CLUSTERED ([UserId] ASC, [RoleId] ASC),
     CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[AspNetRoles] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE
 );
+
+
 
 
 

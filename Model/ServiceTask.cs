@@ -23,7 +23,7 @@ namespace Model
         public Nullable<decimal> HourlyRate { get; set; }
         public Nullable<short> Sequence { get; set; }
         public Nullable<bool> IsBillable { get; set; }
-        public string ResponsibleRoleId { get; set; }
+        public Nullable<System.Guid> ResponsibleRoleId { get; set; }
         public string ResponsibleRoleName { get; set; }
         public Nullable<byte> TaskPhaseId { get; set; }
         public string TaskPhaseName { get; set; }

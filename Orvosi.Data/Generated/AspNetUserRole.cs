@@ -17,8 +17,8 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class AspNetUserRole
     {
-        public string UserId { get; set; } // UserId (Primary key) (length: 128)
-        public string RoleId { get; set; } // RoleId (Primary key) (length: 128)
+        public System.Guid UserId { get; set; } // UserId (Primary key)
+        public System.Guid RoleId { get; set; } // RoleId (Primary key)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 256)
 

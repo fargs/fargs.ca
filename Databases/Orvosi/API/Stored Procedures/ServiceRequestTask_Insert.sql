@@ -6,10 +6,10 @@ CREATE PROCEDURE [API].[ServiceRequestTask_Insert]
 	,@TaskPhaseId tinyint
 	,@TaskPhaseName nvarchar(128)
 	,@Guidance nvarchar(1000)
-	,@ResponsibleRoleId nvarchar(128)
+	,@ResponsibleRoleId uniqueidentifier
 	,@ResponsibleRoleName nvarchar(128)
 	,@Sequence smallint
-	,@AssignedTo nvarchar(128)
+	,@AssignedTo uniqueidentifier
 	,@DependsOn nvarchar(50)
 	,@DueDateBase tinyint
 	,@DueDateDiff smallint

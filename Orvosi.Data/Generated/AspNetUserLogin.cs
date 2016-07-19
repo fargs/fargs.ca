@@ -19,7 +19,7 @@ namespace Orvosi.Data
     {
         public string LoginProvider { get; set; } // LoginProvider (Primary key) (length: 128)
         public string ProviderKey { get; set; } // ProviderKey (Primary key) (length: 128)
-        public string UserId { get; set; } // UserId (Primary key) (length: 128)
+        public System.Guid UserId { get; set; } // UserId (Primary key)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 256)
 

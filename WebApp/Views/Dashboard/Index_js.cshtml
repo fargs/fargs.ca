@@ -1,0 +1,79 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+
+<script type="text/javascript">
+
+    var Model = function (data) {
+        self = this;
+        ko.mapping.fromJS(data, {}, self);
+
+        self.SelectedUserId.subscribe(function (newValue) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~")dashboard/index?serviceproviderid=' + newValue,
+                contentType: "application/json; charset=utf-8",
+                accept: "application/json",
+                success: function (result) {
+                    ko.mapping.fromJS(result, self.Model, mapping);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            });
+        });
+    }
+
+    //var WeekFolders = function(data){
+    //    self = this;
+    //    ko.mapping.fromJS(data, {}, self);
+    //}
+
+    //var DayFolder = function (data) {
+    //    self = this;
+    //    ko.mapping.fromJS(data, {}, self);
+    //}
+
+    //var Assessment = function (data) {
+    //    ko.mapping.fromJS(data, {}, self);
+    //}
+
+    var mapping = {
+        'SelectedUserId': {
+            create:function(options){
+                self = this;
+                ko.mapping.fromJS(options.data, {}, self);
+                
+            }
+        }
+    };
+
+    var vm = function () {
+        self = this;
+        var data = @Html.Raw(Model.ToJson());
+        self.Model = ko.mapping.fromJS(data, mapping);
+        self.Model.SelectedUserId.subscribe(function (newValue) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~")dashboard/index?serviceproviderid=' + newValue,
+                contentType: "application/json; charset=utf-8",
+                accept: "application/json",
+                success: function (result) {
+                    ko.mapping.fromJS(result, self.Model);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            });
+        });
+    }
+
+    $(function () {
+        $('[data-toggle="popover"]').popover({ html: true });
+
+        ko.applyBindings(
+            new vm()
+        );
+    });
+
+</script>

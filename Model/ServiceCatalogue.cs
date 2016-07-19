@@ -16,7 +16,7 @@ namespace Model
     {
         public short Id { get; set; }
         public Nullable<short> CompanyId { get; set; }
-        public string PhysicianId { get; set; }
+        public Nullable<System.Guid> PhysicianId { get; set; }
         public Nullable<short> ServiceId { get; set; }
         public Nullable<short> LocationId { get; set; }
         public Nullable<decimal> ServiceCataloguePriceOverride { get; set; }

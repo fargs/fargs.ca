@@ -17,7 +17,7 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class AspNetRole
     {
-        public string Id { get; set; } // Id (Primary key) (length: 128)
+        public System.Guid Id { get; set; } // Id (Primary key)
         public string Name { get; set; } // Name (length: 256)
         public byte? RoleCategoryId { get; set; } // RoleCategoryId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate

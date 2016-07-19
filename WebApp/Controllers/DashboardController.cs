@@ -2,191 +2,107 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using vm = WebApp.ViewModels.DashboardViewModels;
-using Model;
-using Model.Enums;
+using WebApp.ViewModels.DashboardViewModels;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System.Data.Entity;
 using System.Globalization;
 using WebApp.Library.Extensions;
-using WebApp.Library;
 using System.Collections.Generic;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
+using WebApp.Library;
+using Westwind.Web.Mvc;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        OrvosiEntities db = new OrvosiEntities();
+        //OrvosiEntities db = new OrvosiEntities();
+        private OrvosiDbContext context = new OrvosiDbContext();
 
         // MVC
-        public async Task<ActionResult> Index(string ServiceProviderId)
+        public async Task<ActionResult> Index(Guid? serviceProviderId, string orderTasksBy = "DueDate", bool onlyMine = true)
         {
-            Guid? serviceProviderGuid;
-            var user = await db.Users.SingleOrDefaultAsync(c => c.UserName == User.Identity.Name);
-            if (user.RoleId == Roles.SuperAdmin && ServiceProviderId != null)
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var startOfWeek = now.Date.GetStartOfWeek();
+            var endOfWeek = now.Date.GetEndOfWeek();
+            var startOfNextWeek = now.Date.GetStartOfNextWeek();
+            var endOfNextWeek = now.Date.GetEndOfNextWeek();
+
+            List<API_GetAssignedServiceRequestsReturnModel> requests = null;
+
+            // This pulls all the data required by the dashboard in one call to the database
+            //var requests = context.ServiceRequests
+            //    .Include(sr => sr.Service)
+            //    .Include(sr => sr.Address.City_CityId)
+            //    .Include(sr => sr.Company)
+            //    .Include(sr => sr.AvailableSlot)
+            //    .Include(sr => sr.CaseCoordinator)
+            //    .Include(sr => sr.DocumentReviewer)
+            //    .Include(sr => sr.IntakeAssistant)
+            //    .Include(sr => sr.Physician.AspNetUser)
+            //    .Where(sr => sr.AppointmentDate >= startOfWeek && sr.AppointmentDate < endOfNextWeek);
+
+            Guid? userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
             {
-                serviceProviderGuid = new Guid(ServiceProviderId);
+                userId = serviceProviderId.Value;
             }
-            else
+
+            requests = await context.API_GetAssignedServiceRequestsAsync(userId, now);
+
+            // Populate the view model
+            var vm = new IndexViewModel(requests, now, userId.Value, this.ControllerContext);
+
+            // Additional view data.
+            vm.SelectedUserId = serviceProviderId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                from userRole in context.AspNetUserRoles
+                                from role in context.AspNetRoles
+                                where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                select new SelectListItem
+                                {
+                                    Text = user.FirstName + " " + user.LastName,
+                                    Value = user.Id.ToString(),
+                                    Group = new SelectListGroup() { Name = role.Name }
+                                }).ToList();
+
+            var useKnockoutView = true;
+            if (useKnockoutView)
             {
-                serviceProviderGuid = new Guid(user.Id);
+                return new NegotiatedResult("IndexKO", vm);
             }
-
-            var requests = db.GetDashboardServiceRequest(serviceProviderGuid, SystemTime.Now().Date).ToList();
-
-            var vm = new vm.IndexViewModel();
-            vm.User = user;
-            vm.ThisWeekCards = GetCards(requests, 1);
-            vm.ThisWeekTotal = vm.ThisWeekCards.Sum(c => c.Summary.RequestCount);
-            vm.NextWeekCards = GetCards(requests, 2);
-            vm.NextWeekTotal = vm.NextWeekCards.Sum(c => c.Summary.RequestCount);
-
-            //var tasks = db.ServiceRequestTasks.Where(srt => srt.CompletedDate == null);
-            //if (user.RoleId != Roles.SuperAdmin)
-            //{
-            //    tasks = tasks.Where(srt => srt.AssignedTo == user.Id);
-            //}
-            //vm.TaskCards = tasks.GroupBy(srt => new { srt.TaskId, srt.TaskName, srt.Sequence })
-            //    .Select(c => new vm.IndexViewModel.TaskCard() { CardId = c.Key.TaskId.ToString(), TaskName = c.Key.TaskName, Sequence = c.Key.Sequence.Value, Total = c.Count() })
-            //    .OrderBy(c => c.Sequence)
-            //    .ToList();
-
-            //foreach (var item in tasks)
-            //{
-            //    vm.AddTask(item);
-            //}
-
-            ViewBag.PhysicianName = user.DisplayName;
-            ViewBag.UserId = user.Id;
-            ViewBag.ServiceProviderId = serviceProviderGuid;
-
             return View(vm);
         }
 
-        private static List<vm.IndexViewModel.DateCard> GetCards(List<GetDashboardServiceRequest_Result> requests, byte WeekNumber)
-        {
-            var cards = new List<vm.IndexViewModel.DateCard>();
-            var days = requests.Where(r => r.WeekNumber == WeekNumber).Select(c => new { Day = c.AppointmentDate.Value, WeekNumber = c.WeekNumber }).Distinct();
-
-            foreach (var day in days)
-            {
-                var dayRequests = requests.Where(c => c.AppointmentDate == day.Day.Date).OrderBy(c => c.StartTime).ToList();
-                var first = dayRequests.First();
-                var summary = new GetDashboardSchedule_Result()
-                {
-                    AddressName = first.AddressName,
-                    AppointmentDate = day.Day,
-                    City = first.City,
-                    CompanyName = first.CompanyName,
-                    StartTime = first.StartTime,
-                    EndTime = dayRequests.Last().EndTime,
-                    TimelineId = first.TimelineId,
-                    WeekNumber = first.WeekNumber,
-                    RequestCount = dayRequests.Count
-                };
-                cards.Add(new vm.IndexViewModel.DateCard
-                {
-                    Summary = summary,
-                    ServiceRequests = dayRequests
-                });
-            }
-            return cards;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        // API
-        //[HttpGet]
-        //public JsonResult GetServiceCatalogue(string id)
+        //private static List<IndexViewModel.DayFolder> GetCards(List<API_GetAssignedServiceRequestsReturnModel> requests, byte WeekNumber)
         //{
-        //    using (var db = new OrvosiEntities())
+        //    var cards = new List<IndexViewModel.DayFolder>();
+        //    var days = requests.Select(c => new { Day = c.AppointmentDate.Value, WeekNumber = WeekNumber }).Distinct();
+
+        //    foreach (var day in days)
         //    {
-        //        var list = db.Services.Where(s => s.ServiceCategoryId == 5).Select(c => new vm.Service()
+        //        var dayRequests = requests.Where(c => c.AppointmentDate == day.Day.Date).OrderBy(c => c.StartTime);
+        //        var first = dayRequests.First();
+        //        var last = dayRequests.Last();
+        //        var card = new IndexViewModel.AssessmentCard
         //        {
-        //            Id = c.Id,
-        //            Name = c.Name
-        //        });
-        //        return Json(list.ToList(), JsonRequestBehavior.AllowGet);
+        //            Address = first.Ad,
+        //            Day = day.Day,
+        //            City = first.Address.City_CityId.Name,
+        //            Company = first.Company.Name,
+        //            StartTime = first.AvailableSlot.StartTime,
+        //            EndTime = last.AvailableSlot.EndTime.GetValueOrDefault(first.AvailableSlot.StartTime.Add(new TimeSpan(1))),
+        //            RequestCount = dayRequests.Count(),
+        //            ServiceRequests = dayRequests
+        //        };
+        //        cards.Add(card);
         //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<JsonResult> SubmitSpecialRequest(vm.SpecialRequestFormViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return Json(new
-        //        {
-        //            success = false,
-        //            model = model,
-        //            message = "Errors occurred"
-        //        });
-        //    }
-
-        //    var db = new OrvosiEntities();
-
-        //    var identity = (User.Identity as ClaimsIdentity);
-        //    // save the record to the database
-
-        //    var specialRequest = AutoMapper.Mapper.Map<SpecialRequest>(model);
-        //    specialRequest.ModifiedUserName = identity.Name;
-        //    specialRequest.ModifiedUserId = identity.FindFirst(ClaimTypes.Sid).Value;
-
-        //    db.SpecialRequests.Add(specialRequest);
-        //    model.ActionState = (byte)await db.SaveChangesAsync();
-
-        //    if (model.ActionState == ActionStates.Saved)
-        //    {
-        //        // the current user that is submitting the special request (someone from the company typcially)
-        //        var from = identity.FindFirst(ClaimTypes.Email).Value;
-        //        var to = "support@orvosi.ca";
-        //        // Get the physician selected
-        //        _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-        //        var physician = await _userManager.FindByIdAsync(model.PhysicianId);
-        //        var subject = string.Format("Special Request - {0}", physician.UserName.Split('@').First().ToString());
-        //        var b = new StringBuilder();
-        //        b.AppendLine("REQUESTOR INFO");
-        //        b.AppendLine(string.Format("Requestor Name: {0}", identity.FindFirst("DisplayName").Value));
-        //        b.AppendLine(string.Format("Requestor Email: {0}", identity.FindFirst(ClaimTypes.Email).Value));
-        //        b.AppendLine();
-        //        b.AppendLine("PHYSICIAN INFO");
-        //        b.AppendLine(string.Format("Physician Name: {0}", physician.DisplayName));
-        //        b.AppendLine(string.Format("Physician Email: {0}", physician.Email));
-        //        b.AppendLine();
-        //        b.AppendLine("REQUEST");
-        //        var service = db.Services.SingleOrDefault(c => c.Id == model.ServiceId);
-        //        if (service != null)
-        //        {
-        //            b.AppendLine(string.Format("Service: {0}", "<Not Set>"));
-        //        }
-        //        else
-        //        {
-        //            b.AppendLine(string.Format("Service: {0}", service.Name));
-        //        }
-        //        b.AppendLine(string.Format("Timeframe: {0}", model.Timeframe));
-        //        b.AppendLine("Additional Notes:");
-        //        b.AppendLine(model.AdditionalNotes);
-
-        //        var message = new MailMessage(from, to, subject, b.ToString());
-
-        //        var messenger = MessagingService.GetService();
-        //        await messenger.SendAsync(message);
-        //    }
-
-        //    var result = new
-        //    {
-        //        success = true,
-        //        model = model,
-        //        message = "Request submitted successfully"
-        //    };
-        //    return Json(result);
+        //    return cards;
         //}
     }
 

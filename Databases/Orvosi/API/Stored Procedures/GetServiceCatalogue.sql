@@ -1,7 +1,7 @@
 ﻿
 
 CREATE PROC [API].[GetServiceCatalogue]
-	@PhysicianId NVARCHAR(128)
+	@PhysicianId uniqueidentifier
 AS
 
 WITH ServiceLocations

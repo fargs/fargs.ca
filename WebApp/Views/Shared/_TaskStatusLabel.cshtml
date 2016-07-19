@@ -1,0 +1,15 @@
+﻿@using Orvosi.Shared.Enums
+@model byte
+
+@if (Model == TaskStatuses.ToDo)
+{
+    <span class="label label-danger"><strong>To Do</strong></span>
+}
+else if (Model == TaskStatuses.Waiting)
+{
+    <span class="label label-warning"><strong>Waiting</strong></span>
+}
+else if (Model == TaskStatuses.Done)
+{
+    <span class="label label-success"><strong>Done</strong></span>
+}

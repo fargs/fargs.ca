@@ -14,7 +14,7 @@ namespace Model
     
     public partial class Profile
     {
-        public string Id { get; set; }
+        public System.Guid Id { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Title { get; set; }
@@ -27,7 +27,7 @@ namespace Model
         public System.DateTime ModifiedDate { get; set; }
         public string ModifiedUser { get; set; }
         public bool IsTestRecord { get; set; }
-        public string RoleId { get; set; }
+        public Nullable<System.Guid> RoleId { get; set; }
         public string RoleName { get; set; }
         public string CompanyName { get; set; }
         public string LogoCssClass { get; set; }

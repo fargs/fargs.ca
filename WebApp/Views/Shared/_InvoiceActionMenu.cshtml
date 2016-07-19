@@ -1,0 +1,33 @@
+﻿@using e = Orvosi.Shared.Enums
+@model Orvosi.Data.Invoice
+    <div class="btn-group btn-group-xs">
+        @if (Model.SentDate.HasValue)
+            {
+            <form action="~/Invoice/Unsubmit" method="post" class="pull-left">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="submit" class="btn btn-default btn-xs" name="Unsubmit" value="Unsubmit" />
+            </form>
+        }
+        else
+        {
+            <form action="~/Invoice/Submit" method="post" class="pull-left">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="submit" class="btn btn-default btn-xs" name="submit" value="Submit" />
+            </form>
+        }
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            ...
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li>
+                <a href="~/Invoice/Details/@Model.Id" class="btn btn-sm">View</a>
+            </li>
+            <li>
+                <a href="~/Invoice/Edit/@Model.Id" class="btn btn-sm">Edit</a>
+            </li>
+            <li>
+                <a href="~/Invoice/Download/@Model.ObjectGuid" class="btn btn-sm">Download</a>
+            </li>
+        </ul>
+    </div>
+

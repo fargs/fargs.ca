@@ -15,7 +15,7 @@ namespace Model
     public partial class PhysicianInsurance
     {
         public short Id { get; set; }
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public string Insurer { get; set; }
         public string PolicyNumber { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }

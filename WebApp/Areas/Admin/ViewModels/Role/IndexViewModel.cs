@@ -12,7 +12,7 @@ namespace WebApp.Areas.Admin.ViewModels.Role
 
     public class Role
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int UserCount { get; set; }
     }

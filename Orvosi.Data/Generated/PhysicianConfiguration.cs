@@ -27,7 +27,7 @@ namespace Orvosi.Data
             ToTable(schema + ".Physician");
             HasKey(x => x.Id);
 
-            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("nvarchar").HasMaxLength(128).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("uniqueidentifier").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Designations).HasColumnName(@"Designations").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.SpecialtyId).HasColumnName(@"SpecialtyId").IsOptional().HasColumnType("tinyint");
             Property(x => x.OtherSpecialties).HasColumnName(@"OtherSpecialties").IsOptional().HasColumnType("nvarchar").HasMaxLength(2000);
@@ -40,6 +40,10 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.BoxCaseTemplateFolderId).HasColumnName(@"BoxCaseTemplateFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.BoxAddOnTemplateFolderId).HasColumnName(@"BoxAddOnTemplateFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+
+            // Foreign keys
+            HasOptional(a => a.PhysicianSpeciality).WithMany(b => b.Physicians).HasForeignKey(c => c.SpecialtyId).WillCascadeOnDelete(false); // FK_Physician_PhysicianSpeciality
+            HasRequired(a => a.AspNetUser).WithOptional(b => b.Physician).WillCascadeOnDelete(false); // FK_Physician_AspNetUsers
             InitializePartial();
         }
         partial void InitializePartial();

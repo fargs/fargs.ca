@@ -14,7 +14,7 @@ namespace Model
     
     public partial class PhysicianCompany
     {
-        public string PhysicianId { get; set; }
+        public System.Guid PhysicianId { get; set; }
         public short CompanyId { get; set; }
         public string CompanyName { get; set; }
         public string LogoCssClass { get; set; }

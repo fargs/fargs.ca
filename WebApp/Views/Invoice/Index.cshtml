@@ -48,6 +48,10 @@
             <div class="form-group">
                 @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.HasValue ? Model.FilterArgs.Month.Value.ToString() : string.Empty), "-- Month --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
+            <div class="form-group">
+                @Html.CheckBox("ShowSubmitted", false, new { @class = "form-control", onchange = "this.form.submit();" })
+                Show Submitted
+            </div>
         </form>
     </div>
 </div>

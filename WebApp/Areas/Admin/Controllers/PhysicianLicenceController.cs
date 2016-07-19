@@ -18,7 +18,7 @@ namespace WebApp.Areas.Admin.Controllers
         OrvosiEntities db = new OrvosiEntities();
 
         // GET: Admin/PhysicianLicence
-        public ActionResult Index(string userId)
+        public ActionResult Index(Guid userId)
         {
             var user = db.Users.Single(u => u.Id == userId);
             if (user == null)
@@ -37,7 +37,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(vm);
         }
 
-        public ActionResult Create(string id)
+        public ActionResult Create(Guid id)
         {
             var user = db.Users.Single(u => u.Id == id);
             if (user == null)
@@ -80,7 +80,7 @@ namespace WebApp.Areas.Admin.Controllers
                 {
                     var doc = new Document
                     {
-                        OwnedByObjectGuid = new Guid(user.Id),
+                        OwnedByObjectGuid = user.Id,
                         ModifiedUser = User.Identity.GetUserId(),
                         Name = System.IO.Path.GetFileName(upload.FileName),
                         ContentType = upload.ContentType,
@@ -169,7 +169,7 @@ namespace WebApp.Areas.Admin.Controllers
                     }
                     var doc = new Document
                     {
-                        OwnedByObjectGuid = new Guid(licenceToUpdate.PhysicianId),
+                        OwnedByObjectGuid = licenceToUpdate.PhysicianId,
                         ModifiedUser = User.Identity.GetUserId(),
                         Name = System.IO.Path.GetFileName(upload.FileName),
                         ContentType = upload.ContentType,

@@ -28,7 +28,7 @@ namespace Orvosi.Data
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.Insurer).HasColumnName(@"Insurer").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
             Property(x => x.PolicyNumber).HasColumnName(@"PolicyNumber").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.ExpiryDate).HasColumnName(@"ExpiryDate").IsOptional().HasColumnType("date");

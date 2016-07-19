@@ -14,7 +14,7 @@ namespace Model
     
     public partial class User
     {
-        public string Id { get; set; }
+        public System.Guid Id { get; set; }
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public string PasswordHash { get; set; }
@@ -37,7 +37,7 @@ namespace Model
         public string ModifiedUser { get; set; }
         public Nullable<System.DateTime> LastActivationDate { get; set; }
         public bool IsTestRecord { get; set; }
-        public string RoleId { get; set; }
+        public Nullable<System.Guid> RoleId { get; set; }
         public string RoleName { get; set; }
         public string CompanyName { get; set; }
         public Nullable<byte> RoleCategoryId { get; set; }

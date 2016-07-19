@@ -22,7 +22,7 @@ namespace WebApp.ViewModels.ServiceCatalogueViewModels
 
     public class FilterArgs
     {
-        public string UserId { get; set; }
+        public Guid? UserId { get; set; }
         public short? CompanyId { get; set; }
         public short? LocationId { get; set; }
         public short? ServiceId { get; set; }

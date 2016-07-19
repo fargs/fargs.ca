@@ -6,15 +6,16 @@
 }
 
 @{
-    var db = new OrvosiEntities();
+    var db = new Orvosi.Data.OrvosiDbContext();
 
-    ViewBag.Users = db.Users
+    ViewBag.Users = db.AspNetUsers
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
-            Value = c.Id,
-            Group = new SelectListGroup() { Name = c.RoleName }
-        }).ToList();
+            Text = c.GetDisplayName(),
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.AspNetUserRoles.First().AspNetRole.Name }
+        });
 
     ViewBag.Years = DateRanges.GetYears()
         .Select(c => new SelectListItem()
@@ -35,7 +36,7 @@
 
 @if (Model.CurrentUser.Id != Model.SelectedUser.Id)
 {
-    <div class="lead">@Model.SelectedUser.DisplayName</div>
+    <div class="lead">@Model.SelectedUser.GetDisplayName()</div>
 }
 
 <h2>Availability</h2>
@@ -43,7 +44,7 @@
 <div class="row">
     <div class="col-md-12">
         <form action="~/Availability/Index/" method="get" class="form-inline">
-            @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
+            @if (Model.CurrentUser.AspNetUserRoles.First().AspNetRole.RoleCategoryId == RoleCategory.Admin)
             {
                 <div class="form-group">
                     @Html.DropDownList("PhysicianId", new SelectList(ViewBag.Users, "Value", "Text", Model.FilterArgs.PhysicianId), new { @class = "form-control" })
@@ -75,7 +76,7 @@
                 <div class="pull-left">@day.Day.ToString("dddd dd")</div>
                 <form action="~/Availability/CancelDay" method="post">
                     @Html.Hidden("id", day.Id)
-                    <button type="submit" @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty) class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequestId.HasValue) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                    <button type="submit" @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequests.Count() > 0) != null ? "disabled": string.Empty) class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequests.Count() == 0) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
                 </form>
             </div>
             <span>
@@ -85,7 +86,7 @@
                 }
                 else
                 {
-                    <strong class="small">@day.LocationName</strong>
+                    <strong class="small">@string.Format("{0} - {1}", day.Address.Name, day.Address.City)</strong>
                 }
             </span>
             <span> | </span>
@@ -96,7 +97,7 @@
                 }
                 else
                 {
-                    <strong class="small">@day.CompanyName</strong>
+                    <strong class="small">@day.Company.Name</strong>
                 }
             </span>
         </div>
@@ -156,7 +157,7 @@
                         <div class="pull-left" style="vertical-align: middle">
                             <form action="~/Availability/CancelSlot" method="post">
                                 @Html.Hidden("id", slot.Id)
-                                <button type="submit" @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty) class="btn btn-link @(slot.ServiceRequestId.HasValue ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                <button type="submit" @(slot.ServiceRequests.Count() > 0 ? "disabled": string.Empty) class="btn btn-link @(slot.ServiceRequests.Count() > 0 ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
                             </form>
                         </div>
                     </li>

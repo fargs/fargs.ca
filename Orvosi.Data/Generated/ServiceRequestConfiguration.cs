@@ -58,7 +58,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.NoShowRate).HasColumnName(@"NoShowRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
             Property(x => x.LateCancellationRate).HasColumnName(@"LateCancellationRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
-            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.ServiceId).HasColumnName(@"ServiceId").IsOptional().HasColumnType("smallint");
             Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("int");
             Property(x => x.ServiceCataloguePrice).HasColumnName(@"ServiceCataloguePrice").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
@@ -69,8 +69,12 @@ namespace Orvosi.Data
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address
             HasOptional(a => a.AvailableSlot).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AvailableSlotId).WillCascadeOnDelete(false); // FK_ServiceRequest_AvailableSlot
+            HasOptional(a => a.CaseCoordinator).WithMany(b => b.CaseCoordinator).HasForeignKey(c => c.CaseCoordinatorId).WillCascadeOnDelete(false); // FK_ServiceRequest_CaseCoordinator
             HasOptional(a => a.Company).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_ServiceRequest_Company
+            HasOptional(a => a.DocumentReviewer).WithMany(b => b.DocumentReviewer).HasForeignKey(c => c.DocumentReviewerId).WillCascadeOnDelete(false); // FK_ServiceRequest_DocumentReviewer
+            HasOptional(a => a.IntakeAssistant).WithMany(b => b.IntakeAssistant).HasForeignKey(c => c.IntakeAssistantId).WillCascadeOnDelete(false); // FK_ServiceRequest_IntakeAssistant
             HasOptional(a => a.Service).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_ServiceRequest_Service
+            HasRequired(a => a.Physician).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceRequest_Physician
             InitializePartial();
         }
         partial void InitializePartial();

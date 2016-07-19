@@ -36,6 +36,7 @@ namespace Orvosi.Data
             Property(x => x.Address1).HasColumnName(@"Address1").IsRequired().HasColumnType("nvarchar").HasMaxLength(255);
             Property(x => x.Address2).HasColumnName(@"Address2").IsOptional().HasColumnType("nvarchar").HasMaxLength(255);
             Property(x => x.City).HasColumnName(@"City").IsRequired().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.CityId).HasColumnName(@"CityId").IsOptional().HasColumnType("smallint");
             Property(x => x.PostalCode).HasColumnName(@"PostalCode").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.CountryId).HasColumnName(@"CountryID").IsRequired().HasColumnType("smallint");
             Property(x => x.ProvinceId).HasColumnName(@"ProvinceID").IsOptional().HasColumnType("smallint");
@@ -44,6 +45,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(256);
 
             // Foreign keys
+            HasOptional(a => a.City_CityId).WithMany(b => b.Addresses).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_Address_City
             HasOptional(a => a.Province).WithMany(b => b.Addresses).HasForeignKey(c => c.ProvinceId).WillCascadeOnDelete(false); // FK_Address_Provinces
             HasRequired(a => a.AddressType).WithMany(b => b.Addresses).HasForeignKey(c => c.AddressTypeId).WillCascadeOnDelete(false); // FK_Address_AddressType
             HasRequired(a => a.Country).WithMany(b => b.Addresses).HasForeignKey(c => c.CountryId).WillCascadeOnDelete(false); // FK_Address_Countries

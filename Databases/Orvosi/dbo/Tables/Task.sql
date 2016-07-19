@@ -6,7 +6,7 @@
     [Name]              NVARCHAR (128)      NOT NULL,
     [Guidance]          NVARCHAR (1000)     NULL,
     [TaskPhaseId]       TINYINT             NULL,
-    [ResponsibleRoleId] NVARCHAR (128)      NULL,
+    [ResponsibleRoleId] UNIQUEIDENTIFIER    NULL,
     [IsBillable]        BIT                 CONSTRAINT [DF_Task_IsBillable] DEFAULT ((0)) NULL,
     [HourlyRate]        DECIMAL (18, 2)     NULL,
     [EstimatedHours]    DECIMAL (18, 2)     NULL,
@@ -22,6 +22,8 @@
     [IsCriticalPath]    BIT                 CONSTRAINT [DF_Task_IsCriticalPath] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Task] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

@@ -12,7 +12,7 @@ namespace WebApp.Areas.Admin.Controllers
     {
         OrvosiEntities db = new OrvosiEntities();
 
-        public ActionResult Index(string physicianId)
+        public ActionResult Index(Guid physicianId)
         {
             var user = db.Users.Single(u => u.Id == physicianId);
             if (user == null)

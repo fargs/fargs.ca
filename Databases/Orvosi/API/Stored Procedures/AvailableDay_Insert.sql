@@ -2,7 +2,7 @@
 
 CREATE PROC [API].[AvailableDay_Insert]
 	@AvailableDay DATE
-	,@UserId NVARCHAR(128)
+	,@UserId uniqueidentifier
 	,@CompanyId SMALLINT
 	,@LocationId SMALLINT
 	,@IsPrebook BIT

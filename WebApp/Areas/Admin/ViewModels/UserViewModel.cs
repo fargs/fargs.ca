@@ -38,7 +38,7 @@ namespace WebApp.Areas.Admin.ViewModels
 
     public class ChangePasswordViewModel
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

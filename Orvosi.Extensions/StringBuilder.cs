@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orvosi.Extensions
+namespace Orvosi.Shared
 {
     public static partial class Extensions
     {

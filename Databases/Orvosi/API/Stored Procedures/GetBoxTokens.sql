@@ -1,5 +1,5 @@
-﻿CREATE PROC API.GetBoxTokens
-	@UserId nvarchar(128)
+﻿CREATE PROC [API].[GetBoxTokens]
+	@UserId uniqueidentifier
 AS
 SELECT BoxAccessToken 
 	, BoxRefreshToken

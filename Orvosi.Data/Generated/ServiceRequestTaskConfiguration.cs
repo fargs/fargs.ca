@@ -32,10 +32,10 @@ namespace Orvosi.Data
             Property(x => x.ServiceRequestId).HasColumnName(@"ServiceRequestId").IsRequired().HasColumnType("int");
             Property(x => x.TaskId).HasColumnName(@"TaskId").IsOptional().HasColumnType("smallint");
             Property(x => x.TaskName).HasColumnName(@"TaskName").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
-            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.ResponsibleRoleName).HasColumnName(@"ResponsibleRoleName").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.Sequence).HasColumnName(@"Sequence").IsOptional().HasColumnType("smallint");
-            Property(x => x.AssignedTo).HasColumnName(@"AssignedTo").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.AssignedTo).HasColumnName(@"AssignedTo").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.IsBillable).HasColumnName(@"IsBillable").IsRequired().HasColumnType("bit");
             Property(x => x.HourlyRate).HasColumnName(@"HourlyRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
             Property(x => x.EstimatedHours).HasColumnName(@"EstimatedHours").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
@@ -54,7 +54,7 @@ namespace Orvosi.Data
             Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
             Property(x => x.ShortName).HasColumnName(@"ShortName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
-            Property(x => x.IsDependentOnExamDate).HasColumnName(@"IsDependentOnExamDate").IsRequired().HasColumnType("int").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed);
+            Property(x => x.IsDependentOnExamDate).HasColumnName(@"IsDependentOnExamDate").IsOptional().HasColumnType("bit").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed);
 
             // Foreign keys
             HasOptional(a => a.AspNetUser).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers

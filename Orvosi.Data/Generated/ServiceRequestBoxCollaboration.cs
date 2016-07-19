@@ -18,7 +18,7 @@ namespace Orvosi.Data
     public partial class ServiceRequestBoxCollaboration
     {
         public int Id { get; set; } // Id (Primary key)
-        public string UserId { get; set; } // UserId (length: 128)
+        public System.Guid UserId { get; set; } // UserId
         public int ServiceRequestId { get; set; } // ServiceRequestId
         public string BoxCollaborationId { get; set; } // BoxCollaborationId (length: 50)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate

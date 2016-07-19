@@ -1,7 +1,7 @@
 ﻿
 CREATE PROCEDURE [API].[PhysicianLicense_Update]
 	 @Id smallint
-	,@PhysicianId nvarchar(128)
+	,@PhysicianId uniqueidentifier
 	,@CollegeName nvarchar(128)
 	,@LongName nvarchar(2000)
 	,@ExpiryDate date

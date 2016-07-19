@@ -34,7 +34,7 @@ namespace Orvosi.Data
             Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.Guidance).HasColumnName(@"Guidance").IsOptional().HasColumnType("nvarchar").HasMaxLength(1000);
             Property(x => x.TaskPhaseId).HasColumnName(@"TaskPhaseId").IsOptional().HasColumnType("tinyint");
-            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.IsBillable).HasColumnName(@"IsBillable").IsOptional().HasColumnType("bit");
             Property(x => x.HourlyRate).HasColumnName(@"HourlyRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
             Property(x => x.EstimatedHours).HasColumnName(@"EstimatedHours").IsOptional().HasColumnType("decimal").HasPrecision(18,2);

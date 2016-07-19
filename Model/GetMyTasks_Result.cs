@@ -29,7 +29,7 @@ namespace Model
         public Nullable<short> ServiceId { get; set; }
         public string ServiceName { get; set; }
         public string ClaimantName { get; set; }
-        public string PhysicianId { get; set; }
+        public Nullable<System.Guid> PhysicianId { get; set; }
         public string PhysicianDisplayName { get; set; }
         public string PhysicianColorCode { get; set; }
         public string PhysicianInitials { get; set; }

@@ -69,6 +69,17 @@ namespace Orvosi.Data
         System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, out int procResult);
         System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel>> API_GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now);
 
+        System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now);
+        System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestReturnModel>> API_GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now);
+
+        System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId);
+        System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel>> API_GetServiceRequestResourcesAsync(int? serviceRequestId);
+
+        int API_GetServiceRequestTasks(System.DateTime? now, string serviceRequestIds);
+        // API_GetServiceRequestTasksAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
     }
 
 }

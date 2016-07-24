@@ -22,6 +22,11 @@ namespace WebApp.Controllers
         //OrvosiEntities db = new OrvosiEntities();
         private OrvosiDbContext context = new OrvosiDbContext();
 
+        public ActionResult Work()
+        {
+            return View();
+        }
+
         // MVC
         public async Task<ActionResult> Index(Guid? serviceProviderId, string orderTasksBy = "DueDate", bool onlyMine = true)
         {
@@ -32,20 +37,6 @@ namespace WebApp.Controllers
             var startOfNextWeek = now.Date.GetStartOfNextWeek();
             var endOfNextWeek = now.Date.GetEndOfNextWeek();
 
-            List<API_GetAssignedServiceRequestsReturnModel> requests = null;
-
-            // This pulls all the data required by the dashboard in one call to the database
-            //var requests = context.ServiceRequests
-            //    .Include(sr => sr.Service)
-            //    .Include(sr => sr.Address.City_CityId)
-            //    .Include(sr => sr.Company)
-            //    .Include(sr => sr.AvailableSlot)
-            //    .Include(sr => sr.CaseCoordinator)
-            //    .Include(sr => sr.DocumentReviewer)
-            //    .Include(sr => sr.IntakeAssistant)
-            //    .Include(sr => sr.Physician.AspNetUser)
-            //    .Where(sr => sr.AppointmentDate >= startOfWeek && sr.AppointmentDate < endOfNextWeek);
-
             Guid? userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
             if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
@@ -53,7 +44,7 @@ namespace WebApp.Controllers
                 userId = serviceProviderId.Value;
             }
 
-            requests = await context.API_GetAssignedServiceRequestsAsync(userId, now);
+            var requests = await context.API_GetAssignedServiceRequestsAsync(userId, now);
 
             // Populate the view model
             var vm = new IndexViewModel(requests, now, userId.Value, this.ControllerContext);
@@ -71,13 +62,32 @@ namespace WebApp.Controllers
                                     Group = new SelectListGroup() { Name = role.Name }
                                 }).ToList();
 
-            var useKnockoutView = true;
-            if (useKnockoutView)
-            {
-                return new NegotiatedResult("IndexKO", vm);
-            }
-            return View(vm);
+            return new NegotiatedResult("Index", vm);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid)
+        {
+            var now = SystemTime.Now();
+            Guid? userId = User.Identity.GetGuidUserId();
+
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
+
+            if (serviceRequestTask == null)
+                return HttpNotFound();
+
+            if (isChecked)
+                serviceRequestTask.CompletedDate = SystemTime.Now();
+            else
+                serviceRequestTask.CompletedDate = null;
+
+            serviceRequestTask.ModifiedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            await context.SaveChangesAsync();
+
+            return await Index(serviceProviderGuid);
+        }
+
 
         //private static List<IndexViewModel.DayFolder> GetCards(List<API_GetAssignedServiceRequestsReturnModel> requests, byte WeekNumber)
         //{

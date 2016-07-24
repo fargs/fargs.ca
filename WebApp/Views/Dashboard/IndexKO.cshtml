@@ -9,10 +9,10 @@
         <div class="col-md-12">
             <form action="~/Dashboard/Index/" method="get" class="form-inline">
                 <div class="form-group">
-                    <select class="form-control" data-bind="options: Model.UserSelectList,
+                    <select class="form-control" data-bind="options: UserSelectList,
                         optionsText: 'Text',
                         optionsValue: 'Value',
-                        value: Model.SelectedUserId,
+                        value: SelectedUserId,
                         optionsCaption: 'Choose...'"></select>
                 </div>
             </form>
@@ -20,9 +20,9 @@
     </div>
 }
 
-<div data-bind="visible: Model.SelectedUserId">
-    <span data-bind="text: Model.SelectedUserId"></span>
-    <div data-bind="text: Model.WeekFolders().length"></div>
+<div data-bind="visible: SelectedUserId">
+    <span data-bind="text: SelectedUserId"></span>
+    <div data-bind="text: WeekFolders().length"></div>
 </div>
 
 <ul class="nav nav-tabs nav-justified" role="tablist">
@@ -41,7 +41,7 @@
 </ul>
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
-        <div id="week-folders" class="panel-group" data-bind="foreach: Model.WeekFolders">
+        <div id="week-folders" class="panel-group" data-bind="foreach: WeekFolders">
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" data-bind="attr: { id: 'Header-WeekFolder-' + StartDateTicks() }">
                     <a role="button" data-toggle="collapse" data-parent="#week-folders" data-bind="attr: { href: '#WeekFolder-' + StartDateTicks() }">
@@ -76,11 +76,11 @@
                                 <div data-bind="foreach: Assessments">
                                     <div style="padding-bottom:10px;">
                                         <div>
-                                            <a target="_blank" data-bind="text: Title, attr: { href: URL }"></a>
+                                            <a data-bind="cli" target="_blank" data-bind="text: Title, attr: { href: URL }"></a>
                                         </div>
                                         <div class="btn-toolbar">
                                             <div class="btn-group">
-                                                <a class="btn" href="#MyTasks" aria-controls="MyTasks" role="tab" data-toggle="tab">
+                                                <a data-bind="click: showMyTasks" class="btn" href="#MyTasks" aria-controls="MyTasks" role="tab" data-toggle="tab">
                                                     <i class="glyphicon glyphicon-tasks"></i>
                                                 </a>
                                                 <a class="btn" href="#People" aria-controls="People" role="tab" data-toggle="tab">
@@ -110,7 +110,7 @@
                                                 </div>
                                             </form>
                                         </div>
-                                                @*    <div>
+                                        @*    <div>
                         <a target="_blank" href="https://orvosi.app.box.com/files/0/f/@assessment.BoxCaseFolderId">Case Folder on Box</a>
                     </div>
                     <div>
@@ -124,7 +124,7 @@
                                 </span>
                             </a>
                         }
-                        @foreach (var task in assessment.People.First(c => c.Id == Model.SelectedUserId).Tasks)
+                        @foreach (var task in assessment.People.First(c => c.Id == SelectedUserId).Tasks)
                         {
                             <form action="~/Dashboard/UpdateTaskStatus">
                                 <div class="checkbox">
@@ -135,9 +135,9 @@
                             </form>
                         }
                     </div>*@
-                                            </div>
-                                        </div>
                                     </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

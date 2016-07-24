@@ -64,6 +64,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                select new DayFolder
                                                {
                                                    Day = days.Key.Value.Date,
+                                                   DayTicks = days.Key.Value.Date.Ticks,
                                                    DayFormatted_dddd = days.Key.Value.Date.ToString("dddd"),
                                                    DayFormatted_MMMdd = days.Key.Value.Date.ToString("MMM dd"),
                                                    StartTime = days.Min(c => c.StartTime.Value),
@@ -87,17 +88,6 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
                                                                      ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
                                                                      WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
-                                                                     MyTasks = from o in assessments
-                                                                               where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == userId
-                                                                               select new Task
-                                                                               {
-                                                                                   Id = o.Id,
-                                                                                   Name = o.TaskName,
-                                                                                   StatusId = o.TaskStatusId.Value,
-                                                                                   Status = o.TaskStatusName,
-                                                                                   AssignedTo = o.AssignedTo,
-                                                                                   IsComplete = o.TaskStatusId.Value == TaskStatuses.Done
-                                                                               },
                                                                      People = from o in assessments
                                                                               group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into at
                                                                               where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId
@@ -117,7 +107,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                               Name = o.TaskName,
                                                                                               StatusId = o.TaskStatusId.Value,
                                                                                               Status = o.TaskStatusName,
-                                                                                              AssignedTo = o.AssignedTo
+                                                                                              AssignedTo = o.AssignedTo,
+                                                                                              IsComplete = o.TaskStatusId.Value == TaskStatuses.Done
                                                                                           }
                                                                               }
                                                                  }
@@ -214,6 +205,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public IEnumerable<Assessment> Assessments { get; set; }
         public string DayFormatted_dddd { get; internal set; }
         public string DayFormatted_MMMdd { get; internal set; }
+        public long DayTicks { get; internal set; }
 
         public bool IsToday()
         {
@@ -256,11 +248,13 @@ namespace WebApp.ViewModels.DashboardViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public byte Sequence { get; set; }
+        public byte Sequence { get; set; }  
         public byte StatusId { get; set; }
         public string Status { get; set; }
         public DateTime CompletedDate { get; set; }
         public Guid? AssignedTo { get; set; }
-        public bool IsComplete { get; internal set; }
+        public bool IsComplete { get; set; }
+        public IEnumerable<Person> WaitingOn { get; set; }
+        public string DependsOnCSV { get; internal set; }
     }
 }

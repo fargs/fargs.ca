@@ -1,15 +1,19 @@
 ﻿@using Orvosi.Shared.Enums
-@model byte
+@model WebApp.ViewModels.DashboardViewModels.Task
 
-@if (Model == TaskStatuses.ToDo)
+@if (Model.StatusId == TaskStatuses.ToDo)
 {
-    <span class="label label-danger"><strong>To Do</strong></span>
+    <span id='task-statuslabel-@Model.Id' class='label label-danger'>To Do</span>
 }
-else if (Model == TaskStatuses.Waiting)
+else if (Model.StatusId == TaskStatuses.Waiting)
 {
-    <span class="label label-warning"><strong>Waiting</strong></span>
+    <span id='task-statuslabel-@Model.Id' class='label label-warning'>Waiting</span>
 }
-else if (Model == TaskStatuses.Done)
+else if (Model.StatusId == TaskStatuses.Done)
 {
-    <span class="label label-success"><strong>Done</strong></span>
+    <span id='task-statuslabel-@Model.Id' class='label label-success'>Done</span>
+}
+else if (Model.StatusId == TaskStatuses.Obsolete)
+{
+    <span id='task-statuslabel-@Model.Id' class='label label-info'>Obsolete</span>
 }

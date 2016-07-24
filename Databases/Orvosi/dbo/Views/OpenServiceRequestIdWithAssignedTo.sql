@@ -1,5 +1,8 @@
-﻿CREATE VIEW dbo.OpenServiceRequestIdWithAssignedTo
+﻿
+CREATE VIEW [dbo].[OpenServiceRequestIdWithAssignedTo]
 AS
-SELECT DISTINCT ServiceRequestId, AssignedTo
+
+SELECT srt.ServiceRequestId, srt.AssignedTo
 FROM dbo.ServiceRequestTask srt
-WHERE IsObsolete = 0 AND CompletedDate IS NULL
+INNER JOIN dbo.OpenServiceRequestIds o ON srt.ServiceRequestId = o.ServiceRequestId
+GROUP BY srt.ServiceRequestId, srt.AssignedTo

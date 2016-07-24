@@ -204,3 +204,5 @@ FakesAssemblies/
 /Auth
 *.dacpac
 App_Data/
+/Orvosi.Aurelia
+/Orvosi.Web

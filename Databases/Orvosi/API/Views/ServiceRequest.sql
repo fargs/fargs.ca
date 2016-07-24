@@ -74,7 +74,7 @@ SELECT
 	,[Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, sr.AppointmentDate, sr.DueDate, sr.StartTime, l.ShortText, s.Code, c.Code, p.UserName, sr.ClaimantName)
 	,ServiceRequestStatusId = dbo.GetServiceRequestStatusId(ts.OpenTasks)
 	,ServiceRequestStatusText = lisr.[Text]
-	,ServiceStatusId = dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow, spt.OpenTasks)
+	,ServiceStatusId = dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow)
 	,ServiceStatusText = lis.[Text]
 	,ServiceName = s.Name
 	,ServiceCode = s.Code
@@ -148,4 +148,4 @@ LEFT JOIN Tasks ts ON sr.Id = ts.ServiceRequestId
 LEFT JOIN ServicePhaseTasks spt ON sr.Id = spt.ServiceRequestId
 LEFT JOIN NextTask nt ON sr.Id = nt.ServiceRequestId
 LEFT JOIN dbo.LookupItem lisr ON dbo.GetServiceRequestStatusId(ts.OpenTasks) = lisr.Id
-LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow, spt.OpenTasks) = lis.Id
+LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id

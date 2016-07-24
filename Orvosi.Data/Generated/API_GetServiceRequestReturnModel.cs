@@ -14,7 +14,7 @@ namespace Orvosi.Data
 {
 
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
-    public partial class API_GetAssignedServiceRequestsReturnModel
+    public partial class API_GetServiceRequestReturnModel
     {
         public System.Int32 Id { get; set; }
         public System.Int32 ServiceRequestId { get; set; }
@@ -47,7 +47,6 @@ namespace Orvosi.Data
         public System.Int16? TaskSequence { get; set; }
         public System.String BoxCaseFolderId { get; set; }
         public System.String Title { get; set; }
-        public System.String DependsOnCSV { get; set; }
     }
 
 }

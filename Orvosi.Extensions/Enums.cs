@@ -166,10 +166,10 @@ namespace Orvosi.Shared.Enums
     public static class TaskStatuses
     {
         public const byte ToDo = 102;
-        public const byte InProgress = 103;
+        public const byte InProgress = 104;
         public const byte Waiting = 100;
         public const byte Done = 101;
-        public const byte Obsolete = 104;
+        public const byte Obsolete = 103;
     }
 
     public static class Timeline

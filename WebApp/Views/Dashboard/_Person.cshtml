@@ -5,7 +5,7 @@
 @foreach (var task in Model.Tasks)
 {
     <div>
-        @task.Name @*- @Html.Partial("_TaskStatusLabel", task.StatusId)*@
+        @Html.Partial("_TaskStatusLabel", task) @task.Name
     </div>
 }
 

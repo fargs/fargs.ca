@@ -1,4 +1,5 @@
 ﻿
+
 --EXEC API.GetAssignedServiceRequests '8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9', '2016-07-11'
 
 CREATE PROC [API].[GetAssignedServiceRequests]
@@ -16,6 +17,7 @@ AS (
 		, t.IsObsolete
 		, t.IsDependentOnExamDate
 		, t.[Sequence]
+		, DependsOnCSV = t.[DependsOn]
 		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
 	FROM
 	(
@@ -28,6 +30,7 @@ AS (
 			, IsObsolete
 			, IsDependentOnExamDate
 			, [Sequence]
+			, [DependsOn]
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
 		FROM dbo.ServiceRequestTask
 		WHERE ServiceRequestId IN (
@@ -55,6 +58,7 @@ SELECT t.Id
 	, sr.PhysicianId
 	, sr.AddressId
 	, sr.BoxCaseFolderId
+	, t.DependsOnCSV
 FROM Requests t
 LEFT JOIN dbo.ServiceRequestTask srt 
 	ON t.ServiceRequestId = srt.ServiceRequestId
@@ -82,6 +86,7 @@ AS
 	, TaskStatusId = MIN(TaskStatusId)
 	, [Sequence]
 	, BoxCaseFolderId
+	, DependsOnCSV
 FROM Tasks
 GROUP BY 
 	  Id
@@ -100,6 +105,7 @@ GROUP BY
 	, AddressId
 	, [Sequence]
 	, BoxCaseFolderId
+	, DependsOnCSV
 )
 SELECT t.Id
 	, t.ServiceRequestId
@@ -132,6 +138,7 @@ SELECT t.Id
 	, TaskSequence = t.[Sequence]
 	, BoxCaseFolderId
 	, [Title] = dbo.GetServiceRequestTitle(s.Id, t.ServiceRequestId, t.AppointmentDate, t.DueDate, t.StartTime, ci.Code, s.Code, c.Code, p.UserName, t.ClaimantName)
+	, DependsOnCSV
 FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

@@ -15,155 +15,284 @@
     </div>
 }
 
-    <div class="row">
-        <div class="col-md-12">
-            @*<div class="thumbnail alert">
-                        <div class="caption">
-                            <div class="h1 text-center">@(Model.PastAssessments.AssessmentCount)</div>
-                            <div class="text-muted text-center">Outstanding</div>
-                        </div>
-                    </div>
-                    <ul class="nav nav-tabs nav-justified" role="tablist">
-                        <li role="presentation" class="active"><a href="#Exams" aria-controls="Exams" role="tab" data-toggle="tab">Exams <span class="badge">@Model.</span></a></li>
-                        <li role="presentation"><a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">ADD/PR <span class="badge">@Model.OpenAddOnCount</span></a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active panel-body" id="Exams">
-                            @Html.Partial("_WeekFolder", Model.PastAssessments.WeekFolders)
-                        </div>
-                        <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
-                            Html.Partial("_TaskList_AddOn", Model.OpenAddOns)
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-push-1 col-md-3">
-                    <div class="thumbnail alert" style="border-bottom: 1px solid darkgray">
-                        <div class="caption">
-                            <div class="h1 text-center">@Model.PresentAssessments.AssessmentCount</div>
-                            <div class="text-muted text-center">Exams <strong>THIS</strong> week</div>
-                        </div>
-                    </div>*@
-            <ul class="nav nav-tabs nav-justified" role="tablist">
-                <li role="presentation" class="active">
-                    <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
-                        <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
-                        <div class="text-muted text-center">Assessments</div>
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
-                        <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
-                        <div class="text-muted text-center">Addendums / Paper Reviews</div>
-                    </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
-                    <div id="week-folders" class="panel-group">
-                        @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
-                        {
-                            <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="Header-WeekFolder-@weekFolder.StartDate.Ticks">
-                                    <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#WeekFolder-@weekFolder.StartDate.Ticks">
-                                        <div class="panel-title">
-                                            <div class="row">
-                                                <span class="col-sm-3">
-                                                    @weekFolder.WeekFolderName
-                                                </span>
-                                                <span class="col-sm-3">
-                                                    @weekFolder.AssessmentCount <span class="small text-muted">Assessments</span>
-                                                </span>
-                                                <span class="col-sm-3">
-                                                    @weekFolder.ToDoCount <span class="small text-muted">To Do</span>
-                                                </span>
-                                                <span class="col-sm-3">
-                                                    @weekFolder.WaitingCount <span class="small text-muted">Waiting</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div id="WeekFolder-@weekFolder.StartDate.Ticks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                                    <div class="panel-body">
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs nav-justified" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
+                    <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+                    <div class="text-muted text-center">Assessments</div>
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
+                    <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+                    <div class="text-muted text-center">Addendums / Paper Reviews</div>
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
+                <div id="week-folders" class="panel-group">
+                    @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
+                    {
+                        <div class="panel panel-default">
+                            <div id="header-weekfolder-@weekFolder.StartDateTicks" class="panel-heading" role="tab">
+                                <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
+                                    <div class="panel-title">
                                         <div class="row">
-                                            @foreach (var dayFolder in weekFolder.DayFolders)
-                                            {
-                                                <div class="col-sm-3">
-                                                    <strong>
-                                                        @dayFolder.Day.ToString("dddd")<span class="small"> @dayFolder.Day.ToString("MMM dd")</span>
-                                                    </strong>
-                                                    <div>
-                                                        @dayFolder.Address
-                                                    </div>
-                                                    <div class="small text-muted">
-                                                        @dayFolder.City
-                                                    </div>
-                                                    @*<h5><u>@dayFolder.ToDoCount To Do and @dayFolder.WaitingCount Waiting</u></h5>*@
-                                                    <hr />
-                                                    <div id="dayfolder-@dayFolder.Day.Ticks">
-                                                        @foreach (var assessment in dayFolder.Assessments)
-                                                        {
-                                                            <div style="padding-bottom:10px;">
-                                                                <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.StartTime.ToString(@"hh\:mm") - @assessment.ClaimantName</a>
-                                                                <div>
-                                                                    <a target="_blank" href="https://orvosi.app.box.com/files/0/f/@assessment.BoxCaseFolderId">Case Folder on Box</a>
-                                                                </div>
-                                                                <div>
-                                                                    @foreach (var person in assessment.People)
-                                                                    {
-                                                                        <a class="" data-toggle="popover" title="@person.DisplayName" data-container="body" data-placement="bottom" data-content="@Html.Partial("_Person", person)">
-                                                                            <span title="@person.DisplayName"
-                                                                                  class="btn btn-circle disabled"
-                                                                                  style="cursor: default; color: white; background-color: @person.ColorCode">
-                                                                                <span class="small">@person.Initials</span>
-                                                                            </span>
-                                                                        </a>
-                                                                    }
-                                                                    @foreach (var task in assessment.People.First(c => c.Id == Model.SelectedUserId).Tasks)
-                                                                    {
-                                                                        <form action="~/Dashboard/UpdateTaskStatus">
-                                                                            <div class="checkbox">
-                                                                                <label>
-                                                                                    <input type="checkbox"> @task.Name - @Html.Partial("_TaskStatusLabel", task.StatusId)
-                                                                                </label>
-                                                                            </div>
-                                                                        </form>
-                                                                    }
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            }
+                                            <span class="col-sm-3">
+                                                @weekFolder.WeekFolderName
+                                            </span>
+                                            <span class="col-sm-3">
+                                                <span id="assessment-total">@weekFolder.AssessmentCount</span> <span id="assessment-total-label" class="small text-muted">Assessments</span>
+                                            </span>
+                                            <span class="col-sm-3">
+                                                <span id="todo-total">@weekFolder.ToDoCount</span> <span id="todo-total-label" class="small label @(weekFolder.ToDoCount == 0 ? "label-success" : "label-danger")">To Do</span>
+                                            </span>
+                                            <span class="col-sm-3">
+                                                <span id="waiting-total">@weekFolder.WaitingCount</span> <span id="waiting-total-label" class="small label @(weekFolder.WaitingCount == 0 ? "label-success" : "label-warning")">Waiting</span>
+                                            </span>
                                         </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div id="weekfolder-@weekFolder.StartDateTicks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        @foreach (var dayFolder in weekFolder.DayFolders)
+                                        {
+                                            <div class="col-sm-3" id="dayfolder-@dayFolder.Day.Ticks">
+                                                <strong>
+                                                    @dayFolder.DayFormatted_dddd<span class="small"> @dayFolder.DayFormatted_MMMdd</span>
+                                                </strong>
+                                                <div>
+                                                    @dayFolder.Address
+                                                </div>
+                                                <div class="small text-muted">
+                                                    @dayFolder.City
+                                                </div>
+                                                <hr />
+                                                <div>
+                                                    @foreach (var assessment in dayFolder.Assessments)
+                                                    {
+                                                        <div id="assessment-@assessment.Id" style="padding-bottom:20px;">
+                                                            <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Title</a>
+                                                            <div style="padding-top:5px;">
+                                                                <a class="pull-left" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="22" width="22" src="~/Content/images/box.jpg" /></a>
+                                                                &nbsp;&nbsp;
+                                                                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                                {
+                                                                    <span data-toggle="modal" title="@person.DisplayName" data-target="#assessment-@assessment.Id-person-@person.Id" data-trigger="focus" data-container="body" tabindex="-1">
+                                                                        <span title="@person.DisplayName"
+                                                                              class="btn btn-sm btn-circle disabled"
+                                                                              style="cursor: pointer; color: white; background-color: @person.ColorCode">
+                                                                            <span class="small">@person.Initials</span>
+                                                                        </span>
+                                                                    </span>
+                                                                    <div id="assessment-@assessment.Id-person-@person.Id" class="modal fade" tabindex="-1" role="dialog">
+                                                                        <div class="modal-dialog modal-sm">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                                                    <h4 class="modal-title" id="myModalLabel">@person.DisplayName</h4>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    @foreach (var task in person.Tasks)
+                                                                                    {
+                                                                                        <div>
+                                                                                            @Html.Partial("_TaskStatusLabel", task) @task.Name
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Ping</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div>
+                                                                @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
+                                                                {
+                                                                    <form action="~/Dashboard/UpdateTaskStatus">
+                                                                        <div class="checkbox">
+                                                                            <label>
+                                                                                <input id="task-checkbox-@task.Id" type="checkbox"
+                                                                                       value="@task.IsComplete"
+                                                                                       @(task.IsComplete ? "checked" : "")
+                                                                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                                                       onclick="onTaskChecked(this, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                @Html.Partial("_TaskStatusLabel", task) @task.Name
+                                                                            </label>
+                                                                        </div>
+                                                                    </form>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
-    
-                        }
-                    </div>
-                </div>
-                <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
-                    <h1>Add Ons</h1>
+                        </div>
+
+                    }
                 </div>
             </div>
+            <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
+                <h1>Add Ons</h1>
+            </div>
         </div>
-        @*<div class="col-md-push-2 col-md-3">
-                <div class="thumbnail alert">
-                    <div class="caption">
-                        <div class="h1 text-center">Model.NextWeekTotal</div>
-                        <div class="text-muted text-center">Exams <strong>NEXT</strong> week</div>
-                    </div>
-                </div>
-                @foreach (var card in Model.OutstandingCards)//NextWeekCards)
-                {
-                    @Html.Partial("_DateCard", card)
-                }
-            </div>*@
     </div>
+</div>
 
 
-    @section Scripts{
-        @Scripts.Render("~/bundles/knockout")
-        @Html.Partial("Index_js", Model)
-    }
+@section Scripts{
+    <script>
+
+        function onTaskChecked(checkbox, taskId, assessmentId, day, week) {
+            var params = {
+                taskId: taskId,
+                assessmentId: assessmentId,
+                day: day,
+                week: week,
+                checkbox: checkbox
+            }
+
+            if (checkbox.checked) {
+                console.log(taskId + ' is now checked');
+            } else {
+                console.log(taskId + ' is now unchecked');
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
+                data: JSON.stringify({
+                    taskId: taskId,
+                    isChecked: checkbox.checked,
+                    serviceProviderGuid: '@Model.SelectedUserId'
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    // get the updated assessment data
+                    var weekFolder = $.grep(result.WeekFolders, function(item) { return item.StartDateTicks == params.week; });
+
+                    SetWeekTotals(weekFolder[0], week);
+
+                    if (!weekFolder[0]) {
+                        SetAllTasksToDone();
+                    }
+                    else {
+                        var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
+                        if (!dayFolder[0]) {
+                            SetAllTasksToDone();
+                        }
+                        else {
+                            var assessment = $.grep(dayFolder[0].Assessments, function(item) { return item.Id == params.assessmentId; });
+                            if (!assessment) {
+                                SetAllTasksToDone();
+                            }
+                            else {
+                                updateTaskStatuses(params.assessmentId, assessment);
+                            }
+                        }
+                    }
+
+                    console.log('success: ' + result);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        function SetWeekTotals(weekFolderFromResult, weekIdForEl){
+            var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
+            
+            var assessmentTotalEl = weekFolderEl.find('#assessment-total');
+            var todoTotalEl = weekFolderEl.find('#todo-total');
+            var waitingTotalEl = weekFolderEl.find('#waiting-total');
+
+            assessmentTotalEl.text(weekFolderFromResult.AssessmentCount);
+            todoTotalEl.text(weekFolderFromResult.ToDoCount);
+            waitingTotalEl.text(weekFolderFromResult.WaitingCount);
+
+            if (weekFolderFromResult.ToDoCount == 0)
+                weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-success');
+            else 
+                weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-danger');
+
+            if (weekFolderFromResult.WaitingCount == 0)
+                weekFolderEl.find('#waiting-total-label').removeClass().addClass('small label label-success');
+            else
+                weekFolderEl.find('#waiting-total-label').removeClass().addClass('small label label-warning');
+        }
+
+        function updateTaskStatuses(assessmentIdForEl, assessmentFromResult){
+            var taskStatuses = {
+                "ToDo": 102,
+                "InProgress": 104,
+                "Waiting": 100,
+                "Done": 101,
+                "Obsolete": 103
+            };
+            var assessmentEl = $('#asessment-' + assessmentIdForEl);
+            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
+
+            $.each(assessmentFromResult[0].People, function(index, person){
+                $.each(person.Tasks, function(index, task){
+                    taskEl = $('#task-statuslabel-' + task.Id);
+                    taskEl.removeClass();
+                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
+                    if (task.StatusId == taskStatuses.Done) {
+                        MarkTaskAsDone(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.StatusId == taskStatuses.ToDo) {
+                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.StatusId == taskStatuses.Waiting) {
+                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.StatusId == taskStatuses.Obsolete) {
+                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
+                    }
+                });
+            });
+        }
+
+        function MarkTaskAsDone(label, checkbox){
+            label.addClass("label label-success").text("Done");
+            checkbox.prop('disabled', false);
+        }
+
+        function MarkTaskAsToDo(label, checkbox) {
+            label.addClass("label label-danger").text("To Do");
+            checkbox.prop('disabled', false);
+        }
+        
+        function MarkTaskAsWaiting(label, checkbox) {
+            label.addClass("label label-warning").text("Waiting");
+            checkbox.prop('disabled', true);
+        }
+
+        function MarkTaskAsObsolete(label, checkbox) {
+            label.addClass("label label-info").text("Obsolete");
+            checkbox.prop('disabled', true);
+        }
+
+
+        $(function () {
+            $('[data-toggle="popover"]').popover({
+                html: true
+            });
+        })
+
+
+    </script>
+}

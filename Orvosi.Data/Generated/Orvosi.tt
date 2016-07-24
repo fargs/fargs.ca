@@ -144,7 +144,7 @@
     // Stored Procedures ******************************************************************************************************************
     // Use the following regex filters to include or exclude stored procedures
     StoredProcedureFilterExclude = null;
-    StoredProcedureFilterInclude = new Regex("GetAssignedServiceRequests");
+    StoredProcedureFilterInclude = new Regex("GetAssignedServiceRequests|GetServiceRequest");
 
 
     // Table renaming *********************************************************************************************************************

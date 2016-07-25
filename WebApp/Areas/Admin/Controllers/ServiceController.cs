@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Model;
+using Orvosi.Data;
 using Microsoft.AspNet.Identity;
 using Model.Enums;
 
@@ -14,7 +14,7 @@ namespace WebApp.Areas.Admin.Controllers
 {
     public class ServiceController : BaseController
     {
-        private OrvosiEntities db = new OrvosiEntities();
+        private OrvosiDbContext db = new OrvosiDbContext();
 
         // GET: Admin/Service
         public ActionResult Index(byte parentId)

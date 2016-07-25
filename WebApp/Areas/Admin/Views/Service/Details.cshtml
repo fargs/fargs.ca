@@ -1,4 +1,5 @@
-﻿@model Model.Service
+﻿@using Orvosi.Data
+@model Service
 
 @{
     ViewBag.Title = "Details";
@@ -27,14 +28,14 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.DefaultPrice)
+            @Html.DisplayNameFor(model => model.Price)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.DefaultPrice)
+            @Html.DisplayFor(model => model.Price)
         </dd>
 
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.ServiceCategoryName)
         </dt>
 
@@ -44,7 +45,7 @@
 
         <dt>
             @Html.DisplayNameFor(model => model.ServicePortfolioName)
-        </dt>
+        </dt>*@
 
     </dl>
 </div>

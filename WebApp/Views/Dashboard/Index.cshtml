@@ -76,9 +76,16 @@
                                                 <div>
                                                     @foreach (var assessment in dayFolder.Assessments)
                                                     {
-                                                        <div id="assessment-@assessment.Id" style="padding-bottom:20px;">
-                                                            <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Title</a>
-                                                            <div style="padding-top:5px;">
+                                                        <div id="header-assessment-@assessment.Id">
+                                                            <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                                                            &nbsp;
+                                                            <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                                                            &nbsp;
+                                                            <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
+                                                            <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
+                                                        </div>
+                                                        <div id="assessment-@assessment.Id" class="collapse">
+                                                            <div style="padding-top:5px">
                                                                 <a class="pull-left" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="22" width="22" src="~/Content/images/box.jpg" /></a>
                                                                 &nbsp;&nbsp;
                                                                 @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
@@ -131,6 +138,7 @@
                                                                 }
                                                             </div>
                                                         </div>
+                                                        <div style="padding-top:10px"></div>
                                                     }
                                                 </div>
                                             </div>
@@ -199,7 +207,8 @@
                                 SetAllTasksToDone();
                             }
                             else {
-                                updateTaskStatuses(params.assessmentId, assessment);
+                                SetAssessmentTotals(assessment[0], params.assessmentId);
+                                updateTaskStatuses(assessment[0], params.assessmentId);
                             }
                         }
                     }
@@ -234,7 +243,21 @@
                 weekFolderEl.find('#waiting-total-label').removeClass().addClass('small label label-warning');
         }
 
-        function updateTaskStatuses(assessmentIdForEl, assessmentFromResult){
+        function SetAssessmentTotals(assessmentFromResult, assessmentIdForEl) {
+            var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
+
+            if (assessmentFromResult.ToDoCount == 0)
+                assessmentEl.find('#assessment-todo-total-label').removeClass().addClass('small label label-success').text(assessmentFromResult.ToDoCount);
+            else
+                assessmentEl.find('#assessment-todo-total-label').removeClass().addClass('small label label-danger').text(assessmentFromResult.ToDoCount);
+
+            if (assessmentFromResult.WaitingCount == 0)
+                assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-success').text(assessmentFromResult.WaitingCount);
+            else
+                assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-warning').text(assessmentFromResult.WaitingCount);
+        }
+
+        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
             var taskStatuses = {
                 "ToDo": 102,
                 "InProgress": 104,
@@ -245,7 +268,7 @@
             var assessmentEl = $('#asessment-' + assessmentIdForEl);
             var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
 
-            $.each(assessmentFromResult[0].People, function(index, person){
+            $.each(assessmentFromResult.People, function(index, person){
                 $.each(person.Tasks, function(index, task){
                     taskEl = $('#task-statuslabel-' + task.Id);
                     taskEl.removeClass();
@@ -285,14 +308,5 @@
             label.addClass("label label-info").text("Obsolete");
             checkbox.prop('disabled', true);
         }
-
-
-        $(function () {
-            $('[data-toggle="popover"]').popover({
-                html: true
-            });
-        })
-
-
     </script>
 }

@@ -76,9 +76,6 @@
     <Compile Include="Generated\API_GetServiceRequestResourcesReturnModel.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\API_GetServiceRequestReturnModel.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Generated\AspNetRole.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

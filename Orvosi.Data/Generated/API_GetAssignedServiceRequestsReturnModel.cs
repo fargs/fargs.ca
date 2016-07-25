@@ -48,6 +48,8 @@ namespace Orvosi.Data
         public System.String BoxCaseFolderId { get; set; }
         public System.String Title { get; set; }
         public System.String DependsOnCSV { get; set; }
+        public System.String ServiceCode { get; set; }
+        public System.String ServiceColorCode { get; set; }
     }
 
 }

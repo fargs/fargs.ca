@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Helpers
-@using Model.Enums
-@model IEnumerable<Model.Service>
+@using Orvosi.Shared.Enums
+@model IEnumerable<Orvosi.Data.Service>
 
 @{
     ViewBag.Title = "Index";
@@ -30,11 +30,11 @@
             @Html.DisplayNameFor(model => model.Code)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.DefaultPrice)
+            @Html.DisplayNameFor(model => model.Price)
         </th>
-        <th>
+        @*<th>
             @Html.DisplayNameFor(model => model.ServiceCategoryName)
-        </th>
+        </th>*@
         <th></th>
     </tr>
 
@@ -50,11 +50,11 @@
             @Html.DisplayFor(modelItem => item.Code)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.DefaultPrice)
+            @Html.DisplayFor(modelItem => item.Price)
         </td>
-        <td>
+        @*<td>
             @Html.DisplayFor(modelItem => item.ServiceCategoryName)
-        </td>
+        </td>*@
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
             @Html.ActionLink("Details", "Details", new { id=item.Id }) |

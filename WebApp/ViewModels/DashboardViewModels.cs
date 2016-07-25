@@ -75,7 +75,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                    ToDoCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
                                                    WaitingCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
                                                    Assessments = from o in assessments
-                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName } into sr
+                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode } into sr
                                                                  where sr.Key.AppointmentDate == days.Key
                                                                  select new Assessment
                                                                  {
@@ -83,7 +83,9 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      ClaimantName = sr.Key.ClaimantName,
                                                                      StartTime = sr.Key.StartTime.Value,
                                                                      Service = sr.Key.ServiceName,
-                                                                     Title = $"{sr.Key.StartTime} - {sr.Key.ClaimantName}",
+                                                                     ServiceCode = sr.Key.ServiceCode,
+                                                                     ServiceColorCode = sr.Key.ServiceColorCode,
+                                                                     Title = $"{sr.Key.StartTime.ToShortTimeSafe()} - {sr.Key.ClaimantName}",
                                                                      URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                                                                      BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
                                                                      ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
@@ -225,6 +227,8 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string Title { get; set; }
         public string ClaimantName { get; set; }
         public string Service { get; set; }
+        public string ServiceCode { get; set; }
+        public string ServiceColorCode { get; set; }
         public TimeSpan StartTime { get; set; }
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }

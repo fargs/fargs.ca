@@ -28,6 +28,7 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public bool IsLocationRequired { get; set; } // IsLocationRequired
+        public string ColorCode { get; set; } // ColorCode (length: 10)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Service

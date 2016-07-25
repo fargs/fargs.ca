@@ -20,6 +20,15 @@ namespace WebApp.Library.Extensions
 {
     public static class Extensions
     {
+        public static string ToShortTimeSafe(this TimeSpan timeSpan)
+        {
+            return new DateTime().Add(timeSpan).ToShortTimeString();
+        }
+
+        public static string ToShortTimeSafe(this TimeSpan? timeSpan)
+        {
+            return timeSpan == null ? string.Empty : timeSpan.Value.ToShortTimeSafe();
+        }
         public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
         {
             var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);

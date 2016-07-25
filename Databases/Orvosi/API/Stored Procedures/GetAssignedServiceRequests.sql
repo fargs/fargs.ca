@@ -139,6 +139,8 @@ SELECT t.Id
 	, BoxCaseFolderId
 	, [Title] = dbo.GetServiceRequestTitle(s.Id, t.ServiceRequestId, t.AppointmentDate, t.DueDate, t.StartTime, ci.Code, s.Code, c.Code, p.UserName, t.ClaimantName)
 	, DependsOnCSV
+	, ServiceCode = s.Code
+	, ServiceColorCode = s.ColorCode
 FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

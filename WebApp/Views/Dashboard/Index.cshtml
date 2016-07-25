@@ -91,10 +91,10 @@
                                                                 @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
                                                                 {
                                                                     <span data-toggle="modal" title="@person.DisplayName" data-target="#assessment-@assessment.Id-person-@person.Id" data-trigger="focus" data-container="body" tabindex="-1">
-                                                                        <span title="@person.DisplayName"
+                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                               class="btn btn-sm btn-circle disabled"
-                                                                              style="cursor: pointer; color: white; background-color: @person.ColorCode">
-                                                                            <span class="small">@person.Initials</span>
+                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                         </span>
                                                                     </span>
                                                                     <div id="assessment-@assessment.Id-person-@person.Id" class="modal fade" tabindex="-1" role="dialog">

@@ -95,7 +95,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                               where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId
                                                                               select new Person
                                                                               {
-                                                                                  Id = at.Key.AssignedTo.Value,
+                                                                                  Id = at.Key.AssignedTo,
                                                                                   DisplayName = at.Key.AssignedToDisplayName,
                                                                                   ColorCode = at.Key.AssignedToColorCode,
                                                                                   Initials = at.Key.AssignedToInitials,
@@ -239,7 +239,7 @@ namespace WebApp.ViewModels.DashboardViewModels
 
     public class Person
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string DisplayName { get; set; }
         public string ColorCode { get; set; }
         public string Initials { get; set; }

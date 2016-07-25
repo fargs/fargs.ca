@@ -86,7 +86,9 @@
                                                         </div>
                                                         <div id="assessment-@assessment.Id" class="collapse">
                                                             <div style="padding-top:5px">
-                                                                <a class="pull-left" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="22" width="22" src="~/Content/images/box.jpg" /></a>
+                                                                <a class="pull-left" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                                &nbsp;
+                                                                <a target="_blank" href="@assessment.BoxCaseFolderURL"><img height="22" width="22" src="~/Content/images/box.jpg" /></a>
                                                                 &nbsp;&nbsp;
                                                                 @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
                                                                 {

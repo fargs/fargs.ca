@@ -861,8 +861,6 @@
     <Content Include="Areas\Staff\Views\Home\Details.cshtml" />
     <Content Include="Scripts\ww.jquery.js" />
     <Content Include="Scripts\ww.jquery.min.js" />
-    <Content Include="Views\Dashboard\IndexKO.cshtml" />
-    <None Include="Views\Dashboard\Index_js.cshtml" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="Areas\Admin\Views\User\UserProfile.cshtml" />

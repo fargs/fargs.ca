@@ -1,34 +1,22 @@
-﻿@using Model
-@using Model.Enums
+﻿@using WebApp.ViewModels.ServiceRequestViewModels
+@using Orvosi.Shared.Enums
 
-@model Model.ServiceRequest
+@model ResourceAssignmentViewModel
 
-@{
-    var db = new OrvosiEntities();
-
-    ViewBag.Staff = db.Users
-        .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.DisplayName,
-            Value = c.Id.ToString()
-        }).ToList();
-}
-
-<form action="~/ServiceRequest/ResourceAssignment/@Model.Id" method="post" class="form-horizontal">
+<form action="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId" method="post" class="form-horizontal">
 
     @Html.AntiForgeryToken()
 
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    @Html.HiddenFor(c => c.Id)
+    @Html.HiddenFor(c => c.ServiceRequestId)
 
     <fieldset id="ResourceAssignment">
         <legend>Resource Assignments</legend>
         <div class="form-group">
             <label class="control-label col-md-2">Case Coordinator</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CaseCoordinatorId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -36,7 +24,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Intake Assistant</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.IntakeAssistantId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -44,7 +32,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Document Reviewer</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(ViewBag.Staff, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.DocumentReviewerId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -53,7 +41,7 @@
             <div class="col-md-push-2 col-md-10">
                 <button class="btn btn-primary">Submit</button>
                 <a href="~/ServiceRequest" class="btn btn-primary">Back To List</a>
-                <a href="~/ServiceRequest/Details/@Model.Id" class="btn btn-primary">Back To Details</a>
+                <a href="~/ServiceRequest/Details/@Model.ServiceRequestId" class="btn btn-primary">Back To Details</a>
             </div>
         </div>
 

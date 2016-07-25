@@ -106,6 +106,15 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public DateTime AppointmentDate { get; set; }
     }
 
+    public class ResourceAssignmentViewModel
+    {
+        public int ServiceRequestId { get; set; }
+        public Guid? CaseCoordinatorId { get; set; }
+        public Guid? DocumentReviewerId { get; set; }
+        public Guid? IntakeAssistantId { get; set; }
+        public IEnumerable<SelectListItem> UserSelectList { get; set; }
+    }
+
     public class CompanyForm
     {
         [Required]

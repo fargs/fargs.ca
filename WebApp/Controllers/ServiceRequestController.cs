@@ -622,9 +622,27 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
 
+            var userSelectList = ctx.AspNetUsers
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.GetDisplayName(),
+                    Value = c.Id.ToString()
+                });
+
+            var vm = new ResourceAssignmentViewModel()
+            {
+                ServiceRequestId = serviceRequest.Id,
+                CaseCoordinatorId = serviceRequest.CaseCoordinatorId,
+                DocumentReviewerId = serviceRequest.DocumentReviewerId,
+                IntakeAssistantId = serviceRequest.IntakeAssistantId,
+                UserSelectList = userSelectList
+            };
+
             // TODO: Update the calendar and dropbox folder if appropriate.
 
-            return View(serviceRequest);
+            return View(vm);
         }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -632,17 +650,17 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> ResourceAssignment(ServiceRequest sr)
+        public async Task<ActionResult> ResourceAssignment(ResourceAssignmentViewModel model)
         {
             if (ModelState.IsValid)
             {
                 // get the tracked object from the database
-                var obj = await ctx.ServiceRequests.FindAsync(sr.Id);
+                var obj = await ctx.ServiceRequests.FindAsync(model.ServiceRequestId);
 
                 // update the resource assignments
-                obj.CaseCoordinatorId = sr.CaseCoordinatorId;
-                obj.DocumentReviewerId = sr.DocumentReviewerId;
-                obj.IntakeAssistantId = sr.IntakeAssistantId;
+                obj.CaseCoordinatorId = model.CaseCoordinatorId;
+                obj.DocumentReviewerId = model.DocumentReviewerId;
+                obj.IntakeAssistantId = model.IntakeAssistantId;
 
                 foreach (var task in obj.ServiceRequestTasks)
                 {
@@ -660,7 +678,7 @@ namespace WebApp.Controllers
 
                 return RedirectToAction("Details", new { id = obj.Id });
             }
-            return View(sr);
+            return View(model);
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
@@ -826,7 +844,7 @@ namespace WebApp.Controllers
 
             return Redirect(Request.UrlReferrer.ToString());
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ToggleNoShow(int? id)

@@ -336,10 +336,13 @@ namespace WebApp.Controllers
                     st.TaskName = task.Name;
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
+                    // Assign tasks to physician and case coordinator to start
+                    st.AssignedTo = (task.ResponsibleRoleId == Roles.CaseCoordinator ? sr.CaseCoordinatorId : (task.ResponsibleRoleId == Roles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     sr.ServiceRequestTasks.Add(st);
                 }
 
                 ctx.ServiceRequests.Add(sr);
+
                 await ctx.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = sr.Id });

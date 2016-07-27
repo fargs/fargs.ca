@@ -1015,6 +1015,7 @@
     <Content Include="Views\Dashboard\_WeekFolder.cshtml" />
     <Content Include="Views\Dashboard\_Initials.cshtml" />
     <Content Include="Views\Dashboard\_Person.cshtml" />
+    <Content Include="Views\Dashboard\_TaskList.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

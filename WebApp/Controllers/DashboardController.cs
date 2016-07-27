@@ -88,32 +88,21 @@ namespace WebApp.Controllers
             return await Index(serviceProviderGuid);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> TaskHierarchy(int serviceRequestId, int? taskId = null)
+        {
+            var now = SystemTime.Now();
+            Guid? userId = User.Identity.GetGuidUserId();
 
-        //private static List<IndexViewModel.DayFolder> GetCards(List<API_GetAssignedServiceRequestsReturnModel> requests, byte WeekNumber)
-        //{
-        //    var cards = new List<IndexViewModel.DayFolder>();
-        //    var days = requests.Select(c => new { Day = c.AppointmentDate.Value, WeekNumber = WeekNumber }).Distinct();
+            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
 
-        //    foreach (var day in days)
-        //    {
-        //        var dayRequests = requests.Where(c => c.AppointmentDate == day.Day.Date).OrderBy(c => c.StartTime);
-        //        var first = dayRequests.First();
-        //        var last = dayRequests.Last();
-        //        var card = new IndexViewModel.AssessmentCard
-        //        {
-        //            Address = first.Ad,
-        //            Day = day.Day,
-        //            City = first.Address.City_CityId.Name,
-        //            Company = first.Company.Name,
-        //            StartTime = first.AvailableSlot.StartTime,
-        //            EndTime = last.AvailableSlot.EndTime.GetValueOrDefault(first.AvailableSlot.StartTime.Add(new TimeSpan(1))),
-        //            RequestCount = dayRequests.Count(),
-        //            ServiceRequests = dayRequests
-        //        };
-        //        cards.Add(card);
-        //    }
-        //    return cards;
-        //}
+            var vm = new TaskListViewModel(requests, taskId);
+
+            return PartialView("_TaskList", vm);
+        }
+
+
+
     }
 
 }

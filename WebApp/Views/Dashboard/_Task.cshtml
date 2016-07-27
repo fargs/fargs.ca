@@ -1,17 +1,16 @@
 ﻿@using WebApp.ViewModels.DashboardViewModels
-@model TaskViewModel
+@model Task
 
-<div class="col-xs-12">
-    <span class="pull-left">
-        @Html.Partial("_TaskButton", Model.Task)
+<span title="@Model.AssignedToDisplayName">
+    <span title="@(!string.IsNullOrEmpty(Model.AssignedToDisplayName) ? Model.AssignedToDisplayName : "Unassigned")"
+          class="btn btn-sm btn-circle disabled"
+          style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(Model.AssignedToColorCode) ? Model.AssignedToColorCode : "red")">
+        <span class="small">@(!string.IsNullOrEmpty(Model.AssignedToInitials) ? Model.AssignedToInitials : "?")</span>
     </span>
-    <span>
-        @Model.Task.Name
-    </span>
-    <span class="pull-right">
-        @Html.Partial("_TaskActionMenu", Model)
-    </span>
-    <span class="pull-right" style="margin-left: 5px;">
-        @Html.Partial("_TaskStatusLabel", Model.Task.StatusId)
-    </span>
-</div>
+</span>
+<span>
+    @Html.Partial("_TaskStatusLabel", Model)
+</span>
+<span>
+    @Model.Name
+</span>

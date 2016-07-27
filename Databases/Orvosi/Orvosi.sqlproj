@@ -253,6 +253,7 @@
     <Build Include="dbo\Views\OpenServiceRequestIdWithAssignedTo.sql" />
     <Build Include="dbo\Views\OpenServiceRequestIds.sql" />
     <Build Include="API\Stored Procedures\GetAssignedServiceRequests.sql" />
+    <Build Include="API\Stored Procedures\GetServiceRequest.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

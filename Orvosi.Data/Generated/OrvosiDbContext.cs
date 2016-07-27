@@ -255,6 +255,44 @@ namespace Orvosi.Data
             return procResultData;
         }
 
+        public System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now)
+        {
+            int procResult;
+            return API_GetServiceRequest(serviceRequestId, now, out procResult);
+        }
+
+        public System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult)
+        {
+            var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!serviceRequestId.HasValue)
+                serviceRequestIdParam.Value = System.DBNull.Value;
+
+            var nowParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Now", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = now.GetValueOrDefault() };
+            if (!now.HasValue)
+                nowParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<API_GetServiceRequestReturnModel>("EXEC @procResult = [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestReturnModel>> API_GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now)
+        {
+            var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!serviceRequestId.HasValue)
+                serviceRequestIdParam.Value = System.DBNull.Value;
+
+            var nowParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Now", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = now.GetValueOrDefault() };
+            if (!now.HasValue)
+                nowParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<API_GetServiceRequestReturnModel>("EXEC [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam).ToListAsync();
+
+            return procResultData;
+        }
+
         public System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId)
         {
             int procResult;

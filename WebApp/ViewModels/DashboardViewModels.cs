@@ -109,8 +109,12 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                               Name = o.TaskName,
                                                                                               StatusId = o.TaskStatusId.Value,
                                                                                               Status = o.TaskStatusName,
-                                                                                              AssignedTo = o.AssignedTo,
-                                                                                              IsComplete = o.TaskStatusId.Value == TaskStatuses.Done
+                                                                                              AssignedTo = at.Key.AssignedTo,
+                                                                                              AssignedToDisplayName = at.Key.AssignedToDisplayName,
+                                                                                              AssignedToColorCode = at.Key.AssignedToColorCode,
+                                                                                              AssignedToInitials = at.Key.AssignedToInitials,
+                                                                                              IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                                                              ServiceRequestId = at.Key.ServiceRequestId
                                                                                           }
                                                                               }
                                                                  }
@@ -130,10 +134,77 @@ namespace WebApp.ViewModels.DashboardViewModels
 
     }
 
-    public class TaskViewModel
+    public class TaskListViewModel
     {
-        public Task Task { get; set; }
+        public TaskListViewModel(List<API_GetServiceRequestReturnModel> model, int? taskId)
+        {
+            this.Tasks = model.Select(o => new DashboardViewModels.Task
+            {
+                Id = o.Id,
+                Name = o.TaskName,
+                StatusId = o.TaskStatusId.Value,
+                Status = o.TaskStatusName,
+                AssignedTo = o.AssignedTo,
+                AssignedToColorCode = o.AssignedToColorCode,
+                AssignedToDisplayName = o.AssignedToDisplayName,
+                AssignedToInitials = o.AssignedToInitials,
+                IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                CompletedDate = o.CompletedDate,
+                DependsOnCSV = o.DependsOnCSV,
+                Sequence = (byte)o.TaskSequence.Value,
+                Parent = null,
+                TaskId = o.TaskId.Value
+            });
+
+            if (!taskId.HasValue)
+            {
+                this.RootTask = this.Tasks.Single(t => t.TaskId == Orvosi.Shared.Enums.Tasks.CloseCase || t.TaskId == Orvosi.Shared.Enums.Tasks.CloseAddOn);
+            }
+            else
+            {
+                this.RootTask = this.Tasks.Single(t => t.Id == taskId);
+            }
+
+            BuildDependencies(this.RootTask, this.Tasks);
+        }
+
+        public Task RootTask { get; set; }
+        public IEnumerable<Task> Tasks { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
+        private Task BuildDependencies(Task task, IEnumerable<Task> allTasks)
+        {
+
+            if (!string.IsNullOrEmpty(task.DependsOnCSV))
+            {
+                var depends = task.DependsOnCSV.Split(',');
+                foreach (var item in depends)
+                {
+                    //if (task.DependsOnCSV != "ExamDate")
+                    //{
+                        var id = int.Parse(item);
+                        var depTask = allTasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
+                        if (depTask != null)
+                        {
+                            depTask.Parent = task;
+                            var filledTask = BuildDependencies(depTask, allTasks);
+                            task.Dependencies.Add(filledTask);
+                        }
+                    //}
+                    //else
+                    //{
+                    //    task.Dependencies.Add(new DashboardViewModels.Task
+                    //    {
+                    //        Name = $"Perform the assessment",
+                    //        TaskId = Orvosi.Shared.Enums.Tasks.IntakeInterview,
+                    //        StatusId = Orvosi.Shared.Enums.TaskStatuses.ToDo,
+                    //        Status = "Wait for the assessment date"
+                    //    });
+                    //}
+                }
+            }
+
+            return task;
+        }
     }
 
     public class Timeline
@@ -250,15 +321,26 @@ namespace WebApp.ViewModels.DashboardViewModels
 
     public class Task
     {
+        public Task()
+        {
+            Dependencies = new List<DashboardViewModels.Task>();
+        }
         public int Id { get; set; }
         public string Name { get; set; }
-        public byte Sequence { get; set; }  
+        public short TaskId { get; set; }
+        public byte Sequence { get; set; }
         public byte StatusId { get; set; }
         public string Status { get; set; }
-        public DateTime CompletedDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public Guid? AssignedTo { get; set; }
         public bool IsComplete { get; set; }
         public IEnumerable<Person> WaitingOn { get; set; }
         public string DependsOnCSV { get; internal set; }
+        public Task Parent { get; set; }
+        public List<Task> Dependencies { get; set; }
+        public string AssignedToDisplayName { get; internal set; }
+        public string AssignedToColorCode { get; internal set; }
+        public string AssignedToInitials { get; internal set; }
+        public int ServiceRequestId { get; internal set; }
     }
 }

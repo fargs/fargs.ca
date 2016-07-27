@@ -1,9 +1,7 @@
 ﻿
 
---EXEC API.GetAssignedServiceRequests '8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9', '2016-07-11'
-
-CREATE PROC [API].[GetAssignedServiceRequests]
-	@AssignedTo UNIQUEIDENTIFIER
+CREATE PROC [API].[GetServiceRequest]
+	@ServiceRequestId INT
 	, @Now DATETIME
 AS
 WITH Requests 
@@ -33,9 +31,7 @@ AS (
 			, [DependsOn]
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
 		FROM dbo.ServiceRequestTask
-		WHERE ServiceRequestId IN (
-			SELECT ServiceRequestId FROM dbo.OpenServiceRequestIdWithAssignedTo WHERE AssignedTo = @AssignedTo
-		)
+		WHERE ServiceRequestId = @ServiceRequestId
 	) t
 	CROSS APPLY x.nodes('/XMLRoot/RowData')m(n)
 ) 
@@ -62,7 +58,9 @@ SELECT t.Id
 	, t.CompletedDate
 	, t.IsDependentOnExamDate
 FROM Requests t
-LEFT JOIN dbo.ServiceRequestTask srt ON t.ServiceRequestId = srt.ServiceRequestId AND t.DependsOn = srt.TaskId
+LEFT JOIN dbo.ServiceRequestTask srt 
+	ON t.ServiceRequestId = srt.ServiceRequestId
+		AND CASE WHEN t.DependsOn = 'ExamDate' THEN NULL ELSE t.DependsOn END = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
 )
 , TasksWithStatus

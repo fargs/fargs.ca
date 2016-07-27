@@ -47,11 +47,12 @@
                                             <span class="col-sm-3">
                                                 <span id="assessment-total">@weekFolder.AssessmentCount</span> <span id="assessment-total-label" class="small text-muted">Assessments</span>
                                             </span>
-                                            <span class="col-sm-3">
-                                                <span id="todo-total">@weekFolder.ToDoCount</span> <span id="todo-total-label" class="small label @(weekFolder.ToDoCount == 0 ? "label-success" : "label-danger")">To Do</span>
-                                            </span>
-                                            <span class="col-sm-3">
-                                                <span id="waiting-total">@weekFolder.WaitingCount</span> <span id="waiting-total-label" class="small label @(weekFolder.WaitingCount == 0 ? "label-success" : "label-warning")">Waiting</span>
+                                            <span class="col-sm-6">
+                                                <strong id="todo-total">@weekFolder.ToDoCount</strong>
+                                                <span id="todo-total-label" style="margin-left:5px;" class="small label @(weekFolder.ToDoCount == 0 ? "label-success" : "label-danger")">To Do</span>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <strong id="waiting-total">@weekFolder.WaitingCount</strong>
+                                                <span id="waiting-total-label" style="margin-left:5px;" class="small label @(weekFolder.WaitingCount == 0 ? "label-success" : "label-warning")">Waiting</span>
                                             </span>
                                         </div>
                                     </div>
@@ -160,6 +161,9 @@
     </div>
 </div>
 
+<div class="modal fade" id="dependencies-modal">
+
+</div>
 
 @section Scripts{
     <script>
@@ -191,7 +195,7 @@
                 success: function (result) {
 
                     // get the updated assessment data
-                    var weekFolder = $.grep(result.WeekFolders, function(item) { return item.StartDateTicks == params.week; });
+                    var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
 
                     SetWeekTotals(weekFolder[0], week);
 
@@ -204,7 +208,7 @@
                             SetAllTasksToDone();
                         }
                         else {
-                            var assessment = $.grep(dayFolder[0].Assessments, function(item) { return item.Id == params.assessmentId; });
+                            var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
                             if (!assessment) {
                                 SetAllTasksToDone();
                             }
@@ -223,9 +227,9 @@
             }, this);
         }
 
-        function SetWeekTotals(weekFolderFromResult, weekIdForEl){
+        function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
             var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
-            
+
             var assessmentTotalEl = weekFolderEl.find('#assessment-total');
             var todoTotalEl = weekFolderEl.find('#todo-total');
             var waitingTotalEl = weekFolderEl.find('#waiting-total');
@@ -236,7 +240,7 @@
 
             if (weekFolderFromResult.ToDoCount == 0)
                 weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-success');
-            else 
+            else
                 weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-danger');
 
             if (weekFolderFromResult.WaitingCount == 0)
@@ -270,8 +274,8 @@
             var assessmentEl = $('#asessment-' + assessmentIdForEl);
             var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
 
-            $.each(assessmentFromResult.People, function(index, person){
-                $.each(person.Tasks, function(index, task){
+            $.each(assessmentFromResult.People, function (index, person) {
+                $.each(person.Tasks, function (index, task) {
                     taskEl = $('#task-statuslabel-' + task.Id);
                     taskEl.removeClass();
                     taskCheckboxEl = $('#task-checkbox-' + task.Id);
@@ -291,7 +295,7 @@
             });
         }
 
-        function MarkTaskAsDone(label, checkbox){
+        function MarkTaskAsDone(label, checkbox) {
             label.addClass("label label-success").text("Done");
             checkbox.prop('disabled', false);
         }
@@ -300,7 +304,7 @@
             label.addClass("label label-danger").text("To Do");
             checkbox.prop('disabled', false);
         }
-        
+
         function MarkTaskAsWaiting(label, checkbox) {
             label.addClass("label label-warning").text("Waiting");
             checkbox.prop('disabled', true);
@@ -310,5 +314,24 @@
             label.addClass("label label-info").text("Obsolete");
             checkbox.prop('disabled', true);
         }
+
+        function onShowTaskHierarchy(serviceRequestId, taskId) {
+            // get the html and display it in the model
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/TaskHierarchy")' + '?serviceRequestId=' + serviceRequestId + '&taskId=' + taskId,
+                contentType: "text/html",
+                success: function (result) {
+                    // inject the html into the modal and display it
+                    var modalDiv = $("#dependencies-modal");
+                    modalDiv.html(result);
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
     </script>
 }

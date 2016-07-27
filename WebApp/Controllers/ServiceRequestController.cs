@@ -132,7 +132,16 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
 
-            vm.User = ctx.AspNetUsers.Single(u => u.UserName == User.Identity.Name);
+            vm.UserSelectList = (from user in ctx.AspNetUsers
+                                 from userRole in ctx.AspNetUserRoles
+                                 from role in ctx.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (role.RoleCategoryId == RoleCategory.Staff || role.RoleCategoryId == RoleCategory.Admin || user.Id == vm.ServiceRequest.PhysicianId)
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
 
             return View(vm);
         }

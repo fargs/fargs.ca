@@ -39,7 +39,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
 
     public class DetailsViewModel
     {
-        public AspNetUser User { get; set; }
+        public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
     }
 

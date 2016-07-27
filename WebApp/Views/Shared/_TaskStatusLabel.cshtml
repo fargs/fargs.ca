@@ -1,15 +1,24 @@
 ﻿@using Orvosi.Shared.Enums
-@model byte
+@using WebApp.Library
+@model Orvosi.Data.ServiceRequestTask
 
-@if (Model == TaskStatuses.ToDo)
-{
-    <span class="label label-danger"><strong>To Do</strong></span>
+@{ 
+    var statusId = Model.GetStatus(SystemTime.Now());
 }
-else if (Model == TaskStatuses.Waiting)
+
+@if (statusId == TaskStatuses.ToDo)
 {
-    <span class="label label-warning"><strong>Waiting</strong></span>
+    <span id='task-statuslabel-@Model.Id' class='label label-danger'>To Do</span>
 }
-else if (Model == TaskStatuses.Done)
+else if (statusId == TaskStatuses.Waiting)
 {
-    <span class="label label-success"><strong>Done</strong></span>
+    <span id='task-statuslabel-@Model.Id' class='label label-warning'>Waiting</span>
+}
+else if (statusId == TaskStatuses.Done)
+{
+    <span id='task-statuslabel-@Model.Id' class='label label-success'>Done</span>
+}
+else if (statusId == TaskStatuses.Obsolete)
+{
+    <span id='task-statuslabel-@Model.Id' class='label label-info'>Obsolete</span>
 }

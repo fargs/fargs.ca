@@ -275,43 +275,7 @@ namespace WebApp.Controllers
             }
             return task;
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> MarkAllComplete(int serviceRequestId)
-        {
-            var userId = User.Identity.GetGuidUserId();
-            var serviceRequestTasks = context.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId && srt.AssignedTo == userId);
-
-            foreach (var serviceRequestTask in serviceRequestTasks)
-            {
-                if (!serviceRequestTask.IsComplete())
-                {
-                    serviceRequestTask.CompletedDate = SystemTime.Now();
-                    serviceRequestTask.ModifiedDate = SystemTime.Now();
-                    serviceRequestTask.ModifiedUser = User.Identity.Name;
-                }
-            }
-            await context.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> MarkAsComplete(int id)
-        {
-            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(id);
-            if (serviceRequestTask == null)
-            {
-                return HttpNotFound();
-            }
-            serviceRequestTask.CompletedDate = SystemTime.Now();
-            serviceRequestTask.ModifiedDate = SystemTime.Now();
-            serviceRequestTask.ModifiedUser = User.Identity.Name;
-            await context.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ToggleObsolete(int serviceRequestTaskId)
@@ -330,14 +294,14 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> MarkAsIncomplete(int id)
+        public async Task<ActionResult> ToggleCompleted(int serviceRequestTaskId)
         {
-            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(id);
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
             if (serviceRequestTask == null)
             {
                 return HttpNotFound();
             }
-            serviceRequestTask.CompletedDate = null;
+            serviceRequestTask.CompletedDate = serviceRequestTask.CompletedDate.HasValue ? (DateTime?)null : SystemTime.Now();
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
             await context.SaveChangesAsync();
@@ -359,7 +323,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid AssignedTo)
+        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? AssignedTo)
         {
             var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
             var userId = User.Identity.GetGuidUserId();

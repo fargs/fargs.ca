@@ -1,19 +1,23 @@
-﻿@using WebApp.Library.Extensions.Model
+﻿@using WebApp.Library.Extensions
 @using WebApp.Library;
 @using e = Orvosi.Shared.Enums
 @using Box.V2.Models
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
+@{ 
+    var identity = User.Identity.GetClaimsIdentity();
+    var role = identity.GetRoleId();
+}
 <p>
     <ul class="list-unstyled">
         <li>
-            <a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>
+            @*<a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>*@
 
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Actions <span class="caret"></span>
                 </button>
-                @if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.CaseCoordinator || Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
+                @if (role == e.Roles.CaseCoordinator || role == e.Roles.SuperAdmin)
                 {
                     <ul class="dropdown-menu">
                         <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
@@ -117,35 +121,82 @@
     <div class="col-sm-5">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <strong>My Tasks</strong>
+                <strong>Tasks</strong>
                 <div class="pull-right">
-                    <form action="~/ServiceRequestTask/MarkAllComplete" method="post">
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("serviceRequestId", Model.ServiceRequest.Id)
-                        <input type="submit" value="Mark All Complete" class="btn btn-xs btn-primary" />
-                    </form>
+                    @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
                 </div>
             </div>
-                   @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequest = Model.ServiceRequest, currentUser = Model.User, collapsed = true })
-   
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a href="#AllTasks" data-toggle="collapse">All Tasks</a>
-                @if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.CaseCoordinator || Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
-                {
-                    <div class="pull-right">
-                        @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
-                    </div>
-                }
-            </div>
-            <div id="AllTasks" class="panel-collapse">
-                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequest = Model.ServiceRequest, currentUser = Model.User, myTasksOnly = false, collapsed = true })
+            <div class="panel-body">
+                <table class="table table-condensed">
+                    @foreach (var task in Model.ServiceRequest.ServiceRequestTasks.OrderBy(sr => sr.Sequence))
+                    {
+                        <tr>
+                            <td>
+                                <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AspNetUser.GetDisplayName() : "Unassigned")"
+                                      class="btn btn-sm btn-circle disabled pull-left"
+                                      style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AspNetUser.ColorCode : "red")"
+                                      data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
+                                    <span class="small">@(task.AssignedTo.HasValue ? task.AspNetUser.GetInitials() : "?")</span>
+                                </span>
+                                <div id="task-modal-@task.Id" class="modal fade">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="~/ServiceRequestTask/PickUp" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                    <input type="submit" value="Pick Up" class="btn btn-default" />
+                                                </form>
+                                                <div>Or</div>
+                                                <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                    <div class="form-group">
+                                                        <label class="control-label">Assign To: </label>
+                                                        @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                        @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                    <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                                        <label>
+                                            <input id="task-checkbox-@task.Id" type="checkbox"
+                                                   value="@task.IsComplete()"
+                                                   @(task.IsComplete() ? "checked" : "")
+                                                   @(task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting || task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                   onclick="this.form.submit();">
+                                        </label>
+                                    </span>
+                                </form>
+                                @Html.Partial("_TaskStatusLabel", task)
+                            </td>
+                            <td>@task.TaskName</td>
+                            <td>
+                                @if (task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Done)
+                                {
+                                    <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
             </div>
         </div>
     </div>
     <div class="col-sm-4">
-        @if (Model.User.AspNetUserRoles.First().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+        @if (role == e.Roles.CaseCoordinator || role == e.Roles.SuperAdmin)
         {
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -186,7 +237,7 @@
                     </div>
                 </div>
             }
-            if (Model.User.AspNetUserRoles.First().RoleId == e.Roles.SuperAdmin)
+            if (role == e.Roles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)
@@ -210,11 +261,46 @@
         }
     </div>
 
-            </div>
+</div>
 
-            @section Scripts {
-                <script type="text/javascript">
-                    $(function () {
-                    })
-                </script>
+@section Scripts {
+    <script type="text/javascript">
+
+        function onTaskChecked(checkbox, taskId) {
+            var params = {
+                taskId: taskId,
+                checkbox: checkbox
             }
+
+            if (checkbox.checked) {
+                console.log(taskId + ' is now checked');
+            } else {
+                console.log(taskId + ' is now unchecked');
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
+                data: JSON.stringify({
+                    taskId: taskId,
+                    isChecked: checkbox.checked
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    //// get the updated assessment data
+                    //SetAssessmentTotals(assessment[0], params.assessmentId);
+                    //updateTaskStatuses(assessment[0], params.assessmentId);
+
+                    console.log('success: ' + result);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $(function () {
+        })
+    </script>
+}

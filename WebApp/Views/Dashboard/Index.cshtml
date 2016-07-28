@@ -86,45 +86,8 @@
                                                             <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
                                                             @Html.Partial("_ServiceStatus", assessment.ServiceStatusId, new ViewDataDictionary())
                                                         </div>
-                                                        <div id="assessment-@assessment.Id" class="collapse">
-                                                            <div style="padding-top: 25px;">
-                                                                <a class="pull-left" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                                                &nbsp;
-                                                                <a target="_blank" href="@assessment.BoxCaseFolderURL"><img height="22" width="22" src="~/Content/images/box.jpg" /></a>
-                                                                &nbsp;&nbsp;
-                                                                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                                                                {
-                                                                    <span data-toggle="modal" title="@person.DisplayName" data-target="#assessment-@assessment.Id-person-@person.Id" data-trigger="focus" data-container="body" tabindex="-1">
-                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                                              class="btn btn-sm btn-circle disabled"
-                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                                        </span>
-                                                                    </span>
-                                                                    <div id="assessment-@assessment.Id-person-@person.Id" class="modal fade" tabindex="-1" role="dialog">
-                                                                        <div class="modal-dialog modal-sm">
-                                                                            <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                                                    <h4 class="modal-title" id="myModalLabel">@person.DisplayName</h4>
-                                                                                </div>
-                                                                                <div class="modal-body">
-                                                                                    @foreach (var task in person.Tasks)
-                                                                                    {
-                                                                                        <div>
-                                                                                            @Html.Partial("_TaskStatusLabel", task) @task.Name
-                                                                                        </div>
-                                                                                    }
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Ping</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                            <div style="padding-top: 15px;">
+                                                        <div id="assessment-@assessment.Id" class="collapse" style="margin-left: 30px;">
+                                                            <div style="padding-top: 5px;">
                                                                 @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
                                                                 {
                                                                     <form action="~/Dashboard/UpdateTaskStatus">
@@ -140,6 +103,26 @@
                                                                         </div>
                                                                     </form>
                                                                 }
+                                                            </div>
+                                                            <div style="padding-top: 5px;">
+                                                                <div class="btn-toolbar" role="toolbar">
+                                                                    <div class="btn-group" role="group">
+                                                                        <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                                        <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
+                                                                    </div>
+                                                                    <div class="btn-group" role="group">
+                                                                        <button class="btn btn-default btn-sm">
+                                                                            @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                                            {
+                                                                                <span onclick="onShowTaskList(@assessment.Id)" title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                                      class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                                      style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                                    <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                                </span>
+                                                                            }
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <hr />
                                                         </div>
@@ -164,6 +147,10 @@
 </div>
 
 <div class="modal fade" id="dependencies-modal">
+
+</div>
+
+<div class="modal fade" id="tasklist-modal">
 
 </div>
 
@@ -326,6 +313,24 @@
                 success: function (result) {
                     // inject the html into the modal and display it
                     var modalDiv = $("#dependencies-modal");
+                    modalDiv.html(result);
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        function onShowTaskList(serviceRequestId) {
+            // get the html and display it in the model
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/TaskList")' + '?serviceRequestId=' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    // inject the html into the modal and display it
+                    var modalDiv = $("#tasklist-modal");
                     modalDiv.html(result);
                     modalDiv.modal('toggle');
                 },

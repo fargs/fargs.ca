@@ -1,0 +1,47 @@
+@using WebApp.ViewModels.DashboardViewModels
+@using Orvosi.Shared.Enums
+@model TaskListViewModel
+
+@helper ShowDependencies(Task task, byte level)
+{
+<tr>
+    <td width="100px">
+        @*<span>
+            <button class="btn btn-default btn-link"><i class="glyphicon glyphicon-envelope"></i></button>
+        </span>*@
+        <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
+              class="btn btn-sm btn-circle disabled"
+              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
+            <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+        </span>
+    </td>
+    <td>
+        <div style="padding-left:@(level * 30)px;">
+            @Html.Partial("_TaskStatusLabel", task)
+            &nbsp;
+            @task.Name
+        </div>
+    </td>
+</tr>
+{
+    level++;
+    foreach (var dependent in task.Dependencies)
+    {
+            @ShowDependencies(dependent, level)
+    }
+}
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Dependencies</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-">
+                @ShowDependencies(Model.RootTask, 0)
+            </table>
+        </div>
+    </div>
+</div>

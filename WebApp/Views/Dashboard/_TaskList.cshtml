@@ -1,47 +1,50 @@
-﻿@using WebApp.ViewModels.DashboardViewModels
-@using Orvosi.Shared.Enums
-@model TaskListViewModel
-
-@helper ShowDependencies(Task task, byte level)
-{
-    <tr>
-        <td width="100px">
-            @*<span>
-                    <button class="btn btn-default btn-link"><i class="glyphicon glyphicon-envelope"></i></button>
-                </span>*@
-            <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : "Unassigned")"
-                  class="btn btn-sm btn-circle disabled"
-                  style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : "red")">
-                <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
-            </span>
-        </td>
-        <td>
-            <div style="padding-left:@(level * 30)px;">
-                @Html.Partial("_TaskStatusLabel", task)
-                &nbsp;
-                @task.Name
+﻿@using Orvosi.Shared.Enums
+@model WebApp.ViewModels.DashboardViewModels.Assessment
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Task List - @Model.ClaimantName</h4>
             </div>
-        </td>
-    </tr>
-{
-    level++;
-    foreach (var dependent in task.Dependencies)
-    {
-            @ShowDependencies(dependent, level)
-    }
-}
-}
-
-<div class="modal-dialog modal-lg">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Dependencies</h4>
-        </div>
-        <div class="modal-body">
-            <table class="table table-condensed table-">
-                @ShowDependencies(Model.RootTask, 0)
-            </table>
+            <div class="modal-body">
+                <table class="table table-condensed">
+                    @foreach (var task in Model.Tasks.OrderBy(c => c.Sequence))
+                    {
+                        <tr>
+                            <td>
+                                <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AssignedToDisplayName : "Unassigned")"
+                                      class="btn btn-sm btn-circle disabled pull-left"
+                                      style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AssignedToColorCode : "red")"
+                                      data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
+                                    <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
+                                </span>
+                            </td>
+                            <td>
+                                <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                    <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                                        <label>
+                                            <input id="task-checkbox-@task.Id" type="checkbox"
+                                                   value="@task.IsComplete"
+                                                   @(task.IsComplete ? "checked" : "")
+                                                   @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                   onclick="this.form.submit();">
+                                        </label>
+                                    </span>
+                                </form>
+                                @Html.Partial("_TaskStatusLabel", task)
+                            </td>
+                            <td>@task.Name</td>
+                            <td>
+                                @if (task.StatusId == TaskStatuses.Done)
+                                {
+                                    <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     </div>
-</div>

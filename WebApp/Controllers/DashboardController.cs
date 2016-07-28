@@ -2,15 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using WebApp.ViewModels.DashboardViewModels;
+using dvm = WebApp.ViewModels.DashboardViewModels;
 using Orvosi.Data;
 using Orvosi.Shared.Enums;
-using System.Data.Entity;
-using System.Globalization;
 using WebApp.Library.Extensions;
-using System.Collections.Generic;
-using System.Web;
-using Microsoft.AspNet.Identity.Owin;
 using WebApp.Library;
 using Westwind.Web.Mvc;
 
@@ -47,7 +42,7 @@ namespace WebApp.Controllers
             var requests = await context.API_GetAssignedServiceRequestsAsync(userId, now);
 
             // Populate the view model
-            var vm = new IndexViewModel(requests, now, userId.Value, this.ControllerContext);
+            var vm = new dvm.IndexViewModel(requests, now, userId.Value, this.ControllerContext);
 
             // Additional view data.
             vm.SelectedUserId = serviceProviderId;
@@ -96,12 +91,42 @@ namespace WebApp.Controllers
 
             var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
 
-            var vm = new TaskListViewModel(requests, taskId);
+            var vm = new dvm.TaskListViewModel(requests, taskId);
 
-            return PartialView("_TaskList", vm);
+            return PartialView("_TaskHierarchy", vm);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> TaskList(int serviceRequestId)
+        {
+            var now = SystemTime.Now();
+            Guid? userId = User.Identity.GetGuidUserId();
 
+            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
+            var assessment = new dvm.Assessment
+            {
+                ClaimantName = requests.First().ClaimantName,
+                Tasks = from o in requests
+                        orderby o.TaskSequence
+                        select new dvm.Task
+                        {
+                            Id = o.Id,
+                            Name = o.TaskName,
+                            CompletedDate = o.CompletedDate,
+                            StatusId = o.TaskStatusId.Value,
+                            Status = o.TaskStatusName,
+                            AssignedTo = o.AssignedTo,
+                            AssignedToDisplayName = o.AssignedToDisplayName,
+                            AssignedToColorCode = o.AssignedToColorCode,
+                            AssignedToInitials = o.AssignedToInitials,
+                            IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                            ServiceRequestId = o.ServiceRequestId
+
+                        }
+            };
+
+            return PartialView("_TaskList", assessment);
+        }
 
     }
 

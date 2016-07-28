@@ -83,6 +83,33 @@ namespace WebApp.Controllers
             return await Index(serviceProviderGuid);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> ToggleNoShow(int serviceRequestId, bool isChecked, Guid? serviceProviderGuid)
+        {
+            var now = SystemTime.Now();
+            Guid? userId = User.Identity.GetGuidUserId();
+
+            var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
+
+            if (serviceRequest == null)
+                return HttpNotFound();
+            
+            serviceRequest.IsNoShow = isChecked;
+            serviceRequest.ModifiedDate = SystemTime.Now();
+            serviceRequest.ModifiedUser = User.Identity.Name;
+
+            foreach (var task in serviceRequest.ServiceRequestTasks.Where(t => t.CompletedDate == null && t.TaskId != Tasks.SubmitInvoice && t.TaskId != Tasks.CloseCase))
+            {
+                task.IsObsolete = isChecked;
+                task.ModifiedDate = SystemTime.Now();
+                task.ModifiedUser = User.Identity.Name;
+            }
+
+            await context.SaveChangesAsync();
+
+            return await Index(serviceProviderGuid);
+        }
+
         [HttpGet]
         public async Task<ActionResult> TaskHierarchy(int serviceRequestId, int? taskId = null)
         {

@@ -199,14 +199,14 @@ namespace WebApp.ViewModels.DashboardViewModels
                 {
                     //if (task.DependsOnCSV != "ExamDate")
                     //{
-                        var id = int.Parse(item);
-                        var depTask = allTasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
-                        if (depTask != null)
-                        {
-                            depTask.Parent = task;
-                            var filledTask = BuildDependencies(depTask, allTasks);
-                            task.Dependencies.Add(filledTask);
-                        }
+                    var id = int.Parse(item);
+                    var depTask = allTasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
+                    if (depTask != null)
+                    {
+                        depTask.Parent = task;
+                        var filledTask = BuildDependencies(depTask, allTasks);
+                        task.Dependencies.Add(filledTask);
+                    }
                     //}
                     //else
                     //{
@@ -327,7 +327,15 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string BoxCaseFolderURL { get; set; }
         public IEnumerable<Task> Tasks { get; set; }
         public IEnumerable<Person> People { get; set; }
-        public byte ServiceRequestStatusId {
+        public bool IsCancelled
+        {
+            get
+            {
+                return CancelledDate.HasValue;
+            }
+        }
+        public byte ServiceRequestStatusId
+        {
             get
             {
                 if (Tasks.Any(c => c.StatusId == TaskStatuses.ToDo || c.StatusId == TaskStatuses.Waiting))

@@ -84,7 +84,23 @@
                                                             <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
                                                             &nbsp;
                                                             <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
-                                                            @Html.Partial("_ServiceStatus", assessment.ServiceStatusId, new ViewDataDictionary())
+                                                            @if (assessment.IsLateCancellation)
+                                                            {
+                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Late Cancellation</span>
+                                                            }
+                                                            else if (assessment.IsCancelled)
+                                                            {
+                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Cancellation</span>
+                                                            }
+                                                            else if (assessment.IsNoShow)
+                                                            {
+                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>No Show</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span id="assessment-status-label-@assessment.Id">&nbsp;</span>
+                                                            }
+                                                            <div class="pull-right">@assessment.Id</div>
                                                         </div>
                                                         <div id="assessment-@assessment.Id" class="collapse" style="margin-left: 30px;">
                                                             <div style="padding-top: 5px;">
@@ -122,6 +138,26 @@
                                                                             }
                                                                         </button>
                                                                     </div>
+                                                                </div>
+                                                                <div>
+                                                                    @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+                                                                    {
+                                                                        <form action="~/Dashboard/ToggleNoShow">
+                                                                            <div class="checkbox">
+                                                                                <label>
+                                                                                    <input id="task-checkbox-@assessment.Id" type="checkbox"
+                                                                                           value="@assessment.IsNoShow"
+                                                                                           @(assessment.IsNoShow ? "checked" : "")
+                                                                                           onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                        No Show
+                                                                                </label>
+                                                                            </div>
+                                                                        </form>
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                    }
                                                                 </div>
                                                             </div>
                                                             <hr />
@@ -182,38 +218,74 @@
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-
-                    // get the updated assessment data
-                    var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
-
-                    SetWeekTotals(weekFolder[0], week);
-
-                    if (!weekFolder[0]) {
-                        SetAllTasksToDone();
-                    }
-                    else {
-                        var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
-                        if (!dayFolder[0]) {
-                            SetAllTasksToDone();
-                        }
-                        else {
-                            var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
-                            if (!assessment) {
-                                SetAllTasksToDone();
-                            }
-                            else {
-                                SetAssessmentTotals(assessment[0], params.assessmentId);
-                                updateTaskStatuses(assessment[0], params.assessmentId);
-                            }
-                        }
-                    }
-
-                    console.log('success: ' + result);
+                    UpdateView(result, params);
                 },
                 error: function (err) {
                     alert(err.status + " - " + err.statusText);
                 }
             }, this);
+        }
+
+        function onToggleNoShow(checkbox, assessmentId, day, week) {
+            var params = {
+                assessmentId: assessmentId,
+                day: day,
+                week: week,
+                checkbox: checkbox
+            }
+
+            if (checkbox.checked) {
+                console.log(assessmentId + ' no show is now checked');
+            } else {
+                console.log(assessmentId + ' no show is now unchecked');
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Dashboard/ToggleNoShow")',
+                data: JSON.stringify({
+                    serviceRequestId: assessmentId,
+                    isChecked: checkbox.checked,
+                    serviceProviderGuid: '@Model.SelectedUserId'
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    UpdateView(result, params);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        function UpdateView(result, params) {
+            // get the updated assessment data
+            var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
+
+            SetWeekTotals(weekFolder[0], params.week);
+
+            //if (!weekFolder[0]) {
+            //    SetAllTasksToDone();
+            //}
+            //else {
+                var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
+                //if (!dayFolder[0]) {
+                //    SetAllTasksToDone();
+                //}
+                //else {
+                    var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
+                    //if (!assessment) {
+                    //    SetAllTasksToDone();
+                    //}
+            //else {
+                        SetAssessmentStatus(assessment[0], params.assessmentId);
+                        SetAssessmentTotals(assessment[0], params.assessmentId);
+                        updateTaskStatuses(assessment[0], params.assessmentId);
+            //        }
+            //    }
+            //}
+
+            console.log('success: ' + result);
         }
 
         function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
@@ -250,6 +322,21 @@
                 assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-success').text(assessmentFromResult.WaitingCount);
             else
                 assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-warning').text(assessmentFromResult.WaitingCount);
+        }
+
+        function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
+            var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
+            var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
+            labelEl.removeClass();
+
+            if (assessmentFromResult.IsLateCancellation)
+                labelEl.addClass('small label label-danger').text('Late Cancelled');
+            else if (assessmentFromResult.IsCancelled)
+                labelEl.addClass('small label label-danger').text('Cancelled');
+            if (assessmentFromResult.IsNoShow)
+                labelEl.addClass('small label label-danger').text('No Show');
+            else
+                labelEl.text('');
         }
 
         function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {

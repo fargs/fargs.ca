@@ -61,6 +61,9 @@ SELECT t.Id
 	, t.DependsOnCSV
 	, t.CompletedDate
 	, t.IsDependentOnExamDate
+	, sr.IsLateCancellation
+	, sr.CancelledDate
+	, sr.IsNoShow
 FROM Requests t
 LEFT JOIN dbo.ServiceRequestTask srt ON t.ServiceRequestId = srt.ServiceRequestId AND t.DependsOn = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
@@ -88,6 +91,9 @@ AS
 	, [Sequence]
 	, BoxCaseFolderId
 	, DependsOnCSV
+	, IsLateCancellation
+	, CancelledDate
+	, IsNoShow
 FROM Tasks
 GROUP BY 
 	  Id
@@ -108,6 +114,9 @@ GROUP BY
 	, [Sequence]
 	, BoxCaseFolderId
 	, DependsOnCSV
+	, IsLateCancellation
+	, CancelledDate
+	, IsNoShow
 )
 SELECT t.Id
 	, t.ServiceRequestId
@@ -141,6 +150,9 @@ SELECT t.Id
 	, ServiceColorCode = s.ColorCode
 	, bc.BoxCollaborationId
 	, t.CompletedDate
+	, t.IsLateCancellation
+	, t.IsNoShow
+	, t.CancelledDate
 FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

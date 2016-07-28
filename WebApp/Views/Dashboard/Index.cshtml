@@ -84,6 +84,7 @@
                                                             <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
                                                             &nbsp;
                                                             <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                                                            @Html.Partial("_ServiceStatus", assessment.ServiceStatusId, new ViewDataDictionary())
                                                         </div>
                                                         <div id="assessment-@assessment.Id" class="collapse">
                                                             <div style="padding-top: 25px;">

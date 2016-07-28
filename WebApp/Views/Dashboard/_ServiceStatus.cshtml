@@ -1,0 +1,15 @@
+@using Orvosi.Shared.Enums
+@model byte?
+
+@if (Model == ServiceStatus.LateCancellation)
+{
+    <span class='label label-danger'>Late Cancellation</span>
+}
+else if (Model == ServiceStatus.Cancellation)
+{
+    <span class='label label-danger'>Cancellation</span>
+}
+else if (Model == ServiceStatus.NoShow)
+{
+    <span class='label label-danger'>No Show</span>
+}

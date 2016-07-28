@@ -48,6 +48,9 @@ namespace Orvosi.Data
         public System.String ServiceColorCode { get; set; }
         public System.String BoxCollaborationId { get; set; }
         public System.DateTime? CompletedDate { get; set; }
+        public System.Boolean? IsLateCancellation { get; set; }
+        public System.Boolean? IsNoShow { get; set; }
+        public System.DateTime? CancelledDate { get; set; }
     }
 
 }

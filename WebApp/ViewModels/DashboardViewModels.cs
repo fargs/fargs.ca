@@ -75,7 +75,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                    ToDoCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
                                                    WaitingCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
                                                    Assessments = from o in assessments
-                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode } into sr
+                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                                                  where sr.Key.AppointmentDate == days.Key
                                                                  select new Assessment
                                                                  {
@@ -85,11 +85,29 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      Service = sr.Key.ServiceName,
                                                                      ServiceCode = sr.Key.ServiceCode,
                                                                      ServiceColorCode = sr.Key.ServiceColorCode,
+                                                                     IsLateCancellation = sr.Key.IsLateCancellation.Value,
+                                                                     CancelledDate = sr.Key.CancelledDate,
+                                                                     IsNoShow = sr.Key.IsNoShow.Value,
                                                                      Title = $"{sr.Key.StartTime.ToShortTimeSafe()} - {sr.Key.ClaimantName}",
                                                                      URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                                                                      BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
                                                                      ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
                                                                      WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
+                                                                     Tasks = from o in assessments
+                                                                             where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
+                                                                             select new Task
+                                                                             {
+                                                                                 Id = o.Id,
+                                                                                 Name = o.TaskName,
+                                                                                 StatusId = o.TaskStatusId.Value,
+                                                                                 Status = o.TaskStatusName,
+                                                                                 AssignedTo = o.AssignedTo,
+                                                                                 AssignedToDisplayName = o.AssignedToDisplayName,
+                                                                                 AssignedToColorCode = o.AssignedToColorCode,
+                                                                                 AssignedToInitials = o.AssignedToInitials,
+                                                                                 IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                                                 ServiceRequestId = o.ServiceRequestId
+                                                                             },
                                                                      People = from o in assessments
                                                                               group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into at
                                                                               where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId
@@ -297,6 +315,9 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string URL { get; set; }
         public string Title { get; set; }
         public string ClaimantName { get; set; }
+        public bool IsLateCancellation { get; set; }
+        public bool IsNoShow { get; set; }
+        public DateTime? CancelledDate { get; set; }
         public string Service { get; set; }
         public string ServiceCode { get; set; }
         public string ServiceColorCode { get; set; }
@@ -304,8 +325,43 @@ namespace WebApp.ViewModels.DashboardViewModels
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public string BoxCaseFolderURL { get; set; }
-        public IEnumerable<Task> MyTasks { get; set; }
+        public IEnumerable<Task> Tasks { get; set; }
         public IEnumerable<Person> People { get; set; }
+        public byte ServiceRequestStatusId {
+            get
+            {
+                if (Tasks.Any(c => c.StatusId == TaskStatuses.ToDo || c.StatusId == TaskStatuses.Waiting))
+                {
+                    return ServiceRequestStatus.Open;
+                }
+                else
+                {
+                    return ServiceRequestStatus.Closed;
+                }
+            }
+        }
+        public byte? ServiceStatusId
+        {
+            get
+            {
+                if (IsLateCancellation)
+                {
+                    return ServiceStatus.LateCancellation;
+                }
+                else if (CancelledDate.HasValue)
+                {
+                    return ServiceStatus.Cancellation;
+                }
+                else if (IsNoShow)
+                {
+                    return ServiceStatus.NoShow;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 
     public class Person

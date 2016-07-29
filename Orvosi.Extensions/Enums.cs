@@ -152,6 +152,7 @@ namespace Orvosi.Shared.Enums
         public const byte CloseCase = 30;
         public const byte CloseAddOn = 131;
         public const byte SubmitReport = 19;
+        public const byte SaveMedBrief = 18;
     }
 
     //public static class TaskStatuses

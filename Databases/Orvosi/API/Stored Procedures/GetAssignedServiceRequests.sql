@@ -18,6 +18,7 @@ AS (
 		, t.IsDependentOnExamDate
 		, t.[Sequence]
 		, DependsOnCSV = t.[DependsOn]
+		, ResponsibleRoleId
 		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
 	FROM
 	(
@@ -31,6 +32,7 @@ AS (
 			, IsDependentOnExamDate
 			, [Sequence]
 			, [DependsOn]
+			, [ResponsibleRoleId]
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
 		FROM dbo.ServiceRequestTask
 		WHERE ServiceRequestId IN (
@@ -64,6 +66,7 @@ SELECT t.Id
 	, sr.IsLateCancellation
 	, sr.CancelledDate
 	, sr.IsNoShow
+	, t.ResponsibleRoleId
 FROM Requests t
 LEFT JOIN dbo.ServiceRequestTask srt ON t.ServiceRequestId = srt.ServiceRequestId AND t.DependsOn = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
@@ -94,6 +97,7 @@ AS
 	, IsLateCancellation
 	, CancelledDate
 	, IsNoShow
+	, ResponsibleRoleId = MIN(ResponsibleRoleId)
 FROM Tasks
 GROUP BY 
 	  Id
@@ -153,6 +157,7 @@ SELECT t.Id
 	, t.IsLateCancellation
 	, t.IsNoShow
 	, t.CancelledDate
+	, t.ResponsibleRoleId
 FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

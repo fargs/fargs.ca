@@ -174,6 +174,33 @@ namespace WebApp.ViewModels.DashboardViewModels
                 TaskId = o.TaskId.Value
             });
 
+            var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);
+            this.People = todo
+                .GroupBy(t => new
+                {
+                    t.AssignedTo,
+                    t.AssignedToDisplayName,
+                    t.AssignedToColorCode,
+                    t.AssignedToInitials
+                }).Select(p => new DashboardViewModels.Person
+                {
+                    Id = p.Key.AssignedTo,
+                    DisplayName = p.Key.AssignedToDisplayName,
+                    ColorCode = p.Key.AssignedToColorCode,
+                    Initials = p.Key.AssignedToInitials,
+                    ToDoCount = p.Count(t => t.TaskStatusId == TaskStatuses.ToDo),
+                    WaitingCount = p.Count(t => t.TaskStatusId == TaskStatuses.Waiting),
+                    Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo) 
+                        .Select(t => new Task
+                        {
+                            Id = t.Id,
+                            TaskId = t.TaskId.Value,
+                            Name = t.TaskName
+                        })
+                })
+                .ToList();
+
+
             if (!taskId.HasValue)
             {
                 this.RootTask = this.Tasks.Single(t => t.TaskId == Orvosi.Shared.Enums.Tasks.CloseCase || t.TaskId == Orvosi.Shared.Enums.Tasks.CloseAddOn);
@@ -188,6 +215,7 @@ namespace WebApp.ViewModels.DashboardViewModels
 
         public Task RootTask { get; set; }
         public IEnumerable<Task> Tasks { get; set; }
+        public IEnumerable<Person> People { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         private Task BuildDependencies(Task task, IEnumerable<Task> allTasks)
         {
@@ -322,6 +350,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string ServiceCode { get; set; }
         public string ServiceColorCode { get; set; }
         public TimeSpan StartTime { get; set; }
+        public int CommentCount { get; set; } = 0;
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public string BoxCaseFolderURL { get; set; }

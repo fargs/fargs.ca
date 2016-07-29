@@ -77,30 +77,32 @@
                                                 <div>
                                                     @foreach (var assessment in dayFolder.Assessments)
                                                     {
-                                                        <div id="header-assessment-@assessment.Id">
-                                                            <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
-                                                            &nbsp;
-                                                            <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
-                                                            <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
-                                                            &nbsp;
-                                                            <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
-                                                            @if (assessment.IsLateCancellation)
-                                                            {
-                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Late Cancellation</span>
-                                                            }
-                                                            else if (assessment.IsCancelled)
-                                                            {
-                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Cancellation</span>
-                                                            }
-                                                            else if (assessment.IsNoShow)
-                                                            {
-                                                                <span id="assessment-status-label-@assessment.Id" class='label label-danger'>No Show</span>
-                                                            }
-                                                            else
-                                                            {
-                                                                <span id="assessment-status-label-@assessment.Id">&nbsp;</span>
-                                                            }
-                                                            <div class="pull-right">@assessment.Id</div>
+                                                        <div class="row" id="header-assessment-@assessment.Id">
+                                                            <div class="col-md-10">
+                                                                <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                                                                &nbsp;
+                                                                <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
+                                                                <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
+                                                                &nbsp;
+                                                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                                                                @if (assessment.IsLateCancellation)
+                                                                {
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Late Cancellation</span>
+                                                                }
+                                                                else if (assessment.IsCancelled)
+                                                                {
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Cancellation</span>
+                                                                }
+                                                                else if (assessment.IsNoShow)
+                                                                {
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>No Show</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span id="assessment-status-label-@assessment.Id">&nbsp;</span>
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-2">@assessment.Id</div>
                                                         </div>
                                                         <div id="assessment-@assessment.Id" class="collapse" style="margin-left: 30px;">
                                                             <div style="padding-top: 5px;">
@@ -127,16 +129,19 @@
                                                                         <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
                                                                     </div>
                                                                     <div class="btn-group" role="group">
-                                                                        <button class="btn btn-default btn-sm">
+                                                                        <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
                                                                             @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
                                                                             {
-                                                                                <span onclick="onShowTaskList(@assessment.Id)" title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                                <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                                       class="btn btn-sm btn-circle btn-circle-groupitem disabled"
                                                                                       style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                                                     <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                                 </span>
                                                                             }
                                                                         </button>
+                                                                    </div>
+                                                                    <div class="btn-group" role="group">
+                                                                        <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"> @assessment.CommentCount</i></a>
                                                                     </div>
                                                                 </div>
                                                                 <div>
@@ -149,7 +154,7 @@
                                                                                            value="@assessment.IsNoShow"
                                                                                            @(assessment.IsNoShow ? "checked" : "")
                                                                                            onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                                        No Show
+                                                                                    No Show
                                                                                 </label>
                                                                             </div>
                                                                         </form>
@@ -182,13 +187,33 @@
     </div>
 </div>
 
-<div class="modal fade" id="dependencies-modal">
+<div class="modal fade" id="dependencies-modal"></div>
 
+<div class="modal fade" id="tasklist-modal"></div>
+
+<div class="modal fade" id="discussion-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Assessment Discussion</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter your message ..."/>
+                    </div>
+                    <button class="btn btn-default">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="modal fade" id="tasklist-modal">
-
-</div>
+<div class="modal fade" id="request-modal"></div>
 
 @section Scripts{
     <script>
@@ -268,19 +293,19 @@
             //    SetAllTasksToDone();
             //}
             //else {
-                var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
-                //if (!dayFolder[0]) {
-                //    SetAllTasksToDone();
-                //}
-                //else {
-                    var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
-                    //if (!assessment) {
-                    //    SetAllTasksToDone();
-                    //}
+            var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
+            //if (!dayFolder[0]) {
+            //    SetAllTasksToDone();
+            //}
             //else {
-                        SetAssessmentStatus(assessment[0], params.assessmentId);
-                        SetAssessmentTotals(assessment[0], params.assessmentId);
-                        updateTaskStatuses(assessment[0], params.assessmentId);
+            var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
+            //if (!assessment) {
+            //    SetAllTasksToDone();
+            //}
+            //else {
+            SetAssessmentStatus(assessment[0], params.assessmentId);
+            SetAssessmentTotals(assessment[0], params.assessmentId);
+            updateTaskStatuses(assessment[0], params.assessmentId);
             //        }
             //    }
             //}
@@ -425,6 +450,11 @@
                     alert(err.status + " - " + err.statusText);
                 }
             }, this);
+        }
+
+        function onShowDiscussion(serviceRequestId) {
+            var modalDiv = $("#dependencies-modal");
+            modalDiv.modal('show');
         }
 
     </script>

@@ -20,7 +20,7 @@
                                 </span>
                             </td>
                             <td>
-                                <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                @*<form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                     @Html.AntiForgeryToken()
                                     @Html.Hidden("serviceRequestTaskId", task.Id)
                                     <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
@@ -32,7 +32,7 @@
                                                    onclick="this.form.submit();">
                                         </label>
                                     </span>
-                                </form>
+                                </form>*@
                                 @Html.Partial("_TaskStatusLabel", task)
                             </td>
                             <td>@task.Name</td>

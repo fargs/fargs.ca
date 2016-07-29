@@ -1,28 +1,33 @@
 @using WebApp.ViewModels.DashboardViewModels
-@using Orvosi.Shared.Enums
+@using Newtonsoft.Json.Linq
 @model TaskListViewModel
 
 @helper ShowDependencies(Task task, byte level)
 {
-<tr>
-    <td width="100px">
-        @*<span>
-            <button class="btn btn-default btn-link"><i class="glyphicon glyphicon-envelope"></i></button>
-        </span>*@
-        <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
-              class="btn btn-sm btn-circle disabled"
-              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
-            <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
-        </span>
-    </td>
-    <td>
-        <div style="padding-left:@(level * 30)px;">
-            @Html.Partial("_TaskStatusLabel", task)
-            &nbsp;
-            @task.Name
-        </div>
-    </td>
-</tr>
+    <tr>
+        @*<td width="100px">
+                <span>
+                    <button class="btn btn-default btn-link"><i class="glyphicon glyphicon-envelope"></i></button>
+                </span>
+                <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
+                      class="btn btn-sm btn-circle disabled"
+                      style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
+                    <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+                </span>
+            </td>*@
+        <td>
+            <div style="padding-left:@(level * 30)px;">
+                <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
+                      class="btn btn-sm btn-circle disabled"
+                      style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
+                    <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+                </span>
+                @Html.Partial("_TaskStatusLabel", task)
+                &nbsp;
+                @task.Name
+            </div>
+        </td>
+    </tr>
 {
     level++;
     foreach (var dependent in task.Dependencies)
@@ -39,9 +44,25 @@
             <h4 class="modal-title" id="myModalLabel">Dependencies</h4>
         </div>
         <div class="modal-body">
+            <div>
+                Waiting On:
+                    @foreach (var person in Model.People)
+                    {
+                        if (person.ToDoCount > 0)
+                        {
+                            <span onclick="pokeTeamMember(@Html.Raw(Json.Encode(person))" title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                  class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                  style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                            </span>
+                        }
+                    }
+            </div>
             <table class="table table-condensed table-">
                 @ShowDependencies(Model.RootTask, 0)
             </table>
         </div>
     </div>
 </div>
+
+

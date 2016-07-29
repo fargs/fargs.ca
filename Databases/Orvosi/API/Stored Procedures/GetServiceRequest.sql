@@ -16,6 +16,7 @@ AS (
 		, t.IsDependentOnExamDate
 		, t.[Sequence]
 		, DependsOnCSV = t.[DependsOn]
+		, [ResponsibleRoleId]
 		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
 	FROM
 	(
@@ -29,6 +30,7 @@ AS (
 			, IsDependentOnExamDate
 			, [Sequence]
 			, [DependsOn]
+			, [ResponsibleRoleId]
 			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
 		FROM dbo.ServiceRequestTask
 		WHERE ServiceRequestId = @ServiceRequestId
@@ -57,10 +59,9 @@ SELECT t.Id
 	, t.DependsOnCSV
 	, t.CompletedDate
 	, t.IsDependentOnExamDate
+	, t.ResponsibleRoleId
 FROM Requests t
-LEFT JOIN dbo.ServiceRequestTask srt 
-	ON t.ServiceRequestId = srt.ServiceRequestId
-		AND CASE WHEN t.DependsOn = 'ExamDate' THEN NULL ELSE t.DependsOn END = srt.TaskId
+LEFT JOIN dbo.ServiceRequestTask srt ON t.ServiceRequestId = srt.ServiceRequestId AND t.DependsOn = srt.TaskId
 LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
 )
 , TasksWithStatus
@@ -86,6 +87,7 @@ AS
 	, [Sequence]
 	, BoxCaseFolderId
 	, DependsOnCSV
+	, ResponsibleRoleId = MIN(ResponsibleRoleId)
 FROM Tasks
 GROUP BY 
 	  Id
@@ -139,6 +141,7 @@ SELECT t.Id
 	, ServiceColorCode = s.ColorCode
 	, bc.BoxCollaborationId
 	, t.CompletedDate
+	, t.ResponsibleRoleId
 FROM TasksWithStatus t
 LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
 LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id

@@ -51,6 +51,7 @@ namespace Orvosi.Data
         public System.Boolean? IsLateCancellation { get; set; }
         public System.Boolean? IsNoShow { get; set; }
         public System.DateTime? CancelledDate { get; set; }
+        public System.Guid? ResponsibleRoleId { get; set; }
     }
 
 }

@@ -14,15 +14,8 @@ namespace WebApp.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        //OrvosiEntities db = new OrvosiEntities();
         private OrvosiDbContext context = new OrvosiDbContext();
 
-        public ActionResult Work()
-        {
-            return View();
-        }
-
-        // MVC
         public async Task<ActionResult> Index(Guid? serviceProviderId, string orderTasksBy = "DueDate", bool onlyMine = true)
         {
             // Set date range variables used in where conditions
@@ -118,6 +111,9 @@ namespace WebApp.Controllers
 
             var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
 
+            requests = requests.Where(o => o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief).ToList();
+            requests = requests.Where(c => c.TaskStatusId == TaskStatuses.Waiting || c.TaskStatusId == TaskStatuses.ToDo).ToList();
+
             var vm = new dvm.TaskListViewModel(requests, taskId);
 
             return PartialView("_TaskHierarchy", vm);
@@ -134,6 +130,7 @@ namespace WebApp.Controllers
             {
                 ClaimantName = requests.First().ClaimantName,
                 Tasks = from o in requests
+                        where o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief
                         orderby o.TaskSequence
                         select new dvm.Task
                         {
@@ -154,6 +151,7 @@ namespace WebApp.Controllers
 
             return PartialView("_TaskList", assessment);
         }
+
 
     }
 

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using WebApp.Models;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 
 namespace WebApp.Library.Extensions
 {
@@ -262,12 +263,34 @@ namespace WebApp.Library.Extensions
 
         public static Guid GetRoleId(this IIdentity obj)
         {
-            var claim = obj.GetClaimsIdentity().Claims.SingleOrDefault(c => c.Type == "RoleId");
+            var claim = obj.GetClaimsIdentity().FindFirstValue("RoleId");
             if (claim == null)
             {
                 return Guid.Empty;
             }
-            return new Guid(claim.Value);
+            return new Guid(claim);
+
+        }
+
+        public static string GetRoleName(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().FindFirstValue(ClaimTypes.Role);
+            if (string.IsNullOrEmpty(claim))
+            {
+                return string.Empty;
+            }
+            return claim;
+
+        }
+
+        public static List<Guid> GetRoles(this IIdentity obj)
+        {
+            var roles = obj.GetClaimsIdentity().FindFirstValue("Roles");
+            if (roles == null)
+            {
+                return new List<Guid>();
+            }
+            return roles.Split('|').Select(s => Guid.Parse(s)).ToList();
 
         }
 

@@ -1,12 +1,32 @@
-﻿@model WebApp.ViewModels.LoginPartialViewModel
+﻿@using WebApp.Library.Extensions
+@using e = Orvosi.Shared.Enums
+@model WebApp.ViewModels.LoginPartialViewModel
+
+@{ 
+    var identity = User.Identity.GetClaimsIdentity();
+}
+
 @if (Model.IsAuthenticated)
 {
+    if (User.Identity.GetRoles().Contains(e.Roles.AppTester))
+    {
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <form action="~/Account/ChangeRole/" method="get" class="form-inline">
+                    <div class="form-group">
+                        @Html.DropDownList("RoleId", new SelectList(Model.Roles, "Value", "Text", Model.RoleId), "-- Role --", new { @class = "form-control", onchange = "this.form.submit();" })
+                    </div>
+                </form>
+            </li>
+        </ul>
+    }
+
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
-            <li><a href='@Url.Content("~")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName</a></li>
+            <li><a href='@Url.Content("~")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName | @identity.GetRoleName()</a></li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
         </ul>
     }

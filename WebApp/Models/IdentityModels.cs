@@ -23,12 +23,21 @@ namespace WebApp.Models
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            // cache the default role
+            var defaultRole = userIdentity.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             // Add custom user claims here
             userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
             userIdentity.AddClaim(new Claim("RoleId", Roles.First().RoleId.ToString()));
+            userIdentity.AddClaim(new Claim("Roles", string.Join("|", Roles.Select(r => r.RoleId))));
 
+            // ASP.NET Identity automatically creates ClaimTypes.Role for all the associated Roles. We only want to have one role at a time. Delete all except for the default.
+            var roles = userIdentity.FindAll(i => i.Type == ClaimTypes.Role).Where(r => r.Value != defaultRole);
+            foreach (var role in roles)
+            {
+                userIdentity.RemoveClaim(role);
+            }
             return userIdentity;
         }
 

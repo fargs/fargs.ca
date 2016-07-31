@@ -5,6 +5,7 @@ using Model;
 using WebApp.ViewModels;
 using WebApp.Library;
 using System;
+using Microsoft.AspNet.SignalR;
 
 [assembly: OwinStartupAttribute(typeof(WebApp.Startup))]
 namespace WebApp
@@ -17,6 +18,8 @@ namespace WebApp
             //SystemTime.Now = () => new DateTime(2016, 01, 13, 00, 00, 00);
 
             ConfigureAuth(app);
+
+            app.MapSignalR();
         }
     }
 }

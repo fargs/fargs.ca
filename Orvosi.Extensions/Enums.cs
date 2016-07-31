@@ -20,6 +20,8 @@ namespace Orvosi.Shared.Enums
         public static string DocumentReviewerName = "Document Reviewer";
         public static Guid SuperAdmin = new Guid("7fab67dd-286b-492f-865a-0cb0ce1261ce");
         public static string SuperAdminName = "Super Admin";
+        public static Guid AppTester = new Guid("46f7c109-1a23-4969-bca6-3a937db912d5");
+        public static string AppTesterName = "App Tester";
     }
 
     public static class ActionStates

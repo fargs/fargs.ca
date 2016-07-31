@@ -28,6 +28,10 @@ namespace WebApp
                       "~/Scripts/knockout-3.3.0.js",
                       "~/Scripts/knockout.mapping-latest.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
+                       "~/Scripts/jquery.signalR-2.2.1.min.js", 
+                       "~/signalr/hubs"));
+
             bundles.Add(new ScriptBundle("~/bundles/highcharts").Include(
                       "~/Scripts/highcharts/4.2.0/highcharts.js"));
 

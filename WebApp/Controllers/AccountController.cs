@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using WebApp.Models;
 using WebApp.ViewModels;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -137,6 +138,12 @@ namespace WebApp.Controllers
             {
                 model.UserDisplayName = cp.FindFirst("DisplayName").Value;
                 model.RoleName = cp.FindFirst(ClaimTypes.Role).Value;
+                model.RoleId = cp.GetRoleId();
+                model.Roles = cp.GetRoles().Select(r => new SelectListItem
+                {
+                    Text = r.ToString(),
+                    Value = r.ToString()
+                }).ToList();
             }
             return PartialView(model);
         }
@@ -472,6 +479,27 @@ namespace WebApp.Controllers
         public ActionResult ExternalLoginFailure()
         {
             return View();
+        }
+
+        public ActionResult ChangeRole(Guid RoleId)
+        {
+            var identity = User.Identity.GetClaimsIdentity();
+            var roleIdClaim = identity.FindFirst("RoleId");
+            if (roleIdClaim != null)
+                identity.RemoveClaim(roleIdClaim);
+
+            var roleNameClaim = identity.FindFirst(ClaimTypes.Role);
+            if (roleNameClaim != null)
+                identity.RemoveClaim(roleNameClaim);
+
+            // add new claim
+            var role = RoleManager.Roles.FirstOrDefault(c => c.Id == RoleId);
+            identity.AddClaim(new Claim("RoleId", role.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+            var authenticationManager = this.HttpContext.GetOwinContext().Authentication;
+            authenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true });
+
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         protected override void Dispose(bool disposing)

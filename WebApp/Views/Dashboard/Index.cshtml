@@ -1,8 +1,13 @@
 ﻿@using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
+@using e =Orvosi.Shared.Enums
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
-@if (User.Identity.IsAdmin())
+@{ 
+    var roleId = User.Identity.GetRoleId();
+    var roles = new Guid[2] { e.Roles.AppTester, e.Roles.SuperAdmin };
+}
+
+@if (roles.Contains(roleId))
 {
     <div class="row" style="margin-bottom:20px">
         <div class="col-md-12">
@@ -114,7 +119,7 @@
                                                                                 <input id="task-checkbox-@task.Id" type="checkbox"
                                                                                        value="@task.IsComplete"
                                                                                        @(task.IsComplete ? "checked" : "")
-                                                                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                                                       @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
                                                                                        onclick="onTaskChecked(this, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
                                                                                 @Html.Partial("_TaskStatusLabel", task) @task.Name
                                                                             </label>
@@ -199,14 +204,15 @@
                 <h4 class="modal-title" id="myModalLabel">Assessment Discussion</h4>
             </div>
             <div class="modal-body">
-
+                <ul id="discussion"></ul>
             </div>
             <div class="modal-footer">
-                <form class="form-inline">
+                <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Enter your message ..."/>
+                        <input type="hidden" id="displayname" />
+                        <textarea class="form-control" rows="3" type="text" id="message" placeholder="Write your message here ..."></textarea>
                     </div>
-                    <button class="btn btn-default">Send</button>
+                    <input class="btn btn-success" type="button" id="sendmessage" value="Send" />
                 </form>
             </div>
         </div>
@@ -216,6 +222,8 @@
 <div class="modal fade" id="request-modal"></div>
 
 @section Scripts{
+    @Scripts.Render("~/bundles/signalr")
+    @Scripts.Render("~/signalr/hubs")
     <script>
 
         function onTaskChecked(checkbox, taskId, assessmentId, day, week) {
@@ -453,9 +461,36 @@
         }
 
         function onShowDiscussion(serviceRequestId) {
-            var modalDiv = $("#dependencies-modal");
+            var modalDiv = $("#discussion-modal");
             modalDiv.modal('show');
         }
+
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.serviceRequestHub;
+            // Create a function that the hub can call to broadcast messages.
+            chat.client.broadcastMessage = function (name, message) {
+                // Html encode display name and message.
+                var encodedName = $('<div />').text(name).html();
+                var encodedMsg = $('<div />').text(message).html();
+                // Add the message to the page.
+                $('#discussion').append('<li><strong>' + encodedName
+                    + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
+            };
+            // Get the user name and store it to prepend to messages.
+            $('#displayname').val('fargs');
+            // Set initial focus to message input box.
+            $('#message').focus();
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                $('#sendmessage').click(function () {
+                    // Call the Send method on the hub.
+                    chat.server.send($('#displayname').val(), $('#message').val());
+                    // Clear text box and reset focus for next comment.
+                    $('#message').val('').focus();
+                });
+            });
+        });
 
     </script>
 }

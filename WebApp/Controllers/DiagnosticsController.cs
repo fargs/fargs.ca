@@ -1,9 +1,11 @@
 ﻿using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNet.Identity.Owin;
 using Model;
 using Model.Enums;
+using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,18 +25,15 @@ namespace WebApp.Controllers
         {
             return View();
         }
-
         public ActionResult CodeFirstContextTests()
         {
             var db = new Orvosi.Data.OrvosiDbContext();
             return View(db.Invoices.First());
         }
-
         public ActionResult ConnectToBox()
         {
             return PartialView();
         }
-
         public ActionResult CreateBoxFolder()
         {
             //var box = new BoxManager();
@@ -46,7 +45,6 @@ namespace WebApp.Controllers
             //}
             return new HttpNotFoundResult();
         }
-
         // GET: Diagnostics
         public async Task<ActionResult> SendEmail(string to)
         {
@@ -55,7 +53,6 @@ namespace WebApp.Controllers
             await userManager.SendEmailAsync(user.Id, "Test Email Subject", "Test Email Body");
             return PartialView();
         }
-
         public async Task<ActionResult> SendActivationEmail(string email)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
@@ -68,7 +65,6 @@ namespace WebApp.Controllers
 
             return PartialView("SendEmail");
         }
-
         public async Task<ActionResult> SendResetPasswordEmail(string email)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
@@ -81,7 +77,6 @@ namespace WebApp.Controllers
 
             return PartialView("SendEmail");
         }
-
         public async Task<ActionResult> DropboxViewer()
         {
             var dropbox = new OrvosiDropbox();
@@ -93,7 +88,6 @@ namespace WebApp.Controllers
             ListFolderResult model = await client.Files.ListFolderAsync(ViewBag.Path);
             return View(model);
         }
-
         public async Task<ActionResult> DropboxCreateFolder(string Path, string FolderName)
         {
             var dropbox = new OrvosiDropbox();
@@ -102,7 +96,6 @@ namespace WebApp.Controllers
             var model = await client.Files.CreateFolderAsync(args);
             return RedirectToAction("DropboxViewer");
         }
-
         public async Task<ActionResult> DropboxShareFolder(string Path)
         {
             var dropbox = new OrvosiDropbox();
@@ -142,6 +135,28 @@ namespace WebApp.Controllers
             };
 
             return View(model);
+        }
+        public async Task<ActionResult> DashboardPerformanceTest()
+        {
+            try
+            {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                var context = new OrvosiDbContext();
+                System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
+                var now = SystemTime.Now();
+                var userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
+
+                var requests = new List<API_GetAssignedServiceRequestsReturnModel>(); // await context.API_GetAssignedServiceRequestsAsync(userId, now);
+                //var vm = new WebApp.ViewModels.DashboardViewModels.IndexViewModel(requests, now, userId, this.ControllerContext);
+                System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
+                return View(requests);
+            }
+            catch (Exception ex)
+            {
+                new TelemetryClient().TrackException(ex);
+            }
+            return View();
+            
         }
     }
 }

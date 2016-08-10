@@ -890,6 +890,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-custom\orvosi.less" />
     <Content Include="private_key.pem" />
+    <None Include="Properties\PublishProfiles\orvosi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp__staging.pubxml" />
@@ -1028,7 +1029,9 @@
     <Content Include="Views\Dashboard\_Person.cshtml" />
     <Content Include="Views\Dashboard\_TaskList.cshtml" />
     <Content Include="Views\Dashboard\_ServiceStatus.cshtml" />
-    <None Include="Views\Dashboard\_TaskHierarchy.cshtml" />
+    <Content Include="Views\Dashboard\_DiscussionModal.cshtml" />
+    <Content Include="Views\Dashboard\_TaskHierarchy.cshtml" />
+    <Content Include="Views\Diagnostics\DashboardPerformanceTest.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

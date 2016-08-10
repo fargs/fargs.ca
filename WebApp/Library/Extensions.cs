@@ -272,6 +272,17 @@ namespace WebApp.Library.Extensions
 
         }
 
+        public static string GetDisplayName(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().FindFirstValue("DisplayName");
+            if (string.IsNullOrEmpty(claim))
+            {
+                return string.Empty;
+            }
+            return claim;
+
+        }
+
         public static string GetRoleName(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue(ClaimTypes.Role);

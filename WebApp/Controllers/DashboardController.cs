@@ -38,7 +38,7 @@ namespace WebApp.Controllers
             var vm = new dvm.IndexViewModel(requests, now, userId.Value, this.ControllerContext);
 
             // Additional view data.
-            vm.SelectedUserId = serviceProviderId;
+            vm.SelectedUserId = userId;
             vm.UserSelectList = (from user in context.AspNetUsers
                                 from userRole in context.AspNetUserRoles
                                 from role in context.AspNetRoles
@@ -150,6 +150,21 @@ namespace WebApp.Controllers
             };
 
             return PartialView("_TaskList", assessment);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Discussion(int serviceRequestId)
+        {
+            var now = SystemTime.Now();
+
+            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
+            var assessment = new dvm.Assessment
+            {
+                Id = requests.First().Id,
+                ClaimantName = requests.First().ClaimantName
+            };
+
+            return PartialView("_DiscussionModal", assessment);
         }
 
 

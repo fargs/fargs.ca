@@ -1,8 +1,8 @@
 ﻿@using WebApp.Library.Extensions
-@using e =Orvosi.Shared.Enums
+@using e = Orvosi.Shared.Enums
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
-@{ 
+@{
     var roleId = User.Identity.GetRoleId();
     var roles = new Guid[2] { e.Roles.AppTester, e.Roles.SuperAdmin };
 }
@@ -31,7 +31,7 @@
             </li>
             <li role="presentation">
                 <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
-                    <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
+                    <div class="h1 text-center">@Model.AddOns.Count()</div>
                     <div class="text-muted text-center">Addendums / Paper Reviews</div>
                 </a>
             </li>
@@ -75,159 +75,203 @@
                                                 <div>
                                                     @dayFolder.Address
                                                 </div>
-                                                <div class="small text-muted">
+                                                <div class="small text-muted" style="padding-bottom:20px;">
                                                     @dayFolder.City
                                                 </div>
-                                                <hr />
-                                                <div>
+                                                <table class="table table-condensed">
                                                     @foreach (var assessment in dayFolder.Assessments)
                                                     {
-                                                        <div class="row" id="header-assessment-@assessment.Id">
-                                                            <div class="col-md-10">
+                                                        <tr id="header-assessment-@assessment.Id">
+                                                            <td style="vertical-align: text-top; width:40px;">
                                                                 <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
-                                                                &nbsp;
+                                                            </td>
+                                                            <td style="vertical-align: text-top; width:60px;">
                                                                 <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
                                                                 <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
-                                                                &nbsp;
-                                                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                                                            </td>
+                                                            <td style="vertical-align: text-top; width:80px;">
+                                                                @assessment.StartTime.ToShortTimeSafe()
+                                                            </td>
+                                                            <td style="vertical-align: text-top;">
                                                                 @if (assessment.IsLateCancellation)
                                                                 {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Late Cancellation</span>
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="Late Cancellation">!</span>
                                                                 }
                                                                 else if (assessment.IsCancelled)
                                                                 {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>Cancellation</span>
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="Cancellation">!</span>
                                                                 }
                                                                 else if (assessment.IsNoShow)
                                                                 {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger'>No Show</span>
+                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="No Show">!</span>
                                                                 }
-                                                                else
-                                                                {
-                                                                    <span id="assessment-status-label-@assessment.Id">&nbsp;</span>
-                                                                }
-                                                            </div>
-                                                            <div class="col-md-2">@assessment.Id</div>
-                                                        </div>
-                                                        <div id="assessment-@assessment.Id" class="collapse" style="margin-left: 30px;">
-                                                            <div style="padding-top: 5px;">
-                                                                @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
-                                                                {
-                                                                    <form action="~/Dashboard/UpdateTaskStatus">
-                                                                        <div class="checkbox">
-                                                                            <label>
-                                                                                <input id="task-checkbox-@task.Id" type="checkbox"
-                                                                                       value="@task.IsComplete"
-                                                                                       @(task.IsComplete ? "checked" : "")
-                                                                                       @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
-                                                                                       onclick="onTaskChecked(this, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                                @Html.Partial("_TaskStatusLabel", task) @task.Name
-                                                                            </label>
-                                                                        </div>
-                                                                    </form>
-                                                                }
-                                                            </div>
-                                                            <div style="padding-top: 5px;">
-                                                                <div class="btn-toolbar" role="toolbar">
-                                                                    <div class="btn-group" role="group">
-                                                                        <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                                                        <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
-                                                                    </div>
-                                                                    <div class="btn-group" role="group">
-                                                                        <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
-                                                                            @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                                                                            {
-                                                                                <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                                                      class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                                      style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                                                    <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                                                </span>
-                                                                            }
-                                                                        </button>
-                                                                    </div>
-                                                                    <div class="btn-group" role="group">
-                                                                        <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"> @assessment.CommentCount</i></a>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+                                                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.ClaimantName</a>
+                                                            </td>
+                                                            <td style="vertical-align: text-top; width:50px;">
+                                                                @assessment.Id
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="assessment-@assessment.Id" class="collapse">
+                                                            <td></td>
+                                                            <td colspan="4">
+                                                                <div style="padding-top: 5px;">
+                                                                    @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
                                                                     {
-                                                                        <form action="~/Dashboard/ToggleNoShow">
+                                                                        <form action="~/Dashboard/UpdateTaskStatus">
                                                                             <div class="checkbox">
                                                                                 <label>
-                                                                                    <input id="task-checkbox-@assessment.Id" type="checkbox"
-                                                                                           value="@assessment.IsNoShow"
-                                                                                           @(assessment.IsNoShow ? "checked" : "")
-                                                                                           onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                                    No Show
+                                                                                    <input id="task-checkbox-@task.Id" type="checkbox"
+                                                                                           value="@task.IsComplete"
+                                                                                           @(task.IsComplete ? "checked" : "")
+                                                                                           @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                                                           onclick="onTaskChecked(this, false, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                    @Html.Partial("_TaskStatusLabel", task) @task.Name
                                                                                 </label>
                                                                             </div>
                                                                         </form>
                                                                     }
-                                                                    else
-                                                                    {
-
-                                                                    }
                                                                 </div>
-                                                            </div>
-                                                            <hr />
-                                                        </div>
-                                                        <div style="padding-top:10px"></div>
+                                                                <div style="padding-top: 5px;">
+                                                                    <div class="btn-toolbar" role="toolbar">
+                                                                        <div class="btn-group" role="group">
+                                                                            <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                                            <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
+                                                                        </div>
+                                                                        <div class="btn-group" role="group">
+                                                                            <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
+                                                                                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                                                {
+                                                                                    <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                                          class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                                          style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                                        <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                                    </span>
+                                                                                }
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="btn-group" role="group">
+                                                                            <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"></i></a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+                                                                        {
+                                                                            <form action="~/Dashboard/ToggleNoShow">
+                                                                                <div class="checkbox">
+                                                                                    <label>
+                                                                                        <input id="task-checkbox-@assessment.Id" type="checkbox"
+                                                                                               value="@assessment.IsNoShow"
+                                                                                               @(assessment.IsNoShow ? "checked" : "")
+                                                                                               onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                        No Show
+                                                                                    </label>
+                                                                                </div>
+                                                                            </form>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     }
-                                                </div>
+                                                </table>
                                             </div>
                                         }
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     }
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
-                <h1>Add Ons</h1>
+                <table class="table">
+                    @foreach (var assessment in Model.AddOns)
+                    {
+
+                        <tr id="header-assessment-@assessment.Id">
+                            <td style="vertical-align: text-top; width:40px;">
+                                <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                            </td>
+                            <td style="vertical-align: text-top; width:60px;">
+                                <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
+                                <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
+                            </td>
+                            <td style="vertical-align: text-top;">
+                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                            </td>
+                            <td style="vertical-align: text-top; width:60px;">
+                                @assessment.Id
+                            </td>
+                        </tr>
+                        <tr id="assessment-@assessment.Id" class="collapse">
+                            <td></td>
+                            <td colspan="4">
+                                <div>
+                                    @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
+                                    {
+                                        <form action="~/Dashboard/UpdateTaskStatus">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="task-checkbox-@task.Id" type="checkbox"
+                                                           value="@task.IsComplete"
+                                                           @(task.IsComplete ? "checked" : "")
+                                                           @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                           onclick="onTaskChecked(this, true, @task.Id, @assessment.Id, null, null);">
+                                                    @Html.Partial("_TaskStatusLabel", task) @task.Name
+                                                </label>
+                                            </div>
+                                        </form>
+                                    }
+                                </div>
+                                <div style="padding-top: 5px;">
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                            <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
+                                                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                {
+                                                    <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                          class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                          style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                        <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                    </span>
+                                                }
+                                            </button>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <div class="modal fade" id="dependencies-modal"></div>
 
 <div class="modal fade" id="tasklist-modal"></div>
 
-<div class="modal fade" id="discussion-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Assessment Discussion</h4>
-            </div>
-            <div class="modal-body">
-                <ul id="discussion"></ul>
-            </div>
-            <div class="modal-footer">
-                <form>
-                    <div class="form-group">
-                        <input type="hidden" id="displayname" />
-                        <textarea class="form-control" rows="3" type="text" id="message" placeholder="Write your message here ..."></textarea>
-                    </div>
-                    <input class="btn btn-success" type="button" id="sendmessage" value="Send" />
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="modal fade" id="discussion-modal"></div>
 
 <div class="modal fade" id="request-modal"></div>
 
 @section Scripts{
-    @Scripts.Render("~/bundles/signalr")
-    @Scripts.Render("~/signalr/hubs")
+    @*@Scripts.Render("~/bundles/signalr")
+        @Scripts.Render("~/signalr/hubs")*@
     <script>
 
-        function onTaskChecked(checkbox, taskId, assessmentId, day, week) {
+        function onTaskChecked(checkbox, isAddOn, taskId, assessmentId, day, week) {
             var params = {
+                isAddOn: isAddOn,
                 taskId: taskId,
                 assessmentId: assessmentId,
                 day: day,
@@ -252,9 +296,11 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     UpdateView(result, params);
+                    toastr.success("Task updated successfully.", "Task Updated");
                 },
                 error: function (err) {
-                    alert(err.status + " - " + err.statusText);
+                    // undo the UI change made before the ajax call
+                    toastr.success("Task was not updated.", "Something went wrong!");
                 }
             }, this);
         }
@@ -293,32 +339,22 @@
 
         function UpdateView(result, params) {
             // get the updated assessment data
-            var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
-
-            SetWeekTotals(weekFolder[0], params.week);
-
-            //if (!weekFolder[0]) {
-            //    SetAllTasksToDone();
-            //}
-            //else {
-            var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
-            //if (!dayFolder[0]) {
-            //    SetAllTasksToDone();
-            //}
-            //else {
-            var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
-            //if (!assessment) {
-            //    SetAllTasksToDone();
-            //}
-            //else {
-            SetAssessmentStatus(assessment[0], params.assessmentId);
+            if (!params.isAddOn) {
+                var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
+                SetWeekTotals(weekFolder[0], params.week);
+                var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
+                var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
+                SetAssessmentStatus(assessment[0], params.assessmentId);
+                console.log('Is not addon: ' + result);
+            }
+            else {
+                var assessment = $.grep(result.AddOns, function (item) { return item.Id == params.assessmentId; });
+                console.log('Is addon: ' + result);
+            }
             SetAssessmentTotals(assessment[0], params.assessmentId);
             updateTaskStatuses(assessment[0], params.assessmentId);
-            //        }
-            //    }
-            //}
 
-            console.log('success: ' + result);
+            console.log('view updated successfully: ' + result);
         }
 
         function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
@@ -363,13 +399,13 @@
             labelEl.removeClass();
 
             if (assessmentFromResult.IsLateCancellation)
-                labelEl.addClass('small label label-danger').text('Late Cancelled');
+                labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
             else if (assessmentFromResult.IsCancelled)
-                labelEl.addClass('small label label-danger').text('Cancelled');
+                labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
             if (assessmentFromResult.IsNoShow)
-                labelEl.addClass('small label label-danger').text('No Show');
+                labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
             else
-                labelEl.text('');
+                labelEl.text('').prop('title', '');
         }
 
         function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
@@ -382,7 +418,7 @@
             };
             var assessmentEl = $('#asessment-' + assessmentIdForEl);
             var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
-
+            var taskEl = null;
             $.each(assessmentFromResult.People, function (index, person) {
                 $.each(person.Tasks, function (index, task) {
                     taskEl = $('#task-statuslabel-' + task.Id);
@@ -461,11 +497,23 @@
         }
 
         function onShowDiscussion(serviceRequestId) {
-            var modalDiv = $("#discussion-modal");
-            modalDiv.modal('show');
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/Discussion")' + '?serviceRequestId=' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    // inject the html into the modal and display it
+                    var modalDiv = $("#discussion-modal");
+                    modalDiv.html(result);
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
         }
 
-        $(function () {
+        @*$(function () {
             // Declare a proxy to reference the hub.
             var chat = $.connection.serviceRequestHub;
             // Create a function that the hub can call to broadcast messages.
@@ -478,19 +526,31 @@
                     + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
             };
             // Get the user name and store it to prepend to messages.
-            $('#displayname').val('fargs');
+            $('#displayname').val('@User.Identity.GetDisplayName()');
             // Set initial focus to message input box.
             $('#message').focus();
             // Start the connection.
             $.connection.hub.start().done(function () {
                 $('#sendmessage').click(function () {
                     // Call the Send method on the hub.
-                    chat.server.send($('#displayname').val(), $('#message').val());
+                    chat.server.send($('#displayname').val(), $('#message').val(), 'servicerequestroom_188' )// $('#room').val());
                     // Clear text box and reset focus for next comment.
                     $('#message').val('').focus();
                 });
             });
         });
+
+        function joinRoom(room) {
+
+        }
+
+        function leaveRoom(room) {
+
+        }
+
+        function send(name, message, room) {
+
+        }*@
 
     </script>
 }

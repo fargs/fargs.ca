@@ -57,11 +57,13 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServicePortfolio> ServicePortfolios { get; set; } // ServicePortfolio
         public System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest
         public System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
+        public System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         public System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         public System.Data.Entity.DbSet<Task> Tasks { get; set; } // Task
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
+        public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         static OrvosiDbContext()
         {
@@ -155,11 +157,13 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServicePortfolioConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
             modelBuilder.Configurations.Add(new TaskConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
+            modelBuilder.Configurations.Add(new UserInboxConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }
@@ -205,11 +209,13 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServicePortfolioConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserInboxConfiguration(schema));
             return modelBuilder;
         }
 

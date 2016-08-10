@@ -1,0 +1,9 @@
+﻿@using Orvosi.Data
+@model List<API_GetAssignedServiceRequestsReturnModel>
+
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>@item.Id</li>
+    }
+</ul>

@@ -10,15 +10,11 @@
 {
     if (User.Identity.GetRoles().Contains(e.Roles.AppTester))
     {
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <form action="~/Account/ChangeRole/" method="get" class="form-inline">
-                    <div class="form-group">
-                        @Html.DropDownList("RoleId", new SelectList(Model.Roles, "Value", "Text", Model.RoleId), "-- Role --", new { @class = "form-control", onchange = "this.form.submit();" })
-                    </div>
-                </form>
-            </li>
-        </ul>
+        <form action="~/Account/ChangeRole/" method="get" class="navbar-form navbar-right">
+            <div class="form-group">
+                @Html.DropDownList("RoleId", new SelectList(Model.Roles, "Value", "Text", Model.RoleId), "-- Change your role --", new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+        </form>
     }
 
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))

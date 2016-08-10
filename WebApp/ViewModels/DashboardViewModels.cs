@@ -32,7 +32,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                               where m.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || m.ServiceCategoryId == ServiceCategories.MedicalConsultation
                               orderby m.AppointmentDate, m.StartTime, m.TaskSequence
                               select m;
-            var addOns = model.Where(m => m.ServiceCategoryId == ServiceCategories.AddOn);
+            var addOns = model.Where(m => m.ServiceCategoryId == ServiceCategories.AddOn).OrderBy(m => m.ReportDueDate).ThenBy(m => m.TaskSequence);
 
             var firstDate = assessments.Min(a => a.AppointmentDate);
             var lastDate = assessments.Max(a => a.AppointmentDate);
@@ -139,17 +139,78 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                }
                               };
 
+            var ad = from a in addOns
+                     group a by new { a.ServiceRequestId, a.ReportDueDate, a.CancelledDate, a.ClaimantName, a.ServiceName, a.ServiceCode, a.ServiceColorCode, a.ServiceId, a.BoxCaseFolderId } into sr
+                     select new AddOn
+                     {
+                         Id = sr.Key.ServiceRequestId,
+                         ReportDueDate = sr.Key.ReportDueDate.Value,
+                         ClaimantName = sr.Key.ClaimantName,
+                         Service = sr.Key.ServiceName,
+                         ServiceCode = sr.Key.ServiceCode,
+                         ServiceColorCode = sr.Key.ServiceColorCode,
+                         CancelledDate = sr.Key.CancelledDate,
+                         Title = $"{sr.Key.ReportDueDate.Value.ToShortDateString()} - {sr.Key.ClaimantName}",
+                         URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
+                         BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
+                         ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                         WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
+                         Tasks = from o in addOns
+                                 where o.ServiceRequestId == sr.Key.ServiceRequestId
+                                 select new Task
+                                 {
+                                     Id = o.Id,
+                                     Name = o.TaskName,
+                                     StatusId = o.TaskStatusId.Value,
+                                     Status = o.TaskStatusName,
+                                     AssignedTo = o.AssignedTo,
+                                     AssignedToDisplayName = o.AssignedToDisplayName,
+                                     AssignedToColorCode = o.AssignedToColorCode,
+                                     AssignedToInitials = o.AssignedToInitials,
+                                     IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                     ServiceRequestId = o.ServiceRequestId
+                                 },
+                         People = from o in addOns
+                                  group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into p
+                                  where p.Key.ServiceRequestId == sr.Key.ServiceRequestId
+                                  select new Person
+                                  {
+                                      Id = p.Key.AssignedTo,
+                                      DisplayName = p.Key.AssignedToDisplayName,
+                                      ColorCode = p.Key.AssignedToColorCode,
+                                      Initials = p.Key.AssignedToInitials,
+                                      ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                      WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
+                                      Tasks = from o in addOns
+                                              where o.ServiceRequestId == p.Key.ServiceRequestId && o.AssignedTo == p.Key.AssignedTo
+                                              select new Task
+                                              {
+                                                  Id = o.Id,
+                                                  Name = o.TaskName,
+                                                  StatusId = o.TaskStatusId.Value,
+                                                  Status = o.TaskStatusName,
+                                                  AssignedTo = p.Key.AssignedTo,
+                                                  AssignedToDisplayName = p.Key.AssignedToDisplayName,
+                                                  AssignedToColorCode = p.Key.AssignedToColorCode,
+                                                  AssignedToInitials = p.Key.AssignedToInitials,
+                                                  IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                  ServiceRequestId = p.Key.ServiceRequestId
+                                              }
+                                  }
+                     };
+
             var past = weekFolders.Where(c => c.GetTimeline(now) == Orvosi.Shared.Enums.Timeline.Past);
             var present = weekFolders.Where(c => c.GetTimeline(now) == Orvosi.Shared.Enums.Timeline.Present);
             var future = weekFolders.Where(c => c.GetTimeline(now) == Orvosi.Shared.Enums.Timeline.Future);
 
             WeekFolders = weekFolders;
+            AddOns = ad; 
         }
 
         public IEnumerable<WeekFolder> WeekFolders { get; set; }
+        public IEnumerable<AddOn> AddOns { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Guid? SelectedUserId { get; set; }
-
     }
 
     public class TaskListViewModel
@@ -190,7 +251,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                     Initials = p.Key.AssignedToInitials,
                     ToDoCount = p.Count(t => t.TaskStatusId == TaskStatuses.ToDo),
                     WaitingCount = p.Count(t => t.TaskStatusId == TaskStatuses.Waiting),
-                    Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo) 
+                    Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo)
                         .Select(t => new Task
                         {
                             Id = t.Id,
@@ -399,8 +460,48 @@ namespace WebApp.ViewModels.DashboardViewModels
                 }
             }
         }
+        public IEnumerable<ServiceRequestMessage> Messages { get; set; }
     }
-
+    public class AddOn
+    {
+        public int Id { get; set; }
+        public string URL { get; set; }
+        public string Title { get; set; }
+        public DateTime ReportDueDate { get; set; }
+        public string ClaimantName { get; set; }
+        public DateTime? CancelledDate { get; set; }
+        public string Service { get; set; }
+        public string ServiceCode { get; set; }
+        public string ServiceColorCode { get; set; }
+        public int CommentCount { get; set; } = 0;
+        public int ToDoCount { get; set; }
+        public int WaitingCount { get; set; }
+        public string BoxCaseFolderURL { get; set; }
+        public IEnumerable<Task> Tasks { get; set; }
+        public IEnumerable<Person> People { get; set; }
+        public bool IsCancelled
+        {
+            get
+            {
+                return CancelledDate.HasValue;
+            }
+        }
+        public byte ServiceRequestStatusId
+        {
+            get
+            {
+                if (Tasks.Any(c => c.StatusId == TaskStatuses.ToDo || c.StatusId == TaskStatuses.Waiting))
+                {
+                    return ServiceRequestStatus.Open;
+                }
+                else
+                {
+                    return ServiceRequestStatus.Closed;
+                }
+            }
+        }
+        public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+    }
     public class Person
     {
         public Guid? Id { get; set; }
@@ -436,4 +537,5 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string AssignedToInitials { get; internal set; }
         public int ServiceRequestId { get; internal set; }
     }
+
 }

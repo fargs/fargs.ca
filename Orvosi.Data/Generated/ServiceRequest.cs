@@ -59,6 +59,7 @@ namespace Orvosi.Data
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_ServiceRequest
+        public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequest
 
         // Foreign keys
@@ -80,6 +81,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
+            ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();
         }

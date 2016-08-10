@@ -54,11 +54,13 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServicePortfolio> ServicePortfolios { get; set; } // ServicePortfolio
         System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest
         System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
+        System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         System.Data.Entity.DbSet<Task> Tasks { get; set; } // Task
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time
+        System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync();

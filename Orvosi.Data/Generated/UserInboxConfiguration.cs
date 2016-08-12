@@ -29,14 +29,14 @@ namespace Orvosi.Data
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("int").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.UserId).HasColumnName(@"UserId").IsRequired().HasColumnType("uniqueidentifier");
-            Property(x => x.ServiceRequestMessageId).HasColumnName(@"ServiceRequestMessageId").IsRequired().HasColumnType("uniqueidentifier");
+            Property(x => x.ServiceRequestMessageId).HasColumnName(@"ServiceRequestMessageId").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.IsRead).HasColumnName(@"IsRead").IsRequired().HasColumnType("bit");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
 
             // Foreign keys
+            HasOptional(a => a.ServiceRequestMessage).WithMany(b => b.UserInboxes).HasForeignKey(c => c.ServiceRequestMessageId).WillCascadeOnDelete(false); // FK_UserInbox_ServiceRequestMessage
             HasRequired(a => a.AspNetUser).WithMany(b => b.UserInboxes).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_UserInbox_AspNetUsers
-            HasRequired(a => a.ServiceRequestMessage).WithMany(b => b.UserInboxes).HasForeignKey(c => c.ServiceRequestMessageId).WillCascadeOnDelete(false); // FK_UserInbox_ServiceRequestMessage
             InitializePartial();
         }
         partial void InitializePartial();

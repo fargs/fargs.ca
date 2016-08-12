@@ -17,13 +17,16 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class ServiceRequestTemplateTask
     {
-        public short Id { get; set; } // Id (Primary key)
-        public short? ParentId { get; set; } // ParentId
+        public System.Guid Id { get; set; } // Id (Primary key)
         public short? Sequence { get; set; } // Sequence
         public short ServiceRequestTemplateId { get; set; } // ServiceRequestTemplateId
         public short? TaskId { get; set; } // TaskId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTaskRelated> RelatedTask { get; set; } // ServiceRequestTemplateTaskRelated.FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask1
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskRelated.FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask
 
         // Foreign keys
         public virtual ServiceRequestTemplate ServiceRequestTemplate { get; set; } // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
@@ -33,6 +36,8 @@ namespace Orvosi.Data
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            RelatedTask = new System.Collections.Generic.List<ServiceRequestTemplateTaskRelated>();
+            ServiceRequestTemplateTaskId = new System.Collections.Generic.List<ServiceRequestTemplateTaskRelated>();
             InitializePartial();
         }
 

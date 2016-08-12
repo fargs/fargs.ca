@@ -40,6 +40,7 @@
                                     Admin <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("Request Templates", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
                                     <li>@Html.ActionLink("Companies", "", "Company", new { area = "Admin" }, null)</li>
                                     <li>@Html.ActionLink("Locations", "", "Location", new { area = "Admin" }, null)</li>
                                     <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = e.ServicePortfolios.Physician }, null)</li>

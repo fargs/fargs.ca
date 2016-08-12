@@ -127,6 +127,13 @@ body {
     white-space: pre-line;
 }
 
+td.wordwrap-off {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /*--------------------------------------------------*/
 
 .border-left {

@@ -13,26 +13,21 @@
 namespace Orvosi.Data
 {
 
-    // UserInbox
+    // ServiceRequestTemplateTaskRelated
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
-    public partial class UserInbox
+    public partial class ServiceRequestTemplateTaskRelated
     {
         public int Id { get; set; } // Id (Primary key)
-        public System.Guid UserId { get; set; } // UserId
-        public System.Guid? ServiceRequestMessageId { get; set; } // ServiceRequestMessageId
-        public bool IsRead { get; set; } // IsRead
-        public System.DateTime ModifiedDate { get; set; } // ModifiedDate
-        public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public System.Guid? ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskId
+        public System.Guid? RelatedTaskId { get; set; } // RelatedTaskId
+        public string Relationship { get; set; } // Relationship (length: 50)
 
         // Foreign keys
-        public virtual AspNetUser AspNetUser { get; set; } // FK_UserInbox_AspNetUsers
-        public virtual ServiceRequestMessage ServiceRequestMessage { get; set; } // FK_UserInbox_ServiceRequestMessage
+        public virtual ServiceRequestTemplateTask RelatedTask { get; set; } // FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask1
+        public virtual ServiceRequestTemplateTask ServiceRequestTemplateTask_ServiceRequestTemplateTaskId { get; set; } // FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask
 
-        public UserInbox()
+        public ServiceRequestTemplateTaskRelated()
         {
-            IsRead = false;
-            ModifiedDate = System.DateTime.Now;
-            ModifiedUser = "suser_name()";
             InitializePartial();
         }
 

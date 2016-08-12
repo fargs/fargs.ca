@@ -42,6 +42,10 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_Task
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_Task
 
+        // Foreign keys
+        public virtual AspNetRole AspNetRole { get; set; } // FK_Task_AspNetRoles
+        public virtual TaskPhase TaskPhase { get; set; } // FK_Task_TaskPhase
+
         public Task()
         {
             ObjectGuid = System.Guid.NewGuid();

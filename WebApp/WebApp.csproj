@@ -408,6 +408,10 @@
     <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
+    <Compile Include="Controllers\ServiceRequestTemplateController.cs" />
+    <Compile Include="Controllers\ServiceRequestTemplateTaskController.cs" />
+    <Compile Include="Controllers\ServiceRequestTemplateTaskRelatedController.cs" />
+    <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\Dropbox.cs" />
@@ -878,6 +882,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Areas\Admin\ViewModels\ServiceRequestTemplateTaskViewModels.cs" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1032,6 +1037,21 @@
     <Content Include="Views\Dashboard\_DiscussionModal.cshtml" />
     <Content Include="Views\Dashboard\_TaskHierarchy.cshtml" />
     <Content Include="Views\Diagnostics\DashboardPerformanceTest.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTask\Create.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTask\Delete.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTask\Details.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTask\Edit.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTask\Index.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTaskRelated\Create.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTaskRelated\Delete.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTaskRelated\Details.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTaskRelated\Edit.cshtml" />
+    <Content Include="Views\ServiceRequestTemplateTaskRelated\Index.cshtml" />
+    <Content Include="Views\ServiceRequestTemplate\Create.cshtml" />
+    <Content Include="Views\ServiceRequestTemplate\Delete.cshtml" />
+    <Content Include="Views\ServiceRequestTemplate\Details.cshtml" />
+    <Content Include="Views\ServiceRequestTemplate\Edit.cshtml" />
+    <Content Include="Views\ServiceRequestTemplate\Index.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
@@ -1044,6 +1064,11 @@
     <Content Include="Views\Shared\_TaskList_IME.cshtml" />
     <Content Include="Views\Shared\_TaskList_AddOn.cshtml" />
     <Content Include="Views\Shared\_TaskStatusLabel.cshtml" />
+    <Content Include="Views\Task\Create.cshtml" />
+    <Content Include="Views\Task\Delete.cshtml" />
+    <Content Include="Views\Task\Details.cshtml" />
+    <Content Include="Views\Task\Edit.cshtml" />
+    <Content Include="Views\Task\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

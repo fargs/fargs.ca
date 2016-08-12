@@ -34,6 +34,12 @@
 );
 
 
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_Task];
+
+
+
+
 
 
 

@@ -1,0 +1,42 @@
+﻿@model Orvosi.Data.ServiceRequestTemplateTaskRelated
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ServiceRequestTemplateTaskRelated</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.RelatedTask.ModifiedUser)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RelatedTask.ModifiedUser)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ServiceRequestTemplateTask_ServiceRequestTemplateTaskId.ModifiedUser)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ServiceRequestTemplateTask_ServiceRequestTemplateTaskId.ModifiedUser)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Relationship)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Relationship)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+</p>

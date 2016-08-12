@@ -25,12 +25,14 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<Task> Tasks { get; set; } // Task.FK_Task_AspNetRoles
 
         public AspNetRole()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
+            Tasks = new System.Collections.Generic.List<Task>();
             InitializePartial();
         }
 

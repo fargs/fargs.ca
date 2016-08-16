@@ -47,6 +47,8 @@ namespace Orvosi.Data
             Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
             Property(x => x.ShortName).HasColumnName(@"ShortName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
+            Property(x => x.TaskType).HasColumnName(@"TaskType").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(50);
+            Property(x => x.Workload).HasColumnName(@"Workload").IsOptional().HasColumnType("tinyint");
 
             // Foreign keys
             HasOptional(a => a.AspNetRole).WithMany(b => b.Tasks).HasForeignKey(c => c.ResponsibleRoleId).WillCascadeOnDelete(false); // FK_Task_AspNetRoles

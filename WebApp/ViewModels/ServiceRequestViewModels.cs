@@ -34,7 +34,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public IEnumerable<SelectListItem> AddressSelectList { get; set; }
         public IEnumerable<SelectListItem> StaffSelectList { get; set; }
         public IEnumerable<SelectListItem> PhysicianSelectList { get; set; }
-
+        public IEnumerable<SelectListItem> ServiceRequestTemplateSelectList { get; internal set; }
     }
 
     public class DetailsViewModel

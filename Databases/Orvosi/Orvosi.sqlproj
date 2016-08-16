@@ -258,6 +258,7 @@
     <Build Include="dbo\Tables\ServiceRequestMessage.sql" />
     <Build Include="dbo\Tables\TaskPhase.sql" />
     <Build Include="dbo\Tables\ServiceRequestTemplateTaskRelated.sql" />
+    <Build Include="dbo\Tables\ServiceRequestTaskRelated.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

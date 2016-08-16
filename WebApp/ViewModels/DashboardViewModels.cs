@@ -72,8 +72,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                    Address = days.Min(c => c.AddressName),
                                                    City = days.Min(c => c.City),
                                                    AssessmentCount = days.Select(c => c.ServiceRequestId).Distinct().Count(),
-                                                   ToDoCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
-                                                   WaitingCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
+                                                   ToDoCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                                   WaitingCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                    Assessments = from o in assessments
                                                                  group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                                                  where sr.Key.AppointmentDate == days.Key
@@ -91,8 +91,19 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      Title = $"{sr.Key.StartTime.ToShortTimeSafe()} - {sr.Key.ClaimantName}",
                                                                      URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                                                                      BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
-                                                                     ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
-                                                                     WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
+                                                                     HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.Workload == Workload.High),
+                                                                     Status = () => {
+                                                                         if (sr.Key.IsNoShow.Value || sr.Key.IsLateCancellation.Value)
+                                                                             return TaskStatuses.Obsolete;
+                                                                         else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo))
+                                                                             return TaskStatuses.ToDo;
+                                                                         else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting))
+                                                                             return TaskStatuses.Waiting;
+                                                                         else
+                                                                             return TaskStatuses.Done;
+                                                                    },
+                                                                     ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                                                     WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                      Tasks = from o in assessments
                                                                              where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
                                                                              select new Task
@@ -106,7 +117,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                  AssignedToColorCode = o.AssignedToColorCode,
                                                                                  AssignedToInitials = o.AssignedToInitials,
                                                                                  IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
-                                                                                 ServiceRequestId = o.ServiceRequestId
+                                                                                 ServiceRequestId = o.ServiceRequestId,
+                                                                                 Workload = o.Workload.GetValueOrDefault(0)
                                                                              },
                                                                      People = from o in assessments
                                                                               group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into at
@@ -117,8 +129,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                   DisplayName = at.Key.AssignedToDisplayName,
                                                                                   ColorCode = at.Key.AssignedToColorCode,
                                                                                   Initials = at.Key.AssignedToInitials,
-                                                                                  ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
-                                                                                  WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
+                                                                                  ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                                                                  WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                                   Tasks = from o in assessments
                                                                                           where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
                                                                                           select new Task
@@ -132,7 +144,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                               AssignedToColorCode = at.Key.AssignedToColorCode,
                                                                                               AssignedToInitials = at.Key.AssignedToInitials,
                                                                                               IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
-                                                                                              ServiceRequestId = at.Key.ServiceRequestId
+                                                                                              ServiceRequestId = at.Key.ServiceRequestId,
+                                                                                              Workload = o.Workload.GetValueOrDefault(0)
                                                                                           }
                                                                               }
                                                                  }
@@ -153,6 +166,15 @@ namespace WebApp.ViewModels.DashboardViewModels
                          Title = $"{sr.Key.ReportDueDate.Value.ToShortDateString()} - {sr.Key.ClaimantName}",
                          URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                          BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
+                         HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.Workload == Workload.High),
+                         Status = () => {
+                             if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo))
+                                 return TaskStatuses.ToDo;
+                             else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting))
+                                 return TaskStatuses.Waiting;
+                             else
+                                 return TaskStatuses.Done;
+                         },
                          ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                          WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                          Tasks = from o in addOns
@@ -168,7 +190,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                      AssignedToColorCode = o.AssignedToColorCode,
                                      AssignedToInitials = o.AssignedToInitials,
                                      IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
-                                     ServiceRequestId = o.ServiceRequestId
+                                     ServiceRequestId = o.ServiceRequestId,
+                                     Workload = o.Workload.GetValueOrDefault(0)
                                  },
                          People = from o in addOns
                                   group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into p
@@ -194,7 +217,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                   AssignedToColorCode = p.Key.AssignedToColorCode,
                                                   AssignedToInitials = p.Key.AssignedToInitials,
                                                   IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
-                                                  ServiceRequestId = p.Key.ServiceRequestId
+                                                  ServiceRequestId = p.Key.ServiceRequestId,
+                                                  Workload = o.Workload.GetValueOrDefault(0)
                                               }
                                   }
                      };
@@ -331,10 +355,37 @@ namespace WebApp.ViewModels.DashboardViewModels
         public long StartDateTicks { get; set; }
         public DateTime EndDate { get; set; }
         public int AssessmentCount { get; set; } = 0;
-        public int ToDoCount { get; set; } = 0;
+        public int AssessmentToDoCount
+        {
+            get
+            {
+                return DayFolders.Sum(a => a.AssessmentToDoCount);
+            }
+        }
+        public int AssessmentWaitingCount
+        {
+            get
+            {
+                return DayFolders.Sum(a => a.AssessmentWaitingCount);
+            }
+        }
+        public int AssessmentObsoleteCount
+        {
+            get
+            {
+                return DayFolders.Sum(a => a.AssessmentObsoleteCount);
+            }
+        }
+        public int AssessmentDoneCount
+        {
+            get
+            {
+                return DayFolders.Sum(a => a.AssessmentDoneCount);
+            }
+        }
+        public int ToDoCount { get; internal set; } = 0;
         public int WaitingCount { get; set; }
         public IEnumerable<DayFolder> DayFolders { get; set; }
-
         public byte GetTimeline(DateTime now)
         {
             byte result = Orvosi.Shared.Enums.Timeline.Future;
@@ -386,7 +437,33 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string DayFormatted_dddd { get; internal set; }
         public string DayFormatted_MMMdd { get; internal set; }
         public long DayTicks { get; internal set; }
-
+        public int AssessmentToDoCount {
+            get
+            {
+                return Assessments.Count(a => a.Status() == TaskStatuses.ToDo);
+            }
+        }
+        public int AssessmentWaitingCount
+        {
+            get
+            {
+                return Assessments.Count(a => a.Status() == TaskStatuses.Waiting);
+            }
+        }
+        public int AssessmentObsoleteCount
+        {
+            get
+            {
+                return Assessments.Count(a => a.Status() == TaskStatuses.Obsolete);
+            }
+        }
+        public int AssessmentDoneCount
+        {
+            get
+            {
+                return Assessments.Count(a => a.Status() == TaskStatuses.Done);
+            }
+        }
         public bool IsToday()
         {
             return SystemTime.Now().Date == Day;
@@ -461,6 +538,8 @@ namespace WebApp.ViewModels.DashboardViewModels
             }
         }
         public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+        public bool HasHighWorkload { get; internal set; }
+        public Func<byte> Status { get; internal set; }
     }
     public class AddOn
     {
@@ -501,6 +580,8 @@ namespace WebApp.ViewModels.DashboardViewModels
             }
         }
         public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+        public bool HasHighWorkload { get; internal set; }
+        public Func<byte> Status { get; internal set; }
     }
     public class Person
     {
@@ -536,6 +617,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string AssignedToColorCode { get; internal set; }
         public string AssignedToInitials { get; internal set; }
         public int ServiceRequestId { get; internal set; }
+        public byte Workload { get; set; }
     }
 
 }

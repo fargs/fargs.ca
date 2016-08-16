@@ -65,6 +65,7 @@ namespace Orvosi.Data
             Property(x => x.BoxCaseFolderId).HasColumnName(@"BoxCaseFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.IntakeAssistantBoxCollaborationId).HasColumnName(@"IntakeAssistantBoxCollaborationId").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.DocumentReviewerBoxCollaborationId).HasColumnName(@"DocumentReviewerBoxCollaborationId").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.ServiceRequestTemplateId).HasColumnName(@"ServiceRequestTemplateId").IsOptional().HasColumnType("smallint");
 
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address

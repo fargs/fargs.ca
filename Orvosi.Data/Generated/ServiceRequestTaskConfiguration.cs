@@ -55,6 +55,7 @@ namespace Orvosi.Data
             Property(x => x.ShortName).HasColumnName(@"ShortName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
             Property(x => x.IsDependentOnExamDate).HasColumnName(@"IsDependentOnExamDate").IsOptional().HasColumnType("bit").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed);
+            Property(x => x.Workload).HasColumnName(@"Workload").IsOptional().HasColumnType("tinyint");
 
             // Foreign keys
             HasOptional(a => a.AspNetUser).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers

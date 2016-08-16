@@ -324,6 +324,12 @@
     <Compile Include="Generated\ServiceRequestTaskConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\ServiceRequestTaskRelated.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestTaskRelatedConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\ServiceRequestTemplate.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

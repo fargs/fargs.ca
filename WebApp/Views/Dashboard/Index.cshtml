@@ -46,19 +46,21 @@
                                 <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
                                     <div class="panel-title">
                                         <div class="row">
-                                            <span class="col-sm-3">
-                                                @weekFolder.WeekFolderName
-                                            </span>
-                                            <span class="col-sm-3">
-                                                <span id="assessment-total">@weekFolder.AssessmentCount</span> <span id="assessment-total-label" class="small text-muted">Assessments</span>
-                                            </span>
-                                            <span class="col-sm-6">
-                                                <strong id="todo-total">@weekFolder.ToDoCount</strong>
-                                                <span id="todo-total-label" style="margin-left:5px;" class="small label @(weekFolder.ToDoCount == 0 ? "label-success" : "label-danger")">To Do</span>
-                                                &nbsp;&nbsp;&nbsp;
-                                                <strong id="waiting-total">@weekFolder.WaitingCount</strong>
-                                                <span id="waiting-total-label" style="margin-left:5px;" class="small label @(weekFolder.WaitingCount == 0 ? "label-success" : "label-warning")">Waiting</span>
-                                            </span>
+                                            <div class="col-xs-8">
+                                                <span>@weekFolder.WeekFolderName</span>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <span id="todo-total-label" class="small label @(weekFolder.AssessmentToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.AssessmentToDoCount</strong></span>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <span id="waiting-total-label" class="small label @(weekFolder.AssessmentWaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.AssessmentWaitingCount</strong></span>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <span id="done-total-label" class="small label @(weekFolder.AssessmentDoneCount > 0 ? "label-success" : "bg-success")"><strong id="done-total">@weekFolder.AssessmentDoneCount</strong></span>
+                                            </div>
+                                            <div class="col-xs-1">
+                                                <span id="obsolete-total-label" class="small label @(weekFolder.AssessmentObsoleteCount > 0 ? "label-info" : "bg-info")"><strong id="obsolete-total">@weekFolder.AssessmentObsoleteCount</strong></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -85,29 +87,42 @@
                                                             <td style="vertical-align: text-top; width:40px;">
                                                                 <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
                                                             </td>
-                                                            <td style="vertical-align: text-top; width:60px;">
-                                                                <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
-                                                                <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
+                                                            <td style="vertical-align: text-top; width:30px;">
+                                                                @if (assessment.Status() == e.TaskStatuses.Obsolete)
+                                                                {
+                                                                    <span id="assessment-todo-total-label" class="small label label-info" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
+                                                                }
+                                                                else if (assessment.Status() == e.TaskStatuses.ToDo)
+                                                                {
+                                                                    <span id="assessment-todo-total-label" class="small label label-danger">
+                                                                        @if (assessment.HasHighWorkload)
+                                                                        {
+                                                                            <strong>!</strong>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span>&nbsp;</span>
+                                                                        }
+                                                                    </span>
+                                                                }
+                                                                else if (assessment.Status() == e.TaskStatuses.Waiting)
+                                                                {
+                                                                    <span id="assessment-waiting-total-label" class="small label label-warning">&nbsp;</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span id="assessment-waiting-total-label" class="small label label-success">&nbsp;</span>
+                                                                }
                                                             </td>
                                                             <td style="vertical-align: text-top; width:80px;">
                                                                 @assessment.StartTime.ToShortTimeSafe()
                                                             </td>
-                                                            <td style="vertical-align: text-top;">
-                                                                @if (assessment.IsLateCancellation)
-                                                                {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="Late Cancellation">!</span>
-                                                                }
-                                                                else if (assessment.IsCancelled)
-                                                                {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="Cancellation">!</span>
-                                                                }
-                                                                else if (assessment.IsNoShow)
-                                                                {
-                                                                    <span id="assessment-status-label-@assessment.Id" class='label label-danger' title="No Show">!</span>
-                                                                }
-                                                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.ClaimantName</a>
+                                                            <td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
+                                                                <a data-toggle="collapse" href="#assessment-@assessment.Id" title="@assessment.ClaimantName">
+                                                                    @assessment.ClaimantName
+                                                                </a>
                                                             </td>
-                                                            <td style="vertical-align: text-top; width:50px;">
+                                                            <td style="vertical-align: text-top; width:50px;" class="text-center">
                                                                 @assessment.Id
                                                             </td>
                                                         </tr>
@@ -192,9 +207,28 @@
                             <td style="vertical-align: text-top; width:40px;">
                                 <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
                             </td>
-                            <td style="vertical-align: text-top; width:60px;">
-                                <span id="assessment-todo-total-label" class="small label @(assessment.ToDoCount == 0 ? "label-success" : "label-danger")">@assessment.ToDoCount</span>
-                                <span id="assessment-waiting-total-label" class="small label @(assessment.WaitingCount == 0 ? "label-success" : "label-warning")">@assessment.WaitingCount</span>
+                            <td style="vertical-align: text-top; width:30px;">
+                                @if (assessment.Status() == e.TaskStatuses.ToDo)
+                                {
+                                    <span id="assessment-todo-total-label" class="small label label-danger">
+                                        @if (assessment.HasHighWorkload)
+                                        {
+                                            <strong>!</strong>
+                                        }
+                                        else
+                                        {
+                                            <span>&nbsp;</span>
+                                        }
+                                    </span>
+                                }
+                                else if (assessment.Status() == e.TaskStatuses.Waiting)
+                                {
+                                    <span id="assessment-waiting-total-label" class="small label label-warning">&nbsp;</span>
+                                }
+                                else
+                                {
+                                    <span id="assessment-waiting-total-label" class="small label label-success">&nbsp;</span>
+                                }
                             </td>
                             <td style="vertical-align: text-top;">
                                 <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>

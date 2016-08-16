@@ -55,6 +55,7 @@ namespace Orvosi.Data
         public string BoxCaseFolderId { get; set; } // BoxCaseFolderId (length: 128)
         public string IntakeAssistantBoxCollaborationId { get; set; } // IntakeAssistantBoxCollaborationId (length: 50)
         public string DocumentReviewerBoxCollaborationId { get; set; } // DocumentReviewerBoxCollaborationId (length: 50)
+        public short? ServiceRequestTemplateId { get; set; } // ServiceRequestTemplateId
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest

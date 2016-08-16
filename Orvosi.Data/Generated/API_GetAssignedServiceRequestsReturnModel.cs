@@ -52,6 +52,7 @@ namespace Orvosi.Data
         public System.Boolean? IsNoShow { get; set; }
         public System.DateTime? CancelledDate { get; set; }
         public System.Guid? ResponsibleRoleId { get; set; }
+        public System.Byte? Workload { get; set; }
     }
 
 }

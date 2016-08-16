@@ -37,6 +37,8 @@ namespace Orvosi.Data
         public short? DueDateDiff { get; set; } // DueDateDiff
         public string ShortName { get; set; } // ShortName (length: 50)
         public bool IsCriticalPath { get; set; } // IsCriticalPath
+        public string TaskType { get; set; } // TaskType (length: 50)
+        public byte? Workload { get; set; } // Workload
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_Task

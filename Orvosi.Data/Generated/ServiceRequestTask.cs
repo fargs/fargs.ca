@@ -45,6 +45,7 @@ namespace Orvosi.Data
         public string ShortName { get; set; } // ShortName (length: 50)
         public bool IsCriticalPath { get; set; } // IsCriticalPath
         public bool? IsDependentOnExamDate { get; private set; } // IsDependentOnExamDate
+        public byte? Workload { get; set; } // Workload
 
         // Foreign keys
         public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceRequestTask_AspNetUsers

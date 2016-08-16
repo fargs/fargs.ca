@@ -59,6 +59,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
         public System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         public System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
+        public System.Data.Entity.DbSet<ServiceRequestTaskRelated> ServiceRequestTaskRelateds { get; set; } // ServiceRequestTaskRelated
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         public System.Data.Entity.DbSet<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskRelateds { get; set; } // ServiceRequestTemplateTaskRelated
@@ -161,6 +162,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestTaskRelatedConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskRelatedConfiguration());
@@ -215,6 +217,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestTaskRelatedConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskRelatedConfiguration(schema));

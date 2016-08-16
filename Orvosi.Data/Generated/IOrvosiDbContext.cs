@@ -56,6 +56,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
         System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
+        System.Data.Entity.DbSet<ServiceRequestTaskRelated> ServiceRequestTaskRelateds { get; set; } // ServiceRequestTaskRelated
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         System.Data.Entity.DbSet<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskRelateds { get; set; } // ServiceRequestTemplateTaskRelated

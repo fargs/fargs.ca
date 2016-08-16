@@ -188,6 +188,12 @@ namespace Orvosi.Shared.Enums
         public const byte LateCancellation = 2;
     }
 
+    public static class Workload
+    {
+        public const byte Low = 1;
+        public const byte High = 10;
+    }
+
     public static class DateRanges
     {
         public const byte Today = 1;

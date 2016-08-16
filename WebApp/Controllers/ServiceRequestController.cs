@@ -282,6 +282,14 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
 
+            vm.ServiceRequestTemplateSelectList = ctx.ServiceRequestTemplates
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                });
+
             return View(vm);
         }
 
@@ -327,26 +335,24 @@ namespace WebApp.Controllers
                 sr.ModifiedUser = User.Identity.Name;
                 sr.ModifiedDate = SystemTime.Now();
 
-                var service = await ctx.Services.FindAsync(serviceCatalogue.ServiceId);
-                var tasks = ctx.Tasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
+                var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
-                foreach (var task in tasks)
+                foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
-                    st.DependsOn = task.DependsOn;
-                    st.DueDateBase = task.DueDateBase;
-                    st.DueDateDiff = task.DueDateDiff;
-                    st.Guidance = task.Guidance;
-                    st.ObjectGuid = task.ObjectGuid;
-                    st.ResponsibleRoleId = task.ResponsibleRoleId;
-                    st.Sequence = task.Sequence;
-                    st.ShortName = task.ShortName;
-                    st.TaskId = task.Id;
-                    st.TaskName = task.Name;
+                    st.DueDateBase = template.Task.DueDateBase;
+                    st.DueDateDiff = template.Task.DueDateDiff;
+                    st.Guidance = template.Task.Guidance;
+                    st.ObjectGuid = template.Task.ObjectGuid;
+                    st.ResponsibleRoleId = template.Task.ResponsibleRoleId;
+                    st.Sequence = template.Sequence;
+                    st.ShortName = template.Task.ShortName;
+                    st.TaskId = template.Task.Id;
+                    st.TaskName = template.Task.Name;
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
                     // Assign tasks to physician and case coordinator to start
-                    st.AssignedTo = (task.ResponsibleRoleId == Roles.CaseCoordinator ? sr.CaseCoordinatorId : (task.ResponsibleRoleId == Roles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.AssignedTo = (template.Task.ResponsibleRoleId == Roles.CaseCoordinator ? sr.CaseCoordinatorId : (template.Task.ResponsibleRoleId == Roles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     sr.ServiceRequestTasks.Add(st);
                 }
 

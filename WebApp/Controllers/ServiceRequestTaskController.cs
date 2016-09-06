@@ -207,7 +207,7 @@ namespace WebApp.Controllers
                 return t;
             }).ToList();
 
-            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
+            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
 
             BuildDependencies(closeOutTask, null, tasks);
 

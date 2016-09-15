@@ -26,6 +26,13 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
+        // Reverse navigation
+        public virtual PhysicianLocation PhysicianLocation1 { get; set; } // PhysicianLocation.FK_PhysicianLocation_PhysicianLocation
+
+        // Foreign keys
+        public virtual Physician Physician { get; set; } // FK_PhysicianLocation_Physician
+        public virtual PhysicianLocation PhysicianLocation_Id { get; set; } // FK_PhysicianLocation_PhysicianLocation
+
         public PhysicianLocation()
         {
             ModifiedDate = System.DateTime.Now;

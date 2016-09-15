@@ -1,14 +1,14 @@
 ﻿@using WebApp.Library.Extensions
-@using Model
-@using e = Model.Enums
+@using Orvosi.Data
+@using Orvosi.Shared.Enums
 @model WebApp.ViewModels.InvoiceViewModels.DashboardViewModel
 
 @{
-    var db = new OrvosiEntities();
+    var db = new OrvosiDbContext();
 
     //TODO: Filter out the lookups that are not needed per role
     ViewBag.ServiceProviders = db.BillableEntities
-        .Where(c => c.EntityType == e.EntityTypes.Physician)
+        .Where(c => c.EntityType == EntityTypes.Physician)
         .Select(c => new SelectListItem()
         {
             Text = c.EntityName,
@@ -21,17 +21,17 @@
         {
             Text = c.Name,
             Value = c.ObjectGuid.ToString(),
-            Group = new SelectListGroup() { Name = c.ParentName }
+            Group = new SelectListGroup() { Name = c.Parent.Name }
         });
 
-    ViewBag.Years = e.DateRanges.GetYears()
+    ViewBag.Years = DateRanges.GetYears()
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
             Value = c.Key.ToString()
         });
 
-    ViewBag.Months = e.DateRanges.GetMonths()
+    ViewBag.Months = DateRanges.GetMonths()
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
@@ -42,7 +42,7 @@
 <div class="row" style="margin-bottom:20px">
     <div class="col-md-12">
         <form action="~/Invoice/Dashboard/" method="get" class="form-inline">
-            @if (Model.User.RoleId == e.Roles.SuperAdmin)
+            @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
             {
                 <div class="form-group">
                     @Html.DropDownList("ServiceProviderId", new SelectList(ViewBag.ServiceProviders, "Value", "Text", "Group.Name", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })

@@ -13,8 +13,13 @@
     [ProvinceId]       SMALLINT         NULL,
     [ModifiedDate]     DATETIME         CONSTRAINT [DF_PhysicianLicense_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]     NVARCHAR (100)   CONSTRAINT [DF_PhysicianLicense_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
-    CONSTRAINT [PK_PhysicianLicense] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_PhysicianLicense] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_PhysicianLicense_Document] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[Document] ([Id]),
+    CONSTRAINT [FK_PhysicianLicense_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id]),
+    CONSTRAINT [FK_PhysicianLicense_Province] FOREIGN KEY ([ProvinceId]) REFERENCES [dbo].[Province] ([Id])
 );
+
+
 
 
 

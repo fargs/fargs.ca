@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library
 @using System.Security.Claims
-@using e = Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums
 @using WebApp.ViewModels
 @model IEnumerable<Orvosi.Data.ServiceRequestTask>
 
@@ -28,11 +28,11 @@
                             @Html.Partial("_Initials", item.AspNetUser)
                         }
                     </span>
-                    @if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Done)
+                    @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Done)
                     {
                         <span class="small pull-right">@item.CompletedDate.Value.ToString("ddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
                     }
-                    else if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting)
+                    else if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
                     {
                         <span class="pull-right">
                             <a href="#task-row-@rowId">
@@ -42,7 +42,7 @@
                             </a>
                         </span>
                     }
-                    @if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting)
+                    @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
                     {
                         <div id="task-row-@rowId">
                             @ShowTree(item.GetDependents(), level++)
@@ -64,7 +64,7 @@
     {
         byte level = 1;
         var rowId = Guid.NewGuid().ToString();
-        if (!(ViewBag.HideCaseCoordinator && item.AspNetUser.AspNetUserRoles.First().RoleId == e.Roles.CaseCoordinator))
+        if (!(ViewBag.HideCaseCoordinator && item.AspNetUser.AspNetUserRoles.First().RoleId == AspNetRoles.CaseCoordinator))
         {
             <li class="list-group-item">
                 <div class="row">
@@ -75,7 +75,7 @@
                         <span>
                             @(ViewBag.UseShortName ? item.ShortName : item.TaskName)
                         </span>
-                        @if (identity.Claims.Any(c => c.Type == ClaimTypes.Role && (c.Value == e.Roles.CaseCoordinatorName || c.Value == e.Roles.SuperAdminName)))
+                        @if (identity.Claims.Any(c => c.Type == ClaimTypes.Role && (c.Value == AspNetRoles.CaseCoordinatorName || c.Value == AspNetRoles.SuperAdminName)))
                         {
                             <span class="pull-right" style="margin-left: 5px;">
                                 @Html.Partial("_TaskActionMenu", item)
@@ -88,11 +88,11 @@
                                 @Html.Partial("_Initials", item.AspNetUser)
                             </span>
                         }
-                        @if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Done)
+                        @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Done)
                         {
                             <span class="small pull-right">@item.CompletedDate.Value.ToString("ddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
                         }
-                        else if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting)
+                        else if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
                         {
                             <span class="pull-right">
                                 <a href="#task-row-@rowId"
@@ -105,7 +105,7 @@
                         }
                     </div>
                 </div>
-                @if (item.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting)
+                @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
                     {
                     <div id="task-row-@rowId" class="collapse @(ViewBag.Collapsed ? string.Empty : "in")">
                         @ShowTree(item.GetDependents(), level++)

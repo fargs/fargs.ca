@@ -1509,11 +1509,11 @@
         return parts[0] === '+' ? minutes : -minutes;
     }
 
-    // Return a moment from input, that is local/utc/zone equivalent to model.
+    // Return a moment from input, that is local/utc/zone equivalent to 
     function cloneWithOffset(input, model) {
         var res, diff;
-        if (model._isUTC) {
-            res = model.clone();
+        if (_isUTC) {
+            res = clone();
             diff = (isMoment(input) || isDate(input) ? +input : +local__createLocal(input)) - (+res);
             // Use low-level api, because this fn is low-level api.
             res._d.setTime(+res._d + diff);
@@ -1522,7 +1522,7 @@
         } else {
             return local__createLocal(input).local();
         }
-        return model._isUTC ? local__createLocal(input).zone(model._offset || 0) : local__createLocal(input).local();
+        return _isUTC ? local__createLocal(input).zone(_offset || 0) : local__createLocal(input).local();
     }
 
     function getDateOffset (m) {

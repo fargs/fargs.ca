@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         {
             this.Invoices = new List<Invoice>();
         }
-        public User CurrentUser { get; set; }
+        public AspNetUser CurrentUser { get; set; }
         public BillableEntity SelectedServiceProvider { get; set; }
         public BillableEntity SelectedCustomer { get; set; }
         public List<Invoice> Invoices { get; set; }
@@ -32,7 +32,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public decimal? Expenses { get; internal set; }
         public decimal? Hst { get; internal set; }
         public decimal? NetIncome { get; internal set; }
-        public User User { get; set; }
+        public AspNetUser User { get; set; }
         public FilterArgs FilterArgs { get; set; }
         public int InvoiceCount { get; internal set; }
         public List<Invoice> Invoices { get; set; }

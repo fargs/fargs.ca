@@ -32,6 +32,11 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
+        // Foreign keys
+        public virtual Document Document { get; set; } // FK_PhysicianLicense_Document
+        public virtual Physician Physician { get; set; } // FK_PhysicianLicense_Physician
+        public virtual Province Province { get; set; } // FK_PhysicianLicense_Province
+
         public PhysicianLicense()
         {
             IsPrimary = false;

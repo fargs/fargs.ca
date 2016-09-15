@@ -19,7 +19,7 @@ namespace WebApp.Controllers
         public async threading.Task<ActionResult> Index()
         {
             var tasks = 
-                db.Tasks
+                db.OTasks
                     .Include(t => t.AspNetRole)
                     .Include(t => t.TaskPhase)
                     .OrderBy(t => t.TaskPhase.Sequence)
@@ -34,7 +34,7 @@ namespace WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = await db.Tasks.FindAsync(id);
+            OTask task = await db.OTasks.FindAsync(id);
             if (task == null)
             {
                 return HttpNotFound();
@@ -55,11 +55,11 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Create([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] Task task)
+        public async threading.Task<ActionResult> Create([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {
-                db.Tasks.Add(task);
+                db.OTasks.Add(task);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -76,7 +76,7 @@ namespace WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = await db.Tasks.FindAsync(id);
+            OTask task = await db.OTasks.FindAsync(id);
             if (task == null)
             {
                 return HttpNotFound();
@@ -91,7 +91,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] Task task)
+        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Task task = await db.Tasks.FindAsync(id);
+            var task = await db.OTasks.FindAsync(id);
             if (task == null)
             {
                 return HttpNotFound();
@@ -124,8 +124,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async threading.Task<ActionResult> DeleteConfirmed(short id)
         {
-            Task task = await db.Tasks.FindAsync(id);
-            db.Tasks.Remove(task);
+            var task = await db.OTasks.FindAsync(id);
+            db.OTasks.Remove(task);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

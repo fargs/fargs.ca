@@ -32,6 +32,9 @@ namespace Orvosi.Data
             Property(x => x.RoleCategoryId).HasColumnName(@"RoleCategoryId").IsOptional().HasColumnType("tinyint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
+
+            // Foreign keys
+            HasOptional(a => a.RoleCategory).WithMany(b => b.AspNetRoles).HasForeignKey(c => c.RoleCategoryId).WillCascadeOnDelete(false); // FK_AspNetRoles_RoleCategory
             InitializePartial();
         }
         partial void InitializePartial();

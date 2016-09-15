@@ -1,26 +1,36 @@
-﻿@using Model
-@using Model.Enums
-@model Model.Location
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@model Address
 
 @{
     ViewBag.Title = "Create";
 
-    var db = new OrvosiEntities();
+    var db = new OrvosiDbContext();
 
-    ViewBag.Owners = db.Entities
-        .Where(c => c.EntityType == EntityTypes.Company || c.EntityType == EntityTypes.Physician)
+    ViewBag.Owners = db.Companies
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
-            Value = c.EntityGuid.ToString()
-        }).ToList();
+            Text = c.Name,
+            Value = c.ObjectGuid.ToString()
+        })
+        .Union(
+            db.Physicians
+            .AsEnumerable()
+            .Select(c => new SelectListItem()
+            {
+                Text = c.AspNetUser.GetDisplayName(),
+                Value = c.Id.ToString()
+            })
+        )
+        .ToList();
 
     ViewBag.Locations = db.LookupItems
         .Where(c => c.LookupId == Lookups.LocationAreas)
         .Select(c => new SelectListItem()
         {
-            Text = c.ItemText,
-            Value = c.ItemId.ToString()
+            Text = c.Text,
+            Value = c.Id.ToString()
         }).ToList();
 
     ViewBag.Provinces = db.Provinces
@@ -54,8 +64,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">Address Type</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.AddressTypeID, new SelectList(ViewBag.AddressTypes, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.AddressTypeID, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.AddressTypeId, new SelectList(ViewBag.AddressTypes, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -126,8 +136,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">Province</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.ProvinceID, new SelectList(ViewBag.Provinces, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ProvinceID, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.ProvinceId, new SelectList(ViewBag.Provinces, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProvinceId, "", new { @class = "text-danger" })
             </div>
         </div>
 

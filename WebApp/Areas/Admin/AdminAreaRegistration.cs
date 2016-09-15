@@ -1,5 +1,4 @@
-﻿using Model.Enums;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin
 {

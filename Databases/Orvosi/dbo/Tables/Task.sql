@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Task] (
-    [Id]                SMALLINT            IDENTITY (1, 1) NOT NULL,
+    [Id]                SMALLINT            NOT NULL,
     [ObjectGuid]        UNIQUEIDENTIFIER    CONSTRAINT [DF_Task_ObjectGuid] DEFAULT (newid()) NOT NULL,
     [ServiceCategoryId] SMALLINT            NULL,
     [ServiceId]         SMALLINT            NULL,
@@ -26,6 +26,8 @@
     CONSTRAINT [FK_Task_AspNetRoles] FOREIGN KEY ([ResponsibleRoleId]) REFERENCES [dbo].[AspNetRoles] ([Id]),
     CONSTRAINT [FK_Task_TaskPhase] FOREIGN KEY ([TaskPhaseId]) REFERENCES [dbo].[TaskPhase] ([Id])
 );
+
+
 
 
 

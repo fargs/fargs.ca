@@ -15,6 +15,7 @@ namespace Orvosi.Data
 
     public interface IOrvosiDbContext : System.IDisposable
     {
+        System.Data.Entity.DbSet<Account> Accounts { get; set; } // Account
         System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
         System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
@@ -22,8 +23,11 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims
         System.Data.Entity.DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } // AspNetUserLogins
         System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
+        System.Data.Entity.DbSet<AspNetUserView> AspNetUserViews { get; set; } // User
         System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
         System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
+        System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
+        System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         System.Data.Entity.DbSet<City> Cities { get; set; } // City
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
@@ -32,18 +36,25 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<DocumentType> DocumentTypes { get; set; } // DocumentType
         System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
+        System.Data.Entity.DbSet<LocationArea> LocationAreas { get; set; } // LocationArea
+        System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
         System.Data.Entity.DbSet<Lookup> Lookups { get; set; } // Lookup
         System.Data.Entity.DbSet<LookupItem> LookupItems { get; set; } // LookupItem
         System.Data.Entity.DbSet<Organization> Organizations { get; set; } // Organization
+        System.Data.Entity.DbSet<OTask> OTasks { get; set; } // Task
         System.Data.Entity.DbSet<Person> People { get; set; } // Person
         System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
         System.Data.Entity.DbSet<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany
+        System.Data.Entity.DbSet<PhysicianCompanyStatu> PhysicianCompanyStatus { get; set; } // PhysicianCompanyStatus
+        System.Data.Entity.DbSet<PhysicianCompanyView> PhysicianCompanyViews { get; set; } // PhysicianCompany
         System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
         System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
+        System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
         System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
+        System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
         System.Data.Entity.DbSet<RoleCategory> RoleCategories { get; set; } // RoleCategory
@@ -56,12 +67,11 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
         System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
-        System.Data.Entity.DbSet<ServiceRequestTaskRelated> ServiceRequestTaskRelateds { get; set; } // ServiceRequestTaskRelated
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
-        System.Data.Entity.DbSet<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskRelateds { get; set; } // ServiceRequestTemplateTaskRelated
-        System.Data.Entity.DbSet<Task> Tasks { get; set; } // Task
+        System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
         System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
+        System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
@@ -70,20 +80,60 @@ namespace Orvosi.Data
         System.Threading.Tasks.Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken);
         
         // Stored Procedures
-        System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now);
-        System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, out int procResult);
-        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel>> API_GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now);
+        System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel> GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId);
+        System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel> GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel>> GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId);
 
-        System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now);
-        System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult);
-        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestReturnModel>> API_GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now);
+        System.Collections.Generic.List<GetBoxTokensReturnModel> GetBoxTokens(System.Guid? userId);
+        System.Collections.Generic.List<GetBoxTokensReturnModel> GetBoxTokens(System.Guid? userId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetBoxTokensReturnModel>> GetBoxTokensAsync(System.Guid? userId);
 
-        System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId);
-        System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId, out int procResult);
-        System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel>> API_GetServiceRequestResourcesAsync(int? serviceRequestId);
+        System.Collections.Generic.List<GetCompanyProvinceReturnModel> GetCompanyProvince(int? companyId);
+        System.Collections.Generic.List<GetCompanyProvinceReturnModel> GetCompanyProvince(int? companyId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetCompanyProvinceReturnModel>> GetCompanyProvinceAsync(int? companyId);
 
-        int API_GetServiceRequestTasks(System.DateTime? now, string serviceRequestIds);
-        // API_GetServiceRequestTasksAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+        System.Collections.Generic.List<GetNextInvoiceNumberReturnModel> GetNextInvoiceNumber();
+        System.Collections.Generic.List<GetNextInvoiceNumberReturnModel> GetNextInvoiceNumber(out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetNextInvoiceNumberReturnModel>> GetNextInvoiceNumberAsync();
+
+        System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogue(System.Guid? physicianId);
+        System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogue(System.Guid? physicianId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueReturnModel>> GetServiceCatalogueAsync(System.Guid? physicianId);
+
+        System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogueForCompany(System.Guid? physicianId, short? companyId);
+        System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogueForCompany(System.Guid? physicianId, short? companyId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueReturnModel>> GetServiceCatalogueForCompanyAsync(System.Guid? physicianId, short? companyId);
+
+        int GetServiceCatalogueMatrix(string physicianId, short? companyId);
+        // GetServiceCatalogueMatrixAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
+        System.Collections.Generic.List<GetServiceCatalogueRateReturnModel> GetServiceCatalogueRate(System.Guid? serviceProviderGuid, System.Guid? customerGuid);
+        System.Collections.Generic.List<GetServiceCatalogueRateReturnModel> GetServiceCatalogueRate(System.Guid? serviceProviderGuid, System.Guid? customerGuid, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueRateReturnModel>> GetServiceCatalogueRateAsync(System.Guid? serviceProviderGuid, System.Guid? customerGuid);
+
+        System.Collections.Generic.List<GetServiceRequestReturnModel> GetServiceRequest(int? serviceRequestId, System.DateTime? now);
+        System.Collections.Generic.List<GetServiceRequestReturnModel> GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceRequestReturnModel>> GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now);
+
+        System.Collections.Generic.List<GetServiceRequestResourcesReturnModel> GetServiceRequestResources(int? serviceRequestId);
+        System.Collections.Generic.List<GetServiceRequestResourcesReturnModel> GetServiceRequestResources(int? serviceRequestId, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceRequestResourcesReturnModel>> GetServiceRequestResourcesAsync(int? serviceRequestId);
+
+        int GetServiceRequestTasks(System.DateTime? now, string serviceRequestIds);
+        // GetServiceRequestTasksAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
+        int SaveBoxTokens(string accessToken, string refreshToken, System.Guid? userId);
+        // SaveBoxTokensAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
+        int ToggleCancellation(int? id, System.DateTime? cancelledDate, bool? isLateCancellation, string notes);
+        // ToggleCancellationAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
+        int ToggleNoShow(int? id);
+        // ToggleNoShowAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
+
+        System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd);
+        System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd, out int procResult);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel>> DashboardServiceRequestSummaryAsync(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd);
 
     }
 

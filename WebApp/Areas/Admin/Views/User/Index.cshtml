@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Extensions.Model
 @using WebApp.Library.Helpers
-@using Model.Enums
+@using Orvosi.Shared.Enums
 @model WebApp.Areas.Admin.ViewModels.ListViewModel
 
 <h2>Users</h2>
@@ -10,10 +10,10 @@
 </p>
 
 <ul class="nav nav-tabs">
-    @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategory.Physician)
-    @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategory.Company)
-    @Html.MenuLink("Staff", "Index", "User", "Admin", RoleCategory.Staff)
-    @Html.MenuLink("Admin", "Index", "User", "Admin", RoleCategory.Admin)
+    @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategories.Physician)
+    @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategories.Company)
+    @Html.MenuLink("Staff", "Index", "User", "Admin", RoleCategories.Staff)
+    @Html.MenuLink("Admin", "Index", "User", "Admin", RoleCategories.Admin)
 </ul>
 <div class="margin-top: 20px">
     &nbsp;
@@ -22,7 +22,7 @@
 {
     <div id="UserTableRows" class="row">
         <div class="col-md-12">
-            <span class="h4 pull-left">@item.DisplayName</span>
+            <span class="h4 pull-left">@item.GetDisplayName()</span>
             <nav>
                 <ul class="nav nav-pills nav-condensed">
                     <li role="presentation" class="dropdown">
@@ -31,7 +31,7 @@
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
                             <li role="presentation">@Html.ActionLink("Profile", "UserProfile", "User", new { area="Admin", id = item.Id }, new { })</li>
-                            @if (item.IsPhysician())
+                            @if (item.GetRoleId() == AspNetRoles.Physician)
                             {
                                 <li role="presentation">@Html.ActionLink("Licences", "Index", "PhysicianLicence", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Insurance", "Index", "PhysicianInsurance", new { area = "Admin", userId = item.Id }, new { })</li>
@@ -54,7 +54,7 @@
         <div class="col-md-12">
             <div><strong>User Name:</strong> @item.UserName</div>
             <div><strong>Email:</strong> @item.Email <span class="@(item.EmailConfirmed == true ? "label label-success" : "label label-warning")">@(item.EmailConfirmed == true ? "Confirmed" : "Pending")</span></div>
-            <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0}) {1}", item.CompanyName, string.IsNullOrEmpty(item.CompanySubmittedName) ? string.Empty : string.Format(" -- (submitted as {0})", item.CompanySubmittedName)) : string.Empty)</div>
+            <div><strong>Role:</strong> @item.GetRole().Name @(item.GetRoleId() == AspNetRoles.Company ? string.Format("({0}) {1}", item.Company.Name, string.IsNullOrEmpty(item.CompanyName) ? string.Empty : string.Format(" -- (submitted as {0})", item.CompanyName)) : string.Empty)</div>
             <div><span class="@(item.IsTestRecord == true ? "label label-warning" : "")">@(item.IsTestRecord == true ? "Test Record" : "")</span></div>
         </div>
     </div>

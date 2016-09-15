@@ -1,7 +1,8 @@
-﻿@model WebApp.ViewModels.ServiceRequestTaskViewModels.IndexViewModel
+﻿@using WebApp.Library.Extensions
+@model WebApp.ViewModels.ServiceRequestTaskViewModels.IndexViewModel
 
 <h1>Tasks for</h1>
-<div class="lead">@Model.User.DisplayName</div>
+<div class="lead">@User.Identity.GetDisplayName()</div>
 
 <ul>
     @foreach (var item in Model.Tasks)

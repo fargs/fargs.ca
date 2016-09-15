@@ -30,9 +30,14 @@ namespace Orvosi.Data
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.CompanyId).HasColumnName(@"CompanyId").IsRequired().HasColumnType("smallint");
-            Property(x => x.RelationshipStatusId).HasColumnName(@"RelationshipStatusId").IsRequired().HasColumnType("tinyint");
+            Property(x => x.StatusId).HasColumnName(@"StatusId").IsRequired().HasColumnType("smallint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+
+            // Foreign keys
+            HasRequired(a => a.Company).WithMany(b => b.PhysicianCompanies).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_PhysicianCompany_Company
+            HasRequired(a => a.Physician).WithMany(b => b.PhysicianCompanies).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_PhysicianCompany_Physician
+            HasRequired(a => a.PhysicianCompanyStatu).WithMany(b => b.PhysicianCompanies).HasForeignKey(c => c.StatusId).WillCascadeOnDelete(false); // FK_PhysicianCompany_PhysicianCompanyStatus
             InitializePartial();
         }
         partial void InitializePartial();

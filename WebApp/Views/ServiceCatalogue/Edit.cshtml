@@ -1,10 +1,10 @@
-﻿@model Model.ServiceCatalogue
+﻿@model Orvosi.Data.ServiceCatalogue
 
 <form action="~/ServiceCatalogue/Edit" method="post">
     @Html.Hidden("CompanyId", Model.CompanyId)
     @Html.Hidden("PhysicianId", Model.PhysicianId)
-    @Html.Hidden("ServiceID", Model.ServiceId)
+    @Html.Hidden("ServiceId", Model.ServiceId)
     @Html.Hidden("LocationId", Model.LocationId)
-    Price: <input type="text" name="ServiceCataloguePriceOverride" value="@Model.ServiceCataloguePriceOverride" />
+    Price: <input type="text" name="Price" value="@Model.Price" />
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

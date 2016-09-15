@@ -1,5 +1,5 @@
-﻿using Model;
-using Model.Enums;
+﻿using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +14,12 @@ namespace WebApp.Areas.Admin.Controllers
 {
     public class CompanyController : BaseController
     {
-        OrvosiEntities db = new OrvosiEntities();
+        OrvosiDbContext db = new OrvosiDbContext();
         // GET: Admin/Company
         public ActionResult Index(Nullable<byte> parentId)
         {
             var companies = db.Companies.Where(c => c.ParentId == parentId && c.IsParent == false).ToList(); // exclude examworks and scm
-            var companyContacts = db.Users.Where(c => c.RoleId == Roles.Company).ToList();
+            var companyContacts = db.AspNetUsers.Where(c => c.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.Company).ToList();
 
             var vm = new IndexViewModel()
             {

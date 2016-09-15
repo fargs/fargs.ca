@@ -21,7 +21,6 @@ namespace WebApp
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            MappingConfig.RegisterMaps();
             FluentValidationModelValidatorProvider.Configure();
             // This turns off code first migrations on the database
             Database.SetInitializer<Models.ApplicationDbContext>(null);

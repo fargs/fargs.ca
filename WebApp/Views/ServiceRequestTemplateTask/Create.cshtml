@@ -1,4 +1,5 @@
-﻿@model Orvosi.Data.ServiceRequestTemplateTask
+﻿@using System.Linq
+@model Orvosi.Data.ServiceRequestTemplateTask
 
 @{
     ViewBag.Title = "Create";
@@ -53,6 +54,23 @@
                 @Html.TextBox("ModifiedUser", User.Identity.Name, new { @class = "form-control"})
                 @Html.ValidationMessageFor(model => model.ModifiedUser, "", new { @class = "text-danger" })
             </div>
+        </div>
+
+        <div class="editor-label">
+            @Html.Label("Child", "Depends On")
+        </div>
+
+        <div class="editor-field">
+            <ul>
+                @foreach (var task in ViewBag.TaskSelectList)
+                {
+                    <li>
+                        <input type="checkbox" name="Child" value="@task.Id" />
+                        @task.OTask.Name
+                    </li>
+                }
+                @Html.ValidationMessageFor(model => Model.Child)
+            </ul>
         </div>
 
         <div class="form-group">

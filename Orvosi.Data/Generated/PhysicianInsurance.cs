@@ -26,6 +26,10 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
+        // Foreign keys
+        public virtual Document Document { get; set; } // FK_PhysicianInsurance_Document
+        public virtual Physician Physician { get; set; } // FK_PhysicianInsurance_Physician
+
         public PhysicianInsurance()
         {
             ModifiedDate = System.DateTime.Now;

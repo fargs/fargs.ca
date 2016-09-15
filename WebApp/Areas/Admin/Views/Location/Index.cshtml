@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Model.Location>
+﻿@model IEnumerable<Orvosi.Data.Address>
 
 @{
     ViewBag.Title = "Index";
@@ -13,10 +13,10 @@
     <tr>
         <th></th>
         <th>
-            Owner
+            Type
         </th>
         <th>
-            Location
+            City
         </th>
         <th>
             Building Name
@@ -46,16 +46,13 @@
             </nav>
         </td>
         <td>
-            @item.EntityType<br />
-            <div class="text-muted">@item.EntityDisplayName</div>
-            <strong>@item.AddressTypeName</strong>
+            <strong>@item.AddressType.Name</strong>
         </td>
         <td>
-            @item.LocationName
+            @item.City_CityId.Name
         </td>
         <td>
-            @item.Name<br />
-            <span class="text-muted">@item.Attention</span>
+            <span class="text-muted">@item.Name</span>
         </td>
         <td>
             @item.Address1<br />
@@ -64,7 +61,7 @@
                 @item.Address2<br />
             }
             @item.City, @item.PostalCode<br />
-            @item.ProvinceName @item.CountryName
+            @item.Province.ProvinceName @item.Country.Name
         </td>
     </tr>
 }

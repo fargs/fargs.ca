@@ -1,21 +1,16 @@
-﻿using Model;
+﻿using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Model.Extensions;
 using WebApp.Library.Enums;
 using WebApp.Library;
 using System.Data.Entity;
 using WebApp.ViewModels.InvoiceViewModels;
-using Model.Enums;
+using Orvosi.Shared.Enums;
 using System.Globalization;
-using System.Text;
 using WebApp.Library.Extensions;
-using SelectPdf;
-using WebApp.Library.Helpers;
 using System.Collections.Specialized;
 using System.Net;
 using System.IO;
@@ -24,9 +19,8 @@ namespace WebApp.Controllers
 {
     public class InvoiceController : Controller
     {
-        private OrvosiEntities db = new OrvosiEntities();
-        private Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
-
+        private OrvosiDbContext db = new OrvosiDbContext();
+        
         public InvoiceController()
         {
             var serviceRequestController = new ServiceRequestController();
@@ -40,12 +34,10 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin,Case Coordinator,Physician")]
         public async Task<ActionResult> Dashboard(FilterArgs args)
         {
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
-
             // Service provider dropdown is defaulted to the current user unless you are a Super Admin.
-            if (user.RoleId != Roles.SuperAdmin)
+            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin)
             {
-                args.ServiceProviderId = user.Id;
+                args.ServiceProviderId = User.Identity.GetGuidUserId();
             }
 
             var now = SystemTime.Now();
@@ -79,7 +71,7 @@ namespace WebApp.Controllers
             var endDate = startDate.AddYears(1);
             var dateRange = startDate.GetDateRangeTo(endDate);
 
-            var dates = dateRange.Select(r => new { r.Month, r.Date});
+            var dates = dateRange.Select(r => new { r.Month, r.Date });
 
             var invoiceTotals = invoices
                 .Select(i => new
@@ -134,7 +126,6 @@ namespace WebApp.Controllers
 
             var vm = new DashboardViewModel();
 
-            vm.User = user;
             vm.Months = new string[12] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
             vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct();
             vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.SubTotal);
@@ -152,12 +143,10 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin, Case Coordinator")]
         public async Task<ActionResult> Index(FilterArgs args)
         {
-            var user = db.Users.Single(u => u.UserName == User.Identity.Name);
-
             // Service provider dropdown is defaulted to the current user unless you are a Super Admin.
-            if (user.RoleId != Roles.SuperAdmin)
-            { 
-                args.ServiceProviderId = user.Id;
+            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin)
+            {
+                args.ServiceProviderId = User.Identity.GetGuidUserId();
             }
 
             var query = db.Invoices
@@ -207,10 +196,8 @@ namespace WebApp.Controllers
 
             vm.FilterArgs = args;
 
-            vm.CurrentUser = db.Users.Single(u => u.UserName == User.Identity.Name);
-
             vm.Invoices = invoices;
-            
+
             return View(vm);
         }
 
@@ -222,7 +209,7 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> Create(int serviceRequestId)
         {
-            var sr = await context.ServiceRequests.FindAsync(serviceRequestId);
+            var sr = await db.ServiceRequests.FindAsync(serviceRequestId);
             var invoice = new Invoice();
 
             return View();
@@ -230,63 +217,74 @@ namespace WebApp.Controllers
 
         [Authorize(Roles = "Super Admin, Case Coordinator")]
         [HttpPost]
-        public async Task<ActionResult> Create(short ServiceRequestId)
+        public async Task<ActionResult> Create()
         {
-            using (var context = new OrvosiEntities(User.Identity.Name))
+            var serviceRequestId = int.Parse(this.Request.Form.Get("Id"));
+            //var serviceRequest = await db.ServiceRequestViews.FindAsync(serviceRequestId);
+
+            var serviceRequest =
+                db.ServiceRequests
+                    //.Include(sr => sr.Company.Parent)
+                    //.Include(sr => sr.Physician.AspNetUser)
+                    //.Include(sr => sr.Service.ServiceCategory)
+                    //.Include(sr => sr.InvoiceDetails)
+                    //.Include(sr => sr.CaseCoordinator)
+                    //.Include(sr => sr.DocumentReviewer)
+                    //.Include(sr => sr.IntakeAssistant)
+                    //.Include(sr => sr.Address.Province)
+                    .Find(serviceRequestId);
+
+            // check if the no show rates are set in the request. Migrate old records to use invoices.
+            if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
             {
-                var serviceRequest = await db.ServiceRequests.FindAsync(ServiceRequestId);
-
-                // check if the no show rates are set in the request. Migrate old records to use invoices.
-                if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
-                {
-                    var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.CompanyGuid).First();
-                    serviceRequest.NoShowRate = rates.NoShowRate;
-                    serviceRequest.LateCancellationRate = rates.LateCancellationRate;
-                }
-
-                var serviceProvider = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.PhysicianId);
-                var customer = await db.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
-
-                var invoiceNumber = db.GetNextInvoiceNumber().SingleOrDefault();
-
-                var invoiceDate = SystemTime.Now();
-                if (serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
-                {
-                    invoiceDate = serviceRequest.AppointmentDate.Value;
-                }
-
-                var invoice = new Invoice();
-                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
-
-                // Create or update the invoice detail for the service request
-                InvoiceDetail invoiceDetail;
-
-                invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
-                if (invoiceDetail == null)
-                {
-                    invoiceDetail = new InvoiceDetail();
-                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-                    invoice.InvoiceDetails.Add(invoiceDetail);
-                }
-                else
-                {
-                    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-                }
-                invoice.CalculateTotal();
-                db.Invoices.Add(invoice);
-
-                if (db.GetValidationErrors().Count() == 0)
-                {
-
-                    await db.SaveChangesAsync();
-                    var invoices = new List<Invoice>();
-                    invoices.Add(invoice);
-                    return PartialView("_Table", invoices);
-                }
-                return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
+                var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
+                serviceRequest.NoShowRate = rates.NoShowRate;
+                serviceRequest.LateCancellationRate = rates.LateCancellationRate;
             }
+
+            var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
+            var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
+
+            var invoiceNumber = db.GetNextInvoiceNumber().First();
+
+            var invoiceDate = SystemTime.Now();
+            if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+            {
+                invoiceDate = serviceRequest.AppointmentDate.Value;
+            }
+
+            var invoice = new Invoice();
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber.NextInvoiceNumber, invoiceDate, User.Identity.Name);
+
+            // Create or update the invoice detail for the service request
+            InvoiceDetail invoiceDetail;
+
+            //invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+            //if (invoiceDetail == null)
+            //{
+                invoiceDetail = new InvoiceDetail();
+                invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+                invoice.InvoiceDetails.Add(invoiceDetail);
+            //}
+            //else
+            //{
+            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+            //}
+            invoice.CalculateTotal();
+            db.Invoices.Add(invoice);
+
+            if (db.GetValidationErrors().Count() == 0)
+            {
+
+                await db.SaveChangesAsync();
+                var invoices = new List<Invoice>();
+                invoices.Add(invoice);
+                return RedirectToAction("Details", "ServiceRequest", new { id = serviceRequestId });
+            }
+            return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
+
             //// Confirm the examination was completed.
-            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Enums.Tasks.IntakeInterview);
         }
 
         [ChildActionOnly]
@@ -298,9 +296,9 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
         public async Task<ActionResult> Details(int id)
         {
-            var user = await context.AspNetUsers.FirstAsync(c => c.UserName == User.Identity.Name);
+            var user = await db.AspNetUsers.FirstAsync(c => c.UserName == User.Identity.Name);
             ViewBag.RoleId = user.AspNetUserRoles.First().RoleId;
-            var obj = await context.Invoices.FindAsync(id);
+            var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.ReadOnly;
             return View(obj);
         }
@@ -308,7 +306,7 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Super Admin, Case Coordinator")]
         public async Task<ActionResult> Edit(int id)
         {
-            var obj = await context.Invoices.FindAsync(id);
+            var obj = await db.Invoices.FindAsync(id);
             ViewBag.FormMode = FormModes.Edit;
             return View(obj);
         }
@@ -345,7 +343,7 @@ namespace WebApp.Controllers
             await db.SaveChangesAsync();
 
             //// Confirm the examination was completed.
-            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Enums.Tasks.IntakeInterview);
 
             var button = Request.Form.Get("button");
             if (button == "SaveAndSubmit")
@@ -517,7 +515,7 @@ namespace WebApp.Controllers
         //    await db.SaveChangesAsync();
 
         //    //// Confirm the examination was completed.
-        //    //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Model.Enums.Tasks.IntakeInterview);
+        //    //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Enums.Tasks.IntakeInterview);
 
         //    return File(docBytes, "application/pdf", fileName);
         //}
@@ -527,43 +525,43 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Submit(int id)
         {
 
-                var _invoice = await context.Invoices.FirstAsync(c => c.Id == id);
+            var _invoice = await db.Invoices.FirstAsync(c => c.Id == id);
 
-                //var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-                //await messageService.SendInvoice(invoice, Request.GetBaseUrl());
+            //var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
+            //await messageService.SendInvoice(invoice, Request.GetBaseUrl());
 
-                _invoice.SentDate = SystemTime.Now();
-                _invoice.ModifiedDate = SystemTime.Now();
-                _invoice.ModifiedUser = User.Identity.Name;
+            _invoice.SentDate = SystemTime.Now();
+            _invoice.ModifiedDate = SystemTime.Now();
+            _invoice.ModifiedUser = User.Identity.Name;
 
-                foreach (var item in _invoice.InvoiceDetails)
-                {
-                    var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice || c.TaskId == 37); // TODO: 37 is submit invoice for add/pr
-                    task.CompletedDate = SystemTime.Now();
-                }
-                await context.SaveChangesAsync();
+            foreach (var item in _invoice.InvoiceDetails)
+            {
+                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice || c.TaskId == 37); // TODO: 37 is submit invoice for add/pr
+                task.CompletedDate = SystemTime.Now();
+            }
+            await db.SaveChangesAsync();
 
-                return Redirect(Request.UrlReferrer.ToString());
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [HttpPost]
         [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Unsubmit(int id)
         {
-                var invoice = await context.Invoices.FirstAsync(c => c.Id == id);
-            
-                invoice.SentDate = null;
-                invoice.ModifiedDate = SystemTime.Now();
-                invoice.ModifiedUser = User.Identity.Name;
+            var invoice = await db.Invoices.FirstAsync(c => c.Id == id);
 
-                foreach (var item in invoice.InvoiceDetails)
-                {
-                    var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice || c.TaskId == 37); // TODO: 37 is submit invoice for add/pr
-                    task.CompletedDate = null;
-                }
-                await context.SaveChangesAsync();
+            invoice.SentDate = null;
+            invoice.ModifiedDate = SystemTime.Now();
+            invoice.ModifiedUser = User.Identity.Name;
 
-                return Redirect(Request.UrlReferrer.ToString());
+            foreach (var item in invoice.InvoiceDetails)
+            {
+                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice || c.TaskId == 37); // TODO: 37 is submit invoice for add/pr
+                task.CompletedDate = null;
+            }
+            await db.SaveChangesAsync();
+
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [Authorize(Roles = "Super Admin, Case Coordinator")]

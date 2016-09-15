@@ -69,10 +69,10 @@ foreach (ModelProperty property in GetModelProperties(mvcHost.ViewDataType)) {
 #>
 
     <div class="display-label">
-        <%: Html.DisplayNameFor(model => model.<#= property.ValueExpression #>) %>
+        <%: Html.DisplayNameFor(model => <#= property.ValueExpression #>) %>
     </div>
     <div class="display-field">
-        <%: Html.DisplayFor(model => model.<#= property.ValueExpression #>) %>
+        <%: Html.DisplayFor(model => <#= property.ValueExpression #>) %>
     </div>
 <#
     }
@@ -85,12 +85,12 @@ string pkName = GetPrimaryKeyName(mvcHost.ViewDataType);
 if (pkName != null) {
 #>
 
-    <%: Html.ActionLink("Edit", "Edit", new { id=Model.<#= pkName #> }) %> |
+    <%: Html.ActionLink("Edit", "Edit", new { id=<#= pkName #> }) %> |
     <%: Html.ActionLink("Back to List", "Index") %>
 <#
 } else {
 #>
-    <%: Html.ActionLink("Edit", "Edit", new { /* id=Model.PrimaryKey */ }) %> |
+    <%: Html.ActionLink("Edit", "Edit", new { /* id=PrimaryKey */ }) %> |
     <%: Html.ActionLink("Back to List", "Index") %>
 <#
 }
@@ -150,7 +150,7 @@ static Type[] bindableNonPrimitiveTypes = new[] {
     typeof(TimeSpan),
 };
 
-// Call this to get the list of properties in the model. Change this to modify or add your
+// Call this to get the list of properties in the  Change this to modify or add your
 // own default formatting for display values.
 List<ModelProperty> GetModelProperties(Type type) {
     List<ModelProperty> results = GetEligibleProperties(type);
@@ -230,7 +230,7 @@ string GetValueExpressionSuffix(PropertyInfo property) {
     RelatedModel propertyModel;
     MvcTemplateHost.RelatedProperties.TryGetValue(property.Name, out propertyModel);
 
-    return propertyModel != null ? propertyModel.PropertyName + "." + propertyModel.DisplayPropertyName : property.Name;
+    return propertyModel != null ? propertyPropertyName + "." + propertyDisplayPropertyName : property.Name;
 }
 
 // A foreign key, e.g. CategoryID, will have an association name of Category
@@ -238,7 +238,7 @@ string GetAssociationName(PropertyInfo property) {
     RelatedModel propertyModel;
     MvcTemplateHost.RelatedProperties.TryGetValue(property.Name, out propertyModel);
 
-    return propertyModel != null ? propertyModel.PropertyName : property.Name;
+    return propertyModel != null ? propertyPropertyName : property.Name;
 }
 
 // Helper
@@ -254,7 +254,7 @@ List<ModelProperty> GetEligibleProperties(Type type) {
                 Name = prop.Name,
                 AssociationName = GetAssociationName(prop),
                 ValueExpression = valueExpression,
-                ModelValueExpression = "Model." + valueExpression,
+                ModelValueExpression = "" + valueExpression,
                 ItemValueExpression = "item." + valueExpression,
                 UnderlyingType = underlyingType,
                 IsPrimaryKey = IsPrimaryKey(prop),

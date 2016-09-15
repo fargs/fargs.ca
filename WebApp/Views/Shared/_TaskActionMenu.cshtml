@@ -1,12 +1,12 @@
 ﻿@using WebApp.Library
-@using e = Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums
 @model Orvosi.Data.ServiceRequestTask
 
 @{
     var db = new Orvosi.Data.OrvosiDbContext();
 
     ViewBag.Staff = db.AspNetUsers
-        .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+        .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == RoleCategories.Admin)
         .AsEnumerable()
         .Select(c => new SelectListItem()
         {

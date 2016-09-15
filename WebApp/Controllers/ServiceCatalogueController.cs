@@ -1,5 +1,5 @@
-﻿using Model;
-using Model.Enums;
+﻿using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using WebApp.Library.Enums;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace WebApp.Controllers
     [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class ServiceCatalogueController : Controller
     {
-        OrvosiEntities db = new OrvosiEntities();
+        OrvosiDbContext db = new OrvosiDbContext();
 
         // GET: Admin/ServiceCatalogue
         public async Task<ActionResult> Index(FilterArgs args)
@@ -25,9 +25,7 @@ namespace WebApp.Controllers
 
             vm.FilterArgs = args;
 
-            vm.CurrentUser = db.Users.Single(u => u.UserName == User.Identity.Name);
-
-            vm.SelectedUser = await db.Users.SingleOrDefaultAsync(u => u.Id == args.UserId);
+            vm.SelectedUser = await db.AspNetUsers.SingleOrDefaultAsync(u => u.Id == args.UserId);
             if (vm.SelectedUser != null)
             {
                 vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
@@ -77,18 +75,17 @@ namespace WebApp.Controllers
                         PhysicianId = form.PhysicianId,
                         LocationId = form.LocationId,
                         ServiceId = form.ServiceId,
-                        ServiceCataloguePriceOverride = form.ServiceCataloguePriceOverride,
-                        ModifiedUser = User.Identity.Name,
-                        ServiceName = string.Empty // this field is getting marked as required, it does not get persisted
+                        Price = form.Price,
+                        ModifiedUser = User.Identity.Name
                     };
                     db.ServiceCatalogues.Add(sc);
             }
             else
             {
                 var sc = await db.ServiceCatalogues.SingleAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
-                if (form.ServiceCataloguePriceOverride.HasValue)
+                if (form.Price.HasValue)
                 {
-                    sc.ServiceCataloguePriceOverride = form.ServiceCataloguePriceOverride;
+                    sc.Price = form.Price;
                 }
                 else
                 {
@@ -104,7 +101,7 @@ namespace WebApp.Controllers
         {
             var serviceCatalogueRate = new ServiceCatalogueRate();
 
-            var serviceProvider = await db.Users.SingleOrDefaultAsync(u => u.Id == ServiceProviderGuid);
+            var serviceProvider = await db.AspNetUsers.SingleOrDefaultAsync(u => u.Id == ServiceProviderGuid);
             if (serviceProvider != null)
             {
                 var serviceProviderGuid = serviceProvider.Id;

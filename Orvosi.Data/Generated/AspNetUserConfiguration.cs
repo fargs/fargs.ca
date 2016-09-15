@@ -57,6 +57,9 @@ namespace Orvosi.Data
             Property(x => x.BoxUserId).HasColumnName(@"BoxUserId").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.BoxAccessToken).HasColumnName(@"BoxAccessToken").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.BoxRefreshToken).HasColumnName(@"BoxRefreshToken").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+
+            // Foreign keys
+            HasOptional(a => a.Company).WithMany(b => b.AspNetUsers).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_AspNetUsers_Company
             InitializePartial();
         }
         partial void InitializePartial();

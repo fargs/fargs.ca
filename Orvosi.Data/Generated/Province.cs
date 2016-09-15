@@ -28,6 +28,7 @@ namespace Orvosi.Data
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_Provinces
         public virtual System.Collections.Generic.ICollection<City> Cities { get; set; } // City.FK_City_Province
+        public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Province
 
         public Province()
         {
@@ -35,6 +36,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             Addresses = new System.Collections.Generic.List<Address>();
             Cities = new System.Collections.Generic.List<City>();
+            PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
             InitializePartial();
         }
 

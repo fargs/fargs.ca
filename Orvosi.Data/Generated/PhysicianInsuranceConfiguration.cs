@@ -35,6 +35,10 @@ namespace Orvosi.Data
             Property(x => x.DocumentId).HasColumnName(@"DocumentId").IsOptional().HasColumnType("smallint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+
+            // Foreign keys
+            HasOptional(a => a.Document).WithMany(b => b.PhysicianInsurances).HasForeignKey(c => c.DocumentId).WillCascadeOnDelete(false); // FK_PhysicianInsurance_Document
+            HasRequired(a => a.Physician).WithMany(b => b.PhysicianInsurances).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_PhysicianInsurance_Physician
             InitializePartial();
         }
         partial void InitializePartial();

@@ -1,4 +1,4 @@
-﻿@using enums = Model.Enums
+﻿@using Orvosi.Shared.Enums
 @model WebApp.Areas.Admin.ViewModels.ProfileViewModel
 
 <h2>Profile</h2>
@@ -76,7 +76,7 @@
             <div class="h4 text-muted">To edit the following fields, go to @Html.ActionLink("Security", "Account", new { id = Model.Profile.Id }).</div>
         </div>
 
-        @if (Model.Profile.RoleId == enums.Roles.Company)
+        @if (Model.Profile.RoleId == AspNetRoles.Company)
         {
             <div class="form-group">
                 @Html.LabelFor(model => model.Profile.CompanyName, htmlAttributes: new { @class = "control-label col-md-2" })

@@ -1,175 +1,106 @@
 ﻿
 
+
 --EXEC API.GetAssignedServiceRequests '8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9', '2016-07-11'
 
 CREATE PROC [API].[GetAssignedServiceRequests]
-	@AssignedTo UNIQUEIDENTIFIER
+	  @AssignedTo UNIQUEIDENTIFIER
 	, @Now DATETIME
+	, @ShowClosed BIT
+	, @ServiceRequestId INT
 AS
-WITH Requests 
-AS (
-	SELECT t.Id
-		, t.AssignedTo
-		, t.ServiceRequestId
-		, t.TaskId
-		, t.TaskName
-		, t.CompletedDate
-		, t.IsObsolete
-		, t.IsDependentOnExamDate
-		, t.[Sequence]
-		, DependsOnCSV = t.[DependsOn]
-		, ResponsibleRoleId
-		, [Workload]
-		, LTRIM(RTRIM(m.n.value('.[1]','varchar(8000)'))) AS DependsOn
-	FROM
-	(
-		SELECT Id
-			, AssignedTo
-			, ServiceRequestId
-			, TaskId 
-			, TaskName
-			, CompletedDate
-			, IsObsolete
-			, IsDependentOnExamDate
-			, [Sequence]
-			, [DependsOn]
-			, [ResponsibleRoleId]
-			, [Workload]
-			, CAST('<XMLRoot><RowData>' + REPLACE(CASE WHEN DependsOn IS NULL THEN '' ELSE DependsOn END,',','</RowData><RowData>') + '</RowData></XMLRoot>' AS XML) AS x
-		FROM dbo.ServiceRequestTask
-		WHERE ServiceRequestId IN (
-			SELECT ServiceRequestId FROM dbo.OpenServiceRequestIdWithAssignedTo WHERE AssignedTo = @AssignedTo
-		)
-	) t
-	CROSS APPLY x.nodes('/XMLRoot/RowData')m(n)
-) 
-, Tasks
-AS (
-SELECT t.Id
-	, t.AssignedTo
-	, t.ServiceRequestId
-	, t.TaskId
-	, t.TaskName
-	, TaskStatusId = dbo.GetTaskStatusId(t.CompletedDate, t.IsObsolete, srt.CompletedDate, srt.IsObsolete, @Now, sr.AppointmentDate, t.IsDependentOnExamDate)
-	, t.IsObsolete
-	, t.[Sequence]
+
+DECLARE @SelectedServiceRequests AS SelectedServiceRequestTVP
+INSERT INTO @SelectedServiceRequests (Id)
+SELECT DISTINCT ServiceRequestId 
+FROM dbo.ServiceRequestTask 
+WHERE (AssignedTo = @AssignedTo OR @AssignedTo IS NULL)
+	AND (ServiceRequestId = @ServiceRequestId OR @ServiceRequestId IS NULL)
+OPTION(RECOMPILE);
+
+SELECT 
+	  ServiceRequestId = srt.ServiceRequestId
+	, ReportDueDate = sr.DueDate
 	, sr.AppointmentDate
-	, sr.DueDate
 	, sr.StartTime
+	, sr.DueDate
 	, sr.CompanyId
-	, sr.ServiceId
-	, sr.ClaimantName
-	, sr.PhysicianId
-	, sr.AddressId
-	, sr.BoxCaseFolderId
-	, t.DependsOnCSV
-	, t.CompletedDate
-	, t.IsDependentOnExamDate
-	, sr.IsLateCancellation
-	, sr.CancelledDate
-	, sr.IsNoShow
-	, t.ResponsibleRoleId
-	, t.[Workload]
-FROM Requests t
-LEFT JOIN dbo.ServiceRequestTask srt ON t.ServiceRequestId = srt.ServiceRequestId AND t.DependsOn = srt.TaskId
-LEFT JOIN dbo.ServiceRequest sr ON t.ServiceRequestId = sr.Id
-)
-, TasksWithStatus
-AS
-(
-	SELECT 
-	  Id
-	, AssignedTo
-	, ServiceRequestId
-	, TaskId
-	, TaskName
-	, CompletedDate
-	, IsObsolete
-	, AppointmentDate
-	, DueDate
-	, StartTime
-	, CompanyId
-	, ServiceId
-	, ClaimantName
-	, PhysicianId
-	, AddressId
-	, TaskStatusId = MIN(TaskStatusId)
-	, [Sequence]
-	, BoxCaseFolderId
-	, DependsOnCSV
-	, IsLateCancellation
-	, CancelledDate
-	, IsNoShow
-	, ResponsibleRoleId = MIN(ResponsibleRoleId)
-	, [Workload]
-FROM Tasks
-GROUP BY 
-	  Id
-	, AssignedTo
-	, ServiceRequestId
-	, TaskId
-	, TaskName
-	, CompletedDate
-	, IsObsolete
-	, AppointmentDate
-	, DueDate
-	, StartTime
-	, CompanyId
-	, ServiceId
-	, ClaimantName
-	, PhysicianId
-	, AddressId
-	, [Sequence]
-	, BoxCaseFolderId
-	, DependsOnCSV
-	, IsLateCancellation
-	, CancelledDate
-	, IsNoShow
-	, [Workload]
-)
-SELECT t.Id
-	, t.ServiceRequestId
-	, ReportDueDate = t.DueDate
-	, t.AppointmentDate
-	, t.StartTime
-	, t.TaskId
-	, t.TaskName
-	, t.DueDate
-	, t.TaskStatusId
-	, TaskStatusName = li.[Text]
-	, t.IsObsolete
-	, t.CompanyId
 	, CompanyName = c.Name
-	, t.ServiceId
+	, sr.ServiceId
 	, ServiceName = s.Name
 	, s.ServiceCategoryId
-	, t.ClaimantName
-	, t.AssignedTo
+	, sr.ClaimantName
+	, sr.AddressId
+	, AddressName = a.Name
+	, City = ci.Name
+	, BoxCaseFolderId
+	, [Title] = dbo.GetServiceRequestTitle(s.Id, sr.Id, sr.AppointmentDate, sr.DueDate, sr.StartTime, ci.Code, s.Code, c.Code, p.UserName, sr.ClaimantName)
+	, ServiceCode = s.Code
+	, ServiceColorCode = s.ColorCode
+	, sr.IsLateCancellation
+	, sr.IsNoShow
+	, sr.CancelledDate
+	, r.IsClosed
+	, ServiceRequestStatusId = r.StatusId
+	, t.Id
+	, srt.TaskId
+	, srt.TaskName
+	, TaskSequence = srt.[Sequence]
+	, TaskStatusId = t.StatusId
+	, TaskStatusName = ts.[Name]
+	, bc.BoxCollaborationId
+	, srt.CompletedDate
+	, srt.IsObsolete
+	, srt.ResponsibleRoleId
+	, srt.[Workload]
+	, srt.AssignedTo
+	, srt.TaskType
+	, srt.ResponsibleRoleName
 	, AssignedToDisplayName = dbo.GetDisplayName(ast.FirstName, ast.LastName, ast.Title)
 	, AssignedToColorCode = ast.ColorCode
 	, AssignedToInitials = dbo.GetInitials(ast.FirstName, ast.LastName)
-	, t.AddressId
-	, AddressName = a.Name
-	, City = ci.Name
-	, TaskSequence = t.[Sequence]
-	, BoxCaseFolderId
-	, [Title] = dbo.GetServiceRequestTitle(s.Id, t.ServiceRequestId, t.AppointmentDate, t.DueDate, t.StartTime, ci.Code, s.Code, c.Code, p.UserName, t.ClaimantName)
-	, DependsOnCSV
-	, ServiceCode = s.Code
-	, ServiceColorCode = s.ColorCode
-	, bc.BoxCollaborationId
-	, t.CompletedDate
-	, t.IsLateCancellation
-	, t.IsNoShow
-	, t.CancelledDate
-	, t.ResponsibleRoleId
-	, t.[Workload]
-FROM TasksWithStatus t
-LEFT JOIN dbo.Company c ON t.CompanyId = c.Id
-LEFT JOIN dbo.[Service] s ON t.ServiceId = s.Id
-LEFT JOIN dbo.[Address] a ON t.AddressId = a.Id
+	, AssignedToRoleId = aus.RoleId
+	, AssignedToRoleName = aus.[Name]
+	, csv.DependsOnCSV
+FROM 
+---- ServiceRequestTask
+dbo.GetServiceRequestTaskStatus(@Now, @SelectedServiceRequests, NULL) t
+INNER JOIN dbo.ServiceRequestTask srt ON srt.Id = t.Id
+LEFT JOIN dbo.TaskStatus ts ON t.StatusId = ts.Id
+LEFT JOIN dbo.[AspNetUsers] ast ON srt.AssignedTo = ast.Id
+LEFT JOIN (
+	SELECT RoleId, UserId, [Name]
+	FROM (
+		SELECT RoleId, UserId, [Name]
+			, RowNum = ROW_NUMBER() OVER(PARTITION BY ur.UserId ORDER BY ur.RoleId)
+		FROM dbo.AspNetUserRoles ur
+		INNER JOIN dbo.AspNetRoles r ON ur.RoleId = r.Id
+	) t
+	WHERE t.RowNum = 1
+) aus ON ast.Id = aus.UserId
+LEFT JOIN [Private].ServiceRequestTaskDependsOnCSV csv ON t.Id = csv.ServiceRequestTaskId
+-- ServiceRequest
+LEFT JOIN dbo.GetServiceRequestStatus(@Now, @SelectedServiceRequests, @AssignedTo) r ON r.Id = srt.ServiceRequestId
+LEFT JOIN dbo.ServiceRequest sr ON sr.Id = r.Id
+LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
+LEFT JOIN dbo.Company c ON sr.CompanyId = c.Id
+LEFT JOIN dbo.[Address] a ON sr.AddressId = a.Id
 LEFT JOIN dbo.[City] ci ON a.CityId = ci.Id
-LEFT JOIN dbo.LookupItem li ON t.TaskStatusId = li.Id
-LEFT JOIN dbo.[AspNetUsers] p ON t.PhysicianId = p.Id
-LEFT JOIN dbo.[AspNetUSers] ast ON t.AssignedTo = ast.Id
-LEFT JOIN dbo.[ServiceRequestBoxCollaboration] bc ON t.ServiceRequestId = bc.ServiceRequestId AND ast.Id = bc.UserId
+LEFT JOIN dbo.[AspNetUsers] p ON sr.PhysicianId = p.Id
+LEFT JOIN dbo.[ServiceRequestBoxCollaboration] bc ON sr.Id = bc.ServiceRequestId AND ast.Id = bc.UserId
+WHERE (r.IsClosed = @ShowClosed OR @ShowClosed IS NULL)
+ORDER BY sr.Id, srt.[Sequence]
+OPTION (RECOMPILE)
+
+--'
+--IF @ShowClosed = 1
+--	SET @SQLString = @SQLString + ' OR r.IsClosed = 1'
+
+--DECLARE @ParamDefinition NVARCHAR(200)
+--SET @ParamDefinition = N'
+--	  @AssignedTo UNIQUEIDENTIFIER
+--	, @Now DATETIME'
+
+--EXECUTE sp_executesql @SQLString, @ParamDefinition
+--	, @AssignedTo = @AssignedTo
+--    , @Now = @Now;

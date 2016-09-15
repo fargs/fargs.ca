@@ -46,11 +46,17 @@ namespace Orvosi.Data
         public bool IsCriticalPath { get; set; } // IsCriticalPath
         public bool? IsDependentOnExamDate { get; private set; } // IsDependentOnExamDate
         public byte? Workload { get; set; } // Workload
+        public System.Guid? ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskId
+        public string TaskType { get; set; } // TaskType (length: 20)
+
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Child { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Parent { get; set; } // Many to many mapping
 
         // Foreign keys
         public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceRequestTask_AspNetUsers
+        public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
-        public virtual Task Task { get; set; } // FK_ServiceRequestTask_Task
 
         public ServiceRequestTask()
         {
@@ -60,6 +66,8 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsObsolete = false;
             IsCriticalPath = false;
+            Child = new System.Collections.Generic.List<ServiceRequestTask>();
+            Parent = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();
         }
 

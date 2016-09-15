@@ -1,16 +1,16 @@
-﻿@using Model
-@using Model.Enums
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
 @model ServiceRequest
 
 @{ 
-    var db = new OrvosiEntities();
-    var l = db.Locations.Where(loc => loc.AddressTypeID != AddressTypes.BillingAddress).ToList();
+    var db = new OrvosiDbContext();
+    var l = db.Addresses.Where(loc => loc.AddressTypeId != AddressTypes.BillingAddress).ToList();
     ViewBag.Locations = l.Select(c => new SelectListItem()
     {
-        Text = string.Format("{0} - {1}", c.LocationName, c.Name),
+        Text = string.Format("{0} - {1}", c.City_CityId.Name, c.Name),
         Value = c.Id.ToString(),
-        Group = new SelectListGroup() { Name = c.EntityDisplayName }
+        Group = new SelectListGroup() { Name = c.AddressType.Name }
     });
 }
 
@@ -41,7 +41,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Current Location</label>
         <div class="col-md-10">
-            <p class="form-control-static">@Model.LocationName</p>
+            <p class="form-control-static">@Model.Address.Name</p>
         </div>
     </div>
     <div class="form-group">

@@ -20,13 +20,18 @@ namespace Orvosi.Data
         public short Id { get; set; } // Id (Primary key)
         public System.Guid PhysicianId { get; set; } // PhysicianId
         public short CompanyId { get; set; } // CompanyId
-        public byte RelationshipStatusId { get; set; } // RelationshipStatusId
+        public short StatusId { get; set; } // StatusId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
+        // Foreign keys
+        public virtual Company Company { get; set; } // FK_PhysicianCompany_Company
+        public virtual Physician Physician { get; set; } // FK_PhysicianCompany_Physician
+        public virtual PhysicianCompanyStatu PhysicianCompanyStatu { get; set; } // FK_PhysicianCompany_PhysicianCompanyStatus
+
         public PhysicianCompany()
         {
-            RelationshipStatusId = 1;
+            StatusId = 1;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             InitializePartial();

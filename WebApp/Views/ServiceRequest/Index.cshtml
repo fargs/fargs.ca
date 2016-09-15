@@ -1,32 +1,35 @@
-﻿@using Model
-@using e = Model.Enums
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
 @model WebApp.ViewModels.ServiceRequestViewModels.IndexViewModel
 
 @{
     ViewBag.Title = "Service Requests";
 
-    var db = new OrvosiEntities();
+    var db = new OrvosiDbContext();
 
     ViewBag.ServiceRequestStatuses = db.LookupItems
-        .Where(l => l.LookupId == e.Lookups.ServiceRequestStatus)
+        .Where(l => l.LookupId == Lookups.ServiceRequestStatus)
         .Select(c => new SelectListItem()
         {
-            Text = c.ItemText,
-            Value = c.ItemId.ToString()
+            Text = c.Text,
+            Value = c.Id.ToString()
         })
         .ToList();
 
     ViewBag.Physicians = db.Physicians
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
+            Text = c.AspNetUser.GetDisplayName(),
             Value = c.Id.ToString()
         }).ToList();
 
-    ViewBag.Staff = db.Users
+    ViewBag.Staff = db.AspNetUsers
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
+            Text = c.GetDisplayName(),
             Value = c.Id.ToString(),
 
         }).ToList();
@@ -36,7 +39,7 @@
 
 <div class="row">
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Case Coordinator"))
+        @if (User.IsInRole(AspNetRoles.SuperAdminName) || User.IsInRole(AspNetRoles.CaseCoordinatorName))
         {
             <p>
                 <div class="btn-group">
@@ -69,8 +72,8 @@
                     <label class="control-label small">Date Range</label>
                     <select class="form-control" name="FilterArgs.DateRange">
                         <option></option>
-                        <option value="@e.DateRanges.Today" @(Model.FilterArgs.DateRange == e.DateRanges.Today ? "selected" : string.Empty)>Today</option>
-                        <option value="@e.DateRanges.Next10Days" @(Model.FilterArgs.DateRange == e.DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
+                        <option value="@DateRanges.Today" @(Model.FilterArgs.DateRange == DateRanges.Today ? "selected" : string.Empty)>Today</option>
+                        <option value="@DateRanges.Next10Days" @(Model.FilterArgs.DateRange == DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
                     </select>
                 </div>
                 <div class="form-group form-group-sm">
@@ -80,7 +83,7 @@
                         <option value="Oldest" @(Model.FilterArgs.Sort == "Oldest" ? "selected" : string.Empty)>Oldest</option>
                     </select>
                 </div>
-                @if (Model.User.RoleCategoryId == e.RoleCategory.Staff || Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.DocumentReviewer || User.Identity.GetRoleId() == AspNetRoles.IntakeAssistant)
                 {
                     <fieldset>
                         <legend class="small">Staff Only</legend>
@@ -90,7 +93,7 @@
                         </div>
                     </fieldset>
                 }
-                @if (Model.User.RoleCategoryId == e.RoleCategory.Admin)
+                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
                 {
                     <fieldset>
                         <legend class="small">Admin Only</legend>
@@ -133,14 +136,14 @@
                     @*<td class="@(item.StatusId == ServiceRequestStatus.Open ? "bordered-left-success" : "bordered-left-warning")">*@
                     <td class="col-md-1">
                         <div class="btn-group" style="width:100px">
-                            @if (item.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
+                            @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
                             {
                                 <a href="~/ServiceRequest/Details/@item.Id">View</a>
                             }
                             else
                             {
                                 @Html.ActionLink("View", "Details", new { id = item.Id }, new { @class = "btn btn-default" })
-                                if (Model.User.RoleId == e.Roles.CaseCoordinator || Model.User.RoleId == e.Roles.SuperAdmin)
+                                if (User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
                                 {
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="caret"></span>
@@ -148,15 +151,15 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a href="~/ServiceRequest/Edit/@item.Id">Edit</a></li>
-                                        @if (item.ServiceCategoryId != e.ServiceCategories.AddOn)
+                                        @if (item.ServiceCategoryId != ServiceCategories.AddOn)
                                         {
                                             <li><a href="~/ServiceRequest/Reschedule/@item.Id">Reschedule</a></li>
                                         }
                                         <li><a href="~/ServiceRequest/ResourceAssignment/@item.Id">Resource Assignment</a></li>
-                                        @if (item.ServiceStatusId != e.ServiceStatus.NoShow)
+                                        @if (item.ServiceStatusId != ServiceStatus.NoShow)
                                         {
                                             <li role="separator" class="divider"></li>
-                                            if (item.ServiceStatusId == e.ServiceStatus.Cancellation || item.ServiceStatusId == e.ServiceStatus.LateCancellation)
+                                            if (item.ServiceStatusId == ServiceStatus.Cancellation || item.ServiceStatusId == ServiceStatus.LateCancellation)
                                             {
                                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = item.Id })</li>
                                             }
@@ -170,7 +173,7 @@
                             }
                         </div>
                     </td>
-                    @if (item.ServiceRequestStatusId == e.ServiceRequestStatus.Closed)
+                    @if (item.ServiceRequestStatusId == ServiceRequestStatus.Closed)
                     {
                         <td colspan="4">
                             <div class="text-muted">
@@ -184,15 +187,15 @@
                     {
                         <td>
                             <strong>@item.ClaimantName</strong>
-                            @if (item.ServiceStatusId == e.ServiceStatus.NoShow)
+                            @if (item.ServiceStatusId == ServiceStatus.NoShow)
                             {
                                 <span class="label label-danger"><strong>No Show</strong></span>
                             }
-                            else if (item.ServiceStatusId == e.ServiceStatus.Cancellation)
+                            else if (item.ServiceStatusId == ServiceStatus.Cancellation)
                             {
                                 <span class="label label-warning"><strong>Cancellation</strong></span>
                             }
-                            else if (item.ServiceStatusId == e.ServiceStatus.LateCancellation)
+                            else if (item.ServiceStatusId == ServiceStatus.LateCancellation)
                             {
                                 <span class="label label-danger"><strong>Late Cancellation</strong></span>
                             }
@@ -206,14 +209,14 @@
                             <div class="text-muted">@item.AddressName</div>
                         </td>
                         <td>
-                            @if (item.ServiceCategoryId != e.ServiceCategories.AddOn)
+                            @if (item.ServiceCategoryId != ServiceCategories.AddOn)
                             {
                                 <div><i class="glyphicon glyphicon-calendar"></i><span class="font-bold"> @item.AppointmentDate.Value.ToString("ddd, MMM dd")</span> @item.AppointmentDate.Value.Add(item.StartTime.Value).ToShortTimeString()</div>
                             }
                             <div><i class="glyphicon glyphicon-file"></i><span class="@(item.DueDate.HasValue ? string.Empty : "text-muted")"> @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : "Not Set")</span></div>
                         </td>
                         <td>
-                            @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequest = item, currentUser = Model.User })
+                            @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequest = item, serviceRequestTasks = Model.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == item.Id).ToList()})
                         </td>
                         <td>
                             <div class="btn btn-circle disabled" style="color: white; background-color: @item.PhysicianColorCode;">@item.PhysicianInitials</div>

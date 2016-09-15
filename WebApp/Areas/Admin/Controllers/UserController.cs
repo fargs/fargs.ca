@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using WebApp.Areas.Admin.ViewModels;
 using WebApp.Models;
 //using AutoMapper;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System.Data.Entity;
 
 namespace WebApp.Areas.Admin.Controllers
@@ -21,6 +21,7 @@ namespace WebApp.Areas.Admin.Controllers
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
         private ApplicationDbContext _db;
+        private OrvosiDbContext db = new OrvosiDbContext();
 
         public ApplicationSignInManager SignInManager
         {
@@ -86,38 +87,33 @@ namespace WebApp.Areas.Admin.Controllers
 
         public ActionResult Index(byte parentId)
         {
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+            var list = db.AspNetUsers.Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == parentId).ToList();
+
+            var vm = new ListViewModel()
             {
-                var list = db.Users.Where(u => u.RoleCategoryId == parentId).ToList();
+                Users = list
+            };
 
-                var vm = new ListViewModel()
-                {
-                    Users = list
-                };
-
-                return View(vm);
-            }
+            return View(vm);
         }
 
         public ActionResult UserProfile(Guid id)
         {
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+            var obj = db.Profiles.Single(u => u.Id == id);
+            if (obj == null)
             {
-                var obj = db.Profiles.Single(u => u.Id == id);
-                if (obj == null)
-                {
-                    throw new Exception("User does not exist");
-                }
-
-                // drop down lists
-                var companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
-
-                var vm = new ProfileViewModel()
-                {
-                    Profile = obj
-                };
-                return View(vm);
+                throw new Exception("User does not exist");
             }
+
+            // drop down lists
+            var companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
+
+            var vm = new ProfileViewModel()
+            {
+                Profile = obj
+            };
+            return View(vm);
+
         }
 
         [HttpPost]
@@ -132,37 +128,33 @@ namespace WebApp.Areas.Admin.Controllers
                 return View(vm);
             }
 
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
-            {
-                profile.ModifiedUser = User.Identity.GetUserId();
-                db.Entry(profile).State = EntityState.Modified;
+            profile.ModifiedUser = User.Identity.GetUserId();
+            db.Entry(profile).State = EntityState.Modified;
 
-                var result = await db.SaveChangesAsync();
+            var result = await db.SaveChangesAsync();
 
-                return RedirectToAction("Index", new { parentId = 1 });
-            }
+            return RedirectToAction("Index", new { parentId = 1 });
+
         }
 
         public ActionResult Account(Guid id)
         {
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+            var obj = db.Accounts.Single(u => u.Id == id);
+            if (obj == null)
             {
-                var obj = db.Accounts.Single(u => u.Id == id);
-                if (obj == null)
-                {
-                    throw new Exception("User does not exist");
-                }
-
-                // drop down lists
-                var companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
-
-                var vm = new AccountViewModel()
-                {
-                    Account = obj,
-                    Companies = new SelectList(companies, "Value", "Text", obj.CompanyId)
-                };
-                return View(vm);
+                throw new Exception("User does not exist");
             }
+
+            // drop down lists
+            var companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
+
+            var vm = new AccountViewModel()
+            {
+                Account = obj,
+                Companies = new SelectList(companies, "Value", "Text", obj.CompanyId)
+            };
+            return View(vm);
+
         }
 
         [HttpPost]
@@ -177,29 +169,30 @@ namespace WebApp.Areas.Admin.Controllers
                 return View(vm);
             }
 
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
-            {
-                account.ModifiedUser = User.Identity.GetUserId();
-                db.Entry(account).State = EntityState.Modified;
+            account.ModifiedUser = User.Identity.GetUserId();
+            db.Entry(account).State = EntityState.Modified;
 
-                var result = await db.SaveChangesAsync();
+            var result = await db.SaveChangesAsync();
 
-                return RedirectToAction("Index", new { parentId = 1 });
-            }
+            return RedirectToAction("Index", new { parentId = 1 });
         }
 
         public ActionResult Companies(Guid userId, Nullable<byte> parentId = null)
         {
-            using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+            using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
             {
-                var obj = db.Users.Single(u => u.Id == userId);
+                var obj = db.AspNetUsers.Single(u => u.Id == userId);
                 if (obj == null)
                 {
                     throw new Exception("User does not exist");
                 }
 
                 // drop down lists
-                var companies = db.PhysicianCompanies.Where(p => p.PhysicianId == userId && p.ParentId == parentId || p.CompanyId == p.ParentId).ToList(); // exclude examworks and scm
+                var companies = db.PhysicianCompanies
+                    .Include(pc => pc.Company)
+                    .Include(pc => pc.PhysicianCompanyStatu)
+                    .Where(p => p.PhysicianId == userId)
+                    .ToList(); //&& p.ParentId == parentId || p.CompanyId == p.ParentId).ToList(); // exclude examworks and scm
 
                 var vm = new CompaniesViewModel()
                 {
@@ -212,7 +205,7 @@ namespace WebApp.Areas.Admin.Controllers
 
         //public async Task<ActionResult> Edit(string id)
         //{
-        //    using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+        //    using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
         //    {
 
         //        var obj = db.Users.Single(u => u.Id == id);
@@ -246,7 +239,7 @@ namespace WebApp.Areas.Admin.Controllers
         //        return View(vm);
         //    }
 
-        //    using (var db = new OrvosiEntities(User.Identity.GetUserId()))
+        //    using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
         //    {
         //        var existing = db.Users.Single(u => u.Id == user.Id);
         //        if (existing == null)
@@ -308,7 +301,7 @@ namespace WebApp.Areas.Admin.Controllers
             var callbackUrl = Url.Action("ResetPassword", "Account", new { area = "", userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
-            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Roles.Company);
+            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, AspNetRoles.Company);
 
             return RedirectToAction("Index", new { parentId = 1 });
         }

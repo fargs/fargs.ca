@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using System;
 
 namespace WebApp.Areas.Admin.Controllers
 {
     public class LocationController : BaseController
     {
-        private OrvosiEntities db = new OrvosiEntities();
+        private OrvosiDbContext db = new OrvosiDbContext();
 
         // GET: Admin/Location
         public async Task<ActionResult> Index()
         {
-            return View(await db.Locations.ToListAsync());
+            return View(await db.Addresses.ToListAsync());
         }
 
         // GET: Admin/Location/Details/5
@@ -29,12 +24,12 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = await db.Locations.FindAsync(id);
-            if (location == null)
+            Address address = await db.Addresses.FindAsync(id);
+            if (address == null)
             {
                 return HttpNotFound();
             }
-            return View(location);
+            return View(address);
         }
 
         // GET: Admin/Location/Create
@@ -45,13 +40,13 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
         {
-            var db = new OrvosiEntities(User.Identity.Name);
-
             if (ModelState.IsValid)
             {
-                db.Locations.Add(location);
+                location.ModifiedDate = SystemTime.Now();
+                location.ModifiedUser = User.Identity.Name;
+                db.Addresses.Add(location);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -66,7 +61,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = await db.Locations.FindAsync(id);
+            Address location = await db.Addresses.FindAsync(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -80,9 +75,8 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Location location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
         {
-            var db = new OrvosiEntities(User.Identity.Name);
             if (ModelState.IsValid)
             {
                 db.Entry(location).State = EntityState.Modified;
@@ -95,13 +89,12 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
-            var db = new OrvosiEntities(User.Identity.Name);
-
+         
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = await db.Locations.FindAsync(id);
+            Address location = await db.Addresses.FindAsync(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -114,8 +107,8 @@ namespace WebApp.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Location location = await db.Locations.FindAsync(id);
-            db.Locations.Remove(location);
+            Address location = await db.Addresses.FindAsync(id);
+            db.Addresses.Remove(location);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

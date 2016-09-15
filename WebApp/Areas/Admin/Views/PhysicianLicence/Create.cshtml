@@ -1,11 +1,11 @@
-﻿@model Model.PhysicianLicense
+﻿@model Orvosi.Data.PhysicianLicense
 @{
     ViewBag.Title = "Create";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Add Licence Record For</h2>
-<div class="h3 lead">@ViewBag.User.DisplayName</div>
+<div class="h3 lead">@ViewBag.User.GetDisplayName()</div>
 
 
 @using (Html.BeginForm("Create", "PhysicianLicence", null, FormMethod.Post, new { enctype = "multipart/form-data" }))

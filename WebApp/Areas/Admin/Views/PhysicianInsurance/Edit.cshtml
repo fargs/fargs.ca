@@ -1,4 +1,4 @@
-﻿@model Model.PhysicianInsurance
+﻿@model Orvosi.Data.PhysicianInsurance
 
 @{
     ViewBag.Title = "Edit";
@@ -6,7 +6,7 @@
 }
 
 <h2>Edit Insurance Record For</h2>
-<div class="h3 lead">@ViewBag.User.DisplayName</div>
+<div class="h3 lead">@ViewBag.User.GetDisplayName()</div>
 
 
 @using (Html.BeginForm("Edit","PhysicianInsurance", null, FormMethod.Post , new { enctype = "multipart/form-data" }))

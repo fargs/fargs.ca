@@ -1,4 +1,6 @@
 ﻿
+
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
@@ -6,9 +8,9 @@ AS (
 	SELECT ServiceRequestId
 		, TotalTasks = COUNT(TaskId)
 		, ClosedTasks = COUNT(CompletedDate)
-		, OpenTasks = COUNT(CASE WHEN CompletedDate IS NOT NULL THEN NULL ELSE '2000-01-01' END)
+		, OpenTasks = SUM(CASE WHEN CompletedDate IS NOT NULL THEN 0 ELSE 1 END)
 	FROM dbo.ServiceRequestTask t
-	WHERE IsObsolete = 0
+	WHERE IsObsolete = 0 AND TaskType IS NULL
 	GROUP BY ServiceRequestId
 ),
 NextTask

@@ -25,19 +25,19 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
         // Reverse navigation
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTaskRelated> RelatedTask { get; set; } // ServiceRequestTemplateTaskRelated.FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask1
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskRelated.FK_ServiceRequestTemplateTaskRelated_ServiceRequestTemplateTask
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Child { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Parent { get; set; } // Many to many mapping
 
         // Foreign keys
+        public virtual OTask OTask { get; set; } // FK_ServiceRequestTemplateTask_Task
         public virtual ServiceRequestTemplate ServiceRequestTemplate { get; set; } // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
-        public virtual Task Task { get; set; } // FK_ServiceRequestTemplateTask_Task
 
         public ServiceRequestTemplateTask()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
-            RelatedTask = new System.Collections.Generic.List<ServiceRequestTemplateTaskRelated>();
-            ServiceRequestTemplateTaskId = new System.Collections.Generic.List<ServiceRequestTemplateTaskRelated>();
+            Child = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
+            Parent = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             InitializePartial();
         }
 

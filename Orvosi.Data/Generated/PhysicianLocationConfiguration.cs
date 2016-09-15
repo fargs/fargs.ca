@@ -35,6 +35,10 @@ namespace Orvosi.Data
             Property(x => x.PriceIncrease).HasColumnName(@"PriceIncrease").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+
+            // Foreign keys
+            HasRequired(a => a.Physician).WithMany(b => b.PhysicianLocations).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_PhysicianLocation_Physician
+            HasRequired(a => a.PhysicianLocation_Id).WithOptional(b => b.PhysicianLocation1).WillCascadeOnDelete(false); // FK_PhysicianLocation_PhysicianLocation
             InitializePartial();
         }
         partial void InitializePartial();

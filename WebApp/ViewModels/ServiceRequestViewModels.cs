@@ -4,16 +4,16 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Box.V2.Models;
 using Orvosi.Data;
-using Model;
 
 namespace WebApp.ViewModels.ServiceRequestViewModels
 { 
 
     public class IndexViewModel
     {
-        public User User { get; set; }
-        public List<Model.ServiceRequest> ServiceRequests { get; set; }
+        public AspNetUser User { get; set; }
+        public List<ServiceRequestView> ServiceRequests { get; set; }
         public FilterArgs FilterArgs { get; set; }
+        public List<ServiceRequestTask> ServiceRequestTasks { get; internal set; }
     }
 
     public class DashboardViewModel
@@ -41,6 +41,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     {
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        public WebApp.Models.ServiceRequestModels.ServiceRequest ServiceRequestMapped { get; set; }
     }
 
     public class BoxManagerViewModel

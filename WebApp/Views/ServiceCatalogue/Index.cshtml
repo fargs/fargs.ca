@@ -1,20 +1,21 @@
-﻿@using Model
-@using Model.Enums
-@using WebApp.Library.Enums
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
     ViewBag.Title = "Service Catalogue";
 
-    var db = new OrvosiEntities();
+    var db = new OrvosiDbContext();
 
-    ViewBag.Users = db.Users
-        .Where(c => c.RoleCategoryId == RoleCategory.Physician)
+    ViewBag.Users = db.AspNetUsers
+        .Where(c => c.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.Physician)
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
+            Text = c.GetDisplayName(),
             Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.RoleName }
+            Group = new SelectListGroup() { Name = c.GetRole().Name }
         }).ToList();
 
     ViewBag.Companies = db.Companies
@@ -22,7 +23,7 @@
         {
             Text = c.Name,
             Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.ParentName }
+            Group = new SelectListGroup() { Name = c.Parent.Name }
         }).ToList();
 
     var services = db.Services
@@ -48,7 +49,7 @@
 <div class="row">
     <div class="col-md-12">
         <form action="~/ServiceCatalogue/Index/" method="get" class="form-inline">
-            @if (Model.CurrentUser.RoleCategoryId == RoleCategory.Admin)
+            @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
             {
                 <div class="form-group">
                     @Html.DropDownList("UserId", new SelectList(ViewBag.Users, "Value", "Text", Model.FilterArgs.UserId), string.Empty, new { @class = "form-control" })
@@ -71,11 +72,11 @@ else
     <div class="h3 lead">
         @if (Model.SelectedCompany != null)
         {
-            <span>Service Catalogue for @Model.SelectedUser.DisplayName and <strong>@Model.SelectedCompany.Name</strong></span>
+            <span>Service Catalogue for @Model.SelectedUser.GetDisplayName() and <strong>@Model.SelectedCompany.Name</strong></span>
         }
         else
         {
-            <span>Default Service Catalogue for @Model.SelectedUser.DisplayName</span>
+            <span>Default Service Catalogue for @Model.SelectedUser.GetDisplayName()</span>
         }
     </div>
 

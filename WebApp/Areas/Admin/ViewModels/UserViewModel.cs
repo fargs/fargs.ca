@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Model;
+using Orvosi.Data;
 
 namespace WebApp.Areas.Admin.ViewModels
 {
     public class ListViewModel
     {
-        public List<User> Users { get; set; }
+        public List<AspNetUser> Users { get; set; }
     }
 
     public class DetailViewModel
     {
-        public User User { get; set; }
+        public AspNetUser User { get; set; }
         public SelectList Companies { get; set; }
     }
 
@@ -32,7 +32,7 @@ namespace WebApp.Areas.Admin.ViewModels
 
     public class CompaniesViewModel
     {
-        public User User { get; set; }
+        public AspNetUser User { get; set; }
         public List<PhysicianCompany> Companies { get; set; }
     }
 

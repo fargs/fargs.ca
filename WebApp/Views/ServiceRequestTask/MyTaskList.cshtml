@@ -1,15 +1,15 @@
 ﻿@using WebApp.Library.Extensions
-@using Model.Enums
+@using Orvosi.Shared.Enums
 @model List<WebApp.ViewModels.ServiceRequestTaskViewModels.AssessmentTaskViewModel>
 
 @*<div class="thumbnail alert">
     <div class="caption">
-        <div class="h1 text-center">@Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo).Count().ToString()</div>
+        <div class="h1 text-center">@Where(c => c.TaskStatusId == TaskStatuses.ToDo).Count().ToString()</div>
         <div class="text-muted text-center">Actionable Tasks</div>
     </div>
 </div>
 <div class="list-group">
-    @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
+    @foreach (var item in Where(c => c.TaskStatusId == TaskStatuses.ToDo))
     {
         <div class="list-group-item">
             @if (item.TaskStatusId != Tasks.SubmitInvoice)
@@ -46,7 +46,7 @@
         <th>Due Date</th>
         <th>Request</th>
     </tr>
-    @foreach (var item in Model.Where(c => c.TaskStatusId == TaskStatuses.ToDo))
+    @foreach (var item in Where(c => c.TaskStatusId == TaskStatuses.ToDo))
     {
         <tr>
             <td>

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using WebApp.ViewModels.ServiceRequestViewModels;
 using System.Security.Claims;
 using WebApp.Library;
@@ -18,6 +18,7 @@ using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
 using Box.V2.Models;
 using e = Orvosi.Shared.Enums;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -26,7 +27,7 @@ namespace WebApp.Controllers
     [Authorize]
     public class ServiceRequestController : Controller
     {
-        private OrvosiEntities context = new OrvosiEntities();
+        private OrvosiDbContext context = new OrvosiDbContext();
         private Orvosi.Data.OrvosiDbContext ctx = new Orvosi.Data.OrvosiDbContext();
         private OrvosiDropbox _dropbox;
 
@@ -47,13 +48,11 @@ namespace WebApp.Controllers
         {
             var vm = new IndexViewModel();
             // get the user
-            vm.User = context.Users.Single(u => u.UserName == User.Identity.Name);
-
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
             filterArgs.StatusId = (filterArgs.StatusId ?? e.ServiceRequestStatus.Open);
 
-            var sr = context.ServiceRequests.AsQueryable();
+            var sr = context.ServiceRequestViews.AsQueryable();
 
             if (filterArgs.StatusId.HasValue)
             {
@@ -80,12 +79,12 @@ namespace WebApp.Controllers
             }
 
             // if the user is an administrator and the option showAll is true, then show all
-            if (vm.User.RoleCategoryId != RoleCategory.Admin || (vm.User.RoleCategoryId != RoleCategory.Admin && filterArgs.ShowAll == false))
+            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin && filterArgs.ShowAll == false))
             {
                 sr = sr.Where(c => c.CaseCoordinatorId == vm.User.Id || c.IntakeAssistantId == vm.User.Id || c.DocumentReviewerId == vm.User.Id || c.PhysicianId == vm.User.Id);
             }
 
-            if (vm.User.RoleCategoryId == RoleCategory.Admin || vm.User.RoleCategoryId == RoleCategory.Staff)
+            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || User.Identity.GetRoleId() != AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() != AspNetRoles.DocumentReviewer || User.Identity.GetRoleId() != AspNetRoles.IntakeAssistant)
             {
                 if (filterArgs.PhysicianId.HasValue)
                 {
@@ -105,6 +104,14 @@ namespace WebApp.Controllers
             // order the requests from oldest to newest
             vm.ServiceRequests = await sr.ToListAsync();
 
+            var serviceRequestIds = vm.ServiceRequests.Select(item => item.Id);
+            vm.ServiceRequestTasks = await context.ServiceRequestTasks
+                    .Include(srt => srt.AspNetUser)
+                    .Include(srt => srt.OTask)
+                .Where(srt => serviceRequestIds.Contains(srt.ServiceRequestId)
+                    && srt.TaskId != Tasks.AssessmentDay)
+                .ToListAsync();
+
             vm.FilterArgs = filterArgs;
 
             return View(vm);
@@ -112,10 +119,10 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> Dashboard()
         {
-            var user = context.Users.Single(u => u.UserName == User.Identity.Name);
+            var userId = User.Identity.GetGuidUserId();
 
             var list = await context.ServiceRequests
-                .Where(sr => sr.CaseCoordinatorId == user.Id || sr.IntakeAssistantId == user.Id || sr.DocumentReviewerId == user.Id || sr.PhysicianId == user.Id)
+                .Where(sr => sr.CaseCoordinatorId == userId || sr.IntakeAssistantId == userId || sr.DocumentReviewerId == userId || sr.PhysicianId == userId)
                 .ToListAsync();
 
             return View(list);
@@ -125,17 +132,31 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Details(int id)
         {
             var vm = new DetailsViewModel();
-            vm.ServiceRequest = await ctx.ServiceRequests.FirstAsync(sr => sr.Id == id);
 
+            vm.ServiceRequest = await ctx.ServiceRequests.FindAsync(id);
+
+            // Get the data set
+            var source = await ctx.GetAssignedServiceRequestsAsync(null, SystemTime.Now(), null, id);
+
+            if (vm.ServiceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+            {
+                vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAssessment(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
+            }
+            else if (vm.ServiceRequest.Service.ServiceCategoryId == ServiceCategories.AddOn)
+            {
+                vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAddOn(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
+            }
+            
             if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
             }
 
+            //vm.UserSelectList = (from user in ctx.AspNetUsers
             vm.UserSelectList = (from user in ctx.AspNetUsers
                                  from userRole in ctx.AspNetUserRoles
                                  from role in ctx.AspNetRoles
-                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (role.RoleCategoryId == RoleCategory.Staff || role.RoleCategoryId == RoleCategory.Admin || user.Id == vm.ServiceRequest.PhysicianId)
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (role.Id == AspNetRoles.SuperAdmin || role.Id == AspNetRoles.CaseCoordinator || role.Id == AspNetRoles.DocumentReviewer || role.Id == AspNetRoles.IntakeAssistant || user.Id == vm.ServiceRequest.PhysicianId)
                                  select new SelectListItem
                                  {
                                      Text = user.FirstName + " " + user.LastName,
@@ -189,7 +210,6 @@ namespace WebApp.Controllers
             sr.AppointmentDate = slot.AvailableDay.Day;
             sr.StartTime = slot.StartTime;
             sr.EndTime = slot.EndTime;
-            sr.Duration = slot.Duration;
             sr.AddressId = serviceRequest.AddressId;
             sr.ModifiedDate = SystemTime.Now();
             sr.ModifiedUser = User.Identity.Name;
@@ -274,7 +294,7 @@ namespace WebApp.Controllers
                 });
 
             vm.StaffSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -340,23 +360,37 @@ namespace WebApp.Controllers
                 foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
-                    st.DueDateBase = template.Task.DueDateBase;
-                    st.DueDateDiff = template.Task.DueDateDiff;
-                    st.Guidance = template.Task.Guidance;
-                    st.ObjectGuid = template.Task.ObjectGuid;
-                    st.ResponsibleRoleId = template.Task.ResponsibleRoleId;
+                    st.DueDateBase = template.OTask.DueDateBase;
+                    st.DueDateDiff = template.OTask.DueDateDiff;
+                    st.Guidance = template.OTask.Guidance;
+                    st.ObjectGuid = Guid.NewGuid();
+                    st.ResponsibleRoleId = template.OTask.ResponsibleRoleId;
                     st.Sequence = template.Sequence;
-                    st.ShortName = template.Task.ShortName;
-                    st.TaskId = template.Task.Id;
-                    st.TaskName = template.Task.Name;
+                    st.ShortName = template.OTask.ShortName;
+                    st.TaskId = template.OTask.Id;
+                    st.TaskName = template.OTask.Name;
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
                     // Assign tasks to physician and case coordinator to start
-                    st.AssignedTo = (template.Task.ResponsibleRoleId == Roles.CaseCoordinator ? sr.CaseCoordinatorId : (template.Task.ResponsibleRoleId == Roles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.ServiceRequestTemplateTaskId = template.Id;
                     sr.ServiceRequestTasks.Add(st);
                 }
 
                 ctx.ServiceRequests.Add(sr);
+
+                await ctx.SaveChangesAsync();
+
+                // Clone the related tasks
+                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+                {
+                    foreach (var dependentTemplate in taskTemplate.Child)
+                    {
+                        var task = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
+                        var dependent = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
+                        task.Child.Add(dependent);
+                    }
+                }
 
                 await ctx.SaveChangesAsync();
 
@@ -465,7 +499,7 @@ namespace WebApp.Controllers
             // Create the calendar event
 
             //// mark the first task as complete
-            //using (var db = new OrvosiEntities(User.Identity.Name))
+            //using (var db = new OrvosiDbContext(User.Identity.Name))
             //{
             //    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
             //    serviceRequestTask.CompletedDate = SystemTime.Now();
@@ -512,7 +546,7 @@ namespace WebApp.Controllers
                 });
 
             vm.PhysicianSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Physician)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Physician)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -521,7 +555,7 @@ namespace WebApp.Controllers
                 });
 
             vm.StaffSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -575,7 +609,7 @@ namespace WebApp.Controllers
                 sr.ModifiedDate = SystemTime.Now();
 
                 var service = await ctx.Services.FindAsync(serviceCatalogue.ServiceId);
-                var tasks = ctx.Tasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
+                var tasks = ctx.OTasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
 
                 foreach (var task in tasks)
                 {
@@ -608,11 +642,11 @@ namespace WebApp.Controllers
 
         private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId)
         {
-            if (responsibleRoleId == Roles.Physician)
+            if (responsibleRoleId == AspNetRoles.Physician)
             {
                 return physicianId;
             }
-            else if (responsibleRoleId == Roles.CaseCoordinator)
+            else if (responsibleRoleId == AspNetRoles.CaseCoordinator)
             {
                 return caseCoordinatorId;
             }
@@ -638,7 +672,7 @@ namespace WebApp.Controllers
             }
 
             var userSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategory.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -679,13 +713,13 @@ namespace WebApp.Controllers
 
                 foreach (var task in obj.ServiceRequestTasks)
                 {
-                    if (task.ResponsibleRoleId == Roles.CaseCoordinator)
+                    if (task.ResponsibleRoleId == AspNetRoles.CaseCoordinator)
                         task.AssignedTo = obj.CaseCoordinatorId;
-                    else if (task.ResponsibleRoleId == Roles.IntakeAssistant)
+                    else if (task.ResponsibleRoleId == AspNetRoles.IntakeAssistant)
                         task.AssignedTo = obj.IntakeAssistantId;
-                    else if (task.ResponsibleRoleId == Roles.DocumentReviewer)
+                    else if (task.ResponsibleRoleId == AspNetRoles.DocumentReviewer)
                         task.AssignedTo = obj.DocumentReviewerId;
-                    else if (task.ResponsibleRoleId == Roles.Physician)
+                    else if (task.ResponsibleRoleId == AspNetRoles.Physician)
                         task.AssignedTo = obj.PhysicianId;
                 }
 
@@ -725,7 +759,7 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (context = new OrvosiEntities(User.Identity.Name))
+                using (context = new OrvosiDbContext(User.Identity.Name))
                 {
                     // get the tracked object from the database
                     var obj = await context.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
@@ -809,7 +843,7 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                context.ServiceRequest_ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
+                context.ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
 
                 serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
 
@@ -847,7 +881,7 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            context.ServiceRequest_ToggleCancellation(id, null, false, string.Empty);
+            context.ToggleCancellation(id, null, false, string.Empty);
 
             if (serviceRequest.InvoiceDetails.Count > 0)
             {
@@ -873,7 +907,7 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            context.ServiceRequest_ToggleNoShow(id);
+            context.ToggleNoShow(id);
 
             serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
 
@@ -942,239 +976,239 @@ namespace WebApp.Controllers
 
         #region Dropbox
 
-        [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> CreateDropboxFolder(short id)
-        {
-            var obj = await context.ServiceRequests.FindAsync(id);
-            var client = await dropbox.GetServiceAccountClientAsync();
+        //[HttpPost]
+        //[Authorize(Roles = "Case Coordinator, Super Admin")]
+        //public async Task<ActionResult> CreateDropboxFolder(short id)
+        //{
+        //    var obj = await context.ServiceRequests.FindAsync(id);
+        //    var client = await dropbox.GetServiceAccountClientAsync();
 
-            if (obj.ServiceCategoryId == ServiceCategories.AddOn)
-            {
-                obj.DocumentFolderLink = string.Format("/cases/{0}/AddOns/{1}", obj.PhysicianUserName, obj.Title.Trim());
-            }
-            else
-            {
-                var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
-                obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
-            }
+        //    if (obj.ServiceCategoryId == ServiceCategories.AddOn)
+        //    {
+        //        obj.DocumentFolderLink = string.Format("/cases/{0}/AddOns/{1}", obj.PhysicianUserName, obj.Title.Trim());
+        //    }
+        //    else
+        //    {
+        //        var month = obj.AppointmentDate.Value.ToString("yyyy-MM");
+        //        obj.DocumentFolderLink = string.Format("/cases/{0}/{1}/{2}", obj.PhysicianUserName, month, obj.Title.Trim());
+        //    }
 
-            await context.SaveChangesAsync();
+        //    await context.SaveChangesAsync();
 
-            // Get the destination folder name
-            var destination = obj.DocumentFolderLink;
+        //    // Get the destination folder name
+        //    var destination = obj.DocumentFolderLink;
 
-            // Check if the folder already exists)
-            Metadata metadata = null;
-            // Check if the folder already exists
-            try
-            {
-                // Get the folder
-                metadata = await client.Files.GetMetadataAsync(destination);
-            }
-            catch (ApiException<GetMetadataError> ex)
-            {
-                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
-                    throw;
-            }
+        //    // Check if the folder already exists)
+        //    Metadata metadata = null;
+        //    // Check if the folder already exists
+        //    try
+        //    {
+        //        // Get the folder
+        //        metadata = await client.Files.GetMetadataAsync(destination);
+        //    }
+        //    catch (ApiException<GetMetadataError> ex)
+        //    {
+        //        if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+        //            throw;
+        //    }
 
-            if (metadata != null)
-            {
-                //TODO: Add some error messaging error
-                throw new Exception("The dropbox folder already exists.");
-            }
+        //    if (metadata != null)
+        //    {
+        //        //TODO: Add some error messaging error
+        //        throw new Exception("The dropbox folder already exists.");
+        //    }
 
-            // Copy the case template folder
-            var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_addonfoldertemplate", destination));
+        //    // Copy the case template folder
+        //    var folder = await client.Files.CopyAsync(new RelocationArg("/cases/_addonfoldertemplate", destination));
 
-            return RedirectToAction("Details", new { id = id });
-        }
+        //    return RedirectToAction("Details", new { id = id });
+        //}
 
-        [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> ShareDropboxFolder(int serviceRequestId, string folderId)
-        {
-            var client = await dropbox.GetServiceAccountClientAsync();
+        //[HttpPost]
+        //[Authorize(Roles = "Case Coordinator, Super Admin")]
+        //public async Task<ActionResult> ShareDropboxFolder(int serviceRequestId, string folderId)
+        //{
+        //    var client = await dropbox.GetServiceAccountClientAsync();
 
-            var metadata = await GetMetadata(folderId, client);
+        //    var metadata = await GetMetadata(folderId, client);
 
-            // Share the folder
-            await client.Sharing.ShareFolderAsync(new ShareFolderArg(metadata.AsFolder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
+        //    // Share the folder
+        //    await client.Sharing.ShareFolderAsync(new ShareFolderArg(metadata.AsFolder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
 
-            return RedirectToAction("Details", new { id = serviceRequestId });
-        }
+        //    return RedirectToAction("Details", new { id = serviceRequestId });
+        //}
 
-        [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> UnshareDropboxFolder(int serviceRequestId, string folderId)
-        {
-            var client = await dropbox.GetServiceAccountClientAsync();
+        //[HttpPost]
+        //[Authorize(Roles = "Case Coordinator, Super Admin")]
+        //public async Task<ActionResult> UnshareDropboxFolder(int serviceRequestId, string folderId)
+        //{
+        //    var client = await dropbox.GetServiceAccountClientAsync();
 
-            var metadata = await GetMetadata(folderId, client);
+        //    var metadata = await GetMetadata(folderId, client);
 
-            // Unshare the folder
-            await client.Sharing.UnshareFolderAsync(new UnshareFolderArg(metadata.AsFolder.SharingInfo.SharedFolderId, false));
+        //    // Unshare the folder
+        //    await client.Sharing.UnshareFolderAsync(new UnshareFolderArg(metadata.AsFolder.SharingInfo.SharedFolderId, false));
 
-            return RedirectToAction("Details", new { id = serviceRequestId });
-        }
+        //    return RedirectToAction("Details", new { id = serviceRequestId });
+        //}
 
-        [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> ShareDropboxFolderToMember(string folderId, Guid userId, short serviceRequestId)
-        {
-            var client = await dropbox.GetServiceAccountClientAsync();
+        //[HttpPost]
+        //[Authorize(Roles = "Case Coordinator, Super Admin")]
+        //public async Task<ActionResult> ShareDropboxFolderToMember(string folderId, Guid userId, short serviceRequestId)
+        //{
+        //    var client = await dropbox.GetServiceAccountClientAsync();
 
-            Metadata metadata = await GetMetadata(folderId, client);
+        //    Metadata metadata = await GetMetadata(folderId, client);
 
-            string sharedFolderId = string.Empty;
-            if (metadata.AsFolder.SharingInfo == null)
-            {
-                throw new Exception("Folder is not shared out");
-            }
-            else
-            {
-                sharedFolderId = metadata.AsFolder.SharingInfo.SharedFolderId;
-            }
+        //    string sharedFolderId = string.Empty;
+        //    if (metadata.AsFolder.SharingInfo == null)
+        //    {
+        //        throw new Exception("Folder is not shared out");
+        //    }
+        //    else
+        //    {
+        //        sharedFolderId = metadata.AsFolder.SharingInfo.SharedFolderId;
+        //    }
 
-            var user = await context.Users.SingleAsync(c => c.Id == userId);
-            await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+        //    var user = await context.Users.SingleAsync(c => c.Id == userId);
+        //    await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
 
-            return RedirectToAction("Details", new { id = serviceRequestId });
-        }
+        //    return RedirectToAction("Details", new { id = serviceRequestId });
+        //}
 
-        [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> UnshareDropboxFolderFromMember(string folderId, Guid userId, short serviceRequestId)
-        {
-            var client = await dropbox.GetServiceAccountClientAsync();
+        //[HttpPost]
+        //[Authorize(Roles = "Case Coordinator, Super Admin")]
+        //public async Task<ActionResult> UnshareDropboxFolderFromMember(string folderId, Guid userId, short serviceRequestId)
+        //{
+        //    var client = await dropbox.GetServiceAccountClientAsync();
 
-            Metadata metadata = await GetMetadata(folderId, client);
+        //    Metadata metadata = await GetMetadata(folderId, client);
 
-            string sharedFolderId = string.Empty;
-            if (metadata.AsFolder.SharingInfo == null)
-            {
-                throw new Exception("Folder is not shared out");
-            }
-            else
-            {
-                sharedFolderId = metadata.AsFolder.SharingInfo.SharedFolderId;
-            }
+        //    string sharedFolderId = string.Empty;
+        //    if (metadata.AsFolder.SharingInfo == null)
+        //    {
+        //        throw new Exception("Folder is not shared out");
+        //    }
+        //    else
+        //    {
+        //        sharedFolderId = metadata.AsFolder.SharingInfo.SharedFolderId;
+        //    }
 
-            var user = await context.Users.SingleAsync(c => c.Id == userId);
-            await DropboxRemoveMember(client, user.Email, sharedFolderId);
+        //    var user = await context.Users.SingleAsync(c => c.Id == userId);
+        //    await DropboxRemoveMember(client, user.Email, sharedFolderId);
 
-            return RedirectToAction("Details", new { id = serviceRequestId });
-        }
+        //    return RedirectToAction("Details", new { id = serviceRequestId });
+        //}
 
-        private static async Task<Metadata> GetMetadata(string folderId, DropboxClient client)
-        {
-            Metadata metadata = null;
-            // Check if the folder already exists
-            try
-            {
-                // Get the folder
-                metadata = await client.Files.GetMetadataAsync(folderId);
-            }
-            catch (ApiException<GetMetadataError> ex)
-            {
-                if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
-                    throw;
-            }
+        //private static async Task<Metadata> GetMetadata(string folderId, DropboxClient client)
+        //{
+        //    Metadata metadata = null;
+        //    // Check if the folder already exists
+        //    try
+        //    {
+        //        // Get the folder
+        //        metadata = await client.Files.GetMetadataAsync(folderId);
+        //    }
+        //    catch (ApiException<GetMetadataError> ex)
+        //    {
+        //        if (!ex.ErrorResponse.AsPath.Value.IsNotFound)
+        //            throw;
+        //    }
 
-            if (metadata == null)
-            {
-                //TODO: Add some error messaging error
-                throw new Exception("The dropbox folder does not exist.");
-            }
+        //    if (metadata == null)
+        //    {
+        //        //TODO: Add some error messaging error
+        //        throw new Exception("The dropbox folder does not exist.");
+        //    }
 
-            return metadata;
-        }
+        //    return metadata;
+        //}
 
-        private static async Task<List<MembersGetInfoItem>> GetSharedFolderMembers(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
-        {
-            // Get the members for the shared folder
-            var sharedMembers = await client.Sharing.ListFolderMembersAsync(sharedFolderId);
+        //private static async Task<List<MembersGetInfoItem>> GetSharedFolderMembers(OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
+        //{
+        //    // Get the members for the shared folder
+        //    var sharedMembers = await client.Sharing.ListFolderMembersAsync(sharedFolderId);
 
-            // Get the full member entities of the shared members
-            var args = new List<UserSelectorArg>();
-            foreach (var m in sharedMembers.Users)
-            {
-                args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
-            }
-            var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
-            return members;
-        }
+        //    // Get the full member entities of the shared members
+        //    var args = new List<UserSelectorArg>();
+        //    foreach (var m in sharedMembers.Users)
+        //    {
+        //        args.Add(new UserSelectorArg.TeamMemberId(m.User.TeamMemberId));
+        //    }
+        //    var members = await dropbox.TeamClient.Team.MembersGetInfoAsync(args);
+        //    return members;
+        //}
 
-        private static async Task DropboxAddMember(OrvosiDropbox dropbox, DropboxClient client, string email, string sharedFolderId)
-        {
-            await client.Sharing.AddFolderMemberAsync(
-                sharedFolderId,
-                new List<AddMember>()
-                {
-                        new AddMember(
-                            new MemberSelector.Email(email)
-                        )
-                },
-                true
-            );
+        //private static async Task DropboxAddMember(OrvosiDropbox dropbox, DropboxClient client, string email, string sharedFolderId)
+        //{
+        //    await client.Sharing.AddFolderMemberAsync(
+        //        sharedFolderId,
+        //        new List<AddMember>()
+        //        {
+        //                new AddMember(
+        //                    new MemberSelector.Email(email)
+        //                )
+        //        },
+        //        true
+        //    );
 
-            await client.Sharing.UpdateFolderMemberAsync(
-                sharedFolderId,
-                new MemberSelector.Email(email),
-                AccessLevel.Editor.Instance
-            );
+        //    await client.Sharing.UpdateFolderMemberAsync(
+        //        sharedFolderId,
+        //        new MemberSelector.Email(email),
+        //        AccessLevel.Editor.Instance
+        //    );
 
-            var cc = await dropbox.GetTeamMemberClientAsync(email);
-            await cc.Sharing.MountFolderAsync(sharedFolderId);
-        }
+        //    var cc = await dropbox.GetTeamMemberClientAsync(email);
+        //    await cc.Sharing.MountFolderAsync(sharedFolderId);
+        //}
 
-        private static async Task DropboxRemoveMember(DropboxClient client, string email, string sharedFolderId)
-        {
-            // Add the case coordinator to the share
-            await client.Sharing.RemoveFolderMemberAsync(
-                sharedFolderId,
-                new MemberSelector.Email(email),
-                false
-            );
-        }
+        //private static async Task DropboxRemoveMember(DropboxClient client, string email, string sharedFolderId)
+        //{
+        //    // Add the case coordinator to the share
+        //    await client.Sharing.RemoveFolderMemberAsync(
+        //        sharedFolderId,
+        //        new MemberSelector.Email(email),
+        //        false
+        //    );
+        //}
 
-        private async Task ApplyMemberChangesToDropbox(ServiceRequest request, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
-        {
-            Guid?[] resources = new Guid?[3]
-                    {
-                        request.CaseCoordinatorId,
-                        request.DocumentReviewerId,
-                        request.IntakeAssistantId
-                    };
+        //private async Task ApplyMemberChangesToDropbox(ServiceRequest request, OrvosiDropbox dropbox, Dropbox.Api.DropboxClient client, string sharedFolderId)
+        //{
+        //    Guid?[] resources = new Guid?[3]
+        //            {
+        //                request.CaseCoordinatorId,
+        //                request.DocumentReviewerId,
+        //                request.IntakeAssistantId
+        //            };
 
-            var list = resources.Where(r => r.HasValue).Distinct().ToList();
-            var users = context.Users.Where(c => list.Contains(c.Id)).ToList();
+        //    var list = resources.Where(r => r.HasValue).Distinct().ToList();
+        //    var users = context.Users.Where(c => list.Contains(c.Id)).ToList();
 
-            var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
+        //    var members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
 
-            // Add members
-            foreach (var user in users)
-            {
-                if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
-                {
-                    await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
-                }
-            }
+        //    // Add members
+        //    foreach (var user in users)
+        //    {
+        //        if (!members.Exists(c => c.AsMemberInfo.Value.Profile.Email == user.Email))
+        //        {
+        //            await DropboxAddMember(dropbox, client, user.Email, sharedFolderId);
+        //        }
+        //    }
 
-            // remove members
-            foreach (var member in members)
-            {
-                var memberEmail = member.AsMemberInfo.Value.Profile.Email;
-                var user = context.Users.SingleOrDefault(c => c.Email == memberEmail);
-                if (user.RoleId == Roles.CaseCoordinator || user.RoleId == Roles.DocumentReviewer || user.RoleId == Roles.IntakeAssistant)
-                {
-                    if (!users.Exists(c => c.Email == memberEmail))
-                    {
-                        await DropboxRemoveMember(client, memberEmail, sharedFolderId);
-                    }
-                }
-            }
-        }
+        //    // remove members
+        //    foreach (var member in members)
+        //    {
+        //        var memberEmail = member.AsMemberInfo.Value.Profile.Email;
+        //        var user = context.Users.SingleOrDefault(c => c.Email == memberEmail);
+        //        if (user.RoleId == Roles.CaseCoordinator || user.RoleId == Roles.DocumentReviewer || user.RoleId == Roles.IntakeAssistant)
+        //        {
+        //            if (!users.Exists(c => c.Email == memberEmail))
+        //            {
+        //                await DropboxRemoveMember(client, memberEmail, sharedFolderId);
+        //            }
+        //        }
+        //    }
+        //}
 
         #endregion
 
@@ -1184,13 +1218,13 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
-            using (var db = new OrvosiEntities(User.Identity.Name))
+            using (var db = new OrvosiDbContext(User.Identity.Name))
             {
                 // Get the request
                 var request = db.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
 
                 // Get the request and assert they have a Box Folder Id
-                var physician = db.Physicians.Single(p => p.Id == request.PhysicianId);
+                var physician = db.AspNetUsers.Single(p => p.Id == request.PhysicianId);
                 //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
                 var physicianBoxFolderId = physician.BoxFolderId;
                 if (string.IsNullOrEmpty(physicianBoxFolderId))
@@ -1199,20 +1233,20 @@ namespace WebApp.Controllers
                 // Create the case folder
                 var box = new BoxManager();
                 BoxFolder caseFolder;
-                if (request.ServiceCategoryId == ServiceCategories.AddOn)
+                if (request.Service.ServiceCategoryId == ServiceCategories.AddOn)
                 {
                     var province = db.GetCompanyProvince(request.CompanyId).FirstOrDefault();
                     if (province == null)
                     {
-                        province = new GetCompanyProvince_Result() { ProvinceID = 0, ProvinceName = "Ontario" };
+                        province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
                     }
-                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.Title, physician.BoxAddOnTemplateFolderId);
+                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.Title, physician.Physician.BoxAddOnTemplateFolderId);
                 }
                 else
                 {
                     // Get the province which is used in the case folder path
-                    var province = db.Provinces.Single(p => p.Id == request.ProvinceId);
-                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.BoxCaseTemplateFolderId);
+                    var province = db.Provinces.Single(p => p.Id == request.Address.ProvinceId);
+                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.Physician.BoxCaseTemplateFolderId);
                 }
 
                 // Persist the new case folder Id to the database.
@@ -1227,7 +1261,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
-            using (var db = new OrvosiEntities())
+            using (var db = new OrvosiDbContext())
             {
                 var resources = db.GetServiceRequestResources(ServiceRequestId);
                 var resource = resources.Single(r => r.Id == UserId);
@@ -1254,7 +1288,7 @@ namespace WebApp.Controllers
 
         public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
         {
-            using (var db = new OrvosiEntities())
+            using (var db = new OrvosiDbContext())
             {
                 var box = new BoxManager();
                 var success = box.RemoveCollaboration(CollaborationId);
@@ -1272,7 +1306,7 @@ namespace WebApp.Controllers
         public ActionResult AcceptBoxFolder(int ServiceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
-            using (var db = new OrvosiEntities())
+            using (var db = new OrvosiDbContext())
             {
                 var user = db.Profiles.Single(p => p.Id == UserId);
                 boxUserId = user.BoxUserId;
@@ -1302,13 +1336,22 @@ namespace WebApp.Controllers
 
         private async Task GetPhysicianDropDownData()
         {
-            ViewBag.Physicians = await context.Physicians
-                .Select(c => new SelectListItem()
+            var physicians = await context.Physicians
+                .Select(p => new
                 {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.PrimarySpecialtyName }
+                    p.AspNetUser.FirstName,
+                    p.AspNetUser.LastName,
+                    p.AspNetUser.Title,
+                    p.Id,
+                    PhysicianSpecialty = p.PhysicianSpeciality.Name
                 }).ToListAsync();
+
+            ViewBag.Physicians = physicians.Select(c => new SelectListItem()
+            {
+                Text = ValueConverters.GetDisplayName(c.Title, c.FirstName, c.LastName),
+                Value = c.Id.ToString(),
+                Group = new SelectListGroup() { Name = c.PhysicianSpecialty }
+            });
         }
 
         private async Task GetCreateDropdownlistData(AvailableDay availableDay)
@@ -1322,15 +1365,15 @@ namespace WebApp.Controllers
             //}
 
             ViewBag.Services = await context.Services
-                .Where(c => c.ServicePortfolioId == Model.Enums.ServicePortfolios.Physician)
+                .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
                     Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.ServiceCategoryName }
+                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
                 }).ToListAsync();
 
-            var slots = await context.AvailableSlots
+            var slots = await context.AvailableSlotViews
                 .Where(c => c.AvailableDayId == availableDay.Id).ToListAsync();
 
             ViewBag.AvailableSlots = slots.Select(c => new SelectListItem()
@@ -1347,10 +1390,10 @@ namespace WebApp.Controllers
                 {
                     Text = c.Name,
                     Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.ParentName }
+                    Group = new SelectListGroup() { Name = c.Parent.Name }
                 }).ToListAsync();
 
-            var l = await context.Locations.ToListAsync();
+            var l = await context.LocationViews.ToListAsync();
             ViewBag.Locations = l.Select(c => new SelectListItem()
             {
                 Text = string.Format("{0} - {1}", c.LocationName, c.Name),
@@ -1358,21 +1401,14 @@ namespace WebApp.Controllers
                 Group = new SelectListGroup() { Name = c.EntityDisplayName }
             });
 
-            ViewBag.Requestors = await context.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Company)
+            ViewBag.Staff = context.AspNetUsers
+                .Where(u => u.GetRoleId() == AspNetRoles.CaseCoordinator || u.GetRoleId() == AspNetRoles.DocumentReviewer || u.GetRoleId() == AspNetRoles.IntakeAssistant || u.GetRoleId() == AspNetRoles.SuperAdmin)
+                .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
-                    Text = c.DisplayName,
+                    Text = ValueConverters.GetDisplayName(c.Title, c.FirstName, c.LastName),
                     Value = c.Id.ToString()
-                }).ToListAsync();
-
-            ViewBag.Staff = await context.Users
-                .Where(u => u.RoleCategoryId == RoleCategory.Staff || u.RoleCategoryId == RoleCategory.Admin)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.DisplayName,
-                    Value = c.Id.ToString()
-                }).ToListAsync();
+                });
         }
 
 

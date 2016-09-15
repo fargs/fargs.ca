@@ -32,6 +32,7 @@ namespace Orvosi.Data
         // Foreign keys
         public virtual Address Address { get; set; } // FK_AvailableDay_AvailableDay
         public virtual Company Company { get; set; } // FK_AvailableDay_Company
+        public virtual Physician Physician { get; set; } // FK_AvailableDay_Physician
 
         public AvailableDay()
         {

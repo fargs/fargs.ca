@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using Model.Enums;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Models
 {

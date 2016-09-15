@@ -24,7 +24,7 @@
     UseCamelCase = true;    // This will rename the tables & fields to use CamelCase. If false table & field names will be left alone.
     IncludeComments = CommentsStyle.AtEndOfField; // Adds comments to the generated code
     IncludeExtendedPropertyComments = CommentsStyle.InSummaryBlock; // Adds extended properties as comments to the generated code
-    IncludeViews = false;
+    IncludeViews = true;
     IncludeStoredProcedures = true;
     IncludeTableValuedFunctions = false; // If true, you must set IncludeStoredProcedures = true, and install the "EntityFramework.CodeFirstStoreFunctions" Nuget Package.
     DisableGeographyTypes = false; // Turns off use of System.Data.Entity.Spatial.DbGeography and System.Data.Entity.Spatial.DbGeometry as OData doesn't support entities with geometry/geography types.
@@ -103,7 +103,7 @@
     // If there are multiple schemas, then the table name is prefixed with the schema, except for dbo.
     // Ie. dbo.hello will be Hello.
     //     abc.hello will be AbcHello.
-    PrependSchemaName = true;   // Control if the schema name is prepended to the table name
+    PrependSchemaName = false;   // Control if the schema name is prepended to the table name
 
 
     // Filtering **************************************************************************************************************************
@@ -122,7 +122,7 @@
     //              TableFilterInclude = new Regex("(.*_FR_.*)|(data_.*)");
     //              TableFilterInclude = new Regex("^table_name1$|^table_name2$|etc");
     //              ColumnFilterExclude = new Regex("^FK_.*$");
-    SchemaFilterExclude = null;
+    SchemaFilterExclude = new Regex("Private|Analysis");
     SchemaFilterInclude = null;
     TableFilterExclude = null;
     TableFilterInclude = null;
@@ -133,9 +133,25 @@
     // Return true to include the table, return false to exclude it.
     TableFilter = (Table t) =>
     {
+		if (t.Schema.Equals("API", StringComparison.InvariantCultureIgnoreCase)) 
+		{
+			if (t.Name.Equals("Account", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("Profile", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("User", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("AvailableSlot", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("PhysicianCompany", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("BillableEntity", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("ServiceRequest", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("PhysicianLocationArea", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("Location", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("LocationArea", StringComparison.InvariantCultureIgnoreCase))
+            {
+				return true;
+            }
+        }
         // Example: Exclude any table in dbo schema with "order" in its name.
-        //if(t.Schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase) && t.NameHumanCase.ToLowerInvariant().Contains("order"))
-        //    return false;
+        if(t.Schema.Equals("API", StringComparison.InvariantCultureIgnoreCase))// && t.NameHumanCase.ToLowerInvariant().Contains("order"))
+            return false;
 
         return true;
     };
@@ -144,7 +160,7 @@
     // Stored Procedures ******************************************************************************************************************
     // Use the following regex filters to include or exclude stored procedures
     StoredProcedureFilterExclude = null;
-    StoredProcedureFilterInclude = new Regex("GetAssignedServiceRequests|GetServiceRequest");
+    StoredProcedureFilterInclude = new Regex("(GetAssignedServiceRequests|GetServiceRequest|DashboardServiceRequestSummary|GetServiceCatalogue|GetServiceCatalogueForCompany|GetServiceRequestResources|GetNextInvoiceNumber|ToggleCancellation|ToggleNoShow|GetCompanyProvince|GetBoxTokens|SaveBoxTokens)");
 
 
     // Table renaming *********************************************************************************************************************
@@ -156,6 +172,38 @@
         //if (name.StartsWith("tbl"))
         //    name = name.Remove(0, 3);
         //name = name.Replace("_AB", "");
+
+		if (schema.Equals("API", StringComparison.InvariantCultureIgnoreCase))
+        {
+			if (name.Equals("ServiceRequest", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "ServiceRequestView";
+            }
+			else if (name.Equals("User", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "AspNetUserView";
+            }
+			else if (name.Equals("PhysicianCompany", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "PhysicianCompanyView";
+            }
+			else if (name.Equals("AvailableSlot", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "AvailableSlotView";
+            }
+			else if (name.Equals("Location", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "LocationView";
+            }
+        }
+
+		if (schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase))
+        {
+			if (name.Equals("Task", StringComparison.InvariantCultureIgnoreCase))
+            {
+				name = "OTask";
+            }
+        }
 
         // If you turn camel casing off (UseCamelCase = false), and use the pluralisation service, and some of your
         // tables names are all UPPERCASE, some words ending in IES such as CATEGORIES get singularised as CATEGORy.
@@ -219,7 +267,7 @@
     // If a stored procedure returns an entity, add it to the list below.
     // This will suppress the generation of the return model, and instead return the entity.
     // Example:                       Proc name      Return this entity type instead
-    //StoredProcedureReturnTypes.Add("SalesByYear", "SummaryOfSalesByYear");
+    StoredProcedureReturnTypes.Add("GetServiceCatalogueForCompany", "GetServiceCatalogueReturnModel");
 
 
     // WCF ********************************************************************************************************************************
@@ -270,8 +318,9 @@
     {
         // Return null to exclude this foreign key
         // Example, to exclude all foreign keys for the Categories table, use:
-        // if (fk.PkTableName == "Categories")
+        //if (fk.ConstraintName == "FK_ServiceRequestTaskRelated_ServiceRequestTask1")
         //    return null;
+
         return fk;
     };
 

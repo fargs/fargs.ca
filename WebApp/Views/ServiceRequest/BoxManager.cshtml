@@ -5,31 +5,34 @@
         Box Integration
     </div>
     <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-12">
-                    <small><strong>@Model.BoxFolder.Name</strong></small>
-                </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <small><strong>@Model.BoxFolder.Name</strong></small>
             </div>
-            @foreach (var item in Model.Resources)
+        </div>
+        @foreach (var item in Model.Resources)
             {
-                <div class="row top-buffer">
-                    <div class="col-sm-12">
-                        <span title="@string.Concat(item.ResourceFromTask.DisplayName, " - ", string.Join(" & ", item.ResourceFromTask.Roles.Split('|')))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.ResourceFromTask.ColorCode;">@item.ResourceFromTask.Initials</span>
-                        @if (item.BoxFolder == null)
+            <div class="row top-buffer">
+                <div class="col-sm-12">
+                    <span title="@string.Concat(item.Resource.GetDisplayName(), " - ", string.Join(" & ", item.Resource.AspNetUserRoles.Select(r => r.RoleId)))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.Resource.ColorCode;">@item.Resource.GetInitials()</span>
+                    @if (item.BoxFolder == null)
+                    {
+                        <form action="~/ServiceRequest/ShareBoxFolder" method="post">
+                            @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                            @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                            @Html.Hidden("UserId", item.Resource.Id)
+                            &nbsp;
+                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                        </form>
+                    }
+                    else if (item.BoxFolder != null && item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId) != null)
+                    {
+                        var boxCollaboration = item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId);
+                        if (boxCollaboration != null)
                         {
-                            <form action="~/ServiceRequest/ShareBoxFolder" method="post">
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                @Html.Hidden("UserId", item.ResourceFromTask.Id)
-                                &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                            </form>
-                        }
-                        else if (item.BoxFolder != null && item.ResourceFromTask.BoxCollaborationId != null)
-                        {
-                            var collaboration = Model.BoxFolderCollaborations.Entries.SingleOrDefault(c => c.Id == item.ResourceFromTask.BoxCollaborationId);
+                            var collaboration = Model.BoxFolderCollaborations.Entries.SingleOrDefault(c => c.Id == boxCollaboration.BoxCollaborationId);
                             <form action="~/ServiceRequest/UnshareBoxFolder" method="post" class="pull-left">
-                                @Html.Hidden("CollaborationId", item.ResourceFromTask.BoxCollaborationId)
+                                @Html.Hidden("CollaborationId", boxCollaboration.BoxCollaborationId)
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 &nbsp;
                                 <button type="submit" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
@@ -39,7 +42,7 @@
                                 <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
                                     @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                     @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                    @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
+                                    @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                     &nbsp;
                                     <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
                                 </form>
@@ -49,40 +52,40 @@
                                 <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
                                     @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                     @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                    @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
+                                    @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                     &nbsp;
                                     <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
                                 </form>
                             }
+                        }
+                    }
+                    else
+                    {
+                        <span class="small">&nbsp;Already has higher level access.</span>
+                        if (item.BoxFolder.SyncState == "synced")
+                        {
+                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
+                                @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                                @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
+                                &nbsp;
+                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
+                            </form>
                         }
                         else
                         {
-                            <span class="small">&nbsp;Already has higher level access.</span>
-                            if (item.BoxFolder.SyncState == "synced")
-                            {
-                                <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
-                                    @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                                    @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                    @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                    &nbsp;
-                                    <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
-                                    @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                                    @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                    @Html.Hidden("BoxUserId", item.ResourceFromTask.BoxUserId)
-                                    &nbsp;
-                                    <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
-                                </form>
-                            }
+                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
+                                @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                                @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
+                                &nbsp;
+                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
+                            </form>
                         }
-                    </div>
+                    }
                 </div>
+            </div>
 
-            }
+        }
     </div>
 </div>
-

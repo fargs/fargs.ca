@@ -1,15 +1,15 @@
-﻿@using Model.Enums
+﻿@using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions.Model
 @using WebApp.Library.Helpers
 @model WebApp.Areas.Admin.ViewModels.CompaniesViewModel
 
 <h2>Companies</h2>
-<div class="lead text-muted">@Model.User.DisplayName</div>
+<div class="lead text-muted">@Model.User.GetDisplayName()</div>
 
 <ul class="nav nav-tabs">
-    @Html.MenuLink("Companies", "Companies", "User", "Admin", Model.User.Id, null)
-    @Html.MenuLink("ExamWorks", "Companies", "User", "Admin", Model.User.Id, ParentCompanies.Examworks)
-    @Html.MenuLink("SCM", "Companies", "User", "Admin", Model.User.Id, ParentCompanies.SCM)
+    @Html.MenuLink("Companies", "Companies", "User", "Admin", Model.User.Id.ToString(), null)
+    @Html.MenuLink("ExamWorks", "Companies", "User", "Admin", Model.User.Id.ToString(), ParentCompanies.Examworks)
+    @Html.MenuLink("SCM", "Companies", "User", "Admin", Model.User.Id.ToString(), ParentCompanies.SCM)
 </ul>
 <div class="margin-top: 20px">
     &nbsp;
@@ -19,7 +19,7 @@
 {
     <div class="row">
         <div class="col-md-12">
-            <span class="h4 pull-left">@item.CompanyName</span>
+            <span class="h4 pull-left">@item.Company.Name</span>
             <nav>
                 <ul class="nav nav-pills nav-condensed">
                     <li role="presentation" class="dropdown">
@@ -36,7 +36,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div><strong>Relationship Status:</strong> @item.RelationshipStatusName</div>
+            <div><strong>Relationship Status:</strong> @item.PhysicianCompanyStatu.Name</div>
         </div>
     </div>
     <hr />

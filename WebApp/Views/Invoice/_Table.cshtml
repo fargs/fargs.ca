@@ -1,20 +1,20 @@
 ﻿@using WebApp.Library.Extensions
-@using e = Model.Enums
-@using Model
+@using Orvosi.Data
+@using Orvosi.Shared.Enums
 @model List<Invoice>
-
 @{ 
-    using (var db = new OrvosiEntities())
+    string taxRate = string.Empty;
+    var item = Model.FirstOrDefault();
+    if (item != null)
     {
-        ViewBag.User = db.Users.Single(u => u.UserName == User.Identity.Name);
+        taxRate = item.TaxRateHst.HasValue ? item.TaxRateHst.Value.ToString("0%") : "0%";
     }
 }
-
 <table class="table table-condensed table-hover table-responsive">
     <thead>
         <tr>
             <th></th>
-            @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+            @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
             {
                 <th>Physician</th>
             }
@@ -22,7 +22,7 @@
             <th>Invoice #</th>
             <th>Invoice Date</th>
             <th>SubTotal</th>
-            <th>Tax (@Model.First().TaxRateHst.Value.ToString("0%"))</th>
+            <th>Tax (@taxRate)</th>
             <th>Total</th>
             <th>Submitted</th>
             <th>Payment Received</th>
@@ -34,7 +34,7 @@
             <tr>
                 <td>
                     <div class="btn-group" style="width:100px">
-                        @if (ViewBag.User.RoleId == e.Roles.Physician)
+                        @if (User.Identity.GetRoleId() == AspNetRoles.Physician)
                         {
                             <a href="~/Invoice/Details/@invoice.Id" class="btn btn-default btn-sm">View</a>
                         }
@@ -47,7 +47,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Edit/@invoice.Id" class="btn btn-sm">Edit</a></li>
-                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
                                 {
                                     <li>
                                         <form action="~/Invoice/Unsubmit" method="post">
@@ -68,7 +68,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a href="~/Invoice/Details/@invoice.Id" class="btn btn-sm">View</a></li>
-                                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
                                 {
                                     <li>
                                         <form action="~/Invoice/Submit" method="post">
@@ -82,7 +82,7 @@
                         }
                     </div>
                 </td>
-                @if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
                 {
                     <td>@invoice.ServiceProviderName</td>
                 }
@@ -102,7 +102,7 @@
                     }
                     else
                     {
-                        if (ViewBag.User.RoleId == e.Roles.SuperAdmin)
+                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
                         {
                             <form action="~/Invoice/Submit" method="post">
                                 @Html.Hidden("Id", invoice.Id)

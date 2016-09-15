@@ -47,7 +47,7 @@ intellisense.annotate(jQuery, {
     /// </signature>
   },
   'boxModel': function() {
-    /// <summary>Deprecated in jQuery 1.3 (see jQuery.support). States if the current page, in the user's browser, is being rendered using the W3C CSS Box Model.</summary>
+    /// <summary>Deprecated in jQuery 1.3 (see jQuery.support). States if the current page, in the user's browser, is being rendered using the W3C CSS Box </summary>
     /// <returns type="Boolean" />
   },
   'browser': function() {

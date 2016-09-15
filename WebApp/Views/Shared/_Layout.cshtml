@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using System.Security.Claims
-@using e = Model.Enums;
+@using Orvosi.Shared.Enums
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,11 +28,11 @@
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
                         <li>@Html.ActionLink("Exams", "", "ServiceRequest", new { area = "" }, null)</li>
-                        if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator || User.Identity.GetRoleId() == e.Roles.Physician)
+                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
                         {
                             <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
                         }
-                        if (User.Identity.GetRoleId() == e.Roles.SuperAdmin || User.Identity.GetRoleId() == e.Roles.CaseCoordinator)
+                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
                         {
                             <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                             <li role="presentation" class="dropdown">
@@ -43,12 +43,12 @@
                                     <li>@Html.ActionLink("Request Templates", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
                                     <li>@Html.ActionLink("Companies", "", "Company", new { area = "Admin" }, null)</li>
                                     <li>@Html.ActionLink("Locations", "", "Location", new { area = "Admin" }, null)</li>
-                                    <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = e.ServicePortfolios.Physician }, null)</li>
+                                    <li>@Html.ActionLink("Services", "", "Service", new { area = "Admin", parentId = ServicePortfolios.Physician }, null)</li>
                                     <li>@Html.ActionLink("Service Catalogues", "", "ServiceCatalogue", new { area = "" }, null)</li>
                                     <li>@Html.ActionLink("Invoices", "", "Invoice", new { area = "" }, null)</li>
                                     <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = e.RoleCategory.Physician }, null)</li>
-                                    <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>
+                                    <li>@Html.ActionLink("Users", "", "AspNetUsers", new { area = "Admin", parentId = RoleCategories.Physician }, null)</li>
+                                    <li>@Html.ActionLink("Roles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
                                 </ul>
                             </li>
 

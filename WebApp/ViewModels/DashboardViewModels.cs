@@ -15,7 +15,96 @@ namespace WebApp.ViewModels.DashboardViewModels
         {
         }
 
-        public IndexViewModel(List<API_GetAssignedServiceRequestsReturnModel> model, DateTime now, Guid userId, ControllerContext context)
+        //public IndexViewModel(List<DashboardServiceRequestSummaryReturnModel> model, DateTime now, Guid userId, ControllerContext context)
+        //{
+        //    var startOfWeek = now.Date.GetStartOfWeek();
+        //    var endOfWeek = now.Date.GetEndOfWeek();
+        //    var startOfNextWeek = now.Date.GetStartOfNextWeek();
+        //    var endOfNextWeek = now.Date.GetEndOfNextWeek();
+
+        //    var assessments =
+        //        model
+        //            .Where(m => m.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || m.ServiceCategoryId == ServiceCategories.MedicalConsultation)
+        //            .OrderBy(m => m.AppointmentDate);
+
+        //    var assessmentFirstDate = assessments.Min(a => a.AppointmentDate);
+        //    var assessmentLastDate = assessments.Max(a => a.AppointmentDate);
+
+        //    var assessmentWeeks =
+        //        assessmentFirstDate
+        //            .GetValueOrDefault(SystemTime.Now()).GetDateRangeTo(assessmentLastDate.GetValueOrDefault(SystemTime.Now()))
+        //            .Select(w => new WeekFolder
+        //            {
+        //                WeekFolderName = w.ToWeekFolderName(),
+        //                StartDate = w.GetStartOfWeekWithinMonth(),
+        //                EndDate = w.GetEndOfWeekWithinMonth()
+        //            })
+        //            .Distinct(new WeekFolderEquals());
+
+        //    WeekFolders = from w in assessmentWeeks
+        //                  from a in assessments
+        //                  where a.AppointmentDate >= w.StartDate && a.AppointmentDate <= w.EndDate
+        //                  group a by new
+        //                  {
+        //                      w.WeekFolderName,
+        //                      w.StartDate,
+        //                      w.EndDate
+        //                  } into wf
+        //                  select new WeekFolder
+        //                  {
+        //                      WeekFolderName = wf.Key.WeekFolderName,
+        //                      StartDate = wf.Key.StartDate,
+        //                      StartDateTicks = wf.Key.StartDate.Ticks,
+        //                      EndDate = wf.Key.EndDate,
+        //                      AssessmentCount = wf.Count(),
+        //                      AssessmentToDoCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.ToDo),
+        //                      AssessmentWaitingCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Waiting),
+        //                      AssessmentObsoleteCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Obsolete),
+        //                      AssessmentDoneCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Done)
+        //                  };
+
+        //    var addOns =
+        //        model
+        //            .Where(m => m.ServiceCategoryId == ServiceCategories.AddOn);
+
+        //    var addOnFirstDate = addOns.Min(a => a.AppointmentDate);
+        //    var addOnLastDate = addOns.Max(a => a.AppointmentDate);
+
+        //    var addOnWeeks =
+        //        addOnFirstDate
+        //            .GetValueOrDefault(SystemTime.Now()).GetDateRangeTo(addOnLastDate.GetValueOrDefault(SystemTime.Now()))
+        //            .Select(w => new WeekFolder
+        //            {
+        //                WeekFolderName = w.ToWeekFolderName(),
+        //                StartDate = w.GetStartOfWeekWithinMonth(),
+        //                EndDate = w.GetEndOfWeekWithinMonth()
+        //            })
+        //            .Distinct(new WeekFolderEquals());
+
+        //    AddOns = from w in addOnWeeks
+        //                  from a in addOns
+        //                  where a.AppointmentDate >= w.StartDate && a.AppointmentDate <= w.EndDate
+        //                  group a by new
+        //                  {
+        //                      w.WeekFolderName,
+        //                      w.StartDate,
+        //                      w.EndDate
+        //                  } into wf
+        //                  select new WeekFolder
+        //                  {
+        //                      WeekFolderName = wf.Key.WeekFolderName,
+        //                      StartDate = wf.Key.StartDate,
+        //                      StartDateTicks = wf.Key.StartDate.Ticks,
+        //                      EndDate = wf.Key.EndDate,
+        //                      AssessmentCount = wf.Count(),
+        //                      AssessmentToDoCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.ToDo),
+        //                      AssessmentWaitingCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Waiting),
+        //                      AssessmentObsoleteCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Obsolete),
+        //                      AssessmentDoneCount = wf.Count(c => c.ServiceRequestStatusId == TaskStatuses.Done)
+        //                  };
+        //}
+
+        public IndexViewModel(List<GetAssignedServiceRequestsReturnModel> model, DateTime now, Guid userId, ControllerContext context)
         {
             // outstanding | today | upcoming
             // each lists days
@@ -56,8 +145,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                   StartDateTicks = wf.Key.StartDate.Ticks,
                                   EndDate = wf.Key.EndDate,
                                   AssessmentCount = wf.Select(c => c.ServiceRequestId).Distinct().Count(),
-                                  ToDoCount = wf.Count(c => c.AssignedTo == userId && c.TaskStatusId == 102),
-                                  WaitingCount = wf.Count(c => c.AssignedTo == userId && c.TaskStatusId == 100),
+                                  ToDoCount = wf.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Done),
+                                  WaitingCount = wf.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                   DayFolders = from o in assessments
                                                where o.AppointmentDate >= wf.Key.StartDate && o.AppointmentDate <= wf.Key.EndDate
                                                group o by o.AppointmentDate into days
@@ -75,7 +164,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                    ToDoCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                                                    WaitingCount = days.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                    Assessments = from o in assessments
-                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
+                                                                 group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                                                  where sr.Key.AppointmentDate == days.Key
                                                                  select new Assessment
                                                                  {
@@ -88,20 +177,12 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      IsLateCancellation = sr.Key.IsLateCancellation.Value,
                                                                      CancelledDate = sr.Key.CancelledDate,
                                                                      IsNoShow = sr.Key.IsNoShow.Value,
+                                                                     IsClosed = sr.Key.IsClosed.Value,
                                                                      Title = $"{sr.Key.StartTime.ToShortTimeSafe()} - {sr.Key.ClaimantName}",
                                                                      URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                                                                      BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
-                                                                     HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.Workload == Workload.High),
-                                                                     Status = () => {
-                                                                         if (sr.Key.IsNoShow.Value || sr.Key.IsLateCancellation.Value)
-                                                                             return TaskStatuses.Obsolete;
-                                                                         else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo))
-                                                                             return TaskStatuses.ToDo;
-                                                                         else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting))
-                                                                             return TaskStatuses.Waiting;
-                                                                         else
-                                                                             return TaskStatuses.Done;
-                                                                    },
+                                                                     HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.AssignedTo == userId && c.Workload == Workload.High),
+                                                                     ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
                                                                      ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                                                                      WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                      Tasks = from o in assessments
@@ -110,40 +191,41 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                              {
                                                                                  Id = o.Id,
                                                                                  Name = o.TaskName,
-                                                                                 StatusId = o.TaskStatusId.Value,
+                                                                                 StatusId = o.TaskStatusId,
                                                                                  Status = o.TaskStatusName,
                                                                                  AssignedTo = o.AssignedTo,
                                                                                  AssignedToDisplayName = o.AssignedToDisplayName,
                                                                                  AssignedToColorCode = o.AssignedToColorCode,
                                                                                  AssignedToInitials = o.AssignedToInitials,
-                                                                                 IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                                                 IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                                                  ServiceRequestId = o.ServiceRequestId,
                                                                                  Workload = o.Workload.GetValueOrDefault(0)
                                                                              },
                                                                      People = from o in assessments
-                                                                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into at
-                                                                              where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId
+                                                                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType } into at
+                                                                              where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"
                                                                               select new Person
                                                                               {
                                                                                   Id = at.Key.AssignedTo,
                                                                                   DisplayName = at.Key.AssignedToDisplayName,
                                                                                   ColorCode = at.Key.AssignedToColorCode,
                                                                                   Initials = at.Key.AssignedToInitials,
-                                                                                  ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
-                                                                                  WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
+
+                                                                                  //ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                                                                  //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                                   Tasks = from o in assessments
                                                                                           where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
                                                                                           select new Task
                                                                                           {
                                                                                               Id = o.Id,
                                                                                               Name = o.TaskName,
-                                                                                              StatusId = o.TaskStatusId.Value,
+                                                                                              StatusId = o.TaskStatusId,
                                                                                               Status = o.TaskStatusName,
                                                                                               AssignedTo = at.Key.AssignedTo,
                                                                                               AssignedToDisplayName = at.Key.AssignedToDisplayName,
                                                                                               AssignedToColorCode = at.Key.AssignedToColorCode,
                                                                                               AssignedToInitials = at.Key.AssignedToInitials,
-                                                                                              IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                                                              IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                                                               ServiceRequestId = at.Key.ServiceRequestId,
                                                                                               Workload = o.Workload.GetValueOrDefault(0)
                                                                                           }
@@ -153,7 +235,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                               };
 
             var ad = from a in addOns
-                     group a by new { a.ServiceRequestId, a.ReportDueDate, a.CancelledDate, a.ClaimantName, a.ServiceName, a.ServiceCode, a.ServiceColorCode, a.ServiceId, a.BoxCaseFolderId } into sr
+                     group a by new { a.ServiceRequestId, a.ServiceRequestStatusId, a.IsClosed, a.ReportDueDate, a.CancelledDate, a.ClaimantName, a.ServiceName, a.ServiceCode, a.ServiceColorCode, a.ServiceId, a.BoxCaseFolderId } into sr
                      select new AddOn
                      {
                          Id = sr.Key.ServiceRequestId,
@@ -166,15 +248,9 @@ namespace WebApp.ViewModels.DashboardViewModels
                          Title = $"{sr.Key.ReportDueDate.Value.ToShortDateString()} - {sr.Key.ClaimantName}",
                          URL = $"{context.HttpContext.Server.MapPath("/ServiceRequest/Details/")}{sr.Key.ServiceRequestId}",
                          BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
-                         HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.Workload == Workload.High),
-                         Status = () => {
-                             if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo))
-                                 return TaskStatuses.ToDo;
-                             else if (sr.Any(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting))
-                                 return TaskStatuses.Waiting;
-                             else
-                                 return TaskStatuses.Done;
-                         },
+                         HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.AssignedTo == userId && c.Workload == Workload.High),
+                         ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
+                         IsClosed = sr.Key.IsClosed.Value,
                          ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                          WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                          Tasks = from o in addOns
@@ -183,19 +259,19 @@ namespace WebApp.ViewModels.DashboardViewModels
                                  {
                                      Id = o.Id,
                                      Name = o.TaskName,
-                                     StatusId = o.TaskStatusId.Value,
+                                     StatusId = o.TaskStatusId,
                                      Status = o.TaskStatusName,
                                      AssignedTo = o.AssignedTo,
                                      AssignedToDisplayName = o.AssignedToDisplayName,
                                      AssignedToColorCode = o.AssignedToColorCode,
                                      AssignedToInitials = o.AssignedToInitials,
-                                     IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                     IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                      ServiceRequestId = o.ServiceRequestId,
                                      Workload = o.Workload.GetValueOrDefault(0)
                                  },
                          People = from o in addOns
-                                  group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials } into p
-                                  where p.Key.ServiceRequestId == sr.Key.ServiceRequestId
+                                  group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType } into p
+                                  where p.Key.ServiceRequestId == sr.Key.ServiceRequestId && p.Key.TaskType != "EVENT"
                                   select new Person
                                   {
                                       Id = p.Key.AssignedTo,
@@ -210,13 +286,13 @@ namespace WebApp.ViewModels.DashboardViewModels
                                               {
                                                   Id = o.Id,
                                                   Name = o.TaskName,
-                                                  StatusId = o.TaskStatusId.Value,
+                                                  StatusId = o.TaskStatusId,
                                                   Status = o.TaskStatusName,
                                                   AssignedTo = p.Key.AssignedTo,
                                                   AssignedToDisplayName = p.Key.AssignedToDisplayName,
                                                   AssignedToColorCode = p.Key.AssignedToColorCode,
                                                   AssignedToInitials = p.Key.AssignedToInitials,
-                                                  IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                                                  IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                   ServiceRequestId = p.Key.ServiceRequestId,
                                                   Workload = o.Workload.GetValueOrDefault(0)
                                               }
@@ -228,35 +304,36 @@ namespace WebApp.ViewModels.DashboardViewModels
             var future = weekFolders.Where(c => c.GetTimeline(now) == Orvosi.Shared.Enums.Timeline.Future);
 
             WeekFolders = weekFolders;
-            AddOns = ad; 
+            AddOns = ad;
         }
 
         public IEnumerable<WeekFolder> WeekFolders { get; set; }
         public IEnumerable<AddOn> AddOns { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Guid? SelectedUserId { get; set; }
+        public bool ShowClosed { get; set; }
     }
 
     public class TaskListViewModel
     {
-        public TaskListViewModel(List<API_GetServiceRequestReturnModel> model, int? taskId)
+        public TaskListViewModel(List<GetAssignedServiceRequestsReturnModel> model, int? taskId)
         {
             this.Tasks = model.Select(o => new DashboardViewModels.Task
             {
                 Id = o.Id,
                 Name = o.TaskName,
-                StatusId = o.TaskStatusId.Value,
+                StatusId = o.TaskStatusId,
                 Status = o.TaskStatusName,
                 AssignedTo = o.AssignedTo,
                 AssignedToColorCode = o.AssignedToColorCode,
                 AssignedToDisplayName = o.AssignedToDisplayName,
                 AssignedToInitials = o.AssignedToInitials,
-                IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
+                IsComplete = o.TaskStatusId == TaskStatuses.Done,
                 CompletedDate = o.CompletedDate,
-                DependsOnCSV = o.DependsOnCSV,
                 Sequence = (byte)o.TaskSequence.Value,
                 Parent = null,
-                TaskId = o.TaskId.Value
+                TaskId = o.TaskId.Value,
+                DependsOnCSV = o.DependsOnCSV
             });
 
             var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);
@@ -266,15 +343,15 @@ namespace WebApp.ViewModels.DashboardViewModels
                     t.AssignedTo,
                     t.AssignedToDisplayName,
                     t.AssignedToColorCode,
-                    t.AssignedToInitials
+                    t.AssignedToInitials,
+                    t.TaskType
                 }).Select(p => new DashboardViewModels.Person
                 {
                     Id = p.Key.AssignedTo,
                     DisplayName = p.Key.AssignedToDisplayName,
                     ColorCode = p.Key.AssignedToColorCode,
                     Initials = p.Key.AssignedToInitials,
-                    ToDoCount = p.Count(t => t.TaskStatusId == TaskStatuses.ToDo),
-                    WaitingCount = p.Count(t => t.TaskStatusId == TaskStatuses.Waiting),
+                    IsEvent = p.Key.TaskType == "EVENT" ? true : false,
                     Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo)
                         .Select(t => new Task
                         {
@@ -313,7 +390,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                     //if (task.DependsOnCSV != "ExamDate")
                     //{
                     var id = int.Parse(item);
-                    var depTask = allTasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
+                    var depTask = allTasks.SingleOrDefault(t => t.Id == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
                     if (depTask != null)
                     {
                         depTask.Parent = task;
@@ -355,6 +432,10 @@ namespace WebApp.ViewModels.DashboardViewModels
         public long StartDateTicks { get; set; }
         public DateTime EndDate { get; set; }
         public int AssessmentCount { get; set; } = 0;
+        //public int AssessmentToDoCount { get; set; } = 0;
+        //public int AssessmentWaitingCount { get; set; } = 0;
+        //public int AssessmentObsoleteCount { get; set; } = 0;
+        //public int AssessmentDoneCount { get; set; } = 0;
         public int AssessmentToDoCount
         {
             get
@@ -437,31 +518,32 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string DayFormatted_dddd { get; internal set; }
         public string DayFormatted_MMMdd { get; internal set; }
         public long DayTicks { get; internal set; }
-        public int AssessmentToDoCount {
+        public int AssessmentToDoCount
+        {
             get
             {
-                return Assessments.Count(a => a.Status() == TaskStatuses.ToDo);
+                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.ToDo);
             }
         }
         public int AssessmentWaitingCount
         {
             get
             {
-                return Assessments.Count(a => a.Status() == TaskStatuses.Waiting);
+                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Waiting);
             }
         }
         public int AssessmentObsoleteCount
         {
             get
             {
-                return Assessments.Count(a => a.Status() == TaskStatuses.Obsolete);
+                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Obsolete);
             }
         }
         public int AssessmentDoneCount
         {
             get
             {
-                return Assessments.Count(a => a.Status() == TaskStatuses.Done);
+                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Done);
             }
         }
         public bool IsToday()
@@ -501,20 +583,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                 return CancelledDate.HasValue;
             }
         }
-        public byte ServiceRequestStatusId
-        {
-            get
-            {
-                if (Tasks.Any(c => c.StatusId == TaskStatuses.ToDo || c.StatusId == TaskStatuses.Waiting))
-                {
-                    return ServiceRequestStatus.Open;
-                }
-                else
-                {
-                    return ServiceRequestStatus.Closed;
-                }
-            }
-        }
+        public byte ServiceRequestStatusId { get; internal set; }
+        public bool IsClosed { get; set; }
         public byte? ServiceStatusId
         {
             get
@@ -539,8 +609,8 @@ namespace WebApp.ViewModels.DashboardViewModels
         }
         public IEnumerable<ServiceRequestMessage> Messages { get; set; }
         public bool HasHighWorkload { get; internal set; }
-        public Func<byte> Status { get; internal set; }
     }
+
     public class AddOn
     {
         public int Id { get; set; }
@@ -565,24 +635,12 @@ namespace WebApp.ViewModels.DashboardViewModels
                 return CancelledDate.HasValue;
             }
         }
-        public byte ServiceRequestStatusId
-        {
-            get
-            {
-                if (Tasks.Any(c => c.StatusId == TaskStatuses.ToDo || c.StatusId == TaskStatuses.Waiting))
-                {
-                    return ServiceRequestStatus.Open;
-                }
-                else
-                {
-                    return ServiceRequestStatus.Closed;
-                }
-            }
-        }
         public IEnumerable<ServiceRequestMessage> Messages { get; set; }
         public bool HasHighWorkload { get; internal set; }
-        public Func<byte> Status { get; internal set; }
+        public byte ServiceRequestStatusId { get; internal set; }
+        public bool IsClosed { get; set; }
     }
+
     public class Person
     {
         public Guid? Id { get; set; }
@@ -592,6 +650,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public IEnumerable<Task> Tasks { get; set; }
+        public bool IsEvent { get; internal set; }
     }
 
     public class Task
@@ -618,6 +677,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public string AssignedToInitials { get; internal set; }
         public int ServiceRequestId { get; internal set; }
         public byte Workload { get; set; }
+        public string TaskType { get; set; }
     }
 
 }

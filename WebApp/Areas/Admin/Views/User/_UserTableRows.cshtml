@@ -55,10 +55,10 @@
         </ul>
     </td>
     <td>
-        <span class="h4">@item.DisplayName</span>
+        <span class="h4">@item.GetDisplayName()</span>
         <div><strong>UserName:</strong> @item.UserName</div>
         <div><strong>Email:</strong> @item.Email (@item.EmailConfirmed)</div>
-        <div><strong>Role:</strong> @item.RoleName @(item.RoleName == "Company" ? string.Format("({0})", item.CompanyName) : string.Empty )</div>
+        <div><strong>Role:</strong> @item.GetRole().Name @(item.GetRole().Name == "Company" ? string.Format("({0})", item.CompanyName) : string.Empty )</div>
     </td>
 </tr>
 }

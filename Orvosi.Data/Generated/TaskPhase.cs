@@ -22,11 +22,11 @@ namespace Orvosi.Data
         public byte Sequence { get; set; } // Sequence
 
         // Reverse navigation
-        public virtual System.Collections.Generic.ICollection<Task> Tasks { get; set; } // Task.FK_Task_TaskPhase
+        public virtual System.Collections.Generic.ICollection<OTask> OTasks { get; set; } // Task.FK_Task_TaskPhase
 
         public TaskPhase()
         {
-            Tasks = new System.Collections.Generic.List<Task>();
+            OTasks = new System.Collections.Generic.List<OTask>();
             InitializePartial();
         }
 

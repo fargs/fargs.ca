@@ -206,3 +206,4 @@ FakesAssemblies/
 App_Data/
 /Orvosi.Aurelia
 /Orvosi.Web
+*.jfm

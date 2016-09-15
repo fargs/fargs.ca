@@ -20,7 +20,7 @@ namespace WebApp.Controllers
         {
             var serviceRequestTemplateTasks = db.ServiceRequestTemplateTasks
                 .Include(s => s.ServiceRequestTemplate)
-                .Include(s => s.Task)
+                .Include(s => s.OTask)
                 .Where(t => t.ServiceRequestTemplateId == ServiceRequestTemplateId)
                 .OrderBy(t => t.Sequence);
             return View(await serviceRequestTemplateTasks.ToListAsync());
@@ -44,8 +44,10 @@ namespace WebApp.Controllers
         // GET: ServiceRequestTemplateTask/Create
         public ActionResult Create(short ServiceRequestTemplateId)
         {
+            var serviceRequestTemplate = db.ServiceRequestTemplates.Find(ServiceRequestTemplateId);
+            ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).Where(t => t.ServiceRequestTemplateId == serviceRequestTemplate.Id).OrderBy(t => t.Sequence);
             ViewBag.ServiceRequestTemplateId = new SelectList(db.ServiceRequestTemplates, "Id", "Name", ServiceRequestTemplateId);
-            ViewBag.TaskId = new SelectList(db.Tasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", new { });
+            ViewBag.TaskId = new SelectList(db.OTasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", new { });
             return View();
         }
 
@@ -58,14 +60,21 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var children = Request.Form.GetValues("Child");
+                foreach (var id in children)
+                {
+                    var child = db.ServiceRequestTemplateTasks.Find(new Guid(id));
+                    serviceRequestTemplateTask.Child.Add(child);
+                }
                 serviceRequestTemplateTask.Id = Guid.NewGuid();
                 db.ServiceRequestTemplateTasks.Add(serviceRequestTemplateTask);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", new { ServiceRequestTemplateId = serviceRequestTemplateTask.ServiceRequestTemplateId });
             }
 
+            ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).Where(t => t.ServiceRequestTemplateId == serviceRequestTemplateTask.ServiceRequestTemplateId).OrderBy(t => t.Sequence);
             ViewBag.ServiceRequestTemplateId = new SelectList(db.ServiceRequestTemplates, "Id", "Name", serviceRequestTemplateTask.ServiceRequestTemplateId);
-            ViewBag.TaskId = new SelectList(db.Tasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", serviceRequestTemplateTask.TaskId);
+            ViewBag.TaskId = new SelectList(db.OTasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", serviceRequestTemplateTask.TaskId);
             return View(serviceRequestTemplateTask);
         }
 
@@ -81,8 +90,9 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).Where(t => t.ServiceRequestTemplateId == serviceRequestTemplateTask.ServiceRequestTemplateId).OrderBy(t => t.Sequence);
             ViewBag.ServiceRequestTemplateId = new SelectList(db.ServiceRequestTemplates, "Id", "Name", serviceRequestTemplateTask.ServiceRequestTemplateId);
-            ViewBag.TaskId = new SelectList(db.Tasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", serviceRequestTemplateTask.TaskId);
+            ViewBag.TaskId = new SelectList(db.OTasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", serviceRequestTemplateTask.TaskId);
             return View(serviceRequestTemplateTask);
         }
 
@@ -95,12 +105,24 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(serviceRequestTemplateTask).State = EntityState.Modified;
+                var model = db.ServiceRequestTemplateTasks.Find(serviceRequestTemplateTask.Id);
+                model.TaskId = serviceRequestTemplateTask.TaskId;
+                model.Sequence = serviceRequestTemplateTask.Sequence;
+                model.ModifiedDate = SystemTime.Now();
+                model.ModifiedUser = User.Identity.Name;
+                model.Child.Clear();
+                var children = Request.Form.GetValues("Child") == null ? new string[0] : Request.Form.GetValues("Child");
+                foreach (var id in children)
+                {
+                    var child = db.ServiceRequestTemplateTasks.Find(new Guid(id));
+                    model.Child.Add(child);
+                }
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", new { ServiceRequestTemplateId = serviceRequestTemplateTask.ServiceRequestTemplateId });
             }
+            ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).Where(t => t.ServiceRequestTemplateId == serviceRequestTemplateTask.ServiceRequestTemplateId).OrderBy(t => t.Sequence);
             ViewBag.ServiceRequestTemplateId = new SelectList(db.ServiceRequestTemplates, "Id", "Name", serviceRequestTemplateTask.ServiceRequestTemplateId);
-            ViewBag.TaskId = new SelectList(db.Tasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", serviceRequestTemplateTask.TaskId);
+            ViewBag.TaskId = new SelectList(db.OTasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", serviceRequestTemplateTask.TaskId);
             return View(serviceRequestTemplateTask);
         }
 

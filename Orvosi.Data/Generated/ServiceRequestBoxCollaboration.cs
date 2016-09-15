@@ -25,6 +25,7 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
         // Foreign keys
+        public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceRequestBoxCollaboration_AspNetUsers
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestBoxCollaboration_ServiceRequest
 
         public ServiceRequestBoxCollaboration()

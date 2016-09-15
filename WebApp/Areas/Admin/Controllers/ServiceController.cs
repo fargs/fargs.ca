@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
 using Microsoft.AspNet.Identity;
-using Model.Enums;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Areas.Admin.Controllers
 {

@@ -1,33 +1,34 @@
 ﻿using Microsoft.AspNet.Identity;
-using Model;
+using Orvosi.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Areas.Admin.ViewModels.PhysicianInsuranceViewModels;
-using System.IO;
 using System.Net;
 using System.Data.Entity;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Areas.Admin.Controllers
 {
     public class PhysicianInsuranceController : BaseController
     {
-        OrvosiEntities db = new OrvosiEntities();
+        OrvosiDbContext db = new OrvosiDbContext();
 
         // GET: Admin/PhysicianLicence
-        public ActionResult Index(Guid userId)
+        public ActionResult Index(Guid selectedPhysicianId)
         {
-            var user = db.Users.Single(u => u.Id == userId);
+            var user = db.AspNetUsers.Single(u => u.Id == selectedPhysicianId);
             if (user == null)
             {
                 throw new Exception("User does not exist");
             }
 
             // drop down lists
-            var insurances = db.PhysicianInsurances.Where(p => p.PhysicianId == userId).ToList();
+            var insurances = db.PhysicianInsurances
+                    .Include(pi => pi.Document)
+                .Where(p => p.PhysicianId == selectedPhysicianId).ToList();
 
             var vm = new IndexViewModel()
             {
@@ -40,7 +41,7 @@ namespace WebApp.Areas.Admin.Controllers
 
         public ActionResult Create(Guid id)
         {
-            var user = db.Users.Single(u => u.Id == id);
+            var user = db.AspNetUsers.Single(u => u.Id == id);
             if (user == null)
             {
                 throw new Exception("User does not exist");
@@ -58,7 +59,7 @@ namespace WebApp.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include="PhysicianId, Insurer, PolicyNumber, ExpiryDate")]PhysicianInsurance insurance, HttpPostedFileBase upload)
         {
-            var user = db.Users.Single(u => u.Id == insurance.PhysicianId);
+            var user = db.AspNetUsers.Single(u => u.Id == insurance.PhysicianId);
             if (user == null)
             {
                 throw new Exception("User does not exist");
@@ -120,7 +121,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            var user = db.Users.Single(u => u.Id == insurance.PhysicianId);
+            var user = db.AspNetUsers.Single(u => u.Id == insurance.PhysicianId);
             if (user == null)
             {
                 throw new Exception("User does not exist");
@@ -193,7 +194,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            var user = db.Users.Single(u => u.Id == insurance.PhysicianId);
+            var user = db.AspNetUsers.Single(u => u.Id == insurance.PhysicianId);
             if (user == null)
             {
                 throw new Exception("User does not exist");

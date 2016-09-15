@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Model;
+using Orvosi.Data;
 using System.Threading.Tasks;
 using System.Data.Entity;
-using Model.Enums;
+using Orvosi.Shared.Enums;
 using WebApp.ViewModels.AvailabilityViewModels;
 using System.Globalization;
 using WebApp.Library;
@@ -18,7 +18,7 @@ namespace WebApp.Controllers
     [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class AvailabilityController : Controller
     {
-        //OrvosiEntities db = new OrvosiEntities();
+        //OrvosiDbContext db = new OrvosiDbContext();
         Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
 
         // GET: Availability
@@ -35,17 +35,15 @@ namespace WebApp.Controllers
             args.Month = thisMonth.Month;
             args.FilterDate = thisMonth;
 
-            var user = context.AspNetUsers.Single(u => u.UserName == User.Identity.Name);
-
             //TODO: this will not be limited to just physicians, intakes should be able to manage their availability as well.
             // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
-            if (user.AspNetUserRoles.First().AspNetRole.RoleCategoryId == RoleCategory.Admin && args.PhysicianId.HasValue)
+            if ((User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator) && args.PhysicianId.HasValue)
             {
                 args.PhysicianId = args.PhysicianId;
             }
             else
             {
-                args.PhysicianId = user.Id;
+                args.PhysicianId = User.Identity.GetGuidUserId();
             }
 
             var availableDays = context.AvailableDays
@@ -56,7 +54,6 @@ namespace WebApp.Controllers
             var model = new IndexViewModel()
             {
                 AvailableDays = availableDays,
-                CurrentUser = user,
                 SelectedUser = selectedUser,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
                 Today = SystemTime.Now(),
@@ -79,7 +76,7 @@ namespace WebApp.Controllers
             var model = new AvailableDay()
             {
                 PhysicianId = id,
-                PhysicianName = physician.GetDisplayName(),
+                //PhysicianName = physician.GetDisplayName(),
                 Day = SystemTime.Now()
             };
             return View(model);

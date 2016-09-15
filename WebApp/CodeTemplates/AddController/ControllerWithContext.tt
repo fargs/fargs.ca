@@ -2,10 +2,10 @@
 <#
 var Model = (MvcTextTemplateHost)Host;
 var routePrefix = String.Empty;
-if (!String.IsNullOrWhiteSpace(Model.AreaName)) {
-    routePrefix = "/" + Model.AreaName;
+if (!String.IsNullOrWhiteSpace(AreaName)) {
+    routePrefix = "/" + AreaName;
 }
-routePrefix += "/" + Model.ControllerRootName + "/";
+routePrefix += "/" + ControllerRootName + "/";
 #>
 <#@ import namespace="System.Collections" #>
 <#@ import namespace="System.Collections.Generic" #>
@@ -18,27 +18,27 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-<# if(MvcTextTemplateHost.NamespaceNeeded(Model.Namespace, Model.ModelType.Namespace)) { #>
-using <#= Model.ModelType.Namespace #>;
+<# if(MvcTextTemplateHost.NamespaceNeeded(Namespace, ModelType.Namespace)) { #>
+using <#= ModelType.Namespace #>;
 <# } #>
-<# if(Model.ContextType.Namespace != Model.ModelType.Namespace && MvcTextTemplateHost.NamespaceNeeded(Model.Namespace, Model.ContextType.Namespace)) { #>
-using <#= Model.ContextType.Namespace #>;
+<# if(ContextType.Namespace != ModelType.Namespace && MvcTextTemplateHost.NamespaceNeeded(Namespace, ContextType.Namespace)) { #>
+using <#= ContextType.Namespace #>;
 <# } #>
 
-namespace <#= Model.Namespace #>
+namespace <#= Namespace #>
 {
 <#
-    var modelName = Model.ModelType.Name;
-    var entitySetName = Model.EntitySetName;
+    var modelName = ModelType.Name;
+    var entitySetName = EntitySetName;
     var modelVariable = modelName.ToLowerInvariant();
     var entitySetVariable = entitySetName.ToLowerInvariant();
-    var primaryKey = Model.PrimaryKeys[0];
+    var primaryKey = PrimaryKeys[0];
     var lambdaVar = modelVariable[0];
-    var isObjectContext = typeof(ObjectContext).IsAssignableFrom(Model.ContextType);
+    var isObjectContext = typeof(ObjectContext).IsAssignableFrom(ContextType);
 #>
-    public class <#= Model.ControllerName #> : Controller
+    public class <#= ControllerName #> : Controller
     {
-        private <#= Model.ContextType.Name #> db = new <#= Model.ContextType.Name #>();
+        private <#= ContextType.Name #> db = new <#= ContextType.Name #>();
 
         //
         // GET: <#= routePrefix #>
@@ -47,10 +47,10 @@ namespace <#= Model.Namespace #>
         {
 <#  var includeExpressions = "";
     if(isObjectContext) {
-        includeExpressions = String.Join("", Model.RelatedProperties.Values.Select(property => String.Format(".Include(\"{0}\")", property.PropertyName)));
+        includeExpressions = String.Join("", RelatedProperties.Values.Select(property => String.Format(".Include(\"{0}\")", property.PropertyName)));
     }
     else {
-        includeExpressions = String.Join("", Model.RelatedProperties.Values.Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.PropertyName)));
+        includeExpressions = String.Join("", RelatedProperties.Values.Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.PropertyName)));
     }
 #>
 <# if(!String.IsNullOrEmpty(includeExpressions)) { #>
@@ -83,7 +83,7 @@ namespace <#= Model.Namespace #>
 
         public ActionResult Create()
         {
-<# foreach (var property in Model.RelatedProperties.Values) { #>
+<# foreach (var property in RelatedProperties.Values) { #>
             ViewBag.<#= property.ForeignKeyPropertyName #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKey #>", "<#= property.DisplayPropertyName #>");
 <# } #>
             return View();
@@ -110,7 +110,7 @@ namespace <#= Model.Namespace #>
                 return RedirectToAction("Index");
             }
 
-<# foreach (var property in Model.RelatedProperties.Values) { #>
+<# foreach (var property in RelatedProperties.Values) { #>
             ViewBag.<#= property.ForeignKeyPropertyName #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKey #>", "<#= property.DisplayPropertyName #>", <#= modelVariable #>.<#= property.ForeignKeyPropertyName #>);
 <# } #>
             return View(<#= modelVariable #>);
@@ -130,7 +130,7 @@ namespace <#= Model.Namespace #>
             {
                 return HttpNotFound();
             }
-<# foreach (var property in Model.RelatedProperties.Values) { #>
+<# foreach (var property in RelatedProperties.Values) { #>
             ViewBag.<#= property.ForeignKeyPropertyName #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKey #>", "<#= property.DisplayPropertyName #>", <#= modelVariable #>.<#= property.ForeignKeyPropertyName #>);
 <# } #>
             return View(<#= modelVariable #>);
@@ -154,7 +154,7 @@ namespace <#= Model.Namespace #>
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-<# foreach (var property in Model.RelatedProperties.Values) { #>
+<# foreach (var property in RelatedProperties.Values) { #>
             ViewBag.<#= property.ForeignKeyPropertyName #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKey #>", "<#= property.DisplayPropertyName #>", <#= modelVariable #>.<#= property.ForeignKeyPropertyName #>);
 <# } #>
             return View(<#= modelVariable #>);

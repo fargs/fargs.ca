@@ -54,12 +54,6 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Shared.csproj">
-      <Project>{cbbca8f3-b69a-474c-9d17-90a433c5a3f3}</Project>
-      <Name>Orvosi.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

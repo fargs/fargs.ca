@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,11 @@ namespace WebApp.Areas.Admin.Controllers
 {
     public class PhysicianLocationAreaController : BaseController
     {
-        OrvosiEntities db = new OrvosiEntities();
+        OrvosiDbContext db = new OrvosiDbContext();
 
         public ActionResult Index(Guid physicianId)
         {
-            var user = db.Users.Single(u => u.Id == physicianId);
+            var user = db.AspNetUsers.Single(u => u.Id == physicianId);
             if (user == null)
             {
                 throw new Exception("User does not exist");

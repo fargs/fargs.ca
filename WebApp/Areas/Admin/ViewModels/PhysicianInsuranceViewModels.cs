@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Model;
+using Orvosi.Data;
 
 namespace WebApp.Areas.Admin.ViewModels.PhysicianInsuranceViewModels
 {
     public class IndexViewModel
     {
-        public User User { get; set; }
+        public AspNetUser User { get; set; }
         public List<PhysicianInsurance> Insurance { get; set; }
     }
 }

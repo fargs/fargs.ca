@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +12,10 @@ namespace WebApp.ViewModels.ServiceCatalogueViewModels
         {
             ServiceCatalogueRate = new ServiceCatalogueRate();
         }
-        public Model.User CurrentUser { get; set; }
-        public Model.User SelectedUser { get; set; }
+        public AspNetUser CurrentUser { get; set; }
+        public AspNetUser SelectedUser { get; set; }
         public Company SelectedCompany { get; set; }
-        public List<GetServiceCatalogue_Result> ServiceCatalogues { get; set; }
+        public List<GetServiceCatalogueReturnModel> ServiceCatalogues { get; set; }
         public ServiceCatalogueRate ServiceCatalogueRate { get; set; }
         public FilterArgs FilterArgs { get; set; }
     }

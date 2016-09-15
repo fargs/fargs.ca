@@ -17,15 +17,19 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class RoleCategory
     {
-        public short Id { get; set; } // Id (Primary key)
+        public byte Id { get; set; } // Id (Primary key)
         public string Name { get; set; } // Name (length: 128)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AspNetRole> AspNetRoles { get; set; } // AspNetRoles.FK_AspNetRoles_RoleCategory
 
         public RoleCategory()
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            AspNetRoles = new System.Collections.Generic.List<AspNetRole>();
             InitializePartial();
         }
 

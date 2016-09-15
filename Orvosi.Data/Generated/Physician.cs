@@ -32,6 +32,11 @@ namespace Orvosi.Data
         public string BoxAddOnTemplateFolderId { get; set; } // BoxAddOnTemplateFolderId (length: 128)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany.FK_PhysicianCompany_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance.FK_PhysicianInsurance_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation.FK_PhysicianLocation_Physician
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Physician
 
         // Foreign keys
@@ -42,6 +47,11 @@ namespace Orvosi.Data
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
+            PhysicianCompanies = new System.Collections.Generic.List<PhysicianCompany>();
+            PhysicianInsurances = new System.Collections.Generic.List<PhysicianInsurance>();
+            PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
+            PhysicianLocations = new System.Collections.Generic.List<PhysicianLocation>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

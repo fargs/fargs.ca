@@ -5,8 +5,8 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Web;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System.Security.Principal;
 using System.Security.Claims;
 using System.Text;
@@ -239,8 +239,8 @@ namespace WebApp.Library.Extensions
         {
             var adminRoles = new Guid[2] 
             {
-                Roles.CaseCoordinator,
-                Roles.SuperAdmin
+                AspNetRoles.CaseCoordinator,
+                AspNetRoles.SuperAdmin
             };
             return adminRoles.Contains(identity.GetRoleId());
         }
@@ -318,27 +318,27 @@ namespace WebApp.Library.Extensions.Model
 {
     public static class Extensions
     {
-        public static bool IsPhysician(this User obj)
+        public static bool IsPhysician(this AspNetUserView obj)
         {
-            return obj.RoleId == Roles.Physician ? true : false;
+            return obj.RoleId == AspNetRoles.Physician ? true : false;
         }
 
-        public static bool IsCompanyAdmin(this User obj)
+        public static bool IsCompanyAdmin(this AspNetUserView obj)
         {
-            return obj.RoleId == Roles.Company ? true : false;
+            return obj.RoleId == AspNetRoles.Company ? true : false;
         }
 
-        public static bool IsExamWorksCompany(this PhysicianCompany obj)
+        public static bool IsExamWorksCompany(this PhysicianCompanyView obj)
         {
             return obj.ParentId == ParentCompanies.Examworks ? true : false;
         }
 
-        public static bool IsScmCompany(this PhysicianCompany obj)
+        public static bool IsScmCompany(this PhysicianCompanyView obj)
         {
             return obj.ParentId == ParentCompanies.SCM ? true : false;
         }
 
-        public static BoxFolder GetBoxFolder(this GetServiceRequestResources_Result obj, string folderId)
+        public static BoxFolder GetBoxFolder(this GetServiceRequestResourcesReturnModel obj, string folderId)
         {
             var box = new BoxManager();
             return box.GetFolder(folderId, obj.BoxUserId).Result;

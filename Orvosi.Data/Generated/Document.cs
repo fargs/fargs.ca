@@ -31,6 +31,10 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance.FK_PhysicianInsurance_Document
+        public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Document
+
         // Foreign keys
         public virtual DocumentTemplate DocumentTemplate { get; set; } // FK_Document_DocumentTemplate
 
@@ -39,6 +43,8 @@ namespace Orvosi.Data
             ObjectGuid = System.Guid.NewGuid();
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            PhysicianInsurances = new System.Collections.Generic.List<PhysicianInsurance>();
+            PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
             InitializePartial();
         }
 

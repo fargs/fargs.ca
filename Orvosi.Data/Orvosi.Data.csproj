@@ -58,6 +58,12 @@
     <Compile Include="AspNetUser.cs" />
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
+    <Compile Include="Generated\Account.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AccountConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Address.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -68,15 +74,6 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\AddressTypeConfiguration.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\API_GetAssignedServiceRequestsReturnModel.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\API_GetServiceRequestResourcesReturnModel.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\API_GetServiceRequestReturnModel.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\AspNetRole.cs">
@@ -109,6 +106,12 @@
     <Compile Include="Generated\AspNetUserRoleConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\AspNetUserView.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AspNetUserViewConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\AvailableDay.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -119,6 +122,18 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\AvailableSlotConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AvailableSlotView.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AvailableSlotViewConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\BillableEntity.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\BillableEntityConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\City.cs">
@@ -139,6 +154,9 @@
     <Compile Include="Generated\CountryConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\DashboardServiceRequestSummaryReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Document.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -157,6 +175,30 @@
     <Compile Include="Generated\DocumentTypeConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\GetAssignedServiceRequestsReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetBoxTokensReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetCompanyProvinceReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetNextInvoiceNumberReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetServiceCatalogueRateReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetServiceCatalogueReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetServiceRequestResourcesReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\GetServiceRequestReturnModel.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Invoice.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -170,6 +212,18 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\IOrvosiDbContext.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\LocationArea.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\LocationAreaConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\LocationView.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\LocationViewConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\Lookup.cs">
@@ -198,6 +252,12 @@
     <Compile Include="Generated\OrvosiDbContext.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\OTask.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\OTaskConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Person.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -211,6 +271,18 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianCompanyConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianCompanyStatu.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianCompanyStatuConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianCompanyView.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianCompanyViewConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianConfiguration.cs">
@@ -229,6 +301,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianLocation.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianLocationArea.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianLocationAreaConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianLocationConfiguration.cs">
@@ -250,6 +328,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PriceConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\Profile.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ProfileConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\Province.cs">
@@ -324,12 +408,6 @@
     <Compile Include="Generated\ServiceRequestTaskConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\ServiceRequestTaskRelated.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\ServiceRequestTaskRelatedConfiguration.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Generated\ServiceRequestTemplate.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -342,22 +420,22 @@
     <Compile Include="Generated\ServiceRequestTemplateTaskConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\ServiceRequestTemplateTaskRelated.cs">
+    <Compile Include="Generated\ServiceRequestView.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\ServiceRequestTemplateTaskRelatedConfiguration.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\Task.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\TaskConfiguration.cs">
+    <Compile Include="Generated\ServiceRequestViewConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\TaskPhase.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\TaskPhaseConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TaskStatu.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TaskStatuConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\Temp.cs">
@@ -380,6 +458,7 @@
     <Compile Include="ServiceRequest.cs" />
     <Compile Include="ServiceRequestTask.cs" />
     <Compile Include="Validators\ServiceRequestValidator.cs" />
+    <Compile Include="ValueConverters.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Generated\Orvosi.tt">
@@ -397,7 +476,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orvosi.Extensions\Orvosi.Shared.csproj">
+    <ProjectReference Include="..\Orvosi.Shared\Orvosi.Shared.csproj">
       <Project>{cbbca8f3-b69a-474c-9d17-90a433c5a3f3}</Project>
       <Name>Orvosi.Shared</Name>
     </ProjectReference>

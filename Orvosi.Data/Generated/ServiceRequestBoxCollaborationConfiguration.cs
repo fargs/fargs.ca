@@ -35,6 +35,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
 
             // Foreign keys
+            HasRequired(a => a.AspNetUser).WithMany(b => b.ServiceRequestBoxCollaborations).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_ServiceRequestBoxCollaboration_AspNetUsers
             HasRequired(a => a.ServiceRequest).WithMany(b => b.ServiceRequestBoxCollaborations).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_ServiceRequestBoxCollaboration_ServiceRequest
             InitializePartial();
         }

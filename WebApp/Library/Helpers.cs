@@ -1,4 +1,4 @@
-﻿using Model.Enums;
+﻿using Orvosi.Shared.Enums;
 using System;
 using System.IO;
 using System.Web.Mvc;
@@ -7,7 +7,7 @@ using System.Web.Mvc.Html;
 namespace WebApp.Library.Helpers
 {
     public static class HtmlHelpers
-    {
+    { 
         public static string GetTaskStatusCSS(this HtmlHelper helper, byte taskStatusId, string assignedTo)
         {
             if (taskStatusId == TaskStatuses.ToDo)
@@ -99,7 +99,7 @@ namespace WebApp.Library.Helpers
 
             if (string.IsNullOrEmpty(currentParentIdString))
             {
-                currentParentId = RoleCategory.Physician;
+                currentParentId = RoleCategories.Physician;
             }
             else
             {

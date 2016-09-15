@@ -1,5 +1,5 @@
 ﻿@using WebApp.Library.Extensions
-@using e = Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums
 @model WebApp.ViewModels.LoginPartialViewModel
 
 @{ 
@@ -8,7 +8,7 @@
 
 @if (Model.IsAuthenticated)
 {
-    if (User.Identity.GetRoles().Contains(e.Roles.AppTester))
+    if (User.Identity.GetRoles().Contains(AspNetRoles.AppTester))
     {
         <form action="~/Account/ChangeRole/" method="get" class="navbar-form navbar-right">
             <div class="form-group">

@@ -3,8 +3,8 @@ using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNet.Identity.Owin;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using Orvosi.Data;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace WebApp.Controllers
         public ActionResult CreateBoxFolder()
         {
             //var box = new BoxManager();
-            //using (var db = new OrvosiEntities(User.Identity.Name))
+            //using (var db = new OrvosiDbContext(User.Identity.Name))
             //{
             //    var request = db.ServiceRequests.Single(sr => sr.Id == 131);
             //    var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title, );
@@ -61,7 +61,7 @@ namespace WebApp.Controllers
             var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
-            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, Roles.Company);
+            await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, AspNetRoles.Company);
 
             return PartialView("SendEmail");
         }
@@ -146,7 +146,7 @@ namespace WebApp.Controllers
                 var now = SystemTime.Now();
                 var userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
 
-                var requests = new List<API_GetAssignedServiceRequestsReturnModel>(); // await context.API_GetAssignedServiceRequestsAsync(userId, now);
+                var requests = new List<GetAssignedServiceRequestsReturnModel>(); // await context.API_GetAssignedServiceRequestsAsync(userId, now);
                 //var vm = new WebApp.ViewModels.DashboardViewModels.IndexViewModel(requests, now, userId, this.ControllerContext);
                 System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
                 return View(requests);

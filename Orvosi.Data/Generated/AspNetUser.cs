@@ -56,9 +56,13 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequest> CaseCoordinator { get; set; } // ServiceRequest.FK_ServiceRequest_CaseCoordinator
         public virtual System.Collections.Generic.ICollection<ServiceRequest> DocumentReviewer { get; set; } // ServiceRequest.FK_ServiceRequest_DocumentReviewer
         public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
+        public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
         public virtual System.Collections.Generic.ICollection<UserInbox> UserInboxes { get; set; } // UserInbox.FK_UserInbox_AspNetUsers
+
+        // Foreign keys
+        public virtual Company Company { get; set; } // FK_AspNetUsers_Company
 
         public AspNetUser()
         {
@@ -71,6 +75,7 @@ namespace Orvosi.Data
             CaseCoordinator = new System.Collections.Generic.List<ServiceRequest>();
             DocumentReviewer = new System.Collections.Generic.List<ServiceRequest>();
             IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();
+            ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             UserInboxes = new System.Collections.Generic.List<UserInbox>();

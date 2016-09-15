@@ -1,15 +1,17 @@
-﻿@using Model
-@using Model.Enums
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
 @model WebApp.ViewModels.AvailabilityViewModels.IndexViewModel
 @{
     ViewBag.Title = "Availability";
 }
 
 @{
-    var db = new Orvosi.Data.OrvosiDbContext();
+    var db = new OrvosiDbContext();
 
     ViewBag.Users = db.AspNetUsers
         .AsEnumerable()
+        .Where(a => a.GetRole().Id == AspNetRoles.Physician)
         .Select(c => new SelectListItem()
         {
             Text = c.GetDisplayName(),
@@ -34,7 +36,7 @@
 
 }
 
-@if (Model.CurrentUser.Id != Model.SelectedUser.Id)
+@if (User.Identity.GetGuidUserId() != Model.SelectedUser.Id)
 {
     <div class="lead">@Model.SelectedUser.GetDisplayName()</div>
 }
@@ -44,7 +46,7 @@
 <div class="row">
     <div class="col-md-12">
         <form action="~/Availability/Index/" method="get" class="form-inline">
-            @if (Model.CurrentUser.AspNetUserRoles.First().AspNetRole.RoleCategoryId == RoleCategory.Admin)
+            @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
             {
                 <div class="form-group">
                     @Html.DropDownList("PhysicianId", new SelectList(ViewBag.Users, "Value", "Text", Model.FilterArgs.PhysicianId), new { @class = "form-control" })

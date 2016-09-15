@@ -16,7 +16,7 @@ namespace WebApp.Controllers
     {
         private OrvosiDbContext context = new OrvosiDbContext();
 
-        public async Task<ActionResult> Index(Guid? serviceProviderId, string orderTasksBy = "DueDate", bool onlyMine = true)
+        public async Task<ActionResult> Index(Guid? serviceProviderId, bool showClosed = false, bool onlyMine = true)
         {
             // Set date range variables used in where conditions
             var now = SystemTime.Now();
@@ -32,12 +32,20 @@ namespace WebApp.Controllers
                 userId = serviceProviderId.Value;
             }
 
-            var requests = await context.API_GetAssignedServiceRequestsAsync(userId, now);
+            //var requests = await context.DashboardServiceRequestSummaryAsync(userId, null, null, null);
+
+            //if (!showClosed)
+            //{
+            //    requests = requests.Where(r => r.IsClosed.Value == false).ToList();
+            //}
+
+            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, showClosed, null);
 
             // Populate the view model
             var vm = new dvm.IndexViewModel(requests, now, userId.Value, this.ControllerContext);
 
             // Additional view data.
+            vm.ShowClosed = showClosed;
             vm.SelectedUserId = userId;
             vm.UserSelectList = (from user in context.AspNetUsers
                                 from userRole in context.AspNetUserRoles
@@ -49,8 +57,9 @@ namespace WebApp.Controllers
                                     Value = user.Id.ToString(),
                                     Group = new SelectListGroup() { Name = role.Name }
                                 }).ToList();
-
-            return new NegotiatedResult("Index", vm);
+            
+                return new NegotiatedResult("Index", vm);
+            
         }
 
         [HttpPost]
@@ -73,7 +82,8 @@ namespace WebApp.Controllers
             serviceRequestTask.ModifiedUser = User.Identity.Name;
             await context.SaveChangesAsync();
 
-            return await Index(serviceProviderGuid);
+            var result = await Index(serviceProviderGuid);
+            return result;
         }
 
         [HttpPost]
@@ -109,10 +119,10 @@ namespace WebApp.Controllers
             var now = SystemTime.Now();
             Guid? userId = User.Identity.GetGuidUserId();
 
-            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
+            var requests = await context.GetAssignedServiceRequestsAsync(null, now, null, serviceRequestId);
 
-            requests = requests.Where(o => o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief).ToList();
-            requests = requests.Where(c => c.TaskStatusId == TaskStatuses.Waiting || c.TaskStatusId == TaskStatuses.ToDo).ToList();
+            //requests = requests.Where(o => o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief).ToList();
+            //requests = requests.Where(c => c.TaskStatusId == TaskStatuses.Waiting || c.TaskStatusId == TaskStatuses.ToDo).ToList();
 
             var vm = new dvm.TaskListViewModel(requests, taskId);
 
@@ -125,12 +135,12 @@ namespace WebApp.Controllers
             var now = SystemTime.Now();
             Guid? userId = User.Identity.GetGuidUserId();
 
-            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
+            var requests = await context.GetServiceRequestAsync(serviceRequestId, now);
             var assessment = new dvm.Assessment
             {
                 ClaimantName = requests.First().ClaimantName,
                 Tasks = from o in requests
-                        where o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief
+                        //where o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief
                         orderby o.TaskSequence
                         select new dvm.Task
                         {
@@ -157,7 +167,7 @@ namespace WebApp.Controllers
         {
             var now = SystemTime.Now();
 
-            var requests = await context.API_GetServiceRequestAsync(serviceRequestId, now);
+            var requests = await context.GetServiceRequestAsync(serviceRequestId, now);
             var assessment = new dvm.Assessment
             {
                 Id = requests.First().Id,

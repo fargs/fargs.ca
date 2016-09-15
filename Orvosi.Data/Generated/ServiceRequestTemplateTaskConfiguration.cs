@@ -35,8 +35,14 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
 
             // Foreign keys
-            HasOptional(a => a.Task).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_Task
+            HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_Task
             HasRequired(a => a.ServiceRequestTemplate).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.ServiceRequestTemplateId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
+            HasMany(t => t.Parent).WithMany(t => t.Child).Map(m =>
+            {
+                m.ToTable("ServiceRequestTemplateTaskDependent", "dbo");
+                m.MapLeftKey("ChildId");
+                m.MapRightKey("ParentId");
+            });
             InitializePartial();
         }
         partial void InitializePartial();

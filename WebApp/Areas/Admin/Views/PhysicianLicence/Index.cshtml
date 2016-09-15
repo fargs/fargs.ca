@@ -1,4 +1,5 @@
-﻿@model WebApp.Areas.Admin.ViewModels.PhysicianLicenceViewModels.IndexViewModel
+﻿@using WebApp.Library.Extensions
+@model WebApp.Areas.Admin.ViewModels.PhysicianLicenceViewModels.IndexViewModel
 
 @{
     ViewBag.Title = "Licences";
@@ -6,7 +7,7 @@
 }
 
 <h2>Licences for</h2>
-<div class="h3 lead">@Model.User.DisplayName</div>
+<div class="h3 lead">@Model.User.GetDisplayName()</div>
 
 <p>
     <a class="btn btn-success" href="~/Admin/PhysicianLicence/Create/@Model.User.Id"><i class="glyphicon glyphicon-plus"></i></a>
@@ -54,7 +55,7 @@
                 <span class="text-muted">@item.LongName</span>
             </td>
             <td>
-                @item.ProvinceName
+                @item.Province.ProvinceName
             </td>
             <td>
                 @item.MemberName
@@ -66,7 +67,7 @@
                 @item.CertificateClass
             </td>
             <td>
-                @if (item.Content != null && item.Content.Length > 0)
+                @if (item.Document.Content != null && item.Document.Content.Length > 0)
                 {
                     <a href="~/Admin/Document/Download/@item.DocumentId"><i class="glyphicon glyphicon-download-alt"></i></a>
                 }

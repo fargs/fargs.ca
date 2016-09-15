@@ -1,4 +1,5 @@
-﻿@using Model.Enums
+﻿@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model List<NextTaskViewModel>
 
@@ -9,7 +10,7 @@
         {
             <div>test</div>
         }
-        @if (item.StatusId == TaskStatuses.ToDo && item.AssignedTo == ViewBag.User.Id)
+        @if (item.StatusId == TaskStatuses.ToDo && item.AssignedTo == User.Identity.GetGuidUserId())
         {
             <form method="post" action="@(Url.Content("~/servicerequesttask/markascomplete"))">
                 @Html.AntiForgeryToken()

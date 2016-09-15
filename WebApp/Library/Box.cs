@@ -11,7 +11,7 @@ using Box.V2.Auth;
 using WebApp.Library.Extensions;
 using Box.V2.Exceptions;
 using System.Configuration;
-using Model;
+using Orvosi.Data;
 
 namespace WebApp.Library
 {
@@ -83,8 +83,8 @@ namespace WebApp.Library
         {
             if (_client == null || _client.Auth.Session.ExpiresIn < 0 || !string.IsNullOrEmpty(asUser))
             {
-                GetBoxTokens_Result tokens;
-                using (var db = new OrvosiEntities())
+                GetBoxTokensReturnModel tokens;
+                using (var db = new OrvosiDbContext())
                 {
                     tokens = db.GetBoxTokens(adminUserId).First();
                 }
@@ -100,7 +100,7 @@ namespace WebApp.Library
 
                 _client.Auth.SessionAuthenticated += (sender, args) =>
                 {
-                    using (var db = new OrvosiEntities())
+                    using (var db = new OrvosiDbContext())
                     {
                         db.SaveBoxTokens(args.Session.AccessToken, args.Session.RefreshToken, adminUserId);
                     }
@@ -110,7 +110,7 @@ namespace WebApp.Library
                 //_client.Auth.SessionInvalidated += async (sender, args) =>
                 //{
                 //    var refresh = await _client.Auth.RefreshAccessTokenAsync(_client.Auth.Session.AccessToken);
-                //    using (var db = new OrvosiEntities())
+                //    using (var db = new OrvosiDbContext())
                 //    {
                 //        db.SaveBoxTokens(refresh.AccessToken, refresh.RefreshToken, adminUserId);
                 //    }

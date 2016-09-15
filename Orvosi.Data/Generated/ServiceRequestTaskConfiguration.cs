@@ -56,11 +56,19 @@ namespace Orvosi.Data
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
             Property(x => x.IsDependentOnExamDate).HasColumnName(@"IsDependentOnExamDate").IsOptional().HasColumnType("bit").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed);
             Property(x => x.Workload).HasColumnName(@"Workload").IsOptional().HasColumnType("tinyint");
+            Property(x => x.ServiceRequestTemplateTaskId).HasColumnName(@"ServiceRequestTemplateTaskId").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.TaskType).HasColumnName(@"TaskType").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(20);
 
             // Foreign keys
             HasOptional(a => a.AspNetUser).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers
-            HasOptional(a => a.Task).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_Task
+            HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_Task
             HasRequired(a => a.ServiceRequest).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestId); // FK_ServiceRequestTask_ServiceRequest
+            HasMany(t => t.Parent).WithMany(t => t.Child).Map(m =>
+            {
+                m.ToTable("ServiceRequestTaskDependent", "dbo");
+                m.MapLeftKey("ChildId");
+                m.MapRightKey("ParentId");
+            });
             InitializePartial();
         }
         partial void InitializePartial();

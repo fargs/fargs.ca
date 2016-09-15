@@ -13,7 +13,6 @@ namespace WebApp
 {
     public class ServiceRequestHub : Hub
     {
-        static ConcurrentDictionary<string, string> dic = new ConcurrentDictionary<string, string>();
         private string _roomPrefix = "servicerequestroom_";
 
         public void Send(string name, string message, string roomName)
@@ -35,7 +34,7 @@ namespace WebApp
             using (var db = new OrvosiDbContext())
             {
                 // Retrieve user.
-                var tasks = db.API_GetAssignedServiceRequests(Context.User.Identity.GetGuidUserId(), SystemTime.Now());
+                var tasks = db.GetAssignedServiceRequests(Context.User.Identity.GetGuidUserId(), SystemTime.Now(), false, null);
 
                 var requestIds = tasks.Where(u => u.AssignedTo == Context.User.Identity.GetGuidUserId())
                     .Select(t => t.ServiceRequestId)

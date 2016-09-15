@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 {
     public class IndexViewModel
     {
-        public User User { get; set; }
         public List<ServiceRequestTask> Tasks { get; set; }
         public FilterArgs FilterArgs { get; set; }
     }

@@ -56,9 +56,9 @@ namespace WebApp
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 
             var templatePath = string.Empty;
-            if (role == Roles.Physician)
+            if (role == AspNetRoles.Physician)
                 templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
-            else if (role == Roles.Company)
+            else if (role == AspNetRoles.Company)
                 templatePath = Path.Combine(_templateFolder, "CompanyAccountActivation.html");
             else 
                 throw new System.Exception("Role activation not currently supported");

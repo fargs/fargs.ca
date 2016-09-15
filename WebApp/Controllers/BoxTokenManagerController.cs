@@ -6,7 +6,7 @@ using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.Exceptions;
 using WebApp.Models.BoxModels;
-using Model;
+using Orvosi.Data;
 using System.Configuration;
 using WebApp.Library;
 using System.Linq;
@@ -37,8 +37,8 @@ namespace WebApp.Controllers
 
             ClearSession();
 
-            GetBoxTokens_Result tokens;
-            using (var db = new OrvosiEntities())
+            GetBoxTokensReturnModel tokens;
+            using (var db = new OrvosiDbContext())
             {
                 tokens = db.GetBoxTokens(adminUserId).First();
             }
@@ -56,8 +56,8 @@ namespace WebApp.Controllers
             Session[AntiforgeryToken] = antiforgeryToken;
 
             // Stash the Client ID/Secret for easy access when the user is redirected back to this page.
-            //Session["ClientId"] = authModel.ClientId;
-            //Session["ClientSecret"] = authModel.ClientSecret;
+            //Session["ClientId"] = authClientId;
+            //Session["ClientSecret"] = authClientSecret;
 
             // Redirect the user to Box's OAuth2 authorization page
             string authUrl = string.Format("https://app.box.com/api/oauth2/authorize?response_type=code&client_id={0}&state={1}", authModel.ClientId, antiforgeryToken);
@@ -67,8 +67,8 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Refresh()
         {
             OAuthSession session;
-            GetBoxTokens_Result tokens;
-            using (var db = new OrvosiEntities())
+            GetBoxTokensReturnModel tokens;
+            using (var db = new OrvosiDbContext())
             {
                 tokens = db.GetBoxTokens(adminUserId).First();
 
@@ -106,8 +106,8 @@ namespace WebApp.Controllers
                 // Clear out the session variables for security
                 ClearSession();
 
-                GetBoxTokens_Result tokens;
-                using (var db = new OrvosiEntities())
+                GetBoxTokensReturnModel tokens;
+                using (var db = new OrvosiDbContext())
                 {
                     db.SaveBoxTokens(authSession.AccessToken, authSession.RefreshToken, adminUserId);
                     tokens = db.GetBoxTokens(adminUserId).First();

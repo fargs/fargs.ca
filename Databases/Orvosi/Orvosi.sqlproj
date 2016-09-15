@@ -76,6 +76,9 @@
     <Folder Include="Harvest\" />
     <Folder Include="Harvest\Tables\" />
     <Folder Include="dbo\Sequences\" />
+    <Folder Include="Analysis\" />
+    <Folder Include="Analysis\Views\" />
+    <Folder Include="dbo\User Defined Types\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -110,7 +113,6 @@
     <Build Include="dbo\Tables\DocumentType.sql" />
     <Build Include="dbo\Tables\Document.sql" />
     <Build Include="Harvest\Tables\Task.sql" />
-    <Build Include="dbo\Views\SchemaTableColumn.sql" />
     <Build Include="API\Views\Service.sql" />
     <Build Include="API\Views\Person.sql" />
     <Build Include="API\Views\Company.sql" />
@@ -147,7 +149,6 @@
     <Build Include="API\Stored Procedures\Company_Update.sql" />
     <Build Include="API\Stored Procedures\Company_Insert.sql" />
     <Build Include="dbo\Tables\ServiceRequest.sql" />
-    <Build Include="dbo\Views\SchemaViewColumn.sql" />
     <Build Include="API\Views\ServiceRequest.sql" />
     <Build Include="API\Views\ServiceCatalogue.sql" />
     <Build Include="API\Views\Province.sql" />
@@ -204,10 +205,6 @@
     <Build Include="dbo\Functions\GetServiceStatusId.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatusId.sql" />
     <Build Include="API\Views\DashboardTaskSummary.sql" />
-    <Build Include="API\Stored Procedures\GetDashboardServiceRequest.sql" />
-    <Build Include="API\Stored Procedures\GetDashboardSchedule.sql" />
-    <Build Include="API\Stored Procedures\ServiceRequest_ToggleNoShow.sql" />
-    <Build Include="API\Stored Procedures\ServiceRequest_ToggleCancellation.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableDay_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Delete.sql" />
@@ -250,15 +247,35 @@
     <Build Include="dbo\Tables\PhysicianSpeciality.sql" />
     <Build Include="dbo\Tables\Physician_ServiceRequestTemplate.sql" />
     <Build Include="dbo\Tables\City.sql" />
-    <Build Include="dbo\Views\OpenServiceRequestIdWithAssignedTo.sql" />
-    <Build Include="dbo\Views\OpenServiceRequestIds.sql" />
     <Build Include="API\Stored Procedures\GetAssignedServiceRequests.sql" />
     <Build Include="API\Stored Procedures\GetServiceRequest.sql" />
     <Build Include="dbo\Tables\UserInbox.sql" />
     <Build Include="dbo\Tables\ServiceRequestMessage.sql" />
     <Build Include="dbo\Tables\TaskPhase.sql" />
-    <Build Include="dbo\Tables\ServiceRequestTemplateTaskRelated.sql" />
-    <Build Include="dbo\Tables\ServiceRequestTaskRelated.sql" />
+    <Build Include="dbo\Tables\TaskStatus.sql" />
+    <Build Include="dbo\Tables\ServiceRequestTemplateTaskDependent.sql" />
+    <Build Include="dbo\Tables\ServiceRequestTaskDependent.sql" />
+    <Build Include="Private\Views\TaskStatusRequiredInfo.sql" />
+    <Build Include="Private\Views\TaskStatus.sql" />
+    <Build Include="Private\Views\ServiceRequestTaskDependsOnCSV.sql" />
+    <Build Include="Private\Views\SchemaViewColumn.sql" />
+    <Build Include="Private\Views\SchemaTableColumn.sql" />
+    <Build Include="Private\Views\OpenServiceRequestIdWithAssignedTo.sql" />
+    <Build Include="Private\Views\OpenServiceRequestIds.sql" />
+    <Build Include="API\Views\TaskStatus.sql" />
+    <Build Include="API\Views\Dashboard.sql" />
+    <Build Include="Analysis\Views\ServiceRequest.sql" />
+    <Build Include="dbo\Functions\GetTaskStatusId2.sql" />
+    <Build Include="dbo\Functions\GetServiceStatusId2.sql" />
+    <Build Include="dbo\Functions\GetServiceRequestTaskStatus.sql" />
+    <Build Include="dbo\Functions\GetServiceRequestStatus.sql" />
+    <Build Include="dbo\Stored Procedures\DashboardServiceRequestSummary.sql" />
+    <Build Include="dbo\Stored Procedures\_Migrations_DependentTasks.sql" />
+    <Build Include="dbo\User Defined Types\SelectedServiceRequestTVP.sql" />
+    <Build Include="Security\Analysis.sql" />
+    <Build Include="dbo\Tables\PhysicianCompanyStatus.sql" />
+    <Build Include="API\Stored Procedures\ToggleNoShow.sql" />
+    <Build Include="API\Stored Procedures\ToggleCancellation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

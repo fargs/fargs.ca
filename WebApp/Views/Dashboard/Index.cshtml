@@ -1,10 +1,10 @@
 ﻿@using WebApp.Library.Extensions
-@using e = Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 
 @{
     var roleId = User.Identity.GetRoleId();
-    var roles = new Guid[2] { e.Roles.AppTester, e.Roles.SuperAdmin };
+    var roles = new Guid[2] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin };
 }
 
 @if (roles.Contains(roleId))
@@ -15,6 +15,10 @@
                 <div class="form-group">
                     @Html.DropDownList("ServiceProviderId", new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", Model.SelectedUserId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
+                @*<div class="form-group">
+                    @Html.CheckBox("showClosed", ShowClosed, new { @class = "form-control", onchange = "this.form.submit();" })
+                    Show All
+                </div>*@
             </form>
         </div>
     </div>
@@ -46,7 +50,7 @@
                                 <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
                                     <div class="panel-title">
                                         <div class="row">
-                                            <div class="col-xs-8">
+                                            <div class="col-xs-12 col-sm-8">
                                                 <span>@weekFolder.WeekFolderName</span>
                                             </div>
                                             <div class="col-xs-1">
@@ -88,16 +92,16 @@
                                                                 <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
                                                             </td>
                                                             <td style="vertical-align: text-top; width:30px;">
-                                                                @if (assessment.Status() == e.TaskStatuses.Obsolete)
+                                                                @if (assessment.ServiceRequestStatusId == TaskStatuses.Obsolete)
                                                                 {
-                                                                    <span id="assessment-todo-total-label" class="small label label-info" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
+                                                                    <span id="assessment-total-label" class="small label label-info" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
                                                                 }
-                                                                else if (assessment.Status() == e.TaskStatuses.ToDo)
+                                                                else if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
                                                                 {
-                                                                    <span id="assessment-todo-total-label" class="small label label-danger">
+                                                                    <span id="assessment-total-label" class="small label label-danger">
                                                                         @if (assessment.HasHighWorkload)
                                                                         {
-                                                                            <strong>!</strong>
+                                                                            <i class="glyphicon glyphicon-pencil"></i>
                                                                         }
                                                                         else
                                                                         {
@@ -105,13 +109,13 @@
                                                                         }
                                                                     </span>
                                                                 }
-                                                                else if (assessment.Status() == e.TaskStatuses.Waiting)
+                                                                else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
                                                                 {
-                                                                    <span id="assessment-waiting-total-label" class="small label label-warning">&nbsp;</span>
+                                                                    <span id="assessment-total-label" class="small label label-warning">&nbsp;</span>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <span id="assessment-waiting-total-label" class="small label label-success">&nbsp;</span>
+                                                                    <span id="assessment-total-label" class="small label label-success">&nbsp;</span>
                                                                 }
                                                             </td>
                                                             <td style="vertical-align: text-top; width:80px;">
@@ -138,7 +142,7 @@
                                                                                     <input id="task-checkbox-@task.Id" type="checkbox"
                                                                                            value="@task.IsComplete"
                                                                                            @(task.IsComplete ? "checked" : "")
-                                                                                           @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                                                           @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
                                                                                            onclick="onTaskChecked(this, false, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
                                                                                     @Html.Partial("_TaskStatusLabel", task) @task.Name
                                                                                 </label>
@@ -208,9 +212,9 @@
                                 <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
                             </td>
                             <td style="vertical-align: text-top; width:30px;">
-                                @if (assessment.Status() == e.TaskStatuses.ToDo)
+                                @if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
                                 {
-                                    <span id="assessment-todo-total-label" class="small label label-danger">
+                                    <span id="assessment-total-label" class="small label label-danger">
                                         @if (assessment.HasHighWorkload)
                                         {
                                             <strong>!</strong>
@@ -221,13 +225,13 @@
                                         }
                                     </span>
                                 }
-                                else if (assessment.Status() == e.TaskStatuses.Waiting)
+                                else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
                                 {
-                                    <span id="assessment-waiting-total-label" class="small label label-warning">&nbsp;</span>
+                                    <span id="assessment-total-label" class="small label label-warning">&nbsp;</span>
                                 }
                                 else
                                 {
-                                    <span id="assessment-waiting-total-label" class="small label label-success">&nbsp;</span>
+                                    <span id="assessment-total-label" class="small label label-success">&nbsp;</span>
                                 }
                             </td>
                             <td style="vertical-align: text-top;">
@@ -249,7 +253,7 @@
                                                     <input id="task-checkbox-@task.Id" type="checkbox"
                                                            value="@task.IsComplete"
                                                            @(task.IsComplete ? "checked" : "")
-                                                           @(task.StatusId == e.TaskStatuses.Waiting || task.StatusId == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                           @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
                                                            onclick="onTaskChecked(this, true, @task.Id, @assessment.Id, null, null);">
                                                     @Html.Partial("_TaskStatusLabel", task) @task.Name
                                                 </label>
@@ -384,7 +388,7 @@
                 var assessment = $.grep(result.AddOns, function (item) { return item.Id == params.assessmentId; });
                 console.log('Is addon: ' + result);
             }
-            SetAssessmentTotals(assessment[0], params.assessmentId);
+            //SetAssessmentTotals(assessment[0], params.assessmentId);
             updateTaskStatuses(assessment[0], params.assessmentId);
 
             console.log('view updated successfully: ' + result);
@@ -393,61 +397,56 @@
         function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
             var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
 
-            var assessmentTotalEl = weekFolderEl.find('#assessment-total');
-            var todoTotalEl = weekFolderEl.find('#todo-total');
-            var waitingTotalEl = weekFolderEl.find('#waiting-total');
+            var assessmentTotalEl   = weekFolderEl.find('#assessment-total');
+            var waitingTotalEl      = weekFolderEl.find('#waiting-total-label');
+            var todoTotalEl         = weekFolderEl.find('#todo-total-label');
+            var doneTotalEl         = weekFolderEl.find('#done-total-label');
+            var obsoleteTotalEl     = weekFolderEl.find('#obsolete-total-label');
 
             assessmentTotalEl.text(weekFolderFromResult.AssessmentCount);
-            todoTotalEl.text(weekFolderFromResult.ToDoCount);
-            waitingTotalEl.text(weekFolderFromResult.WaitingCount);
-
-            if (weekFolderFromResult.ToDoCount == 0)
-                weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-success');
-            else
-                weekFolderEl.find('#todo-total-label').removeClass().addClass('small label label-danger');
-
-            if (weekFolderFromResult.WaitingCount == 0)
-                weekFolderEl.find('#waiting-total-label').removeClass().addClass('small label label-success');
-            else
-                weekFolderEl.find('#waiting-total-label').removeClass().addClass('small label label-warning');
-        }
-
-        function SetAssessmentTotals(assessmentFromResult, assessmentIdForEl) {
-            var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
-
-            if (assessmentFromResult.ToDoCount == 0)
-                assessmentEl.find('#assessment-todo-total-label').removeClass().addClass('small label label-success').text(assessmentFromResult.ToDoCount);
-            else
-                assessmentEl.find('#assessment-todo-total-label').removeClass().addClass('small label label-danger').text(assessmentFromResult.ToDoCount);
-
-            if (assessmentFromResult.WaitingCount == 0)
-                assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-success').text(assessmentFromResult.WaitingCount);
-            else
-                assessmentEl.find('#assessment-waiting-total-label').removeClass().addClass('small label label-warning').text(assessmentFromResult.WaitingCount);
+            waitingTotalEl.text(weekFolderFromResult.AssessmentWaitingCount);
+            todoTotalEl.text(weekFolderFromResult.AssessmentToDoCount);
+            doneTotalEl.text(weekFolderFromResult.AssessmentDoneCount);
+            obsoleteTotalEl.text(weekFolderFromResult.AssessmentObsoleteCount);
         }
 
         function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
             var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
-            var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
-            labelEl.removeClass();
+            var assessmentStatusEl = assessmentEl.find('#assessment-total-label');
+            assessmentStatusEl.removeClass();
 
-            if (assessmentFromResult.IsLateCancellation)
-                labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
-            else if (assessmentFromResult.IsCancelled)
-                labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
-            if (assessmentFromResult.IsNoShow)
-                labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
-            else
-                labelEl.text('').prop('title', '');
+            if (assessmentFromResult.ServiceRequestStatusId == 1) // Waiting
+                assessmentStatusEl.addClass('small label label-warning');
+            else if (assessmentFromResult.ServiceRequestStatusId == 2) // Todo
+                assessmentStatusEl.addClass('small label label-danger');
+            else if (assessmentFromResult.ServiceRequestStatusId == 3) // Done
+                assessmentStatusEl.addClass('small label label-success');
+            else if (assessmentFromResult.ServiceRequestStatusId == 4) // Obsolete
+                assessmentStatusEl.addClass('small label label-info');
+
         }
+
+        //function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
+        //    var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
+        //    var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
+        //    labelEl.removeClass();
+
+        //    if (assessmentFromResult.IsLateCancellation)
+        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
+        //    else if (assessmentFromResult.IsCancelled)
+        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
+        //    if (assessmentFromResult.IsNoShow)
+        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
+        //    else
+        //        labelEl.text('').prop('title', '');
+        //}
 
         function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
             var taskStatuses = {
-                "ToDo": 102,
-                "InProgress": 104,
-                "Waiting": 100,
-                "Done": 101,
-                "Obsolete": 103
+                "Waiting": 1,
+                "ToDo": 2,
+                "Done": 3,
+                "Obsolete": 4
             };
             var assessmentEl = $('#asessment-' + assessmentIdForEl);
             var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");

@@ -1,8 +1,8 @@
 ﻿using Box.V2.Config;
 using Box.V2.JWTAuth;
 using Box.V2.Models;
-using Model;
-using Model.Enums;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using Orvosi.Data;
 using System;
 using System.Collections.Generic;

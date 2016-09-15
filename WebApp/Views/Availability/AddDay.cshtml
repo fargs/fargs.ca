@@ -1,17 +1,18 @@
-﻿@using Model
-@using Model.Enums
+﻿@using Orvosi.Data
+@using Orvosi.Shared.Enums
 
-@model Model.AvailableDay
+@model AvailableDay
 
 @{
-    var db = new OrvosiEntities();
+    var db = new OrvosiDbContext();
 
-    ViewBag.Users = db.Users
+    ViewBag.Users = db.AspNetUsers
+        .AsEnumerable()
         .Select(c => new SelectListItem()
         {
-            Text = c.DisplayName,
-            Value = c.Id,
-            Group = new SelectListGroup() { Name = c.RoleName }
+            Text = c.GetDisplayName(),
+            Value = c.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.GetRole().Name }
         }).ToList();
 
     ViewBag.Companies = db.Companies
@@ -22,17 +23,17 @@
             Value = c.Id.ToString(),
         }).ToList();
 
-    var locations = db.Locations.ToList(); // needed to use the string.format in the Select below
-    ViewBag.Locations = locations
+    var addresses = db.Addresses.ToList(); // needed to use the string.format in the Select below
+    ViewBag.Addresses = addresses
         .Select(c => new SelectListItem()
         {
             Text = string.Format("{0} - ({1})", c.Name, c.City),
             Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.EntityDisplayName }
+            Group = new SelectListGroup() { Name = c.AddressType.Name }
         }).ToList();
 }
 
-<div class="lead">@Model.PhysicianName</div>
+<div class="lead">@Model.Physician.AspNetUser.GetDisplayName()</div>
 
 <h2>Add Available Day</h2>
 
@@ -54,7 +55,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Location</label>
         <div class="col-md-10">
-            @Html.DropDownList("LocationId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("LocationId", new SelectList(ViewBag.Addresses, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
         </div>
     </div>

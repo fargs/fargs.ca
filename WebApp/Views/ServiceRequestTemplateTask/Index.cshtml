@@ -16,7 +16,7 @@
             @Html.DisplayNameFor(model => model.ServiceRequestTemplate.Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Task.Name)
+            @Html.DisplayNameFor(model => model.OTask.Name)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Sequence)
@@ -39,7 +39,7 @@
             @Html.DisplayFor(modelItem => item.ServiceRequestTemplate.Name)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Task.Name)
+            @Html.DisplayFor(modelItem => item.OTask.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Sequence)
@@ -51,8 +51,7 @@
             @Html.DisplayFor(modelItem => item.ModifiedUser)
         </td>
         <td>
-            @Html.ActionLink("Depends On", "Index", "ServiceRequestTemplateTaskRelated", new { ServiceRequestTemplateTaskId = item.Id }, new { })
-             (@item.ServiceRequestTemplateTaskId.Count())
+             @item.Child.Count
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

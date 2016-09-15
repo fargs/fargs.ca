@@ -12,7 +12,7 @@ namespace Orvosi.Data
     {
         public bool CanBeRescheduled(DateTime now)
         {
-            return Service.HasAppointment() && CanBeCancelled(now);
+            return this.Service.HasAppointment() && CanBeCancelled(now);
         }
 
         public bool CanBeCancelled(DateTime now)
@@ -99,7 +99,7 @@ namespace Orvosi.Data
 
         public string GetCalendarEventTitle()
         {
-            return $"{Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id})";
+            return $"{this.Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id})";
         }
     }
 }

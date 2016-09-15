@@ -18,6 +18,7 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class OrvosiDbContext : System.Data.Entity.DbContext, IOrvosiDbContext
     {
+        public System.Data.Entity.DbSet<Account> Accounts { get; set; } // Account
         public System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         public System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
         public System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
@@ -25,8 +26,11 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims
         public System.Data.Entity.DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } // AspNetUserLogins
         public System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
+        public System.Data.Entity.DbSet<AspNetUserView> AspNetUserViews { get; set; } // User
         public System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
         public System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
+        public System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
+        public System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         public System.Data.Entity.DbSet<City> Cities { get; set; } // City
         public System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
@@ -35,18 +39,25 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<DocumentType> DocumentTypes { get; set; } // DocumentType
         public System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         public System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
+        public System.Data.Entity.DbSet<LocationArea> LocationAreas { get; set; } // LocationArea
+        public System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
         public System.Data.Entity.DbSet<Lookup> Lookups { get; set; } // Lookup
         public System.Data.Entity.DbSet<LookupItem> LookupItems { get; set; } // LookupItem
         public System.Data.Entity.DbSet<Organization> Organizations { get; set; } // Organization
+        public System.Data.Entity.DbSet<OTask> OTasks { get; set; } // Task
         public System.Data.Entity.DbSet<Person> People { get; set; } // Person
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
         public System.Data.Entity.DbSet<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany
+        public System.Data.Entity.DbSet<PhysicianCompanyStatu> PhysicianCompanyStatus { get; set; } // PhysicianCompanyStatus
+        public System.Data.Entity.DbSet<PhysicianCompanyView> PhysicianCompanyViews { get; set; } // PhysicianCompany
         public System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
         public System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         public System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
+        public System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
         public System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         public System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         public System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
+        public System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         public System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
         public System.Data.Entity.DbSet<RoleCategory> RoleCategories { get; set; } // RoleCategory
@@ -59,12 +70,11 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
         public System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
         public System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
-        public System.Data.Entity.DbSet<ServiceRequestTaskRelated> ServiceRequestTaskRelateds { get; set; } // ServiceRequestTaskRelated
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
-        public System.Data.Entity.DbSet<ServiceRequestTemplateTaskRelated> ServiceRequestTemplateTaskRelateds { get; set; } // ServiceRequestTemplateTaskRelated
-        public System.Data.Entity.DbSet<Task> Tasks { get; set; } // Task
+        public System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
+        public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
@@ -121,6 +131,7 @@ namespace Orvosi.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Configurations.Add(new AccountConfiguration());
             modelBuilder.Configurations.Add(new AddressConfiguration());
             modelBuilder.Configurations.Add(new AddressTypeConfiguration());
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration());
@@ -128,8 +139,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserClaimConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserLoginConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration());
+            modelBuilder.Configurations.Add(new AspNetUserViewConfiguration());
             modelBuilder.Configurations.Add(new AvailableDayConfiguration());
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration());
+            modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration());
+            modelBuilder.Configurations.Add(new BillableEntityConfiguration());
             modelBuilder.Configurations.Add(new CityConfiguration());
             modelBuilder.Configurations.Add(new CompanyConfiguration());
             modelBuilder.Configurations.Add(new CountryConfiguration());
@@ -138,18 +152,25 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration());
             modelBuilder.Configurations.Add(new InvoiceConfiguration());
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration());
+            modelBuilder.Configurations.Add(new LocationAreaConfiguration());
+            modelBuilder.Configurations.Add(new LocationViewConfiguration());
             modelBuilder.Configurations.Add(new LookupConfiguration());
             modelBuilder.Configurations.Add(new LookupItemConfiguration());
             modelBuilder.Configurations.Add(new OrganizationConfiguration());
+            modelBuilder.Configurations.Add(new OTaskConfiguration());
             modelBuilder.Configurations.Add(new PersonConfiguration());
             modelBuilder.Configurations.Add(new PhysicianConfiguration());
             modelBuilder.Configurations.Add(new PhysicianCompanyConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianCompanyStatuConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianCompanyViewConfiguration());
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration());
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration());
             modelBuilder.Configurations.Add(new PriceConfiguration());
+            modelBuilder.Configurations.Add(new ProfileConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
             modelBuilder.Configurations.Add(new RefactorLogConfiguration());
             modelBuilder.Configurations.Add(new RoleCategoryConfiguration());
@@ -162,12 +183,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration());
-            modelBuilder.Configurations.Add(new ServiceRequestTaskRelatedConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
-            modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskRelatedConfiguration());
-            modelBuilder.Configurations.Add(new TaskConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration());
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration());
+            modelBuilder.Configurations.Add(new TaskStatuConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
             modelBuilder.Configurations.Add(new UserInboxConfiguration());
 
@@ -176,6 +196,7 @@ namespace Orvosi.Data
 
         public static System.Data.Entity.DbModelBuilder CreateModel(System.Data.Entity.DbModelBuilder modelBuilder, string schema)
         {
+            modelBuilder.Configurations.Add(new AccountConfiguration(schema));
             modelBuilder.Configurations.Add(new AddressConfiguration(schema));
             modelBuilder.Configurations.Add(new AddressTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration(schema));
@@ -183,8 +204,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserClaimConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserLoginConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration(schema));
+            modelBuilder.Configurations.Add(new AspNetUserViewConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableDayConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration(schema));
+            modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration(schema));
+            modelBuilder.Configurations.Add(new BillableEntityConfiguration(schema));
             modelBuilder.Configurations.Add(new CityConfiguration(schema));
             modelBuilder.Configurations.Add(new CompanyConfiguration(schema));
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
@@ -193,18 +217,25 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration(schema));
+            modelBuilder.Configurations.Add(new LocationAreaConfiguration(schema));
+            modelBuilder.Configurations.Add(new LocationViewConfiguration(schema));
             modelBuilder.Configurations.Add(new LookupConfiguration(schema));
             modelBuilder.Configurations.Add(new LookupItemConfiguration(schema));
             modelBuilder.Configurations.Add(new OrganizationConfiguration(schema));
+            modelBuilder.Configurations.Add(new OTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new PersonConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianCompanyConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianCompanyStatuConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianCompanyViewConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration(schema));
             modelBuilder.Configurations.Add(new PriceConfiguration(schema));
+            modelBuilder.Configurations.Add(new ProfileConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));
             modelBuilder.Configurations.Add(new RefactorLogConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleCategoryConfiguration(schema));
@@ -217,12 +248,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration(schema));
-            modelBuilder.Configurations.Add(new ServiceRequestTaskRelatedConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));
-            modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskRelatedConfiguration(schema));
-            modelBuilder.Configurations.Add(new TaskConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration(schema));
+            modelBuilder.Configurations.Add(new TaskStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));
             modelBuilder.Configurations.Add(new UserInboxConfiguration(schema));
             return modelBuilder;
@@ -232,13 +262,13 @@ namespace Orvosi.Data
         partial void OnModelCreatingPartial(System.Data.Entity.DbModelBuilder modelBuilder);
         
         // Stored Procedures
-        public System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now)
+        public System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel> GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId)
         {
             int procResult;
-            return API_GetAssignedServiceRequests(assignedTo, now, out procResult);
+            return GetAssignedServiceRequests(assignedTo, now, showClosed, serviceRequestId, out procResult);
         }
 
-        public System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel> API_GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, out int procResult)
+        public System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel> GetAssignedServiceRequests(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId, out int procResult)
         {
             var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
             if (!assignedTo.HasValue)
@@ -248,14 +278,22 @@ namespace Orvosi.Data
             if (!now.HasValue)
                 nowParam.Value = System.DBNull.Value;
 
+            var showClosedParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ShowClosed", SqlDbType = System.Data.SqlDbType.Bit, Direction = System.Data.ParameterDirection.Input, Value = showClosed.GetValueOrDefault() };
+            if (!showClosed.HasValue)
+                showClosedParam.Value = System.DBNull.Value;
+
+            var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!serviceRequestId.HasValue)
+                serviceRequestIdParam.Value = System.DBNull.Value;
+
             var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
-            var procResultData = Database.SqlQuery<API_GetAssignedServiceRequestsReturnModel>("EXEC @procResult = [API].[GetAssignedServiceRequests] @AssignedTo, @Now", assignedToParam, nowParam, procResultParam).ToList();
+            var procResultData = Database.SqlQuery<GetAssignedServiceRequestsReturnModel>("EXEC @procResult = [API].[GetAssignedServiceRequests] @AssignedTo, @Now, @ShowClosed, @ServiceRequestId", assignedToParam, nowParam, showClosedParam, serviceRequestIdParam, procResultParam).ToList();
 
             procResult = (int) procResultParam.Value;
             return procResultData;
         }
 
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetAssignedServiceRequestsReturnModel>> API_GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetAssignedServiceRequestsReturnModel>> GetAssignedServiceRequestsAsync(System.Guid? assignedTo, System.DateTime? now, bool? showClosed, int? serviceRequestId)
         {
             var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
             if (!assignedTo.HasValue)
@@ -265,18 +303,231 @@ namespace Orvosi.Data
             if (!now.HasValue)
                 nowParam.Value = System.DBNull.Value;
 
-            var procResultData = await Database.SqlQuery<API_GetAssignedServiceRequestsReturnModel>("EXEC [API].[GetAssignedServiceRequests] @AssignedTo, @Now", assignedToParam, nowParam).ToListAsync();
+            var showClosedParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ShowClosed", SqlDbType = System.Data.SqlDbType.Bit, Direction = System.Data.ParameterDirection.Input, Value = showClosed.GetValueOrDefault() };
+            if (!showClosed.HasValue)
+                showClosedParam.Value = System.DBNull.Value;
+
+            var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!serviceRequestId.HasValue)
+                serviceRequestIdParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetAssignedServiceRequestsReturnModel>("EXEC [API].[GetAssignedServiceRequests] @AssignedTo, @Now, @ShowClosed, @ServiceRequestId", assignedToParam, nowParam, showClosedParam, serviceRequestIdParam).ToListAsync();
 
             return procResultData;
         }
 
-        public System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now)
+        public System.Collections.Generic.List<GetBoxTokensReturnModel> GetBoxTokens(System.Guid? userId)
         {
             int procResult;
-            return API_GetServiceRequest(serviceRequestId, now, out procResult);
+            return GetBoxTokens(userId, out procResult);
         }
 
-        public System.Collections.Generic.List<API_GetServiceRequestReturnModel> API_GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult)
+        public System.Collections.Generic.List<GetBoxTokensReturnModel> GetBoxTokens(System.Guid? userId, out int procResult)
+        {
+            var userIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@UserId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = userId.GetValueOrDefault() };
+            if (!userId.HasValue)
+                userIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetBoxTokensReturnModel>("EXEC @procResult = [API].[GetBoxTokens] @UserId", userIdParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetBoxTokensReturnModel>> GetBoxTokensAsync(System.Guid? userId)
+        {
+            var userIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@UserId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = userId.GetValueOrDefault() };
+            if (!userId.HasValue)
+                userIdParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetBoxTokensReturnModel>("EXEC [API].[GetBoxTokens] @UserId", userIdParam).ToListAsync();
+
+            return procResultData;
+        }
+
+        public System.Collections.Generic.List<GetCompanyProvinceReturnModel> GetCompanyProvince(int? companyId)
+        {
+            int procResult;
+            return GetCompanyProvince(companyId, out procResult);
+        }
+
+        public System.Collections.Generic.List<GetCompanyProvinceReturnModel> GetCompanyProvince(int? companyId, out int procResult)
+        {
+            var companyIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CompanyId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = companyId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!companyId.HasValue)
+                companyIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetCompanyProvinceReturnModel>("EXEC @procResult = [API].[GetCompanyProvince] @CompanyId", companyIdParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetCompanyProvinceReturnModel>> GetCompanyProvinceAsync(int? companyId)
+        {
+            var companyIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CompanyId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = companyId.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!companyId.HasValue)
+                companyIdParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetCompanyProvinceReturnModel>("EXEC [API].[GetCompanyProvince] @CompanyId", companyIdParam).ToListAsync();
+
+            return procResultData;
+        }
+
+        public System.Collections.Generic.List<GetNextInvoiceNumberReturnModel> GetNextInvoiceNumber()
+        {
+            int procResult;
+            return GetNextInvoiceNumber(out procResult);
+        }
+
+        public System.Collections.Generic.List<GetNextInvoiceNumberReturnModel> GetNextInvoiceNumber(out int procResult)
+        {
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetNextInvoiceNumberReturnModel>("EXEC @procResult = [API].[GetNextInvoiceNumber] ", procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetNextInvoiceNumberReturnModel>> GetNextInvoiceNumberAsync()
+        {
+            var procResultData = await Database.SqlQuery<GetNextInvoiceNumberReturnModel>("EXEC [API].[GetNextInvoiceNumber] ").ToListAsync();
+
+            return procResultData;
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogue(System.Guid? physicianId)
+        {
+            int procResult;
+            return GetServiceCatalogue(physicianId, out procResult);
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogue(System.Guid? physicianId, out int procResult)
+        {
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetServiceCatalogueReturnModel>("EXEC @procResult = [API].[GetServiceCatalogue] @PhysicianId", physicianIdParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueReturnModel>> GetServiceCatalogueAsync(System.Guid? physicianId)
+        {
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetServiceCatalogueReturnModel>("EXEC [API].[GetServiceCatalogue] @PhysicianId", physicianIdParam).ToListAsync();
+
+            return procResultData;
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogueForCompany(System.Guid? physicianId, short? companyId)
+        {
+            int procResult;
+            return GetServiceCatalogueForCompany(physicianId, companyId, out procResult);
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueReturnModel> GetServiceCatalogueForCompany(System.Guid? physicianId, short? companyId, out int procResult)
+        {
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var companyIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CompanyId", SqlDbType = System.Data.SqlDbType.SmallInt, Direction = System.Data.ParameterDirection.Input, Value = companyId.GetValueOrDefault(), Precision = 5, Scale = 0 };
+            if (!companyId.HasValue)
+                companyIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetServiceCatalogueReturnModel>("EXEC @procResult = [API].[GetServiceCatalogueForCompany] @PhysicianId, @CompanyId", physicianIdParam, companyIdParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueReturnModel>> GetServiceCatalogueForCompanyAsync(System.Guid? physicianId, short? companyId)
+        {
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var companyIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CompanyId", SqlDbType = System.Data.SqlDbType.SmallInt, Direction = System.Data.ParameterDirection.Input, Value = companyId.GetValueOrDefault(), Precision = 5, Scale = 0 };
+            if (!companyId.HasValue)
+                companyIdParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetServiceCatalogueReturnModel>("EXEC [API].[GetServiceCatalogueForCompany] @PhysicianId, @CompanyId", physicianIdParam, companyIdParam).ToListAsync();
+
+            return procResultData;
+        }
+
+        public int GetServiceCatalogueMatrix(string physicianId, short? companyId)
+        {
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.NVarChar, Direction = System.Data.ParameterDirection.Input, Value = physicianId, Size = 128 };
+            if (physicianIdParam.Value == null)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var companyIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CompanyId", SqlDbType = System.Data.SqlDbType.SmallInt, Direction = System.Data.ParameterDirection.Input, Value = companyId.GetValueOrDefault(), Precision = 5, Scale = 0 };
+            if (!companyId.HasValue)
+                companyIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+ 
+            Database.ExecuteSqlCommand("EXEC @procResult = [API].[GetServiceCatalogueMatrix] @PhysicianId, @CompanyId", physicianIdParam, companyIdParam, procResultParam);
+ 
+            return (int) procResultParam.Value;
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueRateReturnModel> GetServiceCatalogueRate(System.Guid? serviceProviderGuid, System.Guid? customerGuid)
+        {
+            int procResult;
+            return GetServiceCatalogueRate(serviceProviderGuid, customerGuid, out procResult);
+        }
+
+        public System.Collections.Generic.List<GetServiceCatalogueRateReturnModel> GetServiceCatalogueRate(System.Guid? serviceProviderGuid, System.Guid? customerGuid, out int procResult)
+        {
+            var serviceProviderGuidParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceProviderGuid", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = serviceProviderGuid.GetValueOrDefault() };
+            if (!serviceProviderGuid.HasValue)
+                serviceProviderGuidParam.Value = System.DBNull.Value;
+
+            var customerGuidParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CustomerGuid", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = customerGuid.GetValueOrDefault() };
+            if (!customerGuid.HasValue)
+                customerGuidParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<GetServiceCatalogueRateReturnModel>("EXEC @procResult = [API].[GetServiceCatalogueRate] @ServiceProviderGuid, @CustomerGuid", serviceProviderGuidParam, customerGuidParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceCatalogueRateReturnModel>> GetServiceCatalogueRateAsync(System.Guid? serviceProviderGuid, System.Guid? customerGuid)
+        {
+            var serviceProviderGuidParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceProviderGuid", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = serviceProviderGuid.GetValueOrDefault() };
+            if (!serviceProviderGuid.HasValue)
+                serviceProviderGuidParam.Value = System.DBNull.Value;
+
+            var customerGuidParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CustomerGuid", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = customerGuid.GetValueOrDefault() };
+            if (!customerGuid.HasValue)
+                customerGuidParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<GetServiceCatalogueRateReturnModel>("EXEC [API].[GetServiceCatalogueRate] @ServiceProviderGuid, @CustomerGuid", serviceProviderGuidParam, customerGuidParam).ToListAsync();
+
+            return procResultData;
+        }
+
+        public System.Collections.Generic.List<GetServiceRequestReturnModel> GetServiceRequest(int? serviceRequestId, System.DateTime? now)
+        {
+            int procResult;
+            return GetServiceRequest(serviceRequestId, now, out procResult);
+        }
+
+        public System.Collections.Generic.List<GetServiceRequestReturnModel> GetServiceRequest(int? serviceRequestId, System.DateTime? now, out int procResult)
         {
             var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
             if (!serviceRequestId.HasValue)
@@ -287,13 +538,13 @@ namespace Orvosi.Data
                 nowParam.Value = System.DBNull.Value;
 
             var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
-            var procResultData = Database.SqlQuery<API_GetServiceRequestReturnModel>("EXEC @procResult = [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam, procResultParam).ToList();
+            var procResultData = Database.SqlQuery<GetServiceRequestReturnModel>("EXEC @procResult = [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam, procResultParam).ToList();
 
             procResult = (int) procResultParam.Value;
             return procResultData;
         }
 
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestReturnModel>> API_GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceRequestReturnModel>> GetServiceRequestAsync(int? serviceRequestId, System.DateTime? now)
         {
             var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
             if (!serviceRequestId.HasValue)
@@ -303,42 +554,42 @@ namespace Orvosi.Data
             if (!now.HasValue)
                 nowParam.Value = System.DBNull.Value;
 
-            var procResultData = await Database.SqlQuery<API_GetServiceRequestReturnModel>("EXEC [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam).ToListAsync();
+            var procResultData = await Database.SqlQuery<GetServiceRequestReturnModel>("EXEC [API].[GetServiceRequest] @ServiceRequestId, @Now", serviceRequestIdParam, nowParam).ToListAsync();
 
             return procResultData;
         }
 
-        public System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId)
+        public System.Collections.Generic.List<GetServiceRequestResourcesReturnModel> GetServiceRequestResources(int? serviceRequestId)
         {
             int procResult;
-            return API_GetServiceRequestResources(serviceRequestId, out procResult);
+            return GetServiceRequestResources(serviceRequestId, out procResult);
         }
 
-        public System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel> API_GetServiceRequestResources(int? serviceRequestId, out int procResult)
+        public System.Collections.Generic.List<GetServiceRequestResourcesReturnModel> GetServiceRequestResources(int? serviceRequestId, out int procResult)
         {
             var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
             if (!serviceRequestId.HasValue)
                 serviceRequestIdParam.Value = System.DBNull.Value;
 
             var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
-            var procResultData = Database.SqlQuery<API_GetServiceRequestResourcesReturnModel>("EXEC @procResult = [API].[GetServiceRequestResources] @ServiceRequestId", serviceRequestIdParam, procResultParam).ToList();
+            var procResultData = Database.SqlQuery<GetServiceRequestResourcesReturnModel>("EXEC @procResult = [API].[GetServiceRequestResources] @ServiceRequestId", serviceRequestIdParam, procResultParam).ToList();
 
             procResult = (int) procResultParam.Value;
             return procResultData;
         }
 
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<API_GetServiceRequestResourcesReturnModel>> API_GetServiceRequestResourcesAsync(int? serviceRequestId)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<GetServiceRequestResourcesReturnModel>> GetServiceRequestResourcesAsync(int? serviceRequestId)
         {
             var serviceRequestIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@ServiceRequestId", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = serviceRequestId.GetValueOrDefault(), Precision = 10, Scale = 0 };
             if (!serviceRequestId.HasValue)
                 serviceRequestIdParam.Value = System.DBNull.Value;
 
-            var procResultData = await Database.SqlQuery<API_GetServiceRequestResourcesReturnModel>("EXEC [API].[GetServiceRequestResources] @ServiceRequestId", serviceRequestIdParam).ToListAsync();
+            var procResultData = await Database.SqlQuery<GetServiceRequestResourcesReturnModel>("EXEC [API].[GetServiceRequestResources] @ServiceRequestId", serviceRequestIdParam).ToListAsync();
 
             return procResultData;
         }
 
-        public int API_GetServiceRequestTasks(System.DateTime? now, string serviceRequestIds)
+        public int GetServiceRequestTasks(System.DateTime? now, string serviceRequestIds)
         {
             var nowParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Now", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = now.GetValueOrDefault() };
             if (!now.HasValue)
@@ -353,6 +604,119 @@ namespace Orvosi.Data
             Database.ExecuteSqlCommand("EXEC @procResult = [API].[GetServiceRequestTasks] @Now, @ServiceRequestIds", nowParam, serviceRequestIdsParam, procResultParam);
  
             return (int) procResultParam.Value;
+        }
+
+        public int SaveBoxTokens(string accessToken, string refreshToken, System.Guid? userId)
+        {
+            var accessTokenParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AccessToken", SqlDbType = System.Data.SqlDbType.NVarChar, Direction = System.Data.ParameterDirection.Input, Value = accessToken, Size = 128 };
+            if (accessTokenParam.Value == null)
+                accessTokenParam.Value = System.DBNull.Value;
+
+            var refreshTokenParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@RefreshToken", SqlDbType = System.Data.SqlDbType.NVarChar, Direction = System.Data.ParameterDirection.Input, Value = refreshToken, Size = 128 };
+            if (refreshTokenParam.Value == null)
+                refreshTokenParam.Value = System.DBNull.Value;
+
+            var userIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@UserId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = userId.GetValueOrDefault() };
+            if (!userId.HasValue)
+                userIdParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+ 
+            Database.ExecuteSqlCommand("EXEC @procResult = [API].[SaveBoxTokens] @AccessToken, @RefreshToken, @UserId", accessTokenParam, refreshTokenParam, userIdParam, procResultParam);
+ 
+            return (int) procResultParam.Value;
+        }
+
+        public int ToggleCancellation(int? id, System.DateTime? cancelledDate, bool? isLateCancellation, string notes)
+        {
+            var idParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Id", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = id.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!id.HasValue)
+                idParam.Value = System.DBNull.Value;
+
+            var cancelledDateParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@CancelledDate", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = cancelledDate.GetValueOrDefault() };
+            if (!cancelledDate.HasValue)
+                cancelledDateParam.Value = System.DBNull.Value;
+
+            var isLateCancellationParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@IsLateCancellation", SqlDbType = System.Data.SqlDbType.Bit, Direction = System.Data.ParameterDirection.Input, Value = isLateCancellation.GetValueOrDefault() };
+            if (!isLateCancellation.HasValue)
+                isLateCancellationParam.Value = System.DBNull.Value;
+
+            var notesParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Notes", SqlDbType = System.Data.SqlDbType.NVarChar, Direction = System.Data.ParameterDirection.Input, Value = notes, Size = 2000 };
+            if (notesParam.Value == null)
+                notesParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+ 
+            Database.ExecuteSqlCommand("EXEC @procResult = [API].[ToggleCancellation] @Id, @CancelledDate, @IsLateCancellation, @Notes", idParam, cancelledDateParam, isLateCancellationParam, notesParam, procResultParam);
+ 
+            return (int) procResultParam.Value;
+        }
+
+        public int ToggleNoShow(int? id)
+        {
+            var idParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@Id", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Input, Value = id.GetValueOrDefault(), Precision = 10, Scale = 0 };
+            if (!id.HasValue)
+                idParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+ 
+            Database.ExecuteSqlCommand("EXEC @procResult = [API].[ToggleNoShow] @Id", idParam, procResultParam);
+ 
+            return (int) procResultParam.Value;
+        }
+
+        public System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
+        {
+            int procResult;
+            return DashboardServiceRequestSummary(assignedTo, physicianId, dateRangeStart, dateRangeEnd, out procResult);
+        }
+
+        public System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd, out int procResult)
+        {
+            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
+            if (!assignedTo.HasValue)
+                assignedToParam.Value = System.DBNull.Value;
+
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var dateRangeStartParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeStart", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeStart.GetValueOrDefault() };
+            if (!dateRangeStart.HasValue)
+                dateRangeStartParam.Value = System.DBNull.Value;
+
+            var dateRangeEndParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeEnd", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeEnd.GetValueOrDefault() };
+            if (!dateRangeEnd.HasValue)
+                dateRangeEndParam.Value = System.DBNull.Value;
+
+            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
+            var procResultData = Database.SqlQuery<DashboardServiceRequestSummaryReturnModel>("EXEC @procResult = [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam, procResultParam).ToList();
+
+            procResult = (int) procResultParam.Value;
+            return procResultData;
+        }
+
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel>> DashboardServiceRequestSummaryAsync(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
+        {
+            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
+            if (!assignedTo.HasValue)
+                assignedToParam.Value = System.DBNull.Value;
+
+            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
+            if (!physicianId.HasValue)
+                physicianIdParam.Value = System.DBNull.Value;
+
+            var dateRangeStartParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeStart", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeStart.GetValueOrDefault() };
+            if (!dateRangeStart.HasValue)
+                dateRangeStartParam.Value = System.DBNull.Value;
+
+            var dateRangeEndParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeEnd", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeEnd.GetValueOrDefault() };
+            if (!dateRangeEnd.HasValue)
+                dateRangeEndParam.Value = System.DBNull.Value;
+
+            var procResultData = await Database.SqlQuery<DashboardServiceRequestSummaryReturnModel>("EXEC [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam).ToListAsync();
+
+            return procResultData;
         }
 
     }

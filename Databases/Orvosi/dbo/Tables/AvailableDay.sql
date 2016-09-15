@@ -9,8 +9,11 @@
     [ModifiedUser] NVARCHAR (100)   CONSTRAINT [DF_AvailableDay_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     CONSTRAINT [PK_AvailableDay] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_AvailableDay_AvailableDay] FOREIGN KEY ([LocationId]) REFERENCES [dbo].[Address] ([Id]),
-    CONSTRAINT [FK_AvailableDay_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id])
+    CONSTRAINT [FK_AvailableDay_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id]),
+    CONSTRAINT [FK_AvailableDay_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id])
 );
+
+
 
 
 

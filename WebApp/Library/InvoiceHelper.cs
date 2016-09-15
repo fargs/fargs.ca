@@ -1,5 +1,5 @@
-﻿using Model;
-using Model.Enums;
+﻿using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace WebApp.Library
             invoice.InvoiceDate = invoiceDate;
             invoice.DueDate = SystemTime.Now().AddDays(PaymentDueInDays);
             invoice.Currency = "CAD";
-            invoice.ServiceProviderGuid = serviceProvider.EntityGuid;
+            invoice.ServiceProviderGuid = serviceProvider.EntityGuid.Value;
             invoice.ServiceProviderName = serviceProvider.EntityName;
             invoice.ServiceProviderEntityType = serviceProvider.EntityType;
             invoice.ServiceProviderLogoCssClass = serviceProvider.LogoCssClass;
@@ -35,7 +35,7 @@ namespace WebApp.Library
             invoice.ServiceProviderCountry = serviceProvider.CountryName;
             invoice.ServiceProviderEmail = serviceProvider.BillingEmail;
             invoice.ServiceProviderPhoneNumber = serviceProvider.Phone;
-            invoice.CustomerGuid = customer.EntityGuid;
+            invoice.CustomerGuid = customer.EntityGuid.Value;
             invoice.CustomerName = customer.EntityName;
             invoice.CustomerEntityType = customer.EntityType;
             invoice.CustomerAddress1 = customer.Address1;
@@ -59,11 +59,11 @@ namespace WebApp.Library
             invoiceDetail.ModifiedUser = userName;
 
             var description = new StringBuilder();
-            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam ? serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat() : string.Empty));
-            description.AppendLine(serviceRequest.ServiceName);
-            description.AppendLine(serviceRequest.City);
+            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam ? serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat() : string.Empty));
+            description.AppendLine(serviceRequest.Service.Name);
+            description.AppendLine(serviceRequest.Address.City);
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = serviceRequest.EffectivePrice;
+            invoiceDetail.Amount = serviceRequest.ServiceCataloguePrice;
             invoiceDetail.Rate = 1;
             invoiceDetail.CalculateTotal();
 

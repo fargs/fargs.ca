@@ -2653,7 +2653,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         // any child contexts, must be updated when the view model is changed.
         function updateContext() {
             // Most of the time, the context will directly get a view model object, but if a function is given,
-            // we call the function to retrieve the view model. If the function accesses any obsevables or returns
+            // we call the function to retrieve the view  If the function accesses any obsevables or returns
             // an observable, the dependency is tracked, and those observables can later cause the binding
             // context to be updated.
             var dataItemOrObservable = isFunc ? dataItemOrAccessor() : dataItemOrAccessor,
@@ -4330,7 +4330,7 @@ ko.bindingHandlers['textInput'] = {
                 // updates that are from the previous state of the element, usually due to techniques
                 // such as rateLimit. Such updates, if not ignored, can cause keystrokes to be lost.
                 elementValueBeforeEvent = element.value;
-                var handler = DEBUG ? updateModel.bind(element, {type: event.type}) : updateModel;
+                var handler = DEBUG ? updatebind(element, {type: event.type}) : updateModel;
                 timeoutHandle = setTimeout(handler, 4);
             }
         };

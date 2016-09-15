@@ -31,8 +31,10 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 256)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AspNetUser> AspNetUsers { get; set; } // AspNetUsers.FK_AspNetUsers_Company
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Company
         public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_Company
+        public virtual System.Collections.Generic.ICollection<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany.FK_PhysicianCompany_Company
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Company
 
         // Foreign keys
@@ -44,8 +46,10 @@ namespace Orvosi.Data
             IsParent = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            AspNetUsers = new System.Collections.Generic.List<AspNetUser>();
             AvailableDays = new System.Collections.Generic.List<AvailableDay>();
             Companies = new System.Collections.Generic.List<Company>();
+            PhysicianCompanies = new System.Collections.Generic.List<PhysicianCompany>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

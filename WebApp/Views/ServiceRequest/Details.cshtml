@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using WebApp.Library;
-@using e = Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums
 @using Box.V2.Models
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
@@ -11,13 +11,11 @@
 <p>
     <ul class="list-unstyled">
         <li>
-            @*<a href="@(Request.UrlReferrer == null ? Url.Content("~/servicerequest") : Request.UrlReferrer.ToString())" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></a>*@
-
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Actions <span class="caret"></span>
                 </button>
-                @if (role == e.Roles.CaseCoordinator || role == e.Roles.SuperAdmin)
+                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
                 {
                     <ul class="dropdown-menu">
                         <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
@@ -128,15 +126,15 @@
             </div>
             <div class="panel-body">
                 <table class="table table-condensed">
-                    @foreach (var task in Model.ServiceRequest.ServiceRequestTasks.OrderBy(sr => sr.Sequence))
+                    @foreach (var task in Model.ServiceRequestMapped.Tasks.OrderBy(sr => sr.Sequence))
                     {
                         <tr>
                             <td>
-                                <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AspNetUser.GetDisplayName() : "Unassigned")"
+                                <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AssignedToDisplayName : "Unassigned")"
                                       class="btn btn-sm btn-circle disabled pull-left"
-                                      style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AspNetUser.ColorCode : "red")"
+                                      style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AssignedToColorCode : "red")"
                                       data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
-                                    <span class="small">@(task.AssignedTo.HasValue ? task.AspNetUser.GetInitials() : "?")</span>
+                                    <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
                                 </span>
                                 <div id="task-modal-@task.Id" class="modal fade">
                                     <div class="modal-dialog modal-sm">
@@ -173,20 +171,23 @@
                                     <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
                                         <label>
                                             <input id="task-checkbox-@task.Id" type="checkbox"
-                                                   value="@task.IsComplete()"
-                                                   @(task.IsComplete() ? "checked" : "")
-                                                   @(task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Waiting || task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Obsolete ? "disabled" : "")
+                                                   value="@task.IsComplete"
+                                                   @(task.IsComplete ? "checked" : "")
+                                                   @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
                                                    onclick="this.form.submit();">
                                         </label>
                                     </span>
                                 </form>
                                 @Html.Partial("_TaskStatusLabel", task)
                             </td>
-                            <td>@task.TaskName</td>
+                            <td>@task.Name</td>
                             <td>
-                                @if (task.GetStatus(SystemTime.Now()) == e.TaskStatuses.Done)
+                                @if (task.StatusId == TaskStatuses.Done)
                                 {
-                                    <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
+                                    if (task.CompletedDate.HasValue)
+                                    {
+                                        <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
+                                    }
                                 }
                             </td>
                         </tr>
@@ -196,7 +197,7 @@
         </div>
     </div>
     <div class="col-sm-4">
-        @if (role == e.Roles.CaseCoordinator || role == e.Roles.SuperAdmin)
+        @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
         {
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -237,7 +238,7 @@
                     </div>
                 </div>
             }
-            if (role == e.Roles.SuperAdmin)
+            if (role == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)

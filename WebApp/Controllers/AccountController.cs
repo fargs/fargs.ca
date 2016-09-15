@@ -212,7 +212,7 @@ namespace WebApp.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    FirstName =  model.FirstName,
+                    FirstName = model.FirstName,
                     LastName = model.LastName,
                     CompanyName = model.CompanyName
                 };

@@ -5218,7 +5218,7 @@ function DayEventRenderer() {
 		resolveElements(segments, elements);
 
 		// Calculate the left and right padding+margin for each element.
-		// We need this for setting each element's desired outer width, because of the W3C box model.
+		// We need this for setting each element's desired outer width, because of the W3C box 
 		// It's important we do this in a separate pass from acually setting the width on the DOM elements
 		// because alternating reading/writing dimensions causes reflow for every iteration.
 		segmentElementEach(segments, function(segment, element) {

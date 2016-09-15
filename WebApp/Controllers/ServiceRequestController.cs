@@ -54,34 +54,26 @@ namespace WebApp.Controllers
 
             var sr = context.ServiceRequestViews.AsQueryable();
 
-            if (filterArgs.StatusId.HasValue)
-            {
-                sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
-            }
-
-            if (filterArgs.DateRange.HasValue)
-            {
-                var range = DateRanges.GetRange(filterArgs.DateRange.Value);
-                var start = range[0];
-                var end = range[1];
-                sr = sr.Where(c => c.AppointmentDate >= start && c.AppointmentDate < end);
-            }
-
             if (!string.IsNullOrEmpty(filterArgs.Ids))
             {
                 var ids = Array.ConvertAll(filterArgs.Ids.Split(','), s => int.Parse(s));
                 sr = sr.Where(c => ids.Contains(c.Id));
             }
-
-            if (!string.IsNullOrEmpty(filterArgs.ClaimantName))
+            else if (!string.IsNullOrEmpty(filterArgs.ClaimantName))
             {
                 sr = sr.Where(c => c.ClaimantName.Contains(filterArgs.ClaimantName) || c.CompanyReferenceId.Contains(filterArgs.ClaimantName));
             }
+            else if (filterArgs.StatusId.HasValue)
+            {
+                sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
+            }
+
+            var userId = User.Identity.GetGuidUserId();
 
             // if the user is an administrator and the option showAll is true, then show all
             if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin && filterArgs.ShowAll == false))
             {
-                sr = sr.Where(c => c.CaseCoordinatorId == vm.User.Id || c.IntakeAssistantId == vm.User.Id || c.DocumentReviewerId == vm.User.Id || c.PhysicianId == vm.User.Id);
+                sr = sr.Where(c => c.CaseCoordinatorId == userId || c.IntakeAssistantId == userId || c.DocumentReviewerId == userId || c.PhysicianId == userId);
             }
 
             if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || User.Identity.GetRoleId() != AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() != AspNetRoles.DocumentReviewer || User.Identity.GetRoleId() != AspNetRoles.IntakeAssistant)

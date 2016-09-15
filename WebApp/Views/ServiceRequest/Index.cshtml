@@ -16,6 +16,11 @@
             Value = c.Id.ToString()
         })
         .ToList();
+    ViewBag.ServiceRequestStatuses.Add(new SelectListItem()
+    {
+        Text = "All",
+        Value = "0"
+    });
 
     ViewBag.Physicians = db.Physicians
         .AsEnumerable()
@@ -66,15 +71,7 @@
                 </div>
                 <div class="form-group form-group-sm">
                     <label class="control-label small">Status</label>
-                    @Html.DropDownList("FilterArgs.StatusId", new SelectList(ViewBag.ServiceRequestStatuses, "Value", "Text", Model.FilterArgs.StatusId), string.Empty, new { @class = "form-control" })
-                </div>
-                <div class="form-group form-group-sm">
-                    <label class="control-label small">Date Range</label>
-                    <select class="form-control" name="FilterArgs.DateRange">
-                        <option></option>
-                        <option value="@DateRanges.Today" @(Model.FilterArgs.DateRange == DateRanges.Today ? "selected" : string.Empty)>Today</option>
-                        <option value="@DateRanges.Next10Days" @(Model.FilterArgs.DateRange == DateRanges.Next10Days ? "selected" : string.Empty)>Next 10 Days</option>
-                    </select>
+                    @Html.DropDownList("FilterArgs.StatusId", new SelectList(ViewBag.ServiceRequestStatuses, "Value", "Text", Model.FilterArgs.StatusId), new { @class = "form-control" })
                 </div>
                 <div class="form-group form-group-sm">
                     <label class="control-label small">Sort</label>

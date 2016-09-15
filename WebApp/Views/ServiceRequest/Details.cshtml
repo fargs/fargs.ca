@@ -8,6 +8,8 @@
     var identity = User.Identity.GetClaimsIdentity();
     var role = identity.GetRoleId();
 }
+@if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+{
 <p>
     <ul class="list-unstyled">
         <li>
@@ -40,7 +42,7 @@
         </li>
     </ul>
 </p>
-
+}
 
 
 <div class="row">
@@ -164,7 +166,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td width="20px">
+                                @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.SuperAdmin || role == task.AssignedTo)
+                                {
                                 <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                     @Html.AntiForgeryToken()
                                     @Html.Hidden("serviceRequestTaskId", task.Id)
@@ -178,6 +182,9 @@
                                         </label>
                                     </span>
                                 </form>
+                                }
+                            </td>
+                            <td>
                                 @Html.Partial("_TaskStatusLabel", task)
                             </td>
                             <td>@task.Name</td>
@@ -238,7 +245,7 @@
                     </div>
                 </div>
             }
-            if (role == AspNetRoles.SuperAdmin)
+            if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)

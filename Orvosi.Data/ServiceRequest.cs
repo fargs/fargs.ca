@@ -21,7 +21,7 @@ namespace Orvosi.Data
             if (Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || Service.ServiceCategoryId == ServiceCategories.MedicalConsultation)
             {
                 var status = GetExaminationStatusId(now);
-                return status == ServiceStatus.Pending;
+                return status == ServiceStatus.Active;
             }
             else if (Service.ServiceCategoryId == ServiceCategories.AddOn)
             {
@@ -73,7 +73,7 @@ namespace Orvosi.Data
             else if (AppointmentDate <= now)
                 return ServiceStatus.Complete;
             else
-                return ServiceStatus.Pending;
+                return ServiceStatus.Active;
         }
 
         public bool IsReportSubmitted()
@@ -100,6 +100,28 @@ namespace Orvosi.Data
         public string GetCalendarEventTitle()
         {
             return $"{this.Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id})";
+        }
+
+        public byte ServiceStatusId {
+            get
+            {
+                if (IsLateCancellation)
+                {
+                    return ServiceStatus.LateCancellation;
+                }
+                else if (CancelledDate.HasValue)
+                {
+                    return ServiceStatus.Cancellation;
+                }
+                else if (IsNoShow)
+                {
+                    return ServiceStatus.NoShow;
+                }
+                else
+                {
+                    return ServiceStatus.Active;
+                }
+            }
         }
     }
 }

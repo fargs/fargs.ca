@@ -141,7 +141,8 @@ namespace Orvosi.Shared.Enums
         public const byte Cancellation = 31;
         public const byte NoShow = 30;
         public const byte Complete = 36;
-        public const byte Pending = 48;
+        public const byte Active = 48;
+
     }
 
     public static class Tasks

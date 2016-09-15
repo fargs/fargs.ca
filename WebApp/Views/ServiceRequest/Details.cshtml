@@ -4,7 +4,7 @@
 @using Box.V2.Models
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
-@{ 
+@{
     var identity = User.Identity.GetClaimsIdentity();
     var role = identity.GetRoleId();
 }
@@ -37,9 +37,6 @@
                     </ul>
                 }
             </div>
-
-            <strong class="pull-right">Case @Model.ServiceRequest.Id</strong>
-
         </li>
     </ul>
 </p>
@@ -117,6 +114,9 @@
         </div>
     </div>
     <div class="col-sm-5">
+        <p>
+            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <strong>Case @Model.ServiceRequest.Id</strong>
+        </p>
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>

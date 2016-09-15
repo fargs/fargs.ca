@@ -43,7 +43,7 @@ namespace WebApp.Controllers
             var now = SystemTime.Now();
 
             var query = db.Invoices
-                .Where(i => !i.InvoiceDetails.All(id => id.ServiceRequest.CancelledDate.HasValue && id.ServiceRequest.IsLateCancellation == false))
+                .Where(i => !i.InvoiceDetails.All(id => id.ServiceRequest.CancelledDate.HasValue ))
                 .Where(i => i.InvoiceDate < now)
                 .AsQueryable();
 
@@ -103,9 +103,9 @@ namespace WebApp.Controllers
                     SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
                     Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
                 });
-
+            var billableEntities = db.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
             var netIncomeByCompany = invoiceTotals
-                .Join(db.BillableEntities,
+                .Join(billableEntities,
                     i => i.CustomerGuid,
                     c => c.EntityGuid,
                     (i, c) => new

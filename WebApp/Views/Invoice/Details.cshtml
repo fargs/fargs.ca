@@ -1,4 +1,6 @@
-﻿@model Orvosi.Data.Invoice
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model Orvosi.Data.Invoice
 
 <div class="container">
     @Html.Partial("DocumentHeader", Model)
@@ -7,9 +9,15 @@
         <div class="btn-group">
             <a href="~/ServiceRequest/Details/@Model.InvoiceDetails.First().ServiceRequestId" class="btn btn-default">Close</a>
         </div>
-        <div class="btn-group pull-right">
-            <a href="~/Invoice/Edit/@Model.Id" class="btn btn-default">Edit</a>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+        @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
+        {
+            <div class="btn-group pull-right">
+                <a href="~/Invoice/Edit/@Model.Id" class="btn btn-default">Edit</a>
+                @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
+                {
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                }
+            </div>
+        }
     </div>
 </div>

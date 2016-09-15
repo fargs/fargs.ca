@@ -16,11 +16,6 @@
             Value = c.Id.ToString()
         })
         .ToList();
-    ViewBag.ServiceRequestStatuses.Add(new SelectListItem()
-    {
-        Text = "All",
-        Value = "0"
-    });
 
     ViewBag.Physicians = db.Physicians
         .AsEnumerable()

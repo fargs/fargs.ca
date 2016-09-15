@@ -63,7 +63,7 @@ namespace WebApp.Controllers
             {
                 sr = sr.Where(c => c.ClaimantName.Contains(filterArgs.ClaimantName) || c.CompanyReferenceId.Contains(filterArgs.ClaimantName));
             }
-            else if (filterArgs.StatusId.HasValue)
+            else if (filterArgs.StatusId.HasValue) 
             {
                 sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
             }

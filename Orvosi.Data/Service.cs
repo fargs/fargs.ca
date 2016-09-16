@@ -19,9 +19,12 @@ namespace Orvosi.Data
             return ServiceCategory.Id == ServiceCategories.IndependentMedicalExam || ServiceCategory.Id == ServiceCategories.MedicalConsultation;
         }
 
-        public bool HasAppointment()
+        public bool HasAppointment
         {
-            return ServiceCategory.Id == ServiceCategories.IndependentMedicalExam || ServiceCategory.Id == ServiceCategories.MedicalConsultation;
+            get
+            {
+                return ServiceCategory.Id == ServiceCategories.IndependentMedicalExam || ServiceCategory.Id == ServiceCategories.MedicalConsultation;
+            }
         }
     }
 }

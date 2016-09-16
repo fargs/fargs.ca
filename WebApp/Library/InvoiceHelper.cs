@@ -59,9 +59,12 @@ namespace WebApp.Library
             invoiceDetail.ModifiedUser = userName;
 
             var description = new StringBuilder();
-            description.AppendLine(string.Format("{0} on {1}", serviceRequest.ClaimantName, serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam ? serviceRequest.AppointmentDate.Value.ToOrvosiDateFormat() : string.Empty));
+            description.AppendLine(serviceRequest.ClaimantName);
             description.AppendLine(serviceRequest.Service.Name);
-            description.AppendLine(serviceRequest.Address.City);
+            if (serviceRequest.Service.HasAppointment)
+            {
+                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate, serviceRequest.Address.City);
+            }
             invoiceDetail.Description = description.ToString();
             invoiceDetail.Amount = serviceRequest.ServiceCataloguePrice;
             invoiceDetail.Rate = 1;

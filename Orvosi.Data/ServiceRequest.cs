@@ -12,7 +12,7 @@ namespace Orvosi.Data
     {
         public bool CanBeRescheduled(DateTime now)
         {
-            return this.Service.HasAppointment() && CanBeCancelled(now);
+            return this.Service.HasAppointment && CanBeCancelled(now);
         }
 
         public bool CanBeCancelled(DateTime now)
@@ -42,7 +42,7 @@ namespace Orvosi.Data
 
         public bool CanBeNoShow(DateTime now)
         {
-            if (Service.HasAppointment())
+            if (Service.HasAppointment)
             {
                 var status = GetExaminationStatusId(now);
                 return status != ServiceStatus.Cancellation && status != ServiceStatus.LateCancellation && status != ServiceStatus.NoShow;
@@ -52,7 +52,7 @@ namespace Orvosi.Data
 
         public bool CanNoShowBeUndone(DateTime now)
         {
-            if (Service.HasAppointment())
+            if (Service.HasAppointment)
             {
                 var status = GetExaminationStatusId(now);
                 return status == ServiceStatus.NoShow;

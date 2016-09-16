@@ -27,7 +27,7 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Exams", "", "ServiceRequest", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Cases", "", "ServiceRequest", new { area = "" }, null)</li>
                         if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
                         {
                             <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>

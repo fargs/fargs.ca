@@ -10,38 +10,38 @@
 }
 @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
 {
-<p>
-    <ul class="list-unstyled">
-        <li>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions <span class="caret"></span>
-                </button>
-                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+    <p>
+        <ul class="list-unstyled">
+            <li>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Actions <span class="caret"></span>
+                    </button>
+                    @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
                 {
-                    <ul class="dropdown-menu">
-                        <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
-                        @if (Model.ServiceRequest.CanBeRescheduled(SystemTime.Now()))
-                        {
-                            <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
-                        }
+                        <ul class="dropdown-menu">
+                            <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
+                            <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
+                            @if (Model.ServiceRequest.CanBeRescheduled(SystemTime.Now()))
+                            {
+                                <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
+                            }
 
-                        @if (Model.ServiceRequest.CanBeUncancelled(SystemTime.Now()))
-                        {
-                            <li role="separator" class="divider"></li>
-                            <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
-                        }
-                        else if (Model.ServiceRequest.CanBeCancelled(SystemTime.Now()))
-                        {
-                            <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
-                        }
-                    </ul>
-                }
-            </div>
-        </li>
-    </ul>
-</p>
+                            @if (Model.ServiceRequest.CanBeUncancelled(SystemTime.Now()))
+                            {
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
+                            }
+                            else if (Model.ServiceRequest.CanBeCancelled(SystemTime.Now()))
+                            {
+                                <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </li>
+        </ul>
+    </p>
 }
 
 
@@ -57,7 +57,7 @@
                 Closed
             </span>
         }
-        @if (Model.ServiceRequest.Service.HasAppointment())
+        @if (Model.ServiceRequest.Service.HasAppointment)
         {
             <div class="form-group">
                 <label class="control-label">Assessment</label>
@@ -169,19 +169,19 @@
                             <td width="20px">
                                 @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.SuperAdmin || role == task.AssignedTo)
                                 {
-                                <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
-                                    @Html.AntiForgeryToken()
-                                    @Html.Hidden("serviceRequestTaskId", task.Id)
-                                    <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
-                                        <label>
-                                            <input id="task-checkbox-@task.Id" type="checkbox"
-                                                   value="@task.IsComplete"
-                                                   @(task.IsComplete ? "checked" : "")
-                                                   @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                   onclick="this.form.submit();">
-                                        </label>
-                                    </span>
-                                </form>
+                                    <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("serviceRequestTaskId", task.Id)
+                                        <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                                            <label>
+                                                <input id="task-checkbox-@task.Id" type="checkbox"
+                                                       value="@task.IsComplete"
+                                                       @(task.IsComplete ? "checked" : "")
+                                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                       onclick="this.form.submit();">
+                                            </label>
+                                        </span>
+                                    </form>
                                 }
                             </td>
                             <td>
@@ -229,7 +229,7 @@
                 </div>
             </div>
 
-            if (Model.ServiceRequest.Service.HasAppointment())
+            if (Model.ServiceRequest.Service.HasAppointment)
             {
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -245,26 +245,32 @@
                     </div>
                 </div>
             }
-            if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
+        }
+        @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
+        {
+            if (role == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)
                     <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
                 </form>
-                foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
-                {
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Invoice @invoiceDetail.Invoice.InvoiceNumber
+            }
+            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Invoice @invoiceDetail.Invoice.InvoiceNumber
+                        @if (role == AspNetRoles.SuperAdmin)
+                        {
                             <div class="pull-right">
                                 @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
                             </div>
-                        </div>
-                        <div class="panel-body">
-                            @Html.Action("ReadOnly", "Invoice", invoiceDetail.Invoice)
-                        </div>
+                        }
                     </div>
-                }
+                    <div class="panel-body">
+                        @Html.Action("ReadOnly", "Invoice", invoiceDetail.Invoice)
+                    </div>
+                </div>
             }
         }
     </div>

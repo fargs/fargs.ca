@@ -63,7 +63,7 @@ namespace WebApp.Library
             description.AppendLine(serviceRequest.Service.Name);
             if (serviceRequest.Service.HasAppointment)
             {
-                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate, serviceRequest.Address.City);
+                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
             }
             invoiceDetail.Description = description.ToString();
             invoiceDetail.Amount = serviceRequest.ServiceCataloguePrice;

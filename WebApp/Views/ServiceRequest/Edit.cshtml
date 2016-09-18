@@ -1,14 +1,14 @@
 ﻿@using Orvosi.Data
 
-@model ServiceRequest
+@model WebApp.ViewModels.ServiceRequestViewModels.EditViewModel
 
-<form action="~/ServiceRequest/Edit/@Model.Id" method="post" class="form-horizontal">
+<form action="~/ServiceRequest/Edit/@Model.ServiceRequestId" method="post" class="form-horizontal">
 
     @Html.AntiForgeryToken()
 
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    @Html.HiddenFor(c => c.Id)
+    @Html.HiddenFor(c => c.ServiceRequestId)
 
     <div class="form-group">
         <label class="control-label col-md-2">Claimant</label>
@@ -40,16 +40,8 @@
     <div class="form-group">
         <label class="control-label col-md-2">Additional Notes</label>
         <div class="col-md-10">
-            @Html.TextAreaFor(c => c.Notes, new { @class = "form-control", rows = 3 })
-            @Html.ValidationMessageFor(c => c.Notes, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Requested By</label>
-        <div class="col-md-10">
-            @Html.Editor("RequestedBy", new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessage("RequestedBy", "", new { @class = "text-danger" })
+            @Html.TextAreaFor(c => c.AdditionalNotes, new { @class = "form-control", rows = 3 })
+            @Html.ValidationMessageFor(c => c.AdditionalNotes, "", new { @class = "text-danger" })
         </div>
     </div>
 
@@ -66,7 +58,7 @@
     <div class="form-group">
         <div class="col-md-push-2 col-md-10">
             <button class="btn btn-primary" type="submit">Submit</button>
-            <a href="~/ServiceRequest/Index" class="btn btn-primary">Back to List</a>
+            <a href="~/ServiceRequest/Details/@Model.ServiceRequestId" class="btn btn-default">Cancel</a>
         </div>
     </div>
 

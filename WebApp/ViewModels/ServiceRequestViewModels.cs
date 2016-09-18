@@ -58,9 +58,13 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
 
     public class EditViewModel
     {
-        public AspNetUser User { get; set; }
-        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
-        public List<Orvosi.Data.ServiceRequestTask> ServiceRequestTasks { get; set; }
+        public int ServiceRequestId { get; set; }
+        public string ClaimantName { get; set; }
+        public DateTime? DueDate { get; set; }
+        public string CompanyReferenceId { get; set; }
+        public string AdditionalNotes { get; set; }
+        public Guid? RequestedBy { get; set; }
+        public DateTime? RequestedDate { get; set; }
     }
 
     public class CreateSuccessViewModel

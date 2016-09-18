@@ -63,7 +63,7 @@ namespace WebApp.Controllers
             {
                 sr = sr.Where(c => c.ClaimantName.Contains(filterArgs.ClaimantName) || c.CompanyReferenceId.Contains(filterArgs.ClaimantName));
             }
-            else if (filterArgs.StatusId.HasValue) 
+            else if (filterArgs.StatusId.HasValue)
             {
                 sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
             }
@@ -138,7 +138,7 @@ namespace WebApp.Controllers
             {
                 vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAddOn(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
             }
-            
+
             if (vm.ServiceRequest == null)
             {
                 return HttpNotFound();
@@ -743,7 +743,16 @@ namespace WebApp.Controllers
 
             // TODO: Update the calendar and dropbox folder if appropriate.
 
-            return View(serviceRequest);
+            return View(new EditViewModel
+            {
+                ServiceRequestId = serviceRequest.Id,
+                ClaimantName = serviceRequest.ClaimantName,
+                DueDate = serviceRequest.DueDate,
+                CompanyReferenceId = serviceRequest.CompanyReferenceId,
+                AdditionalNotes = serviceRequest.Notes,
+                RequestedBy = serviceRequest.RequestedBy,
+                RequestedDate = serviceRequest.RequestedDate
+            });
         }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -751,25 +760,26 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Edit(ServiceRequest sr)
+        public async Task<ActionResult> Edit(EditViewModel sr)
         {
             if (ModelState.IsValid)
             {
-                using (context = new OrvosiDbContext(User.Identity.Name))
-                {
-                    // get the tracked object from the database
-                    var obj = await context.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.Id);
+                // get the tracked object from the database
+                var obj = await context.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.ServiceRequestId);
 
-                    // update the resource assignments
-                    obj.ClaimantName = sr.ClaimantName;
-                    obj.CompanyReferenceId = sr.CompanyReferenceId;
-                    obj.DueDate = sr.DueDate;
-                    obj.Notes = sr.Notes;
+                // update the resource assignments
+                obj.ClaimantName = sr.ClaimantName;
+                obj.CompanyReferenceId = sr.CompanyReferenceId;
+                obj.DueDate = sr.DueDate;
+                obj.Notes = sr.AdditionalNotes;
+                obj.RequestedBy = sr.RequestedBy;
+                obj.RequestedDate = sr.RequestedDate;
+                obj.ModifiedDate = SystemTime.Now();
+                obj.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
-                    await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-                    return RedirectToAction("Details", new { id = obj.Id });
-                }
+                return RedirectToAction("Details", new { id = sr.ServiceRequestId });
             }
             return View(sr);
         }

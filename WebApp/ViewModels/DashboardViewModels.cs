@@ -202,7 +202,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                  Workload = o.Workload.GetValueOrDefault(0)
                                                                              },
                                                                      People = from o in assessments
-                                                                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType } into at
+                                                                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
                                                                               where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"
                                                                               select new Person
                                                                               {
@@ -210,7 +210,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                   DisplayName = at.Key.AssignedToDisplayName,
                                                                                   ColorCode = at.Key.AssignedToColorCode,
                                                                                   Initials = at.Key.AssignedToInitials,
-
+                                                                                  RoleId = at.Key.ResponsibleRoleId.Value,
+                                                                                  RoleName = at.Key.ResponsibleRoleName,
                                                                                   //ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                                                                                   //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                                   Tasks = from o in assessments
@@ -270,7 +271,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                      Workload = o.Workload.GetValueOrDefault(0)
                                  },
                          People = from o in addOns
-                                  group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType } into p
+                                  group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into p
                                   where p.Key.ServiceRequestId == sr.Key.ServiceRequestId && p.Key.TaskType != "EVENT"
                                   select new Person
                                   {
@@ -278,6 +279,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                                       DisplayName = p.Key.AssignedToDisplayName,
                                       ColorCode = p.Key.AssignedToColorCode,
                                       Initials = p.Key.AssignedToInitials,
+                                      RoleId = p.Key.ResponsibleRoleId.Value,
+                                      RoleName = p.Key.ResponsibleRoleName,
                                       ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                                       WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                       Tasks = from o in addOns
@@ -344,14 +347,13 @@ namespace WebApp.ViewModels.DashboardViewModels
                     t.AssignedToDisplayName,
                     t.AssignedToColorCode,
                     t.AssignedToInitials,
-                    t.TaskType
+                    t.TaskType,
                 }).Select(p => new DashboardViewModels.Person
                 {
                     Id = p.Key.AssignedTo,
                     DisplayName = p.Key.AssignedToDisplayName,
                     ColorCode = p.Key.AssignedToColorCode,
                     Initials = p.Key.AssignedToInitials,
-                    IsEvent = p.Key.TaskType == "EVENT" ? true : false,
                     Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo)
                         .Select(t => new Task
                         {
@@ -650,7 +652,8 @@ namespace WebApp.ViewModels.DashboardViewModels
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public IEnumerable<Task> Tasks { get; set; }
-        public bool IsEvent { get; internal set; }
+        public Guid RoleId { get; internal set; }
+        public string RoleName { get; set; }
     }
 
     public class Task

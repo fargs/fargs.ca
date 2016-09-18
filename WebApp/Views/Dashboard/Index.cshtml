@@ -126,8 +126,40 @@
                                                                     @assessment.ClaimantName
                                                                 </a>
                                                             </td>
-                                                            <td style="vertical-align: text-top; width:50px;" class="text-center">
-                                                                @assessment.Id
+                                                            <td style="vertical-align: text-top; width:80px;" class="text-center">
+                                                                @if (roleId == AspNetRoles.Physician)
+	                                                            {
+		                                                             foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.IntakeAssistant)))
+                                                                     {
+                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                        </span>
+                                                                     }
+                                                                }
+                                                                else if (roleId == AspNetRoles.IntakeAssistant)
+                                                                {
+                                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.Physician)))
+                                                                    {
+                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                        </span>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.Physician || p.RoleId == AspNetRoles.IntakeAssistant)))
+                                                                    {
+                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                        </span>
+                                                                    }
+                                                                }
                                                             </td>
                                                         </tr>
                                                         <tr id="assessment-@assessment.Id" class="collapse">

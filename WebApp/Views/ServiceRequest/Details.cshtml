@@ -1,5 +1,5 @@
 ﻿@using WebApp.Library.Extensions
-@using WebApp.Library;
+@using WebApp.Library
 @using Orvosi.Shared.Enums
 @using Box.V2.Models
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
@@ -18,7 +18,7 @@
                         Actions <span class="caret"></span>
                     </button>
                     @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
-                {
+                    {
                         <ul class="dropdown-menu">
                             <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
                             <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
@@ -117,7 +117,7 @@
     </div>
     <div class="col-sm-5">
         <p>
-            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <h4 style="line-height:30px;">Case @Model.ServiceRequest.Id</h4>
+            <h4 style="line-height:30px;">@Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId) Case @Model.ServiceRequest.Id</h4>
         </p>
         <hr />
         <div class="panel panel-success">

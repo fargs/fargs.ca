@@ -117,16 +117,17 @@
     </div>
     <div class="col-sm-5">
         <p>
-            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <span>Case @Model.ServiceRequest.Id</span>
+            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <h4 style="line-height:30px;">Case @Model.ServiceRequest.Id</h4>
         </p>
+        <hr />
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
                 @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
                 {
-                <div class="pull-right">
-                    @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
-                </div>
+                    <div class="pull-right">
+                        @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
+                    </div>
                 }
             </div>
             <div class="panel-body">
@@ -137,45 +138,45 @@
                             <td width="50px">
                                 @if (task.TaskType == "EVENT")
                                 {
-                                    <span class="btn btn-sm btn-circle">
-                                        <i class="glyphicon glyphicon-calendar"></i>
-                                    </span>
+                                <span class="btn btn-sm btn-circle">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                </span>
                                 }
                                 else
                                 {
-                                    <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AssignedToDisplayName : "Unassigned")"
-                                          class="btn btn-sm btn-circle disabled pull-left"
-                                          style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AssignedToColorCode : "red")"
-                                          data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
-                                        <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
-                                    </span>
-                                    <div id="task-modal-@task.Id" class="modal fade">
-                                        <div class="modal-dialog modal-sm">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="~/ServiceRequestTask/PickUp" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <input type="submit" value="Pick Up" class="btn btn-default" />
-                                                    </form>
-                                                    <div>Or</div>
-                                                    <form action="~/ServiceRequestTask/AssignTo" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <div class="form-group">
-                                                            <label class="control-label">Assign To: </label>
-                                                            @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                            @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AssignedToDisplayName : "Unassigned")"
+                                      class="btn btn-sm btn-circle disabled pull-left"
+                                      style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AssignedToColorCode : "red")"
+                                      data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
+                                    <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
+                                </span>
+                                <div id="task-modal-@task.Id" class="modal fade">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="~/ServiceRequestTask/PickUp" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                    <input type="submit" value="Pick Up" class="btn btn-default" />
+                                                </form>
+                                                <div>Or</div>
+                                                <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                    <div class="form-group">
+                                                        <label class="control-label">Assign To: </label>
+                                                        @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                        @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 }
                             </td>
                             <td width="20px">
@@ -217,6 +218,11 @@
         </div>
     </div>
     <div class="col-sm-4">
+        
+        <h4 style="line-height:30px;">Case Files and Reports</h4>
+        <hr />
+        <a href="@string.Format("https://orvosi.app.box.com/files/0/f/{0}", Model.ServiceRequest.BoxCaseFolderId)">Open Case Folder</a>
+        <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
         {
             <div class="panel panel-default">
@@ -261,12 +267,18 @@
         }
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
         {
+            <h4 style="line-height:30px;">Invoice</h4>
+            <hr />
             if (role == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)
                     <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
                 </form>
+            }
+            else if (Model.ServiceRequest.InvoiceDetails.Count == 0)
+            {
+                <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
             }
             foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails.Where(id => id.IsDeleted == false))
             {

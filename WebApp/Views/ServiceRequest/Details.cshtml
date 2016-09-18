@@ -131,7 +131,7 @@
                     @foreach (var task in Model.ServiceRequestMapped.Tasks.OrderBy(sr => sr.Sequence))
                     {
                         <tr>
-                            <td>
+                            <td width="50px">
                                 @if (task.TaskType == "EVENT")
                                 {
                                     <span class="btn btn-sm btn-circle">
@@ -193,7 +193,7 @@
                                     </form>
                                 }
                             </td>
-                            <td>
+                            <td width="100px">
                                 @Html.Partial("_TaskStatusLabel", task)
                             </td>
                             <td>@task.Name</td>

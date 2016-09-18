@@ -40,6 +40,9 @@ namespace Orvosi.Data
             Property(x => x.AdditionalNotes).HasColumnName(@"AdditionalNotes").IsOptional().HasColumnType("nvarchar").HasMaxLength(1000);
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
+            Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.DeletedBy).HasColumnName(@"DeletedBy").IsOptional().HasColumnType("uniqueidentifier");
 
             // Foreign keys
             HasOptional(a => a.ServiceRequest).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_InvoiceDetail_ServiceRequest

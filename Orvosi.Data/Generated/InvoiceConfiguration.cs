@@ -66,6 +66,9 @@ namespace Orvosi.Data
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.Hst).HasColumnName(@"Hst").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
+            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
+            Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.DeletedBy).HasColumnName(@"DeletedBy").IsOptional().HasColumnType("uniqueidentifier");
             InitializePartial();
         }
         partial void InitializePartial();

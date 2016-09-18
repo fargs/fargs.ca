@@ -30,6 +30,9 @@ namespace Orvosi.Data
         public string AdditionalNotes { get; set; } // AdditionalNotes (length: 1000)
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public bool IsDeleted { get; set; } // IsDeleted
+        public System.DateTime? DeletedDate { get; set; } // DeletedDate
+        public System.Guid? DeletedBy { get; set; } // DeletedBy
 
         // Foreign keys
         public virtual Invoice Invoice { get; set; } // FK_InvoiceDetail_Invoice
@@ -39,6 +42,7 @@ namespace Orvosi.Data
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            IsDeleted = false;
             InitializePartial();
         }
 

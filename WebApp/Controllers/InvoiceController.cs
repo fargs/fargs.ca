@@ -356,6 +356,23 @@ namespace WebApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Super Admin, Case Coordinator")]
+        public ActionResult Delete(int invoiceDetailId)
+        {
+            var invoiceDetail = db.InvoiceDetails.Find(invoiceDetailId);
+            invoiceDetail.IsDeleted = true;
+            invoiceDetail.DeletedBy = User.Identity.GetGuidUserId();
+            invoiceDetail.DeletedDate = SystemTime.Now();
+
+            var invoice = invoiceDetail.Invoice;
+            invoice.IsDeleted = true;
+            invoice.DeletedBy = User.Identity.GetGuidUserId();
+            invoice.DeletedDate = SystemTime.Now();
+
+            db.SaveChanges();
+            return RedirectToAction("Details", "ServiceRequest", new { id = invoiceDetail.ServiceRequestId });
+        }
+
         //[AllowAnonymous]
         //public ActionResult DownloadReport(Guid id)
         //{

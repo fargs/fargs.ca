@@ -28,6 +28,8 @@
             <li>
                 <a href="~/Invoice/Download/@Model.ObjectGuid" class="btn btn-sm">Download</a>
             </li>
+            <li class="divider"></li>
+            <li><a href="~/Invoice/Delete?invoiceDetailId=@Model.InvoiceDetails.First().Id">Delete</a></li>
         </ul>
     </div>
 

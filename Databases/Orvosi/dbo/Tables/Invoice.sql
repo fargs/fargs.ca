@@ -37,9 +37,14 @@
     [PaymentReceivedDate]         DATETIME         NULL,
     [ModifiedDate]                DATETIME         CONSTRAINT [DF_Invoice_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]                NVARCHAR (100)   CONSTRAINT [DF_Invoice_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
-	[Hst]                    DECIMAL (10, 2)  NULL,
+    [Hst]                         DECIMAL (10, 2)  NULL,
+    [IsDeleted]                   BIT              CONSTRAINT [DF_Invoice_IsDeleted] DEFAULT ((0)) NOT NULL,
+    [DeletedDate]                 DATETIME         NULL,
+    [DeletedBy]                   UNIQUEIDENTIFIER NULL,
     CONSTRAINT [PK_Invoice] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

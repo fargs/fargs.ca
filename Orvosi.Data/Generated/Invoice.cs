@@ -56,6 +56,9 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public decimal? Hst { get; set; } // Hst
+        public bool IsDeleted { get; set; } // IsDeleted
+        public System.DateTime? DeletedDate { get; set; } // DeletedDate
+        public System.Guid? DeletedBy { get; set; } // DeletedBy
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_Invoice
@@ -65,6 +68,7 @@ namespace Orvosi.Data
             ObjectGuid = System.Guid.NewGuid();
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            IsDeleted = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             InitializePartial();
         }

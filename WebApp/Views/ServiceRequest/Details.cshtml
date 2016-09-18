@@ -117,7 +117,7 @@
     </div>
     <div class="col-sm-5">
         <p>
-            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <strong>Case @Model.ServiceRequest.Id</strong>
+            @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId)  <span>Case @Model.ServiceRequest.Id</span>
         </p>
         <div class="panel panel-success">
             <div class="panel-heading">
@@ -265,7 +265,7 @@
                     <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
                 </form>
             }
-            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
+            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails.Where(id => id.IsDeleted == false))
             {
                 <div class="panel panel-default">
                     <div class="panel-heading">

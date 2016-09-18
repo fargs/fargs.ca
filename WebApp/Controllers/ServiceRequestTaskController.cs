@@ -286,8 +286,9 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            serviceRequestTask.CompletedDate = serviceRequestTask.CompletedDate.HasValue ? (DateTime?)null : SystemTime.Now();
-            serviceRequestTask.CompletedBy = serviceRequestTask.CompletedDate.HasValue ? (Guid?)null : User.Identity.GetGuidUserId();
+            var isComplete = Request.Form.Get("IsComplete") == "on" ? true : false;
+            serviceRequestTask.CompletedDate = isComplete ? SystemTime.Now() : (DateTime?)null;
+            serviceRequestTask.CompletedBy = isComplete ? User.Identity.GetGuidUserId() : (Guid?)null;
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
             serviceRequestTask.ServiceRequest.UpdateIsClosed();

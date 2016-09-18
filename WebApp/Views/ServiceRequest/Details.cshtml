@@ -184,6 +184,7 @@
                                         <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
                                             <label>
                                                 <input id="task-checkbox-@task.Id" type="checkbox"
+                                                       name="IsComplete"
                                                        value="@task.IsComplete"
                                                        @(task.IsComplete ? "checked" : "")
                                                        @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")

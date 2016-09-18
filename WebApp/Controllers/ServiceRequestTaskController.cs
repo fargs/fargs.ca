@@ -44,6 +44,8 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult AddRespondToQACommentsTask(int serviceRequestId)
         {
+            var request = db.ServiceRequests.Find(serviceRequestId);
+
             var st = db.OTasks.Single(t => t.Id == Tasks.RespondToQAComments);
             var task = new ServiceRequestTask();
             task.ServiceRequestId = serviceRequestId;
@@ -65,7 +67,9 @@ namespace WebApp.Controllers
             task.ModifiedDate = SystemTime.Now();
             task.ModifiedUser = User.Identity.Name;
 
-            db.ServiceRequestTasks.Add(task);
+            request.ServiceRequestTasks.Add(task);
+
+            request.UpdateIsClosed();
 
             //var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
             //obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
@@ -268,6 +272,7 @@ namespace WebApp.Controllers
             serviceRequestTask.IsObsolete = !serviceRequestTask.IsObsolete;
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
+            serviceRequestTask.ServiceRequest.UpdateIsClosed();
             await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -284,6 +289,7 @@ namespace WebApp.Controllers
             serviceRequestTask.CompletedDate = serviceRequestTask.CompletedDate.HasValue ? (DateTime?)null : SystemTime.Now();
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
+            serviceRequestTask.ServiceRequest.UpdateIsClosed();
             await context.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }

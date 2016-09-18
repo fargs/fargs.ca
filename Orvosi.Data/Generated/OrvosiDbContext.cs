@@ -665,13 +665,7 @@ namespace Orvosi.Data
             return (int) procResultParam.Value;
         }
 
-        public System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
-        {
-            int procResult;
-            return DashboardServiceRequestSummary(assignedTo, physicianId, dateRangeStart, dateRangeEnd, out procResult);
-        }
-
-        public System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd, out int procResult)
+        public int DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
         {
             var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
             if (!assignedTo.HasValue)
@@ -690,33 +684,10 @@ namespace Orvosi.Data
                 dateRangeEndParam.Value = System.DBNull.Value;
 
             var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
-            var procResultData = Database.SqlQuery<DashboardServiceRequestSummaryReturnModel>("EXEC @procResult = [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam, procResultParam).ToList();
-
-            procResult = (int) procResultParam.Value;
-            return procResultData;
-        }
-
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel>> DashboardServiceRequestSummaryAsync(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
-        {
-            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
-            if (!assignedTo.HasValue)
-                assignedToParam.Value = System.DBNull.Value;
-
-            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
-            if (!physicianId.HasValue)
-                physicianIdParam.Value = System.DBNull.Value;
-
-            var dateRangeStartParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeStart", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeStart.GetValueOrDefault() };
-            if (!dateRangeStart.HasValue)
-                dateRangeStartParam.Value = System.DBNull.Value;
-
-            var dateRangeEndParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeEnd", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeEnd.GetValueOrDefault() };
-            if (!dateRangeEnd.HasValue)
-                dateRangeEndParam.Value = System.DBNull.Value;
-
-            var procResultData = await Database.SqlQuery<DashboardServiceRequestSummaryReturnModel>("EXEC [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam).ToListAsync();
-
-            return procResultData;
+ 
+            Database.ExecuteSqlCommand("EXEC @procResult = [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam, procResultParam);
+ 
+            return (int) procResultParam.Value;
         }
 
     }

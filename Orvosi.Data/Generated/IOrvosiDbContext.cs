@@ -131,9 +131,8 @@ namespace Orvosi.Data
         int ToggleNoShow(int? id);
         // ToggleNoShowAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
 
-        System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd);
-        System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel> DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd, out int procResult);
-        System.Threading.Tasks.Task<System.Collections.Generic.List<DashboardServiceRequestSummaryReturnModel>> DashboardServiceRequestSummaryAsync(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd);
+        int DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd);
+        // DashboardServiceRequestSummaryAsync cannot be created due to having out parameters, or is relying on the procedure result (int)
 
     }
 

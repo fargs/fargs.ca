@@ -15,7 +15,7 @@
     <RootNamespace>WebApp</RootNamespace>
     <AssemblyName>Orvosi.WebApp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <MvcBuildViews>true</MvcBuildViews>
+    <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44302</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -409,6 +409,7 @@
     <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Helpers.cs" />
+    <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BoxModels.cs" />
@@ -416,6 +417,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="Models\ServiceRequestModels.cs" />
+    <Compile Include="Services\ServiceRequestService.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />

@@ -30,11 +30,11 @@
                             @if (Model.ServiceRequest.CanBeUncancelled(SystemTime.Now()))
                             {
                                 <li role="separator" class="divider"></li>
-                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { id = Model.ServiceRequest.Id })</li>
+                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
                             else if (Model.ServiceRequest.CanBeCancelled(SystemTime.Now()))
                             {
-                                <li>@Html.ActionLink("Cancel", "Cancel", new { id = Model.ServiceRequest.Id })</li>
+                                <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
                         </ul>
                     }
@@ -51,7 +51,7 @@
         <hr />
         <h3>@Model.ServiceRequest.ClaimantName</h3>
         <p class="small text-muted">@Model.ServiceRequest.Service.Name, @Model.ServiceRequest.Company.Name</p>
-        @if (Model.ServiceRequest.IsClosed())
+        @if (Model.ServiceRequest.IsClosed)
         {
             <span class="label label-danger">
                 Closed
@@ -96,18 +96,18 @@
             <div class="col-md-12">
                 @if (Model.ServiceRequest.CanNoShowBeUndone(SystemTime.Now()))
                 {
-                    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                    <form action="~/ServiceRequest/UndoNoShow" method="post">
                         @Html.AntiForgeryToken()
-                        @Html.Hidden("id")
+                        @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
                         <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
                         <span><button class="btn btn-link">Undo</button></span>
                     </form>
                 }
                 else if (Model.ServiceRequest.CanBeNoShow(SystemTime.Now()))
                 {
-                    <form action="~/ServiceRequest/ToggleNoShow" method="post">
+                    <form action="~/ServiceRequest/NoShow" method="post">
                         @Html.AntiForgeryToken()
-                        @Html.Hidden("id")
+                        @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
                         <button class="btn btn-default">No Show</button>
                         <div class="help-block">Click to flag this case as a "No Show"</div>
                     </form>

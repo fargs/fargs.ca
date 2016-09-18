@@ -91,9 +91,9 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     public class CancellationForm
     {
         [Required]
-        public int? Id { get; set; }
+        public int ServiceRequestId { get; set; }
         [Required]
-        public DateTime? CancelledDate { get; set; }
+        public DateTime CancelledDate { get; set; }
         public string IsLate { get; set; }
         public string Notes { get; set; }
 

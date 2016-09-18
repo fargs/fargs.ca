@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [Analysis].[ServiceRequest]
 AS
 
@@ -21,7 +22,7 @@ AS
 	FROM dbo.ServiceRequest sr 
 	LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
 	LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
-	LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId2(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
+	LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
 	LEFT JOIN dbo.Company c ON sr.CompanyId = c.Id
 	LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
 	LEFT JOIN dbo.[Address] a ON sr.AddressId = a.Id
@@ -66,7 +67,7 @@ AS
 		FROM dbo.ServiceRequest sr 
 		LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
 		LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
-		LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId2(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
+		LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
 		LEFT JOIN dbo.Company c ON sr.CompanyId = c.Id
 		LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
 		LEFT JOIN dbo.[Address] a ON sr.AddressId = a.Id

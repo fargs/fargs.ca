@@ -266,7 +266,6 @@
     <Build Include="API\Views\Dashboard.sql" />
     <Build Include="Analysis\Views\ServiceRequest.sql" />
     <Build Include="dbo\Functions\GetTaskStatusId2.sql" />
-    <Build Include="dbo\Functions\GetServiceStatusId2.sql" />
     <Build Include="dbo\Functions\GetServiceRequestTaskStatus.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatus.sql" />
     <Build Include="dbo\Stored Procedures\DashboardServiceRequestSummary.sql" />

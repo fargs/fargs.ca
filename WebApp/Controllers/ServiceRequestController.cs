@@ -369,6 +369,8 @@ namespace WebApp.Controllers
                     sr.ServiceRequestTasks.Add(st);
                 }
 
+                sr.UpdateIsClosed();
+
                 ctx.ServiceRequests.Add(sr);
 
                 await ctx.SaveChangesAsync();
@@ -562,7 +564,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
-            if (sr.ServiceId != Services.Addendum && sr.ServiceId != Services.PaperReview)
+            if (sr.ServiceId != Orvosi.Shared.Enums.Services.Addendum && sr.ServiceId != Orvosi.Shared.Enums.Services.PaperReview)
             {
                 this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
             }
@@ -622,7 +624,7 @@ namespace WebApp.Controllers
 
                     sr.ServiceRequestTasks.Add(st);
                 }
-
+                sr.UpdateIsClosed();
                 ctx.ServiceRequests.Add(sr);
                 await ctx.SaveChangesAsync();
 
@@ -800,14 +802,9 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Cancel(int? id)
+        public async Task<ActionResult> Cancel(int serviceRequestId)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            ServiceRequest serviceRequest = await context.ServiceRequests.FindAsync(id);
+            ServiceRequest serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
 
             if (serviceRequest == null)
             {
@@ -823,11 +820,7 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public async Task<ActionResult> Cancel(CancellationForm form)
         {
-            if (!form.Id.HasValue)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var serviceRequest = await context.ServiceRequests.FindAsync(form.Id);
+            var serviceRequest = await context.ServiceRequests.FindAsync(form.ServiceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
@@ -835,90 +828,95 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                context.ToggleCancellation(form.Id, form.CancelledDate, form.IsLate == "on" ? true : false, string.Concat(serviceRequest.Notes, '\n', form.Notes));
-
+                serviceRequest.CancelledDate = form.CancelledDate;
                 serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
+                serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
 
-                if (serviceRequest.InvoiceDetails.Count > 0)
-                {
-                    var detail = serviceRequest.InvoiceDetails.First();
-                    if (serviceRequest.IsLateCancellation)
-                    {
-                        var rates = context.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
-                        detail.ApplyDiscount(DiscountTypes.LateCancellation, rates.LateCancellationRate);
-                    }
-                    else
-                    {
-                        detail.RemoveDiscount();
-                    }
+                serviceRequest.MarkActiveTasksAsObsolete();
 
-                    detail.Invoice.CalculateTotal();
-                    await context.SaveChangesAsync();
-                }
+                serviceRequest.UpdateIsClosed();
 
-                return RedirectToAction("Index");
+                serviceRequest.UpdateInvoice(context);
+
+                await context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { id = serviceRequest.Id });
             }
             return View(serviceRequest);
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> UndoCancel(int? id)
+        public async Task<ActionResult> UndoCancel(int serviceRequestId)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var serviceRequest = await context.ServiceRequests.FindAsync(id);
+            var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
             }
-            context.ToggleCancellation(id, null, false, string.Empty);
 
-            if (serviceRequest.InvoiceDetails.Count > 0)
-            {
-                var detail = serviceRequest.InvoiceDetails.First();
-                detail.RemoveDiscount();
-                detail.Invoice.CalculateTotal();
-                await context.SaveChangesAsync();
-            }
+            serviceRequest.CancelledDate = null;
+            serviceRequest.IsLateCancellation = false;
+            serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', "Cancellation Undone");
+
+            serviceRequest.MarkObsoleteTasksAsActive();
+
+            serviceRequest.UpdateIsClosed();
+
+            serviceRequest.UpdateInvoice(context);
+
+            await context.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ToggleNoShow(int? id)
+        public async Task<ActionResult> NoShow()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var serviceRequest = await context.ServiceRequests.FindAsync(id);
+            var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
+            var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
             }
-            context.ToggleNoShow(id);
 
-            serviceRequest.IsNoShow = !serviceRequest.IsNoShow;
+            serviceRequest.IsNoShow = true;
 
-            if (serviceRequest.InvoiceDetails.Count > 0)
+            serviceRequest.MarkActiveTasksAsObsolete();
+
+            serviceRequest.UpdateIsClosed();
+
+            serviceRequest.UpdateInvoice(context);
+
+            await context.SaveChangesAsync();
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UndoNoShow()
+        {
+            var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
+            if (serviceRequestId == null)
             {
-                var detail = serviceRequest.InvoiceDetails.First();
-                if (serviceRequest.IsNoShow)
-                {
-                    var rates = context.GetServiceCatalogueRate(detail.Invoice.ServiceProviderGuid, detail.Invoice.CustomerGuid).First();
-                    detail.ApplyDiscount(DiscountTypes.NoShow, rates.NoShowRate);
-                }
-                else
-                {
-                    detail.RemoveDiscount();
-                }
-
-                detail.Invoice.CalculateTotal();
-                await context.SaveChangesAsync();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
+            if (serviceRequest == null)
+            {
+                return HttpNotFound();
+            }
+
+            serviceRequest.IsNoShow = false;
+
+            serviceRequest.MarkObsoleteTasksAsActive();
+
+            serviceRequest.UpdateIsClosed();
+
+            serviceRequest.UpdateInvoice(context);
+
+            await context.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
         }

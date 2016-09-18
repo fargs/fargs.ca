@@ -154,9 +154,6 @@
     <Compile Include="Generated\CountryConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\DashboardServiceRequestSummaryReturnModel.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Generated\Document.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

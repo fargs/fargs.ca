@@ -89,14 +89,6 @@ namespace Orvosi.Data
             return IsReportSubmitted() && !ServiceRequestTasks.First(srt => srt.TaskId == Tasks.RespondToQAComments).IsComplete();
         }
 
-        public bool IsClosed()
-        {
-            if (ServiceRequestTasks.All(srt => srt.CompletedDate.HasValue || srt.IsObsolete))
-                return true;
-
-            return false;
-        }
-
         public string GetCalendarEventTitle()
         {
             return $"{this.Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id})";

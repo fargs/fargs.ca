@@ -203,7 +203,7 @@ namespace WebApp.Controllers
             tasks = tasks
                 .Where(t => !t.IsObsolete)
                 .Select(t => {
-                    if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue)
+                    if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue && serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
                     {
                         var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(3);
                         t.DueDate = t.DueDateBase == 1 ? serviceRequest.AppointmentDate.Value.AddDays(t.DueDateDiff.Value) : reportDueDate.AddDays(t.DueDateDiff.Value);

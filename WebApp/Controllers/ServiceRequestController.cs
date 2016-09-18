@@ -248,7 +248,7 @@ namespace WebApp.Controllers
             vm.SelectedPhysician = physician;
             vm.ServiceRequest = serviceRequest;
 
-            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
@@ -286,7 +286,7 @@ namespace WebApp.Controllers
                 });
 
             vm.StaffSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -394,123 +394,6 @@ namespace WebApp.Controllers
             }
             return await Create(selectedAvailableDayId, selectedPhysicianId);
 
-            ////CREATE THE INVOICE
-            //var serviceRequest = obj;
-
-            //var serviceProvider = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.PhysicianId);
-            //var customer = await context.BillableEntities.SingleOrDefaultAsync(c => c.EntityGuid == serviceRequest.CompanyGuid.Value);
-
-            //var invoiceNumber = context.GetNextInvoiceNumber().SingleOrDefault();
-            //var invoiceDate = serviceRequest.AppointmentDate.Value;
-
-            //var invoice = new Invoice();
-            //invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
-
-            //// Create or update the invoice detail for the service request
-            //InvoiceDetail invoiceDetail;
-
-            //invoiceDetail = context.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
-            //if (invoiceDetail == null)
-            //{
-            //    invoiceDetail = new InvoiceDetail();
-            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-            //    invoice.InvoiceDetails.Add(invoiceDetail);
-            //}
-            //else
-            //{
-            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-            //}
-
-            //invoice.CalculateTotal();
-            //context.Invoices.Add(invoice);
-
-            //var validationResults = context.GetValidationErrors();
-            //if (validationResults.Count() > 0)
-            //{
-            //    foreach (var validationResult in validationResults)
-            //    {
-            //        foreach (var error in validationResult.ValidationErrors)
-            //        {
-            //            additionalErrors.Add(new ModelError(error.ErrorMessage));
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    await context.SaveChangesAsync();
-            //}
-
-            /*  TODO: Create the calendar event in the physician booking calendar.
-                TITLE will equal the Calendar Title field.
-                WHERE will be populated with the location address.
-                DESCRIPTION will be populated with:
-                    Case Details: 
-                    https://orvosi.ca/servicerequest/details/[id]
-
-                    Case Folder:
-                    [Case Folder Name field]
-
-                NOTE: Invitees will be set with the resources are assigned. Not now.
-
-                TODO: Create the DropBox folder.
-                TITLE will equal the Case Folder Name field.
-                PATH will equal Cases/[physician user name]/[yyyy-mm]/[case folder name]
-
-                NOTE: Share permissions will be granted when the resources are assigned.
-            */
-
-            ///***********************************
-            //Dropbox
-            //***********************************/
-            //var dropbox = new OrvosiDropbox();
-            //var client = await dropbox.GetServiceAccountClientAsync();
-            //Metadata folder = null;
-            //List<MembersGetInfoItem> members = new List<MembersGetInfoItem>();
-            //try
-            //{
-
-            //    // Copy the case template folder
-            //    var destination = obj.DocumentFolderLink;
-            //    folder = await client.Files.CopyAsync(new RelocationArg("/cases/_casefoldertemplate", destination));
-            //    // Share the folder
-            //    var caseCoordinator = await db.Users.SingleAsync(c => c.Id == sr.CaseCoordinatorId.Value.ToString());
-            //    var share = await client.Sharing.ShareFolderAsync(new ShareFolderArg(folder.PathLower, MemberPolicy.Team.Instance, AclUpdatePolicy.Editors.Instance));
-            //    var sharedFolderId = share.AsComplete.Value.SharedFolderId;
-
-            //    var physician = await db.Users.SingleAsync(c => c.Id == obj.PhysicianId);
-            //    await DropboxAddMember(dropbox, client, caseCoordinator.Email, sharedFolderId);
-            //    await DropboxAddMember(dropbox, client, physician.Email, sharedFolderId);
-
-            //    // Get the folder
-            //    folder = await client.Files.GetMetadataAsync(folder.AsFolder.PathLower);
-
-            //    // Get the shared folder members
-            //    members = await GetSharedFolderMembers(dropbox, client, sharedFolderId);
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    additionalErrors.Add(new ModelError(ex.Message));
-            //}
-            // Create the calendar event
-
-            //// mark the first task as complete
-            //using (var db = new OrvosiDbContext(User.Identity.Name))
-            //{
-            //    var serviceRequestTask = await db.ServiceRequestTasks.SingleOrDefaultAsync(c => c.ServiceRequestId == obj.Id && c.TaskId == Tasks.CreateCaseFolder && !c.IsObsolete);
-            //    serviceRequestTask.CompletedDate = SystemTime.Now();
-            //    await db.SaveChangesAsync();
-            //}
-
-            //var model = new CreateSuccessViewModel()
-            //{
-            //    ServiceRequest = obj,
-            //    Folder = null,// folder,
-            //    Members = null, //members,
-            //    Invoice = invoice,
-            //    Errors = additionalErrors
-            //};
-
         }
 
         [HttpGet]
@@ -524,7 +407,7 @@ namespace WebApp.Controllers
         {
             var vm = new CreateViewModel();
 
-            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == ServiceCategories.AddOn)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
@@ -551,11 +434,19 @@ namespace WebApp.Controllers
                 });
 
             vm.StaffSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
                     Text = c.GetDisplayName(),
+                    Value = c.Id.ToString()
+                });
+
+            vm.ServiceRequestTemplateSelectList = ctx.ServiceRequestTemplates
+                .AsEnumerable()
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
                     Value = c.Id.ToString()
                 });
 
@@ -601,33 +492,51 @@ namespace WebApp.Controllers
                 sr.ServiceCataloguePrice = serviceCatalogue.Price;
                 sr.NoShowRate = rates.NoShowRate;
                 sr.LateCancellationRate = rates.LateCancellationRate;
+                sr.ServiceRequestTemplateId = sr.ServiceRequestTemplateId;
                 sr.ModifiedUser = User.Identity.Name;
                 sr.ModifiedDate = SystemTime.Now();
 
-                var service = await ctx.Services.FindAsync(serviceCatalogue.ServiceId);
-                var tasks = ctx.OTasks.Where(t => t.ServiceCategoryId == service.ServiceCategoryId);
+                var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
-                foreach (var task in tasks)
+                foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
-                    st.DependsOn = task.DependsOn;
-                    st.DueDateBase = task.DueDateBase;
-                    st.DueDateDiff = task.DueDateDiff;
-                    st.Guidance = task.Guidance;
-                    st.ObjectGuid = task.ObjectGuid;
-                    st.ResponsibleRoleId = task.ResponsibleRoleId;
-                    st.AssignedTo = GetTaskAssignment(task.ResponsibleRoleId, sr.PhysicianId, sr.CaseCoordinatorId);
-                    st.Sequence = task.Sequence;
-                    st.ShortName = task.ShortName;
-                    st.TaskId = task.Id;
-                    st.TaskName = task.Name;
+                    st.DueDateBase = template.OTask.DueDateBase;
+                    st.DueDateDiff = template.OTask.DueDateDiff;
+                    st.Guidance = template.OTask.Guidance;
+                    st.ObjectGuid = Guid.NewGuid();
+                    st.ResponsibleRoleId = template.OTask.ResponsibleRoleId;
+                    st.Sequence = template.Sequence;
+                    st.ShortName = template.OTask.ShortName;
+                    st.TaskId = template.OTask.Id;
+                    st.TaskName = template.OTask.Name;
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
+                    // Assign tasks to physician and case coordinator to start
+                    st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.ServiceRequestTemplateTaskId = template.Id;
+                    st.TaskType = template.OTask.TaskType;
 
                     sr.ServiceRequestTasks.Add(st);
                 }
+
                 sr.UpdateIsClosed();
+
                 ctx.ServiceRequests.Add(sr);
+
+                await ctx.SaveChangesAsync();
+
+                // Clone the related tasks
+                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+                {
+                    foreach (var dependentTemplate in taskTemplate.Child)
+                    {
+                        var task = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
+                        var dependent = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
+                        task.Child.Add(dependent);
+                    }
+                }
+
                 await ctx.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = sr.Id });

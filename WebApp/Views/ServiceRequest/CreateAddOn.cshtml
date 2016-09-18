@@ -7,7 +7,7 @@
 
 <h3>Create Paper Review/Addendum</h3>
 
-<form action="@Url.Content("~/ServiceRequest/CreateAddOn")" method="post" class="form-horizontal">
+<form action="@Url.Content("~/ServiceRequest/CreateAddOn")" method="post" class="form-horizontal" width="400px">
 
     @Html.AntiForgeryToken()
 
@@ -57,28 +57,10 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2">Reference Id</label>
+        <label class="control-label col-md-2">Company Reference Id</label>
         <div class="col-md-10">
             @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Requested On</label>
-        <div class="col-md-10">
-            <div class="input-group date" style="width:100%" id="RequestedDatePicker">
-                <input class="form-control" size="16" type="text" name="RequestedDate" id="RequestedDate">
-                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Additional Notes</label>
-        <div class="col-md-10">
-            <textarea class="form-control" name="Notes" rows="3"></textarea>
-            @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
         </div>
     </div>
 
@@ -87,6 +69,14 @@
         <div class="col-md-10">
             @Html.DropDownList("CaseCoordinatorId", new SelectList(Model.StaffSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Process Template</label>
+        <div class="col-md-10">
+            @Html.DropDownList("ServiceRequestTemplateId", new SelectList(Model.ServiceRequestTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("ServiceRequestTemplateId", "", new { @class = "text-danger" })
         </div>
     </div>
 

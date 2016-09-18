@@ -58,7 +58,7 @@ namespace Orvosi.Data
             Property(x => x.Workload).HasColumnName(@"Workload").IsOptional().HasColumnType("tinyint");
             Property(x => x.ServiceRequestTemplateTaskId).HasColumnName(@"ServiceRequestTemplateTaskId").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.TaskType).HasColumnName(@"TaskType").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(20);
-            Property(x => x.TaskStatusId).HasColumnName(@"TaskStatusId").IsOptional().HasColumnType("tinyint");
+            Property(x => x.CompletedBy).HasColumnName(@"CompletedBy").IsOptional().HasColumnType("uniqueidentifier");
 
             // Foreign keys
             HasOptional(a => a.AspNetUser).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers

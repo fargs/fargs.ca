@@ -665,31 +665,6 @@ namespace Orvosi.Data
             return (int) procResultParam.Value;
         }
 
-        public int DashboardServiceRequestSummary(System.Guid? assignedTo, System.Guid? physicianId, System.DateTime? dateRangeStart, System.DateTime? dateRangeEnd)
-        {
-            var assignedToParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@AssignedTo", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = assignedTo.GetValueOrDefault() };
-            if (!assignedTo.HasValue)
-                assignedToParam.Value = System.DBNull.Value;
-
-            var physicianIdParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@PhysicianId", SqlDbType = System.Data.SqlDbType.UniqueIdentifier, Direction = System.Data.ParameterDirection.Input, Value = physicianId.GetValueOrDefault() };
-            if (!physicianId.HasValue)
-                physicianIdParam.Value = System.DBNull.Value;
-
-            var dateRangeStartParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeStart", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeStart.GetValueOrDefault() };
-            if (!dateRangeStart.HasValue)
-                dateRangeStartParam.Value = System.DBNull.Value;
-
-            var dateRangeEndParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@DateRangeEnd", SqlDbType = System.Data.SqlDbType.DateTime, Direction = System.Data.ParameterDirection.Input, Value = dateRangeEnd.GetValueOrDefault() };
-            if (!dateRangeEnd.HasValue)
-                dateRangeEndParam.Value = System.DBNull.Value;
-
-            var procResultParam = new System.Data.SqlClient.SqlParameter { ParameterName = "@procResult", SqlDbType = System.Data.SqlDbType.Int, Direction = System.Data.ParameterDirection.Output };
- 
-            Database.ExecuteSqlCommand("EXEC @procResult = [dbo].[DashboardServiceRequestSummary] @AssignedTo, @PhysicianId, @DateRangeStart, @DateRangeEnd", assignedToParam, physicianIdParam, dateRangeStartParam, dateRangeEndParam, procResultParam);
- 
-            return (int) procResultParam.Value;
-        }
-
     }
 }
 // </auto-generated>

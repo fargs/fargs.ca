@@ -160,7 +160,17 @@
     // Stored Procedures ******************************************************************************************************************
     // Use the following regex filters to include or exclude stored procedures
     StoredProcedureFilterExclude = null;
-    StoredProcedureFilterInclude = new Regex("(GetAssignedServiceRequests|GetServiceRequest|DashboardServiceRequestSummary|GetServiceCatalogue|GetServiceCatalogueForCompany|GetServiceRequestResources|GetNextInvoiceNumber|ToggleCancellation|ToggleNoShow|GetCompanyProvince|GetBoxTokens|SaveBoxTokens)");
+    StoredProcedureFilterInclude = new Regex("(GetAssignedServiceRequests" +
+		"|GetServiceRequest" +
+		"|GetServiceCatalogue" +
+		"|GetServiceCatalogueForCompany" +
+		"|GetServiceRequestResources" +
+		"|GetNextInvoiceNumber" +
+		"|ToggleCancellation" +
+		"|ToggleNoShow" +
+		"|GetCompanyProvince" +
+		"|GetBoxTokens" + 
+		"|SaveBoxTokens)");
 
 
     // Table renaming *********************************************************************************************************************

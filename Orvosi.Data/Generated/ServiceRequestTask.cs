@@ -48,7 +48,7 @@ namespace Orvosi.Data
         public byte? Workload { get; set; } // Workload
         public System.Guid? ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskId
         public string TaskType { get; set; } // TaskType (length: 20)
-        public byte? TaskStatusId { get; set; } // TaskStatusId
+        public System.Guid? CompletedBy { get; set; } // CompletedBy
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Child { get; set; } // Many to many mapping

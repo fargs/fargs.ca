@@ -81,6 +81,7 @@ namespace Orvosi.Data
             IsLateCancellation = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            IsClosed = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();

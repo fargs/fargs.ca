@@ -122,9 +122,12 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
+                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+                {
                 <div class="pull-right">
                     @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
                 </div>
+                }
             </div>
             <div class="panel-body">
                 <table class="table table-condensed">

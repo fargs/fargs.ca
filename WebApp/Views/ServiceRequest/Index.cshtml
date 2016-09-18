@@ -39,21 +39,6 @@
 
 <div class="row">
     <div class="col-md-2">
-        @if (User.IsInRole(AspNetRoles.SuperAdminName) || User.IsInRole(AspNetRoles.CaseCoordinatorName))
-        {
-            <p>
-                <div class="btn-group">
-                    <a class="btn btn-primary" href="~/ServiceRequest/Availability">Book an Exam</a>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="~/ServiceRequest/CreateAddOn">Paper Review/Addendum</a></li>
-                    </ul>
-                </div>
-            </p>
-        }
         <div class="well well-sm">
             <form action="@Url.Content("~/ServiceRequest/Index")" method="get">
                 <div class="form-group form-group-sm">

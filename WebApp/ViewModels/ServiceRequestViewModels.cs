@@ -158,4 +158,11 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public AspNetUser Resource { get; set; }
         public BoxFolder BoxFolder { get; set; }
     }
+    public class CaseSearchListItem
+    {
+        public int Id { get; set; }
+        public string Claimant { get; set; }
+        public string Url { get; set; }
+    }
+
 }

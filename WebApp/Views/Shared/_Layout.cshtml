@@ -1,6 +1,30 @@
 ﻿@using WebApp.Library.Extensions
 @using System.Security.Claims
+@using Orvosi.Data
 @using Orvosi.Shared.Enums
+@using WebApp.ViewModels.ServiceRequestViewModels
+
+@{
+    IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
+    if (HttpContext.Current.User.Identity.IsAuthenticated)
+    {
+        var userId = User.Identity.GetGuidUserId();
+        var context = new OrvosiDbContext();
+        var list = context.ServiceRequests.AsQueryable();
+        if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin && User.Identity.GetGuidUserId() != AspNetRoles.CaseCoordinator)
+        {
+            list = list.Where(sr => sr.PhysicianId == userId || sr.CaseCoordinatorId == userId || sr.DocumentReviewerId == userId || sr.IntakeAssistantId == userId);
+        }
+        caseSearchList = list
+            .AsEnumerable()
+            .Select(sr => new CaseSearchListItem()
+            {
+                Id = sr.Id,
+                Claimant = sr.ClaimantName,
+                Url = Url.Content("~/ServiceRequest/Details/" + sr.Id)
+            });
+    }
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,8 +50,33 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
+                        <li>
+                            <div id="cases">
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="form-group dropdown">
+                                        <input onfocus="dropdownSearch()" type="text" class="form-control search dropdown-toggle" placeholder="Search" data-toggle="dropdown">
+                                        <ul id="case-list" class="list dropdown-menu scrollable-menu"></ul>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
                         <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("Cases", "", "ServiceRequest", new { area = "" }, null)</li>
+                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
+                        {
+                            <li class="dropdown">
+                                <a href="~/ServiceRequest" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cases <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="~/ServiceRequest">View List</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="~/ServiceRequest/Availability">Book an Assessment</a></li>
+                                    <li><a href="~/ServiceRequest/CreateAddOn">Create Paper Review/Addendum</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Cases", "", "ServiceRequest", new { area = "" }, null)</li>
+                        }
                         if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
                         {
                             <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
@@ -97,6 +146,24 @@
     automatically in just a few seconds.
     -->
     <script type="text/javascript">
+
+        function dropdownSearch(){
+            $('.dropdown-toggle').dropdown();
+        }
+
+        var options = {
+            valueNames: [
+                'Id',
+                'Claimant',
+                { attr: 'href', name: 'Url' },
+            ],
+            item: '<li><a class="Url" href=""><span class="Id"></span> - <span class="Claimant"></span></a></li>'
+        };
+
+        var values = @Html.Raw(caseSearchList.ToJson());
+
+        var caseList = new List('cases', options, values);
+
         var appInsights = window.appInsights || function (config) {
             function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
         }({

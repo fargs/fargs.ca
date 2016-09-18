@@ -25,7 +25,7 @@ namespace WebApp.Library
             {
                 task.IsObsolete = !task.CompletedDate.HasValue ? true : false;
 
-                if (serviceRequest.IsLateCancellation && task.TaskId == Tasks.SubmitInvoice)
+                if ((serviceRequest.IsLateCancellation || serviceRequest.IsNoShow) && task.TaskId == Tasks.SubmitInvoice)
                     task.IsObsolete = false;
 
                 if (task.TaskId == Tasks.CloseCase)

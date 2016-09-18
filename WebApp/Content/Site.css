@@ -455,3 +455,7 @@ dd {
     max-height: 200px;
     overflow-x: hidden;
 }
+
+.section-top-padding {
+    padding-top: 25px;
+}

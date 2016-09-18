@@ -51,7 +51,8 @@ namespace WebApp.Models.ServiceRequestModels
                                 IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                 CompletedDate = o.CompletedDate,
                                 ServiceRequestId = o.ServiceRequestId,
-                                Workload = o.Workload.GetValueOrDefault(0)
+                                Workload = o.Workload.GetValueOrDefault(0),
+                                TaskType = o.TaskType
                             },
                     People = from o in source
                              where o.TaskType == null
@@ -81,7 +82,8 @@ namespace WebApp.Models.ServiceRequestModels
                                              IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                              CompletedDate = o.CompletedDate,
                                              ServiceRequestId = at.Key.ServiceRequestId,
-                                             Workload = o.Workload.GetValueOrDefault(0)
+                                             Workload = o.Workload.GetValueOrDefault(0),
+                                             TaskType = o.TaskType
                                          }
                              }
                 }).First();
@@ -125,7 +127,8 @@ namespace WebApp.Models.ServiceRequestModels
                                 IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                 CompletedDate = o.CompletedDate,
                                 ServiceRequestId = o.ServiceRequestId,
-                                Workload = o.Workload.GetValueOrDefault(0)
+                                Workload = o.Workload.GetValueOrDefault(0),
+                                TaskType = o.TaskType
                             },
                     People = from o in source
                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into at
@@ -155,7 +158,8 @@ namespace WebApp.Models.ServiceRequestModels
                                              IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                              CompletedDate = o.CompletedDate,
                                              ServiceRequestId = at.Key.ServiceRequestId,
-                                             Workload = o.Workload.GetValueOrDefault(0)
+                                             Workload = o.Workload.GetValueOrDefault(0),
+                                             TaskType = o.TaskType
                                          }
                              }
                 }).First();
@@ -253,7 +257,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                                                  IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                                                  CompletedDate = o.CompletedDate,
                                                                                  ServiceRequestId = o.ServiceRequestId,
-                                                                                 Workload = o.Workload.GetValueOrDefault(0)
+                                                                                 Workload = o.Workload.GetValueOrDefault(0),
+                                                                                 TaskType = o.TaskType
                                                                              },
                                                                      People = from o in assessments
                                                                               group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into at
@@ -283,7 +288,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                                                               IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                                                               CompletedDate = o.CompletedDate,
                                                                                               ServiceRequestId = at.Key.ServiceRequestId,
-                                                                                              Workload = o.Workload.GetValueOrDefault(0)
+                                                                                              Workload = o.Workload.GetValueOrDefault(0),
+                                                                                              TaskType = o.TaskType
                                                                                           }
                                                                               }
                                                                  }
@@ -339,7 +345,8 @@ namespace WebApp.Models.ServiceRequestModels
                                      IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                      CompletedDate = o.CompletedDate,
                                      ServiceRequestId = o.ServiceRequestId,
-                                     Workload = o.Workload.GetValueOrDefault(0)
+                                     Workload = o.Workload.GetValueOrDefault(0),
+                                     TaskType = o.TaskType
                                  },
                          People = from o in addOns
                                   group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into p
@@ -369,7 +376,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                   IsComplete = o.TaskStatusId == TaskStatuses.Done,
                                                   CompletedDate = o.CompletedDate,
                                                   ServiceRequestId = p.Key.ServiceRequestId,
-                                                  Workload = o.Workload.GetValueOrDefault(0)
+                                                  Workload = o.Workload.GetValueOrDefault(0),
+                                                  TaskType = o.TaskType
                                               }
                                   }
                      };

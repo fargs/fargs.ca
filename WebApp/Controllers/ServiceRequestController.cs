@@ -366,6 +366,8 @@ namespace WebApp.Controllers
                     // Assign tasks to physician and case coordinator to start
                     st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
+                    st.TaskType = template.OTask.TaskType;
+
                     sr.ServiceRequestTasks.Add(st);
                 }
 

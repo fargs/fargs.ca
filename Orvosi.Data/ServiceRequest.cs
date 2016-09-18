@@ -25,19 +25,22 @@ namespace Orvosi.Data
             }
             else if (Service.ServiceCategoryId == ServiceCategories.AddOn)
             {
-                return !IsReportSubmitted();
+                return !IsReportSubmitted() && !CancelledDate.HasValue;
             }
             return false;
         }
 
         public bool CanBeUncancelled(DateTime now)
         {
-            if (Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+            if (Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || Service.ServiceCategoryId == ServiceCategories.MedicalConsultation)
             {
                 var status = GetExaminationStatusId(now);
                 return status == ServiceStatus.Cancellation || status == ServiceStatus.LateCancellation;
             }
-            return false;
+            else
+            {
+                return CancelledDate.HasValue;
+            }
         }
 
         public bool CanBeNoShow(DateTime now)

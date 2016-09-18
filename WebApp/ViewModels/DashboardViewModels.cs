@@ -341,6 +341,7 @@ namespace WebApp.ViewModels.DashboardViewModels
 
             var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);
             this.People = todo
+                .Where(td => td.TaskType != "EVENT")
                 .GroupBy(t => new
                 {
                     t.AssignedTo,

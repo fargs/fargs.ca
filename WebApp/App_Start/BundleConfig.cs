@@ -58,6 +58,7 @@ namespace WebApp
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
+                      "~/Content/font-awesome-4.6.3/css/font-awesome.min.css",
                       "~/Content/site.css"));
 
             //bundles.Add(new StyleBundle("~/Content/jqueryui").Include(

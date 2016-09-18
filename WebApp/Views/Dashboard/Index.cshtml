@@ -16,9 +16,9 @@
                     @Html.DropDownList("ServiceProviderId", new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", Model.SelectedUserId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
                 @*<div class="form-group">
-                    @Html.CheckBox("showClosed", ShowClosed, new { @class = "form-control", onchange = "this.form.submit();" })
-                    Show All
-                </div>*@
+                        @Html.CheckBox("showClosed", ShowClosed, new { @class = "form-control", onchange = "this.form.submit();" })
+                        Show All
+                    </div>*@
             </form>
         </div>
     </div>
@@ -45,12 +45,12 @@
                 <div id="week-folders" class="panel-group">
                     @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
                     {
-                        <div class="panel panel-default">
+                        <div class="panel @(SystemTime.Now() >= weekFolder.StartDate && SystemTime.Now() < weekFolder.EndDate ? "panel-success" : "panel-default")">
                             <div id="header-weekfolder-@weekFolder.StartDateTicks" class="panel-heading" role="tab">
                                 <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
                                     <div class="panel-title">
                                         <div class="row">
-                                            <div class="col-xs-12 col-sm-8">
+                                            <div class="col-xs-12 col-sm-10">
                                                 <span>@weekFolder.WeekFolderName</span>
                                             </div>
                                             <div class="col-xs-1">
@@ -58,12 +58,6 @@
                                             </div>
                                             <div class="col-xs-1">
                                                 <span id="waiting-total-label" class="small label @(weekFolder.AssessmentWaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.AssessmentWaitingCount</strong></span>
-                                            </div>
-                                            <div class="col-xs-1">
-                                                <span id="done-total-label" class="small label @(weekFolder.AssessmentDoneCount > 0 ? "label-success" : "bg-success")"><strong id="done-total">@weekFolder.AssessmentDoneCount</strong></span>
-                                            </div>
-                                            <div class="col-xs-1">
-                                                <span id="obsolete-total-label" class="small label @(weekFolder.AssessmentObsoleteCount > 0 ? "label-info" : "bg-info")"><strong id="obsolete-total">@weekFolder.AssessmentObsoleteCount</strong></span>
                                             </div>
                                         </div>
                                     </div>
@@ -94,7 +88,7 @@
                                                             <td style="vertical-align: text-top; width:30px;">
                                                                 @if (assessment.ServiceRequestStatusId == TaskStatuses.Obsolete)
                                                                 {
-                                                                    <span id="assessment-total-label" class="small label label-info" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
+                                                                    <span id="assessment-total-label" class="fa fa-frown-o" style="color: dodgerblue;" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
                                                                 }
                                                                 else if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
                                                                 {
@@ -115,7 +109,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    <span id="assessment-total-label" class="small label label-success">&nbsp;</span>
+                                                                    <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>
                                                                 }
                                                             </td>
                                                             <td style="vertical-align: text-top; width:80px;">
@@ -128,15 +122,15 @@
                                                             </td>
                                                             <td style="vertical-align: text-top; width:80px;" class="text-center">
                                                                 @if (roleId == AspNetRoles.Physician)
-	                                                            {
-		                                                             foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.IntakeAssistant)))
-                                                                     {
+                                                                {
+                                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.IntakeAssistant)))
+                                                                    {
                                                                         <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                               class="btn btn-sm btn-circle btn-circle-groupitem disabled"
                                                                               style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                                             <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                         </span>
-                                                                     }
+                                                                    }
                                                                 }
                                                                 else if (roleId == AspNetRoles.IntakeAssistant)
                                                                 {
@@ -166,6 +160,10 @@
                                                             <td></td>
                                                             <td colspan="4">
                                                                 <div style="padding-top: 5px;">
+                                                                    @if (assessment.ServiceStatusId.HasValue)
+                                                                    {
+                                                                        @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
+                                                                    }
                                                                     @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
                                                                     {
                                                                         <form action="~/Dashboard/UpdateTaskStatus">
@@ -183,42 +181,36 @@
                                                                     }
                                                                 </div>
                                                                 <div style="padding-top: 5px;">
-                                                                    <div class="btn-toolbar" role="toolbar">
-                                                                        <div class="btn-group" role="group">
-                                                                            <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                                                            <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
-                                                                        </div>
-                                                                        <div class="btn-group" role="group">
-                                                                            <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
-                                                                                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                                                                                {
-                                                                                    <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                                                          class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                                          style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                                                        <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                                                    </span>
-                                                                                }
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="btn-group" role="group">
-                                                                            <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"></i></a>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+
+                                                                    <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i> Open Case Folder</a></p>
+                                                                    <p>
+                                                                        @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
                                                                         {
-                                                                            <form action="~/Dashboard/ToggleNoShow">
-                                                                                <div class="checkbox">
-                                                                                    <label>
-                                                                                        <input id="task-checkbox-@assessment.Id" type="checkbox"
-                                                                                               value="@assessment.IsNoShow"
-                                                                                               @(assessment.IsNoShow ? "checked" : "")
-                                                                                               onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                                        No Show
-                                                                                    </label>
-                                                                                </div>
-                                                                            </form>
+                                                                            <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                                  class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                                  style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                                <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                            </span>
                                                                         }
+                                                                    </p>
+                                                                    <div>
+                                                                        <div class="pull-left">
+                                                                            @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+                                                                            {
+                                                                                <form action="~/Dashboard/ToggleNoShow">
+                                                                                    <div class="checkbox">
+                                                                                        <label>
+                                                                                            <input id="task-checkbox-@assessment.Id" type="checkbox"
+                                                                                                   value="@assessment.IsNoShow"
+                                                                                                   @(assessment.IsNoShow ? "checked" : "")
+                                                                                                   onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                            No Show
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </form>
+                                                                            }
+                                                                        </div>
+                                                                        <span class="pull-right" style="line-height:40px"><a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a></span>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -429,17 +421,17 @@
         function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
             var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
 
-            var assessmentTotalEl   = weekFolderEl.find('#assessment-total');
-            var waitingTotalEl      = weekFolderEl.find('#waiting-total-label');
-            var todoTotalEl         = weekFolderEl.find('#todo-total-label');
-            var doneTotalEl         = weekFolderEl.find('#done-total-label');
-            var obsoleteTotalEl     = weekFolderEl.find('#obsolete-total-label');
+            var assessmentTotalEl = weekFolderEl.find('#assessment-total');
+            var waitingTotalEl = weekFolderEl.find('#waiting-total-label');
+            var todoTotalEl = weekFolderEl.find('#todo-total-label');
+            //var doneTotalEl = weekFolderEl.find('#done-total-label');
+            //var obsoleteTotalEl = weekFolderEl.find('#obsolete-total-label');
 
             assessmentTotalEl.text(weekFolderFromResult.AssessmentCount);
             waitingTotalEl.text(weekFolderFromResult.AssessmentWaitingCount);
             todoTotalEl.text(weekFolderFromResult.AssessmentToDoCount);
-            doneTotalEl.text(weekFolderFromResult.AssessmentDoneCount);
-            obsoleteTotalEl.text(weekFolderFromResult.AssessmentObsoleteCount);
+            //doneTotalEl.text(weekFolderFromResult.AssessmentDoneCount);
+            //obsoleteTotalEl.text(weekFolderFromResult.AssessmentObsoleteCount);
         }
 
         function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
@@ -452,9 +444,9 @@
             else if (assessmentFromResult.ServiceRequestStatusId == 2) // Todo
                 assessmentStatusEl.addClass('small label label-danger');
             else if (assessmentFromResult.ServiceRequestStatusId == 3) // Done
-                assessmentStatusEl.addClass('small label label-success');
+                assessmentStatusEl.addClass('fa fa-check');
             else if (assessmentFromResult.ServiceRequestStatusId == 4) // Obsolete
-                assessmentStatusEl.addClass('small label label-info');
+                assessmentStatusEl.addClass('fa fa-frown-o');
 
         }
 

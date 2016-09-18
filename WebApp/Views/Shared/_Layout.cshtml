@@ -60,9 +60,14 @@
                                 </form>
                             </div>
                         </li>
-                        <li>@Html.ActionLink("Dashboard", "", "Dashboard", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Work", "", "Dashboard", new { area = "" }, null)</li>
+                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
+                        {
+                            <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
+                        }
                         if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
                         {
+                            <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                             <li class="dropdown">
                                 <a href="~/ServiceRequest" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cases <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
@@ -72,18 +77,6 @@
                                     <li><a href="~/ServiceRequest/CreateAddOn">Create Paper Review/Addendum</a></li>
                                 </ul>
                             </li>
-                        }
-                        else
-                        {
-                            <li>@Html.ActionLink("Cases", "", "ServiceRequest", new { area = "" }, null)</li>
-                        }
-                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
-                        {
-                            <li>@Html.ActionLink("Invoices", "Dashboard", "Invoice", new { area = "" }, null)</li>
-                        }
-                        if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
-                        {
-                            <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
                             <li role="presentation" class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                     Admin <span class="caret"></span>

@@ -48,14 +48,12 @@
                 Waiting On:
                     @foreach (var person in Model.People)
                     {
-                        if (person.ToDoCount > 0)
-                        {
+
                             <span onclick='pokeTeamMember(@Html.Raw(Json.Encode(person))' title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
                                   class="btn btn-sm btn-circle btn-circle-groupitem disabled"
                                   style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                 <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                             </span>
-                        }
                     }
             </div>
             <table class="table table-condensed table-">

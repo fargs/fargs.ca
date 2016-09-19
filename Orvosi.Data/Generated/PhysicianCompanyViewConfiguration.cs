@@ -32,7 +32,7 @@ namespace Orvosi.Data
             Property(x => x.CompanyId).HasColumnName(@"CompanyId").IsRequired().HasColumnType("smallint");
             Property(x => x.CompanyName).HasColumnName(@"CompanyName").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.LogoCssClass).HasColumnName(@"LogoCssClass").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
-            Property(x => x.ParentId).HasColumnName(@"ParentId").IsOptional().HasColumnType("int");
+            Property(x => x.ParentId).HasColumnName(@"ParentId").IsOptional().HasColumnType("smallint");
             Property(x => x.ParentCompanyName).HasColumnName(@"ParentCompanyName").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.RelationshipStatusId).HasColumnName(@"RelationshipStatusId").IsOptional().HasColumnType("tinyint");
             Property(x => x.Id).HasColumnName(@"Id").IsOptional().HasColumnType("smallint");

@@ -22,7 +22,7 @@ namespace Orvosi.Data
         public short CompanyId { get; set; } // CompanyId
         public string CompanyName { get; set; } // CompanyName (length: 128)
         public string LogoCssClass { get; set; } // LogoCssClass (length: 50)
-        public int? ParentId { get; set; } // ParentId
+        public short? ParentId { get; set; } // ParentId
         public string ParentCompanyName { get; set; } // ParentCompanyName (length: 128)
         public byte? RelationshipStatusId { get; set; } // RelationshipStatusId
         public short? Id { get; set; } // Id

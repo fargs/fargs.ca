@@ -151,20 +151,20 @@
                                                             <td></td>
                                                             <td colspan="4">
                                                                 <div style="padding-top: 5px;">
-                                                                    @if (assessment.Tasks.Any(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo))
+                                                                    @*@if (assessment.Tasks.Any(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo))
                                                                     {
                                                                         <div>
                                                                             <strong class="text-warning">Waiting On: </strong>
                                                                             @foreach (var task in assessment.Tasks.Where(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo).Select(t => new { t.AssignedTo, t.AssignedToDisplayName, t.AssignedToInitials, t.AssignedToColorCode }).Distinct())
                                                                             {
                                                                                 <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : "Unassigned")"
-                                                                                      class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                                      style="color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : "red")">
+                                                                                        class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                                        style="color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : "red")">
                                                                                     <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
                                                                                 </span>
                                                                             }
                                                                         </div>
-                                                                    }
+                                                                    }*@
                                                                     @if (assessment.ServiceStatusId.HasValue)
                                                                     {
                                                                         @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)

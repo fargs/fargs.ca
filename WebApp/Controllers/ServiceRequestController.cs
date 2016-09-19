@@ -124,7 +124,7 @@ namespace WebApp.Controllers
         {
             var vm = new DetailsViewModel();
 
-            vm.ServiceRequest = await ctx.ServiceRequests.FindAsync(id);
+            vm.ServiceRequest = await ctx.ServiceRequests.FirstAsync(srt => srt.Id == id);
 
             // Get the data set
             var source = await ctx.GetAssignedServiceRequestsAsync(null, SystemTime.Now(), null, id);
@@ -136,6 +136,15 @@ namespace WebApp.Controllers
             else if (vm.ServiceRequest.Service.ServiceCategoryId == ServiceCategories.AddOn)
             {
                 vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAddOn(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
+            }
+
+            if (User.Identity.GetRoleId() == AspNetRoles.Physician || User.Identity.GetRoleId() == AspNetRoles.IntakeAssistant || User.Identity.GetRoleId() == AspNetRoles.DocumentReviewer)
+            {
+                vm.TaskList = vm.ServiceRequestMapped.Tasks.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Tasks.SaveMedBrief || srt.TaskId == Tasks.AssessmentDay);
+            }
+            else
+            {
+                vm.TaskList = vm.ServiceRequestMapped.Tasks;
             }
 
             if (vm.ServiceRequest == null)

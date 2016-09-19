@@ -29,9 +29,9 @@ SELECT
 	 ,t.LogoCssClass
 	 ,t.ParentId
 	 ,t.ParentCompanyName
-	 ,RelationshipStatusId = CONVERT(tinyint, CASE WHEN pc.RelationshipStatusId IS NULL AND parent.RelationshipStatusId IS NULL THEN 1
-			WHEN pc.RelationshipStatusId IS NULL AND parent.RelationshipStatusId IS NOT NULL THEN parent.RelationshipStatusId
-			WHEN pc.RelationshipStatusId IS NOT NULL THEN pc.RelationshipStatusId
+	 ,RelationshipStatusId = CONVERT(tinyint, CASE WHEN pc.StatusId IS NULL AND parent.StatusId IS NULL THEN 1
+			WHEN pc.StatusId IS NULL AND parent.StatusId IS NOT NULL THEN parent.StatusId
+			WHEN pc.StatusId IS NOT NULL THEN pc.StatusId
 			ELSE 1 
 			END)
 FROM FullList t

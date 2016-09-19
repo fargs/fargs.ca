@@ -52,11 +52,14 @@ namespace WebApp.Models.ServiceRequestModels
                                 CompletedDate = o.CompletedDate,
                                 ServiceRequestId = o.ServiceRequestId,
                                 Workload = o.Workload.GetValueOrDefault(0),
-                                TaskType = o.TaskType
+                                TaskId = o.TaskId.Value,
+                                TaskType = o.TaskType,
+                                ResponsibleRoleId = string.IsNullOrEmpty(o.TaskType) ? o.ResponsibleRoleId.Value : (Guid?)null,
+                                ResponsibleRoleName = o.ResponsibleRoleName
                             },
                     People = from o in source
                              where o.TaskType == null
-                             group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.AssignedToRoleId, o.AssignedToRoleName } into at
+                             group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.AssignedToRoleId, o.AssignedToRoleName, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
                              select new Person
                              {
                                  Id = at.Key.AssignedTo,
@@ -83,7 +86,10 @@ namespace WebApp.Models.ServiceRequestModels
                                              CompletedDate = o.CompletedDate,
                                              ServiceRequestId = at.Key.ServiceRequestId,
                                              Workload = o.Workload.GetValueOrDefault(0),
-                                             TaskType = o.TaskType
+                                             TaskId = o.TaskId.Value,
+                                             TaskType = o.TaskType,
+                                             ResponsibleRoleId = string.IsNullOrEmpty(o.TaskType) ? o.ResponsibleRoleId.Value : (Guid?)null,
+                                             ResponsibleRoleName = o.ResponsibleRoleName
                                          }
                              }
                 }).First();
@@ -128,7 +134,10 @@ namespace WebApp.Models.ServiceRequestModels
                                 CompletedDate = o.CompletedDate,
                                 ServiceRequestId = o.ServiceRequestId,
                                 Workload = o.Workload.GetValueOrDefault(0),
-                                TaskType = o.TaskType
+                                TaskType = o.TaskType,
+                                TaskId = o.TaskId.Value,
+                                ResponsibleRoleId = string.IsNullOrEmpty(o.TaskType) ? o.ResponsibleRoleId.Value : (Guid?)null,
+                                ResponsibleRoleName = o.ResponsibleRoleName
                             },
                     People = from o in source
                              group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into at
@@ -159,7 +168,10 @@ namespace WebApp.Models.ServiceRequestModels
                                              CompletedDate = o.CompletedDate,
                                              ServiceRequestId = at.Key.ServiceRequestId,
                                              Workload = o.Workload.GetValueOrDefault(0),
-                                             TaskType = o.TaskType
+                                             TaskType = o.TaskType,
+                                             TaskId = o.TaskId.Value,
+                                             ResponsibleRoleId = string.IsNullOrEmpty(o.TaskType) ? o.ResponsibleRoleId.Value : (Guid?)null,
+                                             ResponsibleRoleName = o.ResponsibleRoleName
                                          }
                              }
                 }).First();
@@ -258,7 +270,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                                                  CompletedDate = o.CompletedDate,
                                                                                  ServiceRequestId = o.ServiceRequestId,
                                                                                  Workload = o.Workload.GetValueOrDefault(0),
-                                                                                 TaskType = o.TaskType
+                                                                                 TaskType = o.TaskType,
+                                                                                 TaskId = o.TaskId.Value,
                                                                              },
                                                                      People = from o in assessments
                                                                               group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into at
@@ -289,7 +302,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                                                               CompletedDate = o.CompletedDate,
                                                                                               ServiceRequestId = at.Key.ServiceRequestId,
                                                                                               Workload = o.Workload.GetValueOrDefault(0),
-                                                                                              TaskType = o.TaskType
+                                                                                              TaskType = o.TaskType,
+                                                                                              TaskId = o.TaskId.Value,
                                                                                           }
                                                                               }
                                                                  }
@@ -346,7 +360,8 @@ namespace WebApp.Models.ServiceRequestModels
                                      CompletedDate = o.CompletedDate,
                                      ServiceRequestId = o.ServiceRequestId,
                                      Workload = o.Workload.GetValueOrDefault(0),
-                                     TaskType = o.TaskType
+                                     TaskType = o.TaskType,
+                                     TaskId = o.TaskId.Value,
                                  },
                          People = from o in addOns
                                   group o by new { o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.AssignedToRoleId, o.AssignedToRoleName } into p
@@ -377,7 +392,8 @@ namespace WebApp.Models.ServiceRequestModels
                                                   CompletedDate = o.CompletedDate,
                                                   ServiceRequestId = p.Key.ServiceRequestId,
                                                   Workload = o.Workload.GetValueOrDefault(0),
-                                                  TaskType = o.TaskType
+                                                  TaskType = o.TaskType,
+                                                  TaskId = o.TaskId.Value,
                                               }
                                   }
                      };
@@ -630,6 +646,8 @@ namespace WebApp.Models.ServiceRequestModels
         public int ServiceRequestId { get; internal set; }
         public byte Workload { get; set; }
         public string TaskType { get; set; }
+        public Guid? ResponsibleRoleId { get; set; }
+        public string ResponsibleRoleName { get; set; }
     }
 
     public class ServiceRequestMessage

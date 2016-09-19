@@ -42,6 +42,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
         public WebApp.Models.ServiceRequestModels.ServiceRequest ServiceRequestMapped { get; set; }
+        public IEnumerable<WebApp.Models.ServiceRequestModels.ServiceRequestTask> TaskList { get; internal set; }
     }
 
     public class BoxManagerViewModel

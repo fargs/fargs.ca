@@ -132,7 +132,7 @@
             </div>
             <div class="panel-body">
                 <table class="table table-condensed">
-                    @foreach (var task in Model.ServiceRequestMapped.Tasks.OrderBy(sr => sr.Sequence))
+                    @foreach (var task in Model.TaskList.OrderBy(sr => sr.Sequence))
                     {
                         <tr>
                             <td width="50px">
@@ -227,7 +227,7 @@
         }
         else
         {
-            <a href="@string.Format("https://orvosi.app.box.com/files/0/f/{0}", Model.ServiceRequest.BoxCaseFolderId)">Open Case Folder</a>
+            <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequestMapped.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
             <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         }
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)

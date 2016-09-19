@@ -136,15 +136,15 @@
 		if (t.Schema.Equals("API", StringComparison.InvariantCultureIgnoreCase)) 
 		{
 			if (t.Name.Equals("Account", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("Profile", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("User", StringComparison.InvariantCultureIgnoreCase)
 				|| t.Name.Equals("AvailableSlot", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("PhysicianCompany", StringComparison.InvariantCultureIgnoreCase)
 				|| t.Name.Equals("BillableEntity", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("ServiceRequest", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("PhysicianLocationArea", StringComparison.InvariantCultureIgnoreCase)
 				|| t.Name.Equals("Location", StringComparison.InvariantCultureIgnoreCase)
-				|| t.Name.Equals("LocationArea", StringComparison.InvariantCultureIgnoreCase))
+				|| t.Name.Equals("LocationArea", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("Profile", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("PhysicianCompany", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("PhysicianLocationArea", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("ServiceRequest", StringComparison.InvariantCultureIgnoreCase)
+				|| t.Name.Equals("User", StringComparison.InvariantCultureIgnoreCase))
             {
 				return true;
             }

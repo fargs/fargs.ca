@@ -201,7 +201,6 @@
     <Build Include="dbo\Functions\LookupId_Specialty.sql" />
     <Build Include="API\Views\ServiceRequestTemplateTask.sql" />
     <Build Include="API\Views\Task.sql" />
-    <Build Include="API\Views\ServiceRequestCostRollUp.sql" />
     <Build Include="dbo\Functions\GetServiceStatusId.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatusId.sql" />
     <Build Include="API\Views\DashboardTaskSummary.sql" />
@@ -262,8 +261,6 @@
     <Build Include="Private\Views\SchemaTableColumn.sql" />
     <Build Include="Private\Views\OpenServiceRequestIdWithAssignedTo.sql" />
     <Build Include="Private\Views\OpenServiceRequestIds.sql" />
-    <Build Include="API\Views\TaskStatus.sql" />
-    <Build Include="API\Views\Dashboard.sql" />
     <Build Include="Analysis\Views\ServiceRequest.sql" />
     <Build Include="dbo\Functions\GetTaskStatusId2.sql" />
     <Build Include="dbo\Functions\GetServiceRequestTaskStatus.sql" />
@@ -275,6 +272,7 @@
     <Build Include="dbo\Tables\PhysicianCompanyStatus.sql" />
     <Build Include="API\Stored Procedures\ToggleNoShow.sql" />
     <Build Include="API\Stored Procedures\ToggleCancellation.sql" />
+    <Build Include="dbo\User Defined Types\SelectedStatusIdsTVP.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

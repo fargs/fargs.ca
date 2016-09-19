@@ -336,7 +336,8 @@ namespace WebApp.ViewModels.DashboardViewModels
                 Sequence = (byte)o.TaskSequence.Value,
                 Parent = null,
                 TaskId = o.TaskId.Value,
-                DependsOnCSV = o.DependsOnCSV
+                DependsOnCSV = o.DependsOnCSV,
+                TaskType = o.TaskType
             });
 
             var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);

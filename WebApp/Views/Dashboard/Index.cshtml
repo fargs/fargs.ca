@@ -92,16 +92,7 @@
                                                                 }
                                                                 else if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
                                                                 {
-                                                                    <span id="assessment-total-label" class="small label label-danger">
-                                                                        @if (assessment.HasHighWorkload)
-                                                                        {
-                                                                            <i class="glyphicon glyphicon-pencil"></i>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <span>&nbsp;</span>
-                                                                        }
-                                                                    </span>
+                                                                    <span id="assessment-total-label" style="color: red;" class="small @(assessment.HasHighWorkload ? "fa fa-pencil" : "label label-danger")">&nbsp;</span>
                                                                 }
                                                                 else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
                                                                 {
@@ -127,7 +118,7 @@
                                                                     {
                                                                         <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                               class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                                             <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                         </span>
                                                                     }
@@ -138,7 +129,7 @@
                                                                     {
                                                                         <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                               class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                                             <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                         </span>
                                                                     }
@@ -149,7 +140,7 @@
                                                                     {
                                                                         <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                                               class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                              style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                                             <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                                         </span>
                                                                     }
@@ -160,6 +151,20 @@
                                                             <td></td>
                                                             <td colspan="4">
                                                                 <div style="padding-top: 5px;">
+                                                                    @if (assessment.Tasks.Any(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo))
+                                                                    {
+                                                                        <div>
+                                                                            <strong class="text-warning">Waiting On: </strong>
+                                                                            @foreach (var task in assessment.Tasks.Where(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo).Select(t => new { t.AssignedTo, t.AssignedToDisplayName, t.AssignedToInitials, t.AssignedToColorCode }).Distinct())
+                                                                            {
+                                                                                <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : "Unassigned")"
+                                                                                      class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                                      style="color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : "red")">
+                                                                                    <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+                                                                                </span>
+                                                                            }
+                                                                        </div>
+                                                                    }
                                                                     @if (assessment.ServiceStatusId.HasValue)
                                                                     {
                                                                         @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
@@ -179,45 +184,45 @@
                                                                             </div>
                                                                         </form>
                                                                     }
-                                                                </div>
-                                                                <div style="padding-top: 5px;">
+                                                            </div>
+                                                            <div style="padding-top: 5px;">
 
-                                                                    <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i> Open Case Folder</a></p>
-                                                                    <p>
-                                                                        @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                                <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
+                                                                <p>
+                                                                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                                                                    {
+                                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                                                                        </span>
+                                                                    }
+                                                                </p>
+                                                                <div>
+                                                                    <div class="pull-left">
+                                                                        @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
                                                                         {
-                                                                            <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                                                  class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                                  style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                                                <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                                            </span>
+                                                                            <form action="~/Dashboard/ToggleNoShow">
+                                                                                <div class="checkbox">
+                                                                                    <label>
+                                                                                        <input id="task-checkbox-@assessment.Id" type="checkbox"
+                                                                                               value="@assessment.IsNoShow"
+                                                                                               @(assessment.IsNoShow ? "checked" : "")
+                                                                                               onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
+                                                                                        No Show
+                                                                                    </label>
+                                                                                </div>
+                                                                            </form>
                                                                         }
-                                                                    </p>
-                                                                    <div>
-                                                                        <div class="pull-left">
-                                                                            @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
-                                                                            {
-                                                                                <form action="~/Dashboard/ToggleNoShow">
-                                                                                    <div class="checkbox">
-                                                                                        <label>
-                                                                                            <input id="task-checkbox-@assessment.Id" type="checkbox"
-                                                                                                   value="@assessment.IsNoShow"
-                                                                                                   @(assessment.IsNoShow ? "checked" : "")
-                                                                                                   onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                                            No Show
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </form>
-                                                                            }
-                                                                        </div>
-                                                                        <span class="pull-right" style="line-height:40px"><a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a></span>
                                                                     </div>
+                                                                    <span class="pull-right" style="line-height:40px"><a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">More Details ...</a></span>
                                                                 </div>
+                                                            </div>
                                                             </td>
-                                                        </tr>
+                                                            </tr>
                                                     }
-                                                </table>
-                                            </div>
+                                                    </table>
+                                                </div>
                                         }
                                     </div>
                                 </div>
@@ -297,7 +302,7 @@
                                                 {
                                                     <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
                                                           class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                          style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                                          style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                                         <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                     </span>
                                                 }
@@ -315,261 +320,271 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 
-<div class="modal fade" id="dependencies-modal"></div>
+    <div class="modal fade" id="dependencies-modal"></div>
 
-<div class="modal fade" id="tasklist-modal"></div>
+    <div class="modal fade" id="tasklist-modal"></div>
 
-<div class="modal fade" id="discussion-modal"></div>
+    <div class="modal fade" id="discussion-modal"></div>
 
-<div class="modal fade" id="request-modal"></div>
+    <div class="modal fade" id="request-modal"></div>
 
-@section Scripts{
-    @*@Scripts.Render("~/bundles/signalr")
-        @Scripts.Render("~/signalr/hubs")*@
-    <script>
+    @section Scripts{
+        @*@Scripts.Render("~/bundles/signalr")
+            @Scripts.Render("~/signalr/hubs")*@
+        <script>
 
-        function onTaskChecked(checkbox, isAddOn, taskId, assessmentId, day, week) {
-            var params = {
-                isAddOn: isAddOn,
-                taskId: taskId,
-                assessmentId: assessmentId,
-                day: day,
-                week: week,
-                checkbox: checkbox
-            }
-
-            if (checkbox.checked) {
-                console.log(taskId + ' is now checked');
-            } else {
-                console.log(taskId + ' is now unchecked');
-            }
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
-                data: JSON.stringify({
+            function onTaskChecked(checkbox, isAddOn, taskId, assessmentId, day, week) {
+                var params = {
+                    isAddOn: isAddOn,
                     taskId: taskId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    UpdateView(result, params);
-                    toastr.success("Task updated successfully.", "Task Updated");
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    toastr.success("Task was not updated.", "Something went wrong!");
+                    assessmentId: assessmentId,
+                    day: day,
+                    week: week,
+                    checkbox: checkbox
                 }
-            }, this);
-        }
 
-        function onToggleNoShow(checkbox, assessmentId, day, week) {
-            var params = {
-                assessmentId: assessmentId,
-                day: day,
-                week: week,
-                checkbox: checkbox
-            }
-
-            if (checkbox.checked) {
-                console.log(assessmentId + ' no show is now checked');
-            } else {
-                console.log(assessmentId + ' no show is now unchecked');
-            }
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/ToggleNoShow")',
-                data: JSON.stringify({
-                    serviceRequestId: assessmentId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    UpdateView(result, params);
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
+                if (checkbox.checked) {
+                    console.log(taskId + ' is now checked');
+                } else {
+                    console.log(taskId + ' is now unchecked');
                 }
-            }, this);
-        }
 
-        function UpdateView(result, params) {
-            // get the updated assessment data
-            if (!params.isAddOn) {
-                var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
-                SetWeekTotals(weekFolder[0], params.week);
-                var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
-                var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
-                SetAssessmentStatus(assessment[0], params.assessmentId);
-                console.log('Is not addon: ' + result);
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
+                    data: JSON.stringify({
+                        taskId: taskId,
+                        isChecked: checkbox.checked,
+                        serviceProviderGuid: '@Model.SelectedUserId'
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        UpdateView(result, params);
+                        toastr.success("Task updated successfully.", "Task Updated");
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        toastr.success("Task was not updated.", "Something went wrong!");
+                    }
+                }, this);
             }
-            else {
-                var assessment = $.grep(result.AddOns, function (item) { return item.Id == params.assessmentId; });
-                console.log('Is addon: ' + result);
+
+            function onToggleNoShow(checkbox, assessmentId, day, week) {
+                var params = {
+                    assessmentId: assessmentId,
+                    day: day,
+                    week: week,
+                    checkbox: checkbox
+                }
+
+                if (checkbox.checked) {
+                    console.log(assessmentId + ' no show is now checked');
+                } else {
+                    console.log(assessmentId + ' no show is now unchecked');
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/Dashboard/ToggleNoShow")',
+                    data: JSON.stringify({
+                        serviceRequestId: assessmentId,
+                        isChecked: checkbox.checked,
+                        serviceProviderGuid: '@Model.SelectedUserId'
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        UpdateView(result, params);
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
             }
-            //SetAssessmentTotals(assessment[0], params.assessmentId);
-            updateTaskStatuses(assessment[0], params.assessmentId);
 
-            console.log('view updated successfully: ' + result);
-        }
+            function UpdateView(result, params) {
+                // get the updated assessment data
+                if (!params.isAddOn) {
+                    var weekFolder = $.grep(result.WeekFolders, function (item) { return item.StartDateTicks == params.week; });
+                    SetWeekTotals(weekFolder[0], params.week);
+                    var dayFolder = $.grep(weekFolder[0].DayFolders, function (item) { return item.DayTicks == params.day; });
+                    var assessment = $.grep(dayFolder[0].Assessments, function (item) { return item.Id == params.assessmentId; });
+                    SetAssessmentStatus(assessment[0], params.assessmentId);
+                    console.log('Is not addon: ' + result);
+                }
+                else {
+                    var assessment = $.grep(result.AddOns, function (item) { return item.Id == params.assessmentId; });
+                    console.log('Is addon: ' + result);
+                }
+                //SetAssessmentTotals(assessment[0], params.assessmentId);
+                updateTaskStatuses(assessment[0], params.assessmentId);
 
-        function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
-            var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
+                console.log('view updated successfully: ' + result);
+            }
 
-            var assessmentTotalEl = weekFolderEl.find('#assessment-total');
-            var waitingTotalEl = weekFolderEl.find('#waiting-total-label');
-            var todoTotalEl = weekFolderEl.find('#todo-total-label');
-            //var doneTotalEl = weekFolderEl.find('#done-total-label');
-            //var obsoleteTotalEl = weekFolderEl.find('#obsolete-total-label');
+            function SetWeekTotals(weekFolderFromResult, weekIdForEl) {
+                var weekFolderEl = $('#header-weekfolder-' + weekIdForEl);
 
-            assessmentTotalEl.text(weekFolderFromResult.AssessmentCount);
-            waitingTotalEl.text(weekFolderFromResult.AssessmentWaitingCount);
-            todoTotalEl.text(weekFolderFromResult.AssessmentToDoCount);
-            //doneTotalEl.text(weekFolderFromResult.AssessmentDoneCount);
-            //obsoleteTotalEl.text(weekFolderFromResult.AssessmentObsoleteCount);
-        }
+                var assessmentTotalEl = weekFolderEl.find('#assessment-total');
+                var waitingTotalEl = weekFolderEl.find('#waiting-total-label');
+                var todoTotalEl = weekFolderEl.find('#todo-total-label');
 
-        function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
-            var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
-            var assessmentStatusEl = assessmentEl.find('#assessment-total-label');
-            assessmentStatusEl.removeClass();
+                todoTotalEl.removeClass();
+                todoTotalEl.addClass(weekFolderFromResult.AssessmentToDoCount > 0 ? "small label label-danger" : "small label bg-danger");
+                waitingTotalEl.removeClass();
+                waitingTotalEl.addClass(weekFolderFromResult.AssessmentWaitingCount > 0 ? "small label label-warning" : "small label bg-warning");
 
-            if (assessmentFromResult.ServiceRequestStatusId == 1) // Waiting
-                assessmentStatusEl.addClass('small label label-warning');
-            else if (assessmentFromResult.ServiceRequestStatusId == 2) // Todo
-                assessmentStatusEl.addClass('small label label-danger');
-            else if (assessmentFromResult.ServiceRequestStatusId == 3) // Done
-                assessmentStatusEl.addClass('fa fa-check');
-            else if (assessmentFromResult.ServiceRequestStatusId == 4) // Obsolete
-                assessmentStatusEl.addClass('fa fa-frown-o');
+                assessmentTotalEl.text(weekFolderFromResult.AssessmentCount);
+                waitingTotalEl.text(weekFolderFromResult.AssessmentWaitingCount);
+                todoTotalEl.text(weekFolderFromResult.AssessmentToDoCount);
+            }
 
-        }
+            function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
+                var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
+                var assessmentStatusEl = assessmentEl.find('#assessment-total-label');
+                assessmentStatusEl.removeClass();
+                assessmentStatusEl.css('color', '');
 
-        //function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
-        //    var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
-        //    var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
-        //    labelEl.removeClass();
-
-        //    if (assessmentFromResult.IsLateCancellation)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
-        //    else if (assessmentFromResult.IsCancelled)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
-        //    if (assessmentFromResult.IsNoShow)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
-        //    else
-        //        labelEl.text('').prop('title', '');
-        //}
-
-        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
-            var taskStatuses = {
-                "Waiting": 1,
-                "ToDo": 2,
-                "Done": 3,
-                "Obsolete": 4
-            };
-            var assessmentEl = $('#asessment-' + assessmentIdForEl);
-            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
-            var taskEl = null;
-            $.each(assessmentFromResult.People, function (index, person) {
-                $.each(person.Tasks, function (index, task) {
-                    taskEl = $('#task-statuslabel-' + task.Id);
-                    taskEl.removeClass();
-                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
-                    if (task.StatusId == taskStatuses.Done) {
-                        MarkTaskAsDone(taskEl, taskCheckboxEl);
+                if (assessmentFromResult.ServiceRequestStatusId == 1) // Waiting
+                    assessmentStatusEl.addClass('small label label-warning');
+                else if (assessmentFromResult.ServiceRequestStatusId == 2) { // Todo
+                    if (assessmentFromResult.HasHighWorkload) {
+                        assessmentStatusEl.addClass('fa fa-pencil');
+                        assessmentStatusEl.css('color', 'red')
                     }
-                    else if (task.StatusId == taskStatuses.ToDo) {
-                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Waiting) {
-                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Obsolete) {
-                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
-                    }
+                    else
+                        assessmentStatusEl.addClass('small label label-danger');
+                }
+                else if (assessmentFromResult.ServiceRequestStatusId == 3) {// Done
+                    assessmentStatusEl.addClass('fa fa-check');
+                    assessmentStatusEl.css('color', 'green')
+                }
+                else if (assessmentFromResult.ServiceRequestStatusId == 4) // Obsolete
+                    assessmentStatusEl.addClass('fa fa-frown-o');
+
+            }
+
+            //function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
+            //    var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
+            //    var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
+            //    labelEl.removeClass();
+
+            //    if (assessmentFromResult.IsLateCancellation)
+            //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
+            //    else if (assessmentFromResult.IsCancelled)
+            //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
+            //    if (assessmentFromResult.IsNoShow)
+            //        labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
+            //    else
+            //        labelEl.text('').prop('title', '');
+            //}
+
+            function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
+                var taskStatuses = {
+                    "Waiting": 1,
+                    "ToDo": 2,
+                    "Done": 3,
+                    "Obsolete": 4
+                };
+                var assessmentEl = $('#asessment-' + assessmentIdForEl);
+                var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
+                var taskEl = null;
+                $.each(assessmentFromResult.People, function (index, person) {
+                    $.each(person.Tasks, function (index, task) {
+                        taskEl = $('#task-statuslabel-' + task.Id);
+                        taskEl.removeClass();
+                        taskCheckboxEl = $('#task-checkbox-' + task.Id);
+                        if (task.StatusId == taskStatuses.Done) {
+                            MarkTaskAsDone(taskEl, taskCheckboxEl);
+                        }
+                        else if (task.StatusId == taskStatuses.ToDo) {
+                            MarkTaskAsToDo(taskEl, taskCheckboxEl);
+                        }
+                        else if (task.StatusId == taskStatuses.Waiting) {
+                            MarkTaskAsWaiting(taskEl, taskCheckboxEl);
+                        }
+                        else if (task.StatusId == taskStatuses.Obsolete) {
+                            MarkTaskAsObsolete(taskEl, taskCheckboxEl);
+                        }
+                    });
                 });
-            });
-        }
+            }
 
-        function MarkTaskAsDone(label, checkbox) {
-            label.addClass("label label-success").text("Done");
-            checkbox.prop('disabled', false);
-        }
+            function MarkTaskAsDone(label, checkbox) {
+                label.addClass("label label-success").text("Done");
+                checkbox.prop('disabled', false);
+            }
 
-        function MarkTaskAsToDo(label, checkbox) {
-            label.addClass("label label-danger").text("To Do");
-            checkbox.prop('disabled', false);
-        }
+            function MarkTaskAsToDo(label, checkbox) {
+                label.addClass("label label-danger").text("To Do");
+                checkbox.prop('disabled', false);
+            }
 
-        function MarkTaskAsWaiting(label, checkbox) {
-            label.addClass("label label-warning").text("Waiting");
-            checkbox.prop('disabled', true);
-        }
+            function MarkTaskAsWaiting(label, checkbox) {
+                label.addClass("label label-warning").text("Waiting");
+                checkbox.prop('disabled', true);
+            }
 
-        function MarkTaskAsObsolete(label, checkbox) {
-            label.addClass("label label-info").text("Obsolete");
-            checkbox.prop('disabled', true);
-        }
+            function MarkTaskAsObsolete(label, checkbox) {
+                label.addClass("label label-info").text("Obsolete");
+                checkbox.prop('disabled', true);
+            }
 
-        function onShowTaskHierarchy(serviceRequestId, taskId) {
-            // get the html and display it in the model
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/TaskHierarchy")' + '?serviceRequestId=' + serviceRequestId + '&taskId=' + taskId,
-                contentType: "text/html",
-                success: function (result) {
-                    // inject the html into the modal and display it
-                    var modalDiv = $("#dependencies-modal");
-                    modalDiv.html(result);
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
+            function onShowTaskHierarchy(serviceRequestId, taskId) {
+                // get the html and display it in the model
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Dashboard/TaskHierarchy")' + '?serviceRequestId=' + serviceRequestId + '&taskId=' + taskId,
+                    contentType: "text/html",
+                    success: function (result) {
+                        // inject the html into the modal and display it
+                        var modalDiv = $("#dependencies-modal");
+                        modalDiv.html(result);
+                        modalDiv.modal('toggle');
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
+            }
 
-        function onShowTaskList(serviceRequestId) {
-            // get the html and display it in the model
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/TaskList")' + '?serviceRequestId=' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    // inject the html into the modal and display it
-                    var modalDiv = $("#tasklist-modal");
-                    modalDiv.html(result);
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
+            function onShowTaskList(serviceRequestId) {
+                // get the html and display it in the model
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Dashboard/TaskList")' + '?serviceRequestId=' + serviceRequestId,
+                    contentType: "text/html",
+                    success: function (result) {
+                        // inject the html into the modal and display it
+                        var modalDiv = $("#tasklist-modal");
+                        modalDiv.html(result);
+                        modalDiv.modal('toggle');
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
+            }
 
-        function onShowDiscussion(serviceRequestId) {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/Discussion")' + '?serviceRequestId=' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    // inject the html into the modal and display it
-                    var modalDiv = $("#discussion-modal");
-                    modalDiv.html(result);
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
+            function onShowDiscussion(serviceRequestId) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Dashboard/Discussion")' + '?serviceRequestId=' + serviceRequestId,
+                    contentType: "text/html",
+                    success: function (result) {
+                        // inject the html into the modal and display it
+                        var modalDiv = $("#discussion-modal");
+                        modalDiv.html(result);
+                        modalDiv.modal('toggle');
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
+            }
 
-        @*$(function () {
+            @*$(function () {
             // Declare a proxy to reference the hub.
             var chat = $.connection.serviceRequestHub;
             // Create a function that the hub can call to broadcast messages.
@@ -608,5 +623,5 @@
 
         }*@
 
-    </script>
-}
+        </script>
+    }

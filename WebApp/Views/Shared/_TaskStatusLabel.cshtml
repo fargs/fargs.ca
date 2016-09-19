@@ -11,7 +11,7 @@ else if (Model.StatusId == TaskStatuses.Waiting)
 }
 else if (Model.StatusId == TaskStatuses.Done)
 {
-    <span id='task-statuslabel-@Model.Id' class='label label-success'>Done</span>
+    <i id='task-statuslabel-@Model.Id' class='fa fa-check fa-lg' style="color: green;"></i>
 }
 else if (Model.StatusId == TaskStatuses.Obsolete)
 {

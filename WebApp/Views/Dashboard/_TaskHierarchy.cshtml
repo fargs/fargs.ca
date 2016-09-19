@@ -17,14 +17,24 @@
             </td>*@
         <td>
             <div style="padding-left:@(level * 30)px;">
-                <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
-                      class="btn btn-sm btn-circle disabled"
-                      style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
-                    <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+                @if (task.TaskType == "EVENT")
+                {
+                    <i class="fa fa-calendar fa-lg"></i>
+                }
+                else
+                {
+                    <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : " Unassigned")"
+                          class="btn btn-sm btn-circle disabled"
+                          style="color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : " red")">
+                        <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
+                    </span>
+                }
+                <span>
+                    @task.Name
                 </span>
-                @Html.Partial("_TaskStatusLabel", task)
-                &nbsp;
-                @task.Name
+                <span class="pull-right">
+                    @Html.Partial("_TaskStatusLabel", task)
+                </span>
             </div>
         </td>
     </tr>
@@ -44,18 +54,18 @@
             <h4 class="modal-title" id="myModalLabel">Dependencies</h4>
         </div>
         <div class="modal-body">
-            <div>
+            <p>
                 Waiting On:
                     @foreach (var person in Model.People)
                     {
 
-                            <span onclick='pokeTeamMember(@Html.Raw(Json.Encode(person))' title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
+                            <span title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
                                   class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                  style="cursor: pointer; color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                                  style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
                                 <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                             </span>
                     }
-            </div>
+            </p>
             <table class="table table-condensed table-">
                 @ShowDependencies(Model.RootTask, 0)
             </table>

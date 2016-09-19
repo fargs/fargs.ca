@@ -3,13 +3,13 @@
 
 CREATE VIEW [API].[Entity]
 AS
-SELECT EntityId = CONVERT(NVARCHAR(128), Id)
+SELECT EntityId = ObjectGuid
 	, EntityGuid = ObjectGuid
 	, DisplayName = Name
 	, EntityType = 'SERVICE'
 FROM dbo.[Service]
 UNION
-SELECT CONVERT(NVARCHAR(128), Id)
+SELECT ObjectGuid
 	, ObjectGuid
 	, Name
 	, 'COMPANY'

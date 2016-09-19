@@ -157,7 +157,6 @@
     <Build Include="API\Stored Procedures\ServiceRequest_Update.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_Insert.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_Delete.sql" />
-    <Build Include="API\Stored Procedures\Location_Select_PhysicianAndCompany.sql" />
     <Build Include="dbo\Tables\PhysicianLocation.sql" />
     <Build Include="dbo\Tables\PhysicianLicense.sql" />
     <Build Include="dbo\Tables\PhysicianInsurance.sql" />

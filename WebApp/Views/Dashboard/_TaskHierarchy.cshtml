@@ -54,10 +54,12 @@
             <h4 class="modal-title" id="myModalLabel">Waiting On</h4>
         </div>
         <div class="modal-body">
-            
-                @foreach (var person in Model.People)
-                {
-                    <p>
+
+            @foreach (var person in Model.People)
+            {
+                <p>
+                    @if (person != null)
+                    {
                         <span title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
                               class="btn btn-sm btn-circle btn-circle-groupitem disabled"
                               style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
@@ -66,14 +68,30 @@
                         <span>
                             @person.DisplayName to
                         </span>
-                        @foreach (var item in person.Tasks)
+                        foreach (var item in person.Tasks)
                         {
-                        <strong>
-                            @item.Name.ToLower()
-                        </strong>
+                            <strong>
+                                @item.Name.ToLower()
+                            </strong>
                         }
-                    </p>
-                }
+                    }
+                    else
+                    {
+                        foreach (var item in person.Tasks)
+                        {
+                            <span>
+                                @if (item.TaskType == "EVENT")
+                                {
+                                    <i class="fa fa-calendar fa-lg"></i>
+                                }
+                                <strong>
+                                    @item.Name.ToLower()
+                                </strong>
+                            </span>
+                        }
+                    }
+                </p>
+            }
             @*<table class="table table-condensed table-">
                     @ShowDependencies(Model.RootTask, 0)
                 </table>*@

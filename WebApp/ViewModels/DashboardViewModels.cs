@@ -346,7 +346,6 @@ namespace WebApp.ViewModels.DashboardViewModels
                 todo = todo.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Orvosi.Shared.Enums.Tasks.SaveMedBrief || srt.TaskId == Orvosi.Shared.Enums.Tasks.AssessmentDay);
 
             this.People = todo
-                .Where(td => td.TaskType != "EVENT")
                 .GroupBy(t => new
                 {
                     t.AssignedTo,

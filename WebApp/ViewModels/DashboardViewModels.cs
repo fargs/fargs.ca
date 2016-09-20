@@ -340,7 +340,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                 TaskType = o.TaskType
             });
 
-            var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);
+            var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo || (t.TaskStatusId == TaskStatuses.Waiting && t.TaskType == "EVENT"));
 
             if (loggedInUserRole == AspNetRoles.Physician || loggedInUserRole == AspNetRoles.IntakeAssistant || loggedInUserRole == AspNetRoles.DocumentReviewer)
                 todo = todo.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Orvosi.Shared.Enums.Tasks.SaveMedBrief || srt.TaskId == Orvosi.Shared.Enums.Tasks.AssessmentDay);
@@ -351,20 +351,20 @@ namespace WebApp.ViewModels.DashboardViewModels
                     t.AssignedTo,
                     t.AssignedToDisplayName,
                     t.AssignedToColorCode,
-                    t.AssignedToInitials,
-                    t.TaskType,
+                    t.AssignedToInitials
                 }).Select(p => new DashboardViewModels.Person
                 {
                     Id = p.Key.AssignedTo,
                     DisplayName = p.Key.AssignedToDisplayName,
                     ColorCode = p.Key.AssignedToColorCode,
                     Initials = p.Key.AssignedToInitials,
-                    Tasks = model.Where(m => m.TaskStatusId == TaskStatuses.ToDo && m.AssignedTo == p.Key.AssignedTo)
+                    Tasks = todo.Where(t => t.TaskStatusId == TaskStatuses.ToDo || (t.TaskStatusId == TaskStatuses.Waiting && t.TaskType == "EVENT") && t.AssignedTo == p.Key.AssignedTo)
                         .Select(t => new Task
                         {
                             Id = t.Id,
                             TaskId = t.TaskId.Value,
-                            Name = t.TaskName
+                            Name = t.TaskName,
+                            TaskType = t.TaskType
                         })
                 })
                 .ToList();

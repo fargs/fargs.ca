@@ -106,7 +106,7 @@
                                                                 }
                                                                 else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
                                                                 {
-                                                                    <span id="assessment-total-label" class="small label label-warning">&nbsp;</span>
+                                                                    <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning" onclick="onShowTaskHierarchy(@assessment.Id)">&nbsp;</span>
                                                                 }
                                                                 else
                                                                 {

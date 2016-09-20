@@ -319,7 +319,7 @@ namespace WebApp.ViewModels.DashboardViewModels
 
     public class TaskListViewModel
     {
-        public TaskListViewModel(List<GetAssignedServiceRequestsReturnModel> model, int? taskId)
+        public TaskListViewModel(List<GetAssignedServiceRequestsReturnModel> model, int? taskId, Guid loggedInUserRole)
         {
             this.Tasks = model.Select(o => new DashboardViewModels.Task
             {
@@ -341,6 +341,10 @@ namespace WebApp.ViewModels.DashboardViewModels
             });
 
             var todo = model.Where(t => t.TaskStatusId == TaskStatuses.ToDo);
+
+            if (loggedInUserRole == AspNetRoles.Physician || loggedInUserRole == AspNetRoles.IntakeAssistant || loggedInUserRole == AspNetRoles.DocumentReviewer)
+                todo = todo.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Orvosi.Shared.Enums.Tasks.SaveMedBrief || srt.TaskId == Orvosi.Shared.Enums.Tasks.AssessmentDay);
+
             this.People = todo
                 .Where(td => td.TaskType != "EVENT")
                 .GroupBy(t => new

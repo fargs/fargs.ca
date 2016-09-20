@@ -43,6 +43,16 @@
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active panel-body" id="Assessments">
                 <div id="week-folders" class="panel-group">
+
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-10"><strong>Week</strong></div>
+                                <div class="col-xs-1 text-center"><strong>To Do</strong></div>
+                                <div class="col-xs-1 text-center"><strong>Waiting On</strong></div>
+                            </div>
+                        </div>
+                    </div>
                     @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
                     {
                         <div class="panel @(SystemTime.Now() >= weekFolder.StartDate && SystemTime.Now() < weekFolder.EndDate ? "panel-success" : "panel-default")">
@@ -50,13 +60,13 @@
                                 <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
                                     <div class="panel-title">
                                         <div class="row">
-                                            <div class="col-xs-12 col-sm-10">
+                                            <div class="col-xs-10">
                                                 <span>@weekFolder.WeekFolderName</span>
                                             </div>
-                                            <div class="col-xs-1">
+                                            <div class="col-xs-1 text-center">
                                                 <span id="todo-total-label" class="small label @(weekFolder.AssessmentToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.AssessmentToDoCount</strong></span>
                                             </div>
-                                            <div class="col-xs-1">
+                                            <div class="col-xs-1 text-center">
                                                 <span id="waiting-total-label" class="small label @(weekFolder.AssessmentWaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.AssessmentWaitingCount</strong></span>
                                             </div>
                                         </div>

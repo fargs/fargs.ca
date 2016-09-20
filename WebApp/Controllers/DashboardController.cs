@@ -124,7 +124,7 @@ namespace WebApp.Controllers
             //requests = requests.Where(o => o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief).ToList();
             //requests = requests.Where(c => c.TaskStatusId == TaskStatuses.Waiting || c.TaskStatusId == TaskStatuses.ToDo).ToList();
 
-            var vm = new dvm.TaskListViewModel(requests, taskId);
+            var vm = new dvm.TaskListViewModel(requests, taskId, User.Identity.GetRoleId());
 
             return PartialView("_TaskHierarchy", vm);
         }

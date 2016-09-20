@@ -65,21 +65,16 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid)
         {
-            var now = SystemTime.Now();
-            Guid? userId = User.Identity.GetGuidUserId();
-
             var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
-
             if (serviceRequestTask == null)
+            {
                 return HttpNotFound();
-
-            if (isChecked)
-                serviceRequestTask.CompletedDate = SystemTime.Now();
-            else
-                serviceRequestTask.CompletedDate = null;
-
+            }
+            serviceRequestTask.CompletedDate = isChecked ? SystemTime.Now() : (DateTime?)null;
+            serviceRequestTask.CompletedBy = isChecked ? User.Identity.GetGuidUserId() : (Guid?)null;
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
+            serviceRequestTask.ServiceRequest.UpdateIsClosed();
             await context.SaveChangesAsync();
 
             var result = await Index(serviceProviderGuid);
@@ -89,24 +84,26 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> ToggleNoShow(int serviceRequestId, bool isChecked, Guid? serviceProviderGuid)
         {
-            var now = SystemTime.Now();
-            Guid? userId = User.Identity.GetGuidUserId();
-
             var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
-
             if (serviceRequest == null)
-                return HttpNotFound();
-            
-            serviceRequest.IsNoShow = isChecked;
-            serviceRequest.ModifiedDate = SystemTime.Now();
-            serviceRequest.ModifiedUser = User.Identity.Name;
-
-            foreach (var task in serviceRequest.ServiceRequestTasks.Where(t => t.CompletedDate == null && t.TaskId != Tasks.SubmitInvoice && t.TaskId != Tasks.CloseCase))
             {
-                task.IsObsolete = isChecked;
-                task.ModifiedDate = SystemTime.Now();
-                task.ModifiedUser = User.Identity.Name;
+                return HttpNotFound();
             }
+
+            serviceRequest.IsNoShow = isChecked;
+
+            if (isChecked)
+            {
+                serviceRequest.MarkActiveTasksAsObsolete();
+            }
+            else
+            {
+                serviceRequest.MarkObsoleteTasksAsActive();
+            }
+
+            serviceRequest.UpdateIsClosed();
+
+            serviceRequest.UpdateInvoice(context);
 
             await context.SaveChangesAsync();
 

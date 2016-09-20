@@ -356,7 +356,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                     DisplayName = p.Key.AssignedToDisplayName,
                     ColorCode = p.Key.AssignedToColorCode,
                     Initials = p.Key.AssignedToInitials,
-                    Tasks = model.Where(m => m.AssignedTo == p.Key.AssignedTo)
+                    Tasks = model.Where(m => m.TaskStatusId == TaskStatuses.ToDo && m.AssignedTo == p.Key.AssignedTo)
                         .Select(t => new Task
                         {
                             Id = t.Id,
@@ -367,16 +367,16 @@ namespace WebApp.ViewModels.DashboardViewModels
                 .ToList();
 
 
-            if (!taskId.HasValue)
-            {
-                this.RootTask = this.Tasks.Single(t => t.TaskId == Orvosi.Shared.Enums.Tasks.CloseCase || t.TaskId == Orvosi.Shared.Enums.Tasks.CloseAddOn);
-            }
-            else
-            {
-                this.RootTask = this.Tasks.Single(t => t.Id == taskId);
-            }
+            //if (!taskId.HasValue)
+            //{
+            //    this.RootTask = this.Tasks.Single(t => t.TaskId == Orvosi.Shared.Enums.Tasks.CloseCase || t.TaskId == Orvosi.Shared.Enums.Tasks.CloseAddOn);
+            //}
+            //else
+            //{
+            //    this.RootTask = this.Tasks.Single(t => t.Id == taskId);
+            //}
 
-            BuildDependencies(this.RootTask, this.Tasks);
+            //BuildDependencies(this.RootTask, this.Tasks);
         }
 
         public Task RootTask { get; set; }

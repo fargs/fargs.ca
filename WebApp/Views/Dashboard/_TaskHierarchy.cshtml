@@ -51,24 +51,32 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Dependencies</h4>
+            <h4 class="modal-title" id="myModalLabel">Waiting On</h4>
         </div>
         <div class="modal-body">
-            <p>
-                Waiting On:
-                    @foreach (var person in Model.People)
-                    {
-
-                            <span title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
-                                  class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                  style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                            </span>
-                    }
-            </p>
-            <table class="table table-condensed table-">
-                @ShowDependencies(Model.RootTask, 0)
-            </table>
+            
+                @foreach (var person in Model.People)
+                {
+                    <p>
+                        <span title='@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")'
+                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                        </span>
+                        <span>
+                            @person.DisplayName to
+                        </span>
+                        @foreach (var item in person.Tasks)
+                        {
+                        <strong>
+                            @item.Name.ToLower()
+                        </strong>
+                        }
+                    </p>
+                }
+            @*<table class="table table-condensed table-">
+                    @ShowDependencies(Model.RootTask, 0)
+                </table>*@
         </div>
     </div>
 </div>

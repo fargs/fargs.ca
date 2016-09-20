@@ -215,7 +215,7 @@
                                                                             </form>
                                                                         }
                                                                     </div>
-                                                                    <span class="pull-right" style="line-height:40px"><a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">More Details ...</a></span>
+                                                                    <span class="pull-right" style="line-height:40px"><a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a></span>
                                                                 </div>
                                                             </div>
                                                             </td>
@@ -260,7 +260,7 @@
                                 }
                                 else
                                 {
-                                    <span id="assessment-total-label" class="small label label-success">&nbsp;</span>
+                                    <span id="assessment-total-label" class="fa fa-check fa-lg" style="color:green;">&nbsp;</span>
                                 }
                             </td>
                             <td style="vertical-align: text-top;">
@@ -415,6 +415,7 @@
                 }
                 else {
                     var assessment = $.grep(result.AddOns, function (item) { return item.Id == params.assessmentId; });
+                    SetAssessmentStatus(assessment[0], params.assessmentId);
                     console.log('Is addon: ' + result);
                 }
                 //SetAssessmentTotals(assessment[0], params.assessmentId);

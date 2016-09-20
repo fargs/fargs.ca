@@ -12,71 +12,35 @@ namespace Orvosi.Data
     {
         public bool CanBeRescheduled(DateTime now)
         {
-            return this.Service.HasAppointment && CanBeCancelled(now);
+            return this.Service.HasAppointment;
         }
 
-        public bool CanBeCancelled(DateTime now)
+        public bool CanBeCancelled()
         {
-            Console.WriteLine($"Service Request ID: {Id}");
-            if (Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || Service.ServiceCategoryId == ServiceCategories.MedicalConsultation)
-            {
-                var status = GetExaminationStatusId(now);
-                return status == ServiceStatus.Active;
-            }
-            else if (Service.ServiceCategoryId == ServiceCategories.AddOn)
-            {
-                return !IsReportSubmitted() && !CancelledDate.HasValue;
-            }
-            return false;
+            return !this.IsLateCancellation && !this.CancelledDate.HasValue && !this.IsNoShow;
         }
 
-        public bool CanBeUncancelled(DateTime now)
+        public bool CanBeUncancelled()
         {
-            if (Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam || Service.ServiceCategoryId == ServiceCategories.MedicalConsultation)
-            {
-                var status = GetExaminationStatusId(now);
-                return status == ServiceStatus.Cancellation || status == ServiceStatus.LateCancellation;
-            }
-            else
-            {
-                return CancelledDate.HasValue;
-            }
+            return this.IsLateCancellation || this.CancelledDate.HasValue;
         }
 
-        public bool CanBeNoShow(DateTime now)
+        public bool CanBeNoShow()
         {
             if (Service.HasAppointment)
             {
-                var status = GetExaminationStatusId(now);
-                return status != ServiceStatus.Cancellation && status != ServiceStatus.LateCancellation && status != ServiceStatus.NoShow;
+                return !CancelledDate.HasValue && !IsLateCancellation && !IsNoShow;
             }
             return false; 
         }
 
-        public bool CanNoShowBeUndone(DateTime now)
+        public bool CanNoShowBeUndone()
         {
             if (Service.HasAppointment)
             {
-                var status = GetExaminationStatusId(now);
-                return status == ServiceStatus.NoShow;
+                return IsNoShow;
             }
             return false;
-        }
-
-        public byte? GetExaminationStatusId(DateTime now) {
-            if (Service.ServiceCategoryId != ServiceCategories.IndependentMedicalExam)
-                throw new Exception("Examination status is only applicable to services under the IME category.");
-
-            if (IsLateCancellation)
-                return ServiceStatus.LateCancellation;
-            else if (CancelledDate.HasValue)
-                return ServiceStatus.Cancellation;
-            else if (IsNoShow)
-                return ServiceStatus.NoShow;
-            else if (AppointmentDate <= now)
-                return ServiceStatus.Complete;
-            else
-                return ServiceStatus.Active;
         }
 
         public bool IsReportSubmitted()

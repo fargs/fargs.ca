@@ -180,7 +180,7 @@
                                 }
                             </td>
                             <td width="20px">
-                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.SuperAdmin || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
+                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
                                 {
                                     <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                         @Html.AntiForgeryToken()

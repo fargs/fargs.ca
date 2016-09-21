@@ -242,72 +242,60 @@
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane panel-body" id="AddOns">
-                <table class="table">
-                    @foreach (var assessment in Model.AddOns)
-                    {
+                <div class="row">
+                    <div class="col-sm-4">
+                        <table class="table">
+                            @foreach (var assessment in Model.AddOns)
+                            {
 
-                        <tr id="header-assessment-@assessment.Id">
-                            <td style="vertical-align: text-top; width:40px;">
-                                <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
-                            </td>
-                            <td style="vertical-align: text-top; width:30px;">
-                                @if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
-                                {
-                                    <span id="assessment-total-label" class="small label label-danger">
-                                        @if (assessment.HasHighWorkload)
+                                <tr id="header-assessment-@assessment.Id">
+                                    <td style="vertical-align: text-top; width:40px;">
+                                        <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                                    </td>
+                                    <td style="vertical-align: text-top; width:30px;">
+                                        @if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
                                         {
-                                            <strong>!</strong>
+                                            <span id="assessment-total-label" style="color: red;" class="small @(assessment.HasHighWorkload ? "fa fa-pencil" : "label label-danger")">&nbsp;</span>
+                                        }
+                                        else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
+                                        {
+                                            <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning" onclick="onShowTaskHierarchy(@assessment.Id)">&nbsp;</span>
                                         }
                                         else
                                         {
-                                            <span>&nbsp;</span>
+                                            <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>
                                         }
-                                    </span>
-                                }
-                                else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
-                                {
-                                    <span id="assessment-total-label" class="small label label-warning">&nbsp;</span>
-                                }
-                                else
-                                {
-                                    <span id="assessment-total-label" class="fa fa-check fa-lg" style="color:green;">&nbsp;</span>
-                                }
-                            </td>
-                            <td style="vertical-align: text-top;">
-                                <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
-                            </td>
-                            <td style="vertical-align: text-top; width:60px;">
-                                @assessment.Id
-                            </td>
-                        </tr>
-                        <tr id="assessment-@assessment.Id" class="collapse">
-                            <td></td>
-                            <td colspan="4">
-                                <div>
-                                    @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
-                                    {
-                                        <form action="~/Dashboard/UpdateTaskStatus">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input id="task-checkbox-@task.Id" type="checkbox"
-                                                           value="@task.IsComplete"
-                                                           @(task.IsComplete ? "checked" : "")
-                                                           @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                           onclick="onTaskChecked(this, true, @task.Id, @assessment.Id, null, null);">
-                                                    @Html.Partial("_TaskStatusLabel", task) @task.Name
-                                                </label>
-                                            </div>
-                                        </form>
-                                    }
-                                </div>
-                                <div style="padding-top: 5px;">
-                                    <div class="btn-toolbar" role="toolbar">
-                                        <div class="btn-group" role="group">
-                                            <a class="btn btn-default" target="_blank" href="~/ServiceRequest/Details/@assessment.Id"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                            <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><img height="18" width="18" src="~/Content/images/box.jpg" /></a>
+                                    </td>
+                                    <td style="vertical-align: text-top;">
+                                        <a data-toggle="collapse" href="#assessment-@assessment.Id">@assessment.Title</a>
+                                    </td>
+                                    <td style="vertical-align: text-top; width:60px;">
+                                        <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>
+                                    </td>
+                                </tr>
+                                <tr id="assessment-@assessment.Id" class="collapse">
+                                    <td></td>
+                                    <td colspan="4">
+                                        <div>
+                                            @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
+                                            {
+                                                <form action="~/Dashboard/UpdateTaskStatus">
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input id="task-checkbox-@task.Id" type="checkbox"
+                                                                   value="@task.IsComplete"
+                                                                   @(task.IsComplete ? "checked" : "")
+                                                                   @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                                   onclick="onTaskChecked(this, true, @task.Id, @assessment.Id, null, null);">
+                                                            @Html.Partial("_TaskStatusLabel", task) @task.Name
+                                                        </label>
+                                                    </div>
+                                                </form>
+                                            }
                                         </div>
-                                        <div class="btn-group" role="group">
-                                            <button onclick="onShowTaskList(@assessment.Id)" class="btn btn-default btn-sm">
+                                        <div style="padding-top: 5px;">
+                                            <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
+                                            <p>
                                                 @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
                                                 {
                                                     <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
@@ -316,17 +304,14 @@
                                                         <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
                                                     </span>
                                                 }
-                                            </button>
+                                            </p>
                                         </div>
-                                        <div class="btn-group" role="group">
-                                            <a class="btn btn-default" onclick="onShowDiscussion(@assessment.Id)"><i class="glyphicon glyphicon-comment"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </table>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -163,16 +163,19 @@
                                                         @Html.Hidden("serviceRequestTaskId", task.Id)
                                                         <input type="submit" value="Pick Up" class="btn btn-default" />
                                                     </form>
-                                                    <div>Or</div>
-                                                    <form action="~/ServiceRequestTask/AssignTo" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <div class="form-group">
-                                                            <label class="control-label">Assign To: </label>
-                                                            @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                            @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                        </div>
-                                                    </form>
+                                                    @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+                                                    {
+                                                        <div>Or</div>
+                                                        <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                                            @Html.AntiForgeryToken()
+                                                            @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                            <div class="form-group">
+                                                                <label class="control-label">Assign To: </label>
+                                                                @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                                @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </form>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>

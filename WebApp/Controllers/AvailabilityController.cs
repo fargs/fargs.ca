@@ -72,11 +72,10 @@ namespace WebApp.Controllers
 
             var arr = availableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray<string>();
             ViewBag.AvailableDaysCSV = MvcHtmlString.Create(string.Join(",", arr));
-
+            ViewBag.PhysicianName = physician.GetDisplayName();
             var model = new AvailableDay()
             {
                 PhysicianId = id,
-                //PhysicianName = physician.GetDisplayName(),
                 Day = SystemTime.Now()
             };
             return View(model);

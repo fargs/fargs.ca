@@ -180,22 +180,25 @@
                                 }
                             </td>
                             <td width="20px">
-                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
+                                @if (task.TaskType != "EVENT")
                                 {
-                                    <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
-                                        @Html.AntiForgeryToken()
-                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                        <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
-                                            <label>
-                                                <input id="task-checkbox-@task.Id" type="checkbox"
-                                                       name="IsComplete"
-                                                       value="@task.IsComplete"
-                                                       @(task.IsComplete ? "checked" : "")
-                                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                       onclick="this.form.submit();">
-                                            </label>
-                                        </span>
-                                    </form>
+                                    if ((role == AspNetRoles.Physician && task.TaskId == Tasks.ApproveReport) || task.TaskId != Tasks.ApproveReport)
+                                    {
+                                        <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("serviceRequestTaskId", task.Id)
+                                            <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                                                <label>
+                                                    <input id="task-checkbox-@task.Id" type="checkbox"
+                                                           name="IsComplete"
+                                                           value="@task.IsComplete"
+                                                           @(task.IsComplete ? "checked" : "")
+                                                           @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                           onclick="this.form.submit();">
+                                                </label>
+                                            </span>
+                                        </form>
+                                    }
                                 }
                             </td>
                             <td width="100px">

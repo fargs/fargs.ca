@@ -871,13 +871,13 @@ namespace WebApp.Controllers
                     {
                         province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
                     }
-                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.Title, physician.Physician.BoxAddOnTemplateFolderId);
+                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.GetCaseFolderName(), physician.Physician.BoxAddOnTemplateFolderId);
                 }
                 else
                 {
                     // Get the province which is used in the case folder path
                     var province = ctx.Provinces.Single(p => p.Id == request.Address.ProvinceId);
-                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.Physician.BoxCaseTemplateFolderId);
+                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.GetCaseFolderName(), physician.Physician.BoxCaseTemplateFolderId);
                 }
 
                 // Persist the new case folder Id to the database.

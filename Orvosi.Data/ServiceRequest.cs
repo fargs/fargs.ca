@@ -58,7 +58,7 @@ namespace Orvosi.Data
 
         public string GetCalendarEventTitle()
         {
-            return $"{this.Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id})";
+            return $"{this.Address.City_CityId.Code}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id}";
         }
 
         public byte ServiceStatusId {
@@ -80,6 +80,18 @@ namespace Orvosi.Data
                 {
                     return ServiceStatus.Active;
                 }
+            }
+        }
+
+        public string GetCaseFolderName()
+        {
+            if (ServiceId == Services.Addendum || ServiceId == Services.PaperReview)
+            {
+                return $"{this.DueDate.Value.ToString("yy-MM-dd")} {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
+            }
+            else
+            {
+                return $"{this.AppointmentDate.Value.ToString("yy-MM-dd")}({this.StartTime.Value.ToString(@"hh\:mm")}) {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
             }
         }
     }

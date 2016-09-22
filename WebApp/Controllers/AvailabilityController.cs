@@ -100,7 +100,7 @@ namespace WebApp.Controllers
                     context.AvailableDays.Add(day);
                 }
                 await context.SaveChangesAsync();
-                return RedirectToAction("Index", new { id = model.PhysicianId });
+                return RedirectToAction("Index", new { PhysicianId = model.PhysicianId });
             }
             return View(model);
         }

@@ -12,6 +12,7 @@ using WebApp.Models;
 using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System.Data.Entity;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -141,8 +142,16 @@ namespace WebApp.Areas.Admin.Controllers
                 return View(vm);
             }
 
-            profile.ModifiedUser = User.Identity.GetUserId();
-            db.Entry(profile).State = EntityState.Modified;
+            var user = db.AspNetUsers.Find(profile.Id);
+            user.Title = profile.Title;
+            user.FirstName = profile.FirstName;
+            user.LastName = profile.LastName;
+            user.LogoCssClass = profile.LogoCssClass;
+            user.EmployeeId = profile.EmployeeId;
+            user.IsTestRecord = profile.IsTestRecord;
+            user.ColorCode = profile.ColorCode;
+            user.ModifiedDate = SystemTime.Now();
+            user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
             var result = await db.SaveChangesAsync();
 
@@ -182,8 +191,18 @@ namespace WebApp.Areas.Admin.Controllers
                 return View(vm);
             }
 
-            account.ModifiedUser = User.Identity.GetUserId();
-            db.Entry(account).State = EntityState.Modified;
+            var user = db.AspNetUsers.Find(account.Id);
+            user.UserName = account.UserName;
+            user.Email = account.Email;
+            user.EmailConfirmed = account.EmailConfirmed;
+            user.LockoutEndDateUtc = account.LockoutEndDateUtc;
+            user.LockoutEnabled = account.LockoutEnabled;
+            user.AccessFailedCount = account.AccessFailedCount;
+            user.PhoneNumber = account.PhoneNumber;
+            user.PhoneNumberConfirmed = account.PhoneNumberConfirmed;
+            user.TwoFactorEnabled = account.TwoFactorEnabled;
+            user.ModifiedDate = SystemTime.Now();
+            user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
             var result = await db.SaveChangesAsync();
 
@@ -192,8 +211,7 @@ namespace WebApp.Areas.Admin.Controllers
 
         public ActionResult Companies(Guid userId, Nullable<byte> parentId = null)
         {
-            using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
-            {
+            
                 var obj = db.AspNetUsers.Single(u => u.Id == userId);
                 if (obj == null)
                 {
@@ -213,13 +231,12 @@ namespace WebApp.Areas.Admin.Controllers
                     Companies = companies
                 };
                 return View("Companies", vm);
-            }
+            
         }
 
         //public async Task<ActionResult> Edit(string id)
         //{
-        //    using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
-        //    {
+        //    
 
         //        var obj = db.Users.Single(u => u.Id == id);
         //        if (obj == null)
@@ -237,7 +254,7 @@ namespace WebApp.Areas.Admin.Controllers
         //        };
 
         //        return View(vm);
-        //    }
+        //    
         //}
 
         //[HttpPost]
@@ -252,8 +269,7 @@ namespace WebApp.Areas.Admin.Controllers
         //        return View(vm);
         //    }
 
-        //    using (var db = new OrvosiDbContext(User.Identity.GetUserId()))
-        //    {
+        //    
         //        var existing = db.Users.Single(u => u.Id == user.Id);
         //        if (existing == null)
         //        {
@@ -268,7 +284,7 @@ namespace WebApp.Areas.Admin.Controllers
         //        {
         //            return RedirectToAction("Index");
         //        }
-        //    }
+        //    
         //    return View();
         //}
 

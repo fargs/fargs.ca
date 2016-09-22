@@ -87,7 +87,20 @@ namespace WebApp.Areas.Admin.Controllers
 
         public ActionResult Index(byte parentId)
         {
-            var list = db.AspNetUsers.Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == parentId).ToList();
+            var list = db.AspNetUsers.Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == parentId)
+                .AsEnumerable()
+                .Select(u => new ListViewItem
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    EmailConfirmed = u.EmailConfirmed,
+                    DisplayName = u.GetDisplayName(),
+                    RoleId = u.GetRoleId(),
+                    RoleName = u.GetRole().Name,
+                    IsTestRecord = u.IsTestRecord,
+                    UserName = u.UserName
+                })
+                .ToList();
 
             var vm = new ListViewModel()
             {

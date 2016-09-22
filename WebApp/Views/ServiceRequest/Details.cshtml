@@ -253,13 +253,17 @@
                 <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
                 <hr />
                 <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
-                <strong>Google Event Data</strong>
-                <div>@Model.ServiceRequest.GetCalendarEventTitle()</div>
                 <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
                 <div>@Model.ServiceRequest.StartTime</div>
                 <div>@Model.ServiceRequest.EndTime</div>
-            }
-        }
+                <address>
+                    <strong>@Model.ServiceRequest.Address.Name</strong><br>
+                    @Model.ServiceRequest.Address.Address1<br>
+                    @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
+                </address>
+
+    }
+}
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
         {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>

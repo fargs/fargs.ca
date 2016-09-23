@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using dvm = WebApp.ViewModels.DashboardViewModels;
-using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using WebApp.Library;
+using WebApp.Models.ServiceRequestModels;
 using Westwind.Web.Mvc;
 
 namespace WebApp.Controllers
@@ -14,16 +14,14 @@ namespace WebApp.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        private OrvosiDbContext context = new OrvosiDbContext();
+        private Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
 
         public async Task<ActionResult> Index(Guid? serviceProviderId, bool showClosed = false, bool onlyMine = true)
         {
             // Set date range variables used in where conditions
             var now = SystemTime.Now();
-            var startOfWeek = now.Date.GetStartOfWeek();
-            var endOfWeek = now.Date.GetEndOfWeek();
-            var startOfNextWeek = now.Date.GetStartOfNextWeek();
-            var endOfNextWeek = now.Date.GetEndOfNextWeek();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
 
             Guid? userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
@@ -32,20 +30,16 @@ namespace WebApp.Controllers
                 userId = serviceProviderId.Value;
             }
 
-            //var requests = await context.DashboardServiceRequestSummaryAsync(userId, null, null, null);
-
-            //if (!showClosed)
-            //{
-            //    requests = requests.Where(r => r.IsClosed.Value == false).ToList();
-            //}
-
             var requests = await context.GetAssignedServiceRequestsAsync(userId, now, showClosed, null);
 
             // Populate the view model
-            var vm = new dvm.IndexViewModel(requests, now, userId.Value, this.ControllerContext);
+            var vm = new dvm.IndexViewModel();
+
+            vm.WeekFolders = ServiceRequestMapper.MapToWeekFolders(requests, now, loggedInUserId, baseUrl);
+            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, loggedInUserId, baseUrl);
+            vm.Today = ServiceRequestMapper.MapToToday(requests, now, loggedInUserId, baseUrl);
 
             // Additional view data.
-            vm.ShowClosed = showClosed;
             vm.SelectedUserId = userId;
             vm.UserSelectList = (from user in context.AspNetUsers
                                 from userRole in context.AspNetUserRoles
@@ -58,7 +52,7 @@ namespace WebApp.Controllers
                                     Group = new SelectListGroup() { Name = role.Name }
                                 }).ToList();
             
-                return new NegotiatedResult("Index", vm);
+            return new NegotiatedResult("Index", vm);
             
         }
 
@@ -133,13 +127,13 @@ namespace WebApp.Controllers
             Guid? userId = User.Identity.GetGuidUserId();
 
             var requests = await context.GetServiceRequestAsync(serviceRequestId, now);
-            var assessment = new dvm.Assessment
+            var assessment = new Assessment
             {
                 ClaimantName = requests.First().ClaimantName,
                 Tasks = from o in requests
                         //where o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief
                         orderby o.TaskSequence
-                        select new dvm.Task
+                        select new ServiceRequestTask
                         {
                             Id = o.Id,
                             Name = o.TaskName,
@@ -165,7 +159,7 @@ namespace WebApp.Controllers
             var now = SystemTime.Now();
 
             var requests = await context.GetServiceRequestAsync(serviceRequestId, now);
-            var assessment = new dvm.Assessment
+            var assessment = new Assessment
             {
                 Id = requests.First().Id,
                 ClaimantName = requests.First().ClaimantName

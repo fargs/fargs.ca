@@ -1,4 +1,4 @@
-﻿using Orvosi.Data;
+﻿using data = Orvosi.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -6,6 +6,7 @@ using System;
 using WebApp.Library;
 using WebApp.Library.Extensions;
 using Orvosi.Shared.Enums;
+using WebApp.Models.ServiceRequestModels;
 
 namespace WebApp.ViewModels.DashboardViewModels
 {
@@ -104,7 +105,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         //                  };
         //}
 
-        public IndexViewModel(List<GetAssignedServiceRequestsReturnModel> model, DateTime now, Guid userId, ControllerContext context)
+        public IndexViewModel(List<data.GetAssignedServiceRequestsReturnModel> model, DateTime now, Guid userId, ControllerContext context)
         {
             // outstanding | today | upcoming
             // each lists days
@@ -113,7 +114,6 @@ namespace WebApp.ViewModels.DashboardViewModels
             // each person has tasks   
             this.WeekFolders = new List<WeekFolder>();
             this.AddOns = new List<AddOn>();
-            this.DueReports = new List<DayFolder>();
 
             var startOfWeek = now.Date.GetStartOfWeek();
             var endOfWeek = now.Date.GetEndOfWeek();
@@ -190,7 +190,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                      WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                      Tasks = from o in assessments
                                                                              where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
-                                                                             select new Task
+                                                                             select new ServiceRequestTask
                                                                              {
                                                                                  Id = o.Id,
                                                                                  Name = o.TaskName,
@@ -219,7 +219,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                                                   //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                                                   Tasks = from o in assessments
                                                                                           where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
-                                                                                          select new Task
+                                                                                          select new ServiceRequestTask
                                                                                           {
                                                                                               Id = o.Id,
                                                                                               Name = o.TaskName,
@@ -259,7 +259,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                          WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                          Tasks = from o in addOns
                                  where o.ServiceRequestId == sr.Key.ServiceRequestId
-                                 select new Task
+                                 select new ServiceRequestTask
                                  {
                                      Id = o.Id,
                                      Name = o.TaskName,
@@ -288,7 +288,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                       WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                       Tasks = from o in addOns
                                               where o.ServiceRequestId == p.Key.ServiceRequestId && o.AssignedTo == p.Key.AssignedTo
-                                              select new Task
+                                              select new ServiceRequestTask
                                               {
                                                   Id = o.Id,
                                                   Name = o.TaskName,
@@ -345,7 +345,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                               WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                               Tasks = from o in assessments
                                                       where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
-                                                      select new Task
+                                                      select new ServiceRequestTask
                                                       {
                                                           Id = o.Id,
                                                           Name = o.TaskName,
@@ -374,7 +374,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                            //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                            Tasks = from o in assessments
                                                                    where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
-                                                                   select new Task
+                                                                   select new ServiceRequestTask
                                                                    {
                                                                        Id = o.Id,
                                                                        Name = o.TaskName,
@@ -431,7 +431,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                               WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                               Tasks = from o in assessments
                                                       where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
-                                                      select new Task
+                                                      select new ServiceRequestTask
                                                       {
                                                           Id = o.Id,
                                                           Name = o.TaskName,
@@ -460,7 +460,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                                                            //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
                                                            Tasks = from o in assessments
                                                                    where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
-                                                                   select new Task
+                                                                   select new ServiceRequestTask
                                                                    {
                                                                        Id = o.Id,
                                                                        Name = o.TaskName,
@@ -481,13 +481,11 @@ namespace WebApp.ViewModels.DashboardViewModels
             WeekFolders = weekFolders;
             AddOns = ad;
             Today = today;
-            DueReports = due;
         }
 
         public IEnumerable<WeekFolder> WeekFolders { get; set; }
         public IEnumerable<AddOn> AddOns { get; set; }
         public DayFolder Today { get; set; }
-        public IEnumerable<DayFolder> DueReports { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Guid? SelectedUserId { get; set; }
         public bool ShowClosed { get; set; }
@@ -495,9 +493,9 @@ namespace WebApp.ViewModels.DashboardViewModels
 
     public class TaskListViewModel
     {
-        public TaskListViewModel(List<GetAssignedServiceRequestsReturnModel> model, int? taskId, Guid loggedInUserRole)
+        public TaskListViewModel(List<data.GetAssignedServiceRequestsReturnModel> model, int? taskId, Guid loggedInUserRole)
         {
-            this.Tasks = model.Select(o => new DashboardViewModels.Task
+            this.Tasks = model.Select(o => new ServiceRequestTask
             {
                 Id = o.Id,
                 Name = o.TaskName,
@@ -528,14 +526,14 @@ namespace WebApp.ViewModels.DashboardViewModels
                     t.AssignedToDisplayName,
                     t.AssignedToColorCode,
                     t.AssignedToInitials
-                }).Select(p => new DashboardViewModels.Person
+                }).Select(p => new Person
                 {
                     Id = p.Key.AssignedTo,
                     DisplayName = p.Key.AssignedToDisplayName,
                     ColorCode = p.Key.AssignedToColorCode,
                     Initials = p.Key.AssignedToInitials,
                     Tasks = todo.Where(t => t.TaskStatusId == TaskStatuses.ToDo || (t.TaskStatusId == TaskStatuses.Waiting && t.TaskType == "EVENT") && t.AssignedTo == p.Key.AssignedTo)
-                        .Select(t => new Task
+                        .Select(t => new ServiceRequestTask
                         {
                             Id = t.Id,
                             TaskId = t.TaskId.Value,
@@ -558,11 +556,11 @@ namespace WebApp.ViewModels.DashboardViewModels
             //BuildDependencies(this.RootTask, this.Tasks);
         }
 
-        public Task RootTask { get; set; }
-        public IEnumerable<Task> Tasks { get; set; }
+        public ServiceRequestTask RootTask { get; set; }
+        public IEnumerable<ServiceRequestTask> Tasks { get; set; }
         public IEnumerable<Person> People { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
-        private Task BuildDependencies(Task task, IEnumerable<Task> allTasks)
+        private ServiceRequestTask BuildDependencies(ServiceRequestTask task, IEnumerable<ServiceRequestTask> allTasks)
         {
 
             if (!string.IsNullOrEmpty(task.DependsOnCSV))
@@ -598,244 +596,244 @@ namespace WebApp.ViewModels.DashboardViewModels
         }
     }
 
-    public class Timeline
-    {
-        public string Name { get; set; }
-        public byte Sequence { get; set; }
-        public int AssessmentCount { get; set; }
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public IEnumerable<WeekFolder> WeekFolders { get; set; }
-    }
+    //public class Timeline
+    //{
+    //    public string Name { get; set; }
+    //    public byte Sequence { get; set; }
+    //    public int AssessmentCount { get; set; }
+    //    public int ToDoCount { get; set; }
+    //    public int WaitingCount { get; set; }
+    //    public IEnumerable<WeekFolder> WeekFolders { get; set; }
+    //}
 
-    public class WeekFolder
-    {
-        public string WeekFolderName { get; set; }
-        public DateTime StartDate { get; set; }
-        public long StartDateTicks { get; set; }
-        public DateTime EndDate { get; set; }
-        public int AssessmentCount { get; set; } = 0;
-        //public int AssessmentToDoCount { get; set; } = 0;
-        //public int AssessmentWaitingCount { get; set; } = 0;
-        //public int AssessmentObsoleteCount { get; set; } = 0;
-        //public int AssessmentDoneCount { get; set; } = 0;
-        public int AssessmentToDoCount
-        {
-            get
-            {
-                return DayFolders.Sum(a => a.AssessmentToDoCount);
-            }
-        }
-        public int AssessmentWaitingCount
-        {
-            get
-            {
-                return DayFolders.Sum(a => a.AssessmentWaitingCount);
-            }
-        }
-        public int AssessmentObsoleteCount
-        {
-            get
-            {
-                return DayFolders.Sum(a => a.AssessmentObsoleteCount);
-            }
-        }
-        public int AssessmentDoneCount
-        {
-            get
-            {
-                return DayFolders.Sum(a => a.AssessmentDoneCount);
-            }
-        }
-        public int ToDoCount { get; internal set; } = 0;
-        public int WaitingCount { get; set; }
-        public IEnumerable<DayFolder> DayFolders { get; set; }
-        public byte GetTimeline(DateTime now)
-        {
-            byte result = Orvosi.Shared.Enums.Timeline.Future;
-            if (StartDate <= now && EndDate >= now)
-                result = Orvosi.Shared.Enums.Timeline.Present;
-            else if (EndDate < now)
-                result = Orvosi.Shared.Enums.Timeline.Past;
-            return result;
-        }
-    }
+    //public class WeekFolder
+    //{
+    //    public string WeekFolderName { get; set; }
+    //    public DateTime StartDate { get; set; }
+    //    public long StartDateTicks { get; set; }
+    //    public DateTime EndDate { get; set; }
+    //    public int AssessmentCount { get; set; } = 0;
+    //    //public int AssessmentToDoCount { get; set; } = 0;
+    //    //public int AssessmentWaitingCount { get; set; } = 0;
+    //    //public int AssessmentObsoleteCount { get; set; } = 0;
+    //    //public int AssessmentDoneCount { get; set; } = 0;
+    //    public int AssessmentToDoCount
+    //    {
+    //        get
+    //        {
+    //            return DayFolders.Sum(a => a.AssessmentToDoCount);
+    //        }
+    //    }
+    //    public int AssessmentWaitingCount
+    //    {
+    //        get
+    //        {
+    //            return DayFolders.Sum(a => a.AssessmentWaitingCount);
+    //        }
+    //    }
+    //    public int AssessmentObsoleteCount
+    //    {
+    //        get
+    //        {
+    //            return DayFolders.Sum(a => a.AssessmentObsoleteCount);
+    //        }
+    //    }
+    //    public int AssessmentDoneCount
+    //    {
+    //        get
+    //        {
+    //            return DayFolders.Sum(a => a.AssessmentDoneCount);
+    //        }
+    //    }
+    //    public int ToDoCount { get; internal set; } = 0;
+    //    public int WaitingCount { get; set; }
+    //    public IEnumerable<DayFolder> DayFolders { get; set; }
+    //    public byte GetTimeline(DateTime now)
+    //    {
+    //        byte result = Orvosi.Shared.Enums.Timeline.Future;
+    //        if (StartDate <= now && EndDate >= now)
+    //            result = Orvosi.Shared.Enums.Timeline.Present;
+    //        else if (EndDate < now)
+    //            result = Orvosi.Shared.Enums.Timeline.Past;
+    //        return result;
+    //    }
+    //}
 
-    public class WeekFolderEquals : IEqualityComparer<WeekFolder>
-    {
-        public bool Equals(WeekFolder left, WeekFolder right)
-        {
-            if ((object)left == null && (object)right == null)
-            {
-                return true;
-            }
-            if ((object)left == null || (object)right == null)
-            {
-                return false;
-            }
-            return left.WeekFolderName == right.WeekFolderName && left.StartDate == right.StartDate;
-        }
+    //public class WeekFolderEquals : IEqualityComparer<WeekFolder>
+    //{
+    //    public bool Equals(WeekFolder left, WeekFolder right)
+    //    {
+    //        if ((object)left == null && (object)right == null)
+    //        {
+    //            return true;
+    //        }
+    //        if ((object)left == null || (object)right == null)
+    //        {
+    //            return false;
+    //        }
+    //        return left.WeekFolderName == right.WeekFolderName && left.StartDate == right.StartDate;
+    //    }
 
-        public int GetHashCode(WeekFolder weekFolder)
-        {
-            return (weekFolder.WeekFolderName + weekFolder.StartDate.ToString()).GetHashCode();
-        }
-    }
+    //    public int GetHashCode(WeekFolder weekFolder)
+    //    {
+    //        return (weekFolder.WeekFolderName + weekFolder.StartDate.ToString()).GetHashCode();
+    //    }
+    //}
 
-    public class DayFolder
-    {
-        public DayFolder()
-        {
-            Assessments = new List<Assessment>();
-        }
-        public DateTime Day { get; set; }
-        public string City { get; set; }
-        public string Address { get; set; }
-        public string Company { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
-        public int AssessmentCount { get; set; }
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public IEnumerable<Assessment> Assessments { get; set; }
-        public string DayFormatted_dddd { get; internal set; }
-        public string DayFormatted_MMMdd { get; internal set; }
-        public long DayTicks { get; internal set; }
-        public int AssessmentToDoCount
-        {
-            get
-            {
-                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.ToDo);
-            }
-        }
-        public int AssessmentWaitingCount
-        {
-            get
-            {
-                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Waiting);
-            }
-        }
-        public int AssessmentObsoleteCount
-        {
-            get
-            {
-                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Obsolete);
-            }
-        }
-        public int AssessmentDoneCount
-        {
-            get
-            {
-                return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Done);
-            }
-        }
-        public bool IsToday()
-        {
-            return SystemTime.Now().Date == Day;
-        }
+    //public class DayFolder
+    //{
+    //    public DayFolder()
+    //    {
+    //        Assessments = new List<Assessment>();
+    //    }
+    //    public DateTime Day { get; set; }
+    //    public string City { get; set; }
+    //    public string Address { get; set; }
+    //    public string Company { get; set; }
+    //    public TimeSpan StartTime { get; set; }
+    //    public TimeSpan EndTime { get; set; }
+    //    public int AssessmentCount { get; set; }
+    //    public int ToDoCount { get; set; }
+    //    public int WaitingCount { get; set; }
+    //    public IEnumerable<Assessment> Assessments { get; set; }
+    //    public string DayFormatted_dddd { get; internal set; }
+    //    public string DayFormatted_MMMdd { get; internal set; }
+    //    public long DayTicks { get; internal set; }
+    //    public int AssessmentToDoCount
+    //    {
+    //        get
+    //        {
+    //            return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.ToDo);
+    //        }
+    //    }
+    //    public int AssessmentWaitingCount
+    //    {
+    //        get
+    //        {
+    //            return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Waiting);
+    //        }
+    //    }
+    //    public int AssessmentObsoleteCount
+    //    {
+    //        get
+    //        {
+    //            return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Obsolete);
+    //        }
+    //    }
+    //    public int AssessmentDoneCount
+    //    {
+    //        get
+    //        {
+    //            return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Done);
+    //        }
+    //    }
+    //    public bool IsToday()
+    //    {
+    //        return SystemTime.Now().Date == Day;
+    //    }
 
-        public bool IsPast()
-        {
-            return SystemTime.Now().Date < Day;
-        }
-    }
+    //    public bool IsPast()
+    //    {
+    //        return SystemTime.Now().Date < Day;
+    //    }
+    //}
 
-    public class Assessment
-    {
-        public int Id { get; set; }
-        public string URL { get; set; }
-        public string Title { get; set; }
-        public string ClaimantName { get; set; }
-        public bool IsLateCancellation { get; set; }
-        public bool IsNoShow { get; set; }
-        public DateTime? CancelledDate { get; set; }
-        public string Service { get; set; }
-        public string ServiceCode { get; set; }
-        public string ServiceColorCode { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public int CommentCount { get; set; } = 0;
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public string BoxCaseFolderURL { get; set; }
-        public IEnumerable<Task> Tasks { get; set; }
-        public IEnumerable<Person> People { get; set; }
-        public bool IsCancelled
-        {
-            get
-            {
-                return CancelledDate.HasValue;
-            }
-        }
-        public byte ServiceRequestStatusId { get; internal set; }
-        public bool IsClosed { get; set; }
-        public byte? ServiceStatusId
-        {
-            get
-            {
-                if (IsLateCancellation)
-                {
-                    return ServiceStatus.LateCancellation;
-                }
-                else if (CancelledDate.HasValue)
-                {
-                    return ServiceStatus.Cancellation;
-                }
-                else if (IsNoShow)
-                {
-                    return ServiceStatus.NoShow;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        public IEnumerable<ServiceRequestMessage> Messages { get; set; }
-        public bool HasHighWorkload { get; internal set; }
-    }
+    //public class Assessment
+    //{
+    //    public int Id { get; set; }
+    //    public string URL { get; set; }
+    //    public string Title { get; set; }
+    //    public string ClaimantName { get; set; }
+    //    public bool IsLateCancellation { get; set; }
+    //    public bool IsNoShow { get; set; }
+    //    public DateTime? CancelledDate { get; set; }
+    //    public string Service { get; set; }
+    //    public string ServiceCode { get; set; }
+    //    public string ServiceColorCode { get; set; }
+    //    public TimeSpan StartTime { get; set; }
+    //    public int CommentCount { get; set; } = 0;
+    //    public int ToDoCount { get; set; }
+    //    public int WaitingCount { get; set; }
+    //    public string BoxCaseFolderURL { get; set; }
+    //    public IEnumerable<Task> Tasks { get; set; }
+    //    public IEnumerable<Person> People { get; set; }
+    //    public bool IsCancelled
+    //    {
+    //        get
+    //        {
+    //            return CancelledDate.HasValue;
+    //        }
+    //    }
+    //    public byte ServiceRequestStatusId { get; internal set; }
+    //    public bool IsClosed { get; set; }
+    //    public byte? ServiceStatusId
+    //    {
+    //        get
+    //        {
+    //            if (IsLateCancellation)
+    //            {
+    //                return ServiceStatus.LateCancellation;
+    //            }
+    //            else if (CancelledDate.HasValue)
+    //            {
+    //                return ServiceStatus.Cancellation;
+    //            }
+    //            else if (IsNoShow)
+    //            {
+    //                return ServiceStatus.NoShow;
+    //            }
+    //            else
+    //            {
+    //                return null;
+    //            }
+    //        }
+    //    }
+    //    public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+    //    public bool HasHighWorkload { get; internal set; }
+    //}
 
-    public class AddOn
-    {
-        public int Id { get; set; }
-        public string URL { get; set; }
-        public string Title { get; set; }
-        public DateTime ReportDueDate { get; set; }
-        public string ClaimantName { get; set; }
-        public DateTime? CancelledDate { get; set; }
-        public string Service { get; set; }
-        public string ServiceCode { get; set; }
-        public string ServiceColorCode { get; set; }
-        public int CommentCount { get; set; } = 0;
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public string BoxCaseFolderURL { get; set; }
-        public IEnumerable<Task> Tasks { get; set; }
-        public IEnumerable<Person> People { get; set; }
-        public bool IsCancelled
-        {
-            get
-            {
-                return CancelledDate.HasValue;
-            }
-        }
-        public IEnumerable<ServiceRequestMessage> Messages { get; set; }
-        public bool HasHighWorkload { get; internal set; }
-        public byte ServiceRequestStatusId { get; internal set; }
-        public bool IsClosed { get; set; }
-    }
+    //public class AddOn
+    //{
+    //    public int Id { get; set; }
+    //    public string URL { get; set; }
+    //    public string Title { get; set; }
+    //    public DateTime ReportDueDate { get; set; }
+    //    public string ClaimantName { get; set; }
+    //    public DateTime? CancelledDate { get; set; }
+    //    public string Service { get; set; }
+    //    public string ServiceCode { get; set; }
+    //    public string ServiceColorCode { get; set; }
+    //    public int CommentCount { get; set; } = 0;
+    //    public int ToDoCount { get; set; }
+    //    public int WaitingCount { get; set; }
+    //    public string BoxCaseFolderURL { get; set; }
+    //    public IEnumerable<Task> Tasks { get; set; }
+    //    public IEnumerable<Person> People { get; set; }
+    //    public bool IsCancelled
+    //    {
+    //        get
+    //        {
+    //            return CancelledDate.HasValue;
+    //        }
+    //    }
+    //    public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+    //    public bool HasHighWorkload { get; internal set; }
+    //    public byte ServiceRequestStatusId { get; internal set; }
+    //    public bool IsClosed { get; set; }
+    //}
 
-    public class Person
-    {
-        public Guid? Id { get; set; }
-        public string DisplayName { get; set; }
-        public string ColorCode { get; set; }
-        public string Initials { get; set; }
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public IEnumerable<Task> Tasks { get; set; }
-        public Guid RoleId { get; internal set; }
-        public string RoleName { get; set; }
-    }
+    //public class Person
+    //{
+    //    public Guid? Id { get; set; }
+    //    public string DisplayName { get; set; }
+    //    public string ColorCode { get; set; }
+    //    public string Initials { get; set; }
+    //    public int ToDoCount { get; set; }
+    //    public int WaitingCount { get; set; }
+    //    public IEnumerable<Task> Tasks { get; set; }
+    //    public Guid RoleId { get; internal set; }
+    //    public string RoleName { get; set; }
+    //}
 
     public class Task
     {

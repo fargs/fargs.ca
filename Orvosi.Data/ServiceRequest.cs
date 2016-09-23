@@ -87,11 +87,11 @@ namespace Orvosi.Data
         {
             if (ServiceId == Services.Addendum || ServiceId == Services.PaperReview)
             {
-                return $"{this.DueDate.Value.ToString("yy-MM-dd")} {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
+                return $"{this.DueDate.Value.ToString("yyyy-MM-dd")} {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
             }
             else
             {
-                return $"{this.AppointmentDate.Value.ToString("yy-MM-dd")}({this.StartTime.Value.ToString(@"hh\:mm")}) {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
+                return $"{this.AppointmentDate.Value.ToString("yyyy-MM-dd")}({this.StartTime.Value.ToString(@"hhmm")}) {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
             }
         }
     }

@@ -29,14 +29,14 @@
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active">
                 <a href="#Today" aria-controls="Today" role="tab" data-toggle="tab">
-                    <div class="h1 text-center">@(Model.Today == null ? 0 : Model.Today.AssessmentCount)</div>
-                    <div class="text-muted text-center">Today</div>
+                    <div class="h4">@(Model.Today == null ? 0 : Model.Today.AssessmentCount)</div>
+                    <div class="text-muted">Today</div>
                 </a>
             </li>
             <li role="presentation">
                 <a href="#DueReports" aria-controls="Due" role="tab" data-toggle="tab">
-                    <div class="h1 text-center">@Model.DueReports.Sum(c => c.AssessmentCount)</div>
-                    <div class="text-muted text-center">Due</div>
+                    <div class="h4">@Model.DueReports.Sum(c => c.AssessmentCount)</div>
+                    <div class="text-muted">Due</div>
                 </a>
             </li>
             <li role="presentation">

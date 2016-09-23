@@ -4,7 +4,7 @@
 
 @{
     var roleId = User.Identity.GetRoleId();
-    var roles = new Guid[2] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin };
+    var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 }
 
 @if (roles.Contains(roleId))

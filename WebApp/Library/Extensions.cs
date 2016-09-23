@@ -96,13 +96,11 @@ namespace WebApp.Library.Extensions
             return value.ItemCollection == null ? new List<BoxItem>() : value.ItemCollection.Entries;
         }
 
-        public static string ToJson(this object obj)
-        {
-            JsonSerializer js = JsonSerializer.Create(new JsonSerializerSettings());
-            var jw = new StringWriter();
-            js.Serialize(jw, obj);
-            return jw.ToString();
-        }
+        public static string ToJson(this object obj) => 
+            JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
 
         public static int GetRestOfWeek(this DateTime obj)
         {

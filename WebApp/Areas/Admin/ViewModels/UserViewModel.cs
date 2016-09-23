@@ -10,7 +10,19 @@ namespace WebApp.Areas.Admin.ViewModels
 {
     public class ListViewModel
     {
-        public List<AspNetUser> Users { get; set; }
+        public List<ListViewItem> Users { get; set; }
+    }
+
+    public class ListViewItem
+    {
+        public Guid Id { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public string DisplayName { get; set; }
+        public Guid RoleId { get; set; }
+        public string RoleName { get; set; }
+        public bool IsTestRecord { get; set; }
     }
 
     public class DetailViewModel

@@ -163,16 +163,19 @@
                                                         @Html.Hidden("serviceRequestTaskId", task.Id)
                                                         <input type="submit" value="Pick Up" class="btn btn-default" />
                                                     </form>
-                                                    <div>Or</div>
-                                                    <form action="~/ServiceRequestTask/AssignTo" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <div class="form-group">
-                                                            <label class="control-label">Assign To: </label>
-                                                            @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                            @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                        </div>
-                                                    </form>
+                                                    @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+                                                    {
+                                                        <div>Or</div>
+                                                        <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                                            @Html.AntiForgeryToken()
+                                                            @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                            <div class="form-group">
+                                                                <label class="control-label">Assign To: </label>
+                                                                @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                                @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </form>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -180,7 +183,7 @@
                                 }
                             </td>
                             <td width="20px">
-                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.SuperAdmin || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
+                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
                                 {
                                     <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                         @Html.AntiForgeryToken()
@@ -221,6 +224,7 @@
 
         <h4 style="line-height:30px;">Case Files and Reports</h4>
         <hr />
+        <p><strong>Folder Name:</strong> @Model.ServiceRequest.GetCaseFolderName()</p>
         @if (Model.ServiceRequest.BoxCaseFolderId == null)
         {
             <div>The case folder has not been created yet.<br />Your case coordinator will take care of this once the files are received.</div>
@@ -244,18 +248,22 @@
                     </form>
                 </div>
             }
-            <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
-            <hr />
             if (Model.ServiceRequest.Service.HasAppointment)
             {
+                <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
+                <hr />
                 <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
-                <strong>Google Event Data</strong>
-                <div>@Model.ServiceRequest.GetCalendarEventTitle()</div>
                 <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
                 <div>@Model.ServiceRequest.StartTime</div>
                 <div>@Model.ServiceRequest.EndTime</div>
-            }
-        }
+                <address>
+                    <strong>@Model.ServiceRequest.Address.Name</strong><br>
+                    @Model.ServiceRequest.Address.Address1<br>
+                    @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
+                </address>
+
+    }
+}
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
         {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>

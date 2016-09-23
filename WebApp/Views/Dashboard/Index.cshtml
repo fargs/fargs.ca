@@ -4,7 +4,7 @@
 
 @{
     var roleId = User.Identity.GetRoleId();
-    var roles = new Guid[2] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin };
+    var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 }
 
 @if (roles.Contains(roleId))
@@ -26,7 +26,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <ul class="nav nav-tabs nav-justified" role="tablist">
+        <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active">
                 <a href="#Today" aria-controls="Today" role="tab" data-toggle="tab">
                     <div class="h1 text-center">@(Model.Today == null ? 0 : Model.Today.AssessmentCount)</div>
@@ -41,14 +41,14 @@
             </li>
             <li role="presentation">
                 <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
-                    <div class="h1 text-center">@Model.WeekFolders.Sum(c => c.AssessmentCount)</div>
-                    <div class="text-muted text-center">Assessments</div>
+                    <span class="h4">@Model.WeekFolders.Sum(c => c.AssessmentCount)</span>
+                    <span class="text-muted">&nbsp;&nbsp;Assessments</span>
                 </a>
             </li>
             <li role="presentation">
                 <a href="#AddOns" aria-controls="AddOns" role="tab" data-toggle="tab">
-                    <div class="h1 text-center">@Model.AddOns.Count()</div>
-                    <div class="text-muted text-center">Addendums / Paper Reviews</div>
+                    <span class="h4">@Model.AddOns.Count()</span>
+                    <span class="text-muted">&nbsp;&nbsp;Addendums / Paper Reviews</span>
                 </a>
             </li>
         </ul>

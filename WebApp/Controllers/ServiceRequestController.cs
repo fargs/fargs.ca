@@ -851,13 +851,11 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
-            using (var db = new OrvosiDbContext(User.Identity.Name))
-            {
                 // Get the request
-                var request = db.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
+                var request = ctx.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
 
                 // Get the request and assert they have a Box Folder Id
-                var physician = db.AspNetUsers.Single(p => p.Id == request.PhysicianId);
+                var physician = ctx.AspNetUsers.Single(p => p.Id == request.PhysicianId);
                 //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
                 var physicianBoxFolderId = physician.BoxFolderId;
                 if (string.IsNullOrEmpty(physicianBoxFolderId))
@@ -868,40 +866,37 @@ namespace WebApp.Controllers
                 BoxFolder caseFolder;
                 if (request.Service.ServiceCategoryId == ServiceCategories.AddOn)
                 {
-                    var province = db.GetCompanyProvince(request.CompanyId).FirstOrDefault();
+                    var province = ctx.GetCompanyProvince(request.CompanyId).FirstOrDefault();
                     if (province == null)
                     {
                         province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
                     }
-                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.Title, physician.Physician.BoxAddOnTemplateFolderId);
+                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.GetCaseFolderName(), physician.Physician.BoxAddOnTemplateFolderId);
                 }
                 else
                 {
                     // Get the province which is used in the case folder path
-                    var province = db.Provinces.Single(p => p.Id == request.Address.ProvinceId);
-                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.Title, physician.Physician.BoxCaseTemplateFolderId);
+                    var province = ctx.Provinces.Single(p => p.Id == request.Address.ProvinceId);
+                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.GetCaseFolderName(), physician.Physician.BoxCaseTemplateFolderId);
                 }
 
                 // Persist the new case folder Id to the database.
                 request.BoxCaseFolderId = caseFolder.Id;
-                db.SaveChanges();
+                ctx.SaveChanges();
 
                 // Redirect to display the Box Folder
                 return RedirectToAction("Details", new { id = ServiceRequestId });
-            }
         }
 
         [HttpPost]
         public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
-            using (var db = new OrvosiDbContext())
-            {
-                var resources = db.GetServiceRequestResources(ServiceRequestId);
+                var resources = ctx.GetServiceRequestResources(ServiceRequestId);
                 var resource = resources.Single(r => r.Id == UserId);
 
                 var box = new BoxManager();
                 var collaboration = box.AddCollaboration(FolderId, resource.BoxUserId, resource.Email);
-                db.ServiceRequestBoxCollaborations.Add(
+                ctx.ServiceRequestBoxCollaborations.Add(
                     new ServiceRequestBoxCollaboration()
                     {
                         BoxCollaborationId = collaboration.Id,
@@ -911,39 +906,36 @@ namespace WebApp.Controllers
                         ModifiedDate = SystemTime.Now()
                     }
                 );
-                db.SaveChanges();
+                ctx.SaveChanges();
 
                 box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
                 return RedirectToAction("Details", new { id = ServiceRequestId });
-            }
+            
         }
 
         public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
         {
-            using (var db = new OrvosiDbContext())
-            {
+            
                 var box = new BoxManager();
                 var success = box.RemoveCollaboration(CollaborationId);
 
                 if (success)
                 {
-                    var collaboration = db.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
-                    db.ServiceRequestBoxCollaborations.Remove(collaboration);
-                    db.SaveChanges();
+                    var collaboration = ctx.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
+                    ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
+                    ctx.SaveChanges();
                 }
                 return RedirectToAction("Details", new { id = ServiceRequestId });
-            }
+            
         }
 
         public ActionResult AcceptBoxFolder(int ServiceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
-            using (var db = new OrvosiDbContext())
-            {
-                var user = db.Profiles.Single(p => p.Id == UserId);
+            
+                var user = ctx.Profiles.Single(p => p.Id == UserId);
                 boxUserId = user.BoxUserId;
-            }
             var box = new BoxManager();
             var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
             return RedirectToAction("Details", new { id = ServiceRequestId });
@@ -989,7 +981,7 @@ namespace WebApp.Controllers
 
         private async Task GetCreateDropdownlistData(AvailableDay availableDay)
         {
-            //var companies = db.Companies
+            //var companies = ctx.Companies
             //    .Where(c => c.IsParent == false);
 
             //if (availableDay != null && availableDay.CompanyIsParent.Value)

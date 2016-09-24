@@ -422,6 +422,7 @@ namespace WebApp.Models.ServiceRequestModels
                         Assessments = from o in assessments
                                       group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                       where sr.Key.AppointmentDate == days.Key
+                                      orderby sr.Key.AppointmentDate, sr.Key.StartTime
                                       select new Assessment
                                       {
                                           Id = sr.Key.ServiceRequestId,
@@ -438,57 +439,59 @@ namespace WebApp.Models.ServiceRequestModels
                                           URL = $"{baseUrl}/ServiceRequest/Details/{sr.Key.ServiceRequestId}",
                                           BoxCaseFolderURL = $"https://orvosi.app.box.com/files/0/f/{sr.Key.BoxCaseFolderId}",
                                           HasHighWorkload = sr.Any(c => (c.TaskStatusId == TaskStatuses.ToDo || c.TaskStatusId == TaskStatuses.Waiting) && c.AssignedTo == loggedInUserId && c.Workload == Workload.High),
-                                               ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
-                                               ToDoCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
-                                               WaitingCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
-                                               Tasks = from o in assessments
-                                                       where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
-                                                       select new ServiceRequestTask
-                                                       {
-                                                           Id = o.Id,
-                                                           Name = o.TaskName,
-                                                           StatusId = o.TaskStatusId,
-                                                           Status = o.TaskStatusName,
-                                                           AssignedTo = o.AssignedTo,
-                                                           AssignedToDisplayName = o.AssignedToDisplayName,
-                                                           AssignedToColorCode = o.AssignedToColorCode,
-                                                           AssignedToInitials = o.AssignedToInitials,
-                                                           IsComplete = o.TaskStatusId == TaskStatuses.Done,
-                                                           ServiceRequestId = o.ServiceRequestId,
-                                                           Workload = o.Workload.GetValueOrDefault(0)
-                                                       },
-                                               People = from o in assessments
-                                                        group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
-                                                        where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"
-                                                        select new Person
-                                                        {
-                                                            Id = at.Key.AssignedTo,
-                                                            DisplayName = at.Key.AssignedToDisplayName,
-                                                            ColorCode = at.Key.AssignedToColorCode,
-                                                            Initials = at.Key.AssignedToInitials,
-                                                            RoleId = at.Key.ResponsibleRoleId.Value,
-                                                            RoleName = at.Key.ResponsibleRoleName,
-                                                            //ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
-                                                            //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
-                                                            Tasks = from o in assessments
-                                                                    where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
-                                                                    select new ServiceRequestTask
-                                                                    {
-                                                                        Id = o.Id,
-                                                                        Name = o.TaskName,
-                                                                        StatusId = o.TaskStatusId,
-                                                                        Status = o.TaskStatusName,
-                                                                        AssignedTo = at.Key.AssignedTo,
-                                                                        AssignedToDisplayName = at.Key.AssignedToDisplayName,
-                                                                        AssignedToColorCode = at.Key.AssignedToColorCode,
-                                                                        AssignedToInitials = at.Key.AssignedToInitials,
-                                                                        IsComplete = o.TaskStatusId == TaskStatuses.Done,
-                                                                        ServiceRequestId = at.Key.ServiceRequestId,
-                                                                        Workload = o.Workload.GetValueOrDefault(0)
-                                                                    }
-                                                        }
-                                           }
-                         }).FirstOrDefault();
+                                          ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
+                                          ToDoCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
+                                          WaitingCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
+                                          Tasks = from o in assessments
+                                                  where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
+                                                  orderby o.TaskSequence
+                                                  select new ServiceRequestTask
+                                                  {
+                                                      Id = o.Id,
+                                                      Name = o.TaskName,
+                                                      StatusId = o.TaskStatusId,
+                                                      Status = o.TaskStatusName,
+                                                      AssignedTo = o.AssignedTo,
+                                                      AssignedToDisplayName = o.AssignedToDisplayName,
+                                                      AssignedToColorCode = o.AssignedToColorCode,
+                                                      AssignedToInitials = o.AssignedToInitials,
+                                                      IsComplete = o.TaskStatusId == TaskStatuses.Done,
+                                                      ServiceRequestId = o.ServiceRequestId,
+                                                      Workload = o.Workload.GetValueOrDefault(0)
+                                                  },
+                                          People = from o in assessments
+                                                   group o by new { o.AppointmentDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
+                                                   where at.Key.AppointmentDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"
+                                                   select new Person
+                                                   {
+                                                       Id = at.Key.AssignedTo,
+                                                       DisplayName = at.Key.AssignedToDisplayName,
+                                                       ColorCode = at.Key.AssignedToColorCode,
+                                                       Initials = at.Key.AssignedToInitials,
+                                                       RoleId = at.Key.ResponsibleRoleId.Value,
+                                                       RoleName = at.Key.ResponsibleRoleName,
+                                                       //ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
+                                                       //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
+                                                       Tasks = from o in assessments
+                                                               where o.AppointmentDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
+                                                               select new ServiceRequestTask
+                                                               {
+                                                                   Id = o.Id,
+                                                                   Name = o.TaskName,
+                                                                   StatusId = o.TaskStatusId,
+                                                                   Status = o.TaskStatusName,
+                                                                   AssignedTo = at.Key.AssignedTo,
+                                                                   AssignedToDisplayName = at.Key.AssignedToDisplayName,
+                                                                   AssignedToColorCode = at.Key.AssignedToColorCode,
+                                                                   AssignedToInitials = at.Key.AssignedToInitials,
+                                                                   IsComplete = o.TaskStatusId == TaskStatuses.Done,
+                                                                   ServiceRequestId = at.Key.ServiceRequestId,
+                                                                   Workload = o.Workload.GetValueOrDefault(0)
+                                                               }
+                                                               
+                                                   }
+                                      }
+                    }).FirstOrDefault();
         }
     }
 

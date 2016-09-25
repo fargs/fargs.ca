@@ -496,8 +496,16 @@ namespace WebApp.Models.ServiceRequestModels
 
         public static IEnumerable<DayFolder> MapToDueDates(List<Orvosi.Data.GetAssignedServiceRequestsReturnModel> assessments, DateTime now, Guid loggedInUserId, string baseUrl)
         {
-            return (from o in assessments
-                    where (o.AppointmentDate.HasValue && o.AppointmentDate <= SystemTime.Now()) || !o.AppointmentDate.HasValue
+            var assessmentIds = 
+                assessments
+                    .Where(a => (a.TaskId == Tasks.ApproveReport && a.TaskStatusId == TaskStatuses.ToDo)
+                        || (a.TaskId == Tasks.ApproveReport && a.TaskStatusId == TaskStatuses.Waiting &&
+                            ((a.AppointmentDate < SystemTime.Now()) || !a.AppointmentDate.HasValue)))
+                    .Select(a => a.ServiceRequestId)
+                    .Distinct();
+            var source = assessments.Where(a => assessmentIds.Contains(a.ServiceRequestId));
+
+            return (from o in source
                     orderby o.DueDate
                     group o by o.DueDate into days
                     select new DayFolder
@@ -510,11 +518,9 @@ namespace WebApp.Models.ServiceRequestModels
                         Address = days.Min(c => c.AddressName),
                         City = days.Min(c => c.City),
                         AssessmentCount = days.Select(c => c.ServiceRequestId).Distinct().Count(),
-                        ToDoCount = days.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
-                        WaitingCount = days.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
-                        Assessments = from o in assessments
+                        Assessments = from o in source
                                       group o by new { o.DueDate, o.Title, o.BoxCaseFolderId, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
-                                      where sr.Key.DueDate == days.Key
+                                      where sr.Key.DueDate == days.Key 
                                       orderby sr.Key.DueDate
                                       select new Assessment
                                       {
@@ -533,7 +539,7 @@ namespace WebApp.Models.ServiceRequestModels
                                           ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
                                           ToDoCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
                                           WaitingCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
-                                          Tasks = from o in assessments
+                                          Tasks = from o in source
                                                   where o.DueDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
                                                   orderby o.TaskSequence
                                                   select new ServiceRequestTask
@@ -550,7 +556,7 @@ namespace WebApp.Models.ServiceRequestModels
                                                       ServiceRequestId = o.ServiceRequestId,
                                                       Workload = o.Workload.GetValueOrDefault(0)
                                                   },
-                                          People = from o in assessments
+                                          People = from o in source
                                                    group o by new { o.DueDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
                                                    where at.Key.DueDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"
                                                    select new Person
@@ -563,7 +569,7 @@ namespace WebApp.Models.ServiceRequestModels
                                                        RoleName = at.Key.ResponsibleRoleName,
                                                        //ToDoCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.ToDo),
                                                        //WaitingCount = sr.Count(c => c.AssignedTo == userId && c.TaskStatusId == TaskStatuses.Waiting),
-                                                       Tasks = from o in assessments
+                                                       Tasks = from o in source
                                                                where o.DueDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId && o.AssignedTo == at.Key.AssignedTo
                                                                select new ServiceRequestTask
                                                                {

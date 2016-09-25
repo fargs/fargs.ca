@@ -161,7 +161,7 @@
                                                                    value="@task.IsComplete"
                                                                    @(task.IsComplete ? "checked" : "")
                                                                    @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                                   onclick="onTaskChecked(this, false, @task.Id, @assessment.Id, @Model.Today.DayTicks)">
+                                                                   onclick="onTaskChecked(this, false, @task.Id, @assessment.Id, @day.DayTicks)">
                                                             @Html.Partial("_TaskStatusLabel", task) @task.Name
                                                         </label>
                                                     </div>

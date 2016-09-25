@@ -38,6 +38,7 @@ namespace WebApp.Controllers
             vm.WeekFolders = ServiceRequestMapper.MapToWeekFolders(requests, now, loggedInUserId, baseUrl);
             vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, loggedInUserId, baseUrl);
             vm.Today = ServiceRequestMapper.MapToToday(requests, now, loggedInUserId, baseUrl);
+            vm.DueDates = ServiceRequestMapper.MapToDueDates(requests, now, loggedInUserId, baseUrl);
 
             // Additional view data.
             vm.SelectedUserId = userId;

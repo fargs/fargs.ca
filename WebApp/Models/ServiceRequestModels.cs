@@ -420,13 +420,14 @@ namespace WebApp.Models.ServiceRequestModels
                         ToDoCount = days.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
                         WaitingCount = days.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
                         Assessments = from o in assessments
-                                      group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
+                                      group o by new { o.AppointmentDate, o.Title, o.BoxCaseFolderId, o.StartTime, o.CompanyName, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                       where sr.Key.AppointmentDate == days.Key
                                       orderby sr.Key.AppointmentDate, sr.Key.StartTime
                                       select new Assessment
                                       {
                                           Id = sr.Key.ServiceRequestId,
                                           ClaimantName = sr.Key.ClaimantName,
+                                          CompanyName = sr.Key.CompanyName,
                                           StartTime = sr.Key.StartTime.Value,
                                           Service = sr.Key.ServiceName,
                                           ServiceCode = sr.Key.ServiceCode,
@@ -519,13 +520,14 @@ namespace WebApp.Models.ServiceRequestModels
                         City = days.Min(c => c.City),
                         AssessmentCount = days.Select(c => c.ServiceRequestId).Distinct().Count(),
                         Assessments = from o in source
-                                      group o by new { o.DueDate, o.Title, o.BoxCaseFolderId, o.ServiceRequestId, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
+                                      group o by new { o.DueDate, o.Title, o.BoxCaseFolderId, o.ServiceRequestId, o.CompanyName, o.IsClosed, o.ServiceRequestStatusId, o.ClaimantName, o.ServiceName, o.ServiceCode, o.ServiceColorCode, o.IsLateCancellation, o.CancelledDate, o.IsNoShow } into sr
                                       where sr.Key.DueDate == days.Key 
                                       orderby sr.Key.DueDate
                                       select new Assessment
                                       {
                                           Id = sr.Key.ServiceRequestId,
                                           ClaimantName = sr.Key.ClaimantName,
+                                          CompanyName = sr.Key.CompanyName,
                                           Service = sr.Key.ServiceName,
                                           ServiceCode = sr.Key.ServiceCode,
                                           ServiceColorCode = sr.Key.ServiceColorCode,

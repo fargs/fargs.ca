@@ -612,7 +612,9 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\Site.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\gulpfile.js" />
     <Content Include="logo_icon.ico" />
     <Content Include="Content\images\Orvosi-Banners-01-nologo.pdn" />

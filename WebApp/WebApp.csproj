@@ -417,6 +417,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="Models\ServiceRequestModels.cs" />
+    <Compile Include="Models\ServiceRequestModels2.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
@@ -1091,6 +1092,8 @@
     <Content Include="Views\Dashboard\DueDates.cshtml" />
     <Content Include="Views\Dashboard\Schedule.cshtml" />
     <Content Include="Views\Dashboard\Additionals.cshtml" />
+    <Content Include="Views\Dashboard\DueDates2.cshtml" />
+    <Content Include="Views\Dashboard\_TaskStatusLabel2.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

@@ -1,0 +1,154 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+@{
+    Layout = "~/Views/Dashboard/_Layout.cshtml";
+}
+
+@foreach (var day in Model.DueDates2.OrderBy(d => d.Day))
+{
+    <div class="h3">
+        @day.DayFormatted_MMMdd<span class="small"> @day.DayFormatted_dddd</span>
+    </div>
+    <section>
+        @foreach (var assessment in day.ServiceRequests)
+        {
+            <div class="row o-dashboard-tr">
+                <div class="col-md-2 o-dashboard-td">
+                    <strong>@assessment.ClaimantName</strong>
+                </div>
+                <div class="col-md-1 o-dashboard-td">
+                    <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
+                    -
+                    <span>@assessment.Company.Name</span>
+                </div>
+                <div class="col-md-3">
+                    @foreach (var task in assessment.ServiceRequestTasks.Where(p => p.AssignedTo.Id == Model.SelectedUserId).OrderBy(p => p.ProcessTask.Sequence))
+                    {
+                        <form action="~/Dashboard/UpdateTaskStatus">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="task-checkbox-@task.Id" type="checkbox"
+                                           value="@task.CompletedDate.HasValue"
+                                           @(task.CompletedDate.HasValue ? "checked" : "")
+                                           @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
+                                           onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
+                                    @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
+                                </label>
+                            </div>
+                        </form>
+                    }
+                </div>
+                <div class="col-md-2 o-dashboard-td">
+                    <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+                </div>
+
+                <div class="col-md-2 o-dashboard-td">
+                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                    {
+                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
+                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
+                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                        </span>
+                    }
+                </div>
+                <div class="col-md-1 o-dashboard-td">
+                    <a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>
+                </div>
+            </div>
+        }
+    </section>
+}
+
+@section Scripts {
+
+    <script>
+
+        let serviceProviderId = '@Model.SelectedUserId';
+        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
+            var taskStatuses = {
+                "Waiting": 1,
+                "ToDo": 2,
+                "Done": 3,
+                "Obsolete": 4
+            };
+            var assessmentEl = $('#asessment-' + assessmentIdForEl);
+            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
+            var taskEl = null;
+            $.each(assessmentFromResult.ServiceRequestTasks, function (index, task) {
+                if (task.AssignedTo.Id == serviceProviderId) {
+                    taskEl = $('#task-statuslabel-' + task.Id);
+                    taskEl.removeClass();
+                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
+                    if (task.Status.Id == taskStatuses.Done) {
+                        MarkTaskAsDone(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.Status.Id == taskStatuses.ToDo) {
+                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.Status.Id == taskStatuses.Waiting) {
+                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
+                    }
+                    else if (task.Status.Id == taskStatuses.Obsolete) {
+                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
+                    }
+                }
+            });
+        }
+
+        function MarkTaskAsDone(label, checkbox) {
+            label.addClass("label label-success").text("Done");
+            checkbox.prop('disabled', false);
+        }
+
+        function MarkTaskAsToDo(label, checkbox) {
+            label.addClass("label label-danger").text("To Do");
+            checkbox.prop('disabled', false);
+        }
+
+        function MarkTaskAsWaiting(label, checkbox) {
+            label.addClass("label label-warning").text("Waiting");
+            checkbox.prop('disabled', true);
+        }
+
+        function MarkTaskAsObsolete(label, checkbox) {
+            label.addClass("label label-info").text("Obsolete");
+            checkbox.prop('disabled', true);
+        }
+
+        function onTaskChecked(checkbox, taskId, assessmentId) {
+            var params = {
+                taskId: taskId,
+                assessmentId: assessmentId,
+                checkbox: checkbox
+            }
+
+            if (checkbox.checked) {
+                console.log(taskId + ' is now checked');
+            } else {
+                console.log(taskId + ' is now unchecked');
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Dashboard/UpdateTaskStatus2")',
+                data: JSON.stringify({
+                    taskId: taskId,
+                    isChecked: checkbox.checked,
+                    serviceProviderGuid: '@Model.SelectedUserId'
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    updateTaskStatuses(result, params.assessmentId);
+                    toastr.success("Task updated successfully.", "Task Updated");
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.success("Task was not updated.", "Something went wrong!");
+                }
+            }, this);
+        }
+
+    </script>
+}

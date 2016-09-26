@@ -487,6 +487,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public IEnumerable<AddOn> AddOns { get; set; }
         public DayFolder Today { get; set; }
         public IEnumerable<DayFolder> DueDates { get; set; }
+        public IEnumerable<WebApp.Models.ServiceRequestModels2.DayFolder> DueDates2 { get; set; }
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Guid? SelectedUserId { get; set; }
         public bool ShowClosed { get; set; }

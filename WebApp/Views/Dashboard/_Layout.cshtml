@@ -25,7 +25,7 @@
     <li role="presentation" class="@Html.IsActive("Dashboard", "Today")"><a href="~/Dashboard/Today?@(Request.QueryString)">Today</a></li>
     @if (roleId == AspNetRoles.Physician || roleId == AspNetRoles.SuperAdmin)
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates</a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates2")"><a href="~/Dashboard/DueDates2?@(Request.QueryString)">Due Dates</a></li>
     }
     <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule</a></li>
     <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals</a></li>

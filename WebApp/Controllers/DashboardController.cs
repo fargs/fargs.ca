@@ -206,6 +206,78 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Additionals", vm);
         }
 
+        public async Task<ActionResult> DueDates2(Guid? serviceProviderId)
+        {
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            Guid userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            // Populate the view model
+            var vm = new dvm.IndexViewModel();
+
+            vm.DueDates2 = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, loggedInUserId, baseUrl);
+
+            // Additional view data.
+            vm.SelectedUserId = userId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                 from userRole in context.AspNetUserRoles
+                                 from role in context.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
+
+            return new NegotiatedResult("DueDates2", vm);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateTaskStatus2(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
+        {
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
+            if (serviceRequestTask == null)
+            {
+                return HttpNotFound();
+            }
+            serviceRequestTask.CompletedDate = isChecked ? SystemTime.Now() : (DateTime?)null;
+            serviceRequestTask.CompletedBy = isChecked ? User.Identity.GetGuidUserId() : (Guid?)null;
+            serviceRequestTask.ModifiedDate = SystemTime.Now();
+            serviceRequestTask.ModifiedUser = User.Identity.Name;
+            serviceRequestTask.ServiceRequest.UpdateIsClosed();
+            await context.SaveChangesAsync();
+
+            if (includeSummaries)
+            {
+                var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, null);
+                var result = ServiceRequestMapper.MapToWeekFolders(request, now, loggedInUserId, baseUrl);
+                return Json(new { WeekFolders = result });
+            }
+            else if (isAddOn)
+            {
+                //var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
+                var result = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToServiceRequest(serviceRequestTask.ServiceRequestId, now, loggedInUserId, baseUrl);
+                return Json(result);
+            }
+            else
+            {
+                var result = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToServiceRequest(serviceRequestTask.ServiceRequestId, now, loggedInUserId, baseUrl);
+                return Json(result);
+            }
+        }
 
         [HttpPost]
         public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)

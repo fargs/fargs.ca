@@ -1,0 +1,60 @@
+﻿@using WebApp.Library.Helpers
+@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+    var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
+}
+
+@if (roles.Contains(roleId))
+{
+    <div class="row" style="margin-bottom:20px">
+        <div class="col-md-12">
+            <form action="~/Dashboard/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
+                <div class="form-group">
+                    @Html.DropDownList("ServiceProviderId", new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", Model.SelectedUserId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<ul class="nav nav-tabs">
+    <li role="presentation" class="@Html.IsActive("Dashboard", "Today")"><a href="~/Dashboard/Today?@(Request.QueryString)">Today</a></li>
+    <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates</a></li>
+    <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule</a></li>
+    <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals</a></li>
+</ul>
+<section class="tab-content">
+    <div role="tabpanel" class="tab-pane active panel-body">
+        @RenderBody()
+    </div>
+</section>
+<div class="modal fade" id="dependencies-modal"></div>
+
+@section Scripts {
+
+    <script>
+        function onShowTaskHierarchy(serviceRequestId, taskId) {
+            // get the html and display it in the model
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/TaskHierarchy")' + '?serviceRequestId=' + serviceRequestId + '&taskId=' + taskId,
+                contentType: "text/html",
+                success: function (result) {
+                    // inject the html into the modal and display it
+                    var modalDiv = $("#dependencies-modal");
+                    modalDiv.html(result);
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+    </script>
+    }
+
+@RenderSection("scripts", required: false)

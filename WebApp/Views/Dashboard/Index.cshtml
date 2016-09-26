@@ -38,7 +38,7 @@
             <li role="presentation">
                 <a href="#Assessments" aria-controls="Assessments" role="tab" data-toggle="tab">
                     <span class="h4">@Model.WeekFolders.Sum(c => c.AssessmentCount)</span>
-                    <span class="text-muted">&nbsp;&nbsp;Assessments</span>
+                    <span class="text-muted">&nbsp;&nbsp;Schedule</span>
                 </a>
             </li>
             <li role="presentation">
@@ -133,7 +133,7 @@
                 }
                 else
                 {
-                <strong> No assessments today</strong>
+                    <strong> No assessments today</strong>
                 }
             </div>
             <div role="tabpanel" class="tab-pane panel-body" id="DueDates">
@@ -488,8 +488,6 @@
 <div class="modal fade" id="request-modal"></div>
 
 @section Scripts{
-    @*@Scripts.Render("~/bundles/signalr")
-        @Scripts.Render("~/signalr/hubs")*@
     <script>
 
         function onTaskChecked(checkbox, isAddOn, taskId, assessmentId, day, week) {
@@ -623,21 +621,6 @@
 
         }
 
-        //function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
-        //    var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
-        //    var labelEl = assessmentEl.find('#assessment-status-label-' + assessmentIdForEl);
-        //    labelEl.removeClass();
-
-        //    if (assessmentFromResult.IsLateCancellation)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Late Cancelled');
-        //    else if (assessmentFromResult.IsCancelled)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'Cancelled');
-        //    if (assessmentFromResult.IsNoShow)
-        //        labelEl.addClass('small label label-danger').text('!').prop('title', 'No Show');
-        //    else
-        //        labelEl.text('').prop('title', '');
-        //}
-
         function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
             var taskStatuses = {
                 "Waiting": 1,
@@ -741,45 +724,6 @@
                 }
             }, this);
         }
-
-        @*$(function () {
-            // Declare a proxy to reference the hub.
-            var chat = $.connection.serviceRequestHub;
-            // Create a function that the hub can call to broadcast messages.
-            chat.client.broadcastMessage = function (name, message) {
-                // Html encode display name and message.
-                var encodedName = $('<div />').text(name).html();
-                var encodedMsg = $('<div />').text(message).html();
-                // Add the message to the page.
-                $('#discussion').append('<li><strong>' + encodedName
-                    + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
-            };
-            // Get the user name and store it to prepend to messages.
-            $('#displayname').val('@User.Identity.GetDisplayName()');
-            // Set initial focus to message input box.
-            $('#message').focus();
-            // Start the connection.
-            $.connection.hub.start().done(function () {
-                $('#sendmessage').click(function () {
-                    // Call the Send method on the hub.
-                    chat.server.send($('#displayname').val(), $('#message').val(), 'servicerequestroom_188' )// $('#room').val());
-                    // Clear text box and reset focus for next comment.
-                    $('#message').val('').focus();
-                });
-            });
-        });
-
-        function joinRoom(room) {
-
-        }
-
-        function leaveRoom(room) {
-
-        }
-
-        function send(name, message, room) {
-
-        }*@
 
     </script>
 }

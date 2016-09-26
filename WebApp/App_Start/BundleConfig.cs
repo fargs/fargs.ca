@@ -45,7 +45,6 @@ namespace WebApp
                       "~/Scripts/bootstrap.min.js",
                       "~/Scripts/bootstrap-datepicker.min.js",
                       "~/Scripts/moment.min.js",
-                      "~/Scripts/fullcalendar.min.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/toastr.min.js"));
 

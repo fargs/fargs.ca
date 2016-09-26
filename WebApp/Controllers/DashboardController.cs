@@ -57,9 +57,162 @@ namespace WebApp.Controllers
             
         }
 
-        [HttpPost]
-        public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid)
+        public async Task<ActionResult> Today(Guid? serviceProviderId)
         {
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            Guid? userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
+
+            // Populate the view model
+            var vm = new dvm.IndexViewModel();
+
+            vm.Today = ServiceRequestMapper.MapToToday(requests, now, loggedInUserId, baseUrl);
+            
+            // Additional view data.
+            vm.SelectedUserId = userId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                 from userRole in context.AspNetUserRoles
+                                 from role in context.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
+
+            return new NegotiatedResult("Today", vm);
+        }
+
+        public async Task<ActionResult> DueDates(Guid? serviceProviderId)
+        {
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            Guid? userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
+
+            // Populate the view model
+            var vm = new dvm.IndexViewModel();
+
+            vm.DueDates = ServiceRequestMapper.MapToDueDates(requests, now, loggedInUserId, baseUrl);
+
+            // Additional view data.
+            vm.SelectedUserId = userId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                 from userRole in context.AspNetUserRoles
+                                 from role in context.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
+
+            return new NegotiatedResult("DueDates", vm);
+        }
+
+        public async Task<ActionResult> Schedule(Guid? serviceProviderId)
+        {
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            Guid? userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
+
+            // Populate the view model
+            var vm = new dvm.IndexViewModel();
+
+            vm.WeekFolders = ServiceRequestMapper.MapToWeekFolders(requests, now, loggedInUserId, baseUrl);
+
+            // Additional view data.
+            vm.SelectedUserId = userId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                 from userRole in context.AspNetUserRoles
+                                 from role in context.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
+
+            return new NegotiatedResult("Schedule", vm);
+        }
+
+        public async Task<ActionResult> Additionals(Guid? serviceProviderId)
+        {
+            // Set date range variables used in where conditions
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
+            Guid? userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
+
+            // Populate the view model
+            var vm = new dvm.IndexViewModel();
+
+            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, loggedInUserId, baseUrl);
+
+            // Additional view data.
+            vm.SelectedUserId = userId;
+            vm.UserSelectList = (from user in context.AspNetUsers
+                                 from userRole in context.AspNetUserRoles
+                                 from role in context.AspNetRoles
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                                 select new SelectListItem
+                                 {
+                                     Text = user.FirstName + " " + user.LastName,
+                                     Value = user.Id.ToString(),
+                                     Group = new SelectListGroup() { Name = role.Name }
+                                 }).ToList();
+
+            return new NegotiatedResult("Additionals", vm);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
+        {
+            var now = SystemTime.Now();
+            var loggedInUserId = User.Identity.GetGuidUserId();
+            var baseUrl = Request.GetBaseUrl();
+
             var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
             if (serviceRequestTask == null)
             {
@@ -72,8 +225,24 @@ namespace WebApp.Controllers
             serviceRequestTask.ServiceRequest.UpdateIsClosed();
             await context.SaveChangesAsync();
 
-            var result = await Index(serviceProviderGuid);
-            return result;
+            if (includeSummaries)
+            {
+                var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, null);
+                var result = ServiceRequestMapper.MapToWeekFolders(request, now, loggedInUserId, baseUrl);
+                return Json(new { WeekFolders = result });
+            }
+            else if (isAddOn)
+            {
+                var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
+                var result = ServiceRequestMapper.MapToAddOn(request, now, loggedInUserId, baseUrl);
+                return Json(result);
+            }
+            else
+            {
+                var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
+                var result = ServiceRequestMapper.MapToAssessment(request, now, loggedInUserId, baseUrl);
+                return Json(result);
+            }
         }
 
         [HttpPost]

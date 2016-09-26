@@ -507,7 +507,6 @@ namespace WebApp.Models.ServiceRequestModels
             var source = assessments.Where(a => assessmentIds.Contains(a.ServiceRequestId));
 
             return (from o in source
-                    orderby o.DueDate
                     group o by o.DueDate into days
                     select new DayFolder
                     {
@@ -541,23 +540,23 @@ namespace WebApp.Models.ServiceRequestModels
                                           ServiceRequestStatusId = sr.Key.ServiceRequestStatusId.Value,
                                           ToDoCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.ToDo),
                                           WaitingCount = sr.Count(c => c.AssignedTo == loggedInUserId && c.TaskStatusId == TaskStatuses.Waiting),
-                                          Tasks = from o in source
-                                                  where o.DueDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
-                                                  orderby o.TaskSequence
-                                                  select new ServiceRequestTask
-                                                  {
-                                                      Id = o.Id,
-                                                      Name = o.TaskName,
-                                                      StatusId = o.TaskStatusId,
-                                                      Status = o.TaskStatusName,
-                                                      AssignedTo = o.AssignedTo,
-                                                      AssignedToDisplayName = o.AssignedToDisplayName,
-                                                      AssignedToColorCode = o.AssignedToColorCode,
-                                                      AssignedToInitials = o.AssignedToInitials,
-                                                      IsComplete = o.TaskStatusId == TaskStatuses.Done,
-                                                      ServiceRequestId = o.ServiceRequestId,
-                                                      Workload = o.Workload.GetValueOrDefault(0)
-                                                  },
+                                          //Tasks = from o in source
+                                          //        where o.DueDate == days.Key && o.ServiceRequestId == sr.Key.ServiceRequestId
+                                          //        orderby o.TaskSequence
+                                          //        select new ServiceRequestTask
+                                          //        {
+                                          //            Id = o.Id,
+                                          //            Name = o.TaskName,
+                                          //            StatusId = o.TaskStatusId,
+                                          //            Status = o.TaskStatusName,
+                                          //            AssignedTo = o.AssignedTo,
+                                          //            AssignedToDisplayName = o.AssignedToDisplayName,
+                                          //            AssignedToColorCode = o.AssignedToColorCode,
+                                          //            AssignedToInitials = o.AssignedToInitials,
+                                          //            IsComplete = o.TaskStatusId == TaskStatuses.Done,
+                                          //            ServiceRequestId = o.ServiceRequestId,
+                                          //            Workload = o.Workload.GetValueOrDefault(0)
+                                          //        },
                                           People = from o in source
                                                    group o by new { o.DueDate, o.ServiceRequestId, o.AssignedTo, o.AssignedToColorCode, o.AssignedToDisplayName, o.AssignedToInitials, o.TaskType, o.ResponsibleRoleId, o.ResponsibleRoleName } into at
                                                    where at.Key.DueDate == days.Key && at.Key.ServiceRequestId == sr.Key.ServiceRequestId && at.Key.TaskType != "EVENT"

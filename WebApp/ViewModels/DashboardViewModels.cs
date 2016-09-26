@@ -520,30 +520,24 @@ namespace WebApp.ViewModels.DashboardViewModels
             if (loggedInUserRole == AspNetRoles.Physician || loggedInUserRole == AspNetRoles.IntakeAssistant || loggedInUserRole == AspNetRoles.DocumentReviewer)
                 todo = todo.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Orvosi.Shared.Enums.Tasks.SaveMedBrief || srt.TaskId == Orvosi.Shared.Enums.Tasks.AssessmentDay);
 
-            this.People = todo
-                .GroupBy(t => new
-                {
-                    t.AssignedTo,
-                    t.AssignedToDisplayName,
-                    t.AssignedToColorCode,
-                    t.AssignedToInitials
-                }).Select(p => new Person
-                {
-                    Id = p.Key.AssignedTo,
-                    DisplayName = p.Key.AssignedToDisplayName,
-                    ColorCode = p.Key.AssignedToColorCode,
-                    Initials = p.Key.AssignedToInitials,
-                    Tasks = todo.Where(t => t.TaskStatusId == TaskStatuses.ToDo || (t.TaskStatusId == TaskStatuses.Waiting && t.TaskType == "EVENT") && t.AssignedTo == p.Key.AssignedTo)
-                        .Select(t => new ServiceRequestTask
-                        {
-                            Id = t.Id,
-                            TaskId = t.TaskId.Value,
-                            Name = t.TaskName,
-                            TaskType = t.TaskType
-                        })
-                })
-                .ToList();
-
+            this.People = from t in todo
+                          group t by new { t.AssignedTo, t.AssignedToDisplayName, t.AssignedToColorCode, t.AssignedToInitials } into p
+                          select new Person
+                          {
+                              Id = p.Key.AssignedTo,
+                              DisplayName = p.Key.AssignedToDisplayName,
+                              ColorCode = p.Key.AssignedToColorCode,
+                              Initials = p.Key.AssignedToInitials,
+                              Tasks = from t in todo
+                                      where t.AssignedTo == p.Key.AssignedTo
+                                      select new ServiceRequestTask
+                                      {
+                                          Id = t.Id,
+                                          TaskId = t.TaskId.Value,
+                                          Name = t.TaskName,
+                                          TaskType = t.TaskType
+                                      }
+                          };
 
             //if (!taskId.HasValue)
             //{

@@ -1086,6 +1086,11 @@
     <Content Include="Views\ServiceRequestTemplate\Details.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Edit.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Index.cshtml" />
+    <Content Include="Views\Dashboard\Today.cshtml" />
+    <Content Include="Views\Dashboard\_Layout.cshtml" />
+    <Content Include="Views\Dashboard\DueDates.cshtml" />
+    <Content Include="Views\Dashboard\Schedule.cshtml" />
+    <Content Include="Views\Dashboard\Additionals.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

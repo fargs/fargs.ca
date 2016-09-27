@@ -404,7 +404,7 @@ namespace WebApp.Models.ServiceRequestModels
         public static DayFolder MapToToday(List<Orvosi.Data.GetAssignedServiceRequestsReturnModel> assessments, DateTime now, Guid loggedInUserId, string baseUrl)
         {
             return (from o in assessments
-                    where o.AppointmentDate == SystemTime.Now()
+                    where o.AppointmentDate == SystemTime.Now().Date
                     group o by o.AppointmentDate into days
                     select new DayFolder
                     {

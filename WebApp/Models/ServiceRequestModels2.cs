@@ -93,6 +93,8 @@ namespace WebApp.Models.ServiceRequestModels2
                 // apply filters that use computed fields
                 var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId, SystemTime.Now()));
 
+                filtered = filtered.Where(s => s.IsAppointmentComplete.HasValue ? s.IsAppointmentComplete.Value : true);
+
                 // group into hierarchy
                 return filtered // this filters out the days
                     .GroupBy(d => new { d.DueDate })
@@ -294,6 +296,16 @@ namespace WebApp.Models.ServiceRequestModels2
             }
         }
         public bool HasHighWorkload { get; internal set; }
+        public bool? IsAppointmentComplete {
+            get
+            {
+                if (AppointmentDate.HasValue)
+                {
+                    return Now >= new DateTime(AppointmentDate.Value.Ticks + StartTime.Value.Ticks);
+                }
+                return null;
+            }
+        }
 
         // methods
         public bool IsDoneTheirPart(Guid? userId, DateTime now)

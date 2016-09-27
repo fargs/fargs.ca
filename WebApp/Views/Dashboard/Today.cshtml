@@ -71,16 +71,17 @@
                                 No Show
                             </label>
                         </div>
-                        <div class="form-group">
-                            @if (assessment.ServiceStatusId.HasValue)
-                            {
-                                @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
-                            }
-                        </div>
                     </form>
                 }
+                <div class="o-dashboard-td">
+                    @if (assessment.ServiceStatusId.HasValue)
+                    {
+                        @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
+                    }
+                </div>
+
             </div>
-            <div class="col-md-1 o-dashboard-td">
+            <div class="col-md-1 o-dashboard-td" style="text-align: center;">
                 <a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>
             </div>
         </div>

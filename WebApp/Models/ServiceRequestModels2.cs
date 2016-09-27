@@ -23,6 +23,9 @@ namespace WebApp.Models.ServiceRequestModels2
                         Id = sr.Id,
                         ClaimantName = sr.ClaimantName,
                         DueDate = sr.DueDate,
+                        AppointmentDate = sr.AppointmentDate,
+                        Now = now,
+                        StartTime = sr.StartTime,
                         CancelledDate = sr.CancelledDate,
                         IsClosed = sr.IsClosed,
                         BoxCaseFolderId = sr.BoxCaseFolderId,
@@ -41,6 +44,8 @@ namespace WebApp.Models.ServiceRequestModels2
                         {
                             Id = srt.Id,
                             ServiceRequestId = srt.ServiceRequestId,
+                            AppointmentDate = sr.AppointmentDate,
+                            Now = now,
                             ProcessTask = new ProcessTask
                             {
                                 Id = srt.OTask.Id,
@@ -86,7 +91,7 @@ namespace WebApp.Models.ServiceRequestModels2
                     }).ToList();
 
                 // apply filters that use computed fields
-                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId));
+                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId, SystemTime.Now()));
 
                 // group into hierarchy
                 return filtered // this filters out the days
@@ -108,6 +113,9 @@ namespace WebApp.Models.ServiceRequestModels2
                     {
                         Id = sr.Id,
                         DueDate = sr.DueDate,
+                        AppointmentDate = sr.AppointmentDate,
+                        StartTime = sr.StartTime,
+                        Now = now,
                         CancelledDate = sr.CancelledDate,
                         IsClosed = sr.IsClosed,
                         BoxCaseFolderId = sr.BoxCaseFolderId,
@@ -126,6 +134,8 @@ namespace WebApp.Models.ServiceRequestModels2
                         {
                             Id = srt.Id,
                             ServiceRequestId = srt.ServiceRequestId,
+                            AppointmentDate = sr.AppointmentDate,
+                            Now = now,
                             ProcessTask = new ProcessTask
                             {
                                 Id = srt.OTask.Id,
@@ -257,6 +267,9 @@ namespace WebApp.Models.ServiceRequestModels2
         public string Title { get; set; }
         public string ClaimantName { get; set; }
         public DateTime? DueDate { get; set; }
+        public DateTime? AppointmentDate { get; set; }
+        public TimeSpan? StartTime { get; set; }
+        public DateTime Now { get; set; }
         public string BoxCaseFolderId { get; set; }
         public DateTime? CancelledDate { get; set; }
         public bool IsClosed { get; set; }
@@ -283,7 +296,7 @@ namespace WebApp.Models.ServiceRequestModels2
         public bool HasHighWorkload { get; internal set; }
 
         // methods
-        public bool IsDoneTheirPart(Guid? userId)
+        public bool IsDoneTheirPart(Guid? userId, DateTime now)
         {
             return this.ServiceRequestTasks
                 .Where(srt => srt.AssignedTo?.Id == userId)
@@ -301,8 +314,6 @@ namespace WebApp.Models.ServiceRequestModels2
 
     public class Assessment : ServiceRequest
     {
-        public DateTime AppointmentDate { get; set; }
-        public TimeSpan StartTime { get; set; }
         public bool IsLateCancellation { get; set; }
         public bool IsNoShow { get; set; }
         public bool CanBeRescheduled
@@ -374,7 +385,7 @@ namespace WebApp.Models.ServiceRequestModels2
             {
                 if (string.IsNullOrEmpty(FirstName))
                     return "Unassigned";
-                else 
+                else
                     return $"{(!string.IsNullOrEmpty(Title) ? Title + " " : "")}{FirstName} {LastName}";
             }
         }
@@ -421,22 +432,17 @@ namespace WebApp.Models.ServiceRequestModels2
         public ServiceRequestTask Parent { get; set; }
         public IEnumerable<ServiceRequestTaskDependent> Dependencies { get; set; }
         public int ServiceRequestId { get; set; }
+        public DateTime? AppointmentDate { get; set; } // required for determining status
+        public DateTime Now { get; set; }
 
-        // computeds
+        // methods
         public ServiceRequestTaskStatus Status
         {
             get
             {
-                var isWaiting = Dependencies.Any(d => !d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != Tasks.AssessmentDay);
-                if (isWaiting)
-                {
-                    return new ServiceRequestTaskStatus
-                    {
-                        Id = TaskStatuses.Waiting,
-                        Name = "Waiting"
-                    };
-                }
-                else if (IsObsolete)
+                var isWaiting = Dependencies.Any(d => (!d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != 133) || (d.TaskId == 133 && AppointmentDate > Now));
+
+                if (IsObsolete)
                 {
                     return new ServiceRequestTaskStatus
                     {
@@ -450,6 +456,14 @@ namespace WebApp.Models.ServiceRequestModels2
                     {
                         Id = TaskStatuses.Done,
                         Name = "Done"
+                    };
+                }
+                else if (isWaiting)
+                {
+                    return new ServiceRequestTaskStatus
+                    {
+                        Id = TaskStatuses.Waiting,
+                        Name = "Waiting"
                     };
                 }
                 else

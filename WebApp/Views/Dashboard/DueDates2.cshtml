@@ -11,22 +11,27 @@
         @day.DayFormatted_MMMdd<span class="small"> @day.DayFormatted_dddd</span>
     </div>
     <section>
-        @foreach (var assessment in day.ServiceRequests)
+        @foreach (var assessment in day.ServiceRequests.OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime))
         {
             <div class="row o-dashboard-tr">
                 <div class="col-md-2 o-dashboard-td">
                     <strong>@assessment.ClaimantName</strong>
+                    <div>@assessment.Company.Name</div>
                 </div>
-                <div class="col-md-1 o-dashboard-td">
+                <div class="col-md-2 o-dashboard-td">
                     <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
-                    -
-                    <span>@assessment.Company.Name</span>
+                    @if (assessment.AppointmentDate.HasValue)
+                    {
+                        <div class="small text-muted">
+                            on @assessment.AppointmentDate.ToOrvosiDateFormat() @assessment.StartTime.ToShortTimeSafe()
+                        </div>
+                    }
                 </div>
                 <div class="col-md-3">
                     @foreach (var task in assessment.ServiceRequestTasks.Where(p => p.AssignedTo.Id == Model.SelectedUserId).OrderBy(p => p.ProcessTask.Sequence))
                     {
                         <form action="~/Dashboard/UpdateTaskStatus">
-                            <div class="checkbox">
+                            <div class="checkbox" title="@task.Id">
                                 <label>
                                     <input id="task-checkbox-@task.Id" type="checkbox"
                                            value="@task.CompletedDate.HasValue"

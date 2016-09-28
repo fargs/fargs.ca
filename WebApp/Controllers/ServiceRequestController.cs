@@ -375,6 +375,7 @@ namespace WebApp.Controllers
                     st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
+                    st.Workload = template.OTask.Workload;
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -524,6 +525,7 @@ namespace WebApp.Controllers
                     st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
+                    st.Workload = template.OTask.Workload;
 
                     sr.ServiceRequestTasks.Add(st);
                 }

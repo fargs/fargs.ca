@@ -35,7 +35,7 @@ namespace WebApp.Controllers
                             ColorCode = u.ColorCode,
                             BoxUserId = u.BoxUserId,
                             Email = u.Email,
-                            Role = u.AspNetUserRoles.Select(r => new Models.ServiceRequestModels2.UserRole
+                            Role = u.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
                             {
                                 Id = r.AspNetRole.Id,
                                 Name = r.AspNetRole.Name
@@ -63,7 +63,7 @@ namespace WebApp.Controllers
             return View(user);
         }
     }
-    public class BoxPerson : Models.ServiceRequestModels2.Person
+    public class BoxPerson : Orvosi.Shared.Model.Person
     {
         public BoxUser BoxUser { get; set; }
 

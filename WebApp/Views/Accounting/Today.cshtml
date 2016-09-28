@@ -1,0 +1,29 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model Orvosi.Shared.Model.DayFolder
+@{
+    Layout = "~/Views/Accounting/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+}
+
+@if (Model != null)
+{
+    <div class="h3">
+        @Model.DayFormatted_MMMdd<span class="small"> @Model.DayFormatted_dddd</span>
+    </div>
+    <div>
+        @Model.Address.Name
+    </div>
+    <div class="small text-muted" style="padding-bottom:20px;">
+        @Model.Address.City
+    </div>
+    foreach (var assessment in Model.ServiceRequests)
+    {
+        <div>@assessment.ClaimantName</div>
+    }
+}
+else
+{
+    <strong> No assessments today</strong>
+}

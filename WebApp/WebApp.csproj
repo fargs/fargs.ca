@@ -392,6 +392,7 @@
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AccountingController.cs" />
     <Compile Include="Controllers\AvailabilityController.cs" />
     <Compile Include="Controllers\BoxController.cs" />
     <Compile Include="Controllers\BoxTokenManagerController.cs" />
@@ -412,6 +413,7 @@
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
+    <Compile Include="Models\AccountingModel.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BoxModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -1095,6 +1097,8 @@
     <Content Include="Views\Dashboard\Additionals.cshtml" />
     <Content Include="Views\Dashboard\DueDates2.cshtml" />
     <Content Include="Views\Dashboard\_TaskStatusLabel2.cshtml" />
+    <Content Include="Views\Accounting\Today.cshtml" />
+    <Content Include="Views\Accounting\_Layout.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

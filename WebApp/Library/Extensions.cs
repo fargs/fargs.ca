@@ -199,7 +199,7 @@ namespace WebApp.Library.Extensions
         public static DateTime GetStartOfWeekWithinMonth(this DateTime obj)
         {
             var daysPast = obj.GetDaysOfWeekPast();
-            if (daysPast > obj.Day) // number of days since monday is greater than the current day number
+            if (daysPast >= obj.Day) // number of days since monday is greater than the current day number
             {
                 return new DateTime(obj.Year, obj.Month, 1);
             }

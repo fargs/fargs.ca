@@ -389,6 +389,8 @@ namespace WebApp.Models.ServiceRequestModels2
         public string LastName { get; set; }
         public string ColorCode { get; set; }
         public UserRole Role { get; set; }
+        public string BoxUserId { get; set; }
+        public string Email { get; internal set; }
         public IEnumerable<ServiceRequestTask> ServiceRequestTasks { get; set; }
 
         // computeds

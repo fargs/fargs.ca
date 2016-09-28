@@ -14,24 +14,52 @@ using WebApp.Library;
 
 namespace WebApp.Controllers
 {
+    [Authorize("Super Admin")]
     public class BoxController : Controller
     {
         private OrvosiDbContext context = new OrvosiDbContext();
         [ChildActionOnly]
         public ActionResult _BoxIntegration(BoxFolder folder) => PartialView(folder);
 
+        public ActionResult CaseFolders()
+        {
+            var box = new BoxManager();
+            var caseFolders = box.GetFolders()
+        }
+
         public ActionResult Users()
         {
-                var box = new BoxManager();
-                var boxUsers = box.GetUsers();
-                var users = context.AspNetUsers.Where(u => boxUsers.Entries.Select(bu => bu.Login).Contains(u.Email));
-                foreach (var user in users)
-                {
-                    var boxUser = boxUsers.Entries.First(bu => bu.Login == user.Email);
-                    user.BoxUserId = boxUser.Id;
-                }
-                context.SaveChanges();
-                return View(users);
+            var box = new BoxManager();
+            var boxUsers = box.GetUsers();
+            var users = (from u in context.AspNetUsers
+                        select new BoxPerson
+                        {
+                            Id = u.Id,
+                            Title = u.Title,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            ColorCode = u.ColorCode,
+                            BoxUserId = u.BoxUserId,
+                            Email = u.Email,
+                            Role = u.AspNetUserRoles.Select(r => new Models.ServiceRequestModels2.UserRole
+                            {
+                                Id = r.AspNetRole.Id,
+                                Name = r.AspNetRole.Name
+                            }).FirstOrDefault()
+                        })
+                        .AsEnumerable();
+
+            users = from u in users
+                         select new BoxPerson
+                         {
+                             Id = u.Id,
+                             FirstName = u.FirstName,
+                             LastName = u.LastName,
+                             Title = u.Title,
+                             BoxUser = boxUsers.Entries.FirstOrDefault(bu => bu.Id == u.BoxUserId)
+                         };
+
+            return View(users);
         }
 
         public ActionResult LogInAs(string id)
@@ -40,5 +68,10 @@ namespace WebApp.Controllers
             var user = box.Client(id).UsersManager.GetCurrentUserInformationAsync().Result;
             return View(user);
         }
+    }
+    public class BoxPerson : Models.ServiceRequestModels2.Person
+    {
+        public BoxUser BoxUser { get; set; }
+
     }
 }

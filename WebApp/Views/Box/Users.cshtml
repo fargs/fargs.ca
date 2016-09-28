@@ -1,5 +1,5 @@
 ﻿@using Box.V2.Models
-@model BoxCollection<BoxUser>
+@model IEnumerable<WebApp.Controllers.BoxPerson>
 @{
     ViewBag.Title = "Users";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,11 +8,12 @@
 <h2>Users</h2>
 
 <table class="table">
-    @foreach (var item in Model.Entries)
+    @foreach (var item in Model)
     {
         <tr>
-            <td>@item.Name</td>
+            <td>@item.DisplayName</td>
             <td>@item.Id</td>
+            <td>@(item.BoxUser == null ? "Not Set" : item.BoxUser.Name)</td>
             <td><a href="~/Box/LogInAs/@item.Id">Log In As</a></td>
         </tr>
     }

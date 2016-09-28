@@ -91,7 +91,7 @@ namespace Orvosi.Data
             }
             else
             {
-                return $"{this.AppointmentDate.Value.ToString("yyyy-MM-dd")}({this.StartTime.Value.ToString(@"hhmm")}) {ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
+                return $"{this.AppointmentDate.Value.ToString("yyyy-MM-dd")}({this.StartTime.Value.ToString(@"hhmm")})-{Address.City_CityId.Code}-{ClaimantName} ({Service.Code}-{Physician.AspNetUser.UserName}) {Company.Code}-{Id}";
             }
         }
     }

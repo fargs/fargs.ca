@@ -65,7 +65,7 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid? userId = User.Identity.GetGuidUserId();
+            Guid userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
             if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
             {
@@ -77,7 +77,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Today = ServiceRequestMapper.MapToToday(requests, now, loggedInUserId, baseUrl);
+            vm.Today = ServiceRequestMapper.MapToToday(requests, now, userId, baseUrl);
             
             // Additional view data.
             vm.SelectedUserId = userId;
@@ -139,7 +139,7 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid? userId = User.Identity.GetGuidUserId();
+            Guid userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
             if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
             {
@@ -151,7 +151,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.WeekFolders = ServiceRequestMapper.MapToWeekFolders(requests, now, loggedInUserId, baseUrl);
+            vm.WeekFolders = ServiceRequestMapper.MapToWeekFolders(requests, now, userId, baseUrl);
 
             // Additional view data.
             vm.SelectedUserId = userId;
@@ -176,7 +176,7 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid? userId = User.Identity.GetGuidUserId();
+            Guid userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
             if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
             {
@@ -188,7 +188,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, loggedInUserId, baseUrl);
+            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, userId, baseUrl);
 
             // Additional view data.
             vm.SelectedUserId = userId;
@@ -223,7 +223,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.DueDates2 = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, loggedInUserId, baseUrl);
+            vm.DueDates2 = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, baseUrl);
 
             // Additional view data.
             vm.SelectedUserId = userId;

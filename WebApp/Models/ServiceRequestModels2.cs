@@ -9,7 +9,7 @@ namespace WebApp.Models.ServiceRequestModels2
 {
     public static class ServiceRequestMapper2
     {
-        public static IEnumerable<DayFolder> MapToDueDates(Guid serviceProviderId, DateTime now, Guid loggedInUserId, string requestUrl)
+        public static IEnumerable<DayFolder> MapToDueDates(Guid serviceProviderId, DateTime now, string requestUrl)
         {
             using (var context = new OrvosiDbContext())
             {
@@ -142,7 +142,8 @@ namespace WebApp.Models.ServiceRequestModels2
                             {
                                 Id = srt.OTask.Id,
                                 Name = srt.OTask.Name,
-                                Sequence = srt.OTask.Sequence.Value
+                                Sequence = srt.OTask.Sequence.Value,
+                                Workload = srt.Workload
                             },
                             AssignedTo = new Person
                             {
@@ -508,7 +509,7 @@ namespace WebApp.Models.ServiceRequestModels2
     public class ProcessTask : ProcessItem
     {
         public UserRole ResponsibleRole { get; set; }
-        public byte Workload { get; set; }
+        public byte? Workload { get; set; }
     }
 
     public class ServiceRequestMessage

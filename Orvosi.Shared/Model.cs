@@ -114,7 +114,13 @@ namespace Orvosi.Shared.Model
         public DateTime Now { get; set; }
         public string BoxCaseFolderId { get; set; }
         public DateTime? CancelledDate { get; set; }
+        public bool IsLateCancellation { get; set; }
+        public bool IsNoShow { get; set; }
         public bool IsClosed { get; set; }
+        public decimal? ServiceCataloguePrice { get; set; }
+        public decimal? NoShowRate { get; set; }
+        public decimal? LateCancellationRate { get; set; }
+        public string Notes { get; set; }
 
         // references
         public Service Service { get; set; }
@@ -122,12 +128,36 @@ namespace Orvosi.Shared.Model
         public IEnumerable<ServiceRequestTask> ServiceRequestTasks { get; set; }
         public IEnumerable<Person> People { get; set; }
         public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+        public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
+        public Address Address { get; set; }
 
         // computeds
         public int CommentCount { get; set; } = 0;
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public byte ServiceRequestStatusId { get; internal set; }
+        public byte? ServiceStatusId
+        {
+            get
+            {
+                if (IsLateCancellation)
+                {
+                    return ServiceStatus.LateCancellation;
+                }
+                else if (CancelledDate.HasValue)
+                {
+                    return ServiceStatus.Cancellation;
+                }
+                else if (IsNoShow)
+                {
+                    return ServiceStatus.NoShow;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         public bool IsCancelled
         {
             get
@@ -147,15 +177,6 @@ namespace Orvosi.Shared.Model
                 return null;
             }
         }
-
-        // methods
-        public bool IsDoneTheirPart(Guid? userId, DateTime now)
-        {
-            return this.ServiceRequestTasks
-                .Where(srt => srt.AssignedTo?.Id == userId)
-                .All(srt => srt.Status.Id == TaskStatuses.Done || srt.Status.Id == TaskStatuses.Obsolete);
-        }
-
         public string BoxCaseFolderURL
         {
             get
@@ -164,13 +185,17 @@ namespace Orvosi.Shared.Model
             }
         }
 
-        public Address Address { get; set; }
+        // methods
+        public bool IsDoneTheirPart(Guid? userId, DateTime now)
+        {
+            return this.ServiceRequestTasks
+                .Where(srt => srt.AssignedTo?.Id == userId)
+                .All(srt => srt.Status.Id == TaskStatuses.Done || srt.Status.Id == TaskStatuses.Obsolete);
+        }
     }
 
     public class Assessment : ServiceRequest
     {
-        public bool IsLateCancellation { get; set; }
-        public bool IsNoShow { get; set; }
         public bool CanBeRescheduled
         {
             get
@@ -193,28 +218,6 @@ namespace Orvosi.Shared.Model
                 return IsCancelled || IsLateCancellation && AppointmentDate > Now;
             }
 
-        }
-        public byte? ServiceStatusId
-        {
-            get
-            {
-                if (IsLateCancellation)
-                {
-                    return ServiceStatus.LateCancellation;
-                }
-                else if (CancelledDate.HasValue)
-                {
-                    return ServiceStatus.Cancellation;
-                }
-                else if (IsNoShow)
-                {
-                    return ServiceStatus.NoShow;
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
     }
 
@@ -370,5 +373,41 @@ namespace Orvosi.Shared.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public string City { get; set; }
+    }
+
+    public class Invoice
+    {
+        public int Id { get; set; }
+        public string InvoiceNumber { get; set; }
+        public DateTime InvoiceDate { get; set; }
+        public DateTime? PaymentDueDate { get; set; }
+        public decimal? SubTotal { get; set; }
+        public decimal? TaxRateHst { get; set; }
+        public decimal? Hst { get; set; }
+        public decimal? Total { get; set; }
+        public DateTime? SentDate { get; set; }
+        public DateTime? PaymentReceivedDate { get; set; }
+        public Customer Customer { get; set; }
+    }
+
+    public class InvoiceDetail
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public decimal Rate { get; set; }
+        public decimal Amount { get; set; }
+        public decimal Discount { get; set; }
+        public string DiscountDescription { get; set; }
+        public decimal Total { get; set; }
+        public string AdditionalNotes { get; set; }
+        public Invoice Invoice { get; set; }
+    }
+
+    public class Customer
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string BillingEmail { get; set; }
+
     }
 }

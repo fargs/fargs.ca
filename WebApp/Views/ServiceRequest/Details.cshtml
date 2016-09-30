@@ -279,6 +279,7 @@
             {
                 <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
             }
+
             foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails.Where(id => id.IsDeleted == false))
             {
                 <div class="panel panel-default">

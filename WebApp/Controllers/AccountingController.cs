@@ -20,7 +20,7 @@ namespace WebApp.Controllers
                 userId = serviceProviderId.Value;
             }
 
-            var model = Mapper.MapToToday(userId, SystemTime.Now());
+            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToToday(userId, SystemTime.Now());
 
             ViewBag.SelectedUserId = userId;
 

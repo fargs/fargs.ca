@@ -1,29 +1,176 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model Orvosi.Shared.Model.DayFolder
+@model IEnumerable<Orvosi.Shared.Model.DayFolder>
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
 
     var roleId = User.Identity.GetRoleId();
 }
 
-@if (Model != null)
+@foreach (var dayFolder in Model)
 {
-    <div class="h3">
-        @Model.DayFormatted_MMMdd<span class="small"> @Model.DayFormatted_dddd</span>
+    <div class="row o-th" style="background-color: aliceblue">
+        <div class="col-md-12">
+            <div class="h3">
+                @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
+            </div>
+            @if (dayFolder.Address != null)
+            {
+                <div class="h4">
+                    @dayFolder.Address.Name
+                </div>
+                <div class="small" style="padding-bottom:20px;">
+                    @dayFolder.Address.City
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row o-dashboard-tr">
+        <strong class="col-md-2 o-dashboard-td">Case</strong>
+        <strong class="col-md-1 o-dashboard-td">Invoice</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Item</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">SubTotal</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Hst</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Total</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: center;">Edit</strong>
+        <strong class="col-md-2 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
+        <strong class="col-md-2 o-dashboard-td" style="text-align: center;">Payment Received</strong>
     </div>
     <div>
-        @Model.Address.Name
+        @foreach (var assessment in dayFolder.ServiceRequests)
+        {
+            <div class="row o-dashboard-tr">
+                <div class="col-md-2 o-dashboard-td">
+                    <div><strong>@assessment.ClaimantName</strong> (<a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>)</div>
+                    <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
+                    -
+                    <span>@assessment.Company.Name</span>
+                    <div>
+                        @(assessment.AppointmentDate.HasValue ? assessment.AppointmentDate.ToOrvosiDateFormat() : assessment.DueDate.ToOrvosiDateFormat()) @assessment.StartTime.ToShortTimeSafe()
+                    </div>
+                </div>
+                @if (assessment.InvoiceDetails.Count() == 0)
+                {
+                    <div class="col-md-5 o-dashboard-td">
+                        <form action="~/Invoice/Create" method="post" class="form-horizontal">
+                            @Html.Hidden("Id", assessment.Id)
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="text-align:left;">Catalogue Price</label>
+                                <div class="col-md-2"><input class="form-control input-sm" type="text" name="Price" value="@assessment.ServiceCataloguePrice" placeholder="Override Price" /></div>
+                            </div>
+                            @if (assessment.IsNoShow)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" style="text-align:left;">No Show Rate</label>
+                                    <div class="col-md-2">
+                                        <input class="form-control input-sm" type="text" name="NoShowRate" value="@assessment.NoShowRate" placeholder="Override Rate" />
+                                    </div>
+                                </div>
+                            }
+                            else if (assessment.IsLateCancellation)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" style="text-align:left;">Late Cancellation Rate</label>
+                                    <div class="col-md-2"><input class="form-control input-sm" type="text" name="LateCancellationRate" value="@assessment.LateCancellationRate" placeholder="Override Rate" /></div>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(assessment.Notes))
+                            {
+                                <div class="text-danger form-group">
+                                    <i class="fa fa-exclamation"></i> @assessment.Notes
+                                </div>
+                            }
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-danger col-md-4" name="Create" value="Add Invoice" />
+                            </div>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    foreach (var detail in assessment.InvoiceDetails)
+                    {
+                        <div class="col-md-1 o-dashboard-td">
+                            <strong>@detail.Invoice.InvoiceNumber</strong>
+                            <div>@detail.Invoice.InvoiceDate.ToOrvosiDateFormat()</div>
+                        </div>
+                        <div class="col-md-1 o-dashboard-td" style="text-align: right;">
+                            @if (assessment.IsNoShow || assessment.IsLateCancellation)
+                            {
+                                <span>
+                                    @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
+                                </span>
+                                if (assessment.ServiceStatusId.HasValue)
+                                {
+                                    <div>
+                                        @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span>
+                                    @detail.Amount.ToString("C2")
+                                </span>
+                            }
+                        </div>
+                        <div class="col-md-1 o-dashboard-td" style="text-align: right;">
+                            @detail.Invoice.SubTotal.Value.ToString("C2")
+                        </div>
+                        <div class="col-md-1 o-dashboard-td" style="text-align: right;">
+                            <span class="small text-muted">(@detail.Invoice.TaxRateHst.Value.ToString("0%"))</span>
+                            <span>@detail.Invoice.Hst.Value.ToString("C2")</span>
+                        </div>
+                        <div class="col-md-1 o-dashboard-td" style="text-align: right;">
+                            <div>
+                                @detail.Invoice.Total.Value.ToString("C2")
+                            </div>
+                        </div>
+                        <div class="col-md-1 o-dashboard-td" style="text-align: center;">
+                            <button class="btn btn-default" style="border: none;">
+                                <i class="fa fa-pencil fa-2x"></i>
+                            </button>
+                        </div>
+                        if (detail.Invoice.SentDate.HasValue)
+                        {
+                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                                <div>
+                                    <i class="fa fa-check fa-3x" style="color:green;"></i>
+                                </div>
+                                <div>Sent @detail.Invoice.SentDate.ToOrvosiDateTimeFormat()</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                                <div>
+                                    <button class="btn btn-primary"><i class="fa fa-send"></i> Send</button>
+                                </div>
+                                <div class="help-block small">
+                                    To: <strong>@detail.Invoice.Customer.BillingEmail</strong>
+                                </div>
+                            </div>
+                        }
+                        if (detail.Invoice.PaymentReceivedDate.HasValue)
+                        {
+                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                                <div>
+                                    <i class="fa fa-check fa-3x" style="color:green;"></i>
+                                </div>
+                                <div>Sent @detail.Invoice.PaymentReceivedDate.ToOrvosiDateTimeFormat()</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                                <div>
+                                    <button class="btn btn-primary"><i class="fa fa-send"></i> Add Payment</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
     </div>
-    <div class="small text-muted" style="padding-bottom:20px;">
-        @Model.Address.City
-    </div>
-    foreach (var assessment in Model.ServiceRequests)
-    {
-        <div>@assessment.ClaimantName</div>
-    }
-}
-else
-{
-    <strong> No assessments today</strong>
 }

@@ -32,9 +32,8 @@
         <strong class="col-md-1 o-dashboard-td" style="text-align: right;">SubTotal</strong>
         <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Hst</strong>
         <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Total</strong>
+        <strong class="col-md-3 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
         <strong class="col-md-1 o-dashboard-td" style="text-align: center;">Edit</strong>
-        <strong class="col-md-2 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
-        <strong class="col-md-2 o-dashboard-td" style="text-align: center;">Payment Received</strong>
     </div>
     <div>
         @foreach (var assessment in dayFolder.ServiceRequests)
@@ -126,14 +125,9 @@
                                 @detail.Invoice.Total.Value.ToString("C2")
                             </div>
                         </div>
-                        <div class="col-md-1 o-dashboard-td" style="text-align: center;">
-                            <button class="btn btn-default" style="border: none;">
-                                <i class="fa fa-pencil fa-2x"></i>
-                            </button>
-                        </div>
                         if (detail.Invoice.SentDate.HasValue)
                         {
-                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                            <div class="col-md-3 o-dashboard-td" style="text-align: center;">
                                 <div>
                                     <i class="fa fa-check fa-3x" style="color:green;"></i>
                                 </div>
@@ -142,7 +136,7 @@
                         }
                         else
                         {
-                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
+                            <div class="col-md-3 o-dashboard-td" style="text-align: center;">
                                 <div>
                                     <button class="btn btn-primary"><i class="fa fa-send"></i> Send</button>
                                 </div>
@@ -151,23 +145,11 @@
                                 </div>
                             </div>
                         }
-                        if (detail.Invoice.PaymentReceivedDate.HasValue)
-                        {
-                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
-                                <div>
-                                    <i class="fa fa-check fa-3x" style="color:green;"></i>
-                                </div>
-                                <div>Sent @detail.Invoice.PaymentReceivedDate.ToOrvosiDateTimeFormat()</div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2 o-dashboard-td" style="text-align: center;">
-                                <div>
-                                    <button class="btn btn-primary"><i class="fa fa-send"></i> Add Payment</button>
-                                </div>
-                            </div>
-                        }
+                        <div class="col-md-1 o-dashboard-td" style="text-align: center;">
+                            <button class="btn btn-default" style="border: none;">
+                                <i class="fa fa-pencil fa-lg"></i>
+                            </button>
+                        </div>
                     }
                 }
             </div>

@@ -34,7 +34,7 @@
 {
     <div class="row" style="margin-bottom:20px">
         <div class="col-md-12">
-            <form action="~/Dashboard/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
+            <form action="~/Accounting/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
                 <div class="form-group">
                     @Html.DropDownList("ServiceProviderId", new SelectList(userSelectList, "Value", "Text", "Group.Name", userId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>

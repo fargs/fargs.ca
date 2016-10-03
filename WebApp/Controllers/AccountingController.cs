@@ -18,7 +18,7 @@ namespace WebApp.Controllers
     public class AccountingController : Controller
     {
         // GET: Accounting
-        public ActionResult Today(Guid? serviceProviderId)
+        public ActionResult Invoices(Guid? serviceProviderId)
         {
             Guid userId = GetServiceProviderId(serviceProviderId);
 
@@ -68,6 +68,7 @@ namespace WebApp.Controllers
             target.Amount = form.Amount;
             if (form.Rate != target.Rate)
             {
+                target.Rate = form.Rate;
                 var discountType = target.ServiceRequest.GetDiscountType();
                 target.DiscountDescription = InvoiceHelper.GetDiscountDescription(discountType, form.Rate, form.Amount);
             }
@@ -94,16 +95,16 @@ namespace WebApp.Controllers
             return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Get(Guid? serviceProviderId, int serviceRequestId)
+        public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
             Guid userId = GetServiceProviderId(serviceProviderId);
 
             var context = new Orvosi.Data.OrvosiDbContext();
-            var invoices = new Models.AccountingModel.Mapper(context).MapToServiceRequest(userId, SystemTime.Now(), serviceRequestId);
-            if (invoices.Count() != 1)
+            var serviceRequests = new Models.AccountingModel.Mapper(context).MapToServiceRequest(userId, SystemTime.Now(), serviceRequestId);
+            if (serviceRequests.Count() != 1)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
-            return Json(invoices.First(), JsonRequestBehavior.AllowGet);
+            return PartialView("_ServiceRequest", serviceRequests.First());
         }
 
         private Guid GetServiceProviderId(Guid? serviceProviderId)

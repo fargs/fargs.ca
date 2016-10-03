@@ -45,7 +45,7 @@ namespace WebApp.Models.AccountingModel
 
         public EditInvoiceDetailForm MapToEditForm(int invoiceDetailId)
         {
-            var source = context.InvoiceDetails.Select(id => new 
+            var source = context.InvoiceDetails.Select(id => new
             {
                 Id = id.Id,
                 InvoiceDate = id.Invoice.InvoiceDate,
@@ -53,7 +53,8 @@ namespace WebApp.Models.AccountingModel
                 Rate = id.Rate,
                 AdditionalNotes = id.AdditionalNotes,
                 ClaimantName = id.ServiceRequest.ClaimantName,
-                InvoiceNumber = id.Invoice.InvoiceNumber
+                InvoiceNumber = id.Invoice.InvoiceNumber,
+                ServiceRequestId = id.ServiceRequestId.Value
             })
             .First(id => id.Id == invoiceDetailId);
 
@@ -65,7 +66,8 @@ namespace WebApp.Models.AccountingModel
                 Rate = source.Rate,
                 AdditionalNotes = source.AdditionalNotes,
                 ClaimantName = source.ClaimantName,
-                InvoiceNumber = source.InvoiceNumber
+                InvoiceNumber = source.InvoiceNumber,
+                ServiceRequestId = source.ServiceRequestId
             };
         }
 

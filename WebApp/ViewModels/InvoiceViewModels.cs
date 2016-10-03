@@ -60,5 +60,6 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public decimal? Amount { get; set; }
         public decimal? Rate { get; set; }
         public string AdditionalNotes { get; set; }
+        public int ServiceRequestId { get; internal set; }
     }
 }

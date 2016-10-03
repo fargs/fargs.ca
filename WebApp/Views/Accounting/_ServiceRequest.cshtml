@@ -107,10 +107,10 @@
                         <input type="hidden" value="@assessment.Id" id="ServiceRequestId" name="ServiceRequestId" />
                         <input type="hidden" value="@detail.Invoice.Id" id="InvoiceId" name="InvoiceId" />
                         <div>
-                            <button class="btn btn-primary" onclick="onSend(@detail.Invoice.Id)"><i class="fa fa-send"></i> Send</button>
+                            <button type="button" class="btn btn-primary" onclick="onSend(@detail.Invoice.Id)"><i class="fa fa-send"></i> Send</button>
                         </div>
                         <div class="help-block small">
-                            To: <input type="text" id="To" name="To" style="border: none;" value="@detail.Invoice.Customer.BillingEmail" />
+                            To: <input type="text" id="to" name="to" style="border: none;" value="@detail.Invoice.Customer.BillingEmail" />
                         </div>
                     </form>
                 </div>

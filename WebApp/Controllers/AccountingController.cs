@@ -36,7 +36,7 @@ namespace WebApp.Controllers
             var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
 
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice, Request.GetBaseUrl());
+            await messageService.SendInvoice(invoice, Request.GetBaseUrl(), to);
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();

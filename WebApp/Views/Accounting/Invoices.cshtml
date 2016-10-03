@@ -118,8 +118,6 @@
                         toastr.success("Something went wrong.");
                     }
                 });
-
-                return false; // avoid to execute the actual submit of the form.
             }
 
             function onEdit(invoiceDetailId) {
@@ -159,6 +157,7 @@
                     url: url,
                     data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
                     success: function () {
+                        $("#edit-modal").modal('toggle');
                         toastr.success("Invoice updated successfully.");
                         refreshServiceRequest(serviceRequestId);
                     }
@@ -174,7 +173,6 @@
                     url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
                     contentType: "text/html",
                     success: function (result) {
-                        $("#edit-modal").modal('toggle');
                         $('#service-request-' + serviceRequestId).replaceWith(result);
                     },
                     error: function (err) {

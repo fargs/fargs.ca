@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Linq.Expressions;
+using WebApp.ViewModels.InvoiceViewModels;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Models.AccountingModel
 {
@@ -16,33 +19,59 @@ namespace WebApp.Models.AccountingModel
             this.context = context;
         }
 
-        public IEnumerable<DayFolder> MapToToday(Guid serviceProviderId, DateTime now)
+        public IEnumerable<DayFolder> MapToServiceRequests(Guid serviceProviderId, DateTime now)
         {
+            IQueryable<ServiceRequest> source = GetServiceRequests(serviceProviderId, now);
 
-            var invoices = (from i in context.Invoices
-                                //from id in context.InvoiceDetails
-                            where i.IsDeleted == false
-                            //group id by new { i.CustomerGuid, i.CustomerName, i.CustomerEmail, i.Id, i.InvoiceNumber, i.InvoiceDate, i.SentDate, id.Description, id.DiscountDescription, id.Rate, id.Amount, id.Total, i.SubTotal, i.Discount, i.Hst, i.TaxRateHst, i.Total, ServiceRequestId = id.ServiceRequestId } into iv
-                            select new Invoice
-                            {
-                                Id = i.Id,
-                                InvoiceNumber = i.InvoiceNumber,
-                                InvoiceDate = i.InvoiceDate,
-                                SubTotal = i.SubTotal,
-                                TaxRateHst = i.TaxRateHst,
-                                Hst = i.Hst,
-                                Total = i.Total.Value,
-                                SentDate = i.SentDate,
-                                Customer = new Customer
-                                {
-                                    Id = i.CustomerGuid,
-                                    Name = i.CustomerName,
-                                    BillingEmail = i.CustomerEmail
-                                }
-                            });
+            return source // this filters out the days
+                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) < now.Date)
+                .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
+                .Select(d => new DayFolder
+                {
+                    Day = d.Key.Day.Value,
+                    //Company = d.Key.Company,
+                    //Address = d.Key.Address,
+                    ServiceRequests = source.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value).OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
+                }).OrderBy(df => df.Day);
+        }
 
+        public IEnumerable<ServiceRequest> MapToServiceRequest(Guid serviceProviderId, DateTime now, int serviceRequestId)
+        {
+            IQueryable<ServiceRequest> source = GetServiceRequests(serviceProviderId, now);
 
-            var source = context.ServiceRequests
+            // Get a list with one item
+            return source.Where(s => s.Id == serviceRequestId);
+        }
+
+        public EditInvoiceDetailForm MapToEditForm(int invoiceDetailId)
+        {
+            var source = context.InvoiceDetails.Select(id => new 
+            {
+                Id = id.Id,
+                InvoiceDate = id.Invoice.InvoiceDate,
+                Amount = id.Amount,
+                Rate = id.Rate,
+                AdditionalNotes = id.AdditionalNotes,
+                ClaimantName = id.ServiceRequest.ClaimantName,
+                InvoiceNumber = id.Invoice.InvoiceNumber
+            })
+            .First(id => id.Id == invoiceDetailId);
+
+            return new EditInvoiceDetailForm
+            {
+                Id = source.Id,
+                InvoiceDate = source.InvoiceDate.ToOrvosiDateFormat(),
+                Amount = source.Amount,
+                Rate = source.Rate,
+                AdditionalNotes = source.AdditionalNotes,
+                ClaimantName = source.ClaimantName,
+                InvoiceNumber = source.InvoiceNumber
+            };
+        }
+
+        private IQueryable<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
+        {
+            return context.ServiceRequests
                 .Where(d => d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
                     && !d.IsClosed)
                 .Select(sr => new ServiceRequest
@@ -107,18 +136,7 @@ namespace WebApp.Models.AccountingModel
                             }
                         }
                     })
-                }).ToList();
-
-            return source // this filters out the days
-                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) < now.Date)
-                .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
-                .Select(d => new DayFolder
-                {
-                    Day = d.Key.Day.Value,
-                        //Company = d.Key.Company,
-                        //Address = d.Key.Address,
-                        ServiceRequests = source.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value).OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
-                }).OrderBy(df => df.Day);
+                });
         }
     }
 }

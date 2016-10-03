@@ -28,6 +28,7 @@
     {
         userId = serviceProviderId.Value;
     }
+    ViewBag.SelectedUserId = userId; 
 }
 
 @if (roles.Contains(roleId))
@@ -55,5 +56,6 @@
         @RenderBody()
     </div>
 </section>
+
 
 @RenderSection("scripts", required: false)

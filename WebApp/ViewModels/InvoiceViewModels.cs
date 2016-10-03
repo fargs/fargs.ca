@@ -50,4 +50,15 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public bool ShowSubmitted { get; set; } = false;
         public DateTime FilterDate { get; set; }
     }
+
+    public class EditInvoiceDetailForm
+    {
+        public int Id { get; set; }
+        public string InvoiceDate { get; set; }
+        public string ClaimantName { get; set; }
+        public string InvoiceNumber { get; set; }
+        public decimal? Amount { get; set; }
+        public decimal? Rate { get; set; }
+        public string AdditionalNotes { get; set; }
+    }
 }

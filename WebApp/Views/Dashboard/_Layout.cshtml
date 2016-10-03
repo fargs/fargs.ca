@@ -21,6 +21,8 @@
     </div>
 }
 
+<p class="h3 text-muted">Work</p>
+
 <ul class="nav nav-tabs">
     <li role="presentation" class="@Html.IsActive("Dashboard", "Today")"><a href="~/Dashboard/Today?@(Request.QueryString)">Today</a></li>
     @if (roleId == AspNetRoles.Physician || roleId == AspNetRoles.SuperAdmin)

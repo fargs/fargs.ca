@@ -7,6 +7,11 @@
     var roleId = User.Identity.GetRoleId();
 }
 
+@if(Model.Count() == 0)
+{
+    <p><strong>There are no invoices that need to be sent out.</strong></p>
+}
+
 @foreach (var dayFolder in Model)
 {
     <div class="row o-th" style="background-color: aliceblue">

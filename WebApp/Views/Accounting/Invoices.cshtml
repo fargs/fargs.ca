@@ -95,8 +95,26 @@
             });
         });
 
-            function onSend(el, invoiceId) {
-                alert(invoiceId);
+            function onSend(invoiceId) {
+                var url = '@Url.Content("~/Accounting/SendInvoice")';
+                var form = $("#send-invoice-form-" + invoiceId);
+                var serviceRequestId = form.find('#ServiceRequestId').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function () {
+                        toastr.success("Invoice sent successfully");
+                        refreshServiceRequest(serviceRequestId);
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        toastr.success("Something went wrong.");
+                    }
+                });
+
+                return false; // avoid to execute the actual submit of the form.
             }
 
             function onEdit(invoiceDetailId) {

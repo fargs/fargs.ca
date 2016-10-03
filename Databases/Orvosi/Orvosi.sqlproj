@@ -272,6 +272,7 @@
     <Build Include="API\Stored Procedures\ToggleNoShow.sql" />
     <Build Include="API\Stored Procedures\ToggleCancellation.sql" />
     <Build Include="dbo\User Defined Types\SelectedStatusIdsTVP.sql" />
+    <Build Include="dbo\Tables\InvoiceSentLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

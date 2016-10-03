@@ -208,6 +208,12 @@
     <Compile Include="Generated\InvoiceDetailConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\InvoiceSentLog.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\InvoiceSentLogConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\IOrvosiDbContext.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

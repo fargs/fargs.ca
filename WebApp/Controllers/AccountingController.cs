@@ -42,9 +42,18 @@ namespace WebApp.Controllers
             invoice.ModifiedDate = SystemTime.Now();
             invoice.ModifiedUser = User.Identity.Name;
 
+            invoice.InvoiceSentLogs.Add(new Orvosi.Data.InvoiceSentLog()
+            {
+                InvoiceId = invoice.Id,
+                EmailTo = to,
+                SentDate = SystemTime.Now(),
+                ModifiedDate = SystemTime.Now(),
+                ModifiedUser = User.Identity.Name
+            });
+
             foreach (var item in invoice.InvoiceDetails)
             {
-                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice || c.TaskId == 37); // TODO: 37 is submit invoice for add/pr
+                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
                 task.CompletedDate = SystemTime.Now();
             }
 

@@ -14,18 +14,12 @@ using WebApp.Library;
 
 namespace WebApp.Controllers
 {
-    [Authorize("Super Admin")]
+    [Authorize(Roles = "Super Admin")]
     public class BoxController : Controller
     {
         private OrvosiDbContext context = new OrvosiDbContext();
         [ChildActionOnly]
         public ActionResult _BoxIntegration(BoxFolder folder) => PartialView(folder);
-
-        public ActionResult CaseFolders()
-        {
-            var box = new BoxManager();
-            var caseFolders = box.GetFolders()
-        }
 
         public ActionResult Users()
         {
@@ -41,7 +35,7 @@ namespace WebApp.Controllers
                             ColorCode = u.ColorCode,
                             BoxUserId = u.BoxUserId,
                             Email = u.Email,
-                            Role = u.AspNetUserRoles.Select(r => new Models.ServiceRequestModels2.UserRole
+                            Role = u.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
                             {
                                 Id = r.AspNetRole.Id,
                                 Name = r.AspNetRole.Name
@@ -69,7 +63,7 @@ namespace WebApp.Controllers
             return View(user);
         }
     }
-    public class BoxPerson : Models.ServiceRequestModels2.Person
+    public class BoxPerson : Orvosi.Shared.Model.Person
     {
         public BoxUser BoxUser { get; set; }
 

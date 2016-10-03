@@ -39,6 +39,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<DocumentType> DocumentTypes { get; set; } // DocumentType
         public System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         public System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
+        public System.Data.Entity.DbSet<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog
         public System.Data.Entity.DbSet<LocationArea> LocationAreas { get; set; } // LocationArea
         public System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
         public System.Data.Entity.DbSet<Lookup> Lookups { get; set; } // Lookup
@@ -152,6 +153,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration());
             modelBuilder.Configurations.Add(new InvoiceConfiguration());
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration());
+            modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration());
             modelBuilder.Configurations.Add(new LocationAreaConfiguration());
             modelBuilder.Configurations.Add(new LocationViewConfiguration());
             modelBuilder.Configurations.Add(new LookupConfiguration());
@@ -217,6 +219,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration(schema));
+            modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration(schema));
             modelBuilder.Configurations.Add(new LocationAreaConfiguration(schema));
             modelBuilder.Configurations.Add(new LocationViewConfiguration(schema));
             modelBuilder.Configurations.Add(new LookupConfiguration(schema));

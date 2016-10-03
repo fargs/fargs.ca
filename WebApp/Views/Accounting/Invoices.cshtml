@@ -1,0 +1,183 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model IEnumerable<Orvosi.Shared.Model.DayFolder>
+@{
+    Layout = "~/Views/Accounting/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+}
+
+@foreach (var dayFolder in Model)
+{
+    <div class="row o-th" style="background-color: aliceblue">
+        <div class="col-md-12">
+            <div class="h3">
+                @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
+            </div>
+            @if (dayFolder.Address != null)
+            {
+                <div class="h4">
+                    @dayFolder.Address.Name
+                </div>
+                <div class="small" style="padding-bottom:20px;">
+                    @dayFolder.Address.City
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row o-dashboard-tr">
+        <strong class="col-md-2 o-dashboard-td">Case</strong>
+        <strong class="col-md-1 o-dashboard-td">Invoice</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Item</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">SubTotal</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Hst</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Total</strong>
+        <strong class="col-md-3 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
+        <strong class="col-md-1 o-dashboard-td" style="text-align: center;">Edit</strong>
+    </div>
+    <div>
+        @foreach (var assessment in dayFolder.ServiceRequests)
+        {
+            @Html.Partial("_ServiceRequest", assessment)
+        }
+    </div>
+}
+
+<div class="modal fade" id="edit-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <form id="edit-invoicedetail-form">
+                <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">
+                        <span id="ClaimantName"></span>
+                    </h4>
+                    <div class="small text-muted">
+                        Invoice <span id="InvoiceNumber"></span>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group">
+                        <label class="control-label">Invoice Date</label>
+                        <div class="input-group date" style="width:100%" id="InvoiceDatePicker">
+                            <input class="form-control" size="16" type="text" name="InvoiceDate" id="InvoiceDate">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Amount</label>
+                        <input type="text" class="form-control" id="Amount" name="Amount" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Rate</label>
+                        <input type="text" class="form-control" id="Rate" name="Rate" />
+                        <div class="help-block">Less than 1 will be applied as a percentage. Greater than 1, the rate will override the amount.</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-success" type="submit" id="edit-modal-save" value="Save" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $('#InvoiceDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+        });
+
+            function onSend(invoiceId) {
+                var url = '@Url.Content("~/Accounting/SendInvoice")';
+                var form = $("#send-invoice-form-" + invoiceId);
+                var serviceRequestId = form.find('#ServiceRequestId').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function () {
+                        toastr.success("Invoice sent successfully");
+                        refreshServiceRequest(serviceRequestId);
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        toastr.success("Something went wrong.");
+                    }
+                });
+
+                return false; // avoid to execute the actual submit of the form.
+            }
+
+            function onEdit(invoiceDetailId) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+
+                        var modalDiv = $("#edit-modal");
+                        modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                        modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
+                        modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                        var form = $('#edit-invoicedetail-form');
+                        form.find('#Id').val(result.Id);
+                        $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
+                        form.find('#Amount').val(result.Amount);
+                        form.find('#Rate').val(result.Rate);
+
+                        modalDiv.modal('toggle');
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
+            }
+
+            $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
+
+                var url = '@Url.Content("~/Accounting/Update")';
+
+                var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
+                    success: function () {
+                        toastr.success("Invoice updated successfully.");
+                        refreshServiceRequest(serviceRequestId);
+                    }
+                });
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+            });
+
+            function refreshServiceRequest(serviceRequestId) {
+
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
+                    contentType: "text/html",
+                    success: function (result) {
+                        $("#edit-modal").modal('toggle');
+                        $('#service-request-' + serviceRequestId).replaceWith(result);
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        window.location.reload();
+                    }
+                }, this);
+
+            }
+    </script>
+}

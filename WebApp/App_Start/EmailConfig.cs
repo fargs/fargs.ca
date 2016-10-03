@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System;
 using Orvosi.Shared.Enums;
+using WebApp.Library.Extensions;
 
 namespace WebApp
 {
@@ -102,7 +103,7 @@ namespace WebApp
             var message = new MailMessage();
             message.To.Add(invoice.CustomerEmail);
             message.From = new MailAddress(invoice.ServiceProviderEmail);
-            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate);
+            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
             message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 

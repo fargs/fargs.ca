@@ -429,28 +429,28 @@ namespace WebApp.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> DownloadHeader(Guid id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
             return PartialView("DocumentHeader", invoice);
         }
 
         [AllowAnonymous]
         public async Task<ActionResult> DownloadBody(Guid id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
             return PartialView("PrintableInvoice", invoice);
         }
 
         [AllowAnonymous]
         public async Task<ActionResult> DownloadFooter(Guid id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
             return PartialView("DocumentFooter", invoice);
         }
 
         [AllowAnonymous]
         public async Task<ActionResult> Download(Guid id)
         {
-            var invoice = await db.Invoices.SingleOrDefaultAsync(c => c.ObjectGuid == id);
+            var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
 
             //var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
             //var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
@@ -461,10 +461,10 @@ namespace WebApp.Controllers
             {
                 NameValueCollection options = new NameValueCollection();
                 options.Add("apikey", apiKey);
-                options.Add("value", "http://orvosi.ca/invoice/downloadbody/" + id.ToString());
+                options.Add("value", "https://orvosi.ca/invoice/downloadbody/" + id.ToString());
 
-                options.Add("HeaderUrl", "http://orvosi.ca/invoice/downloadheader/" + id.ToString());
-                options.Add("FooterUrl", "http://orvosi.ca/invoice/downloadfooter/" + id.ToString());
+                options.Add("HeaderUrl", "https://orvosi.ca/invoice/downloadheader/" + id.ToString());
+                options.Add("FooterUrl", "https://orvosi.ca/invoice/downloadfooter/" + id.ToString());
 
                 options.Add("MarginTop", "40");
                 options.Add("MarginBottom", "10");

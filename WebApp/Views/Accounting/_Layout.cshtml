@@ -1,0 +1,61 @@
+﻿@using WebApp.Library.Helpers
+@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@using Orvosi.Data
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+    var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
+
+    var context = new OrvosiDbContext();
+    var userSelectList = (from user in context.AspNetUsers
+                          from userRole in context.AspNetUserRoles
+                          from role in context.AspNetRoles
+                          where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                          select new SelectListItem
+                          {
+                              Text = user.FirstName + " " + user.LastName,
+                              Value = user.Id.ToString(),
+                              Group = new SelectListGroup() { Name = role.Name }
+                          }).ToList();
+
+    Guid userId = User.Identity.GetGuidUserId();
+    var param = Request.QueryString.Get("ServiceProviderId");
+    var serviceProviderId = string.IsNullOrEmpty(param) ? (Guid?)null : (Guid?)new Guid(param);
+    // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+    if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+    {
+        userId = serviceProviderId.Value;
+    }
+    ViewBag.SelectedUserId = userId; 
+}
+
+@if (roles.Contains(roleId))
+{
+    <div class="row" style="margin-bottom:20px">
+        <div class="col-md-12">
+            <form action="~/Accounting/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
+                <div class="form-group">
+                    @Html.DropDownList("ServiceProviderId", new SelectList(userSelectList, "Value", "Text", "Group.Name", userId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<p class="h3 text-muted">Accounting</p>
+
+<ul class="nav nav-tabs">
+    <li role="presentation" class="@Html.IsActive("Accounting", "Today")"><a href="~/Accounting/Today?@(Request.QueryString)">Invoices</a></li>
+    <li role="presentation" class="@Html.IsActive("Accounting", "Schedule")"><a href="~/Accounting/Schedule?@(Request.QueryString)">Schedule</a></li>
+    <li role="presentation" class="@Html.IsActive("Accounting", "Additionals")"><a href="~/Accounting/Additionals?@(Request.QueryString)">Additionals</a></li>
+</ul>
+<section class="tab-content">
+    <div role="tabpanel" class="tab-pane active panel-body">
+        @RenderBody()
+    </div>
+</section>
+
+
+@RenderSection("scripts", required: false)

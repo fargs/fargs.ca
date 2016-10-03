@@ -7,6 +7,7 @@ using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using WebApp.Library;
 using WebApp.Models.ServiceRequestModels;
+using m = Orvosi.Shared.Model;
 using Westwind.Web.Mvc;
 
 namespace WebApp.Controllers

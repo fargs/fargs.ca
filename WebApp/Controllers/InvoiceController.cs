@@ -14,6 +14,7 @@ using WebApp.Library.Extensions;
 using System.Collections.Specialized;
 using System.Net;
 using System.IO;
+using WebApp.Library.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -454,19 +455,19 @@ namespace WebApp.Controllers
 
             //var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
             //var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
-            //var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
+            var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "PrintableInvoice", invoice);
 
             string apiKey = "eedbadc1-0fe7-4712-8573-816115379e62";
             using (var client = new WebClient())
             {
                 NameValueCollection options = new NameValueCollection();
                 options.Add("apikey", apiKey);
-                options.Add("value", "https://orvosi.ca/invoice/downloadbody/" + id.ToString());
+                //options.Add("value", "https://orvosi.ca/invoice/downloadbody/" + id.ToString());
+                options.Add("value", body);
+                //options.Add("HeaderUrl", "https://orvosi.ca/invoice/downloadheader/" + id.ToString());
+                //options.Add("FooterUrl", "https://orvosi.ca/invoice/downloadfooter/" + id.ToString());
 
-                options.Add("HeaderUrl", "https://orvosi.ca/invoice/downloadheader/" + id.ToString());
-                options.Add("FooterUrl", "https://orvosi.ca/invoice/downloadfooter/" + id.ToString());
-
-                options.Add("MarginTop", "40");
+                options.Add("MarginTop", "10");
                 options.Add("MarginBottom", "10");
                 options.Add("MarginLeft", "10");
                 options.Add("MarginRight", "10");

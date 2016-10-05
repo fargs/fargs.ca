@@ -116,7 +116,7 @@
                 </div>
             }
             <div class="col-md-1 o-dashboard-td" style="text-align: center;">
-                <button class="btn btn-default" style="border: none;" onclick="onEdit(@detail.Id)">
+                <button class="btn btn-default" style="border: none;" onclick="onEdit(@detail.Id , @assessment.IsNoShow.ToString().ToLower() , @assessment.IsLateCancellation.ToString().ToLower())">
                     <i class="fa fa-pencil fa-lg"></i>
                 </button>
             </div>

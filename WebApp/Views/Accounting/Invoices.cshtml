@@ -7,7 +7,7 @@
     var roleId = User.Identity.GetRoleId();
 }
 
-@if(Model.Count() == 0)
+@if (Model.Count() == 0)
 {
     <p><strong>There are no invoices that need to be sent out.</strong></p>
 }
@@ -79,7 +79,7 @@
                         <label class="control-label">Amount</label>
                         <input type="text" class="form-control" id="Amount" name="Amount" />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="rate-form-group" style="display:none;">
                         <label class="control-label">Rate</label>
                         <input type="text" class="form-control" id="Rate" name="Rate" />
                         <div class="help-block">Less than 1 will be applied as a percentage. Greater than 1, the rate will override the amount.</div>
@@ -104,88 +104,98 @@
             });
         });
 
-            function onSend(invoiceId) {
-                var url = '@Url.Content("~/Accounting/SendInvoice")';
-                var form = $("#send-invoice-form-" + invoiceId);
-                var serviceRequestId = form.find('#ServiceRequestId').val();
+        function onSend(invoiceId) {
+            var url = '@Url.Content("~/Accounting/SendInvoice")';
+            var form = $("#send-invoice-form-" + invoiceId);
+            var serviceRequestId = form.find('#ServiceRequestId').val();
 
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: form.serialize(), // serializes the form's elements.
-                    success: function () {
-                        toastr.success("Invoice sent successfully");
-                        refreshServiceRequest(serviceRequestId);
-                    },
-                    error: function (err) {
-                        // undo the UI change made before the ajax call
-                        toastr.success("Something went wrong.");
-                    }
-                });
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    toastr.success("Invoice sent successfully");
+                    refreshServiceRequest(serviceRequestId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.success("Something went wrong.");
+                }
+            });
+        }
+
+        function onEdit(invoiceDetailId, isNoShow, isLateCancellation) {
+
+            if (isNoShow || isLateCancellation) {
+                $('#rate-form-group').css({'display': 'block'})
+            }
+            else {
+                $('#rate-form-group').css({ 'display': 'none' })
             }
 
-            function onEdit(invoiceDetailId) {
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
-                    contentType: "application/json; charset=utf-8",
-                    success: function (result) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
 
-                        var modalDiv = $("#edit-modal");
-                        modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                        modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
-                        modalDiv.find('#ClaimantName').html(result.ClaimantName);
+                    var modalDiv = $("#edit-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
 
-                        var form = $('#edit-invoicedetail-form');
-                        form.find('#Id').val(result.Id);
-                        form.find('#To').val(result.To);
-                        $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
-                        form.find('#Amount').val(result.Amount);
+                    var form = $('#edit-invoicedetail-form');
+                    form.find('#Id').val(result.Id);
+                    form.find('#To').val(result.To);
+                    $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
+                    form.find('#Amount').val(result.Amount);
+                    if (isNoShow || isLateCancellation) {
                         form.find('#Rate').val(result.Rate);
-
-                        modalDiv.modal('toggle');
-                    },
-                    error: function (err) {
-                        alert(err.status + " - " + err.statusText);
                     }
-                }, this);
-            }
 
-            $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
 
-                var url = '@Url.Content("~/Accounting/Update")';
+        $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
 
-                var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
+            var url = '@Url.Content("~/Accounting/Update")';
 
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
-                    success: function () {
-                        $("#edit-modal").modal('toggle');
-                        toastr.success("Invoice updated successfully.");
-                        refreshServiceRequest(serviceRequestId);
-                    }
-                });
+            var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
 
-                e.preventDefault(); // avoid to execute the actual submit of the form.
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-modal").modal('toggle');
+                    toastr.success("Invoice updated successfully.");
+                    refreshServiceRequest(serviceRequestId);
+                }
             });
 
-            function refreshServiceRequest(serviceRequestId) {
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
 
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
-                    contentType: "text/html",
-                    success: function (result) {
-                        $('#service-request-' + serviceRequestId).replaceWith(result);
-                    },
-                    error: function (err) {
-                        // undo the UI change made before the ajax call
-                        window.location.reload();
-                    }
-                }, this);
+        function refreshServiceRequest(serviceRequestId) {
 
-            }
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
     </script>
 }

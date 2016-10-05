@@ -1100,6 +1100,7 @@
     <Content Include="Views\Accounting\Invoices.cshtml" />
     <Content Include="Views\Accounting\_Layout.cshtml" />
     <Content Include="Views\Accounting\_ServiceRequest.cshtml" />
+    <Content Include="Views\Box\BoxUsers.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

@@ -54,6 +54,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
     public class EditInvoiceDetailForm
     {
         public int Id { get; set; }
+        public string To { get; set; }
         public string InvoiceDate { get; set; }
         public string ClaimantName { get; set; }
         public string InvoiceNumber { get; set; }

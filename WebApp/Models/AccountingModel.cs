@@ -51,6 +51,7 @@ namespace WebApp.Models.AccountingModel
             var source = context.InvoiceDetails.Select(id => new
             {
                 Id = id.Id,
+                CustomerEmail = id.Invoice.CustomerEmail,
                 InvoiceDate = id.Invoice.InvoiceDate,
                 Amount = id.Amount,
                 Rate = id.Rate,
@@ -64,6 +65,7 @@ namespace WebApp.Models.AccountingModel
             return new EditInvoiceDetailForm
             {
                 Id = source.Id,
+                To = source.CustomerEmail,
                 InvoiceDate = source.InvoiceDate.ToOrvosiDateFormat(),
                 Amount = source.Amount,
                 Rate = source.Rate,

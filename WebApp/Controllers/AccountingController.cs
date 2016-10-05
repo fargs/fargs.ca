@@ -30,13 +30,13 @@ namespace WebApp.Controllers
         }
 
         // API
-        public async Task<ActionResult> SendInvoice(int invoiceId, string to)
+        public async Task<ActionResult> SendInvoice(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
 
             var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice, Request.GetBaseUrl(), to);
+            await messageService.SendInvoice(invoice, Request.GetBaseUrl());
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
@@ -45,7 +45,7 @@ namespace WebApp.Controllers
             invoice.InvoiceSentLogs.Add(new Orvosi.Data.InvoiceSentLog()
             {
                 InvoiceId = invoice.Id,
-                EmailTo = to,
+                EmailTo = invoice.CustomerEmail,
                 SentDate = SystemTime.Now(),
                 ModifiedDate = SystemTime.Now(),
                 ModifiedUser = User.Identity.Name
@@ -69,6 +69,8 @@ namespace WebApp.Controllers
                 .Include(id => id.Invoice)
                 .Include(id => id.ServiceRequest)
                 .FirstAsync(id => id.Id == form.Id);
+
+            target.Invoice.CustomerEmail = form.To;
 
             DateTime invoiceDate;
             DateTime.TryParseExact(form.InvoiceDate, "yyyy-MM-dd", null, DateTimeStyles.None, out invoiceDate);

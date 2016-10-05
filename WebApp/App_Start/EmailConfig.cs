@@ -98,10 +98,10 @@ namespace WebApp
             return true;
         }
 
-        public async Task<bool> SendInvoice(Orvosi.Data.Invoice invoice, string callbackUrlBase, string to)
+        public async Task<bool> SendInvoice(Orvosi.Data.Invoice invoice, string callbackUrlBase)
         {
             var message = new MailMessage();
-            message.To.Add(to);
+            message.To.Add(invoice.CustomerEmail);
             message.From = new MailAddress(invoice.ServiceProviderEmail);
             message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
             message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);

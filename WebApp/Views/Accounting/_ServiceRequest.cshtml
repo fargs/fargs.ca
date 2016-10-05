@@ -110,7 +110,7 @@
                             <button type="button" class="btn btn-primary" onclick="onSend(@detail.Invoice.Id)"><i class="fa fa-send"></i> Send</button>
                         </div>
                         <div class="help-block small">
-                            To: <input type="text" id="to" name="to" style="border: none;" value="@detail.Invoice.Customer.BillingEmail" />
+                            To: @detail.Invoice.Customer.BillingEmail
                         </div>
                     </form>
                 </div>

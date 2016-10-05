@@ -1,0 +1,18 @@
+﻿@using Box.V2.Models
+@model BoxCollection<BoxUser>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Users</h2>
+
+<table class="table">
+    @foreach (var item in Model.Entries)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+        </tr>
+    }
+</table>

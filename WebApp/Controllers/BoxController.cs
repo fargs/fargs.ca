@@ -56,6 +56,13 @@ namespace WebApp.Controllers
             return View(users);
         }
 
+        public ActionResult BoxUsers()
+        {
+            var box = new BoxManager();
+            var boxUsers = box.GetUsers();
+            return View(boxUsers);
+        }
+
         public ActionResult LogInAs(string id)
         {
             var box = new BoxManager();

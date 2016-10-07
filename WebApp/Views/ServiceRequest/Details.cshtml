@@ -119,6 +119,20 @@
         <p>
             <h4 style="line-height:30px;">@Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId) Case @Model.ServiceRequest.Id</h4>
         </p>
+        @if (!string.IsNullOrEmpty(Model.ServiceRequest.Notes))
+        {
+            <h4 class="text-info">Note</h4>
+            @Html.Raw(Model.ServiceRequest.Notes)
+        }
+        else
+        {
+            <div class="pull-right">
+                <i class="fa fa-sticky-note-o"></i>
+                <a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id"><small>Add Note</small></a>
+            </div>
+        }
+        <p>
+        </p>
         <hr />
         <div class="panel panel-success">
             <div class="panel-heading">
@@ -262,8 +276,8 @@
                     @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
                 </address>
 
-    }
-}
+            }
+        }
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
         {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>

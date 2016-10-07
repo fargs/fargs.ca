@@ -13,14 +13,20 @@
         <div>
             @(assessment.AppointmentDate.HasValue ? assessment.AppointmentDate.ToOrvosiDateFormat() : assessment.DueDate.ToOrvosiDateFormat()) @assessment.StartTime.ToShortTimeSafe()
         </div>
+        @if (!string.IsNullOrEmpty(assessment.Notes))
+        {
+            <div class="text-danger form-group">
+                <i class="fa fa-exclamation"></i> @assessment.Notes
+            </div>
+        }
     </div>
     @if (assessment.InvoiceDetails.Count() == 0)
     {
         <div class="col-md-5 o-dashboard-td">
             <form action="~/Invoice/Create" method="post" class="form-horizontal">
                 @Html.Hidden("Id", assessment.Id)
-                <div class="form-group">
-                    <label class="control-label col-md-2" style="text-align:left;">Catalogue Price</label>
+                @*<div class="form-group">
+                    <label class="control-label col-md-2" style="text-align:left;">Price</label>
                     <div class="col-md-2"><input class="form-control input-sm" type="text" name="Price" value="@assessment.ServiceCataloguePrice" placeholder="Override Price" /></div>
                 </div>
                 @if (assessment.IsNoShow)
@@ -44,9 +50,9 @@
                     <div class="text-danger form-group">
                         <i class="fa fa-exclamation"></i> @assessment.Notes
                     </div>
-                }
+                }*@
                 <div class="form-group">
-                    <input type="submit" class="btn btn-danger col-md-4" name="Create" value="Add Invoice" />
+                    <input type="button" class="btn btn-danger col-md-4" name="Create" value="Create Invoice" onclick="onCreate(@assessment.Id)" />
                 </div>
             </form>
         </div>

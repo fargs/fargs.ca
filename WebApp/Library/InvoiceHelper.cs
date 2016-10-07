@@ -72,7 +72,7 @@ namespace WebApp.Library
 
             if (serviceRequest.IsNoShow)
             {
-                if (!serviceRequest.NoShowRate.HasValue)
+                if (!serviceRequest.NoShowRate.HasValue || serviceRequest.NoShowRate == 0)
                 {
                     throw new Exception("No show rate must have a value");
                 }
@@ -83,7 +83,7 @@ namespace WebApp.Library
             }
             else if (serviceRequest.IsLateCancellation)
             {
-                if (!serviceRequest.LateCancellationRate.HasValue)
+                if (!serviceRequest.LateCancellationRate.HasValue || serviceRequest.LateCancellationRate == 0)
                 {
                     throw new Exception("Late cancellation rate must have a value");
                 }

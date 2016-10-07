@@ -8,6 +8,10 @@ using System.Web;
 using System.Linq.Expressions;
 using WebApp.ViewModels.InvoiceViewModels;
 using WebApp.Library.Extensions;
+using WebApp.Library;
+using System.Security.Principal;
+using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace WebApp.Models.AccountingModel
 {
@@ -76,6 +80,46 @@ namespace WebApp.Models.AccountingModel
             };
         }
 
+        public void Create(int serviceRequestId, IPrincipal User)
+        {
+            var db = context;
+            var serviceRequest =
+                db.ServiceRequests
+                    .Find(serviceRequestId);
+
+            // check if the no show rates are set in the request. Migrate old records to use invoices.
+            if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
+            {
+                var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
+                serviceRequest.NoShowRate = rates.NoShowRate;
+                serviceRequest.LateCancellationRate = rates.LateCancellationRate;
+            }
+
+            var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
+            var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
+
+            var invoiceNumber = db.GetNextInvoiceNumber().First();
+
+            var invoiceDate = SystemTime.Now();
+            if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+            {
+                invoiceDate = serviceRequest.AppointmentDate.Value;
+            }
+
+            var invoice = new data.Invoice();
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber.NextInvoiceNumber, invoiceDate, User.Identity.Name);
+            
+            var invoiceDetail = new data.InvoiceDetail();
+            invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+            invoice.InvoiceDetails.Add(invoiceDetail);
+
+            invoice.CalculateTotal();
+
+            db.Invoices.Add(invoice);
+            
+            db.SaveChanges();
+        }
+
         private List<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
         {
             return context.ServiceRequests
@@ -121,7 +165,7 @@ namespace WebApp.Models.AccountingModel
                         Name = sr.Address.Name,
                         City = sr.Address.City_CityId.Name
                     },
-                    InvoiceDetails = sr.InvoiceDetails.Select(id => new InvoiceDetail
+                    InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted).Select(id => new InvoiceDetail
                     {
                         Id = id.Id,
                         Description = id.Description,

@@ -124,6 +124,26 @@
             });
         }
 
+        function onCreate(serviceRequestId) {
+            var url = '@Url.Content("~/Accounting/Create")';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    serviceRequestId: serviceRequestId
+                }, // serializes the form's elements.
+                success: function () {
+                    toastr.success("Invoice created successfully");
+                    refreshServiceRequest(serviceRequestId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.success("Something went wrong.");
+                }
+            });
+        }
+
         function onEdit(invoiceDetailId, isNoShow, isLateCancellation) {
 
             if (isNoShow || isLateCancellation) {

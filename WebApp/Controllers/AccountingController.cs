@@ -61,6 +61,15 @@ namespace WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+        [HttpPost]
+        public ActionResult Create(int serviceRequestId)
+        {
+            var repo = new Mapper(new Orvosi.Data.OrvosiDbContext());
+            repo.Create(serviceRequestId, User);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
         public async Task<ActionResult> Update(EditInvoiceDetailForm form)
         {
             var context = new Orvosi.Data.OrvosiDbContext();

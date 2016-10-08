@@ -388,6 +388,7 @@ namespace Orvosi.Shared.Model
         public DateTime? SentDate { get; set; }
         public DateTime? PaymentReceivedDate { get; set; }
         public Customer Customer { get; set; }
+        public Guid InvoiceGuid { get; set; }
     }
 
     public class InvoiceDetail

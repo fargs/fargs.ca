@@ -126,7 +126,7 @@
                 <button class="btn btn-default" style="border: none;" onclick="onEdit(@detail.Id , @assessment.IsNoShow.ToString().ToLower() , @assessment.IsLateCancellation.ToString().ToLower())">
                     <i class="fa fa-pencil fa-lg"></i>
                 </button>
-                <a class="btn btn-default" href="~/Invoice/Details/@detail.Invoice.Id" target="_blank">
+                <a class="btn btn-default" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">
                     <i class="fa fa-pdf fa-lg"></i>
                 </a>
             </div>

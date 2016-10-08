@@ -185,6 +185,7 @@ namespace WebApp.Models.AccountingModel
                             Total = id.Invoice.Total.Value,
                             SentDate = id.Invoice.SentDate,
                             PaymentReceivedDate = id.Invoice.PaymentReceivedDate,
+                            InvoiceGuid = id.Invoice.ObjectGuid,
                             Customer = new Customer
                             {
                                 Id = id.Invoice.CustomerGuid,

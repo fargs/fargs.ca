@@ -80,13 +80,14 @@ namespace WebApp.Controllers
                 .FirstAsync(id => id.Id == form.Id);
 
             target.Invoice.CustomerEmail = form.To;
+            target.AdditionalNotes = form.AdditionalNotes;
 
             DateTime invoiceDate;
             DateTime.TryParseExact(form.InvoiceDate, "yyyy-MM-dd", null, DateTimeStyles.None, out invoiceDate);
             target.Invoice.InvoiceDate = invoiceDate;
 
             target.Amount = form.Amount;
-            if (form.Rate != target.Rate)
+            if ((target.ServiceRequest.IsNoShow || target.ServiceRequest.IsLateCancellation) && form.Rate != target.Rate && target.Rate.HasValue)
             {
                 target.Rate = form.Rate;
                 var discountType = target.ServiceRequest.GetDiscountType();

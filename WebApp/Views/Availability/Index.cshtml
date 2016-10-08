@@ -75,10 +75,21 @@
     <div class="row">
         <div class="col-md-2">
             <div>
-                <div class="pull-left">@day.Day.ToString("dddd dd")</div>
+                <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                 <form action="~/Availability/CancelDay" method="post">
                     @Html.Hidden("id", day.Id)
-                    <button type="submit" @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequests.Count() > 0) != null ? "disabled": string.Empty) class="btn btn-link @(day.AvailableSlots.FirstOrDefault(c => c.ServiceRequests.Count() == 0) != null ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                    @if (day.AvailableSlots.All(a => a.ServiceRequests.Any()))
+                    {
+                        <i class="fa fa-check fa-lg" style="color:green;"></i><i class="fa fa-check fa-lg" style="color:green;"></i>
+                    }
+                    else if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
+                    {
+                        <i class="fa fa-check fa-lg" style="color:green;"></i>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                    }
                 </form>
             </div>
             <span>
@@ -155,11 +166,19 @@
                 @foreach (var slot in day.AvailableSlots.OrderBy(c => c.StartTime))
                 {
                     <li>
-                        <div class="pull-left">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
                         <div class="pull-left" style="vertical-align: middle">
                             <form action="~/Availability/CancelSlot" method="post">
                                 @Html.Hidden("id", slot.Id)
-                                <button type="submit" @(slot.ServiceRequests.Count() > 0 ? "disabled": string.Empty) class="btn btn-link @(slot.ServiceRequests.Count() > 0 ? "disabled": string.Empty)" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                @if (slot.ServiceRequests.Any())
+                                {
+                                    <div class="pull-left text-muted">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
+                                    <i class="fa fa-check fa-lg" style="color:green;"></i>
+                                }
+                                else
+                                {
+                                    <div class="pull-left"><strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong></div>
+                                    <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                }
                             </form>
                         </div>
                     </li>

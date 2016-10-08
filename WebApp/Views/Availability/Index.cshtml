@@ -75,20 +75,22 @@
     <div class="row">
         <div class="col-md-2">
             <div>
-                <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                 <form action="~/Availability/CancelDay" method="post">
                     @Html.Hidden("id", day.Id)
                     @if (day.AvailableSlots.All(a => a.ServiceRequests.Any()))
                     {
+                        <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-check fa-lg" style="color:green;"></i><i class="fa fa-check fa-lg" style="color:green;"></i>
                     }
                     else if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
                     {
+                        <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-check fa-lg" style="color:green;"></i>
                     }
                     else
                     {
-                        <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                        <div class="pull-left bg-danger">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
+                        <button type="submit" class="btn btn-link" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove"></i></button>
                     }
                 </form>
             </div>
@@ -176,8 +178,12 @@
                                 }
                                 else
                                 {
-                                    <div class="pull-left"><strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong></div>
-                                    <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                    <div class="bg-info">
+                                        <div class="pull-left">
+                                            <strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong>
+                                        </div>
+                                        <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </div>
                                 }
                             </form>
                         </div>

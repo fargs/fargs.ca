@@ -166,4 +166,10 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public string Url { get; set; }
     }
 
+    public class NoteViewModel
+    {
+        public int ServiceRequestId { get; set; }
+        public string Note { get; set; }
+    }
+
 }

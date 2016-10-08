@@ -1,0 +1,25 @@
+﻿<div class="modal fade" id="edit-note-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <form id="edit-note-form">
+                <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">
+                        <span id="ClaimantName"></span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group">
+                        <label class="control-label">Note</label>
+                        <textarea id="Notes" name="Notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-success" type="submit" id="edit-note-modal-save" value="Save" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

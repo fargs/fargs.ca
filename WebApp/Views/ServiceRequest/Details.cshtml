@@ -119,21 +119,12 @@
         <p>
             <h4 style="line-height:30px;">@Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId) Case @Model.ServiceRequest.Id</h4>
         </p>
-        @if (!string.IsNullOrEmpty(Model.ServiceRequest.Notes))
-        {
-            <h4 class="text-info">Note</h4>
-            @Html.Raw(Model.ServiceRequest.Notes)
-        }
-        else
-        {
-            <div class="pull-right">
-                <i class="fa fa-sticky-note-o"></i>
-                <a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id"><small>Add Note</small></a>
-            </div>
-        }
+        <hr />
+        <div id="notes">
+            @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
+        </div>
         <p>
         </p>
-        <hr />
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
@@ -313,8 +304,9 @@
             }
         }
     </div>
-
 </div>
+
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
 @section Scripts {
     <script type="text/javascript">
@@ -353,7 +345,63 @@
             }, this);
         }
 
-        $(function () {
-        })
+        function onEdit(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-note-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#Notes').html(result.Notes);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-note-form").submit(function (e) {
+
+            var url = '@Url.Content("~/Note/UpdateNote")';
+
+            var form = $("#edit-note-form");
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-note-modal").modal('toggle');
+                    toastr.success("The note was updated successfully.");
+                    refreshNote(serviceRequestId);
+                }
+            });
+            e.preventDefault();
+        });
+
+        function refreshNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#notes').replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
     </script>
 }

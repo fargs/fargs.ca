@@ -848,6 +848,13 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
+        public async Task<ActionResult> RefreshNote(int serviceRequestId)
+        {
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var note = await context.ServiceRequests.FindAsync(serviceRequestId);
+            return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
+        }
+
         #region Box
 
         [HttpPost]
@@ -961,6 +968,8 @@ namespace WebApp.Controllers
 
         #endregion
 
+        #region Private
+
         private async Task GetPhysicianDropDownData()
         {
             var physicians = await ctx.Physicians
@@ -1037,6 +1046,8 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
         }
+
+        #endregion
 
 
         protected override void Dispose(bool disposing)

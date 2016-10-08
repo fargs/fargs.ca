@@ -166,7 +166,7 @@
                     modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
                     modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
                     modalDiv.find('#ClaimantName').html(result.ClaimantName);
-                    modalDiv.find('#AdditionalNotes').html(result.AdditionalNotes);
+                    modalDiv.find('#AdditionalNotes').val(result.AdditionalNotes);
 
                     var form = $('#edit-invoicedetail-form');
                     form.find('#Id').val(result.Id);

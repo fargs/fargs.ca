@@ -177,7 +177,7 @@ namespace WebApp.Library
         {
             switch (provinceName)
             {
-                case "British Colombia":
+                case "British Columbia":
                     return 0.05M;
                 default:
                     return 0.13M;

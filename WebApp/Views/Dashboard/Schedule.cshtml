@@ -127,6 +127,7 @@
                                             <td></td>
                                             <td colspan="4">
                                                 <div style="padding-top: 5px;">
+                                                    <div><strong>@assessment.ClaimantName</strong></div>
                                                     @*@if (assessment.Tasks.Any(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo))
                                                         {
                                                             <div>

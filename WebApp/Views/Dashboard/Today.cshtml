@@ -11,10 +11,10 @@
         @Model.Today.DayFormatted_MMMdd<span class="small"> @Model.Today.DayFormatted_dddd</span>
     </div>
     <div>
-        @Model.Today.Address
+        @Model.Today.Address.Name
     </div>
     <div class="small text-muted" style="padding-bottom:20px;">
-        @Model.Today.City
+        @Model.Today.Address.City
     </div>
     foreach (var assessment in Model.Today.Assessments)
     {
@@ -24,22 +24,25 @@
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <div><strong>@assessment.ClaimantName</strong></div>
-                <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
                 -
-                <span>@assessment.CompanyName</span>
+                <span>@assessment.Company.Name</span>
+                <div id="notes">
+                    @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
+                </div>
             </div>
             <div class="col-md-3">
-                @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
+                @foreach (var task in assessment.ServiceRequestTasks.Where(srt => srt.AssignedTo.Id == Model.SelectedUserId))
                 {
                     <form action="~/Dashboard/UpdateTaskStatus">
                         <div class="checkbox">
                             <label>
                                 <input id="task-checkbox-@task.Id" type="checkbox"
-                                       value="@task.IsComplete"
-                                       @(task.IsComplete ? "checked" : "")
-                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                       value="@(task.Status.Id == TaskStatuses.Done)"
+                                       @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
+                                       @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
                                        onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
-                                @Html.Partial("_TaskStatusLabel", task) @task.Name
+                                @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
                             </label>
                         </div>
                     </form>
@@ -92,6 +95,7 @@ else
     <strong> No assessments today</strong>
 }
 
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
 @section Scripts {
 
@@ -178,6 +182,65 @@ else
                     toastr.success("Task was not updated.", "Something went wrong!");
                 }
             }, this);
+        }
+
+
+        function onEditNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-note-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#Notes').html(result.Notes);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-note-form").submit(function (e) {
+
+            var url = '@Url.Content("~/Note/UpdateNote")';
+
+            var form = $("#edit-note-form");
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-note-modal").modal('toggle');
+                    toastr.success("The note was updated successfully.");
+                    refreshNote(serviceRequestId);
+                }
+            });
+            e.preventDefault();
+        });
+
+        function refreshNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/RefreshNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#notes').replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
         }
 
     </script>

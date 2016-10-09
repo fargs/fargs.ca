@@ -9,6 +9,7 @@ using WebApp.Library;
 using WebApp.Models.ServiceRequestModels;
 using m = Orvosi.Shared.Model;
 using Westwind.Web.Mvc;
+using WebApp.ViewModels.ServiceRequestViewModels;
 
 namespace WebApp.Controllers
 {
@@ -73,12 +74,10 @@ namespace WebApp.Controllers
                 userId = serviceProviderId.Value;
             }
 
-            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
-
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Today = ServiceRequestMapper.MapToToday(requests, now, userId, baseUrl);
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, now, loggedInUserId, baseUrl);
             
             // Additional view data.
             vm.SelectedUserId = userId;
@@ -103,19 +102,17 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid? userId = User.Identity.GetGuidUserId();
+            Guid userId = User.Identity.GetGuidUserId();
             // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
             if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
             {
                 userId = serviceProviderId.Value;
             }
 
-            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
-
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.DueDates = ServiceRequestMapper.MapToDueDates(requests, now, loggedInUserId, baseUrl);
+            vm.DueDates = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, baseUrl);
 
             // Additional view data.
             vm.SelectedUserId = userId;
@@ -207,41 +204,12 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Additionals", vm);
         }
 
-        public async Task<ActionResult> DueDates2(Guid? serviceProviderId)
+        public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
-            // Set date range variables used in where conditions
-            var now = SystemTime.Now();
-            var loggedInUserId = User.Identity.GetGuidUserId();
-            var baseUrl = Request.GetBaseUrl();
-
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
-
-            // Populate the view model
-            var vm = new dvm.IndexViewModel();
-
-            vm.DueDates2 = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, baseUrl);
-
-            // Additional view data.
-            vm.SelectedUserId = userId;
-            vm.UserSelectList = (from user in context.AspNetUsers
-                                 from userRole in context.AspNetUserRoles
-                                 from role in context.AspNetRoles
-                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
-                                 select new SelectListItem
-                                 {
-                                     Text = user.FirstName + " " + user.LastName,
-                                     Value = user.Id.ToString(),
-                                     Group = new SelectListGroup() { Name = role.Name }
-                                 }).ToList();
-
-            return new NegotiatedResult("DueDates2", vm);
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var note = await context.ServiceRequests.FindAsync(serviceRequestId);
+            return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
         }
-
         [HttpPost]
         public async Task<ActionResult> UpdateTaskStatus2(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
         {

@@ -1,15 +1,17 @@
 @using Orvosi.Shared.Enums
-@model byte?
+@model Orvosi.Shared.Model.ServiceRequest
 
-@if (Model == ServiceStatus.LateCancellation)
-{
-    <span class='label label-danger'>Late Cancellation</span>
-}
-else if (Model == ServiceStatus.Cancellation)
-{
-    <span class='label label-danger'>Cancellation</span>
-}
-else if (Model == ServiceStatus.NoShow)
-{
-    <span class='label label-danger'>No Show</span>
-}
+<span id="service-status-@Model.Id">
+    @if (Model.ServiceStatusId == ServiceStatus.NoShow)
+    {
+        <span class="label label-danger"><strong>No Show</strong></span>
+    }
+    else if (Model.ServiceStatusId == ServiceStatus.Cancellation)
+    {
+        <span class="label label-warning"><strong>Cancellation</strong></span>
+    }
+    else if (Model.ServiceStatusId == ServiceStatus.LateCancellation)
+    {
+        <span class="label bg-danger" style="color: black;"><strong>Late Cancellation</strong></span>
+    }
+</span>

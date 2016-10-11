@@ -10,6 +10,7 @@ using WebApp.Models.ServiceRequestModels;
 using m = Orvosi.Shared.Model;
 using Westwind.Web.Mvc;
 using WebApp.ViewModels.ServiceRequestViewModels;
+using System.Net;
 
 namespace WebApp.Controllers
 {
@@ -204,6 +205,28 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Additionals", vm);
         }
 
+        public ActionResult RefreshServiceRequestTasks(int serviceRequestId)
+        {
+            var now = SystemTime.Now();
+            var request = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToServiceRequest(serviceRequestId, now, User.Identity.GetGuidUserId(), Request.GetBaseUrl());
+            return PartialView("_ServiceRequestTasks_Today", request);
+        }
+
+        public ActionResult RefreshServiceStatus(int serviceRequestId)
+        {
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var request = context.ServiceRequests.Select(sr => new m.ServiceRequest
+            {
+                Id = sr.Id,
+                IsLateCancellation = sr.IsLateCancellation,
+                IsNoShow = sr.IsNoShow,
+                CancelledDate = sr.CancelledDate
+            })
+            .First(sr => sr.Id == serviceRequestId);
+
+            return PartialView("_ServiceStatus", request);
+        }
+
         public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -313,7 +336,7 @@ namespace WebApp.Controllers
 
             await context.SaveChangesAsync();
 
-            return await Index(serviceProviderGuid);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [HttpGet]

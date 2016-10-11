@@ -301,7 +301,7 @@ namespace Orvosi.Shared.Model
         {
             get
             {
-                var isWaiting = Dependencies.Any(d => (!d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != 133) || (d.TaskId == 133 && AppointmentDate > Now));
+                var isWaiting = Dependencies.Any(d => (!d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != 133) || (d.TaskId == 133 && AppointmentDate.Value.Date > Now));
 
                 if (IsObsolete)
                 {

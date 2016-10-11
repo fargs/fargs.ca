@@ -1103,6 +1103,7 @@
     <Content Include="Views\Box\BoxUsers.cshtml" />
     <Content Include="Views\ServiceRequest\_Note.cshtml" />
     <Content Include="Views\Dashboard\_Note.cshtml" />
+    <Content Include="Views\Dashboard\_ServiceRequestTasks_Today.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

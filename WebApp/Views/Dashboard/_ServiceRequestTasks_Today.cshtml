@@ -1,0 +1,39 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+
+@model Orvosi.Shared.Model.ServiceRequest
+
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var assessment = Model;
+}
+
+<div id="service-request-tasks-@assessment.Id">
+        @foreach (var task in assessment.ServiceRequestTasks.Where(srt => (srt.ProcessTask.Id != Tasks.AssessmentDay) && (srt.ProcessTask.ResponsibleRole.Id == AspNetRoles.Physician || srt.ProcessTask.ResponsibleRole.Id == AspNetRoles.IntakeAssistant || srt.ProcessTask.ResponsibleRole.Id == AspNetRoles.DocumentReviewer)).OrderBy(srt => srt.ProcessTask.Sequence))
+        {
+            if ((roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.Physician || userId == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)
+            {
+                <form action="~/Dashboard/UpdateTaskStatus">
+                    <div class="checkbox">
+                        <label>
+                            <input id="task-checkbox-@task.Id" type="checkbox" style="cursor:pointer;"
+                                   value="@(task.Status.Id == TaskStatuses.Done)"
+                                   @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
+                                   @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
+                                   onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
+                            @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
+                        </label>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="checkbox">
+                    <label style="cursor:default;">
+                        @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
+                    </label>
+                </div>
+            }
+        }
+</div>

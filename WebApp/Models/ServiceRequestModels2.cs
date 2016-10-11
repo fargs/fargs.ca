@@ -20,7 +20,7 @@ namespace WebApp.Models.ServiceRequestModels2
                 var source = context.ServiceRequests
                     .Where(d => d.AppointmentDate.HasValue
                         && d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                        //&& d.AppointmentDate.Value >= now && d.AppointmentDate.Value < endOfDay
+                        && d.AppointmentDate.Value >= now && d.AppointmentDate.Value < endOfDay
                         && !d.IsClosed)
                     .Select(sr => new Assessment
                     {
@@ -33,6 +33,8 @@ namespace WebApp.Models.ServiceRequestModels2
                         CancelledDate = sr.CancelledDate,
                         IsClosed = sr.IsClosed,
                         BoxCaseFolderId = sr.BoxCaseFolderId,
+                        IsNoShow = sr.IsNoShow,
+                        IsLateCancellation = sr.IsLateCancellation,
                         Notes = sr.Notes,
                         Address = new Address
                         {
@@ -61,7 +63,12 @@ namespace WebApp.Models.ServiceRequestModels2
                             {
                                 Id = srt.OTask.Id,
                                 Name = srt.OTask.Name,
-                                Sequence = srt.OTask.Sequence.Value
+                                Sequence = srt.OTask.Sequence.Value,
+                                ResponsibleRole = srt.OTask.AspNetRole == null ? null : new UserRole
+                                {
+                                    Id = srt.OTask.AspNetRole.Id,
+                                    Name = srt.OTask.AspNetRole.Name
+                                }
                             },
                             AssignedTo = new Person
                             {
@@ -224,6 +231,8 @@ namespace WebApp.Models.ServiceRequestModels2
                         Now = now,
                         CancelledDate = sr.CancelledDate,
                         IsClosed = sr.IsClosed,
+                        IsLateCancellation = sr.IsLateCancellation,
+                        IsNoShow = sr.IsNoShow,
                         BoxCaseFolderId = sr.BoxCaseFolderId,
                         Company = new Company
                         {
@@ -247,7 +256,12 @@ namespace WebApp.Models.ServiceRequestModels2
                                 Id = srt.OTask.Id,
                                 Name = srt.OTask.Name,
                                 Sequence = srt.OTask.Sequence.Value,
-                                Workload = srt.Workload
+                                Workload = srt.Workload,
+                                ResponsibleRole = srt.OTask.AspNetRole == null ? null : new UserRole
+                                {
+                                    Id = srt.OTask.AspNetRole.Id,
+                                    Name = srt.OTask.AspNetRole.Name
+                                }
                             },
                             AssignedTo = new Person
                             {

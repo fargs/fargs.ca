@@ -1,6 +1,6 @@
 ﻿@model WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel
 
-<div id="notes">
+<div id="notes-@Model.ServiceRequestId">
     @if (!string.IsNullOrEmpty(Model.Note))
     {
         <h4 class="text-info">Note</h4>

@@ -3,6 +3,8 @@
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
 }
 
 @if (Model.Today != null)
@@ -16,7 +18,7 @@
     <div class="small text-muted" style="padding-bottom:20px;">
         @Model.Today.Address.City
     </div>
-    foreach (var assessment in Model.Today.Assessments)
+    foreach (var assessment in Model.Today.Assessments.OrderBy(a => a.StartTime))
     {
         <div class="row o-dashboard-tr">
             <div class="col-md-1 o-dashboard-td">
@@ -27,44 +29,30 @@
                 <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
                 -
                 <span>@assessment.Company.Name</span>
-                <div id="notes">
-                    @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
+                <div style="padding: 5px 0px">
+                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                    {
+                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                              class="btn btn-sm btn-circle btn-circle-groupitem"
+                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red"); cursor: default;">
+                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                        </span>
+                    }
                 </div>
             </div>
             <div class="col-md-3">
-                @foreach (var task in assessment.ServiceRequestTasks.Where(srt => srt.AssignedTo.Id == Model.SelectedUserId))
-                {
-                    <form action="~/Dashboard/UpdateTaskStatus">
-                        <div class="checkbox">
-                            <label>
-                                <input id="task-checkbox-@task.Id" type="checkbox"
-                                       value="@(task.Status.Id == TaskStatuses.Done)"
-                                       @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
-                                       @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
-                                       onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
-                                @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
-                            </label>
-                        </div>
-                    </form>
-                }
+                @Html.Partial("_ServiceRequestTasks_Today", assessment)
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
             </div>
             <div class="col-md-2 o-dashboard-td">
-                @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                {
-                    <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                          class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                          style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                        <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                    </span>
-                }
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
             </div>
             <div class="col-md-1">
                 @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
                 {
-                    <form action="~/Dashboard/ToggleNoShow">
+                    <form>
                         <div class="checkbox">
                             <label>
                                 <input id="task-checkbox-@assessment.Id" type="checkbox"
@@ -77,10 +65,7 @@
                     </form>
                 }
                 <div class="o-dashboard-td">
-                    @if (assessment.ServiceStatusId.HasValue)
-                    {
-                        @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
-                    }
+                    @Html.Partial("_ServiceStatus", assessment)
                 </div>
 
             </div>
@@ -100,70 +85,8 @@ else
 @section Scripts {
 
     <script>
-        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
-            var taskStatuses = {
-                "Waiting": 1,
-                "ToDo": 2,
-                "Done": 3,
-                "Obsolete": 4
-            };
-            var assessmentEl = $('#asessment-' + assessmentIdForEl);
-            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
-            var taskEl = null;
-            $.each(assessmentFromResult.People, function (index, person) {
-                $.each(person.Tasks, function (index, task) {
-                    taskEl = $('#task-statuslabel-' + task.Id);
-                    taskEl.removeClass();
-                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
-                    if (task.StatusId == taskStatuses.Done) {
-                        MarkTaskAsDone(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.ToDo) {
-                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Waiting) {
-                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Obsolete) {
-                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
-                    }
-                });
-            });
-        }
 
-        function MarkTaskAsDone(label, checkbox) {
-            label.addClass("label label-success").text("Done");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsToDo(label, checkbox) {
-            label.addClass("label label-danger").text("To Do");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsWaiting(label, checkbox) {
-            label.addClass("label label-warning").text("Waiting");
-            checkbox.prop('disabled', true);
-        }
-
-        function MarkTaskAsObsolete(label, checkbox) {
-            label.addClass("label label-info").text("Obsolete");
-            checkbox.prop('disabled', true);
-        }
-
-        function onTaskChecked(checkbox, taskId, assessmentId) {
-            var params = {
-                taskId: taskId,
-                assessmentId: assessmentId,
-                checkbox: checkbox
-            }
-
-            if (checkbox.checked) {
-                console.log(taskId + ' is now checked');
-            } else {
-                console.log(taskId + ' is now unchecked');
-            }
-
+        function onTaskChecked(checkbox, taskId, serviceRequestId) {
             $.ajax({
                 type: "POST",
                 url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
@@ -174,7 +97,7 @@ else
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    updateTaskStatuses(result, params.assessmentId);
+                    refreshServiceRequestTasks(serviceRequestId);
                     toastr.success("Task updated successfully.", "Task Updated");
                 },
                 error: function (err) {
@@ -184,6 +107,61 @@ else
             }, this);
         }
 
+        function onToggleNoShow(checkbox, serviceRequestId) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Dashboard/ToggleNoShow")',
+                data: JSON.stringify({
+                    serviceRequestId: serviceRequestId,
+                    isChecked: checkbox.checked,
+                    serviceProviderGuid: '@Model.SelectedUserId'
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    toastr.success("Request updated successfully.", "Request Updated");
+                    refreshServiceRequestTasks(serviceRequestId);
+                    refreshServiceStatus(serviceRequestId);
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        function refreshServiceRequestTasks(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/RefreshServiceRequestTasks?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
+        function refreshServiceStatus(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-status-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
 
         function onEditNote(serviceRequestId) {
 
@@ -195,7 +173,7 @@ else
 
                     var modalDiv = $("#edit-note-modal");
                     modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                    modalDiv.find('#Notes').html(result.Notes);
+                    modalDiv.find('#Notes').val(result.Notes);
                     modalDiv.find('#ClaimantName').html(result.ClaimantName);
 
                     modalDiv.modal('toggle');
@@ -233,7 +211,7 @@ else
                 url: '@Url.Content("~/Dashboard/RefreshNote?serviceRequestId=")' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
-                    $('#notes').replaceWith(result);
+                    $('#notes-' + serviceRequestId).replaceWith(result);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call

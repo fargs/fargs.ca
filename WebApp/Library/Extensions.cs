@@ -30,6 +30,11 @@ namespace WebApp.Library.Extensions
         {
             return timeSpan == null ? string.Empty : timeSpan.Value.ToShortTimeSafe();
         }
+        public static DateTime ToLocalTimeZone(this DateTime timeUtc, string timeZone)
+        {
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+        }
         public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
         {
             var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);

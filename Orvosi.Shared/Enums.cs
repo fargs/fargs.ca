@@ -257,4 +257,10 @@ namespace Orvosi.Shared.Enums
             return months;
         }
     }
+
+    public static class TimeZones
+    {
+        public const string EasternStandardTime = "Eastern Standard Time";
+        public const string WestCoastTime = "West Coast Time";
+    }
 }

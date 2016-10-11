@@ -12,7 +12,7 @@ namespace WebApp.Models.ServiceRequestModels2
     {
         public static DayFolder MapToToday(Guid serviceProviderId, DateTime now, Guid loggedInUserId, string baseUrl)
         {
-            var endOfDay = now.AddDays(1);
+            var endOfDay = now.Date.AddDays(1);
 
             using (var context = new data.OrvosiDbContext())
             {

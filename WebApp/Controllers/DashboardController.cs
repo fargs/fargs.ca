@@ -27,7 +27,8 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Today(Guid? serviceProviderId)
         {
             // Set date range variables used in where conditions
-            var now = SystemTime.Now();
+
+            var currentTime = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
@@ -41,7 +42,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, now, loggedInUserId, baseUrl);
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, currentTime, loggedInUserId, baseUrl);
             
             // Additional view data.
             vm.SelectedUserId = userId;

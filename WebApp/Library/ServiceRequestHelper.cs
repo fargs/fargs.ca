@@ -61,9 +61,13 @@ namespace WebApp.Library
                             context.ServiceCatalogueRates
                                 .FirstOrDefault(sc => sc.ServiceProviderGuid == invoice.ServiceProviderGuid
                                     && sc.CustomerGuid == invoice.CustomerGuid);
-                    rate = rate ?? context.ServiceCatalogueRates
+
+                    if (serviceRequest.Company.Parent != null)
+                    {
+                        rate = rate ?? context.ServiceCatalogueRates
                             .FirstOrDefault(sc => sc.ServiceProviderGuid == invoice.ServiceProviderGuid
                                 && serviceRequest.Company.Parent.ObjectGuid == invoice.CustomerGuid);
+                    }
                     rate = rate ?? context.ServiceCatalogueRates
                             .First(sc => sc.ServiceProviderGuid == invoice.ServiceProviderGuid);
 

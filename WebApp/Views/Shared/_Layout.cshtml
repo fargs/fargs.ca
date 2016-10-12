@@ -32,10 +32,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Orvosi Medical</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-
+    
 </head>
 <body>
     <div class="navbar navbar-default">
@@ -136,6 +133,11 @@
     and before any other scripts. Your first data will appear
     automatically in just a few seconds.
     -->
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
     <script type="text/javascript">
 
         function dropdownSearch(){

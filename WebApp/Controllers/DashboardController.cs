@@ -24,11 +24,14 @@ namespace WebApp.Controllers
             return RedirectToAction("Today");
         }
 
-        public async Task<ActionResult> Today(Guid? serviceProviderId)
+        public async Task<ActionResult> Today(Guid? serviceProviderId, DateTime? day)
         {
             // Set date range variables used in where conditions
 
-            var currentTime = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            if (!day.HasValue)
+            {
+                day = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            }
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
@@ -42,7 +45,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, currentTime, loggedInUserId, baseUrl);
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, loggedInUserId, baseUrl);
             
             // Additional view data.
             vm.SelectedUserId = userId;

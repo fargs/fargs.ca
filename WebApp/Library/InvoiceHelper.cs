@@ -169,7 +169,7 @@ namespace WebApp.Library
         public static void RemoveDiscount(this InvoiceDetail detail)
         {
             detail.DiscountDescription = null;
-            detail.Rate = null;
+            detail.Rate = 1;
             detail.CalculateTotal();
         }
 

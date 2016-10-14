@@ -66,6 +66,7 @@
             </div>
             <div class="col-md-4 o-dashboard-td">
                 @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = assessment.Id })
+                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", assessment)
             </div>
         </div>
     }

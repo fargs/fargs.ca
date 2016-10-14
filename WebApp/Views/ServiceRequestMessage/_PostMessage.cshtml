@@ -1,1 +1,12 @@
-﻿
+﻿@model Orvosi.Shared.Model.ServiceRequest
+<form id="service-request-message-form-@Model.Id">
+    <div class="input-group">
+        <textarea class="form-control" rows="1" type="text" id="Message" name="Message" placeholder="Write your message here ..."></textarea>
+        <span class="input-group-btn">
+            <button class="btn btn-primary" type="button" onclick="postMessage(@Model.Id)"><i class="fa fa-send"></i></button>
+        </span>
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" onclick="refreshDiscussion(@Model.Id)"><i class="fa fa-refresh"></i></button>
+        </span>
+    </div>
+</form>

@@ -1,0 +1,62 @@
+﻿<script type="text/javascript">
+
+    function postMessage(serviceRequestId) {
+
+        let form = $('#service-request-message-form-' + serviceRequestId);
+        let message = form.find('#Message');
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/ServiceRequestMessage/PostMessage")',
+            data: JSON.stringify({
+                ServiceRequestId: serviceRequestId,
+                Message: message.val()
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (newMessage) {
+                message.val('');
+                appendMessage(newMessage);
+            },
+            error: function (err) {
+                // undo the UI change made before the ajax call
+                toastr.success("Task was not updated.", "Something went wrong!");
+            }
+        }, this);
+
+
+        function appendMessage(newMessage) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ServiceRequestMessage/GetMessage?serviceRequestMessageId=")' + newMessage.Id,
+                contentType: "text/html",
+                success: function (result) {
+                    var messages = $('#service-request-message-list-' + newMessage.ServiceRequestId);
+                    messages.append(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
+        function refreshDiscussion(serviceRequestId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ServiceRequestMessage/Discussion?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    var messages = $('#service-request-message-list-' + serviceRequestId);
+                    messages.append(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+    }
+
+</script>

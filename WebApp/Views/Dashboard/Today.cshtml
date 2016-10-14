@@ -22,34 +22,7 @@
     {
         <div class="row o-dashboard-tr">
             <div class="col-md-1 o-dashboard-td">
-                @assessment.StartTime.ToShortTimeSafe()
-            </div>
-            <div class="col-md-2 o-dashboard-td">
-                <div><strong>@assessment.ClaimantName</strong></div>
-                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
-                -
-                <span>@assessment.Company.Name</span>
-                <div style="padding: 5px 0px">
-                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                    {
-                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                              class="btn btn-sm btn-circle btn-circle-groupitem"
-                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red"); cursor: default;">
-                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                        </span>
-                    }
-                </div>
-            </div>
-            <div class="col-md-3">
-                @Html.Partial("_ServiceRequestTasks_Today", assessment)
-            </div>
-            <div class="col-md-2 o-dashboard-td">
-                <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-            </div>
-            <div class="col-md-2 o-dashboard-td">
-                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
-            </div>
-            <div class="col-md-1">
+                <strong>@assessment.StartTime.ToShortTimeSafe()</strong>
                 @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
                 {
                     <form>
@@ -67,10 +40,32 @@
                 <div class="o-dashboard-td">
                     @Html.Partial("_ServiceStatus", assessment)
                 </div>
-
             </div>
-            <div class="col-md-1 o-dashboard-td" style="text-align: center;">
-                <a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>
+            <div class="col-md-2 o-dashboard-td">
+                <div><a target="_blank" class="" href="~/ServiceRequest/Details/@assessment.Id">@assessment.ClaimantName (@assessment.Id)</a></div>
+                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
+                -
+                <span>@assessment.Company.Name</span>
+                <div style="padding: 5px 0px">
+                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
+                    {
+                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
+                              class="btn btn-sm btn-circle btn-circle-groupitem"
+                              style="@(!string.IsNullOrEmpty(person.ColorCode) ? string.Format("color: white;background-color: {0};", person.ColorCode)  : string.Format("border-color: red;")); cursor: default;">
+                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
+                        </span>
+                    }
+                </div>
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
+            </div>
+            <div class="col-md-3">
+                @Html.Partial("_ServiceRequestTasks_Today", assessment)
+            </div>
+            <div class="col-md-2 o-dashboard-td">
+                <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+            </div>
+            <div class="col-md-4 o-dashboard-td">
+                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = assessment.Id })
             </div>
         </div>
     }
@@ -222,4 +217,6 @@ else
         }
 
     </script>
+
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml")
 }

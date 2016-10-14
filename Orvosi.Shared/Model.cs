@@ -359,16 +359,6 @@ namespace Orvosi.Shared.Model
         public byte? Workload { get; set; }
     }
 
-    public class ServiceRequestMessage
-    {
-        public Guid Id { get; set; } // Id (Primary key)
-        public string Message { get; set; } // Message (length: 256)
-        public DateTime PostedDate { get; set; } // PostedDate
-        public string PostedByDisplayName { get; internal set; }
-        public string PostedByColorCode { get; internal set; }
-        public string PostedByInitials { get; internal set; }
-    }
-
     public class Address
     {
         public int Id { get; set; }
@@ -410,6 +400,15 @@ namespace Orvosi.Shared.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string BillingEmail { get; set; }
+
+    }
+
+    public class ServiceRequestMessage
+    {
+        public Guid Id { get; set; }
+        public string Message { get; set; }
+        public DateTime PostedDate { get; set; }
+        public Person PostedBy { get; set; }
 
     }
 }

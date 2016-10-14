@@ -1,0 +1,11 @@
+﻿@model Orvosi.Shared.Model.ServiceRequestMessage
+
+<li id="service-request-message-@Model.Id">
+    <span title="@(!string.IsNullOrEmpty(Model.PostedBy.DisplayName) ? Model.PostedBy.DisplayName : "Unassigned")"
+          class="btn btn-sm btn-circle btn-circle-groupitem"
+          style="color: white; background-color: @(!string.IsNullOrEmpty(Model.PostedBy.ColorCode) ? Model.PostedBy.ColorCode : "red"); cursor: default;">
+        <span class="small">@(!string.IsNullOrEmpty(Model.PostedBy.Initials) ? Model.PostedBy.Initials : "?")</span>
+    </span>
+    @*<span style="color: white; background-color:@Model.PostedBy.ColorCode; padding:2px;">@Model.PostedBy.Initials</span>*@
+    <span style="margin-left: 10px;">@Model.Message</span>
+</li>

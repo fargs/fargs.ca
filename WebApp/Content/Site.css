@@ -478,3 +478,20 @@ dd {
 .o-th:first-child {
     border-top: 1px solid gray;
 }
+
+
+.divtoscroll{   
+    background-color: #F5F5F5;
+    border: 1px solid #DDDDDD;
+    /*border-radius: 4px 0 4px 0;
+    color: #3B3C3E;
+    font-size: 12px;
+    left: -1px;
+    padding: 10px 7px 5px;*/
+}
+
+.divwithscroll{
+    height:120px;
+    overflow-y:auto;
+    overflow-x:hidden;
+}

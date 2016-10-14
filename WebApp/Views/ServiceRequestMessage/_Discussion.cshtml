@@ -1,10 +1,13 @@
 ﻿@using WebApp.Library.Extensions
 @model Orvosi.Shared.Model.ServiceRequest
-<ul id="service-request-message-list-@Model.Id" class="list-unstyled">
-    @foreach (var item in Model.Messages)
-    {
-        <li id="service-request-message-@item.Id">
-            @Html.Partial("_ServiceRequestMessage", item)
-        </li>
-    }
-</ul>
+
+<div class="divtoscroll">
+    <div class="divwithscroll" id="service-request-message-scroll-@Model.Id">
+        <ul id="service-request-message-list-@Model.Id" class="list-unstyled">
+            @foreach (var item in Model.Messages)
+            {
+                    @Html.Partial("_ServiceRequestMessage", item)
+            }
+        </ul>
+    </div>
+</div>

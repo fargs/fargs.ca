@@ -24,6 +24,14 @@
         }, this);
     }
 
+    function onPostMessageKeyPress(e, serviceRequestId) {
+        if (e.keyCode === 13) {
+            e.preventDefault(); // Ensure it is only this code that runs
+
+            postMessage(serviceRequestId);
+        }
+    }
+
 
     function appendMessage(newMessage) {
         $.ajax({
@@ -33,6 +41,8 @@
             success: function (result) {
                 var messages = $('#service-request-message-list-' + newMessage.ServiceRequestId);
                 messages.append(result);
+                var scrollDiv = $('#service-request-message-scroll-' + newMessage.ServiceRequestId);
+                scrollDiv[0].scrollTop = scrollDiv[0].scrollHeight;
             },
             error: function (err) {
                 // undo the UI change made before the ajax call

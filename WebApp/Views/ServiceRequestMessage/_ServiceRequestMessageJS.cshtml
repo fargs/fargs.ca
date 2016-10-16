@@ -1,11 +1,30 @@
-﻿<script type="text/javascript">
+﻿<script src="@Url.Content("~/signalr/hubs")"></script>
+
+<script type="text/javascript">
+
+    let chat = null;
+    $(function () {
+        // Declare a proxy to reference the hub.
+        chat = $.connection.serviceRequestHub;
+        // Create a function that the hub can call to broadcast messages.
+        chat.client.addChatMessage = function (messageId, serviceRequestId) {
+            appendMessage(messageId, serviceRequestId)
+        };
+        // Start the connection.
+        $.connection.hub.start();
+
+    });
 
     function postMessage(serviceRequestId) {
 
         let form = $('#service-request-message-form-' + serviceRequestId);
         let message = form.find('#Message');
 
-        $.ajax({
+        chat.server.postMessage(message.val(), serviceRequestId);
+
+        message.val('').focus();
+
+        @*$.ajax({
             type: "POST",
             url: '@Url.Content("~/ServiceRequestMessage/PostMessage")',
             data: JSON.stringify({
@@ -21,7 +40,7 @@
                 // undo the UI change made before the ajax call
                 toastr.success("Task was not updated.", "Something went wrong!");
             }
-        }, this);
+        }, this);*@
     }
 
     function onPostMessageKeyPress(e, serviceRequestId) {
@@ -33,15 +52,15 @@
     }
 
 
-    function appendMessage(newMessage) {
+    function appendMessage(messageId, serviceRequestId) {
         $.ajax({
             type: "GET",
-            url: '@Url.Content("~/ServiceRequestMessage/GetMessage?serviceRequestMessageId=")' + newMessage.Id,
+            url: '@Url.Content("~/ServiceRequestMessage/GetMessage?serviceRequestMessageId=")' + messageId,
             contentType: "text/html",
             success: function (result) {
-                var messages = $('#service-request-message-list-' + newMessage.ServiceRequestId);
+                var messages = $('#service-request-message-list-' + serviceRequestId);
                 messages.append(result);
-                var scrollDiv = $('#service-request-message-scroll-' + newMessage.ServiceRequestId);
+                var scrollDiv = $('#service-request-message-scroll-' + serviceRequestId);
                 scrollDiv[0].scrollTop = scrollDiv[0].scrollHeight;
             },
             error: function (err) {

@@ -28,6 +28,7 @@ namespace WebApp.Models
             // Add custom user claims here
             userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
+            userIdentity.AddClaim(new Claim("Initials", this.Initials));
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
             userIdentity.AddClaim(new Claim("RoleId", Roles.First().RoleId.ToString()));
             userIdentity.AddClaim(new Claim("Roles", string.Join("|", Roles.Select(r => r.RoleId))));
@@ -47,6 +48,7 @@ namespace WebApp.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
+        public string ColorCode { get; set; }
         public DateTime? LastActivationDate { get; set; }
         public bool IsTestRecord { get; set; }
         public string DisplayName
@@ -63,6 +65,16 @@ namespace WebApp.Models
                     s = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
                 }
                 return s;
+            }
+        }
+        public string Initials
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FirstName))
+                    return "Unassigned";
+                else
+                    return $"{FirstName.ToUpper().First()}{LastName.ToUpper().First()}";
             }
         }
     }

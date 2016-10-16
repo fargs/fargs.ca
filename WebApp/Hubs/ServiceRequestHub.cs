@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,12 +14,27 @@ namespace WebApp
 {
     public class ServiceRequestHub : Hub
     {
-        private string _roomPrefix = "servicerequestroom_";
+        private string _roomPrefix = "service-request-room-";
 
-        public void Send(string name, string message, string roomName)
+        public void PostMessage(string message, int serviceRequestId)
         {
-            // Call the broadcastMessage method to update clients.
-            Clients.OthersInGroup(roomName).addChatMessage(name, message);
+            var roomName = _roomPrefix + serviceRequestId;
+
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var newMessage = new Orvosi.Data.ServiceRequestMessage()
+                {
+                    Id = Guid.NewGuid(),
+                    Message = message,
+                    UserId = Context.User.Identity.GetGuidUserId(),
+                    PostedDate = SystemTime.UtcNow(),
+                    ServiceRequestId = serviceRequestId
+                };
+                context.ServiceRequestMessages.Add(newMessage);
+                context.SaveChanges();
+
+                Clients.Group(roomName).addChatMessage(newMessage.Id, serviceRequestId);
+            }
         }
         public System.Threading.Tasks.Task JoinRoom(string roomName)
         {
@@ -31,15 +47,44 @@ namespace WebApp
 
         public override System.Threading.Tasks.Task OnConnected()
         {
+            DateTime? day;
+            var dayQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "day");
+            if (dayQs.Equals(default(KeyValuePair<string, string>)))
+            {
+                day = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            }
+            day = new DateTime(2016, 9, 19);
+
+            Guid? serviceProviderId = null;
+            var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "ServiceProviderId");
+            if (!serviceProviderQs.Equals(default(KeyValuePair<string, string>)))
+            {
+                serviceProviderId = new Guid(serviceProviderQs.Value);
+            }
+
+            var loggedInUserId = Context.User.Identity.GetGuidUserId();
+            var baseUrl = Context.Request.Url.ToString();
+
+            Guid userId = Context.User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (Context.User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+            userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
+
             using (var db = new OrvosiDbContext())
             {
                 // Retrieve user.
-                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(Context.User.Identity.GetGuidUserId(), SystemTime.Now(), Context.User.Identity.GetGuidUserId(), Context.Request.Url.ToString());
+                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, userId, Context.Request.Url.ToString());
                 
-                // Add to each assigned group.
-                foreach (var request in dayFolder.ServiceRequests)
+                if (dayFolder != null)
                 {
-                    Groups.Add(Context.ConnectionId, $"servicerequestroom_{request.Id}");
+                    // Add to each assigned group.
+                    foreach (var request in dayFolder.Assessments)
+                    {
+                        Groups.Add(Context.ConnectionId, $"{_roomPrefix}{request.Id}");
+                    }
                 }
             }
             return base.OnConnected();

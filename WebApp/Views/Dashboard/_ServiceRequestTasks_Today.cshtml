@@ -30,6 +30,7 @@
                                            value="@(task.Status.Id == TaskStatuses.Done)"
                                            @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
                                            @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
+                                           title="@(task.Status.Id == TaskStatuses.Done && task.CompletedBy != null ? string.Format("{0} on {1}", task.CompletedBy.DisplayName, task.CompletedDate.ToOrvosiDateTimeFormat()) : "")"
                                            onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
                                     @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
                                 </label>

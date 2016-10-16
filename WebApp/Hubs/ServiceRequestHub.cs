@@ -34,16 +34,12 @@ namespace WebApp
             using (var db = new OrvosiDbContext())
             {
                 // Retrieve user.
-                var tasks = db.GetAssignedServiceRequests(Context.User.Identity.GetGuidUserId(), SystemTime.Now(), false, null);
-
-                var requestIds = tasks.Where(u => u.AssignedTo == Context.User.Identity.GetGuidUserId())
-                    .Select(t => t.ServiceRequestId)
-                    .Distinct();
+                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(Context.User.Identity.GetGuidUserId(), SystemTime.Now(), Context.User.Identity.GetGuidUserId(), Context.Request.Url.ToString());
                 
                 // Add to each assigned group.
-                foreach (var request in requestIds)
+                foreach (var request in dayFolder.ServiceRequests)
                 {
-                    Groups.Add(Context.ConnectionId, $"servicerequestroom_{request}");
+                    Groups.Add(Context.ConnectionId, $"servicerequestroom_{request.Id}");
                 }
             }
             return base.OnConnected();

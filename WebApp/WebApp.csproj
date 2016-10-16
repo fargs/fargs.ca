@@ -1109,6 +1109,7 @@
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessageJS.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessage.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_PostMessage.cshtml" />
+    <Content Include="Views\ServiceRequestHub\_ServiceRequestHubJS.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

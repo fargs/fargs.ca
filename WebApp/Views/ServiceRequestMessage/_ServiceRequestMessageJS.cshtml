@@ -58,8 +58,10 @@
             url: '@Url.Content("~/ServiceRequestMessage/Discussion?serviceRequestId=")' + serviceRequestId,
             contentType: "text/html",
             success: function (result) {
-                var messages = $('#service-request-message-list-' + serviceRequestId);
+                var messages = $('#service-request-message-container-' + serviceRequestId);
                 messages.replaceWith(result);
+                var scrollDiv = $('#service-request-message-scroll-' + serviceRequestId);
+                scrollDiv[0].scrollTop = scrollDiv[0].scrollHeight;
             },
             error: function (err) {
                 // undo the UI change made before the ajax call

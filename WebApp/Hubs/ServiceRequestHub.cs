@@ -47,11 +47,12 @@ namespace WebApp
 
         public override System.Threading.Tasks.Task OnConnected()
         {
+            var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
             DateTime day;
             var dayQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "day");
             if (!DateTime.TryParse(dayQs.Value, out day))
             {
-                day = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+                day = now;
             }
 
             Guid? serviceProviderId = null;
@@ -75,7 +76,7 @@ namespace WebApp
             using (var db = new OrvosiDbContext())
             {
                 // Retrieve user.
-                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, userId, Context.Request.Url.ToString());
+                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, now, userId, Context.Request.Url.ToString());
                 
                 if (dayFolder != null)
                 {

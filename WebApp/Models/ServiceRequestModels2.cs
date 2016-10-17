@@ -10,9 +10,9 @@ namespace WebApp.Models.ServiceRequestModels2
 {
     public static class ServiceRequestMapper2
     {
-        public static DayFolder MapToToday(Guid serviceProviderId, DateTime now, Guid loggedInUserId, string baseUrl)
+        public static DayFolder MapToToday(Guid serviceProviderId, DateTime day, DateTime now, Guid loggedInUserId, string baseUrl)
         {
-            var endOfDay = now.Date.AddDays(1);
+            var endOfDay = day.Date.AddDays(1);
 
             using (var context = new data.OrvosiDbContext())
             {
@@ -20,7 +20,7 @@ namespace WebApp.Models.ServiceRequestModels2
                 var source = context.ServiceRequests
                     .Where(d => d.AppointmentDate.HasValue
                         && d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                        && d.AppointmentDate.Value >= now && d.AppointmentDate.Value < endOfDay
+                        && d.AppointmentDate.Value >= day && d.AppointmentDate.Value < endOfDay
                         && !d.IsClosed)
                     .Select(sr => new Assessment
                     {

@@ -28,9 +28,11 @@ namespace WebApp.Controllers
         {
             // Set date range variables used in where conditions
 
+            var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+
             if (!day.HasValue)
             {
-                day = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+                day = now;
             }
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
@@ -45,7 +47,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, loggedInUserId, baseUrl);
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, now, loggedInUserId, baseUrl);
             
             // Additional view data.
             vm.SelectedUserId = userId;

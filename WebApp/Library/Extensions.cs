@@ -16,11 +16,39 @@ using Microsoft.AspNet.Identity;
 using WebApp.Models;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using System.Collections.Specialized;
 
 namespace WebApp.Library.Extensions
 {
     public static class Extensions
     {
+
+        public static Dictionary<string, object> ToDictionary(this NameValueCollection nvc, bool handleMultipleValuesPerKey)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (string key in nvc.Keys)
+            {
+                if (handleMultipleValuesPerKey)
+                {
+                    string[] values = nvc.GetValues(key);
+                    if (values.Length == 1)
+                    {
+                        result.Add(key, values[0]);
+                    }
+                    else
+                    {
+                        result.Add(key, values);
+                    }
+                }
+                else
+                {
+                    result.Add(key, nvc[key]);
+                }
+            }
+
+            return result;
+        }
+
         public static string ToShortTimeSafe(this TimeSpan timeSpan)
         {
             return new DateTime().Add(timeSpan).ToShortTimeString();
@@ -101,7 +129,7 @@ namespace WebApp.Library.Extensions
             return value.ItemCollection == null ? new List<BoxItem>() : value.ItemCollection.Entries;
         }
 
-        public static string ToJson(this object obj) => 
+        public static string ToJson(this object obj) =>
             JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -240,7 +268,7 @@ namespace WebApp.Library.Extensions
 
         public static bool IsAdmin(this IIdentity identity)
         {
-            var adminRoles = new Guid[2] 
+            var adminRoles = new Guid[2]
             {
                 AspNetRoles.CaseCoordinator,
                 AspNetRoles.SuperAdmin
@@ -347,5 +375,5 @@ namespace WebApp.Library.Extensions.Model
             return box.GetFolder(folderId, obj.BoxUserId).Result;
         }
     }
-    
+
 }

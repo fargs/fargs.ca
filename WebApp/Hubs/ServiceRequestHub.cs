@@ -47,13 +47,12 @@ namespace WebApp
 
         public override System.Threading.Tasks.Task OnConnected()
         {
-            DateTime? day;
+            DateTime day;
             var dayQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "day");
-            if (dayQs.Equals(default(KeyValuePair<string, string>)))
+            if (!DateTime.TryParse(dayQs.Value, out day))
             {
                 day = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
             }
-            day = new DateTime(2016, 9, 19);
 
             Guid? serviceProviderId = null;
             var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "ServiceProviderId");
@@ -71,12 +70,12 @@ namespace WebApp
             {
                 userId = serviceProviderId.Value;
             }
-            userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
+            //userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
 
             using (var db = new OrvosiDbContext())
             {
                 // Retrieve user.
-                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, userId, Context.Request.Url.ToString());
+                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, userId, Context.Request.Url.ToString());
                 
                 if (dayFolder != null)
                 {

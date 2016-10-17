@@ -587,12 +587,13 @@ namespace WebApp.Controllers
             }
 
             var userSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Staff || u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Admin)
+                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId != e.RoleCategories.Company)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
                     Text = c.GetDisplayName(),
-                    Value = c.Id.ToString()
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.AspNetUserRoles.FirstOrDefault().AspNetRole.Name }
                 });
 
             var vm = new ResourceAssignmentViewModel()

@@ -120,9 +120,12 @@
             <h4 style="line-height:30px;">@Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId) Case @Model.ServiceRequest.Id</h4>
         </p>
         <hr />
-        <div id="notes">
-            @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
-        </div>
+        @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
+        {
+            <div id="notes">
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
+            </div>
+        }
         <p>
         </p>
         <div class="panel panel-success">
@@ -155,36 +158,36 @@
                                           data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
                                         <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
                                     </span>
-                                    <div id="task-modal-@task.Id" class="modal fade">
-                                        <div class="modal-dialog modal-sm">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="~/ServiceRequestTask/PickUp" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <input type="submit" value="Pick Up" class="btn btn-default" />
-                                                    </form>
-                                                    @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
-                                                    {
-                                                        <div>Or</div>
-                                                        <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                        <div id="task-modal-@task.Id" class="modal fade">
+                                            <div class="modal-dialog modal-sm">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                        <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="~/ServiceRequestTask/PickUp" method="post">
                                                             @Html.AntiForgeryToken()
                                                             @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                            <div class="form-group">
-                                                                <label class="control-label">Assign To: </label>
-                                                                @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                                @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                            </div>
+                                                            <input type="submit" value="Pick Up" class="btn btn-default" />
                                                         </form>
-                                                    }
+                                                        @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+                                                        {
+                                                            <div>Or</div>
+                                                            <form action="~/ServiceRequestTask/AssignTo" method="post">
+                                                                @Html.AntiForgeryToken()
+                                                                @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Assign To: </label>
+                                                                    @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                                    @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </form>
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                 }
                             </td>
                             <td width="20px">
@@ -231,18 +234,18 @@
         <hr />
         <p><strong>Folder Name:</strong> @Model.ServiceRequest.GetCaseFolderName()</p>
         @if (Model.ServiceRequest.BoxCaseFolderId == null)
-        {
+            {
             <div>The case folder has not been created yet.<br />Your case coordinator will take care of this once the files are received.</div>
         }
         else
         {
             <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequestMapped.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-            <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
+                <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         }
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
-        {
-            if (Model.ServiceRequest.BoxCaseFolderId != null)
             {
+                if (Model.ServiceRequest.BoxCaseFolderId != null)
+                {
                 <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
             }
             else
@@ -256,23 +259,23 @@
             if (Model.ServiceRequest.Service.HasAppointment)
             {
                 <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
-                <hr />
-                <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
-                <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
-                <div>@Model.ServiceRequest.StartTime</div>
-                <div>@Model.ServiceRequest.EndTime</div>
-                <address>
-                    <strong>@Model.ServiceRequest.Address.Name</strong><br>
-                    @Model.ServiceRequest.Address.Address1<br>
-                    @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
-                </address>
+                    <hr />
+                    <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
+                    <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                    <div>@Model.ServiceRequest.StartTime</div>
+                    <div>@Model.ServiceRequest.EndTime</div>
+                    <address>
+                        <strong>@Model.ServiceRequest.Address.Name</strong><br>
+                        @Model.ServiceRequest.Address.Address1<br>
+                        @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
+                    </address>
 
             }
         }
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
-        {
+            {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-            <hr />
+                <hr />
             if (role == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">

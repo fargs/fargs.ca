@@ -32,7 +32,7 @@ namespace WebApp.Controllers
 
             if (!day.HasValue)
             {
-                day = now;
+                day = now.Date;
             }
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();

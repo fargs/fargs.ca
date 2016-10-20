@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using System.Security.Cryptography.X509Certificates;
-using System.Configuration;
-using WebApp.Library.Google;
-using Orvosi.Data;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.IO;
+//using System.Linq;
+//using System.Text;
+//using System.Threading;
+//using System.Threading.Tasks;
+//using System.Web;
+//using System.Web.Mvc;
+//using Google.Apis.Auth.OAuth2;
+//using Google.Apis.Calendar.v3;
+//using Google.Apis.Calendar.v3.Data;
+//using Google.Apis.Services;
+//using Google.Apis.Util.Store;
+//using System.Security.Cryptography.X509Certificates;
+//using System.Configuration;
+//using Orvosi.Data;
 
-namespace WebApp.Controllers
-{
-    public class CalendarController : Controller
-    {
-        OrvosiDbContext db = new OrvosiDbContext();
+//namespace WebApp.Controllers
+//{
+//    public class CalendarController : Controller
+//    {
+//        OrvosiDbContext db = new OrvosiDbContext();
 
         //public ActionResult GetAvailability(string id, DateTime start, DateTime end)
         //{
@@ -68,5 +67,5 @@ namespace WebApp.Controllers
         //    };
         //    return Json(model, JsonRequestBehavior.AllowGet);
         //}
-    }
-}
+//    }
+//}

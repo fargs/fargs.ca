@@ -1002,7 +1002,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <None Include="Views\Shared\NotificationTemplates\Invoice.cshtml" />
+    <Content Include="Views\Shared\NotificationTemplates\Invoice.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\Invoice.html" />
     <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
     <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />

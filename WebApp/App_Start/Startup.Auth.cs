@@ -62,11 +62,11 @@ namespace WebApp
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = ConfigurationManager.AppSettings["GoogleClientID"],
-            //    ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"]
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = ConfigurationManager.AppSettings["GoogleClientID"],
+                ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"]
+            });
         }
     }
 }

@@ -1,19 +1,24 @@
 ﻿using Dropbox.Api.Files;
 using Dropbox.Api.Sharing;
 using Dropbox.Api.Team;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNet.Identity.Owin;
+using Newtonsoft.Json.Linq;
 using Orvosi.Data;
 using Orvosi.Shared.Enums;
-using Orvosi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
+using WebApp.Library.Extensions;
 using WebApp.ViewModels.DiagnosticViewModels;
 
 namespace WebApp.Controllers
@@ -156,6 +161,56 @@ namespace WebApp.Controllers
             }
             return View();
             
+        }
+        [HttpPost]
+        public async Task<ActionResult> ConnectToGoogleCalendar(string email, DateTime start, DateTime end)
+        {
+            string[] scopes = new string[] {
+                CalendarService.Scope.Calendar,  // Manage your calendars
+                CalendarService.Scope.CalendarReadonly, // View your Calendars
+            };
+
+            var keyFilePath = Server.MapPath("~/orvosi-b54037435bbf.json");
+            var settings = JObject.Parse(System.IO.File.ReadAllText(keyFilePath));
+            var credential = new ServiceAccountCredential(
+                new ServiceAccountCredential.Initializer(settings["client_id"].ToString())
+                {
+                    User = email,
+                    Scopes = scopes
+                }.FromPrivateKey(settings["private_key"].ToString()));
+
+            // Create the service.
+            var service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Orvosi",
+            });
+
+            // Define parameters of request.
+            EventsResource.ListRequest request = service.Events.List("primary");
+            request.TimeMin = start;
+            request.TimeMax = end;
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 10;
+            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            Console.WriteLine("Upcoming events:");
+            Events events = request.Execute();
+            var model = new
+            {
+                data = events
+            };
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task SendEmailFrom(string from, string to)
+        {
+            var service = new GoogleServices();
+            var templateFolder = Url.Content("~/Views/Shared/NotificationTemplates/");
+            var baseUrl = Request.GetBaseUrl();
+            await service.SendEmailAsync(new MailMessage(from, to, "This is a test", "This is a test"));
         }
     }
 }

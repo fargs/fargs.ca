@@ -11,9 +11,9 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
 
-namespace WebApp.Library.Google
+namespace WebApp.Library
 {
-    class Authentication
+    class GoogleAuthentication
     {
 
 

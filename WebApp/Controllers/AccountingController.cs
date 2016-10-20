@@ -12,6 +12,8 @@ using System.Net;
 using System.Globalization;
 using WebApp.ViewModels.InvoiceViewModels;
 using WebApp.Library;
+using System.Net.Mail;
+using System.IO;
 
 namespace WebApp.Controllers
 {
@@ -34,9 +36,12 @@ namespace WebApp.Controllers
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
+            
+            var message = BuildSendInvoiceMailMessage(invoice, Request.GetBaseUrl());
 
-            var messageService = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), null);
-            await messageService.SendInvoice(invoice, Request.GetBaseUrl());
+            // this should get created using a DI container and configured in the Startup.
+            await new GoogleServices()
+                .SendEmailAsync(message);
 
             invoice.SentDate = SystemTime.Now();
             invoice.ModifiedDate = SystemTime.Now();
@@ -59,6 +64,23 @@ namespace WebApp.Controllers
 
             await context.SaveChangesAsync();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)
+        {
+            var message = new MailMessage();
+            message.To.Add(invoice.CustomerEmail);
+            message.From = new MailAddress(invoice.ServiceProviderEmail);
+            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
+            message.IsBodyHtml = true;
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+
+            var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views/Shared/NotificationTemplates/Invoice.html");
+
+            ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
+            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
+
+            return message;
         }
 
         [HttpPost]

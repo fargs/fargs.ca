@@ -17,6 +17,7 @@ using WebApp.Models;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Collections.Specialized;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace WebApp.Library.Extensions
 {
@@ -91,7 +92,7 @@ namespace WebApp.Library.Extensions
             if (request.Url == (Uri)null)
                 return string.Empty;
             else
-                return request.Url.Scheme + "://" + request.Url.Authority + VirtualPathUtility.ToAbsolute("~/");
+                return request.Url.Scheme + "://" + request.Url.Authority + VirtualPathUtility.ToAbsolute("~");
         }
 
         public static string ToMonthFolderName(this DateTime value)

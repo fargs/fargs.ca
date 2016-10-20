@@ -9,6 +9,7 @@ using System.Web;
 using System;
 using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
+using WebApp.Library;
 
 namespace WebApp
 {
@@ -71,7 +72,7 @@ namespace WebApp
             }
             sr.Close();
 
-            await service.SendAsync(message);
+            await service.SendEmailAsync(message);
             return true;
         }
 
@@ -94,7 +95,7 @@ namespace WebApp
             }
             sr.Close();
 
-            await service.SendAsync(message);
+            await service.SendEmailAsync(message);
             return true;
         }
 
@@ -118,7 +119,7 @@ namespace WebApp
             }
             sr.Close();
 
-            await service.SendAsync(message);
+            await service.SendEmailAsync(message);
             return true;
         }
 
@@ -132,18 +133,13 @@ namespace WebApp
             message.IsBodyHtml = true;
             message.Body = "<h1>Hello World</h1>";
 
-            await service.SendAsync(message);
+            await service.SendEmailAsync(message);
             return true;
-        }
-
-        public interface IEmailService
-        {
-            Task SendAsync(MailMessage message);
         }
 
         public class SendGridEmailService : IEmailService
         {
-            public Task SendAsync(MailMessage message)
+            public Task SendEmailAsync(MailMessage message)
             {
                 // Plug in your email service here to send an email.
                 var myMessage = new SendGridMessage();
@@ -179,7 +175,7 @@ namespace WebApp
 
         public class LocalEmailService : IEmailService
         {
-            public async Task SendAsync(MailMessage message)
+            public async Task SendEmailAsync(MailMessage message)
             {
                 // Plug in your email service here to send an email.
                 var client = new SmtpClient
@@ -194,14 +190,17 @@ namespace WebApp
 
         public class GmailEmailService : IEmailService
         {
-            public async Task SendAsync(MailMessage message)
+            public async Task SendEmailAsync(MailMessage message)
             {
                 // Plug in your email service here to send an email.
                 var client = new SmtpClient
                 {
                     Host = "smtp.gmail.com",
                     Port = 587,
-                    Credentials = new NetworkCredential("lfarago@orvosi.ca", "Orvosiinc"),
+                    Credentials = new NetworkCredential(
+                        ConfigurationManager.AppSettings["GmailUserName"],
+                        ConfigurationManager.AppSettings["GmailPassword"]
+                    ),
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network
                 };

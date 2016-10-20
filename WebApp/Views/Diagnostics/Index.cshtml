@@ -27,3 +27,17 @@
 <form method="post" action="~/Diagnostics/CreateBoxFolder" role="form">
     <button type="submit" class="btn btn-primary">Create a folder on Box</button>
 </form>
+
+<form method="post" action="~/Diagnostics/ConnectToGoogleCalendar" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <input type="date" name="start" placeholder="Start Date" class="form-control" />
+    <input type="date" name="end" placeholder="End Date" class="form-control" />
+    <button type="submit" class="btn btn-primary">Connect to Google Calendar</button>
+</form>
+
+
+<form method="post" action="~/Diagnostics/SendEmailFrom" role="form">
+    <input type="email" name="from" placeholder="From" class="form-control" />
+    <input type="email" name="to" placeholder="To" class="form-control" />
+    <button type="submit" class="btn btn-primary">Send Email From</button>
+</form>

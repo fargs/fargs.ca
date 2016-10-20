@@ -1,0 +1,17 @@
+﻿@model Orvosi.Data.Invoice
+@{
+    Layout = "~/Views/Shared/NotificationTemplates/_Layout.cshtml";
+}
+<p>
+    Please click the link below to download the invoice:
+</p>
+<p style="white-space: pre-line;">
+    <a href="@ViewData["BaseUrl"]/Invoice/Download/@Model.ObjectGuid.ToString()">Download Invoice</a>
+</p>
+<p>
+    Thank you for the referral!
+</p>
+<p>
+    Regards,<br />
+    @Model.ServiceProviderName
+</p>

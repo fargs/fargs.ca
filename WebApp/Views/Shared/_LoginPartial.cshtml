@@ -22,7 +22,7 @@
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
-            <li><a href='@Url.Content("~")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName | @identity.GetRoleName()</a></li>
+            <li><a href='@Url.Content("~/Manage")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName | @identity.GetRoleName()</a></li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
         </ul>
     }

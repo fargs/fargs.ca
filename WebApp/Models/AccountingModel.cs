@@ -123,8 +123,11 @@ namespace WebApp.Models.AccountingModel
         private List<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
         {
             return context.ServiceRequests
-                .Where(d => 
-                    d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
+                .Where(d =>
+                    //d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
+                    d.PhysicianId == serviceProviderId
+                    && d.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue) 
+                    && d.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete) // Where it is not sent or the submit invoices task is not checked
                     && !d.IsClosed)
                 .Select(sr => new ServiceRequest
                 {

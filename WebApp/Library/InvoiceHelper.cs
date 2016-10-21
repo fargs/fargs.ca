@@ -96,6 +96,7 @@ namespace WebApp.Library
 
         public static void CalculateTotal(this Invoice invoice)
         {
+            invoice.TaxRateHst = GetTaxRate(invoice.CustomerProvince); // This is to fix issue with Vancouver tax rates set to 13%. Could be taken out once the data is fixed.
             invoice.SubTotal = 0;
             invoice.Hst = 0;
             invoice.Total = 0;

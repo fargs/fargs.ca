@@ -41,8 +41,11 @@
     [IsDeleted]                   BIT              CONSTRAINT [DF_Invoice_IsDeleted] DEFAULT ((0)) NOT NULL,
     [DeletedDate]                 DATETIME         NULL,
     [DeletedBy]                   UNIQUEIDENTIFIER NULL,
+    [ServiceProviderHstNumber]    NVARCHAR (50)    NULL,
     CONSTRAINT [PK_Invoice] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

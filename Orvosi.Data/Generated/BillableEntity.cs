@@ -32,6 +32,7 @@ namespace Orvosi.Data
         public string CountryName { get; set; } // CountryName (length: 100)
         public string BillingEmail { get; set; } // BillingEmail (length: 256)
         public string Phone { get; set; } // Phone
+        public string HstNumber { get; set; } // HstNumber (length: 50)
 
         public BillableEntity()
         {

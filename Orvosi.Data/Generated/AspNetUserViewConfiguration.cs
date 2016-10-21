@@ -61,6 +61,7 @@ namespace Orvosi.Data
             Property(x => x.ColorCode).HasColumnName(@"ColorCode").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.BoxFolderId).HasColumnName(@"BoxFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.BoxUserId).HasColumnName(@"BoxUserId").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.HstNumber).HasColumnName(@"HstNumber").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             InitializePartial();
         }
         partial void InitializePartial();

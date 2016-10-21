@@ -37,6 +37,7 @@ namespace Orvosi.Data
         public string ColorCode { get; set; } // ColorCode (length: 50)
         public string BoxFolderId { get; set; } // BoxFolderId (length: 128)
         public string BoxUserId { get; set; } // BoxUserId (length: 50)
+        public string HstNumber { get; set; } // HstNumber (length: 50)
 
         public Profile()
         {

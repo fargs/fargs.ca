@@ -42,6 +42,7 @@ namespace Orvosi.Data
             Property(x => x.CountryName).HasColumnName(@"CountryName").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.BillingEmail).HasColumnName(@"BillingEmail").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
             Property(x => x.Phone).HasColumnName(@"Phone").IsOptional().HasColumnType("nvarchar");
+            Property(x => x.HstNumber).HasColumnName(@"HstNumber").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             InitializePartial();
         }
         partial void InitializePartial();

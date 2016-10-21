@@ -123,7 +123,8 @@ namespace WebApp.Models.AccountingModel
         private List<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
         {
             return context.ServiceRequests
-                .Where(d => d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
+                .Where(d => 
+                    d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
                     && !d.IsClosed)
                 .Select(sr => new ServiceRequest
                 {
@@ -165,7 +166,7 @@ namespace WebApp.Models.AccountingModel
                         Name = sr.Address.Name,
                         City = sr.Address.City_CityId.Name
                     },
-                    InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted).Select(id => new InvoiceDetail
+                    InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted && id.Invoice.ServiceProviderGuid == serviceProviderId).Select(id => new InvoiceDetail
                     {
                         Id = id.Id,
                         Description = id.Description,

@@ -150,6 +150,7 @@ namespace WebApp.Areas.Admin.Controllers
             user.EmployeeId = profile.EmployeeId;
             user.IsTestRecord = profile.IsTestRecord;
             user.ColorCode = profile.ColorCode;
+            user.HstNumber = profile.HstNumber;
             user.ModifiedDate = SystemTime.Now();
             user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 

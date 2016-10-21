@@ -12,7 +12,7 @@
     var userSelectList = (from user in context.AspNetUsers
                           from userRole in context.AspNetUserRoles
                           from role in context.AspNetRoles
-                          where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                          where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
                           select new SelectListItem
                           {
                               Text = user.FirstName + " " + user.LastName,

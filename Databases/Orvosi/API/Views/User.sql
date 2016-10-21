@@ -5,6 +5,8 @@
 
 
 
+
+
 CREATE VIEW [API].[User]
 AS
 
@@ -53,6 +55,7 @@ SELECT u.[Id]
 	  ,u.ColorCode
 	  ,u.BoxFolderId
 	  ,u.BoxUserId
+	  ,u.HstNumber
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.RoleCategory rc ON r.RoleCategoryId = rc.Id

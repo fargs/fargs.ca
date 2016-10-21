@@ -69,6 +69,7 @@ namespace Orvosi.Data
             Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
             Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").IsOptional().HasColumnType("datetime");
             Property(x => x.DeletedBy).HasColumnName(@"DeletedBy").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.ServiceProviderHstNumber).HasColumnName(@"ServiceProviderHstNumber").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             InitializePartial();
         }
         partial void InitializePartial();

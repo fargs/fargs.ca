@@ -17,6 +17,7 @@ using System.IO;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "Case Coordinator, Super Admin, Physician")]
     public class AccountingController : Controller
     {
         // GET: Accounting

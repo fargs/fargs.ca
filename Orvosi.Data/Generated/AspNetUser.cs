@@ -47,6 +47,7 @@ namespace Orvosi.Data
         public string BoxUserId { get; set; } // BoxUserId (length: 50)
         public string BoxAccessToken { get; set; } // BoxAccessToken (length: 128)
         public string BoxRefreshToken { get; set; } // BoxRefreshToken (length: 128)
+        public string HstNumber { get; set; } // HstNumber (length: 50)
 
         // Reverse navigation
         public virtual Physician Physician { get; set; } // Physician.FK_Physician_AspNetUsers

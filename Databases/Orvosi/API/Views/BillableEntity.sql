@@ -5,6 +5,7 @@
 
 
 
+
 CREATE VIEW [API].[BillableEntity]
 AS
 
@@ -17,6 +18,7 @@ AS (
 		, LogoCssClass
 		, BillingEmail
 		, Phone
+		, HstNumber = NULL
 	FROM dbo.Company
 	UNION
 	SELECT CONVERT(NVARCHAR(128), Id)
@@ -26,6 +28,7 @@ AS (
 		, u.LogoCssClass
 		, u.Email
 		, u.PhoneNumber
+		, u.HstNumber
 	FROM API.[User] u
 	WHERE u.RoleCategoryId = 1
 )
@@ -44,5 +47,6 @@ SELECT e.EntityGuid
 	, a.CountryName
 	, e.BillingEmail
 	, e.Phone
+	, e.HstNumber
 FROM Entity e
 LEFT JOIN API.[Address] a ON e.EntityGuid = a.OwnerGuid AND a.AddressTypeID = 4

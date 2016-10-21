@@ -35,6 +35,7 @@ namespace WebApp.Library
             invoice.ServiceProviderCountry = serviceProvider.CountryName;
             invoice.ServiceProviderEmail = serviceProvider.BillingEmail;
             invoice.ServiceProviderPhoneNumber = serviceProvider.Phone;
+            invoice.ServiceProviderHstNumber = serviceProvider.HstNumber;
             invoice.CustomerGuid = customer.EntityGuid.Value;
             invoice.CustomerName = customer.EntityName;
             invoice.CustomerEntityType = customer.EntityType;

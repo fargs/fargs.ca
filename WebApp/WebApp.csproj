@@ -1112,7 +1112,7 @@
     <Content Include="Views\ServiceRequestTemplate\Details.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Edit.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Index.cshtml" />
-    <Content Include="Views\Dashboard\Today.cshtml" />
+    <Content Include="Views\Dashboard\Agenda.cshtml" />
     <Content Include="Views\Dashboard\_Layout.cshtml" />
     <Content Include="Views\Dashboard\DueDates.cshtml" />
     <Content Include="Views\Dashboard\Schedule.cshtml" />

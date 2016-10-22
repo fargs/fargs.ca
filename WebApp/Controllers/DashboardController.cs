@@ -24,7 +24,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Today");
         }
 
-        public async Task<ActionResult> Today(Guid? serviceProviderId, DateTime? day)
+        public async Task<ActionResult> Agenda(Guid? serviceProviderId, DateTime? day)
         {
             // Set date range variables used in where conditions
 
@@ -63,7 +63,7 @@ namespace WebApp.Controllers
                                      Group = new SelectListGroup() { Name = role.Name }
                                  }).ToList();
 
-            return new NegotiatedResult("Today", vm);
+            return new NegotiatedResult("Agenda", vm);
         }
 
         public async Task<ActionResult> DueDates(Guid? serviceProviderId)

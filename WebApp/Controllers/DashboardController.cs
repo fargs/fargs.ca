@@ -21,7 +21,7 @@ namespace WebApp.Controllers
 
         public ActionResult Index(Guid? serviceProviderId, bool showClosed = false, bool onlyMine = true)
         {
-            return RedirectToAction("Today");
+            return RedirectToAction("Agenda");
         }
 
         public async Task<ActionResult> Agenda(Guid? serviceProviderId, DateTime? day)

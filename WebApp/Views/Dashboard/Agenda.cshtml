@@ -7,13 +7,13 @@
     var userId = User.Identity.GetGuidUserId();
 }
 <div>
-    <div class="btn-group">
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-default"><i class="fa fa-arrow-left"></i></a>
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-default"><i class="fa fa-arrow-right"></i></a>
-    </div>
-    <span class="h3" style="vertical-align:middle;margin-left:15px;">
+    <span class="h3">
         @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
     </span>
+    <div class="btn-group">
+        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
+        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
+    </div>
 </div>
 @if (Model.Today != null)
 {

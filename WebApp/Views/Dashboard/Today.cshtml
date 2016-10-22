@@ -6,25 +6,30 @@
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
 }
-
+<div>
+    <div class="btn-group">
+        <a href="~/Dashboard/Today?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-default"><i class="fa fa-arrow-left"></i></a>
+        <a href="~/Dashboard/Today?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-default"><i class="fa fa-arrow-right"></i></a>
+    </div>
+    <span class="h3" style="vertical-align:middle;margin-left:15px;">
+        @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
+    </span>
+</div>
 @if (Model.Today != null)
 {
-    <div class="h3">
-        @Model.Today.DayFormatted_MMMdd<span class="small"> @Model.Today.DayFormatted_dddd</span>
-    </div>
     <div>
         @Model.Today.Address.Name
     </div>
-    <div class="small text-muted" style="padding-bottom:20px;">
-        @Model.Today.Address.City
-    </div>
+        <div class="small text-muted" style="padding-bottom:20px;">
+            @Model.Today.Address.City
+        </div>
     foreach (var assessment in Model.Today.Assessments.OrderBy(a => a.StartTime))
     {
         <div class="row o-dashboard-tr">
             <div class="col-md-1 o-dashboard-td">
                 <strong>@assessment.StartTime.ToShortTimeSafe()</strong>
                 @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
-                {
+                    {
                     <form>
                         <div class="checkbox">
                             <label>
@@ -53,7 +58,7 @@
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
                 @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                {
+                    {
                     @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
                 }
             </div>
@@ -66,7 +71,8 @@
 }
 else
 {
-    <strong> No assessments today</strong>
+    <p></p>
+    <p><strong> No assessments today</strong></p>
 }
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")

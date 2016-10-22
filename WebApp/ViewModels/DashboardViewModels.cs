@@ -19,6 +19,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
         public Guid? SelectedUserId { get; set; }
         public bool ShowClosed { get; set; }
+        public DateTime Day { get; set; }
     }
 
     public class TaskListViewModel

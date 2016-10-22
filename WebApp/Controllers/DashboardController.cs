@@ -47,6 +47,7 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
+            vm.Day = day.Value;
             vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, now, loggedInUserId, baseUrl);
             
             // Additional view data.

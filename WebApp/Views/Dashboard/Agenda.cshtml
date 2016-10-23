@@ -7,14 +7,15 @@
     var userId = User.Identity.GetGuidUserId();
 }
 <div>
-    <span class="h3">
-        @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
-    </span>
-    <div class="btn-group">
+    <div class="btn-group" style="margin-right:15px;">
         <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
         <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
     </div>
+    <span class="h3" style="vertical-align:middle;">
+        @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
+    </span>
 </div>
+<p></p>
 @if (Model.Today != null)
 {
     <div>
@@ -58,7 +59,7 @@
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
                 @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                    {
+                {
                     @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
                 }
             </div>

@@ -1,4 +1,5 @@
 ﻿using data = Orvosi.Data;
+using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
 using Orvosi.Shared.Model;
 using System;
@@ -12,16 +13,12 @@ namespace WebApp.Models.ServiceRequestModels2
     {
         public static DayFolder MapToToday(Guid serviceProviderId, DateTime day, DateTime now, Guid loggedInUserId, string baseUrl)
         {
-            var endOfDay = day.Date.AddDays(1);
-
             using (var context = new data.OrvosiDbContext())
             {
                 // read all the data in from the database.
                 var source = context.ServiceRequests
-                    .Where(d => d.AppointmentDate.HasValue
-                        && d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                        && d.AppointmentDate.Value >= day && d.AppointmentDate.Value < endOfDay
-                        && !d.IsClosed)
+                    .AreAssignedToServiceProvider(serviceProviderId)
+                    .AreScheduledThisDay(day)
                     .Select(sr => new Assessment
                     {
                         Id = sr.Id,
@@ -40,7 +37,8 @@ namespace WebApp.Models.ServiceRequestModels2
                         {
                             Id = sr.Address.Id,
                             Name = sr.Address.Name,
-                            City = sr.Address.City_CityId.Name
+                            City = sr.Address.City_CityId.Name,
+                            ProvinceCode = sr.Address.Province.ProvinceCode
                         },
                         Company = new Company
                         {
@@ -72,12 +70,12 @@ namespace WebApp.Models.ServiceRequestModels2
                             },
                             AssignedTo = new Person
                             {
-                                Id = srt.AspNetUser == null ? (Guid?)null : srt.AspNetUser.Id,
-                                Title = srt.AspNetUser.Title,
-                                FirstName = srt.AspNetUser.FirstName,
-                                LastName = srt.AspNetUser.LastName,
-                                ColorCode = srt.AspNetUser.ColorCode,
-                                Role = srt.AspNetUser.AspNetUserRoles.Select(r => new UserRole
+                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
+                                Title = srt.AspNetUser_AssignedTo.Title,
+                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
+                                LastName = srt.AspNetUser_AssignedTo.LastName,
+                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
+                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
                                 {
                                     Id = r.AspNetRole.Id,
                                     Name = r.AspNetRole.Name
@@ -95,12 +93,12 @@ namespace WebApp.Models.ServiceRequestModels2
                         People = sr.ServiceRequestTasks.Where(srt => srt.AssignedTo != null)
                             .Select(srt => new Person
                             {
-                                Id = srt.AspNetUser == null ? (Guid?)null : srt.AspNetUser.Id,
-                                Title = srt.AspNetUser.Title,
-                                FirstName = srt.AspNetUser.FirstName,
-                                LastName = srt.AspNetUser.LastName,
-                                ColorCode = srt.AspNetUser.ColorCode,
-                                Role = srt.AspNetUser.AspNetUserRoles.Select(r => new UserRole
+                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
+                                Title = srt.AspNetUser_AssignedTo.Title,
+                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
+                                LastName = srt.AspNetUser_AssignedTo.LastName,
+                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
+                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
                                 {
                                     Id = r.AspNetRole.Id,
                                     Name = r.AspNetRole.Name
@@ -119,16 +117,26 @@ namespace WebApp.Models.ServiceRequestModels2
                     }).FirstOrDefault();
             }
         }
-
+        public static int ScheduleThisDayCount(Guid serviceProviderId, DateTime day)
+        {
+            using (var context = new data.OrvosiDbContext())
+            {
+                // read all the data in from the database.
+                return context.ServiceRequests
+                    .AreAssignedToServiceProvider(serviceProviderId)
+                    .AreScheduledThisDay(day)
+                    .Count();
+            }
+        }
         public static IEnumerable<DayFolder> MapToDueDates(Guid serviceProviderId, DateTime now, string requestUrl)
         {
             using (var context = new data.OrvosiDbContext())
             {
                 // read all the data in from the database.
                 var source = context.ServiceRequests
-                    .Where(d => d.DueDate.HasValue
-                        && d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                        && !d.IsClosed)
+                    .AreAssignedToServiceProvider(serviceProviderId)
+                    .HasDueDate()
+                    .AreOpen()
                     .Select(sr => new ServiceRequest
                     {
                         Id = sr.Id,
@@ -165,12 +173,12 @@ namespace WebApp.Models.ServiceRequestModels2
                             },
                             AssignedTo = new Person
                             {
-                                Id = srt.AspNetUser == null ? (Guid?)null : srt.AspNetUser.Id,
-                                Title = srt.AspNetUser.Title,
-                                FirstName = srt.AspNetUser.FirstName,
-                                LastName = srt.AspNetUser.LastName,
-                                ColorCode = srt.AspNetUser.ColorCode,
-                                Role = srt.AspNetUser.AspNetUserRoles.Select(r => new UserRole
+                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
+                                Title = srt.AspNetUser_AssignedTo.Title,
+                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
+                                LastName = srt.AspNetUser_AssignedTo.LastName,
+                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
+                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
                                 {
                                     Id = r.AspNetRole.Id,
                                     Name = r.AspNetRole.Name
@@ -188,12 +196,12 @@ namespace WebApp.Models.ServiceRequestModels2
                         People = sr.ServiceRequestTasks.Where(srt => srt.AssignedTo != null)
                             .Select(srt => new Person
                             {
-                                Id = srt.AspNetUser == null ? (Guid?)null : srt.AspNetUser.Id,
-                                Title = srt.AspNetUser.Title,
-                                FirstName = srt.AspNetUser.FirstName,
-                                LastName = srt.AspNetUser.LastName,
-                                ColorCode = srt.AspNetUser.ColorCode,
-                                Role = srt.AspNetUser.AspNetUserRoles.Select(r => new UserRole
+                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
+                                Title = srt.AspNetUser_AssignedTo.Title,
+                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
+                                LastName = srt.AspNetUser_AssignedTo.LastName,
+                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
+                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
                                 {
                                     Id = r.AspNetRole.Id,
                                     Name = r.AspNetRole.Name
@@ -202,7 +210,7 @@ namespace WebApp.Models.ServiceRequestModels2
                     }).ToList();
 
                 // apply filters that use computed fields
-                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId, SystemTime.Now()));
+                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId));
 
                 filtered = filtered.Where(s => s.IsAppointmentComplete.HasValue ? s.IsAppointmentComplete.Value : true);
 
@@ -214,6 +222,62 @@ namespace WebApp.Models.ServiceRequestModels2
                         Day = d.Key.DueDate.Value,
                         ServiceRequests = filtered.Where(s => s.DueDate == d.Key.DueDate)
                     });
+            }
+        }
+        internal static int DueDatesCount(Guid serviceProviderId, DateTime now)
+        {
+            using (var context = new data.OrvosiDbContext())
+            {
+                var source = context
+                    .ServiceRequests
+                        .AreAssignedToServiceProvider(serviceProviderId)
+                        .HasDueDate()
+                        .AreOpen()
+                        .Select(sr => new ServiceRequest
+                        {
+                            Id = sr.Id,
+                            DueDate = sr.DueDate,
+                            AppointmentDate = sr.AppointmentDate,
+                            Now = now,
+                            StartTime = sr.StartTime,
+                            ServiceRequestTasks = sr.ServiceRequestTasks.Select(srt => new ServiceRequestTask
+                            {
+                                Id = srt.Id,
+                                AppointmentDate = sr.AppointmentDate,
+                                Now = now,
+                                AssignedTo = new Person
+                                {
+                                    Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id
+                                },
+                                CompletedDate = srt.CompletedDate,
+                                IsObsolete = srt.IsObsolete,
+                                Dependencies = srt.Child.Select(c => new ServiceRequestTaskDependent
+                                {
+                                    TaskId = c.TaskId.Value,
+                                    CompletedDate = c.CompletedDate,
+                                    IsObsolete = c.IsObsolete
+                                })
+                            })
+                        }).ToList();
+
+                // apply filters that use computed fields
+                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId));
+
+                filtered = filtered.Where(s => s.IsAppointmentComplete.HasValue ? s.IsAppointmentComplete.Value : true);
+
+                return filtered.Count();
+            }
+        }
+        internal static int AdditionalsCount(Guid serviceProviderIdOrDefault)
+        {
+            using (var context = new data.OrvosiDbContext())
+            {
+                return context
+                    .ServiceRequests
+                        .AreAddOns()
+                        .AreAssignedToServiceProvider(serviceProviderIdOrDefault)
+                        .AreOpen()
+                        .Count();
             }
         }
         public static ServiceRequest MapToServiceRequest(int serviceRequestId, DateTime now, Guid loggedInUserId, string requestUrl)
@@ -265,13 +329,21 @@ namespace WebApp.Models.ServiceRequestModels2
                             },
                             AssignedTo = new Person
                             {
-                                Id = srt.AspNetUser == null ? (Guid?)null : srt.AspNetUser.Id,
-                                Title = srt.AspNetUser.Title,
-                                FirstName = srt.AspNetUser.FirstName,
-                                LastName = srt.AspNetUser.LastName,
-                                ColorCode = srt.AspNetUser.ColorCode
+                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
+                                Title = srt.AspNetUser_AssignedTo.Title,
+                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
+                                LastName = srt.AspNetUser_AssignedTo.LastName,
+                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode
                             },
                             CompletedDate = srt.CompletedDate,
+                            CompletedBy = new Person
+                            {
+                                Id = srt.AspNetUser_CompletedBy == null ? (Guid?)null : srt.AspNetUser_CompletedBy.Id,
+                                Title = srt.AspNetUser_CompletedBy.Title,
+                                FirstName = srt.AspNetUser_CompletedBy.FirstName,
+                                LastName = srt.AspNetUser_CompletedBy.LastName,
+                                ColorCode = srt.AspNetUser_CompletedBy.ColorCode
+                            },
                             IsObsolete = srt.IsObsolete,
                             Dependencies = srt.Child.Select(c => new ServiceRequestTaskDependent
                             {

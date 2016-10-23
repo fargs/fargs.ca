@@ -97,7 +97,7 @@ namespace WebApp.Controllers
 
             var serviceRequestIds = vm.ServiceRequests.Select(item => item.Id);
             vm.ServiceRequestTasks = await ctx.ServiceRequestTasks
-                    .Include(srt => srt.AspNetUser)
+                    .Include(srt => srt.AspNetUser_AssignedTo)
                     .Include(srt => srt.OTask)
                 .Where(srt => serviceRequestIds.Contains(srt.ServiceRequestId)
                     && srt.TaskId != Tasks.AssessmentDay)
@@ -170,7 +170,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> BoxManager(int serviceRequestId)
         {
             var serviceRequest = ctx.ServiceRequests.Find(serviceRequestId);
-            var resources = serviceRequest.ServiceRequestTasks.Where(t => t.AssignedTo.HasValue).Select(sr => sr.AspNetUser).Distinct();
+            var resources = serviceRequest.ServiceRequestTasks.Where(t => t.AssignedTo.HasValue).Select(sr => sr.AspNetUser_AssignedTo).Distinct();
 
             var boxCaseFolderId = ctx.ServiceRequests.First(sr => sr.Id == serviceRequestId).BoxCaseFolderId;
 

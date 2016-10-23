@@ -187,7 +187,7 @@ namespace Orvosi.Shared.Model
         }
 
         // methods
-        public bool IsDoneTheirPart(Guid? userId, DateTime now)
+        public bool IsDoneTheirPart(Guid? userId)
         {
             return this.ServiceRequestTasks
                 .Where(srt => srt.AssignedTo?.Id == userId)
@@ -364,6 +364,7 @@ namespace Orvosi.Shared.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public string City { get; set; }
+        public string ProvinceCode { get; set; }
     }
 
     public class Invoice

@@ -20,6 +20,8 @@ namespace WebApp.ViewModels.DashboardViewModels
         public Guid? SelectedUserId { get; set; }
         public bool ShowClosed { get; set; }
         public DateTime Day { get; set; }
+        public int TodayCount { get; internal set; }
+        public int AddOnsSummaryCount { get; internal set; }
     }
 
     public class TaskListViewModel

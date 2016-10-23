@@ -67,7 +67,7 @@ namespace WebApp.Library
                 description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
             }
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = serviceRequest.ServiceCataloguePrice;
+            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice;
             invoiceDetail.Rate = 1;
             invoiceDetail.CalculateTotal();
 

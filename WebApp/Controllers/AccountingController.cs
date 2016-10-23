@@ -14,6 +14,7 @@ using WebApp.ViewModels.InvoiceViewModels;
 using WebApp.Library;
 using System.Net.Mail;
 using System.IO;
+using WebApp.ViewModels.AccountingViewModels;
 
 namespace WebApp.Controllers
 {
@@ -85,10 +86,10 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(int serviceRequestId)
+        public ActionResult Create(CreateInvoiceForm form)
         {
             var repo = new Mapper(new Orvosi.Data.OrvosiDbContext());
-            repo.Create(serviceRequestId, User);
+            repo.Create(form, User);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
@@ -149,6 +150,47 @@ namespace WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
             return PartialView("_ServiceRequest", serviceRequests.First());
+        }
+
+        public async Task<ActionResult> UpdateServiceCataloguePrice(int serviceRequestId, decimal price)
+        {
+            // in this scenario, price must have a value. Compared to the ServiceCatalogueController/Edit function where if the value is null, it would remove the entry.
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var sr = await context.ServiceRequests.FindAsync(serviceRequestId);
+                var exists = await context.ServiceCatalogues.AnyAsync(c => c.CompanyId == sr.CompanyId && c.PhysicianId == sr.PhysicianId && c.LocationId == sr.AddressId && c.ServiceId == sr.ServiceId);
+
+                if (!exists)
+                {
+                    var sc = new Orvosi.Data.ServiceCatalogue()
+                    {
+                        CompanyId = sr.CompanyId,
+                        PhysicianId = sr.PhysicianId,
+                        LocationId = (short?)(sr.AddressId.HasValue ? sr.AddressId.Value : sr.AddressId),
+                        ServiceId = sr.ServiceId,
+                        Price = sr.Price,
+                        ModifiedUser = User.Identity.Name
+                    };
+                    context.ServiceCatalogues.Add(sc);
+                }
+                else
+                {
+                    var sc = await context.ServiceCatalogues.SingleAsync(c => c.CompanyId == sr.CompanyId && c.PhysicianId == sr.PhysicianId && c.LocationId == sr.AddressId && c.ServiceId == sr.ServiceId);
+                    sc.Price = price;
+                }
+                await context.SaveChangesAsync();
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+        }
+
+        public ActionResult UpdateServiceCatalogueLateCancellationRate(int serviceRequestId, decimal rate)
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        public ActionResult UpdateServiceCatalogueNoShowRate(int serviceRequestId, decimal rate)
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         private Guid GetServiceProviderId(Guid? serviceProviderId)

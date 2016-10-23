@@ -11,6 +11,7 @@ using m = Orvosi.Shared.Model;
 using Westwind.Web.Mvc;
 using WebApp.ViewModels.ServiceRequestViewModels;
 using System.Net;
+using System.Data.Entity;
 
 namespace WebApp.Controllers
 {
@@ -29,30 +30,21 @@ namespace WebApp.Controllers
             // Set date range variables used in where conditions
 
             var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            var dayOrDefault = GetDayOrDefault(day);
+            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
 
-            if (!day.HasValue)
-            {
-                day = now.Date;
-            }
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
-
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
 
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Day = day.Value;
-            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day.Value, now, loggedInUserId, baseUrl);
-            
+            vm.Day = dayOrDefault;
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(serviceProviderIdOrDefault, dayOrDefault, now, loggedInUserId, baseUrl);
+            vm.TodayCount = Models.ServiceRequestModels2.ServiceRequestMapper2.ScheduleThisDayCount(serviceProviderIdOrDefault, dayOrDefault);
             // Additional view data.
-            vm.SelectedUserId = userId;
-            vm.UserSelectList = (from user in context.AspNetUsers
+            vm.SelectedUserId = serviceProviderIdOrDefault;
+            vm.UserSelectList = await (from user in context.AspNetUsers
                                  from userRole in context.AspNetUserRoles
                                  from role in context.AspNetRoles
                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId
@@ -61,7 +53,7 @@ namespace WebApp.Controllers
                                      Text = user.FirstName + " " + user.LastName,
                                      Value = user.Id.ToString(),
                                      Group = new SelectListGroup() { Name = role.Name }
-                                 }).ToList();
+                                 }).ToListAsync();
 
             return new NegotiatedResult("Agenda", vm);
         }
@@ -87,7 +79,7 @@ namespace WebApp.Controllers
 
             // Additional view data.
             vm.SelectedUserId = userId;
-            vm.UserSelectList = (from user in context.AspNetUsers
+            vm.UserSelectList = await (from user in context.AspNetUsers
                                  from userRole in context.AspNetUserRoles
                                  from role in context.AspNetRoles
                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId
@@ -96,7 +88,7 @@ namespace WebApp.Controllers
                                      Text = user.FirstName + " " + user.LastName,
                                      Value = user.Id.ToString(),
                                      Group = new SelectListGroup() { Name = role.Name }
-                                 }).ToList();
+                                 }).ToListAsync();
 
             return new NegotiatedResult("DueDates", vm);
         }
@@ -145,22 +137,17 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
+            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
 
-            var requests = await context.GetAssignedServiceRequestsAsync(userId, now, false, null);
+            var requests = await context.GetAssignedServiceRequestsAsync(serviceProviderIdOrDefault, now, false, null);
 
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, userId, baseUrl);
+            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, serviceProviderIdOrDefault, baseUrl);
 
             // Additional view data.
-            vm.SelectedUserId = userId;
+            vm.SelectedUserId = serviceProviderIdOrDefault;
             vm.UserSelectList = (from user in context.AspNetUsers
                                  from userRole in context.AspNetUserRoles
                                  from role in context.AspNetRoles
@@ -197,6 +184,45 @@ namespace WebApp.Controllers
             return PartialView("_ServiceStatus", request);
         }
 
+        public ActionResult RefreshAgendaSummaryCount(Guid? serviceProviderId, DateTime? day)
+        {
+            var dayOrDefault = GetDayOrDefault(day);
+            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+
+            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.ScheduleThisDayCount(serviceProviderIdOrDefault, dayOrDefault);
+
+            return PartialView("_SummaryCount", count);
+        }
+
+        public ActionResult RefreshDueDateSummaryCount(Guid? serviceProviderId)
+        {
+            var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+
+            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.DueDatesCount(serviceProviderIdOrDefault, now);
+
+            return PartialView("_SummaryCount", count);
+        }
+
+        public ActionResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)
+        {
+            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+
+            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.AdditionalsCount(serviceProviderIdOrDefault);
+
+            return PartialView("_SummaryCount", count);
+        }
+
+        private static DateTime GetDayOrDefault(DateTime? day)
+        {
+            return day.HasValue ? day.Value : SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+        }
+
+        private Guid GetServiceProviderIdOrDefault(Guid? serviceProviderId)
+        {
+            return (User.Identity.IsAdmin() && serviceProviderId.HasValue) ? serviceProviderId.Value : User.Identity.GetGuidUserId();
+        }
+
         public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -216,7 +242,7 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             serviceRequestTask.CompletedDate = isChecked ? SystemTime.Now() : (DateTime?)null;
-            serviceRequestTask.CompletedBy = isChecked ? User.Identity.GetGuidUserId() : (Guid?)null;
+            serviceRequestTask.CompletedBy = isChecked ? loggedInUserId : (Guid?)null;
             serviceRequestTask.ModifiedDate = SystemTime.Now();
             serviceRequestTask.ModifiedUser = User.Identity.Name;
             serviceRequestTask.ServiceRequest.UpdateIsClosed();

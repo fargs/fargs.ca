@@ -4,7 +4,9 @@
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
 }
-
+<div class="alert alert-info">
+    <strong>Important Note:</strong> <br />The Due Date is the day the final report must be submitted back to the company, not your individual task due date. <br /> You are expected to complete your tasks taking into account the other work required to get the report submitted.
+</div>
 @foreach (var day in Model.DueDates.OrderBy(d => d.Day))
 {
     <div class="h3">

@@ -107,9 +107,9 @@ namespace Orvosi.Shared.Enums
 
     public static class ServiceCategories
     {
-        public const byte IndependentMedicalExam = 5;
-        public const byte MedicalConsultation = 6;
-        public const byte AddOn = 7;
+        public const short IndependentMedicalExam = 5;
+        public const short MedicalConsultation = 6;
+        public const short AddOn = 7;
     }
 
     public static class PhysicianLocationStatus

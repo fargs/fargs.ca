@@ -59,7 +59,8 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
         public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_AspNetUsers
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> AssignedTo { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> CompletedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers1
         public virtual System.Collections.Generic.ICollection<UserInbox> UserInboxes { get; set; } // UserInbox.FK_UserInbox_AspNetUsers
 
         // Foreign keys
@@ -78,7 +79,8 @@ namespace Orvosi.Data
             IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();
-            ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
+            AssignedTo = new System.Collections.Generic.List<ServiceRequestTask>();
+            CompletedBy = new System.Collections.Generic.List<ServiceRequestTask>();
             UserInboxes = new System.Collections.Generic.List<UserInbox>();
             InitializePartial();
         }

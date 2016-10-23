@@ -55,7 +55,8 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Parent { get; set; } // Many to many mapping
 
         // Foreign keys
-        public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceRequestTask_AspNetUsers
+        public virtual AspNetUser AspNetUser_AssignedTo { get; set; } // FK_ServiceRequestTask_AspNetUsers
+        public virtual AspNetUser AspNetUser_CompletedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers1
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
 

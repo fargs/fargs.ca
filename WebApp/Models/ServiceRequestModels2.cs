@@ -148,6 +148,7 @@ namespace WebApp.Models.ServiceRequestModels2
                         CancelledDate = sr.CancelledDate,
                         IsClosed = sr.IsClosed,
                         BoxCaseFolderId = sr.BoxCaseFolderId,
+                        PhysicianId = sr.PhysicianId,
                         Company = new Company
                         {
                             Id = sr.Company.Id,

@@ -12,6 +12,7 @@ using WebApp.Library;
 using System.Security.Principal;
 using System.Data.Entity;
 using System.Threading.Tasks;
+using Orvosi.Data.Filters;
 
 namespace WebApp.Models.AccountingModel
 {
@@ -146,6 +147,7 @@ namespace WebApp.Models.AccountingModel
                     NoShowRate = sr.NoShowRate,
                     LateCancellationRate = sr.LateCancellationRate,
                     Notes = sr.Notes,
+                    PhysicianId = sr.PhysicianId,
                     ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new ServiceRequestTask
                     {
                         Id = srt.Id,

@@ -23,6 +23,10 @@
     @if (assessment.InvoiceDetails.Count() == 0)
     {
         <div class="col-md-5 o-dashboard-td">
+            <div>
+                Price: @Model.ServiceCataloguePrice.Value.ToString("C2")
+            </div>
+            <a href="~/ServiceCatalogue/Index?UserId=@Model.PhysicianId&CompanyId=@Model.Company.Id">Edit Service Catalogue</a>
             <form action="~/Invoice/Create" method="post" class="form-horizontal">
                 @Html.Hidden("Id", assessment.Id)
                 @*<div class="form-group">

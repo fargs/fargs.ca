@@ -122,6 +122,7 @@ namespace Orvosi.Shared.Model
         public decimal? LateCancellationRate { get; set; }
         public string Notes { get; set; }
         public string City { get; set; }
+        public Guid PhysicianId { get; set; }
 
         // references
         public Service Service { get; set; }

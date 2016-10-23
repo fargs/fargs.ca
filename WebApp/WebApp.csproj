@@ -441,7 +441,6 @@
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="Models\ServiceRequestModels.cs" />
     <Compile Include="Models\ServiceRequestModels2.cs" />
-    <Compile Include="ViewModels\AccountingViewModels.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />

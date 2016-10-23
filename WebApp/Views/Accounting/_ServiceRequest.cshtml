@@ -13,6 +13,10 @@
         <div>
             @(assessment.AppointmentDate.HasValue ? assessment.AppointmentDate.ToOrvosiDateFormat() : assessment.DueDate.ToOrvosiDateFormat()) @assessment.StartTime.ToShortTimeSafe()
         </div>
+        @if (assessment.Address != null)
+        {
+            <span>@Model.Address.City</span><span>, </span><span>@Model.Address.ProvinceCode.Split('-')[1]</span>
+        }
         @if (!string.IsNullOrEmpty(assessment.Notes))
         {
             <div class="text-danger form-group">

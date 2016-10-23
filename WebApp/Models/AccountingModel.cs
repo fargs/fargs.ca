@@ -169,7 +169,8 @@ namespace WebApp.Models.AccountingModel
                     {
                         Id = sr.Address.Id,
                         Name = sr.Address.Name,
-                        City = sr.Address.City_CityId.Name
+                        City = sr.Address.City_CityId.Name,
+                        ProvinceCode = sr.Address.Province.ProvinceCode
                     },
                     InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted && id.Invoice.ServiceProviderGuid == serviceProviderId).Select(id => new InvoiceDetail
                     {

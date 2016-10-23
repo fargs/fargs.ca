@@ -28,17 +28,19 @@ namespace WebApp.Models.AccountingModel
         {
             var source = GetServiceRequests(serviceProviderId, now);
 
-            return source // this filters out the days
+            var filtered = source
+                .AsEnumerable() // this filters out the days
                 .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) < now.Date
-                    && s.ServiceRequestTasks.FirstOrDefault()?.Status.Id == TaskStatuses.ToDo) // this where condition needs to be in the next Select as well.
+                    //&& s.ServiceRequestTasks.FirstOrDefault()?.Status.Id == TaskStatuses.ToDo); // this where condition needs to be in the next Select as well.
+                );
+            return filtered
                 .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
                 .Select(d => new DayFolder
                 {
                     Day = d.Key.Day.Value,
                     //Company = d.Key.Company,
                     //Address = d.Key.Address,
-                    ServiceRequests = source.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value
-                        && s.ServiceRequestTasks.FirstOrDefault()?.Status.Id == TaskStatuses.ToDo)
+                    ServiceRequests = filtered.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
                         .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
                 }).OrderBy(df => df.Day);
         }
@@ -48,7 +50,7 @@ namespace WebApp.Models.AccountingModel
             var source = GetServiceRequests(serviceProviderId, now);
 
             // Get a list with one item
-            return source.Where(s => s.Id == serviceRequestId);
+            return source.Where(s => s.Id == serviceRequestId).ToList();
         }
 
         public EditInvoiceDetailForm MapToEditForm(int invoiceDetailId)
@@ -121,7 +123,7 @@ namespace WebApp.Models.AccountingModel
             db.SaveChanges();
         }
 
-        private List<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
+        private IQueryable<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
         {
             return context.ServiceRequests
                 .Where(d =>
@@ -201,7 +203,7 @@ namespace WebApp.Models.AccountingModel
                             }
                         }
                     })
-                }).ToList();
+                });
         }
     }
 }

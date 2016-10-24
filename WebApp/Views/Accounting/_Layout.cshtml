@@ -21,7 +21,7 @@
                           }).ToList();
 
     Guid userId = User.Identity.GetGuidUserId();
-    var param = Request.QueryString.Get("ServiceProviderId");
+    var param = Request.QueryString.Get("serviceProviderId");
     var serviceProviderId = string.IsNullOrEmpty(param) ? (Guid?)null : (Guid?)new Guid(param);
     // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
     if (User.Identity.IsAdmin() && serviceProviderId.HasValue)

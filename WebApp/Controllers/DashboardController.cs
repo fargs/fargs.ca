@@ -39,9 +39,9 @@ namespace WebApp.Controllers
             // Populate the view model
             var vm = new dvm.IndexViewModel();
 
-            vm.Day = dayOrDefault;
-            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(serviceProviderIdOrDefault, dayOrDefault, now, loggedInUserId, baseUrl);
-            vm.TodayCount = Models.ServiceRequestModels2.ServiceRequestMapper2.ScheduleThisDayCount(serviceProviderIdOrDefault, dayOrDefault);
+            vm.Day = dayOrDefault.Date;
+            vm.Today = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(serviceProviderIdOrDefault, dayOrDefault.Date, now, loggedInUserId, baseUrl);
+            vm.TodayCount = Models.ServiceRequestModels2.ServiceRequestMapper2.ScheduleThisDayCount(serviceProviderIdOrDefault, dayOrDefault.Date);
             // Additional view data.
             vm.SelectedUserId = serviceProviderIdOrDefault;
             vm.UserSelectList = await (from user in context.AspNetUsers

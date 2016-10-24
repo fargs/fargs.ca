@@ -14,7 +14,7 @@ namespace Orvosi.Data.Filters
             var endOfDay = day.Date.AddDays(1);
             return serviceRequests
                     .Where(d => d.AppointmentDate.HasValue
-                        && d.AppointmentDate.Value >= day && d.AppointmentDate.Value < endOfDay);
+                        && d.AppointmentDate.Value >= day.Date && d.AppointmentDate.Value < endOfDay);
         }
         public static IQueryable<ServiceRequest> AreAssignedToServiceProvider(this IQueryable<ServiceRequest> serviceRequests, Guid serviceProviderId)
         {

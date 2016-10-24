@@ -56,7 +56,7 @@ namespace WebApp
             }
 
             Guid? serviceProviderId = null;
-            var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "ServiceProviderId");
+            var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key.ToLower() == "serviceProviderId".ToLower());
             if (!serviceProviderQs.Equals(default(KeyValuePair<string, string>)))
             {
                 serviceProviderId = new Guid(serviceProviderQs.Value);

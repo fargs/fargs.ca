@@ -11,6 +11,10 @@
 {
     <p><strong>There are no invoices that need to be sent out.</strong></p>
 }
+else
+{
+    <p>You have <strong>@Model.Sum(day => day.ServiceRequests.Count())</strong> unsent invoices</p>
+}
 
 @foreach (var dayFolder in Model)
 {

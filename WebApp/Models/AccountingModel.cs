@@ -29,10 +29,13 @@ namespace WebApp.Models.AccountingModel
             var source = GetServiceRequests(serviceProviderId, now);
 
             var filtered = source
-                .AsEnumerable() // this filters out the days
-                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) < now.Date
-                    //&& s.ServiceRequestTasks.FirstOrDefault()?.Status.Id == TaskStatuses.ToDo); // this where condition needs to be in the next Select as well.
-                );
+                .Where(sr => sr.PhysicianId == serviceProviderId)
+                .Where(sr => !sr.IsClosed)
+                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date) // this filters out the days
+                .Where(sr => !sr.InvoiceDetails.Any() || sr.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue))
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete)) // Where it is not sent or the submit invoices task is not checked)
+                .ToList();
+
             return filtered
                 .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
                 .Select(d => new DayFolder
@@ -40,7 +43,8 @@ namespace WebApp.Models.AccountingModel
                     Day = d.Key.Day.Value,
                     //Company = d.Key.Company,
                     //Address = d.Key.Address,
-                    ServiceRequests = filtered.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
+                    ServiceRequests = filtered
+                        .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
                         .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
                 }).OrderBy(df => df.Day);
         }
@@ -126,12 +130,12 @@ namespace WebApp.Models.AccountingModel
         private IQueryable<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
         {
             return context.ServiceRequests
-                .Where(d =>
+                //.Where(d =>
                     //d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                    d.PhysicianId == serviceProviderId
-                    && d.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue) 
-                    && d.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete) // Where it is not sent or the submit invoices task is not checked
-                    && !d.IsClosed)
+                    //d.PhysicianId == serviceProviderId
+                    //&& d.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue) 
+                    //&& d.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete) // Where it is not sent or the submit invoices task is not checked
+                    //&& !d.IsClosed)
                 .Select(sr => new ServiceRequest
                 {
                     Id = sr.Id,
@@ -153,6 +157,10 @@ namespace WebApp.Models.AccountingModel
                     ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new ServiceRequestTask
                     {
                         Id = srt.Id,
+                        ProcessTask = new ProcessTask
+                        {
+                            Id = srt.TaskId.Value
+                        },
                         IsObsolete = srt.IsObsolete,
                         CompletedDate = srt.CompletedDate
                     }),

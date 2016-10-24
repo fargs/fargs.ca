@@ -107,13 +107,14 @@ namespace WebApp.Models.ServiceRequestModels2
                     }).ToList();
 
                 // group into hierarchy
-                return source 
+                return source
+                    .Where(sr => sr.ServiceStatusId.GetValueOrDefault(0) != ServiceStatus.Cancellation)
                     .GroupBy(d => new { d.AppointmentDate, d.Address })
                     .Select(d => new DayFolder
                     {
                         Day = d.Key.AppointmentDate.Value,
                         Address = d.Key.Address,
-                        Assessments = source.Where(s => s.AppointmentDate == d.Key.AppointmentDate)
+                        Assessments = source.Where(s => s.AppointmentDate == d.Key.AppointmentDate && s.ServiceStatusId.GetValueOrDefault(0) != ServiceStatus.Cancellation)
                     }).FirstOrDefault();
             }
         }
@@ -122,9 +123,20 @@ namespace WebApp.Models.ServiceRequestModels2
             using (var context = new data.OrvosiDbContext())
             {
                 // read all the data in from the database.
-                return context.ServiceRequests
+                var source = context.ServiceRequests
                     .AreAssignedToServiceProvider(serviceProviderId)
                     .AreScheduledThisDay(day)
+                    .Select(sr => new ServiceRequest
+                    {
+                        Id = sr.Id,
+                        IsLateCancellation = sr.IsLateCancellation,
+                        CancelledDate = sr.CancelledDate,
+                        IsNoShow = sr.IsNoShow
+                    })
+                    .ToList();
+
+                return source
+                    .Where(sr => sr.ServiceStatusId.GetValueOrDefault(0) != ServiceStatus.Cancellation)
                     .Count();
             }
         }

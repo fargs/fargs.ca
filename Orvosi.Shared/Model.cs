@@ -366,6 +366,24 @@ namespace Orvosi.Shared.Model
         public string Name { get; set; }
         public string City { get; set; }
         public string ProvinceCode { get; set; }
+        public string TimeZone
+        {
+            get
+            {
+                if (ProvinceCode == "CA-ON")
+                {
+                    return TimeZones.EasternStandardTime;
+                }
+                else if (ProvinceCode == "CA-BC")
+                {
+                    return TimeZones.WestCoastTime;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
     }
 
     public class Invoice
@@ -408,9 +426,16 @@ namespace Orvosi.Shared.Model
     public class ServiceRequestMessage
     {
         public Guid Id { get; set; }
+        public string TimeZone { get; set; }
         public string Message { get; set; }
         public DateTime PostedDate { get; set; }
         public Person PostedBy { get; set; }
-
+        public DateTime PostedDateLocal
+        {
+            get
+            {
+                return PostedDate.ToLocalTimeZone(TimeZone);
+            }
+        }
     }
 }

@@ -43,6 +43,7 @@ namespace Orvosi.Data
             Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("smallint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("smalldatetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(256);
+            Property(x => x.TimeZone).HasColumnName(@"TimeZone").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
 
             // Foreign keys
             HasOptional(a => a.City_CityId).WithMany(b => b.Addresses).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_Address_City

@@ -13,7 +13,7 @@
             </span>
             @*<span style="color: white; background-color:@Model.PostedBy.ColorCode; padding:2px;">@Model.PostedBy.Initials</span>*@
             <span class="col-md-8">@Model.Message</span>
-            <span class="col-md-3 pull-right small text-muted">@Model.PostedDate.ToOrvosiDateTimeFormat()</span>
+            <span class="col-md-3 pull-right small text-muted">@Model.PostedDateLocal.ToOrvosiDateTimeFormat()</span>
         </div>
     </div>
 </li>

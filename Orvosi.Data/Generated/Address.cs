@@ -33,6 +33,7 @@ namespace Orvosi.Data
         public short? LocationId { get; set; } // LocationId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 256)
+        public string TimeZone { get; set; } // TimeZone (length: 50)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_AvailableDay

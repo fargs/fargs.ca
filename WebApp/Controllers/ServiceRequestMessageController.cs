@@ -25,6 +25,7 @@ namespace WebApp.Controllers
                         Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
                         {
                             Id = srm.Id,
+                            TimeZone = srm.ServiceRequest.Address.TimeZone,
                             Message = srm.Message,
                             PostedDate = srm.PostedDate,
                             PostedBy = new Person
@@ -76,6 +77,7 @@ namespace WebApp.Controllers
                         Id = srm.Id,
                         Message = srm.Message,
                         PostedDate = srm.PostedDate,
+                        TimeZone = srm.ServiceRequest.Address.TimeZone,
                         PostedBy = new Person
                         {
                             Id = srm.AspNetUser.Id,

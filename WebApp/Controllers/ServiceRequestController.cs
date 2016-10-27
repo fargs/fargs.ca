@@ -19,6 +19,7 @@ using Dropbox.Api.Team;
 using Box.V2.Models;
 using e = Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
+using MoreLinq;
 
 namespace WebApp.Controllers
 {
@@ -169,26 +170,56 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> BoxManager(int serviceRequestId)
         {
+            // Get the box folder id for the case
             var serviceRequest = ctx.ServiceRequests.Find(serviceRequestId);
-            var resources = serviceRequest.ServiceRequestTasks.Where(t => t.AssignedTo.HasValue).Select(sr => sr.AspNetUser_AssignedTo).Distinct();
 
-            var boxCaseFolderId = ctx.ServiceRequests.First(sr => sr.Id == serviceRequestId).BoxCaseFolderId;
+            if (string.IsNullOrEmpty(serviceRequest.BoxCaseFolderId))
+            {
+                ModelState.AddModelError("", "BoxCaseFolderId is set to null.");
+                return new HttpNotFoundResult();
+            }
+
+            var orvosiBoxFolderCollaborations = serviceRequest
+                .ServiceRequestBoxCollaborations
+                .Where(bc => bc.ServiceRequestId == serviceRequestId)
+                .ToList();
+
+            var box = new BoxManager();
+            var boxFolder = box.GetFolder(serviceRequest.BoxCaseFolderId);
+            var boxFolderCollaborations = box.GetCollaborations(serviceRequest.BoxCaseFolderId).Entries.ToList();
+
+            var result = orvosiBoxFolderCollaborations
+                .FullGroupJoin(boxFolderCollaborations,
+                    o => o.BoxCollaborationId,
+                    b => b.Id,
+                    (key, o, b) => new BoxCollaborationFullOuterJoinResult
+                    {
+                        ServiceRequestId = serviceRequestId,
+                        BoxCollaborationId = key,
+                        OrvosiCollaborations = o,
+                        BoxCollaborations = b
+                    }).ToList();
+
+            var orvosiResources = serviceRequest
+                .ServiceRequestTasks
+                    .Where(t => t.AssignedTo.HasValue)
+                    .Select(sr => sr.AspNetUser_AssignedTo)
+                    .Distinct();
+
+            var resources = new List<BoxResource>();
+            foreach (var resource in orvosiResources)
+            {
+                var boxResource = new BoxResource() { Resource = resource };
+                boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
+                resources.Add(boxResource);
+            }
 
             var vm = new BoxManagerViewModel();
             vm.ServiceRequestId = serviceRequestId;
-
-            var box = new BoxManager();
-            if (!string.IsNullOrEmpty(boxCaseFolderId))
-            {
-                vm.BoxFolder = box.GetFolder(boxCaseFolderId);
-                vm.BoxFolderCollaborations = box.GetCollaborations(boxCaseFolderId);
-                foreach (var resource in resources)
-                {
-                    var boxResource = new BoxResource() { Resource = resource };
-                    boxResource.BoxFolder = await box.GetFolder(boxCaseFolderId, resource.BoxUserId);
-                    vm.Resources.Add(boxResource);
-                }
-            }
+            vm.Reconciliations = result;
+            vm.Resources = resources;
+            vm.BoxFolderCollaborations = boxFolderCollaborations;
+            vm.BoxFolder = boxFolder;
             return View(vm);
         }
 
@@ -861,91 +892,91 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
-                // Get the request
-                var request = ctx.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
+            // Get the request
+            var request = ctx.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
 
-                // Get the request and assert they have a Box Folder Id
-                var physician = ctx.AspNetUsers.Single(p => p.Id == request.PhysicianId);
-                //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
-                var physicianBoxFolderId = physician.BoxFolderId;
-                if (string.IsNullOrEmpty(physicianBoxFolderId))
-                    return PartialView("Error", "Physician does not have a cases folder setup in Box.");
+            // Get the request and assert they have a Box Folder Id
+            var physician = ctx.AspNetUsers.Single(p => p.Id == request.PhysicianId);
+            //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
+            var physicianBoxFolderId = physician.BoxFolderId;
+            if (string.IsNullOrEmpty(physicianBoxFolderId))
+                return PartialView("Error", "Physician does not have a cases folder setup in Box.");
 
-                // Create the case folder
-                var box = new BoxManager();
-                BoxFolder caseFolder;
-                if (request.Service.ServiceCategoryId == ServiceCategories.AddOn)
+            // Create the case folder
+            var box = new BoxManager();
+            BoxFolder caseFolder;
+            if (request.Service.ServiceCategoryId == ServiceCategories.AddOn)
+            {
+                var province = ctx.GetCompanyProvince(request.CompanyId).FirstOrDefault();
+                if (province == null)
                 {
-                    var province = ctx.GetCompanyProvince(request.CompanyId).FirstOrDefault();
-                    if (province == null)
-                    {
-                        province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
-                    }
-                    caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.GetCaseFolderName(), physician.Physician.BoxAddOnTemplateFolderId);
+                    province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
                 }
-                else
-                {
-                    // Get the province which is used in the case folder path
-                    var province = ctx.Provinces.Single(p => p.Id == request.Address.ProvinceId);
-                    caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.GetCaseFolderName(), physician.Physician.BoxCaseTemplateFolderId);
-                }
+                caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.GetCaseFolderName(), physician.Physician.BoxAddOnTemplateFolderId);
+            }
+            else
+            {
+                // Get the province which is used in the case folder path
+                var province = ctx.Provinces.Single(p => p.Id == request.Address.ProvinceId);
+                caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.GetCaseFolderName(), physician.Physician.BoxCaseTemplateFolderId);
+            }
 
-                // Persist the new case folder Id to the database.
-                request.BoxCaseFolderId = caseFolder.Id;
-                ctx.SaveChanges();
+            // Persist the new case folder Id to the database.
+            request.BoxCaseFolderId = caseFolder.Id;
+            ctx.SaveChanges();
 
-                // Redirect to display the Box Folder
-                return RedirectToAction("Details", new { id = ServiceRequestId });
+            // Redirect to display the Box Folder
+            return RedirectToAction("Details", new { id = ServiceRequestId });
         }
 
         [HttpPost]
         public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
-                var resources = ctx.GetServiceRequestResources(ServiceRequestId);
-                var resource = resources.Single(r => r.Id == UserId);
+            var resources = ctx.GetServiceRequestResources(ServiceRequestId);
+            var resource = resources.Single(r => r.Id == UserId);
 
-                var box = new BoxManager();
-                var collaboration = box.AddCollaboration(FolderId, resource.BoxUserId, resource.Email);
-                ctx.ServiceRequestBoxCollaborations.Add(
-                    new ServiceRequestBoxCollaboration()
-                    {
-                        BoxCollaborationId = collaboration.Id,
-                        ServiceRequestId = ServiceRequestId,
-                        UserId = UserId,
-                        ModifiedUser = User.Identity.Name,
-                        ModifiedDate = SystemTime.Now()
-                    }
-                );
-                ctx.SaveChanges();
+            var box = new BoxManager();
+            var collaboration = box.AddCollaboration(FolderId, resource.BoxUserId, resource.Email);
+            ctx.ServiceRequestBoxCollaborations.Add(
+                new ServiceRequestBoxCollaboration()
+                {
+                    BoxCollaborationId = collaboration.Id,
+                    ServiceRequestId = ServiceRequestId,
+                    UserId = UserId,
+                    ModifiedUser = User.Identity.Name,
+                    ModifiedDate = SystemTime.Now()
+                }
+            );
+            ctx.SaveChanges();
 
-                box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
+            box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
-                return RedirectToAction("Details", new { id = ServiceRequestId });
-            
+            return RedirectToAction("Details", new { id = ServiceRequestId });
+
         }
 
         public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
         {
-            
-                var box = new BoxManager();
-                var success = box.RemoveCollaboration(CollaborationId);
 
-                if (success)
-                {
-                    var collaboration = ctx.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
-                    ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
-                    ctx.SaveChanges();
-                }
-                return RedirectToAction("Details", new { id = ServiceRequestId });
-            
+            var box = new BoxManager();
+            var success = box.RemoveCollaboration(CollaborationId);
+
+            if (success)
+            {
+                var collaboration = ctx.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
+                ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
+                ctx.SaveChanges();
+            }
+            return RedirectToAction("Details", new { id = ServiceRequestId });
+
         }
 
         public ActionResult AcceptBoxFolder(int ServiceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
-            
-                var user = ctx.Profiles.Single(p => p.Id == UserId);
-                boxUserId = user.BoxUserId;
+
+            var user = ctx.Profiles.Single(p => p.Id == UserId);
+            boxUserId = user.BoxUserId;
             var box = new BoxManager();
             var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
             return RedirectToAction("Details", new { id = ServiceRequestId });
@@ -1060,4 +1091,12 @@ namespace WebApp.Controllers
             base.Dispose(disposing);
         }
     }
+}
+
+public class BoxCollaborationFullOuterJoinResult
+{
+    public string BoxCollaborationId { get; set; }
+    public IEnumerable<ServiceRequestBoxCollaboration> OrvosiCollaborations { get; set; }
+    public IEnumerable<BoxCollaboration> BoxCollaborations { get; set; }
+    public int ServiceRequestId { get; internal set; }
 }

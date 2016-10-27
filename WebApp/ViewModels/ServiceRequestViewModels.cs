@@ -53,8 +53,9 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         }
         public int ServiceRequestId { get; set; }
         public BoxFolder BoxFolder { get; set; }
-        public BoxCollection<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
+        public List<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
         public List<BoxResource> Resources { get; internal set; }
+        public IEnumerable<BoxCollaborationFullOuterJoinResult> Reconciliations { get; set; }
     }
 
     public class EditViewModel

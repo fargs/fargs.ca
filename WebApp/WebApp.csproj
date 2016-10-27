@@ -63,11 +63,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Box.V2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Box.V2.2.6.2\lib\portable-net40+sl50+win+wp80\Box.V2.dll</HintPath>
+      <HintPath>..\packages\Box.V2.2.12.1\lib\portable-net40+sl50+win+wp80\Box.V2.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Box.V2.JWTAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Box.V2.JWTAuth.1.0.3\lib\net45\Box.V2.JWTAuth.dll</HintPath>
+      <HintPath>..\packages\Box.V2.JWTAuth.1.1.0\lib\net45\Box.V2.JWTAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Dropbox.Api, Version=0.1.5884.25547, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
@@ -1132,6 +1132,7 @@
     <Content Include="Hubs\_ServiceRequestHubJS.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\_Layout.cshtml" />
     <Content Include="Views\Dashboard\_SummaryCount.cshtml" />
+    <Content Include="Views\ServiceRequest\BoxManager2.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
@@ -1153,6 +1154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Views\Box\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Library\Filters\" />

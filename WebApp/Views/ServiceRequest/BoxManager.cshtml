@@ -1,4 +1,19 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.BoxManagerViewModel
+﻿@using Orvosi.Data
+@model WebApp.ViewModels.ServiceRequestViewModels.BoxManagerViewModel
+
+@{
+    var context = new OrvosiDbContext();
+    var userSelectList = (from user in context.AspNetUsers
+                          from userRole in context.AspNetUserRoles
+                          from role in context.AspNetRoles
+                          where user.Id == userRole.UserId && role.Id == userRole.RoleId
+                          select new SelectListItem
+                          {
+                              Text = user.FirstName + " " + user.LastName,
+                              Value = user.Id.ToString(),
+                              Group = new SelectListGroup() { Name = role.Name }
+                          }).ToList();
+}
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -7,36 +22,77 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-sm-12">
-                <small><strong>@Model.BoxFolder.Name</strong></small>
+                @if (Model.BoxFolder != null)
+                {
+                    <small><strong>@Model.BoxFolder.Name</strong></small>
+                }
+                else
+                {
+                    <small><strong>Folder is not created yet</strong></small>
+                }
             </div>
         </div>
-        @foreach (var item in Model.Resources)
+        @if (Model.BoxFolder != null)
+        {
+            foreach (var item in Model.Resources)
             {
-            <div class="row top-buffer">
-                <div class="col-sm-12">
-                    <span title="@string.Concat(item.Resource.GetDisplayName(), " - ", string.Join(" & ", item.Resource.AspNetUserRoles.Select(r => r.RoleId)))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.Resource.ColorCode;">@item.Resource.GetInitials()</span>
-                    @if (item.BoxFolder == null)
+                <div class="row top-buffer">
+                    <div class="col-sm-12">
+                        <span title="@string.Concat(item.Resource.GetDisplayName(), " - ", string.Join(" & ", item.Resource.AspNetUserRoles.Select(r => r.RoleId)))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.Resource.ColorCode;">@item.Resource.GetInitials()</span>
+                        @if (item.BoxFolder == null)
                     {
-                        <form action="~/ServiceRequest/ShareBoxFolder" method="post">
-                            @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                            @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                            @Html.Hidden("UserId", item.Resource.Id)
-                            &nbsp;
-                            <button type="submit" class="btn btn-sm btn-primary">Share</button>
-                        </form>
-                    }
-                    else if (item.BoxFolder != null && item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId) != null)
-                    {
-                        var boxCollaboration = item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId);
-                        if (boxCollaboration != null)
-                        {
-                            var collaboration = Model.BoxFolderCollaborations.Entries.SingleOrDefault(c => c.Id == boxCollaboration.BoxCollaborationId);
-                            <form action="~/ServiceRequest/UnshareBoxFolder" method="post" class="pull-left">
-                                @Html.Hidden("CollaborationId", boxCollaboration.BoxCollaborationId)
+                            <form action="~/ServiceRequest/ShareBoxFolder" method="post">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                                @Html.Hidden("UserId", item.Resource.Id)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Share</button>
                             </form>
+                        }
+                        else if (item.BoxFolder != null && item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId) != null)
+                        {
+                            var boxCollaboration = item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId);
+                            if (boxCollaboration != null)
+                            {
+                                var collaboration = Model.BoxFolderCollaborations.SingleOrDefault(c => c.Id == boxCollaboration.BoxCollaborationId);
+                                if (collaboration != null)
+                                {
+                                    <form action="~/ServiceRequest/UnshareBoxFolder" method="post" class="pull-left">
+                                        @Html.Hidden("CollaborationId", boxCollaboration.BoxCollaborationId)
+                                        @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                        &nbsp;
+                                        <button type="submit" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
+                                    </form>
+                                    if (item.BoxFolder.SyncState == "synced")
+                                    {
+                                        <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
+                                            @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                            @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                                            @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
+                                            &nbsp;
+                                            <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
+                                            @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+                                            @Html.Hidden("FolderId", Model.BoxFolder.Id)
+                                            @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
+                                            &nbsp;
+                                            <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
+                                        </form>
+                                    }
+                                }
+                                else
+                                {
+                                    <div> Something went wrong</div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <span class="small">&nbsp;Already has higher level access.</span>
                             if (item.BoxFolder.SyncState == "synced")
                             {
                                 <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
@@ -58,34 +114,60 @@
                                 </form>
                             }
                         }
-                    }
-                    else
-                    {
-                        <span class="small">&nbsp;Already has higher level access.</span>
-                        if (item.BoxFolder.SyncState == "synced")
-                        {
-                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
-                                &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
-                                @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
-                                @Html.Hidden("FolderId", Model.BoxFolder.Id)
-                                @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
-                                &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
-                            </form>
-                        }
-                    }
+                    </div>
                 </div>
-            </div>
-
+            }
         }
     </div>
 </div>
+
+<h4>Debug</h4>
+@foreach (var item in Model.Reconciliations)
+{
+    <ul>
+        <li>
+            @item.BoxCollaborationId
+            <span><i class="fa fa-times"></i></span>
+            <ul>
+                @if (item.OrvosiCollaborations.Any())
+                {
+                    foreach (var inner in item.OrvosiCollaborations)
+                    {
+                        <li>
+                            ORVOSI: @inner.AspNetUser.GetDisplayName()
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li>
+                        ORVOSI:
+                    </li>
+                }
+            </ul>
+            <ul>
+                @foreach (var inner in item.BoxCollaborations)
+                {
+                    <li>
+                        @if (inner.AccessibleBy.Type == BoxType.user.ToString())
+                        {
+                            <span>BOX: </span> @((inner.AccessibleBy as Box.V2.Models.BoxUser).Name)
+                        }
+                        else if (inner.AccessibleBy.Type == BoxType.group.ToString())
+                        {
+                            <span>BOX: </span> @((inner.AccessibleBy as Box.V2.Models.BoxGroup).Name) <span class="label label-warning">Group</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </li>
+    </ul>
+}
+@*<form action="~/ServiceRequest/AddCollaboration/" method="get" class="form-inline">
+    <div class="form-group">
+        @Html.DropDownList("userId", new SelectList(userSelectList, "Value", "Text", "Group.Name", new { }), "-- User --", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Share</button>
+    </div>
+</form>*@

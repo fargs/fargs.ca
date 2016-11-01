@@ -66,6 +66,9 @@ namespace WebApp.Library.Extensions
         }
         public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
         {
+            if (self.Date == toDate.Date)
+                return new List<DateTime> { self.Date };
+
             var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);
 
             return from p in range

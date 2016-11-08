@@ -14,22 +14,112 @@ using WebApp.ViewModels.InvoiceViewModels;
 using WebApp.Library;
 using System.Net.Mail;
 using System.IO;
+using System.Linq.Expressions;
+using Orvosi.Data;
 
 namespace WebApp.Controllers
 {
     [Authorize(Roles = "Case Coordinator, Super Admin, Physician")]
     public class AccountingController : Controller
     {
-        // GET: Accounting
-        public ActionResult Invoices(Guid? serviceProviderId)
+        [HttpGet]
+        public ActionResult AddInvoice(Guid? serviceProviderId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                ViewBag.UserSelectList = GetServiceProviderList(context);
+                ViewBag.CustomerSelectList = GetCustomerList(context);
+            }
+
+            var invoice = new Orvosi.Data.Invoice()
+            {
+                ServiceProviderGuid = GetServiceProviderId(serviceProviderId),
+                InvoiceDate = SystemTime.Now()
+            };
+            return View(invoice);
+        }
+
+
+        public async Task<ActionResult> AddInvoiceDetail(Orvosi.Data.Invoice invoice)
+        {
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var serviceProvider = context.BillableEntities.First(c => c.EntityGuid == invoice.ServiceProviderGuid);
+                var customer = context.BillableEntities.First(c => c.EntityGuid == invoice.CustomerGuid);
+
+                var newInvoice = new Invoice();
+                newInvoice.BuildInvoice(serviceProvider, customer, "PREVIEW", invoice.InvoiceDate, User.Identity.Name);
+                newInvoice.CustomerEmail = string.IsNullOrEmpty(newInvoice.CustomerEmail) ? newInvoice.CustomerEmail : invoice.CustomerEmail;
+                return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", newInvoice);
+            }
+        }
+
+        public async Task<ActionResult> PreviewInvoice(Orvosi.Data.Invoice invoice)
+        {
+            return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+        }
+        private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
+        {
+            var userSelectList = (from user in context.AspNetUsers
+                                  from userRole in context.AspNetUserRoles
+                                  from role in context.AspNetRoles
+                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
+                                  select new SelectListItem
+                                  {
+                                      Text = user.FirstName + " " + user.LastName,
+                                      Value = user.Id.ToString(),
+                                      Group = new SelectListGroup() { Name = role.Name }
+                                  }).ToList();
+            return userSelectList;
+        }
+
+        private List<SelectListItem> GetCustomerList(OrvosiDbContext context)
+        {
+            return context.Companies
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.ObjectGuid.ToString(),
+                    Group = new SelectListGroup() { Name = c.Parent.Name }
+                }).ToList();
+        }
+
+        public ActionResult UnsentInvoices(Guid? serviceProviderId)
         {
             Guid userId = GetServiceProviderId(serviceProviderId);
 
-            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToServiceRequests(userId, SystemTime.Now());
+            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToUnsentInvoices(userId, SystemTime.Now());
 
             ViewBag.SelectedUserId = userId;
 
-            return View(model);
+            return View("Invoices", model);
+        }
+
+        public ActionResult SentInvoices(Guid? serviceProviderId)
+        {
+            Guid userId = GetServiceProviderId(serviceProviderId);
+
+            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToSentInvoices(userId, SystemTime.Now());
+
+            ViewBag.SelectedUserId = userId;
+
+            return View("Invoices", model);
+        }
+
+        public ActionResult AllInvoices(Guid? serviceProviderId)
+        {
+            Guid userId = GetServiceProviderId(serviceProviderId);
+
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var model = context
+                    .Invoices
+                    .Select(WebApp.Models.AccountingModel.Mapper.InvoicesProjection(userId, System.SystemTime.Now()))
+                    .ToList();
+                ViewBag.SelectedUserId = userId;
+
+                return View("AllInvoices", model);
+            }
         }
 
         // API

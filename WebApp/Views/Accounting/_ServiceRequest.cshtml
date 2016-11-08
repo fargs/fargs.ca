@@ -34,7 +34,7 @@
     {
         <div class="col-md-5 o-dashboard-td">
             <div>
-                Price: @Model.ServiceCataloguePrice.Value.ToString("C2")
+                Price: @(Model.ServiceCataloguePrice.HasValue ? Model.ServiceCataloguePrice.Value.ToString("C2") : "Not Set")
             </div>
             @if (assessment.IsNoShow)
             {

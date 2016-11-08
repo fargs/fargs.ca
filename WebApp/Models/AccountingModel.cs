@@ -24,16 +24,14 @@ namespace WebApp.Models.AccountingModel
             this.context = context;
         }
 
-        public IEnumerable<DayFolder> MapToServiceRequests(Guid serviceProviderId, DateTime now)
+        public IEnumerable<DayFolder> MapToUnsentInvoices(Guid serviceProviderId, DateTime now)
         {
-            var source = GetServiceRequests(serviceProviderId, now);
-
-            var filtered = source
-                .Where(sr => sr.PhysicianId == serviceProviderId)
-                .Where(sr => !sr.IsClosed)
-                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date) // this filters out the days
-                .Where(sr => !sr.InvoiceDetails.Any() || sr.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue))
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete)) // Where it is not sent or the submit invoices task is not checked)
+            var filtered = context.ServiceRequests
+                .AreAssignedToServiceProvider(serviceProviderId)
+                //.AreOpen()
+                .AreScheduledOnOrBefore(now)
+                .AreNotSent()
+                .Select(ServiceRequestProjection(serviceProviderId, now))
                 .ToList();
 
             return filtered
@@ -41,20 +39,40 @@ namespace WebApp.Models.AccountingModel
                 .Select(d => new DayFolder
                 {
                     Day = d.Key.Day.Value,
-                    //Company = d.Key.Company,
-                    //Address = d.Key.Address,
                     ServiceRequests = filtered
                         .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
-                        .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
+                        .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
+                        .ThenBy(sr => sr.StartTime)
+                }).OrderBy(df => df.Day);
+        }
+
+        public IEnumerable<DayFolder> MapToSentInvoices(Guid serviceProviderId, DateTime now)
+        {
+            var filtered = context.ServiceRequests
+                .AreAssignedToServiceProvider(serviceProviderId)
+                //.AreSent()
+                .Select(ServiceRequestProjection(serviceProviderId, now))
+                .ToList();
+
+            return filtered
+                .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
+                .Select(d => new DayFolder
+                {
+                    Day = d.Key.Day.Value,
+                    ServiceRequests = filtered
+                        .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
+                        .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
+                        .ThenBy(sr => sr.StartTime)
                 }).OrderBy(df => df.Day);
         }
 
         public IEnumerable<ServiceRequest> MapToServiceRequest(Guid serviceProviderId, DateTime now, int serviceRequestId)
         {
-            var source = GetServiceRequests(serviceProviderId, now);
-
-            // Get a list with one item
-            return source.Where(s => s.Id == serviceRequestId).ToList();
+            return context
+                .ServiceRequests
+                    .Where(s => s.Id == serviceRequestId)
+                    .Select(ServiceRequestProjection(serviceProviderId, now))
+                    .ToList();
         }
 
         public EditInvoiceDetailForm MapToEditForm(int invoiceDetailId)
@@ -127,91 +145,168 @@ namespace WebApp.Models.AccountingModel
             db.SaveChanges();
         }
 
-        private IQueryable<ServiceRequest> GetServiceRequests(Guid serviceProviderId, DateTime now)
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> InvoicesProjection(Guid serviceProviderId, DateTime now)
         {
-            return context.ServiceRequests
-                //.Where(d =>
-                    //d.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId)
-                    //d.PhysicianId == serviceProviderId
-                    //&& d.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue) 
-                    //&& d.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete) // Where it is not sent or the submit invoices task is not checked
-                    //&& !d.IsClosed)
-                .Select(sr => new ServiceRequest
+            return i => new Invoice
+            {
+                Id = i.Id,
+                InvoiceNumber = i.InvoiceNumber,
+                InvoiceDate = i.InvoiceDate,
+                SubTotal = i.SubTotal,
+                TaxRateHst = i.TaxRateHst,
+                Hst = i.Hst,
+                Total = i.Total.Value,
+                SentDate = i.SentDate,
+                PaymentReceivedDate = i.PaymentReceivedDate,
+                InvoiceGuid = i.ObjectGuid,
+                Customer = new Customer
                 {
-                    Id = sr.Id,
-                    ClaimantName = sr.ClaimantName,
-                    DueDate = sr.DueDate,
-                    AppointmentDate = sr.AppointmentDate,
-                    Now = now,
-                    StartTime = sr.StartTime,
-                    CancelledDate = sr.CancelledDate,
-                    IsLateCancellation = sr.IsLateCancellation,
-                    IsNoShow = sr.IsNoShow,
-                    IsClosed = sr.IsClosed,
-                    BoxCaseFolderId = sr.BoxCaseFolderId,
-                    ServiceCataloguePrice = sr.ServiceCataloguePrice,
-                    NoShowRate = sr.NoShowRate,
-                    LateCancellationRate = sr.LateCancellationRate,
-                    Notes = sr.Notes,
-                    PhysicianId = sr.PhysicianId,
-                    ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new ServiceRequestTask
+                    Id = i.CustomerGuid,
+                    Name = i.CustomerName,
+                    BillingEmail = i.CustomerEmail,
+                    City = i.CustomerCity,
+                    Province = i.CustomerProvince
+                },
+                InvoiceDetails = i.InvoiceDetails.Where(id => !id.IsDeleted && i.ServiceProviderGuid == serviceProviderId).Select(id => new InvoiceDetail
+                {
+                    Id = id.Id,
+                    Description = id.Description,
+                    DiscountDescription = id.DiscountDescription,
+                    AdditionalNotes = id.AdditionalNotes,
+                    Rate = id.Rate.Value,
+                    Amount = id.Amount.Value,
+                    Total = id.Total.Value,
+                    ServiceRequest = !id.ServiceRequestId.HasValue ? null : new ServiceRequest
                     {
-                        Id = srt.Id,
-                        ProcessTask = new ProcessTask
+                        Id = id.ServiceRequest.Id,
+                        ClaimantName = id.ServiceRequest.ClaimantName,
+                        DueDate = id.ServiceRequest.DueDate,
+                        AppointmentDate = id.ServiceRequest.AppointmentDate,
+                        Now = now,
+                        StartTime = id.ServiceRequest.StartTime,
+                        CancelledDate = id.ServiceRequest.CancelledDate,
+                        IsLateCancellation = id.ServiceRequest.IsLateCancellation,
+                        IsNoShow = id.ServiceRequest.IsNoShow,
+                        IsClosed = id.ServiceRequest.IsClosed,
+                        BoxCaseFolderId = id.ServiceRequest.BoxCaseFolderId,
+                        ServiceCataloguePrice = id.ServiceRequest.ServiceCataloguePrice,
+                        NoShowRate = id.ServiceRequest.NoShowRate,
+                        LateCancellationRate = id.ServiceRequest.LateCancellationRate,
+                        Notes = id.ServiceRequest.Notes,
+                        PhysicianId = id.ServiceRequest.PhysicianId,
+                        ServiceRequestTasks = id.ServiceRequest.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new ServiceRequestTask
                         {
-                            Id = srt.TaskId.Value
-                        },
-                        IsObsolete = srt.IsObsolete,
-                        CompletedDate = srt.CompletedDate
-                    }),
-                    Service = new Service
-                    {
-                        Id = sr.Service.Id,
-                        Name = sr.Service.Name,
-                        Code = sr.Service.Code
-                    },
-                    Company = new Company
-                    {
-                        Id = sr.Company.Id,
-                        Name = sr.Company.Name
-                    },
-                    Address = sr.Address == null ? null : new Address
-                    {
-                        Id = sr.Address.Id,
-                        Name = sr.Address.Name,
-                        City = sr.Address.City_CityId.Name,
-                        ProvinceCode = sr.Address.Province.ProvinceCode
-                    },
-                    InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted && id.Invoice.ServiceProviderGuid == serviceProviderId).Select(id => new InvoiceDetail
-                    {
-                        Id = id.Id,
-                        Description = id.Description,
-                        DiscountDescription = id.DiscountDescription,
-                        AdditionalNotes = id.AdditionalNotes,
-                        Rate = id.Rate.Value,
-                        Amount = id.Amount.Value,
-                        Total = id.Total.Value,
-                        Invoice = new Invoice
-                        {
-                            Id = id.Invoice.Id,
-                            InvoiceNumber = id.Invoice.InvoiceNumber,
-                            InvoiceDate = id.Invoice.InvoiceDate,
-                            SubTotal = id.Invoice.SubTotal,
-                            TaxRateHst = id.Invoice.TaxRateHst,
-                            Hst = id.Invoice.Hst,
-                            Total = id.Invoice.Total.Value,
-                            SentDate = id.Invoice.SentDate,
-                            PaymentReceivedDate = id.Invoice.PaymentReceivedDate,
-                            InvoiceGuid = id.Invoice.ObjectGuid,
-                            Customer = new Customer
+                            Id = srt.Id,
+                            ProcessTask = new ProcessTask
                             {
-                                Id = id.Invoice.CustomerGuid,
-                                Name = id.Invoice.CustomerName,
-                                BillingEmail = id.Invoice.CustomerEmail
-                            }
+                                Id = srt.TaskId.Value
+                            },
+                            IsObsolete = srt.IsObsolete,
+                            CompletedDate = srt.CompletedDate
+                        }),
+                        Service = new Service
+                        {
+                            Id = id.ServiceRequest.Service.Id,
+                            Name = id.ServiceRequest.Service.Name,
+                            Code = id.ServiceRequest.Service.Code
+                        },
+                        Company = new Company
+                        {
+                            Id = id.ServiceRequest.Company.Id,
+                            Name = id.ServiceRequest.Company.Name
+                        },
+                        Address = id.ServiceRequest.Address == null ? null : new Address
+                        {
+                            Id = id.ServiceRequest.Address.Id,
+                            Name = id.ServiceRequest.Address.Name,
+                            City = id.ServiceRequest.Address.City_CityId.Name,
+                            ProvinceCode = id.ServiceRequest.Address.Province.ProvinceCode
                         }
-                    })
-                });
+                    }
+                })
+            };
+        }
+
+        public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> ServiceRequestProjection(Guid serviceProviderId, DateTime now)
+        {
+            return sr => new ServiceRequest
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                DueDate = sr.DueDate,
+                AppointmentDate = sr.AppointmentDate,
+                Now = now,
+                StartTime = sr.StartTime,
+                CancelledDate = sr.CancelledDate,
+                IsLateCancellation = sr.IsLateCancellation,
+                IsNoShow = sr.IsNoShow,
+                IsClosed = sr.IsClosed,
+                BoxCaseFolderId = sr.BoxCaseFolderId,
+                ServiceCataloguePrice = sr.ServiceCataloguePrice,
+                NoShowRate = sr.NoShowRate,
+                LateCancellationRate = sr.LateCancellationRate,
+                Notes = sr.Notes,
+                PhysicianId = sr.PhysicianId,
+                ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new ServiceRequestTask
+                {
+                    Id = srt.Id,
+                    ProcessTask = new ProcessTask
+                    {
+                        Id = srt.TaskId.Value
+                    },
+                    IsObsolete = srt.IsObsolete,
+                    CompletedDate = srt.CompletedDate
+                }),
+                Service = new Service
+                {
+                    Id = sr.Service.Id,
+                    Name = sr.Service.Name,
+                    Code = sr.Service.Code
+                },
+                Company = new Company
+                {
+                    Id = sr.Company.Id,
+                    Name = sr.Company.Name
+                },
+                Address = sr.Address == null ? null : new Address
+                {
+                    Id = sr.Address.Id,
+                    Name = sr.Address.Name,
+                    City = sr.Address.City_CityId.Name,
+                    ProvinceCode = sr.Address.Province.ProvinceCode
+                },
+                InvoiceDetails = sr.InvoiceDetails.Where(id => !id.IsDeleted && id.Invoice.ServiceProviderGuid == serviceProviderId).Select(id => new InvoiceDetail
+                {
+                    Id = id.Id,
+                    Description = id.Description,
+                    DiscountDescription = id.DiscountDescription,
+                    AdditionalNotes = id.AdditionalNotes,
+                    Rate = id.Rate.Value,
+                    Amount = id.Amount.Value,
+                    Total = id.Total.Value,
+                    Invoice = new Invoice
+                    {
+                        Id = id.Invoice.Id,
+                        InvoiceNumber = id.Invoice.InvoiceNumber,
+                        InvoiceDate = id.Invoice.InvoiceDate,
+                        SubTotal = id.Invoice.SubTotal,
+                        TaxRateHst = id.Invoice.TaxRateHst,
+                        Hst = id.Invoice.Hst,
+                        Total = id.Invoice.Total.Value,
+                        SentDate = id.Invoice.SentDate,
+                        PaymentReceivedDate = id.Invoice.PaymentReceivedDate,
+                        InvoiceGuid = id.Invoice.ObjectGuid,
+                        Customer = new Customer
+                        {
+                            Id = id.Invoice.CustomerGuid,
+                            Name = id.Invoice.CustomerName,
+                            BillingEmail = id.Invoice.CustomerEmail,
+                            City = id.Invoice.CustomerCity,
+                            Province = id.Invoice.CustomerProvince
+                        }
+                    }
+                })
+            };
         }
     }
 }

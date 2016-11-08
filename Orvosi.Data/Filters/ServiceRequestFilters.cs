@@ -16,6 +16,10 @@ namespace Orvosi.Data.Filters
                     .Where(d => d.AppointmentDate.HasValue
                         && d.AppointmentDate.Value >= day.Date && d.AppointmentDate.Value < endOfDay);
         }
+        public static IQueryable<ServiceRequest> AreScheduledOnOrBefore(this IQueryable<ServiceRequest> serviceRequests, DateTime now)
+        {
+            return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date); // this filters out the days
+        }
         public static IQueryable<ServiceRequest> AreAssignedToServiceProvider(this IQueryable<ServiceRequest> serviceRequests, Guid serviceProviderId)
         {
             return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId));
@@ -32,6 +36,17 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests.Where(sr => sr.DueDate.HasValue);
         }
-
+        public static IQueryable<ServiceRequest> AreSent(this IQueryable<ServiceRequest> serviceRequests)
+        {
+            return serviceRequests.Where(sr => 
+                sr.InvoiceDetails.Any(id => id.Invoice.SentDate.HasValue)
+                || sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete));
+        }
+        public static IQueryable<ServiceRequest> AreNotSent(this IQueryable<ServiceRequest> serviceRequests)
+        {
+            return serviceRequests
+                .Where(sr => !sr.InvoiceDetails.Any() || sr.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue))
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete));
+        }
     }
 }

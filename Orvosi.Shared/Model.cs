@@ -400,6 +400,7 @@ namespace Orvosi.Shared.Model
         public DateTime? PaymentReceivedDate { get; set; }
         public Customer Customer { get; set; }
         public Guid InvoiceGuid { get; set; }
+        public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
     }
 
     public class InvoiceDetail
@@ -413,6 +414,7 @@ namespace Orvosi.Shared.Model
         public decimal Total { get; set; }
         public string AdditionalNotes { get; set; }
         public Invoice Invoice { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
     }
 
     public class Customer
@@ -420,7 +422,8 @@ namespace Orvosi.Shared.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string BillingEmail { get; set; }
-
+        public string City { get; set; }
+        public string Province { get; set; }
     }
 
     public class ServiceRequestMessage

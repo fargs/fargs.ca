@@ -71,21 +71,20 @@
 <h3>@Model.FilterArgs.FilterDate.ToString("yyyy MMMM")</h3>
 @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
 {
-    <p></p>
-    <div class="row">
-        <div class="col-md-2">
+    <div class="row o-dashboard-tr">
+        <div class="col-md-2" style="padding:15px 15px">
             <div>
                 <form action="~/Availability/CancelDay" method="post">
                     @Html.Hidden("id", day.Id)
-                    @if (day.AvailableSlots.All(a => a.ServiceRequests.Any()))
+                    @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequests.Any()))
                     {
                         <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
-                        <i class="fa fa-check fa-lg" style="color:green;"></i><i class="fa fa-check fa-lg" style="color:green;"></i>
+                        <i class="fa fa-check fa-lg text-success"></i>
                     }
                     else if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
                     {
-                        <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
-                        <i class="fa fa-check fa-lg" style="color:green;"></i>
+                        <div class="pull-left bg-warning">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
+                        <i class="fa fa-exclamation fa-lg text-warning"></i>
                     }
                     else
                     {
@@ -116,7 +115,7 @@
                 }
             </span>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-10" style="padding:15px 15px">
             <form action="~/Availability/AddSlots" method="post">
                 @Html.Hidden("AvailableDayId", day.Id)
                 <div class="bootstrap-timepicker">

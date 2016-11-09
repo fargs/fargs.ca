@@ -56,7 +56,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser")] ServiceRequestTemplateTask serviceRequestTemplateTask)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
             if (ModelState.IsValid)
             {
@@ -101,13 +101,14 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser")] ServiceRequestTemplateTask serviceRequestTemplateTask)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
             if (ModelState.IsValid)
             {
                 var model = db.ServiceRequestTemplateTasks.Find(serviceRequestTemplateTask.Id);
                 model.TaskId = serviceRequestTemplateTask.TaskId;
                 model.Sequence = serviceRequestTemplateTask.Sequence;
+                model.DueDateType = serviceRequestTemplateTask.DueDateType;
                 model.ModifiedDate = SystemTime.Now();
                 model.ModifiedUser = User.Identity.Name;
                 model.Child.Clear();

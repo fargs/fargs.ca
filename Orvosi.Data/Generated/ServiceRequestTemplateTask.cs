@@ -23,6 +23,7 @@ namespace Orvosi.Data
         public short? TaskId { get; set; } // TaskId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public string DueDateType { get; set; } // DueDateType (length: 10)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Child { get; set; } // Many to many mapping

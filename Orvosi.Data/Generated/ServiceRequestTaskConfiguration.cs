@@ -59,6 +59,7 @@ namespace Orvosi.Data
             Property(x => x.ServiceRequestTemplateTaskId).HasColumnName(@"ServiceRequestTemplateTaskId").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.TaskType).HasColumnName(@"TaskType").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(20);
             Property(x => x.CompletedBy).HasColumnName(@"CompletedBy").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.DueDate).HasColumnName(@"DueDate").IsOptional().HasColumnType("datetime");
 
             // Foreign keys
             HasOptional(a => a.AspNetUser_AssignedTo).WithMany(b => b.AssignedTo).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers

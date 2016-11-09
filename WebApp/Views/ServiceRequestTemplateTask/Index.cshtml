@@ -27,6 +27,7 @@
         <th>
             @Html.DisplayNameFor(model => model.ModifiedUser)
         </th>
+        <th>@Html.DisplayNameFor(model => model.DueDateType)</th>
         <th>
             Depends On
         </th>
@@ -49,6 +50,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.ModifiedUser)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DueDateType)
         </td>
         <td>
              @item.Child.Count

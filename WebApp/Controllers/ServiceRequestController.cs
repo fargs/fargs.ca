@@ -407,6 +407,7 @@ namespace WebApp.Controllers
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
+                    st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -434,6 +435,19 @@ namespace WebApp.Controllers
             }
             return await Create(selectedAvailableDayId, selectedPhysicianId);
 
+        }
+
+        private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
+        {
+            switch (dueDateType)
+            {
+                case DueDateTypes.AppointmentDate:
+                    return appointmentDate;
+                case DueDateTypes.ReportDueDate:
+                    return dueDate;
+                default:
+                    return null;
+            }
         }
 
         [HttpGet]
@@ -557,7 +571,7 @@ namespace WebApp.Controllers
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
-
+                    st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
                     sr.ServiceRequestTasks.Add(st);
                 }
 

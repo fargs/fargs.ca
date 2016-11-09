@@ -6,14 +6,26 @@
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
 }
-<div>
-    <div class="btn-group" style="margin-right:15px;">
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <form action="~/Dashboard/Agenda" method="get" class="form-inline">
+                <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+                <div class="input-group date" id="AppointmentDatePicker">
+                    @Html.TextBox("day", Model.Day, "{0:yyyy-MM-dd}", new { @class = "form-control", size = "16", onchange = "this.form.submit();" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+                <div class="btn-group">
+                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
+                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
+                </div>
+            </form>
+        </div>
     </div>
     <span class="h3" style="vertical-align:middle;">
         @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
     </span>
+
 </div>
 <p></p>
 @if (Model.Today != null)
@@ -81,6 +93,11 @@ else
 @section Scripts {
 
     <script>
+
+        $('#AppointmentDatePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        })
 
         function onTaskChecked(checkbox, taskId, serviceRequestId) {
             $.ajax({

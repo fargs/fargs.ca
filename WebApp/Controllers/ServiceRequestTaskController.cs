@@ -262,6 +262,28 @@ namespace WebApp.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Delete(int serviceRequestTaskId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                var  task = context.ServiceRequestTasks.Single(srt => srt.Id == serviceRequestTaskId);
+                foreach (var item in task.Child.ToList())
+                {
+                    task.Child.Remove(item);
+                }
+                foreach (var item in task.Parent.ToList())
+                {
+                    task.Parent.Remove(item);
+                }
+                // Parents are removed using referential integrity at the database level.
+                context.ServiceRequestTasks.Remove(task);
+                await context.SaveChangesAsync();
+                return Redirect(Request.UrlReferrer.ToString());
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> ToggleObsolete(int serviceRequestTaskId)
         {
             var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);

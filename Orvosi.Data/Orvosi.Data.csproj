@@ -59,6 +59,7 @@
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
+    <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
     <Compile Include="Generated\Account.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

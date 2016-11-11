@@ -22,7 +22,7 @@ namespace WebApp.Controllers
                     {
                         Id = sr.Id,
                         ClaimantName = sr.ClaimantName,
-                        Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
+                        ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
                         {
                             Id = srm.Id,
                             TimeZone = srm.ServiceRequest.Address.TimeZone,

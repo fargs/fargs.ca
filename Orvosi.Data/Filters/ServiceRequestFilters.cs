@@ -16,9 +16,9 @@ namespace Orvosi.Data.Filters
                     .Where(d => d.AppointmentDate.HasValue
                         && d.AppointmentDate.Value >= day.Date && d.AppointmentDate.Value < endOfDay);
         }
-        public static IQueryable<ServiceRequest> AreAssignedToServiceProvider(this IQueryable<ServiceRequest> serviceRequests, Guid serviceProviderId)
+        public static IQueryable<ServiceRequest> AreAssignedToUser(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {
-            return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId));
+            return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId));
         }
         public static IQueryable<ServiceRequest> AreOpen(this IQueryable<ServiceRequest> serviceRequests)
         {

@@ -129,7 +129,7 @@ namespace Orvosi.Shared.Model
         public Company Company { get; set; }
         public IEnumerable<ServiceRequestTask> ServiceRequestTasks { get; set; }
         public IEnumerable<Person> People { get; set; }
-        public IEnumerable<ServiceRequestMessage> Messages { get; set; }
+        public IEnumerable<ServiceRequestMessage> ServiceRequestMessages { get; set; }
         public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
         public Address Address { get; set; }
 
@@ -191,7 +191,7 @@ namespace Orvosi.Shared.Model
         public bool IsDoneTheirPart(Guid? userId)
         {
             return this.ServiceRequestTasks
-                .Where(srt => srt.AssignedTo?.Id == userId)
+                .Where(srt => (srt.AssignedTo == null ? null : srt.AssignedTo.Id) == userId)
                 .All(srt => srt.Status.Id == TaskStatuses.Done || srt.Status.Id == TaskStatuses.Obsolete);
         }
     }
@@ -302,7 +302,7 @@ namespace Orvosi.Shared.Model
         {
             get
             {
-                var isWaiting = Dependencies.Any(d => (!d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != 133) || (d.TaskId == 133 && AppointmentDate.Value.Date > Now));
+                var isWaiting = Dependencies.Any(d => (!d.CompletedDate.HasValue && !d.IsObsolete && d.TaskId != 133) || (d.TaskId == 133 && AppointmentDate.HasValue && AppointmentDate.Value.Date > Now));
 
                 if (IsObsolete)
                 {
@@ -312,7 +312,7 @@ namespace Orvosi.Shared.Model
                         Name = "Obsolete"
                     };
                 }
-                else if (CompletedDate.HasValue)
+                else if (CompletedDate.HasValue || (ProcessTask.Id == 133 && AppointmentDate.HasValue && AppointmentDate.Value.Date <= Now))
                 {
                     return new ServiceRequestTaskStatus
                     {
@@ -338,6 +338,9 @@ namespace Orvosi.Shared.Model
                 }
             }
         }
+
+        public DateTime? DueDate { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
     }
 
     public class ServiceRequestTaskDependent

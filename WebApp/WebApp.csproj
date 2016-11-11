@@ -443,6 +443,7 @@
     <Compile Include="Models\ServiceRequestModels2.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
+    <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />

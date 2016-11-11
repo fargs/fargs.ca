@@ -73,7 +73,7 @@ namespace WebApp.Controllers
             }
 
             // Populate the view model
-            var vm = new dvm.IndexViewModel();
+            var vm = new dvm.DueDatesViewModel();
 
             vm.DueDates = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToDueDates(userId, now, baseUrl);
 
@@ -401,5 +401,5 @@ namespace WebApp.Controllers
 
 
     }
-
+    
 }

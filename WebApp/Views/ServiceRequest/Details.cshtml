@@ -143,6 +143,16 @@
                     @foreach (var task in Model.TaskList.OrderBy(sr => sr.Sequence))
                     {
                         <tr>
+                            @if (role == AspNetRoles.SuperAdmin)
+                            {
+                                <td>
+                                    <form action="~/ServiceRequestTask/Delete" method="post" class="pull-left">
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("serviceRequestTaskId", task.Id)
+                                        <button type="submit" class="btn btn-sm btn-link"><i class="fa fa-remove"></i></button>
+                                    </form>
+                                </td>
+                            }
                             <td width="50px">
                                 @if (task.TaskType == "EVENT")
                                 {

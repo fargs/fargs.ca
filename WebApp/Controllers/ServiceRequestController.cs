@@ -571,7 +571,7 @@ namespace WebApp.Controllers
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
-                    st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
+
                     sr.ServiceRequestTasks.Add(st);
                 }
 

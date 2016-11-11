@@ -17,7 +17,7 @@ namespace WebApp.Models.ServiceRequestModels2
             {
                 // read all the data in from the database.
                 var source = context.ServiceRequests
-                    .AreAssignedToServiceProvider(serviceProviderId)
+                    .AreAssignedToUser(serviceProviderId)
                     .AreScheduledThisDay(day)
                     .Select(sr => new Assessment
                     {
@@ -124,7 +124,7 @@ namespace WebApp.Models.ServiceRequestModels2
             {
                 // read all the data in from the database.
                 var source = context.ServiceRequests
-                    .AreAssignedToServiceProvider(serviceProviderId)
+                    .AreAssignedToUser(serviceProviderId)
                     .AreScheduledThisDay(day)
                     .Select(sr => new ServiceRequest
                     {
@@ -140,100 +140,156 @@ namespace WebApp.Models.ServiceRequestModels2
                     .Count();
             }
         }
-        public static IEnumerable<DayFolder> MapToDueDates(Guid serviceProviderId, DateTime now, string requestUrl)
+        public static IEnumerable<DueDateDayFolder> MapToDueDates(Guid userId, DateTime now, string requestUrl)
         {
             using (var context = new data.OrvosiDbContext())
             {
+                var roleId = context.AspNetUsers.Single(u => u.Id == userId).AspNetUserRoles.First().RoleId;
                 // read all the data in from the database.
-                var source = context.ServiceRequests
-                    .AreAssignedToServiceProvider(serviceProviderId)
-                    .HasDueDate()
-                    .AreOpen()
-                    .Select(sr => new ServiceRequest
+                var source = context.ServiceRequestTasks
+                    .Where(srt => srt.AssignedTo == userId)
+                    .AreActive()
+                    .Select(srt => new DayIndex
                     {
-                        Id = sr.Id,
-                        ClaimantName = sr.ClaimantName,
-                        DueDate = sr.DueDate,
-                        AppointmentDate = sr.AppointmentDate,
-                        Now = now,
-                        StartTime = sr.StartTime,
-                        CancelledDate = sr.CancelledDate,
-                        IsClosed = sr.IsClosed,
-                        BoxCaseFolderId = sr.BoxCaseFolderId,
-                        PhysicianId = sr.PhysicianId,
-                        Company = new Company
+                        DueDate = srt.DueDate,
+                        ServiceRequest = new ServiceRequest
                         {
-                            Id = sr.Company.Id,
-                            Name = sr.Company.Name
-                        },
-                        Service = new Service
-                        {
-                            Id = sr.Service.Id,
-                            Name = sr.Service.Name,
-                            Code = sr.Service.Code
-                        },
-                        ServiceRequestTasks = sr.ServiceRequestTasks.Select(srt => new ServiceRequestTask
-                        {
-                            Id = srt.Id,
-                            ServiceRequestId = srt.ServiceRequestId,
-                            AppointmentDate = sr.AppointmentDate,
+                            Id = srt.ServiceRequest.Id,
+                            ClaimantName = srt.ServiceRequest.ClaimantName,
+                            DueDate = srt.ServiceRequest.DueDate,
+                            AppointmentDate = srt.ServiceRequest.AppointmentDate,
                             Now = now,
-                            ProcessTask = new ProcessTask
+                            StartTime = srt.ServiceRequest.StartTime,
+                            CancelledDate = srt.ServiceRequest.CancelledDate,
+                            IsClosed = srt.ServiceRequest.IsClosed,
+                            BoxCaseFolderId = srt.ServiceRequest.BoxCaseFolderId,
+                            PhysicianId = srt.ServiceRequest.PhysicianId,
+                            Company = new Company
                             {
-                                Id = srt.OTask.Id,
-                                Name = srt.OTask.Name,
-                                Sequence = srt.OTask.Sequence.Value
+                                Id = srt.ServiceRequest.Company.Id,
+                                Name = srt.ServiceRequest.Company.Name
                             },
-                            AssignedTo = new Person
+                            Service = new Service
                             {
-                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
-                                Title = srt.AspNetUser_AssignedTo.Title,
-                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
-                                LastName = srt.AspNetUser_AssignedTo.LastName,
-                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
-                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
+                                Id = srt.ServiceRequest.Service.Id,
+                                Name = srt.ServiceRequest.Service.Name,
+                                Code = srt.ServiceRequest.Service.Code
+                            },
+                            ServiceRequestMessages = srt.ServiceRequest.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
+                            {
+                                Id = srm.Id,
+                                TimeZone = srm.ServiceRequest.Address.TimeZone,
+                                Message = srm.Message,
+                                PostedDate = srm.PostedDate,
+                                PostedBy = new Person
                                 {
-                                    Id = r.AspNetRole.Id,
-                                    Name = r.AspNetRole.Name
-                                }).FirstOrDefault()
-                            },
-                            CompletedDate = srt.CompletedDate,
-                            IsObsolete = srt.IsObsolete,
-                            Dependencies = srt.Child.Select(c => new ServiceRequestTaskDependent
+                                    Id = srm.AspNetUser.Id,
+                                    Title = srm.AspNetUser.Title,
+                                    FirstName = srm.AspNetUser.FirstName,
+                                    LastName = srm.AspNetUser.LastName,
+                                    Email = srm.AspNetUser.Email,
+                                    ColorCode = srm.AspNetUser.ColorCode,
+                                    Role = srm.AspNetUser.AspNetUserRoles.Select(r => new UserRole
+                                    {
+                                        Id = r.AspNetRole.Id,
+                                        Name = r.AspNetRole.Name
+                                    }).FirstOrDefault()
+                                }
+                            }),
+                            ServiceRequestTasks = srt.ServiceRequest.ServiceRequestTasks.Select(t => new ServiceRequestTask
                             {
-                                TaskId = c.TaskId.Value,
-                                CompletedDate = c.CompletedDate,
-                                IsObsolete = c.IsObsolete
+                                Id = t.Id,
+                                ServiceRequestId = t.ServiceRequestId,
+                                AppointmentDate = srt.ServiceRequest.AppointmentDate,
+                                DueDate = t.DueDate,
+                                Now = now,
+                                ProcessTask = new ProcessTask
+                                {
+                                    Id = t.OTask.Id,
+                                    Name = t.OTask.Name,
+                                    Sequence = t.OTask.Sequence.Value,
+                                    ResponsibleRole = t.OTask.AspNetRole == null ? null : new UserRole
+                                    {
+                                        Id = t.OTask.AspNetRole.Id,
+                                        Name = t.OTask.AspNetRole.Name
+                                    }
+                                },
+                                AssignedTo = new Person
+                                {
+                                    Id = t.AspNetUser_AssignedTo == null ? (Guid?)null : t.AspNetUser_AssignedTo.Id,
+                                    Title = t.AspNetUser_AssignedTo.Title,
+                                    FirstName = t.AspNetUser_AssignedTo.FirstName,
+                                    LastName = t.AspNetUser_AssignedTo.LastName,
+                                    Email = t.AspNetUser_AssignedTo.Email,
+                                    ColorCode = t.AspNetUser_AssignedTo.ColorCode,
+                                    Role = t.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
+                                    {
+                                        Id = r.AspNetRole.Id,
+                                        Name = r.AspNetRole.Name
+                                    }).FirstOrDefault()
+                                },
+                                CompletedDate = t.CompletedDate,
+                                IsObsolete = t.IsObsolete,
+                                Dependencies = t.Child.Select(c => new ServiceRequestTaskDependent
+                                {
+                                    TaskId = c.TaskId.Value,
+                                    CompletedDate = c.CompletedDate,
+                                    IsObsolete = c.IsObsolete
+                                }),
                             })
-                        }),
-                        People = sr.ServiceRequestTasks.Where(srt => srt.AssignedTo != null)
-                            .Select(srt => new Person
-                            {
-                                Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id,
-                                Title = srt.AspNetUser_AssignedTo.Title,
-                                FirstName = srt.AspNetUser_AssignedTo.FirstName,
-                                LastName = srt.AspNetUser_AssignedTo.LastName,
-                                ColorCode = srt.AspNetUser_AssignedTo.ColorCode,
-                                Role = srt.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new UserRole
-                                {
-                                    Id = r.AspNetRole.Id,
-                                    Name = r.AspNetRole.Name
-                                }).FirstOrDefault()
-                            }).Distinct()
-                    }).ToList();
-
-                // apply filters that use computed fields
-                var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId));
-
-                filtered = filtered.Where(s => s.IsAppointmentComplete.HasValue ? s.IsAppointmentComplete.Value : true);
+                        }
+                    })
+                    .ToList();
 
                 // group into hierarchy
-                return filtered // this filters out the days
-                    .GroupBy(d => new { d.DueDate })
-                    .Select(d => new DayFolder
+                return source // this filters out the days
+                    .GroupBy(srt => new { DueDate = srt.DueDate.HasValue ? srt.DueDate.Value : (DateTime?)null })
+                    .Select(d => new DueDateDayFolder
                     {
-                        Day = d.Key.DueDate.Value,
-                        ServiceRequests = filtered.Where(s => s.DueDate == d.Key.DueDate)
+                        DueDate = d.Key.DueDate,
+                        DueDateTicks = d.Key.DueDate.HasValue ? d.Key.DueDate.Value.Ticks : 0,
+                        ServiceRequests = source
+                            .Where(srt => srt.DueDate == d.Key.DueDate)
+                            .GroupBy(srt => new { srt.ServiceRequest })
+                            .Select(sr => new ServiceRequest
+                            {
+                                Id = sr.Key.ServiceRequest.Id,
+                                ClaimantName = sr.Key.ServiceRequest.ClaimantName,
+                                DueDate = sr.Key.ServiceRequest.DueDate,
+                                AppointmentDate = sr.Key.ServiceRequest.AppointmentDate,
+                                Now = now,
+                                StartTime = sr.Key.ServiceRequest.StartTime,
+                                CancelledDate = sr.Key.ServiceRequest.CancelledDate,
+                                IsClosed = sr.Key.ServiceRequest.IsClosed,
+                                BoxCaseFolderId = sr.Key.ServiceRequest.BoxCaseFolderId,
+                                PhysicianId = sr.Key.ServiceRequest.PhysicianId,
+                                Company = sr.Key.ServiceRequest.Company,
+                                Service = sr.Key.ServiceRequest.Service,
+                                ServiceRequestMessages = sr.Key.ServiceRequest.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
+                                {
+                                    Id = srm.Id,
+                                    TimeZone = srm.TimeZone,
+                                    Message = srm.Message,
+                                    PostedDate = srm.PostedDate,
+                                    PostedBy = srm.PostedBy
+                                }),
+                                ServiceRequestTasks = sr.Key.ServiceRequest.ServiceRequestTasks
+                                    .Where(t => t.DueDate == d.Key.DueDate)
+                                    .ShouldBeDisplayedToUser(roleId)
+                                    .Select(t => new ServiceRequestTask
+                                    {
+                                        Id = t.Id,
+                                        ServiceRequestId = t.ServiceRequestId,
+                                        AppointmentDate = t.AppointmentDate,
+                                        DueDate = t.DueDate,
+                                        Now = now,
+                                        ProcessTask = t.ProcessTask,
+                                        AssignedTo = t.AssignedTo,
+                                        CompletedDate = t.CompletedDate,
+                                        IsObsolete = t.IsObsolete,
+                                        Dependencies = t.Dependencies,
+                                    })
+                            })
                     });
             }
         }
@@ -243,8 +299,7 @@ namespace WebApp.Models.ServiceRequestModels2
             {
                 var source = context
                     .ServiceRequests
-                        .AreAssignedToServiceProvider(serviceProviderId)
-                        .HasDueDate()
+                        .AreAssignedToUser(serviceProviderId)
                         .AreOpen()
                         .Select(sr => new ServiceRequest
                         {
@@ -258,6 +313,10 @@ namespace WebApp.Models.ServiceRequestModels2
                                 Id = srt.Id,
                                 AppointmentDate = sr.AppointmentDate,
                                 Now = now,
+                                ProcessTask = new ProcessTask
+                                {
+                                    Id = srt.OTask.Id
+                                },
                                 AssignedTo = new Person
                                 {
                                     Id = srt.AspNetUser_AssignedTo == null ? (Guid?)null : srt.AspNetUser_AssignedTo.Id
@@ -276,8 +335,6 @@ namespace WebApp.Models.ServiceRequestModels2
                 // apply filters that use computed fields
                 var filtered = source.Where(s => !s.IsDoneTheirPart(serviceProviderId));
 
-                filtered = filtered.Where(s => s.IsAppointmentComplete.HasValue ? s.IsAppointmentComplete.Value : true);
-
                 return filtered.Count();
             }
         }
@@ -288,7 +345,7 @@ namespace WebApp.Models.ServiceRequestModels2
                 return context
                     .ServiceRequests
                         .AreAddOns()
-                        .AreAssignedToServiceProvider(serviceProviderIdOrDefault)
+                        .AreAssignedToUser(serviceProviderIdOrDefault)
                         .AreOpen()
                         .Count();
             }
@@ -368,5 +425,45 @@ namespace WebApp.Models.ServiceRequestModels2
                     }).First();
             }
         }
+
+        // Filters
+        public static IEnumerable<ServiceRequestTask> ShouldBeDisplayedToUser(this IEnumerable<ServiceRequestTask> serviceRequestTasks, Guid roleId)
+        {
+            var rolesThatShouldSeeEverything = new Guid[2] { AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
+            var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
+            if (!rolesThatShouldSeeEverything.Contains(roleId))
+            {
+                return serviceRequestTasks.Where(srt => rolesThatShouldBeSeen.Contains(srt.ProcessTask?.ResponsibleRole?.Id));
+            }
+            return serviceRequestTasks;
+        }
     }
+
+    public class DueDateDayFolder
+    {
+        public DateTime? DueDate { get; set; }
+        public long DueDateTicks { get; set; }
+        public IEnumerable<ServiceRequest> ServiceRequests { get; set; }
+        public string DayFormatted_dddd
+        {
+            get
+            {
+                return DueDate.HasValue ? DueDate.Value.ToString("dddd") : "No Due Date";
+            }
+        }
+        public string DayFormatted_MMMdd
+        {
+            get
+            {
+                return DueDate.HasValue ? DueDate.Value.ToString("MMM dd") : string.Empty;
+            }
+        }
+    }
+
+    internal class DayIndex
+    {
+        public DateTime? DueDate { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
+    }
+    
 }

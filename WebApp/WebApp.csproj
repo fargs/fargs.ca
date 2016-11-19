@@ -443,10 +443,13 @@
     <Compile Include="Models\ServiceRequestModels2.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
+    <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
+    <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
+    <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
@@ -465,6 +468,7 @@
     <Compile Include="Areas\Admin\ViewModels\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\TaskFilterViewModel.cs" />
     <Compile Include="ViewModels\TaskListItemViewModel.cs" />
     <Compile Include="ViewModels\UserInitialsViewModel.cs" />
   </ItemGroup>
@@ -1130,9 +1134,10 @@
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessageJS.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessage.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_PostMessage.cshtml" />
-    <Content Include="Hubs\_ServiceRequestHubJS.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\_Layout.cshtml" />
     <Content Include="Views\Dashboard\_SummaryCount.cshtml" />
+    <Content Include="Views\Note\_Note.cshtml" />
+    <Content Include="Views\ServiceRequestTask\_TaskFilter.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

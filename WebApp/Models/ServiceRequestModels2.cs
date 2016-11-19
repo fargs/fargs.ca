@@ -112,7 +112,7 @@ namespace WebApp.Models.ServiceRequestModels2
                     .GroupBy(d => new { d.AppointmentDate, d.Address })
                     .Select(d => new DayFolder
                     {
-                        Day = d.Key.AppointmentDate.Value,
+                        DayAndTime = d.Key.AppointmentDate.Value,
                         Address = d.Key.Address,
                         Assessments = source.Where(s => s.AppointmentDate == d.Key.AppointmentDate && s.ServiceStatusId.GetValueOrDefault(0) != ServiceStatus.Cancellation)
                     }).FirstOrDefault();
@@ -246,8 +246,7 @@ namespace WebApp.Models.ServiceRequestModels2
                     .GroupBy(srt => new { DueDate = srt.DueDate.HasValue ? srt.DueDate.Value : (DateTime?)null })
                     .Select(d => new DueDateDayFolder
                     {
-                        DueDate = d.Key.DueDate,
-                        DueDateTicks = d.Key.DueDate.HasValue ? d.Key.DueDate.Value.Ticks : 0,
+                        DayAndTime = d.Key.DueDate,
                         ServiceRequests = source
                             .Where(srt => srt.DueDate == d.Key.DueDate)
                             .GroupBy(srt => new { srt.ServiceRequest })
@@ -436,27 +435,6 @@ namespace WebApp.Models.ServiceRequestModels2
                 return serviceRequestTasks.Where(srt => rolesThatShouldBeSeen.Contains(srt.ProcessTask?.ResponsibleRole?.Id));
             }
             return serviceRequestTasks;
-        }
-    }
-
-    public class DueDateDayFolder
-    {
-        public DateTime? DueDate { get; set; }
-        public long DueDateTicks { get; set; }
-        public IEnumerable<ServiceRequest> ServiceRequests { get; set; }
-        public string DayFormatted_dddd
-        {
-            get
-            {
-                return DueDate.HasValue ? DueDate.Value.ToString("dddd") : "No Due Date";
-            }
-        }
-        public string DayFormatted_MMMdd
-        {
-            get
-            {
-                return DueDate.HasValue ? DueDate.Value.ToString("MMM dd") : string.Empty;
-            }
         }
     }
 

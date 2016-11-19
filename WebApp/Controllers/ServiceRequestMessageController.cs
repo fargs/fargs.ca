@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Orvosi.Shared.Model;
 using System.Net;
 using WebApp.Library.Extensions;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Controllers
 {
@@ -77,7 +78,7 @@ namespace WebApp.Controllers
                         Id = srm.Id,
                         Message = srm.Message,
                         PostedDate = srm.PostedDate,
-                        TimeZone = srm.ServiceRequest.Address.TimeZone,
+                        TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone,
                         PostedBy = new Person
                         {
                             Id = srm.AspNetUser.Id,

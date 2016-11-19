@@ -40,7 +40,7 @@ namespace WebApp.Models.AccountingModel
                 .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
                 .Select(d => new DayFolder
                 {
-                    Day = d.Key.Day.Value,
+                    DayAndTime = d.Key.Day.Value,
                     //Company = d.Key.Company,
                     //Address = d.Key.Address,
                     ServiceRequests = filtered

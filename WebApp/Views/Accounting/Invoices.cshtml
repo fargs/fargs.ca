@@ -23,13 +23,13 @@ else
             <div class="h3">
                 @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
             </div>
-            @if (dayFolder.Address != null)
+            @if (!string.IsNullOrEmpty(dayFolder.Address))
             {
                 <div class="h4">
-                    @dayFolder.Address.Name
+                    @dayFolder.Address
                 </div>
                 <div class="small" style="padding-bottom:20px;">
-                    @dayFolder.Address.City
+                    @dayFolder.City
                 </div>
             }
         </div>

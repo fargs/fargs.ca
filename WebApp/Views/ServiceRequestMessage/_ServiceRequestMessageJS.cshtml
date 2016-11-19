@@ -1,9 +1,9 @@
 ﻿@using WebApp.Library.Extensions
-@model System.Collections.Specialized.NameValueCollection
+@model WebApp.ViewModels.ServiceRequestMessageJSViewModel
 
 @{ 
 
-    var queryString = Newtonsoft.Json.JsonConvert.SerializeObject(Model.ToDictionary(false));
+    var queryString = Newtonsoft.Json.JsonConvert.SerializeObject(Model.QueryString.ToDictionary(false));
 }
 <script type="text/javascript">
 
@@ -19,8 +19,12 @@
             appendMessage(messageId, serviceRequestId)
         };
 
+        $.connection.hub.logging = true;
+
         // Start the connection.
         $.connection.hub.start().done(function () {
+            // join the rooms
+            chat.server.joinRooms(@Model.ServiceRequestIds.ToJson())
         });
 
     });
@@ -33,24 +37,6 @@
         chat.server.postMessage(message.val(), serviceRequestId);
 
         message.val('').focus();
-
-        @*$.ajax({
-            type: "POST",
-            url: '@Url.Content("~/ServiceRequestMessage/PostMessage")',
-            data: JSON.stringify({
-                ServiceRequestId: serviceRequestId,
-                Message: message.val()
-            }),
-            contentType: "application/json; charset=utf-8",
-            success: function (newMessage) {
-                message.val('');
-                appendMessage(newMessage);
-            },
-            error: function (err) {
-                // undo the UI change made before the ajax call
-                toastr.success("Task was not updated.", "Something went wrong!");
-            }
-        }, this);*@
     }
 
     function onPostMessageKeyPress(e, serviceRequestId) {

@@ -40,53 +40,66 @@ namespace WebApp
         {
             return Groups.Add(Context.ConnectionId, roomName);
         }
+        public async System.Threading.Tasks.Task JoinRooms(int[] serviceRequestIds)
+        {
+            foreach (var id in serviceRequestIds)
+            {
+                await Groups.Add(Context.ConnectionId, $"{_roomPrefix}{id}");
+            }
+        }
         public System.Threading.Tasks.Task LeaveRoom(string roomName)
         {
             return Groups.Remove(Context.ConnectionId, roomName);
         }
-
+        public async System.Threading.Tasks.Task LeaveRooms(int[] serviceRequestIds)
+        {
+            foreach (var id in serviceRequestIds)
+            {
+                await Groups.Remove(Context.ConnectionId, $"{_roomPrefix}{id}");
+            }
+        }
         public override System.Threading.Tasks.Task OnConnected()
         {
-            var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
-            DateTime day;
-            var dayQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "day");
-            if (!DateTime.TryParse(dayQs.Value, out day))
-            {
-                day = now;
-            }
+            //var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+            //DateTime day;
+            //var dayQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key == "day");
+            //if (!DateTime.TryParse(dayQs.Value, out day))
+            //{
+            //    day = now;
+            //}
 
-            Guid? serviceProviderId = null;
-            var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key.ToLower() == "serviceProviderId".ToLower());
-            if (!serviceProviderQs.Equals(default(KeyValuePair<string, string>)))
-            {
-                serviceProviderId = new Guid(serviceProviderQs.Value);
-            }
+            //Guid? serviceProviderId = null;
+            //var serviceProviderQs = Context.Request.QueryString.FirstOrDefault(qs => qs.Key.ToLower() == "serviceProviderId".ToLower());
+            //if (!serviceProviderQs.Equals(default(KeyValuePair<string, string>)))
+            //{
+            //    serviceProviderId = new Guid(serviceProviderQs.Value);
+            //}
 
-            var loggedInUserId = Context.User.Identity.GetGuidUserId();
-            var baseUrl = Context.Request.Url.ToString();
+            //var loggedInUserId = Context.User.Identity.GetGuidUserId();
+            //var baseUrl = Context.Request.Url.ToString();
 
-            Guid userId = Context.User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (Context.User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
-            //userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
+            //Guid userId = Context.User.Identity.GetGuidUserId();
+            //// Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            //if (Context.User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            //{
+            //    userId = serviceProviderId.Value;
+            //}
+            ////userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
 
-            using (var db = new OrvosiDbContext())
-            {
-                // Retrieve user.
-                var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, now, userId, Context.Request.Url.ToString());
+            //using (var db = new OrvosiDbContext())
+            //{
+            //    // Retrieve user.
+            //    var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, now, userId, Context.Request.Url.ToString());
                 
-                if (dayFolder != null)
-                {
-                    // Add to each assigned group.
-                    foreach (var request in dayFolder.Assessments)
-                    {
-                        Groups.Add(Context.ConnectionId, $"{_roomPrefix}{request.Id}");
-                    }
-                }
-            }
+            //    if (dayFolder != null)
+            //    {
+            //        // Add to each assigned group.
+            //        foreach (var request in dayFolder.Assessments)
+            //        {
+            //            Groups.Add(Context.ConnectionId, $"{_roomPrefix}{request.Id}");
+            //        }
+            //    }
+            //}
             return base.OnConnected();
         }
 

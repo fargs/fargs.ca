@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Orvosi.Shared.Enums;
+using Orvosi.Shared.Filters;
 
 namespace Orvosi.Shared.Model
 {
@@ -11,12 +12,28 @@ namespace Orvosi.Shared.Model
     {
         public string WeekFolderName { get; set; }
         public DateTime StartDate { get; set; }
-        public long StartDateTicks { get; set; }
         public DateTime EndDate { get; set; }
-        public int AssessmentCount { get; set; } = 0;
-        public int ToDoCount { get; internal set; } = 0;
-        public int WaitingCount { get; set; }
         public IEnumerable<DayFolder> DayFolders { get; set; }
+
+        public int ToDoCount(Guid userId)
+        {
+            return DayFolders.Sum(d => d.ToDoCount(userId));
+        }
+        public int WaitingCount(Guid userId)
+        {
+            return DayFolders.Sum(d => d.WaitingCount(userId));
+        }
+        public int ServiceRequestCount(Guid userId)
+        {
+            return DayFolders.Sum(d => d.ServiceRequests.Count());
+        }
+        public long StartDateTicks
+        {
+            get
+            {
+                return StartDate.Ticks;
+            }
+        }
         public byte GetTimeline(DateTime now)
         {
             byte result = Orvosi.Shared.Enums.Timeline.Future;
@@ -49,41 +66,96 @@ namespace Orvosi.Shared.Model
         }
     }
 
-    public class DayFolder
+    public class DayFolderBase
     {
-        public DayFolder()
+        public DateTime? DayAndTime { get; set; }
+        public string Company { get; set; }
+        public DateTime? Day
         {
-            Assessments = new List<Assessment>();
+            get
+            {
+                return DayAndTime.HasValue ? DayAndTime.Value.Date : (DateTime?)null;
+            }
         }
-        public DateTime Day { get; set; }
-        public Company Company { get; set; }
-        public Address Address { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
-        public int AssessmentCount { get; set; }
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public IEnumerable<ServiceRequest> ServiceRequests { get; set; }
-        public IEnumerable<Assessment> Assessments { get; set; }
-        public IEnumerable<ServiceRequest> DueDates { get; set; }
-
-        // computeds
+        public long DayTicks
+        {
+            get
+            {
+                return DayAndTime.HasValue ? DayAndTime.Value.Date.Ticks : 0;
+            }
+        }
+        public string DayFormatted_ddd
+        {
+            get
+            {
+                return DayAndTime.HasValue ? DayAndTime.Value.Date.ToString("ddd") : string.Empty;
+            }
+        }
         public string DayFormatted_dddd
         {
             get
             {
-                return Day.ToString("dddd");
+                return DayAndTime.HasValue ? DayAndTime.Value.Date.ToString("dddd") : string.Empty;
             }
         }
         public string DayFormatted_MMMdd
         {
             get
             {
-                return Day.ToString("MMM dd");
+                return DayAndTime.HasValue ? DayAndTime.Value.Date.ToString("MMMdd") : string.Empty;
             }
         }
-        public long DayTicks { get; set; }
+        public IEnumerable<ServiceRequest> ServiceRequests { get; set; }
+        public int ToDoCount(Guid userId)
+        {
+            return ServiceRequests.GroupBy(sr => new
+            {
+                ServiceRequestId = sr.Id,
+                StatusOfNextTaskAssignedtoUser = sr.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .AreActive()
+                .OrderBy(srt => srt.ProcessTask.Sequence)
+                .First()
+                .Status.Id
+            })
+            .Count(srt => srt.Key.StatusOfNextTaskAssignedtoUser == TaskStatuses.ToDo);
+        }
+        public int WaitingCount(Guid userId)
+        {
+            return ServiceRequests.GroupBy(sr => new
+            {
+                ServiceRequestId = sr.Id,
+                StatusOfNextTaskAssignedtoUser = sr.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .AreActive()
+                .OrderBy(srt => srt.ProcessTask.Sequence)
+                .First()
+                .Status.Id
+            })
+            .Count(srt => srt.Key.StatusOfNextTaskAssignedtoUser == TaskStatuses.Waiting);
+        }
 
+    }
+
+    public class DayFolder : DayFolderBase
+    {
+        public DayFolder()
+        {
+            Assessments = new List<Assessment>();
+        }
+        public string City { get; set; }
+        public Address Address { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+        public IEnumerable<Assessment> Assessments { get; set; }
+    }
+
+    public class DueDateDayFolder : DayFolderBase
+    {
+        public DueDateDayFolder()
+        {
+            ServiceRequests = new List<Assessment>();
+        }
     }
 
     public class Service
@@ -135,9 +207,22 @@ namespace Orvosi.Shared.Model
 
         // computeds
         public int CommentCount { get; set; } = 0;
-        public int ToDoCount { get; set; }
-        public int WaitingCount { get; set; }
-        public byte ServiceRequestStatusId { get; internal set; }
+        public byte ServiceRequestStatusId(Guid userId)
+        {
+            var query = ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .AreActive();
+
+            if (query.Any(srt => srt.Status.Id == TaskStatuses.ToDo)) return TaskStatuses.ToDo;
+            
+            if (query.Any(srt => srt.Status.Id == TaskStatuses.Waiting)) return TaskStatuses.Waiting;
+
+            if (IsNoShow) return TaskStatuses.Obsolete;
+
+            return TaskStatuses.Done;
+
+
+        }
         public byte? ServiceStatusId
         {
             get
@@ -369,24 +454,7 @@ namespace Orvosi.Shared.Model
         public string Name { get; set; }
         public string City { get; set; }
         public string ProvinceCode { get; set; }
-        public string TimeZone
-        {
-            get
-            {
-                if (ProvinceCode == "CA-ON")
-                {
-                    return TimeZones.EasternStandardTime;
-                }
-                else if (ProvinceCode == "CA-BC")
-                {
-                    return TimeZones.WestCoastTime;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-        }
+        public string TimeZone { get; set; }
     }
 
     public class Invoice

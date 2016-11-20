@@ -287,7 +287,7 @@ namespace WebApp.Controllers
                 }),
                 ServiceRequestTasks = sr.ServiceRequestTasks
                     .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
-                    .Where(srt => srt.TaskId != Tasks.AssessmentDay)
+                    //.Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .OrderBy(srt => srt.Sequence)
                     .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
                     {
@@ -489,7 +489,7 @@ namespace WebApp.Controllers
                 }),
                 ServiceRequestTasks = sr.ServiceRequestTasks
                     .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
-                    .Where(srt => srt.TaskId != Tasks.AssessmentDay)
+                    //.Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .OrderBy(srt => srt.Sequence)
                     .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
                     {
@@ -549,19 +549,19 @@ namespace WebApp.Controllers
                 People = sr.ServiceRequestTasks
                     .Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .GroupBy(t => new Orvosi.Shared.Model.Person
-                {
-                    Id = t.AspNetUser_AssignedTo == null ? (Guid?)null : t.AspNetUser_AssignedTo.Id,
-                    Title = t.AspNetUser_AssignedTo.Title,
-                    FirstName = t.AspNetUser_AssignedTo.FirstName,
-                    LastName = t.AspNetUser_AssignedTo.LastName,
-                    Email = t.AspNetUser_AssignedTo.Email,
-                    ColorCode = t.AspNetUser_AssignedTo.ColorCode,
-                    Role = t.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
                     {
-                        Id = r.AspNetRole.Id,
-                        Name = r.AspNetRole.Name
-                    }).FirstOrDefault()
-                }).Select(group => group.Key)
+                        Id = t.AspNetUser_AssignedTo == null ? (Guid?)null : t.AspNetUser_AssignedTo.Id,
+                        Title = t.AspNetUser_AssignedTo.Title,
+                        FirstName = t.AspNetUser_AssignedTo.FirstName,
+                        LastName = t.AspNetUser_AssignedTo.LastName,
+                        Email = t.AspNetUser_AssignedTo.Email,
+                        ColorCode = t.AspNetUser_AssignedTo.ColorCode,
+                        Role = t.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                        {
+                            Id = r.AspNetRole.Id,
+                            Name = r.AspNetRole.Name
+                        }).FirstOrDefault()
+                    }).Select(group => group.Key)
             }).ToList();
 
             // we have what we need to refresh a single request so return it. This is expected to be called via an ajax call
@@ -774,16 +774,20 @@ namespace WebApp.Controllers
 
             return PartialView("_SummaryCount", count);
         }
+
         public ActionResult RefreshScheduleSummaryCount(Guid? serviceProviderId)
         {
             var userId = GetServiceProviderIdOrDefault(serviceProviderId);
             
-            var serviceRequestIdsQuery = context.ServiceRequestTasks
+            var count = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
                                 .AreActive()
-                                .Where(sr => sr.ServiceRequest.AppointmentDate.HasValue);
+                                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
+                                .Select(srt => srt.ServiceRequestId)
+                                .Distinct()
+                                .Count();
 
-            return PartialView("_SummaryCount", serviceRequestIdsQuery.Count());
+            return PartialView("_SummaryCount", count);
         }
 
         public ActionResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)

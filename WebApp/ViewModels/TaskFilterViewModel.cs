@@ -20,5 +20,6 @@ namespace WebApp.ViewModels
     {
         public short? Id { get; set; }
         public string Name { get; set; }
+        public short? Sequence { get; internal set; }
     }
 }

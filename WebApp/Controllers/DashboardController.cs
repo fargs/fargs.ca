@@ -366,10 +366,11 @@ namespace WebApp.Controllers
             var taskFilters = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
                                 .AreActive()
-                                .OrderBy(srt => srt.Sequence)
-                                .Select(srt => new ViewModels.TaskIndexDto { Id = srt.TaskId, Name = srt.TaskName })
+                                .Select(srt => new ViewModels.TaskIndexDto { Id = srt.TaskId, Name = srt.TaskName, Sequence = srt.OTask.Sequence })
                                 .Distinct()
+                                .OrderBy(srt => srt.Sequence.Value)
                                 .ToList();
+
             vm.TaskFilterViewModel = new ViewModels.TaskFilterViewModel() { Tasks = taskFilters, SelectedTaskTypes = selectedTaskTypes, SelectedUserId = userId };
 
             // This page uses the Discussion component and must therefore supply the view model for it
@@ -612,10 +613,11 @@ namespace WebApp.Controllers
             var taskFilters = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
                                 .AreActive()
-                                .OrderBy(srt => srt.Sequence)
-                                .Select(srt => new ViewModels.TaskIndexDto { Id = srt.TaskId, Name = srt.TaskName })
+                                .Select(srt => new ViewModels.TaskIndexDto { Id = srt.TaskId, Name = srt.TaskName, Sequence = srt.OTask.Sequence })
                                 .Distinct()
+                                .OrderBy(srt => srt.Sequence.Value)
                                 .ToList();
+
             vm.TaskFilterViewModel = new ViewModels.TaskFilterViewModel() { Tasks = taskFilters, SelectedTaskTypes = selectedTaskTypes, SelectedUserId = userId };
 
             // This page uses the Discussion component and must therefore supply the view model for it

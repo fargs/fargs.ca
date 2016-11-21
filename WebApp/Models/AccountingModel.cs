@@ -31,7 +31,6 @@ namespace WebApp.Models.AccountingModel
             var filtered = source
                 .Where(sr => sr.PhysicianId == serviceProviderId)
                 .Where(sr => !sr.IsClosed)
-                .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date) // this filters out the days
                 .Where(sr => !sr.InvoiceDetails.Any() || sr.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue))
                 .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete)) // Where it is not sent or the submit invoices task is not checked)
                 .ToList();
@@ -43,8 +42,7 @@ namespace WebApp.Models.AccountingModel
                     DayAndTime = d.Key.Day.Value,
                     //Company = d.Key.Company,
                     //Address = d.Key.Address,
-                    ServiceRequests = filtered
-                        .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
+                    ServiceRequests = d
                         .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
                 }).OrderBy(df => df.Day);
         }

@@ -287,7 +287,7 @@ namespace WebApp.Controllers
                 }),
                 ServiceRequestTasks = sr.ServiceRequestTasks
                     .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
-                    //.Where(srt => srt.TaskId != Tasks.AssessmentDay)
+                    .Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .OrderBy(srt => srt.Sequence)
                     .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
                     {
@@ -545,9 +545,8 @@ namespace WebApp.Controllers
                     }
                 }),
                 ServiceRequestTasks = sr.ServiceRequestTasks
+                    .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
                     .Where(srt => srt.TaskId != Tasks.AssessmentDay)
-                    //.Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
-                    //.Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .OrderBy(srt => srt.Sequence)
                     .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
                     {

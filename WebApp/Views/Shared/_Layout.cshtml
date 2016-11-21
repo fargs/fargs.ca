@@ -5,26 +5,32 @@
 @using WebApp.ViewModels.ServiceRequestViewModels
 
 @{
-    IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
-    if (HttpContext.Current.User.Identity.IsAuthenticated)
-    {
-        var userId = User.Identity.GetGuidUserId();
-        var context = new OrvosiDbContext();
-        var list = context.ServiceRequests.AsQueryable();
-        if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin && User.Identity.GetGuidUserId() != AspNetRoles.CaseCoordinator)
-        {
-            list = list.Where(sr => sr.PhysicianId == userId || sr.CaseCoordinatorId == userId || sr.DocumentReviewerId == userId || sr.IntakeAssistantId == userId);
-        }
-        caseSearchList = list
-            .AsEnumerable()
-            .Select(sr => new CaseSearchListItem()
-            {
-                Id = sr.Id,
-                Claimant = sr.ClaimantName,
-                Url = Url.Content("~/ServiceRequest/Details/" + sr.Id)
-            });
-    }
-}
+                IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
+                if (HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    var userId = User.Identity.GetGuidUserId();
+                    var roleId = User.Identity.GetRoleId();
+                    var context = new OrvosiDbContext();
+                    var list = context.ServiceRequests.AsQueryable();
+                    if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator)
+                    {
+                        list = list.Where(sr => sr.PhysicianId == userId || sr.CaseCoordinatorId == userId || sr.DocumentReviewerId == userId || sr.IntakeAssistantId == userId);
+                    }
+                    caseSearchList = list
+                        .Select(sr => new
+                        {
+                            Id = sr.Id,
+                            ClaimantName = sr.ClaimantName
+                        })
+                        .ToList()
+                        .Select(sr => new CaseSearchListItem
+                        {
+                            Id = sr.Id,
+                            Claimant = sr.ClaimantName,
+                            Url = Url.Content("~/ServiceRequest/Details/" + sr.Id)
+                        });
+                }
+            }
 <!DOCTYPE html>
 <html>
 <head>
@@ -48,7 +54,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
-                    {
+            {
                         <li>
                             <div id="cases">
                                 <form class="navbar-form navbar-left" role="search">

@@ -412,7 +412,7 @@ namespace WebApp.Controllers
             var serviceRequestIdsQuery = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
                                 .AreActive()
-                                .Where(sr => sr.ServiceRequest.AppointmentDate.HasValue); 
+                                .Where(sr => sr.ServiceRequest.AppointmentDate.HasValue);
 
             selectedTaskTypes = selectedTaskTypes == null ? new short[0] : selectedTaskTypes;
             if (selectedTaskTypes.Any()) serviceRequestIdsQuery = serviceRequestIdsQuery.Where(srt => selectedTaskTypes.Contains(srt.TaskId.Value));  // Cannot be refactored because the list is not an IQueryable <need to look into this>
@@ -467,6 +467,62 @@ namespace WebApp.Controllers
                     Name = sr.Service.Name,
                     Code = sr.Service.Code
                 },
+                CaseCoordinator = sr.CaseCoordinator == null ? null : new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.CaseCoordinator.Id,
+                    Title = sr.CaseCoordinator.Title,
+                    FirstName = sr.CaseCoordinator.FirstName,
+                    LastName = sr.CaseCoordinator.LastName,
+                    Email = sr.CaseCoordinator.Email,
+                    ColorCode = sr.CaseCoordinator.ColorCode,
+                    Role = sr.CaseCoordinator.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                    {
+                        Id = AspNetRoles.CaseCoordinator,
+                        Name = AspNetRoles.CaseCoordinatorName
+                    }).FirstOrDefault()
+                },
+                DocumentReviewer = sr.DocumentReviewer == null ? null : new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.DocumentReviewer.Id,
+                    Title = sr.DocumentReviewer.Title,
+                    FirstName = sr.DocumentReviewer.FirstName,
+                    LastName = sr.DocumentReviewer.LastName,
+                    Email = sr.DocumentReviewer.Email,
+                    ColorCode = sr.DocumentReviewer.ColorCode,
+                    Role = sr.DocumentReviewer.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                    {
+                        Id = AspNetRoles.DocumentReviewer,
+                        Name = AspNetRoles.DocumentReviewerName
+                    }).FirstOrDefault()
+                },
+                IntakeAssistant = sr.IntakeAssistant == null ? null : new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.IntakeAssistant.Id,
+                    Title = sr.IntakeAssistant.Title,
+                    FirstName = sr.IntakeAssistant.FirstName,
+                    LastName = sr.IntakeAssistant.LastName,
+                    Email = sr.IntakeAssistant.Email,
+                    ColorCode = sr.IntakeAssistant.ColorCode,
+                    Role = sr.IntakeAssistant.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                    {
+                        Id = AspNetRoles.IntakeAssistant,
+                        Name = AspNetRoles.IntakeAssistantName
+                    }).FirstOrDefault()
+                },
+                Physician = sr.Physician == null ? null : new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.Physician.Id,
+                    Title = sr.Physician.AspNetUser.Title,
+                    FirstName = sr.Physician.AspNetUser.FirstName,
+                    LastName = sr.Physician.AspNetUser.LastName,
+                    Email = sr.Physician.AspNetUser.Email,
+                    ColorCode = sr.Physician.AspNetUser.ColorCode,
+                    Role = sr.Physician.AspNetUser.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                    {
+                        Id = AspNetRoles.Physician,
+                        Name = AspNetRoles.PhysicianName
+                    }).FirstOrDefault()
+                },
                 ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
                 {
                     Id = srm.Id,
@@ -489,7 +545,8 @@ namespace WebApp.Controllers
                     }
                 }),
                 ServiceRequestTasks = sr.ServiceRequestTasks
-                    .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
+                    .Where(srt => srt.TaskId != Tasks.AssessmentDay)
+                    //.Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
                     //.Where(srt => srt.TaskId != Tasks.AssessmentDay)
                     .OrderBy(srt => srt.Sequence)
                     .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
@@ -780,7 +837,7 @@ namespace WebApp.Controllers
         public ActionResult RefreshScheduleSummaryCount(Guid? serviceProviderId)
         {
             var userId = GetServiceProviderIdOrDefault(serviceProviderId);
-            
+
             var count = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
                                 .AreActive()

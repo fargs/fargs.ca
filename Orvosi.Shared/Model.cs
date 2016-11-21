@@ -272,6 +272,11 @@ namespace Orvosi.Shared.Model
             }
         }
 
+        public Person CaseCoordinator { get; set; }
+        public Person DocumentReviewer { get; set; }
+        public Person IntakeAssistant { get; set; }
+        public Person Physician { get; set; }
+
         // methods
         public bool IsDoneTheirPart(Guid? userId)
         {

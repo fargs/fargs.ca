@@ -470,7 +470,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\TaskFilterViewModel.cs" />
     <Compile Include="ViewModels\TaskListItemViewModel.cs" />
-    <Compile Include="ViewModels\UserInitialsViewModel.cs" />
+    <Compile Include="ViewModels\InitialsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeTemplates\AddController\ApiController.tt" />
@@ -1100,7 +1100,6 @@
     <Content Include="Views\Dashboard\_Task.cshtml" />
     <Content Include="Views\Dashboard\_TaskButton.cshtml" />
     <Content Include="Views\Dashboard\_TaskStatusLabel.cshtml" />
-    <Content Include="Views\Dashboard\_Initials.cshtml" />
     <Content Include="Views\Dashboard\_Person.cshtml" />
     <Content Include="Views\Dashboard\_TaskList.cshtml" />
     <Content Include="Views\Dashboard\_ServiceStatus.cshtml" />

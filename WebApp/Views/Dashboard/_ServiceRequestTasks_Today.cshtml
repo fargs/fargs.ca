@@ -16,11 +16,7 @@
     {
         <tr style="padding: 5px 0px">
             <td>
-                <span title="@(task.AssignedTo.Id.HasValue ? task.AssignedTo.DisplayName : "Unassigned")"
-                      class="btn btn-sm btn-circle btn-circle-groupitem"
-                      style="margin-right: 10px; @(task.AssignedTo.Id.HasValue ? string.Format("color: white;background-color: {0};", task.AssignedTo.ColorCode)  : string.Format("border-color: red;")); cursor: default;">
-                    <span class="small">@(task.AssignedTo.Id.HasValue ? task.AssignedTo.Initials : "?")</span>
-                </span>
+                @Html.Partial("_Initials", task.AssignedTo)
             </td>
             <td>
                 @if ((roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.Physician || userId == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)

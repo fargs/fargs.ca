@@ -262,6 +262,7 @@ namespace WebApp.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin")]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)
         {
             using (var context = new OrvosiDbContext())

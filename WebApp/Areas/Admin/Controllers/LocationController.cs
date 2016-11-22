@@ -40,10 +40,11 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
         {
             if (ModelState.IsValid)
             {
+                location.City = location.CityId.ToString(); // to maintain backwards compatibility
                 location.ModifiedDate = SystemTime.Now();
                 location.ModifiedUser = User.Identity.Name;
                 db.Addresses.Add(location);
@@ -75,10 +76,13 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
         {
             if (ModelState.IsValid)
             {
+                location.City = location.CityId.ToString(); // to maintain backwards compatibility
+                location.ModifiedDate = SystemTime.Now();
+                location.ModifiedUser = User.Identity.Name;
                 db.Entry(location).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");

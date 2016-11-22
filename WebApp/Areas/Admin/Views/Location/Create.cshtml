@@ -41,12 +41,19 @@
             Value = c.Id.ToString()
         }).ToList();
 
-    ViewBag.AddressTypes = db.AddressTypes
+    ViewBag.Cities = db.Cities
         .Select(c => new SelectListItem()
         {
-            Text = c.Name,
+            Text = c.Name  + " - " + c.Province.ProvinceName,
             Value = c.Id.ToString()
         }).ToList();
+
+    ViewBag.AddressTypes = db.AddressTypes
+.Select(c => new SelectListItem()
+{
+    Text = c.Name,
+    Value = c.Id.ToString()
+}).ToList();
 }
 
 <h2>Create</h2>
@@ -118,10 +125,10 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label class="control-label col-md-2">City</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.CityId, new SelectList(ViewBag.Cities, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CityId, "", new { @class = "text-danger" })
             </div>
         </div>
 

@@ -25,6 +25,10 @@
                 @if (Model.BoxFolder != null)
                 {
                     <small><strong>@Model.BoxFolder.Name</strong></small>
+                    <small>@Model.ExpectedFolderName</small>
+                    <form action="~/ServiceRequest/UpdateBoxCaseFolderName?serviceRequestId=@Model.ServiceRequestId" method="post">
+                        <button type="submit" class="btn btn-@(Model.BoxFolder.Name != Model.ExpectedFolderName ? "danger" : "primary")">Update Case Folder Name</button>
+                    </form>
                 }
                 else
                 {

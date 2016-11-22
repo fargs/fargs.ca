@@ -49,7 +49,7 @@
             <strong>@item.AddressType.Name</strong>
         </td>
         <td>
-            @item.City_CityId.Name
+            @(item.City_CityId == null ? string.Empty : item.City_CityId.Name)
         </td>
         <td>
             <span class="text-muted">@item.Name</span>

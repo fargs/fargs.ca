@@ -443,6 +443,7 @@
     <Compile Include="Models\ServiceRequestModels2.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
+    <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
@@ -1137,6 +1138,7 @@
     <Content Include="Views\Dashboard\_SummaryCount.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />
     <Content Include="Views\ServiceRequestTask\_TaskFilter.cshtml" />
+    <Content Include="Views\ServiceRequest\ChangeCompany.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

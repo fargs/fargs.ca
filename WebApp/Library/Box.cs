@@ -248,6 +248,22 @@ namespace WebApp.Library
             return Client().FoldersManager.GetInformationAsync(caseFolder.Id).Result;
         }
 
+        public BoxFolder RenameCaseFolder(string boxFolderId, string caseFolderName)
+        {
+            var caseFolder = Client().FoldersManager.GetInformationAsync(boxFolderId).Result;
+            if (caseFolder == null)
+            {
+                throw new Exception("Folder does not exist");
+            }
+
+            var request = new BoxFolderRequest();
+            request.Id = boxFolderId;
+            request.Name = caseFolderName;
+            caseFolder = Client().FoldersManager.UpdateInformationAsync(request).Result;
+
+            return caseFolder;
+        }
+
         public BoxCollaboration AddCollaboration(string FolderId, string BoxUserId, string BoxLogin)
         {
             var request = new BoxCollaborationRequest()

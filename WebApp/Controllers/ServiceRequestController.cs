@@ -20,6 +20,7 @@ using Box.V2.Models;
 using e = Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using MoreLinq;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -220,9 +221,100 @@ namespace WebApp.Controllers
             vm.Resources = resources;
             vm.BoxFolderCollaborations = boxFolderCollaborations;
             vm.BoxFolder = boxFolder;
+            vm.ExpectedFolderName = serviceRequest.GetCaseFolderName();
             return View(vm);
         }
 
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public ActionResult ChangeCompany(int id)
+        {
+            var vm = ctx.ServiceRequests
+                .Where(sr => sr.Id == id)
+                .Select(sr => new ChangeCompanyViewModel
+                {
+                    ServiceRequestId = sr.Id,
+                    ClaimantName = sr.ClaimantName,
+                    CompanyId = sr.CompanyId,
+                    ServiceId = sr.ServiceId,
+                    HasInvoices = sr.InvoiceDetails.Any()
+                })
+                .First();
+
+            vm.CompanySelectList = ctx.Companies
+                .Where(c => c.IsParent == false)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
+                })
+                .ToList();
+
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
+                })
+                .ToList();
+
+
+            // pre validation rules
+            if (vm.HasInvoices)
+            {
+                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> ChangeCompany(ChangeCompanyFormViewModel form)
+        {
+            var record = ctx.ServiceRequests
+                .Where(sr => sr.Id == form.ServiceRequestId)
+                .Single();
+
+            // Get the service catalogue
+            var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
+            var serviceCatalogues = ctx.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
+            var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == record.ServiceId);
+            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+            }
+
+            // Get the no show and late cancellation rates for this company
+            var company = ctx.Companies.FirstOrDefault(c => c.Id == record.CompanyId);
+            var rates = ctx.GetServiceCatalogueRate(record.PhysicianId, company?.ObjectGuid).First();
+            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            }
+
+            if (record.InvoiceDetails.Any())
+            {
+                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("ChangeCompany", form);
+            }
+
+            // update the company
+            record.CompanyId = form.CompanyId;
+            record.ServiceId = form.ServiceId;
+            record.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+            record.ServiceCataloguePrice = serviceCatalogue.Price;
+            record.ModifiedDate = SystemTime.UtcNow();
+            record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+
+            await ctx.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = record.Id });
+        }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult Reschedule(int id)
@@ -902,6 +994,19 @@ namespace WebApp.Controllers
         }
 
         #region Box
+
+        [HttpPost]
+        public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
+        {
+            // Get the request
+            var request = ctx.ServiceRequests.Single(sr => sr.Id == serviceRequestId);
+
+            var box = new BoxManager();
+            var caseFolder = box.RenameCaseFolder(request.BoxCaseFolderId, request.GetCaseFolderName());
+            
+            // Redirect to display the Box Folder
+            return RedirectToAction("Details", new { id = serviceRequestId });
+        }
 
         [HttpPost]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)

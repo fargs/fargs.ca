@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -47,8 +48,10 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,ModifiedDate,ModifiedUser")] ServiceRequestTemplate serviceRequestTemplate)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name")] ServiceRequestTemplate serviceRequestTemplate)
         {
+            serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
+            serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();
             if (ModelState.IsValid)
             {
                 db.ServiceRequestTemplates.Add(serviceRequestTemplate);
@@ -79,8 +82,10 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,ModifiedDate,ModifiedUser")] ServiceRequestTemplate serviceRequestTemplate)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] ServiceRequestTemplate serviceRequestTemplate)
         {
+            serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
+            serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();
             if (ModelState.IsValid)
             {
                 db.Entry(serviceRequestTemplate).State = EntityState.Modified;

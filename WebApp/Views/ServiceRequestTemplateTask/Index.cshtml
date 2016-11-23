@@ -1,55 +1,39 @@
-﻿@model IEnumerable<Orvosi.Data.ServiceRequestTemplateTask>
+﻿@model Orvosi.Data.ServiceRequestTemplate
 
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>@Model.Name</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create", new { ServiceRequestTemplateId = Model.First().ServiceRequestTemplateId })
+    @Html.ActionLink("Create New", "Create", new { ServiceRequestTemplateId = Model.Id })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.ServiceRequestTemplate.Name)
+            Task
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.OTask.Name)
+            Sequence
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Sequence)
+            Due Date Type (A or R)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ModifiedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ModifiedUser)
-        </th>
-        <th>@Html.DisplayNameFor(model => model.DueDateType)</th>
         <th>
             Depends On
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.ServiceRequestTemplateTasks.OrderBy(srt => srt.Sequence)) {
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ServiceRequestTemplate.Name)
-        </td>
         <td>
             @Html.DisplayFor(modelItem => item.OTask.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Sequence)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ModifiedDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ModifiedUser)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.DueDateType)

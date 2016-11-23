@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -18,12 +19,10 @@ namespace WebApp.Controllers
         // GET: ServiceRequestTemplateTask
         public async Task<ActionResult> Index(short ServiceRequestTemplateId)
         {
-            var serviceRequestTemplateTasks = db.ServiceRequestTemplateTasks
-                .Include(s => s.ServiceRequestTemplate)
-                .Include(s => s.OTask)
-                .Where(t => t.ServiceRequestTemplateId == ServiceRequestTemplateId)
-                .OrderBy(t => t.Sequence);
-            return View(await serviceRequestTemplateTasks.ToListAsync());
+            var serviceRequestTemplate = db.ServiceRequestTemplates
+                .Where(t => t.Id == ServiceRequestTemplateId)
+                .Single();
+            return View(serviceRequestTemplate);
         }
 
         // GET: ServiceRequestTemplateTask/Details/5
@@ -56,11 +55,13 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
+            serviceRequestTemplateTask.ModifiedDate = SystemTime.UtcNow();
+            serviceRequestTemplateTask.ModifiedUser = User.Identity.GetGuidUserId().ToString();
             if (ModelState.IsValid)
             {
-                var children = Request.Form.GetValues("Child");
+                var children = (Request.Form.GetValues("Child") ?? new string[0]);
                 foreach (var id in children)
                 {
                     var child = db.ServiceRequestTemplateTasks.Find(new Guid(id));
@@ -101,8 +102,10 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,ModifiedDate,ModifiedUser,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
+            serviceRequestTemplateTask.ModifiedDate = SystemTime.UtcNow();
+            serviceRequestTemplateTask.ModifiedUser = User.Identity.GetGuidUserId().ToString();
             if (ModelState.IsValid)
             {
                 var model = db.ServiceRequestTemplateTasks.Find(serviceRequestTemplateTask.Id);

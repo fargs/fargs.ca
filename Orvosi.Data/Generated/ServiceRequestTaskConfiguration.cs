@@ -65,6 +65,7 @@ namespace Orvosi.Data
             HasOptional(a => a.AspNetUser_AssignedTo).WithMany(b => b.AssignedTo).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers
             HasOptional(a => a.AspNetUser_CompletedBy).WithMany(b => b.CompletedBy).HasForeignKey(c => c.CompletedBy).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers1
             HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_Task
+            HasOptional(a => a.ServiceRequestTemplateTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestTemplateTaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_ServiceRequestTemplateTask
             HasRequired(a => a.ServiceRequest).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestId); // FK_ServiceRequestTask_ServiceRequest
             HasMany(t => t.Parent).WithMany(t => t.Child).Map(m =>
             {

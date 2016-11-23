@@ -60,6 +60,7 @@ namespace Orvosi.Data
         public virtual AspNetUser AspNetUser_CompletedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers1
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
+        public virtual ServiceRequestTemplateTask ServiceRequestTemplateTask { get; set; } // FK_ServiceRequestTask_ServiceRequestTemplateTask
 
         public ServiceRequestTask()
         {

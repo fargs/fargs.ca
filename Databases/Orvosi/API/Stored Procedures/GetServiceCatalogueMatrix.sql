@@ -30,6 +30,7 @@ AS (
 	SELECT 
 		 ServiceId = s.Id
 		,ServiceName = s.Name
+		,ServiceCategoryId = s.ServiceCategoryId
 		,LocationId = l.ItemId
 		,LocationName = l.ItemText
 		,sc.Price
@@ -47,6 +48,7 @@ AS
 	SELECT 
 		 ServiceID = s.Id
 		,ServiceName = s.Name
+		,ServiceCategoryId = s.ServiceCategoryId
 		,LocationId = l.ItemId
 		,LocationName = l.ItemText
 		,PriceFromService = s.Price
@@ -61,6 +63,7 @@ AS
 SELECT 
 	 ServiceId 
 	,ServiceName
+	,ServiceCategoryId
 	,LocationId
 	,LocationName
 	,ServiceCatalogueData = (

@@ -130,17 +130,7 @@ else
                             @{
                                 var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == service.Id && c.LocationId == location.ItemId);
                             }
-                            @if ((serviceCatalogueItem.ServiceId == Services.PaperReview
-        || serviceCatalogueItem.ServiceId == Services.Addendum
-        || serviceCatalogueItem.ServiceId == Services.TeleConference)
-        && serviceCatalogueItem.LocationId != 0)
-                            {
-                                <span>N/A</span>
-                            }
-                            else if ((serviceCatalogueItem.ServiceId != Services.PaperReview
-                                && serviceCatalogueItem.ServiceId != Services.Addendum
-                                && serviceCatalogueItem.ServiceId != Services.TeleConference)
-                                && serviceCatalogueItem.LocationId == 0)
+                            @if ((serviceCatalogueItem.ServiceCategoryId == ServiceCategories.AddOn) && (serviceCatalogueItem.LocationId ?? 0) != 0)
                             {
                                 <span>N/A</span>
                             }

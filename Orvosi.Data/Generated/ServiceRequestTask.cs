@@ -49,6 +49,7 @@ namespace Orvosi.Data
         public System.Guid? ServiceRequestTemplateTaskId { get; set; } // ServiceRequestTemplateTaskId
         public string TaskType { get; set; } // TaskType (length: 20)
         public System.Guid? CompletedBy { get; set; } // CompletedBy
+        public System.DateTime? DueDate { get; set; } // DueDate
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Child { get; set; } // Many to many mapping
@@ -59,6 +60,7 @@ namespace Orvosi.Data
         public virtual AspNetUser AspNetUser_CompletedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers1
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
+        public virtual ServiceRequestTemplateTask ServiceRequestTemplateTask { get; set; } // FK_ServiceRequestTask_ServiceRequestTemplateTask
 
         public ServiceRequestTask()
         {

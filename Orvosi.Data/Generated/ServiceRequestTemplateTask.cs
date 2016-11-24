@@ -23,8 +23,10 @@ namespace Orvosi.Data
         public short? TaskId { get; set; } // TaskId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public string DueDateType { get; set; } // DueDateType (length: 10)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequestTemplateTask
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Child { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Parent { get; set; } // Many to many mapping
 
@@ -36,6 +38,7 @@ namespace Orvosi.Data
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             Child = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             Parent = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             InitializePartial();

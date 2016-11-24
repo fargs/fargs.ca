@@ -59,6 +59,7 @@
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
+    <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
     <Compile Include="Generated\Account.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -449,6 +450,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\TimeConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TimeZone.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TimeZoneConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\UserInbox.cs">

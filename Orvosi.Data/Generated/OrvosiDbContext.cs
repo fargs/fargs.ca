@@ -77,6 +77,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
+        public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         static OrvosiDbContext()
@@ -191,6 +192,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration());
             modelBuilder.Configurations.Add(new TaskStatuConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
+            modelBuilder.Configurations.Add(new TimeZoneConfiguration());
             modelBuilder.Configurations.Add(new UserInboxConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
@@ -257,6 +259,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));
+            modelBuilder.Configurations.Add(new TimeZoneConfiguration(schema));
             modelBuilder.Configurations.Add(new UserInboxConfiguration(schema));
             return modelBuilder;
         }

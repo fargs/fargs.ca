@@ -6,6 +6,13 @@ using System.Web;
 
 namespace Orvosi.Shared.Enums
 {
+    public static class DueDateTypes
+    {
+        public const string AppointmentDate = "A";
+        public const string ReportDueDate = "R";
+        public const string None = "N";
+    }
+
     public static class AspNetRoles
     {
         public static Guid Physician = new Guid("8359141f-e423-4e48-8925-4624ba86245a");

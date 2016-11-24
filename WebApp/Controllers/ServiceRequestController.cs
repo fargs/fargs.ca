@@ -20,6 +20,7 @@ using Box.V2.Models;
 using e = Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using MoreLinq;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -220,9 +221,100 @@ namespace WebApp.Controllers
             vm.Resources = resources;
             vm.BoxFolderCollaborations = boxFolderCollaborations;
             vm.BoxFolder = boxFolder;
+            vm.ExpectedFolderName = serviceRequest.GetCaseFolderName();
             return View(vm);
         }
 
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public ActionResult ChangeCompany(int id)
+        {
+            var vm = ctx.ServiceRequests
+                .Where(sr => sr.Id == id)
+                .Select(sr => new ChangeCompanyViewModel
+                {
+                    ServiceRequestId = sr.Id,
+                    ClaimantName = sr.ClaimantName,
+                    CompanyId = sr.CompanyId,
+                    ServiceId = sr.ServiceId,
+                    HasInvoices = sr.InvoiceDetails.Any()
+                })
+                .First();
+
+            vm.CompanySelectList = ctx.Companies
+                .Where(c => c.IsParent == false)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
+                })
+                .ToList();
+
+            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
+                })
+                .ToList();
+
+
+            // pre validation rules
+            if (vm.HasInvoices)
+            {
+                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public async Task<ActionResult> ChangeCompany(ChangeCompanyFormViewModel form)
+        {
+            var record = ctx.ServiceRequests
+                .Where(sr => sr.Id == form.ServiceRequestId)
+                .Single();
+
+            // Get the service catalogue
+            var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
+            var serviceCatalogues = ctx.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
+            var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == record.ServiceId);
+            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+            }
+
+            // Get the no show and late cancellation rates for this company
+            var company = ctx.Companies.FirstOrDefault(c => c.Id == record.CompanyId);
+            var rates = ctx.GetServiceCatalogueRate(record.PhysicianId, company?.ObjectGuid).First();
+            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            {
+                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            }
+
+            if (record.InvoiceDetails.Any())
+            {
+                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("ChangeCompany", form);
+            }
+
+            // update the company
+            record.CompanyId = form.CompanyId;
+            record.ServiceId = form.ServiceId;
+            record.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+            record.ServiceCataloguePrice = serviceCatalogue.Price;
+            record.ModifiedDate = SystemTime.UtcNow();
+            record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+
+            await ctx.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = record.Id });
+        }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult Reschedule(int id)
@@ -314,15 +406,17 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ParentId.ToString() }
                 });
 
-            vm.AddressSelectList = ctx.Addresses
-                .Where(loc => loc.AddressTypeId != e.AddressTypes.BillingAddress)
+            var addresses = new DataHelper().LoadAddressesWithOwner(ctx);
+            vm.AddressSelectList = addresses
+                .Where(loc => loc.Address.AddressTypeId != e.AddressTypes.BillingAddress)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
-                    Text = string.Format("{0}", c.Name),
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.City_CityId.Name }
-                });
+                    Text = string.Format("{0} - {1}", c.Owner, c.Address.Name),
+                    Value = c.Address.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.Address.City_CityId.Name }
+                })
+                .OrderBy(c => c.Group.Name).ThenBy(c => c.Text);
 
             vm.StaffSelectList = ctx.AspNetUsers
                 .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
@@ -407,6 +501,7 @@ namespace WebApp.Controllers
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
+                    st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -434,6 +529,19 @@ namespace WebApp.Controllers
             }
             return await Create(selectedAvailableDayId, selectedPhysicianId);
 
+        }
+
+        private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
+        {
+            switch (dueDateType)
+            {
+                case DueDateTypes.AppointmentDate:
+                    return appointmentDate;
+                case DueDateTypes.ReportDueDate:
+                    return dueDate;
+                default:
+                    return null;
+            }
         }
 
         [HttpGet]
@@ -890,6 +998,19 @@ namespace WebApp.Controllers
         #region Box
 
         [HttpPost]
+        public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
+        {
+            // Get the request
+            var request = ctx.ServiceRequests.Single(sr => sr.Id == serviceRequestId);
+
+            var box = new BoxManager();
+            var caseFolder = box.RenameCaseFolder(request.BoxCaseFolderId, request.GetCaseFolderName());
+            
+            // Redirect to display the Box Folder
+            return RedirectToAction("Details", new { id = serviceRequestId });
+        }
+
+        [HttpPost]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
             // Get the request
@@ -1061,12 +1182,14 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.Parent.Name }
                 }).ToListAsync();
 
-            var l = await ctx.LocationViews.ToListAsync();
-            ViewBag.Locations = l.Select(c => new SelectListItem()
+            var l = new WebApp.Library.DataHelper().LoadAddressesWithOwner(ctx);
+            ViewBag.Locations = l
+                .Where(a => a.Address.AddressTypeId != AddressTypes.BillingAddress)
+                .Select(c => new SelectListItem()
             {
-                Text = string.Format("{0} - {1}", c.LocationName, c.Name),
-                Value = c.Id.ToString(),
-                Group = new SelectListGroup() { Name = c.EntityDisplayName }
+                Text = string.Format("{0} - {1} - {2}", c.Owner, c.Address.City_CityId.Name, c.Address.Name),
+                Value = c.Address.Id.ToString(),
+                Group = new SelectListGroup() { Name = c.Owner }
             });
 
             ViewBag.Staff = ctx.AspNetUsers

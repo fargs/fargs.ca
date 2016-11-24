@@ -1,12 +1,23 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+@model WebApp.ViewModels.DashboardViewModels.ScheduleViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
 
     var roleId = User.Identity.GetRoleId();
     var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 }
+
+<form action="~/Dashboard/Schedule" method="get">
+    <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+    <ul class="list-unstyled list-inline">
+        @foreach (var item in Model.TaskFilterViewModel.Tasks)
+        {
+            <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
+        }
+        <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
+    </ul>
+</form>
 
 <div id="week-folders" class="panel-group">
 
@@ -30,10 +41,10 @@
                                 <span>@weekFolder.WeekFolderName</span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="todo-total-label" class="small label @(weekFolder.AssessmentToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.AssessmentToDoCount</strong></span>
+                                <span id="todo-total-label" class="small label @(weekFolder.ToDoCount(Model.SelectedUserId) > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.ToDoCount(Model.SelectedUserId)</strong></span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="waiting-total-label" class="small label @(weekFolder.AssessmentWaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.AssessmentWaitingCount</strong></span>
+                                <span id="waiting-total-label" class="small label @(weekFolder.WaitingCount(Model.SelectedUserId) > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.WaitingCount(Model.SelectedUserId)</strong></span>
                             </div>
                         </div>
                     </div>
@@ -44,33 +55,33 @@
                     <div class="row">
                         @foreach (var dayFolder in weekFolder.DayFolders)
                         {
-                            <div class="col-sm-3" id="dayfolder-@dayFolder.Day.Ticks">
+                            <div class="col-xs-12 col-md-6" id="dayfolder-@dayFolder.DayTicks">
                                 <strong>
                                     @dayFolder.DayFormatted_dddd<span class="small"> @dayFolder.DayFormatted_MMMdd</span>
                                 </strong>
                                 <div>
-                                    @dayFolder.Address
+                                    @dayFolder.Address.Name
                                 </div>
                                 <div class="small text-muted" style="padding-bottom:20px;">
                                     @dayFolder.City
                                 </div>
                                 <table class="table table-condensed">
-                                    @foreach (var assessment in dayFolder.Assessments)
+                                    @foreach (var assessment in dayFolder.ServiceRequests)
                                     {
                                         <tr id="header-assessment-@assessment.Id">
                                             <td style="vertical-align: text-top; width:40px;">
-                                                <strong style="color: @assessment.ServiceColorCode;">@assessment.ServiceCode</strong>
+                                                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
                                             </td>
                                             <td style="vertical-align: text-top; width:30px;">
-                                                @if (assessment.ServiceRequestStatusId == TaskStatuses.Obsolete)
+                                                @if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.Obsolete)
                                                 {
                                                     <span id="assessment-total-label" class="fa fa-frown-o" style="color: dodgerblue;" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
                                                 }
-                                                else if (assessment.ServiceRequestStatusId == TaskStatuses.ToDo)
+                                                else if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.ToDo)
                                                 {
                                                     <span id="assessment-total-label" style="color: red;" class="small @(assessment.HasHighWorkload ? "fa fa-pencil" : "label label-danger")">&nbsp;</span>
                                                 }
-                                                else if (assessment.ServiceRequestStatusId == TaskStatuses.Waiting)
+                                                else if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.Waiting)
                                                 {
                                                     <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning" onclick="onShowTaskHierarchy(@assessment.Id)">&nbsp;</span>
                                                 }
@@ -84,43 +95,17 @@
                                             </td>
                                             <td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
                                                 <a data-toggle="collapse" href="#assessment-@assessment.Id" title="@assessment.ClaimantName">
+                                                    @if (!string.IsNullOrEmpty(assessment.Notes))
+                                                    {
+                                                        <i class="fa fa-sticky-note" style="color:goldenrod;"></i>
+                                                    }
                                                     @assessment.ClaimantName
                                                 </a>
                                             </td>
-                                            <td style="vertical-align: text-top; width:80px;" class="text-center">
-                                                @if (roleId == AspNetRoles.Physician)
-                                                {
-                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.IntakeAssistant)))
-                                                    {
-                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                        </span>
-                                                    }
-                                                }
-                                                else if (roleId == AspNetRoles.IntakeAssistant)
-                                                {
-                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.Physician)))
-                                                    {
-                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                        </span>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId && (p.RoleId == AspNetRoles.Physician || p.RoleId == AspNetRoles.IntakeAssistant)))
-                                                    {
-                                                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                        </span>
-                                                    }
-                                                }
+                                            <td style="vertical-align: text-top; width:100px;" class="text-right">
+                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.DocumentReviewer == null ? new Orvosi.Shared.Model.Person() : assessment.DocumentReviewer)
+                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.IntakeAssistant == null ? new Orvosi.Shared.Model.Person() : assessment.IntakeAssistant)
+                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.Physician == null ? new Orvosi.Shared.Model.Person() : assessment.Physician)
                                             </td>
                                         </tr>
                                         <tr id="assessment-@assessment.Id" class="collapse">
@@ -128,53 +113,20 @@
                                             <td colspan="4">
                                                 <div style="padding-top: 5px;">
                                                     <div><strong>@assessment.ClaimantName</strong></div>
-                                                    @*@if (assessment.Tasks.Any(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo))
-                                                        {
-                                                            <div>
-                                                                <strong class="text-warning">Waiting On: </strong>
-                                                                @foreach (var task in assessment.Tasks.Where(t => t.AssignedTo != Model.SelectedUserId && t.StatusId == TaskStatuses.ToDo).Select(t => new { t.AssignedTo, t.AssignedToDisplayName, t.AssignedToInitials, t.AssignedToColorCode }).Distinct())
-                                                                {
-                                                                    <span title="@(!string.IsNullOrEmpty(task.AssignedToDisplayName) ? task.AssignedToDisplayName : "Unassigned")"
-                                                                            class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                            style="color: white; background-color: @(!string.IsNullOrEmpty(task.AssignedToColorCode) ? task.AssignedToColorCode : "red")">
-                                                                        <span class="small">@(!string.IsNullOrEmpty(task.AssignedToInitials) ? task.AssignedToInitials : "?")</span>
-                                                                    </span>
-                                                                }
-                                                            </div>
-                                                        }*@
                                                     @if (assessment.ServiceStatusId.HasValue)
                                                     {
                                                         @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
                                                     }
-                                                    @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
-                                                    {
-                                                        <form action="~/Dashboard/UpdateTaskStatus">
-                                                            <div class="checkbox">
-                                                                <label>
-                                                                    <input id="task-checkbox-@task.Id" type="checkbox"
-                                                                           value="@task.IsComplete"
-                                                                           @(task.IsComplete ? "checked" : "")
-                                                                           @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                                           onclick="onTaskChecked(this, false, @task.Id, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                    @Html.Partial("_TaskStatusLabel", task) @task.Name
-                                                                </label>
-                                                            </div>
-                                                        </form>
-                                                    }
+                                                    <p class="">
+                                                        @assessment.Notes
+                                                    </p>
+                                                    <div>
+                                                        @Html.Partial("_ServiceRequestTasks_Today", assessment)
+                                                    </div>
                                                 </div>
                                                 <div style="padding-top: 5px;">
 
                                                     <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-                                                    <p>
-                                                        @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                                                        {
-                                                            <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                                                                  class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                                                                  style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                                                                <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                                                            </span>
-                                                        }
-                                                    </p>
                                                     <div>
                                                         <div class="pull-left">
                                                             @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
@@ -211,35 +163,19 @@
 @section Scripts{
     <script>
 
-        function onTaskChecked(checkbox, isAddOn, taskId, assessmentId, day, week) {
-            var params = {
-                isAddOn: isAddOn,
-                taskId: taskId,
-                assessmentId: assessmentId,
-                day: day,
-                week: week,
-                checkbox: checkbox
-            }
-
-            if (checkbox.checked) {
-                console.log(taskId + ' is now checked');
-            } else {
-                console.log(taskId + ' is now unchecked');
-            }
-
+        function onTaskChecked(checkbox, taskId, serviceRequestId) {
             $.ajax({
                 type: "POST",
                 url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
                 data: JSON.stringify({
                     taskId: taskId,
                     isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId',
-                    includeSummaries: true
+                    serviceProviderGuid: '@Model.SelectedUserId'
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    UpdateView(result, params);
                     toastr.success("Task updated successfully.", "Task Updated");
+                    refreshServiceRequestTasks(serviceRequestId);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
@@ -248,36 +184,60 @@
             }, this);
         }
 
-        function onToggleNoShow(checkbox, assessmentId, day, week) {
-            var params = {
-                assessmentId: assessmentId,
-                day: day,
-                week: week,
-                checkbox: checkbox
-            }
+        function refreshServiceRequestTasks(serviceRequestId) {
 
-            if (checkbox.checked) {
-                console.log(assessmentId + ' no show is now checked');
-            } else {
-                console.log(assessmentId + ' no show is now unchecked');
-            }
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/Schedule?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId',
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
+        function onToggleNoShow(checkbox, serviceRequestId) {
 
             $.ajax({
                 type: "POST",
                 url: '@Url.Content("~/Dashboard/ToggleNoShow")',
                 data: JSON.stringify({
-                    serviceRequestId: assessmentId,
+                    serviceRequestId: serviceRequestId,
                     isChecked: checkbox.checked,
                     serviceProviderGuid: '@Model.SelectedUserId'
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    UpdateView(result, params);
+                    toastr.success("Request updated successfully.", "Request Updated");
+                    refreshServiceRequestTasks(serviceRequestId);
+                    refreshServiceStatus(serviceRequestId);
                 },
                 error: function (err) {
                     alert(err.status + " - " + err.statusText);
                 }
             }, this);
+        }
+
+        function refreshServiceStatus(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-status-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
         }
 
         function UpdateView(result, params) {
@@ -341,57 +301,6 @@
             else if (assessmentFromResult.ServiceRequestStatusId == 4) // Obsolete
                 assessmentStatusEl.addClass('fa fa-frown-o');
 
-        }
-
-        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
-            var taskStatuses = {
-                "Waiting": 1,
-                "ToDo": 2,
-                "Done": 3,
-                "Obsolete": 4
-            };
-            var assessmentEl = $('#asessment-' + assessmentIdForEl);
-            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
-            var taskEl = null;
-            $.each(assessmentFromResult.People, function (index, person) {
-                $.each(person.Tasks, function (index, task) {
-                    taskEl = $('#task-statuslabel-' + task.Id);
-                    taskEl.removeClass();
-                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
-                    if (task.StatusId == taskStatuses.Done) {
-                        MarkTaskAsDone(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.ToDo) {
-                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Waiting) {
-                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.StatusId == taskStatuses.Obsolete) {
-                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
-                    }
-                });
-            });
-        }
-
-        function MarkTaskAsDone(label, checkbox) {
-            label.addClass("label label-success").text("Done");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsToDo(label, checkbox) {
-            label.addClass("label label-danger").text("To Do");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsWaiting(label, checkbox) {
-            label.addClass("label label-warning").text("Waiting");
-            checkbox.prop('disabled', true);
-        }
-
-        function MarkTaskAsObsolete(label, checkbox) {
-            label.addClass("label label-info").text("Obsolete");
-            checkbox.prop('disabled', true);
         }
 
         function onShowTaskHierarchy(serviceRequestId, taskId) {

@@ -1,145 +1,127 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+@model WebApp.ViewModels.DashboardViewModels.DueDatesViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
 }
-<div class="alert alert-info">
-    <strong>Important Note:</strong> <br />The Due Date is the day the final report must be submitted back to the company, not your individual task due date. <br /> You are expected to complete your tasks taking into account the other work required to get the report submitted.
-</div>
-@foreach (var day in Model.DueDates.OrderBy(d => d.Day))
-{
-    <div class="h3">
-        @day.DayFormatted_MMMdd<span class="small"> @day.DayFormatted_dddd</span>
-    </div>
-    <section>
-        @foreach (var assessment in day.ServiceRequests.OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime))
+
+<form action="~/Dashboard/DueDates" method="get">
+    <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+    <ul class="list-unstyled list-inline">
+        @foreach (var item in Model.TaskFilterViewModel.Tasks)
         {
-            <div class="row o-dashboard-tr">
-                <div class="col-md-2 o-dashboard-td">
-                    <strong>@assessment.ClaimantName</strong>
-                    <div>@assessment.Company.Name</div>
-                </div>
-                <div class="col-md-2 o-dashboard-td">
-                    <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
-                    @if (assessment.AppointmentDate.HasValue)
-                    {
-                        <div class="small text-muted">
-                            on @assessment.AppointmentDate.ToOrvosiDateFormat() @assessment.StartTime.ToShortTimeSafe()
+            <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
+        }
+        <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
+    </ul>
+</form>
+
+<div id="day-folders" class="panel-group">
+
+    <div class="panel">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-10"><strong>Day</strong></div>
+                <div class="col-xs-12 col-sm-1 text-center"><strong>To Do</strong></div>
+                <div class="col-xs-12 col-sm-1 text-center"><strong>Waiting On</strong></div>
+            </div>
+        </div>
+    </div>
+    @foreach (var day in Model.DueDates.OrderBy(d => d.Day))
+    {
+        <div class="panel 
+            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) > SystemTime.Now().Date ? " panel-default" : string.Empty )
+            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) == SystemTime.Now().Date ? " panel-success" : string.Empty )
+            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) < SystemTime.Now().Date ? " panel-danger" : string.Empty )">
+            <div id="header-dayfolder-@day.DayTicks" class="panel-heading" role="tab">
+                <a role="button" data-toggle="collapse" data-parent="#day-folders" href="#dayfolder-@day.DayTicks">
+                    <div class="panel-title">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-10">
+                                <span>@day.DayFormatted_MMMdd</span><span class="small"> @day.DayFormatted_dddd.ToUpper()</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-1 text-center">
+                                <span id="todo-total-label" class="small label @(day.ToDoCount(Model.SelectedUserId) > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@(day.ToDoCount(Model.SelectedUserId))</strong></span>
+                            </div>
+                            <div class="col-xs-12 col-sm-1 text-center">
+                                <span id="waiting-total-label" class="small label @(day.WaitingCount(Model.SelectedUserId) > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@(day.WaitingCount(Model.SelectedUserId))</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <section id="dayfolder-@day.DayTicks" class="panel-collapse collapse">
+                <div class="panel-body">
+                    @foreach (var serviceRequest in day.ServiceRequests.OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime))
+                {
+                        <div class="row o-dashboard-tr">
+                            <div class="col-md-2 o-dashboard-td">
+                                <a target="_blank" class="small" href="~/ServiceRequest/Details/@serviceRequest.Id"><h4>@serviceRequest.ClaimantName - @serviceRequest.Id</h4></a>
+                                <div>@serviceRequest.Company.Name</div>
+                                <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
+                                @if (serviceRequest.AppointmentDate.HasValue)
+                                {
+                                    <div class="small text-muted">
+                                        on @serviceRequest.AppointmentDate.ToOrvosiDateFormat() @serviceRequest.StartTime.ToShortTimeSafe()
+                                    </div>
+                                }
+                                <p>
+                                    <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+                                </p>
+                            </div>
+                            <div class="col-md-2 o-dashboard-td">
+                                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
+                                {
+                                    @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                @Html.Partial("_ServiceRequestTasks_Today", serviceRequest)
+
+                            </div>
+                            <div class="col-md-4 o-dashboard-td">
+                                @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", serviceRequest)
+                                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
+                            </div>
                         </div>
                     }
                 </div>
-                <div class="col-md-3">
-                    @foreach (var task in assessment.ServiceRequestTasks.Where(p => p.AssignedTo.Id == Model.SelectedUserId).OrderBy(p => p.ProcessTask.Sequence))
-                    {
-                        <form action="~/Dashboard/UpdateTaskStatus">
-                            <div class="checkbox" title="@task.Id">
-                                <label>
-                                    <input id="task-checkbox-@task.Id" type="checkbox"
-                                           value="@task.CompletedDate.HasValue"
-                                           @(task.CompletedDate.HasValue ? "checked" : "")
-                                           @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
-                                           onclick="onTaskChecked(this, @task.Id, @assessment.Id)">
-                                    @Html.Partial("_TaskStatusLabel2", task) @task.ProcessTask.Name
-                                </label>
-                            </div>
-                        </form>
-                    }
-                </div>
-                <div class="col-md-2 o-dashboard-td">
-                    <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                </div>
-
-                <div class="col-md-2 o-dashboard-td">
-                    @foreach (var person in assessment.People.Where(p => p.Id != Model.SelectedUserId))
-                    {
-                        <span title="@(!string.IsNullOrEmpty(person.DisplayName) ? person.DisplayName : "Unassigned")"
-                              class="btn btn-sm btn-circle btn-circle-groupitem disabled"
-                              style="color: white; background-color: @(!string.IsNullOrEmpty(person.ColorCode) ? person.ColorCode : "red")">
-                            <span class="small">@(!string.IsNullOrEmpty(person.Initials) ? person.Initials : "?")</span>
-                        </span>
-                    }
-                </div>
-                <div class="col-md-1 o-dashboard-td">
-                    <a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>
-                </div>
+            </section>
             </div>
-        }
-    </section>
-}
+            }
+        </div>
+
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
 @section Scripts {
 
     <script>
 
         let serviceProviderId = '@Model.SelectedUserId';
-        function updateTaskStatuses(assessmentFromResult, assessmentIdForEl) {
-            var taskStatuses = {
-                "Waiting": 1,
-                "ToDo": 2,
-                "Done": 3,
-                "Obsolete": 4
-            };
-            var assessmentEl = $('#asessment-' + assessmentIdForEl);
-            var tasksEl = assessmentEl.find("span[id^='task-statuslabel-]'");
-            var taskEl = null;
-            $.each(assessmentFromResult.ServiceRequestTasks, function (index, task) {
-                if (task.AssignedTo.Id == serviceProviderId) {
-                    taskEl = $('#task-statuslabel-' + task.Id);
-                    taskEl.removeClass();
-                    taskCheckboxEl = $('#task-checkbox-' + task.Id);
-                    if (task.Status.Id == taskStatuses.Done) {
-                        MarkTaskAsDone(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.Status.Id == taskStatuses.ToDo) {
-                        MarkTaskAsToDo(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.Status.Id == taskStatuses.Waiting) {
-                        MarkTaskAsWaiting(taskEl, taskCheckboxEl);
-                    }
-                    else if (task.Status.Id == taskStatuses.Obsolete) {
-                        MarkTaskAsObsolete(taskEl, taskCheckboxEl);
-                    }
-                }
-            });
-        }
 
-        function MarkTaskAsDone(label, checkbox) {
-            label.addClass("label label-success").text("Done");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsToDo(label, checkbox) {
-            label.addClass("label label-danger").text("To Do");
-            checkbox.prop('disabled', false);
-        }
-
-        function MarkTaskAsWaiting(label, checkbox) {
-            label.addClass("label label-warning").text("Waiting");
-            checkbox.prop('disabled', true);
-        }
-
-        function MarkTaskAsObsolete(label, checkbox) {
-            label.addClass("label label-info").text("Obsolete");
-            checkbox.prop('disabled', true);
-        }
-
-        function onTaskChecked(checkbox, taskId, assessmentId) {
-            var params = {
-                taskId: taskId,
-                assessmentId: assessmentId,
-                checkbox: checkbox
-            }
-
-            if (checkbox.checked) {
-                console.log(taskId + ' is now checked');
-            } else {
-                console.log(taskId + ' is now unchecked');
-            }
+        function refreshServiceRequestTasks(serviceRequestId) {
 
             $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/DueDates?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId',
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
+        function onTaskChecked(checkbox, taskId, serviceRequestId) {
+            $.ajax({
                 type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus2")',
+                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
                 data: JSON.stringify({
                     taskId: taskId,
                     isChecked: checkbox.checked,
@@ -147,8 +129,8 @@
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    updateTaskStatuses(result, params.assessmentId);
                     toastr.success("Task updated successfully.", "Task Updated");
+                    refreshServiceRequestTasks(serviceRequestId);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
@@ -157,5 +139,66 @@
             }, this);
         }
 
+
+        function onEditNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-note-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#Notes').val(result.Notes);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-note-form").submit(function (e) {
+
+            var url = '@Url.Content("~/Note/UpdateNote")';
+
+            var form = $("#edit-note-form");
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-note-modal").modal('toggle');
+                    toastr.success("The note was updated successfully.");
+                    refreshNote(serviceRequestId);
+                }
+            });
+            e.preventDefault();
+        });
+
+        function refreshNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Dashboard/RefreshNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#notes-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
     </script>
+
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

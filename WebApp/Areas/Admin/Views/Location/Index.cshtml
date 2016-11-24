@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Orvosi.Data.Address>
+﻿@model IEnumerable<WebApp.Areas.Admin.ViewModels.AddressViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -16,6 +16,9 @@
             Type
         </th>
         <th>
+            Owner
+        </th>
+        <th>
             City
         </th>
         <th>
@@ -26,7 +29,7 @@
         </th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.OrderBy(a => a.Address.AddressType.Name).ThenBy(a => a.Owner)) {
     <tr>
         <td>
             <nav>
@@ -36,32 +39,36 @@
                             <i class="glyphicon glyphicon-menu-hamburger"></i>
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
-                            <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</li>
-                            <li role="presentation">@Html.ActionLink("Details", "Details", new { id = item.Id })</li>
+                            <li role="presentation">@Html.ActionLink("Edit", "Edit", new { id = item.Address.Id })</li>
+                            <li role="presentation">@Html.ActionLink("Details", "Details", new { id = item.Address.Id })</li>
                             <li role="separator" class="divider"></li>
-                            <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</li>
+                            <li role="presentation">@Html.ActionLink("Delete", "Delete", new { id = item.Address.Id })</li>
                         </ul>
                     </li>
                 </ul>
             </nav>
         </td>
         <td>
-            <strong>@item.AddressType.Name</strong>
+            <strong>@item.Address.AddressType.Name</strong>
         </td>
         <td>
-            @item.City_CityId.Name
+            <span>@item.Owner</span>
         </td>
         <td>
-            <span class="text-muted">@item.Name</span>
+            @(item.Address.City_CityId == null ? string.Empty : item.Address.City_CityId.Name)
         </td>
         <td>
-            @item.Address1<br />
-            @if (!string.IsNullOrEmpty(item.Address2))
+            <span class="text-muted">@item.Address.Name</span>
+        </td>
+        <td>
+            @item.Address.Address1<br />
+            @if (!string.IsNullOrEmpty(item.Address.Address2))
             {
-                @item.Address2<br />
+                @item.Address.Address2<br />
             }
-            @item.City, @item.PostalCode<br />
-            @item.Province.ProvinceName @item.Country.Name
+            @(item.Address.City_CityId == null ? string.Empty : item.Address.City_CityId.Name), @item.Address.PostalCode<br />
+            @item.Address.Province.ProvinceName @item.Address.Country.Name<br />
+            Timezone: @(item.Address.TimeZone_TimeZone == null ? "Not Set" : item.Address.TimeZone_TimeZone.Name)
         </td>
     </tr>
 }

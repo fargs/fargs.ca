@@ -1,10 +1,18 @@
-﻿@model Orvosi.Data.AspNetUser
+﻿@model Orvosi.Shared.Model.Person
 
-@if (Model != null)
+@if (!Model.Id.HasValue)
 {
-<span title="@Model.GetDisplayName() - @Model.AspNetUserRoles.First().AspNetRole.Name" 
-      class="btn btn-circle disabled" 
-      style="cursor: default; color: white; background-color: @(string.IsNullOrEmpty(Model.ColorCode) ? "gray" : Model.ColorCode);">
-    <span class="small">@(string.IsNullOrEmpty(Model.GetInitials()) ? "?" : Model.GetInitials())</span>
-</span>
+    <span title="Unassigned"
+          class="btn btn-sm btn-circle btn-circle-groupitem"
+          style="margin-right: 2px; color: red; border-color: red; cursor: default;">
+        <span class="small">?</span>
+    </span>
+}
+else
+{
+    <span title="@(Model.DisplayName + " - " + Model.Role.Name)"
+          class="btn btn-sm btn-circle btn-circle-groupitem"
+          style="margin-right: 2px; color: white; background-color: @(Model.ColorCode);">
+        <span class="small">@Model.Initials</span>
+    </span>
 }

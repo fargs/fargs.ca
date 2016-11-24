@@ -74,6 +74,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time
+        System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         int SaveChanges();

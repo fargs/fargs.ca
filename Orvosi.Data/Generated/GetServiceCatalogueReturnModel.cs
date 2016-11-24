@@ -18,6 +18,7 @@ namespace Orvosi.Data
     {
         public System.Int16 ServiceId { get; set; }
         public System.String ServiceName { get; set; }
+        public System.Int16? ServiceCategoryId { get; set; }
         public System.Int32? LocationId { get; set; }
         public System.String LocationName { get; set; }
         public System.Decimal? ServicePrice { get; set; }

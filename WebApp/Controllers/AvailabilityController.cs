@@ -131,7 +131,7 @@ namespace WebApp.Controllers
         {
             var day = await context.AvailableDays.FirstAsync(c => c.Id == id);
 
-            if (context.ServiceRequests.Any(sr => day.AvailableSlots.Contains(sr.AvailableSlot)))
+            if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
             {
                 ModelState.AddModelError("", "Slots have already been booked.");
             }
@@ -145,7 +145,7 @@ namespace WebApp.Controllers
         {
             var slot = await context.AvailableSlots.FirstAsync(c => c.Id == id);
 
-            if (context.ServiceRequests.Any(sr => sr.AvailableSlot == slot))
+            if (slot.ServiceRequests.Any())
             {
                 ModelState.AddModelError("", "Slot has already been booked.");
             }

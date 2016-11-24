@@ -1,71 +1,83 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model WebApp.ViewModels.DashboardViewModels.IndexViewModel
+@model WebApp.ViewModels.DashboardViewModels.AgendaViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
 }
-<div>
-    <div class="btn-group" style="margin-right:15px;">
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
-        <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <form action="~/Dashboard/Agenda" method="get" class="form-inline">
+                <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+                <div class="input-group date" id="AppointmentDatePicker">
+                    @Html.TextBox("day", Model.Day, "{0:yyyy-MM-dd}", new { @class = "form-control", size = "16", onchange = "this.form.submit();" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+                <div class="btn-group">
+                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
+                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
+                </div>
+            </form>
+        </div>
     </div>
     <span class="h3" style="vertical-align:middle;">
         @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
     </span>
+
 </div>
 <p></p>
-@if (Model.Today != null)
+@if (Model.DayFolder != null)
 {
     <div>
-        @Model.Today.Address.Name
+        @Model.DayFolder.Address.Name
     </div>
         <div class="small text-muted" style="padding-bottom:20px;">
-            @Model.Today.Address.City
+            @Model.DayFolder.Address.City
         </div>
-    foreach (var assessment in Model.Today.Assessments.OrderBy(a => a.StartTime))
+    foreach (var serviceRequest in Model.DayFolder.ServiceRequests.OrderBy(a => a.StartTime))
     {
         <div class="row o-dashboard-tr">
             <div class="col-md-1 o-dashboard-td">
-                <strong>@assessment.StartTime.ToShortTimeSafe()</strong>
-                @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
+                <strong>@serviceRequest.StartTime.ToShortTimeSafe()</strong>
+                @if (!serviceRequest.IsLateCancellation && !serviceRequest.IsCancelled)
                     {
                     <form>
                         <div class="checkbox">
                             <label>
-                                <input id="task-checkbox-@assessment.Id" type="checkbox"
-                                       value="@assessment.IsNoShow"
-                                       @(assessment.IsNoShow ? "checked" : "")
-                                       onclick="onToggleNoShow(this, @assessment.Id, @Model.Today.DayTicks);">
+                                <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
+                                       value="@serviceRequest.IsNoShow"
+                                       @(serviceRequest.IsNoShow ? "checked" : "")
+                                       onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
                                 No Show
                             </label>
                         </div>
                     </form>
                 }
                 <div class="o-dashboard-td">
-                    @Html.Partial("_ServiceStatus", assessment)
+                    @Html.Partial("_ServiceStatus", serviceRequest)
                 </div>
             </div>
             <div class="col-md-2 o-dashboard-td">
-                <div><a target="_blank" class="" href="~/ServiceRequest/Details/@assessment.Id">@assessment.ClaimantName (@assessment.Id)</a></div>
-                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
+                <div><a target="_blank" class="" href="~/ServiceRequest/Details/@serviceRequest.Id">@serviceRequest.ClaimantName (@serviceRequest.Id)</a></div>
+                <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
                 -
-                <span>@assessment.Company.Name</span>
+                <span>@serviceRequest.Company.Name</span>
             </div>
             <div class="col-md-3">
-                @Html.Partial("_ServiceRequestTasks_Today", assessment)
+                @Html.Partial("_ServiceRequestTasks_Today", serviceRequest)
             </div>
             <div class="col-md-2 o-dashboard-td">
-                <a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+                <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
                 @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
                 {
-                    @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = assessment.Id, Note = assessment.Notes })
+                    @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
                 }
             </div>
             <div class="col-md-4 o-dashboard-td">
-                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = assessment.Id })
-                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", assessment)
+                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.Id })
+                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
             </div>
         </div>
     }
@@ -82,6 +94,11 @@ else
 
     <script>
 
+        $('#AppointmentDatePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        })
+
         function onTaskChecked(checkbox, taskId, serviceRequestId) {
             $.ajax({
                 type: "POST",
@@ -93,8 +110,8 @@ else
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
-                    refreshServiceRequestTasks(serviceRequestId);
                     toastr.success("Task updated successfully.", "Task Updated");
+                    refreshServiceRequestTasks(serviceRequestId);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
@@ -129,7 +146,7 @@ else
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/RefreshServiceRequestTasks?serviceRequestId=")' + serviceRequestId,
+                url: '@Url.Content("~/Dashboard/Agenda?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId' + '&day=@Model.Day.Date',
                 contentType: "text/html",
                 success: function (result) {
                     $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
@@ -219,5 +236,5 @@ else
 
     </script>
 
-    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Request.QueryString)
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

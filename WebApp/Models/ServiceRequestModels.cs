@@ -663,25 +663,36 @@ namespace WebApp.Models.ServiceRequestModels
         }
     }
 
-    public class DayFolder
+    public class DayFolderBase
+    {
+        public DateTime Day { get; set; }
+        public string DayFormatted_dddd { get; internal set; }
+        public string DayFormatted_MMMdd { get; internal set; }
+        public long DayTicks { get; internal set; }
+        public string Company { get; set; }
+        public bool IsToday()
+        {
+            return SystemTime.Now().Date == Day;
+        }
+        public bool IsPast()
+        {
+            return SystemTime.Now().Date < Day;
+        }
+    }
+    public class DayFolder : DayFolderBase
     {
         public DayFolder()
         {
             Assessments = new List<Assessment>();
         }
-        public DateTime Day { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
-        public string Company { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public int AssessmentCount { get; set; }
         public int ToDoCount { get; set; }
         public int WaitingCount { get; set; }
         public IEnumerable<Assessment> Assessments { get; set; }
-        public string DayFormatted_dddd { get; internal set; }
-        public string DayFormatted_MMMdd { get; internal set; }
-        public long DayTicks { get; internal set; }
         public int AssessmentToDoCount
         {
             get
@@ -710,15 +721,15 @@ namespace WebApp.Models.ServiceRequestModels
                 return Assessments.Count(a => a.ServiceRequestStatusId == TaskStatuses.Done);
             }
         }
-        public bool IsToday()
-        {
-            return SystemTime.Now().Date == Day;
-        }
+    }
 
-        public bool IsPast()
+    public class DueDateDayFolder : DayFolderBase
+    {
+        public DueDateDayFolder()
         {
-            return SystemTime.Now().Date < Day;
+            ServiceRequests = new List<Assessment>();
         }
+        public IEnumerable<ServiceRequest> ServiceRequests { get; set; }
     }
 
     public class ServiceRequest

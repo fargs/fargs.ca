@@ -22,6 +22,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
                             <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
+                            <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company</a></li>
                             @if (Model.ServiceRequest.CanBeRescheduled(SystemTime.Now()))
                             {
                                 <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
@@ -143,6 +144,16 @@
                     @foreach (var task in Model.TaskList.OrderBy(sr => sr.Sequence))
                     {
                         <tr>
+                            @if (role == AspNetRoles.SuperAdmin)
+                            {
+                                <td>
+                                    <form action="~/ServiceRequestTask/Delete" method="post" class="pull-left">
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("serviceRequestTaskId", task.Id)
+                                        <button type="submit" class="btn btn-sm btn-link"><i class="fa fa-remove"></i></button>
+                                    </form>
+                                </td>
+                            }
                             <td width="50px">
                                 @if (task.TaskType == "EVENT")
                                 {
@@ -232,7 +243,6 @@
 
         <h4 style="line-height:30px;">Case Files and Reports</h4>
         <hr />
-        <p><strong>Folder Name:</strong> @Model.ServiceRequest.GetCaseFolderName()</p>
         @if (Model.ServiceRequest.BoxCaseFolderId == null)
             {
             <div>The case folder has not been created yet.<br />Your case coordinator will take care of this once the files are received.</div>
@@ -243,9 +253,9 @@
                 <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         }
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+        {
+            if (Model.ServiceRequest.BoxCaseFolderId != null)
             {
-                if (Model.ServiceRequest.BoxCaseFolderId != null)
-                {
                 <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
             }
             else

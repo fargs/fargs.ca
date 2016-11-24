@@ -33,19 +33,33 @@
             Value = c.Id.ToString()
         }).ToList();
 
-    ViewBag.Provinces = db.Provinces
-        .Where(c => c.CountryId == 124) // Canada
+    ViewBag.Cities = db.Cities
         .Select(c => new SelectListItem()
         {
-            Text = c.ProvinceName,
+            Text = c.Name + " - " + c.Province.ProvinceName,
             Value = c.Id.ToString()
         }).ToList();
+
+    ViewBag.Provinces = db.Provinces
+.Where(c => c.CountryId == 124) // Canada
+.Select(c => new SelectListItem()
+{
+    Text = c.ProvinceName,
+    Value = c.Id.ToString()
+}).ToList();
 
     ViewBag.AddressTypes = db.AddressTypes
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
             Value = c.Id.ToString()
+        }).ToList();
+
+    ViewBag.TimeZones = db.TimeZones
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Name
         }).ToList();
 }
 
@@ -121,10 +135,10 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label class="control-label col-md-2">City</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.CityId, new SelectList(ViewBag.Cities, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CityId, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -141,6 +155,14 @@
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.ProvinceId, new SelectList(ViewBag.Provinces, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ProvinceId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">TimeZone</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.TimeZone, new SelectList(ViewBag.TimeZones, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TimeZone, "", new { @class = "text-danger" })
             </div>
         </div>
 

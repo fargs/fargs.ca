@@ -4,6 +4,10 @@ using System.Net;
 using System.Web.Mvc;
 using Orvosi.Data;
 using System;
+using System.Linq;
+using Orvosi.Shared.Enums;
+using WebApp.Areas.Admin.ViewModels;
+using WebApp.Library;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -14,7 +18,9 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location
         public async Task<ActionResult> Index()
         {
-            return View(await db.Addresses.ToListAsync());
+            // retrieve all the PHYSICIANS from the database
+            var result = new DataHelper().LoadAddressesWithOwner(new OrvosiDbContext());
+            return View(result);
         }
 
         // GET: Admin/Location/Details/5
@@ -40,10 +46,11 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZone")] Address location)
         {
             if (ModelState.IsValid)
             {
+                location.City = location.CityId.ToString(); // to maintain backwards compatibility
                 location.ModifiedDate = SystemTime.Now();
                 location.ModifiedUser = User.Identity.Name;
                 db.Addresses.Add(location);
@@ -75,10 +82,13 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,City,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId")] Address location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZone")] Address location)
         {
             if (ModelState.IsValid)
             {
+                location.City = location.CityId.ToString(); // to maintain backwards compatibility
+                location.ModifiedDate = SystemTime.Now();
+                location.ModifiedUser = User.Identity.Name;
                 db.Entry(location).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -89,7 +99,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
-         
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

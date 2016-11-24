@@ -52,6 +52,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
             this.Resources = new List<BoxResource>();
         }
         public int ServiceRequestId { get; set; }
+        public string ExpectedFolderName { get; set; }
         public BoxFolder BoxFolder { get; set; }
         public List<BoxCollaboration> BoxFolderCollaborations { get; internal set; }
         public List<BoxResource> Resources { get; internal set; }

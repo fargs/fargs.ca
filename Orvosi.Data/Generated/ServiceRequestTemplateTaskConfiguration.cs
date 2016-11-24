@@ -33,6 +33,7 @@ namespace Orvosi.Data
             Property(x => x.TaskId).HasColumnName(@"TaskId").IsOptional().HasColumnType("smallint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.DueDateType).HasColumnName(@"DueDateType").IsOptional().IsFixedLength().HasColumnType("nchar").HasMaxLength(10);
 
             // Foreign keys
             HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_Task

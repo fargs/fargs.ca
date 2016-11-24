@@ -26,7 +26,7 @@
 <ul class="nav nav-tabs">
     <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda <strong>(@Html.Action("RefreshAgendaSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"], day = Request.QueryString["day"] }))</strong></a></li>
     <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
-    <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule</a></li>
+    <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule <strong>(@Html.Action("RefreshScheduleSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
     <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong>(@Html.Action("RefreshAdditionalsSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
 </ul>
 <section class="tab-content">

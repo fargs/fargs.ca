@@ -4,9 +4,9 @@
 <div class="divtoscroll" id="service-request-message-container-@Model.Id">
     <div class="divwithscroll" id="service-request-message-scroll-@Model.Id">
         <ul id="service-request-message-list-@Model.Id" class="list-unstyled">
-            @foreach (var item in Model.Messages)
+            @foreach (var item in Model.ServiceRequestMessages)
             {
-                    @Html.Partial("_ServiceRequestMessage", item)
+                    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessage.cshtml", item)
             }
         </ul>
     </div>

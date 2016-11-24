@@ -22,7 +22,7 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<ServiceRequest> AreAssignedToServiceProvider(this IQueryable<ServiceRequest> serviceRequests, Guid serviceProviderId)
         {
-            return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == serviceProviderId));
+            return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId));
         }
         public static IQueryable<ServiceRequest> AreOpen(this IQueryable<ServiceRequest> serviceRequests)
         {

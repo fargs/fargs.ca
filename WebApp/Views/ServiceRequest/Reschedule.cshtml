@@ -4,14 +4,17 @@
 @model ServiceRequest
 
 @{ 
-    var db = new OrvosiDbContext();
-    var l = db.Addresses.Where(loc => loc.AddressTypeId != AddressTypes.BillingAddress).ToList();
-    ViewBag.Locations = l.Select(c => new SelectListItem()
-    {
-        Text = string.Format("{0} - {1}", c.City_CityId.Name, c.Name),
-        Value = c.Id.ToString(),
-        Group = new SelectListGroup() { Name = c.AddressType.Name }
-    });
+    var addresses = new WebApp.Library.DataHelper().LoadAddressesWithOwner(new OrvosiDbContext());
+    ViewBag.AddressSelectList = addresses
+        .Where(loc => loc.Address.AddressTypeId != AddressTypes.BillingAddress)
+        .AsEnumerable()
+        .Select(c => new SelectListItem()
+        {
+            Text = string.Format("{0} - {1}", c.Owner, c.Address.Name),
+            Value = c.Address.Id.ToString(),
+            Group = new SelectListGroup() { Name = c.Address.City_CityId.Name }
+        })
+        .OrderBy(c => c.Group.Name).ThenBy(c => c.Text);
 }
 
 <h3>Reschedule Assessment @Model.ClaimantName</h3>
@@ -68,7 +71,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Location</label>
         <div class="col-md-10">
-            @Html.DropDownList("AddressId", new SelectList(ViewBag.Locations, "Value", "Text", "Group.Name", Model.AddressId), new { @class = "form-control" })
+            @Html.DropDownList("AddressId", new SelectList(ViewBag.AddressSelectList, "Value", "Text", "Group.Name", Model.AddressId), new { @class = "form-control" })
             @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
             <div id="locationMessage" class="text-danger"></div>
         </div>

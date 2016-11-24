@@ -58,11 +58,11 @@ namespace WebApp.Models.AccountingModel
                 .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
                 .Select(d => new DayFolder
                 {
-                    Day = d.Key.Day.Value,
-                    ServiceRequests = filtered
-                        .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
-                        .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
-                        .ThenBy(sr => sr.StartTime)
+                    DayAndTime = d.Key.Day.Value,
+                    //Company = d.Key.Company,
+                    //Address = d.Key.Address,
+                    ServiceRequests = d
+                        .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
                 }).OrderBy(df => df.Day);
         }
 

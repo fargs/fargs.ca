@@ -4,6 +4,10 @@ using System.Net;
 using System.Web.Mvc;
 using Orvosi.Data;
 using System;
+using System.Linq;
+using Orvosi.Shared.Enums;
+using WebApp.Areas.Admin.ViewModels;
+using WebApp.Library;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -14,7 +18,9 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location
         public async Task<ActionResult> Index()
         {
-            return View(await db.Addresses.ToListAsync());
+            // retrieve all the PHYSICIANS from the database
+            var result = new DataHelper().LoadAddressesWithOwner(new OrvosiDbContext());
+            return View(result);
         }
 
         // GET: Admin/Location/Details/5
@@ -93,7 +99,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Location/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
-         
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

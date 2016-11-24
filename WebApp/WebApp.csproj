@@ -391,6 +391,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\ViewModels\AddressViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\AspNetRolesController.cs" />
     <Compile Include="Areas\Admin\Controllers\AspNetUsersController.cs" />
     <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
@@ -426,6 +427,7 @@
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\Box.cs" />
+    <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Google\GoogleServices.cs" />

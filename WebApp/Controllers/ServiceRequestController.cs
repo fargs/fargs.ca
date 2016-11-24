@@ -406,15 +406,17 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ParentId.ToString() }
                 });
 
-            vm.AddressSelectList = ctx.Addresses
-                .Where(loc => loc.AddressTypeId != e.AddressTypes.BillingAddress)
+            var addresses = new DataHelper().LoadAddressesWithOwner(ctx);
+            vm.AddressSelectList = addresses
+                .Where(loc => loc.Address.AddressTypeId != e.AddressTypes.BillingAddress)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
-                    Text = string.Format("{0}", c.Name),
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.City_CityId.Name }
-                });
+                    Text = string.Format("{0} - {1}", c.Owner, c.Address.Name),
+                    Value = c.Address.Id.ToString(),
+                    Group = new SelectListGroup() { Name = c.Address.City_CityId.Name }
+                })
+                .OrderBy(c => c.Group.Name).ThenBy(c => c.Text);
 
             vm.StaffSelectList = ctx.AspNetUsers
                 .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
@@ -1180,12 +1182,14 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.Parent.Name }
                 }).ToListAsync();
 
-            var l = await ctx.LocationViews.ToListAsync();
-            ViewBag.Locations = l.Select(c => new SelectListItem()
+            var l = new WebApp.Library.DataHelper().LoadAddressesWithOwner(ctx);
+            ViewBag.Locations = l
+                .Where(a => a.Address.AddressTypeId != AddressTypes.BillingAddress)
+                .Select(c => new SelectListItem()
             {
-                Text = string.Format("{0} - {1}", c.LocationName, c.Name),
-                Value = c.Id.ToString(),
-                Group = new SelectListGroup() { Name = c.EntityDisplayName }
+                Text = string.Format("{0} - {1} - {2}", c.Owner, c.Address.City_CityId.Name, c.Address.Name),
+                Value = c.Address.Id.ToString(),
+                Group = new SelectListGroup() { Name = c.Owner }
             });
 
             ViewBag.Staff = ctx.AspNetUsers

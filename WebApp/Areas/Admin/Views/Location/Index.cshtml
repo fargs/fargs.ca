@@ -67,7 +67,8 @@
                 @item.Address.Address2<br />
             }
             @(item.Address.City_CityId == null ? string.Empty : item.Address.City_CityId.Name), @item.Address.PostalCode<br />
-            @item.Address.Province.ProvinceName @item.Address.Country.Name
+            @item.Address.Province.ProvinceName @item.Address.Country.Name<br />
+            Timezone: @(item.Address.TimeZone_TimeZone == null ? "Not Set" : item.Address.TimeZone_TimeZone.Name)
         </td>
     </tr>
 }

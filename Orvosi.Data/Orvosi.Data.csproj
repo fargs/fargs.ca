@@ -452,6 +452,12 @@
     <Compile Include="Generated\TimeConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\TimeZone.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TimeZoneConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\UserInbox.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

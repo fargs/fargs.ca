@@ -44,6 +44,7 @@ namespace Orvosi.Data
         public virtual City City_CityId { get; set; } // FK_Address_City
         public virtual Country Country { get; set; } // FK_Address_Countries
         public virtual Province Province { get; set; } // FK_Address_Provinces
+        public virtual TimeZone TimeZone_TimeZone { get; set; } // FK_Address_TimeZone
 
         public Address()
         {

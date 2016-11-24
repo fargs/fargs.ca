@@ -44,16 +44,23 @@
     ViewBag.Cities = db.Cities
         .Select(c => new SelectListItem()
         {
-            Text = c.Name  + " - " + c.Province.ProvinceName,
+            Text = c.Name + " - " + c.Province.ProvinceName,
             Value = c.Id.ToString()
         }).ToList();
 
     ViewBag.AddressTypes = db.AddressTypes
-.Select(c => new SelectListItem()
-{
-    Text = c.Name,
-    Value = c.Id.ToString()
-}).ToList();
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Id.ToString()
+        }).ToList();
+
+    ViewBag.TimeZones = db.TimeZones
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Name,
+            Value = c.Name
+        }).ToList();
 }
 
 <h2>Create</h2>
@@ -67,7 +74,7 @@
         <h4>Location</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        
+
         <div class="form-group">
             <label class="control-label col-md-2">Address Type</label>
             <div class="col-md-10">
@@ -145,6 +152,14 @@
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.ProvinceId, new SelectList(ViewBag.Provinces, "Value", "Text"), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ProvinceId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">TimeZone</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.TimeZone, new SelectList(ViewBag.TimeZones, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TimeZone, "", new { @class = "text-danger" })
             </div>
         </div>
 

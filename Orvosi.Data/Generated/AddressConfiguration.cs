@@ -48,6 +48,7 @@ namespace Orvosi.Data
             // Foreign keys
             HasOptional(a => a.City_CityId).WithMany(b => b.Addresses).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_Address_City
             HasOptional(a => a.Province).WithMany(b => b.Addresses).HasForeignKey(c => c.ProvinceId).WillCascadeOnDelete(false); // FK_Address_Provinces
+            HasOptional(a => a.TimeZone_TimeZone).WithMany(b => b.Addresses).HasForeignKey(c => c.TimeZone).WillCascadeOnDelete(false); // FK_Address_TimeZone
             HasRequired(a => a.AddressType).WithMany(b => b.Addresses).HasForeignKey(c => c.AddressTypeId).WillCascadeOnDelete(false); // FK_Address_AddressType
             HasRequired(a => a.Country).WithMany(b => b.Addresses).HasForeignKey(c => c.CountryId).WillCascadeOnDelete(false); // FK_Address_Countries
             InitializePartial();

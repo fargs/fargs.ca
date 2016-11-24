@@ -15,11 +15,11 @@ namespace WebApp.Library
     {
         public const byte PaymentDueInDays = 14;
 
-        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, string invoiceNumber, DateTime invoiceDate, string userName)
+        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string userName)
         {
             var TaxRateHst = GetTaxRate(customer.ProvinceName);
 
-            invoice.InvoiceNumber = invoiceNumber;
+            invoice.InvoiceNumber = invoiceNumber.ToString();
             invoice.InvoiceDate = invoiceDate;
             invoice.DueDate = SystemTime.Now().AddDays(PaymentDueInDays);
             invoice.Currency = "CAD";

@@ -58,6 +58,7 @@
     <Compile Include="AspNetUser.cs" />
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
+    <Compile Include="Filters\InvoiceFilters.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
     <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
     <Compile Include="Generated\Account.cs">

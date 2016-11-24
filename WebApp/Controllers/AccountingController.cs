@@ -48,7 +48,7 @@ namespace WebApp.Controllers
                 var customer = context.BillableEntities.First(c => c.EntityGuid == invoice.CustomerGuid);
 
                 var newInvoice = new Invoice();
-                newInvoice.BuildInvoice(serviceProvider, customer, "PREVIEW", invoice.InvoiceDate, User.Identity.Name);
+                newInvoice.BuildInvoice(serviceProvider, customer, 0, invoice.InvoiceDate, User.Identity.Name);
                 newInvoice.CustomerEmail = string.IsNullOrEmpty(newInvoice.CustomerEmail) ? newInvoice.CustomerEmail : invoice.CustomerEmail;
                 return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", newInvoice);
             }

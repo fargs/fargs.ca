@@ -2,7 +2,14 @@
 @using WebApp.Library.Extensions
 @model Orvosi.Data.Invoice
 @{
-    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+    if (this.ViewContext.RouteData.Values["action"].ToString() == "PreviewInvoice")
+    {
+        Layout = "~/Views/Shared/_LayoutPrintPreview.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+    }
     ViewBag.Title = "Invoice";
 }
 

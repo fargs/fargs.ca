@@ -54,9 +54,13 @@ namespace WebApp.Controllers
             }
         }
 
-        public async Task<ActionResult> PreviewInvoice(Orvosi.Data.Invoice invoice)
+        public async Task<ActionResult> PreviewInvoice(Guid id)
         {
-            return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var invoice = await context.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
+                return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+            }
         }
         private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
         {

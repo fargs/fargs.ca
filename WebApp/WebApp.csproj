@@ -1162,6 +1162,7 @@
     <Content Include="Views\Task\Edit.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Note\_NoteModalForm.cshtml" />
+    <Content Include="Views\Shared\_LayoutPrintPreview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

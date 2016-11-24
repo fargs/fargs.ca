@@ -27,7 +27,7 @@ namespace WebApp.Models.AccountingModel
         public IEnumerable<DayFolder> MapToUnsentInvoices(Guid serviceProviderId, DateTime now)
         {
             var filtered = context.ServiceRequests
-                .AreAssignedToServiceProvider(serviceProviderId)
+                .AreAssignedToUser(serviceProviderId)
                 //.AreOpen()
                 .AreScheduledOnOrBefore(now)
                 .AreNotSent()
@@ -38,7 +38,7 @@ namespace WebApp.Models.AccountingModel
                 .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
                 .Select(d => new DayFolder
                 {
-                    Day = d.Key.Day.Value,
+                    DayAndTime = d.Key.Day.Value,
                     ServiceRequests = filtered
                         .Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) == d.Key.Day.Value)
                         .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
@@ -49,7 +49,7 @@ namespace WebApp.Models.AccountingModel
         public IEnumerable<DayFolder> MapToSentInvoices(Guid serviceProviderId, DateTime now)
         {
             var filtered = context.ServiceRequests
-                .AreAssignedToServiceProvider(serviceProviderId)
+                .AreAssignedToUser(serviceProviderId)
                 //.AreSent()
                 .Select(ServiceRequestProjection(serviceProviderId, now))
                 .ToList();

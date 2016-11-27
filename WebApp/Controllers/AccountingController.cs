@@ -16,6 +16,8 @@ using System.Net.Mail;
 using System.IO;
 using System.Linq.Expressions;
 using Orvosi.Data;
+using Orvosi.Data.Filters;
+using WebApp.Library.Projections;
 
 namespace WebApp.Controllers
 {
@@ -62,6 +64,7 @@ namespace WebApp.Controllers
                 return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
             }
         }
+
         private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
         {
             var userSelectList = (from user in context.AspNetUsers
@@ -90,24 +93,78 @@ namespace WebApp.Controllers
 
         public ActionResult UnsentInvoices(Guid? serviceProviderId)
         {
-            Guid userId = GetServiceProviderId(serviceProviderId);
+            using (var context = new OrvosiDbContext())
+            {
+                Guid userId = GetServiceProviderId(serviceProviderId);
+                var now = SystemTime.Now();
 
-            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToUnsentInvoices(userId, SystemTime.Now());
+                var serviceRequests = context.ServiceRequests
+                    .ForPhysician(userId)
+                    .AreNotCancellations()
+                    .HaveNotCompletedSubmitInvoiceTask()
+                    .Select(ServiceRequestProjections.BasicInfo(userId, now))
+                    .ToList();
 
-            ViewBag.SelectedUserId = userId;
+                var invoices = context.Invoices
+                    .AreOwnedBy(userId)
+                    .AreNotDeleted()
+                    .AreNotSent()
+                    .Select(InvoiceProjections.Header(userId, now))
+                    .ToList();
 
-            return View("Invoices", model);
+                // Full outer join on these 2 lists.
+                var result = from sr in serviceRequests
+                             from i in invoices 
+                             where sr.Id == i.ServiceRequestId
+                             select new Orvosi.Shared.Model.UnsentInvoice
+                             {
+                                 ServiceRequest = sr,
+                                 Invoice = i
+                             }
+
+
+                var model = filtered
+                    .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
+                    .Select(d => new Orvosi.Shared.Model.DayFolder
+                    {
+                        DayAndTime = d.Key.Day.Value,
+                        ServiceRequests = d
+                            .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
+                            .ThenBy(sr => sr.StartTime)
+                    }).OrderBy(df => df.Day);
+
+                ViewBag.SelectedUserId = userId;
+
+                return View("Invoices", model);
+            }
         }
 
         public ActionResult SentInvoices(Guid? serviceProviderId)
         {
-            Guid userId = GetServiceProviderId(serviceProviderId);
+            using (var context = new OrvosiDbContext())
+            {
+                Guid userId = GetServiceProviderId(serviceProviderId);
+                var now = SystemTime.Now();
 
-            var model = new Mapper(new Orvosi.Data.OrvosiDbContext()).MapToSentInvoices(userId, SystemTime.Now());
+                var filtered = context.ServiceRequests
+                    .ForPhysician(userId)
+                    .AreSent()
+                    .Select(ServiceRequestProjections.DetailsWithInvoices(userId, now))
+                    .ToList();
 
-            ViewBag.SelectedUserId = userId;
+                var model = filtered
+                    .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
+                    .Select(d => new Orvosi.Shared.Model.DayFolder
+                    {
+                        DayAndTime = d.Key.Day.Value,
+                        ServiceRequests = d
+                            .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
+                    }).OrderBy(df => df.Day);
 
-            return View("Invoices", model);
+                ViewBag.SelectedUserId = userId;
+
+                return View("Invoices", model);
+            }
         }
 
         public ActionResult AllInvoices(Guid? serviceProviderId)
@@ -118,11 +175,31 @@ namespace WebApp.Controllers
             {
                 var model = context
                     .Invoices
-                    .Select(WebApp.Models.AccountingModel.Mapper.InvoicesProjection(userId, System.SystemTime.Now()))
+                    .OwnedBy(userId)
+                    .Select(InvoiceProjections.InvoiceList(userId, System.SystemTime.Now()))
                     .ToList();
                 ViewBag.SelectedUserId = userId;
 
                 return View("AllInvoices", model);
+            }
+        }
+
+        public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                Guid userId = GetServiceProviderId(serviceProviderId);
+                var now = SystemTime.Now();
+
+                var serviceRequests = context
+                    .ServiceRequests
+                        .Where(s => s.Id == serviceRequestId)
+                        .Select(ServiceRequestProjections.DetailsWithInvoices(userId, now))
+                        .ToList();
+                if (serviceRequests.Count() != 1)
+                    return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+                return PartialView("_ServiceRequest", serviceRequests.First());
             }
         }
 
@@ -233,18 +310,6 @@ namespace WebApp.Controllers
             return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
-        {
-            Guid userId = GetServiceProviderId(serviceProviderId);
-
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var serviceRequests = new Models.AccountingModel.Mapper(context).MapToServiceRequest(userId, SystemTime.Now(), serviceRequestId);
-            if (serviceRequests.Count() != 1)
-                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
-
-            return PartialView("_ServiceRequest", serviceRequests.First());
-        }
-
         private Guid GetServiceProviderId(Guid? serviceProviderId)
         {
             Guid userId = User.Identity.GetGuidUserId();
@@ -256,5 +321,7 @@ namespace WebApp.Controllers
 
             return userId;
         }
+
+        
     }
 }

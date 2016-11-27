@@ -433,6 +433,8 @@
     <Compile Include="Library\Google\GoogleServices.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\IEmailService.cs" />
+    <Compile Include="Library\Projections\InvoiceProjections.cs" />
+    <Compile Include="Library\Projections\ServiceRequestProjections.cs" />
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Models\AccountingModel.cs" />

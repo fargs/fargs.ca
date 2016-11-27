@@ -37,6 +37,15 @@
         </div>
     </div>
 
+    @if (ViewBag.ServiceIdHasErrors == true)
+    {
+        <div class="checkbox col-md-push-2">
+            <label>
+                @Html.CheckBox("OverrideServiceCatalogueMissingError", false) Override Service Catalogue Errors
+            </label>
+        </div>
+    }
+
     <div class="form-group">
         <label class="control-label col-md-2">Claimant</label>
         <div class="col-md-6">

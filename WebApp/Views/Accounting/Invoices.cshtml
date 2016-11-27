@@ -35,14 +35,11 @@ else
         </div>
     </div>
     <div class="row o-dashboard-tr">
-        <strong class="col-md-2 o-dashboard-td">Case</strong>
-        <strong class="col-md-1 o-dashboard-td">Invoice</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Item</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">SubTotal</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Hst</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Total</strong>
-        <strong class="col-md-3 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: center;">Edit</strong>
+        <strong class="col-md-3 o-dashboard-td">Case</strong>
+        <strong class="col-md-2 o-dashboard-td">Header</strong>
+        <strong class="col-md-2 o-dashboard-td">Items</strong>
+        <strong class="col-md-2 o-dashboard-td text-right">Total</strong>
+        <strong class="col-md-3 o-dashboard-td text-right">Actions</strong>
     </div>
     <div>
         @foreach (var assessment in dayFolder.ServiceRequests)
@@ -52,8 +49,8 @@ else
     </div>
 }
 
-<div class="modal fade" id="edit-modal">
-    <div class="modal-dialog modal-sm">
+<div class="modal right fade" id="edit-modal">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="edit-invoicedetail-form">
                 <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />

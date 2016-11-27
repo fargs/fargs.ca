@@ -68,7 +68,7 @@
                         <li>@Html.ActionLink("Work", "Agenda", "Dashboard", new { area = "" }, null)</li>
                         if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() == AspNetRoles.Physician)
                         {
-                            <li>@Html.ActionLink("Accounting", "AllInvoices", "Accounting", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Accounting", "UnsentInvoices", "Accounting", new { area = "" }, null)</li>
                         }
                         if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
                         {

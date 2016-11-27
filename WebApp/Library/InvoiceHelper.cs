@@ -67,28 +67,20 @@ namespace WebApp.Library
                 description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
             }
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice;
+            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice.HasValue ? serviceRequest.ServiceCataloguePrice : 0;
             invoiceDetail.Rate = 1;
             invoiceDetail.CalculateTotal();
 
             if (serviceRequest.IsNoShow)
             {
-                if (!serviceRequest.NoShowRate.HasValue || serviceRequest.NoShowRate == 0)
-                {
-                    throw new Exception("No show rate must have a value");
-                }
-                var rate = serviceRequest.NoShowRate;
+                var rate = serviceRequest.NoShowRate.HasValue ? serviceRequest.NoShowRate : 1;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.NoShow,
                     rate);
             }
             else if (serviceRequest.IsLateCancellation)
             {
-                if (!serviceRequest.LateCancellationRate.HasValue || serviceRequest.LateCancellationRate == 0)
-                {
-                    throw new Exception("Late cancellation rate must have a value");
-                }
-                var rate = serviceRequest.LateCancellationRate;
+                var rate = serviceRequest.LateCancellationRate.HasValue ? serviceRequest.LateCancellationRate : 1;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.LateCancellation,
                     rate);

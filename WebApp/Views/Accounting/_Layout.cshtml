@@ -46,10 +46,10 @@
 <p class="h3 text-muted">Accounting</p>
 
 <ul class="nav nav-tabs">
-    <li role="presentation" class="@Html.IsActive("Accounting", "AddInvoice")"><a href="~/Accounting/AddInvoice?@(Request.QueryString)"><i class="fa fa-plus-circle fa-lg"></i></a></li>
     <li role="presentation" class="@Html.IsActive("Accounting", "UnsentInvoices")"><a href="~/Accounting/UnsentInvoices?@(Request.QueryString)">Unsent Invoices</a></li>
     <li role="presentation" class="@Html.IsActive("Accounting", "SentInvoices")"><a href="~/Accounting/SentInvoices?@(Request.QueryString)">Sent Invoices</a></li>
     <li role="presentation" class="@Html.IsActive("Accounting", "AllInvoices")"><a href="~/Accounting/AllInvoices?@(Request.QueryString)">All Invoices</a></li>
+    <li role="presentation" class="pull-right @Html.IsActive("Accounting", "AddInvoice")"><a href="~/Accounting/AddInvoice?@(Request.QueryString)"><i class="fa fa-plus-circle fa-lg" style="color:green"></i></a></li>
 </ul>
 <section class="tab-content">
     <div role="tabpanel" class="tab-pane active panel-body">

@@ -20,6 +20,10 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date); // this filters out the days
         }
+        public static IQueryable<ServiceRequest> ForPhysician(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
+        {
+            return serviceRequests.Where(sr => sr.PhysicianId == userId);
+        }
         public static IQueryable<ServiceRequest> AreAssignedToUser(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {
             return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId));
@@ -36,17 +40,21 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests.Where(sr => sr.DueDate.HasValue);
         }
-        public static IQueryable<ServiceRequest> AreSent(this IQueryable<ServiceRequest> serviceRequests)
-        {
-            return serviceRequests.Where(sr => 
-                sr.InvoiceDetails.Any(id => id.Invoice.SentDate.HasValue)
-                || sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete));
-        }
-        public static IQueryable<ServiceRequest> AreNotSent(this IQueryable<ServiceRequest> serviceRequests)
+        public static IQueryable<ServiceRequest> HaveCompletedSubmitInvoiceTask(this IQueryable<ServiceRequest> serviceRequests)
         {
             return serviceRequests
-                .Where(sr => !sr.InvoiceDetails.Any() || sr.InvoiceDetails.Any(id => !id.Invoice.SentDate.HasValue))
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.CompletedDate.HasValue));
+        }
+        public static IQueryable<ServiceRequest> HaveNotCompletedSubmitInvoiceTask(this IQueryable<ServiceRequest> serviceRequests)
+        {
+            // where there is no invoice yet and the 
+            return serviceRequests
                 .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete));
+        }
+
+        public static IQueryable<ServiceRequest> AreNotCancellations(this IQueryable<ServiceRequest> serviceRequest)
+        {
+            return serviceRequest.Where(sr => sr.IsLateCancellation ? true : !sr.CancelledDate.HasValue);
         }
     }
 }

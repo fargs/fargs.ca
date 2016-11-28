@@ -275,6 +275,7 @@
     <Build Include="dbo\User Defined Types\SelectedStatusIdsTVP.sql" />
     <Build Include="dbo\Tables\InvoiceSentLog.sql" />
     <Build Include="_Data\ReadMe.md" />
+    <Build Include="dbo\Tables\TimeZone.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

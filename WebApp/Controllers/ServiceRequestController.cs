@@ -1007,7 +1007,7 @@ namespace WebApp.Controllers
             var caseFolder = box.RenameCaseFolder(request.BoxCaseFolderId, request.GetCaseFolderName());
             
             // Redirect to display the Box Folder
-            return RedirectToAction("Details", new { id = serviceRequestId });
+            return RedirectToAction("Details", new { serviceRequestId = serviceRequestId });
         }
 
         [HttpPost]
@@ -1072,7 +1072,7 @@ namespace WebApp.Controllers
 
             box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
-            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
 
         }
 
@@ -1088,7 +1088,7 @@ namespace WebApp.Controllers
                 ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
                 ctx.SaveChanges();
             }
-            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
 
         }
 
@@ -1108,7 +1108,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
-            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
         }
 
         [HttpPost]
@@ -1116,7 +1116,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
-            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
         }
 
         #endregion

@@ -1047,7 +1047,7 @@ namespace WebApp.Controllers
             ctx.SaveChanges();
 
             // Redirect to display the Box Folder
-            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
+            return RedirectToAction("Details", new { id = ServiceRequestId });
         }
 
         [HttpPost]

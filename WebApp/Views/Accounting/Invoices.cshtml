@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model IEnumerable<Orvosi.Shared.Model.DayFolder>
+@model IEnumerable<Orvosi.Shared.Model.UnsentInvoiceDayFolder>
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
 
@@ -13,7 +13,7 @@
 }
 else
 {
-    <p><strong>@Model.Sum(day => day.ServiceRequests.Count())</strong> invoices</p>
+    <p><strong>@Model.Sum(day => day.UnsentInvoices.Count())</strong> invoices</p>
 }
 
 @foreach (var dayFolder in Model)
@@ -23,30 +23,90 @@ else
             <div class="h3">
                 @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
             </div>
-            @if (dayFolder.Address != null)
-            {
-                <div class="h4">
-                    @dayFolder.Address
-                </div>
-                <div class="small" style="padding-bottom:20px;">
-                    @dayFolder.Address.City
-                </div>
-            }
         </div>
     </div>
     <div class="row o-dashboard-tr">
         <strong class="col-md-3 o-dashboard-td">Case</strong>
         <strong class="col-md-2 o-dashboard-td">Header</strong>
         <strong class="col-md-2 o-dashboard-td">Items</strong>
-        <strong class="col-md-2 o-dashboard-td text-right">Total</strong>
+        <strong class="col-md-2 o-dashboard-td">Total</strong>
         <strong class="col-md-3 o-dashboard-td text-right">Actions</strong>
     </div>
-    <div>
-        @foreach (var assessment in dayFolder.ServiceRequests)
-        {
-            @Html.Partial("_ServiceRequest", assessment)
-        }
-    </div>
+
+    foreach (var unsentInvoice in dayFolder.UnsentInvoices)
+    {
+        <div class="row o-dashboard-tr">
+            <div class="col-md-3 o-dashboard-td">
+                @if (unsentInvoice.ServiceRequest != null)
+                {
+                    @Html.Partial("_ServiceRequest", unsentInvoice.ServiceRequest)
+                }
+                else
+                {
+                    <div>Invoice has no related service request</div>
+                }
+            </div>
+            @if (unsentInvoice.Invoice != null)
+            {
+                <div class="col-md-6 o-dashboard-td">
+                    @Html.Partial("_Invoice", unsentInvoice.Invoice)
+                </div>
+                <div class="col-md-3 o-dashboard-td" style="text-align: center;">
+                    <div class="pull-right">
+                        <button class="btn btn-default" style="border: none;" onclick="onEdit(@unsentInvoice.Invoice.Id , @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
+                            <i class="fa fa-pencil fa-lg"></i>
+                        </button>
+                        @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
+                        <a class="btn btn-default" style="border: none;" href="~/Accounting/PreviewInvoice/@unsentInvoice.Invoice.InvoiceGuid" target="_blank">
+                            <i class="fa fa-eye fa-lg"></i>
+                        </a>
+                    </div>
+                    @if (unsentInvoice.Invoice.SentDate.HasValue)
+                    {
+                        <div>
+                            <i class="fa fa-check fa-3x" style="color:green;"></i>
+                        </div>
+                        <div>Sent @unsentInvoice.Invoice.SentDate.ToOrvosiDateTimeFormat()</div>
+                    }
+                    else if (unsentInvoice.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
+                    {
+                        <div>
+                            <i class="fa fa-check fa-3x" style="color:green;"></i>
+                        </div>
+                        <div>Submit Invoice task checked off on @unsentInvoice.ServiceRequest.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat()</div>
+                    }
+                    else
+                    {
+                        <div class="pull-right">
+                            <form id="send-invoice-form-@unsentInvoice.Invoice.Id">
+                                <input type="hidden" value="@unsentInvoice.ServiceRequest.Id" id="ServiceRequestId" name="ServiceRequestId" />
+                                <input type="hidden" value="@unsentInvoice.Invoice.Id" id="InvoiceId" name="InvoiceId" />
+                                <div>
+                                    <button type="button" class="btn btn-primary" onclick="onSend(@unsentInvoice.Invoice.Id)"><i class="fa fa-2x fa-send"></i></button>
+                                </div>
+                                <div class="help-block small">
+                                    To: @unsentInvoice.Invoice.Customer.BillingEmail
+                                </div>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="col-md-push-6 col-md-3 o-dashboard-td">
+                    <div class="pull-right">
+                        <form action="~/Invoice/Create" method="post" class="form-horizontal">
+                            @Html.Hidden("Id", unsentInvoice.ServiceRequest.Id)
+                            <div class="form-group">
+                                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@unsentInvoice.ServiceRequest.Id)"><i class="fa fa-3x fa-plus"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 }
 
 <div class="modal right fade" id="edit-modal">

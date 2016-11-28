@@ -5,131 +5,29 @@
 @{
     var assessment = Model;
 }
-<div class="row o-dashboard-tr" id="service-request-@assessment.Id">
-    <div class="col-md-3 o-dashboard-td">
-        <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Name</strong>
+<div id="service-request-@assessment.Id">
+    <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Name</strong>
 
-        <div>@assessment.Company.Name</div>
-        @if (assessment.Address != null)
-        {
-            <div>
-                <span>@Model.Address.City</span><span>, </span><span>@Model.Address.ProvinceCode.Split('-')[1]</span>
-            </div>
-        }
-        @if (assessment.ServiceStatusId.HasValue)
-        {
-            <div>
-                @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
-            </div>
-        }
-        <div>
-            <span class="text-muted">@assessment.ClaimantName</span> (<a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>)
-        </div>
-        @if (!string.IsNullOrEmpty(assessment.Notes))
-        {
-            <div class="text-danger form-group">
-                <i class="fa fa-exclamation"></i> @assessment.Notes
-            </div>
-        }
-    </div>
-    @if (assessment.InvoiceDetails.Count() == 0)
+    <div>@assessment.Company.Name</div>
+    @if (assessment.Address != null)
     {
-        <div class="col-md-push-5 col-md-4 o-dashboard-td">
-            <div class="pull-right">
-                <form action="~/Invoice/Create" method="post" class="form-horizontal">
-                    @Html.Hidden("Id", assessment.Id)
-                    <div class="form-group">
-                        <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@assessment.Id)"><i class="fa fa-3x fa-plus"></i></button>
-                    </div>
-                </form>
-            </div>
+        <div>
+            <span>@Model.Address.City</span><span>, </span><span>@Model.Address.ProvinceCode.Split('-')[1]</span>
         </div>
     }
-    else
+    @if (assessment.ServiceStatusId.HasValue)
     {
-        foreach (var detail in assessment.InvoiceDetails)
-        {
-            <div class="col-md-2 o-dashboard-td">
-                <strong>@detail.Invoice.InvoiceNumber</strong>
-                <div>@detail.Invoice.InvoiceDate.ToOrvosiDateFormat()</div>
-                <div class="text-danger">@detail.AdditionalNotes</div>
-                <div>@detail.Invoice.Customer.Name</div>
-            </div>
-            <div class="col-md-2 o-dashboard-td" style="text-align: right;">
-                @if (assessment.IsNoShow || assessment.IsLateCancellation)
-                {
-                    <span>
-                        @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
-                    </span>
-                    if (assessment.ServiceStatusId.HasValue)
-                    {
-                        <div>
-                            @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
-                        </div>
-                    }
-                }
-                else
-                {
-                    <span>
-                        @detail.Amount.ToString("C2")
-                    </span>
-                }
-            </div>
-            <div class="col-md-2 o-dashboard-td text-right">
-                <div style="width:250px;float:right;">
-                    <dl class="dl-horizontal dl-clear-margins">
-                        <dt>Sub Total</dt>
-                        <dd>@detail.Invoice.SubTotal.Value.ToString("C2")</dd>
-                        <dt>Tax (@(detail.Invoice.TaxRateHst.Value.ToString("0%"))%)</dt>
-                        <dd>@detail.Invoice.Hst.Value.ToString("C2")</dd>
-                    </dl>
-                    <hr class="hr-smaller-margins" />
-                    <dl class="dl-horizontal dl-clear-margins">
-                        <dt>Total</dt>
-                        <dd>@detail.Invoice.Total.Value.ToString("C2")</dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="col-md-3 o-dashboard-td" style="text-align: center;">
-                <div class="pull-right">
-                    <button class="btn btn-default" style="border: none;" onclick="onEdit(@detail.Id , @assessment.IsNoShow.ToString().ToLower() , @assessment.IsLateCancellation.ToString().ToLower())">
-                        <i class="fa fa-pencil fa-lg"></i>
-                    </button>
-                    @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
-                    <a class="btn btn-default" style="border: none;" href="~/Accounting/PreviewInvoice/@detail.Invoice.InvoiceGuid" target="_blank">
-                        <i class="fa fa-eye fa-lg"></i>
-                    </a>
-                </div>
-                @if (detail.Invoice.SentDate.HasValue)
-                {
-                    <div>
-                        <i class="fa fa-check fa-3x" style="color:green;"></i>
-                    </div>
-                    <div>Sent @detail.Invoice.SentDate.ToOrvosiDateTimeFormat()</div>
-                }
-                else if (Model.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
-                {
-                    <div>
-                        <i class="fa fa-check fa-3x" style="color:green;"></i>
-                    </div>
-                    <div>Submit Invoice task checked off on @Model.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat()</div>
-                }
-                else
-                {
-                    <div class="pull-right">
-                        <form id="send-invoice-form-@detail.Invoice.Id">
-                            <input type="hidden" value="@assessment.Id" id="ServiceRequestId" name="ServiceRequestId" />
-                            <input type="hidden" value="@detail.Invoice.Id" id="InvoiceId" name="InvoiceId" />
-                            <div>
-                                <button type="button" class="btn btn-primary" onclick="onSend(@detail.Invoice.Id)"><i class="fa fa-2x fa-send"></i></button>
-                            </div>
-                            <div class="help-block small">
-                                To: @detail.Invoice.Customer.BillingEmail
-                            </div>
-                        </form>
-                    </div>
-                }
-            </div>
-        }
+        <div>
+            @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
+        </div>
+    }
+    <div>
+        <span class="text-muted">@assessment.ClaimantName</span> (<a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>)
+    </div>
+    @if (!string.IsNullOrEmpty(assessment.Notes))
+    {
+        <div class="text-danger form-group">
+            <i class="fa fa-exclamation"></i> @assessment.Notes
+        </div>
     }
 </div>

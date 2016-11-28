@@ -23,7 +23,7 @@ namespace WebApp.Library.Projections
                 SentDate = i.SentDate,
                 PaymentReceivedDate = i.PaymentReceivedDate,
                 InvoiceGuid = i.ObjectGuid,
-                ServiceRequestId = i.InvoiceDetails.SingleOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequestId,
+                ServiceRequestId = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequestId,
                 ServiceProvider = new Orvosi.Shared.Model.ServiceProvider
                 {
                     Id = i.ServiceProviderGuid,
@@ -38,7 +38,8 @@ namespace WebApp.Library.Projections
                     BillingEmail = i.CustomerEmail,
                     City = i.CustomerCity,
                     Province = i.CustomerProvince
-                }
+                },
+                InvoiceDetailCount = i.InvoiceDetails.Count()
             };
         }
         public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> InvoiceList(Guid serviceProviderId, DateTime now)

@@ -150,6 +150,15 @@ namespace Orvosi.Shared.Model
         public IEnumerable<Assessment> Assessments { get; set; }
     }
 
+    public class UnsentInvoiceDayFolder : DayFolderBase
+    {
+        public UnsentInvoiceDayFolder()
+        {
+            UnsentInvoices = new List<UnsentInvoice>();
+        }
+        public IEnumerable<UnsentInvoice> UnsentInvoices { get; set; }
+    }
+
     public class DueDateDayFolder : DayFolderBase
     {
         public DueDateDayFolder()
@@ -299,6 +308,13 @@ namespace Orvosi.Shared.Model
             get
             {
                 return $"https://orvosi.app.box.com/files/0/f/{BoxCaseFolderId}";
+            }
+        }
+        public DateTime EffectiveDate
+        {
+            get
+            {
+                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.Value;
             }
         }
 
@@ -583,6 +599,7 @@ namespace Orvosi.Shared.Model
         public Guid InvoiceGuid { get; set; }
         public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
         public int? ServiceRequestId { get; set; }
+        public int InvoiceDetailCount { get; set; }
     }
 
     public class InvoiceDetail
@@ -603,11 +620,23 @@ namespace Orvosi.Shared.Model
     {
         public ServiceRequest ServiceRequest { get; set; }
         public Invoice Invoice { get; set; }
-        public bool IncludeInList
+        public DateTime Day
         {
             get
             {
-                return ServiceRequest.
+                if (ServiceRequest == null)
+                {
+                    return Invoice.InvoiceDate;
+                }
+                else if (Invoice == null)
+                {
+                    return ServiceRequest.EffectiveDate;
+                }
+                else
+                {
+                    return ServiceRequest.EffectiveDate;
+                    throw new Exception($"Invoice {Invoice.Id} Date nor Service Request {ServiceRequest.Id} Date exist.");
+                }
             }
         }
     }

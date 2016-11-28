@@ -18,6 +18,7 @@ using System.Linq.Expressions;
 using Orvosi.Data;
 using Orvosi.Data.Filters;
 using WebApp.Library.Projections;
+using MoreLinq;
 
 namespace WebApp.Controllers
 {
@@ -113,24 +114,32 @@ namespace WebApp.Controllers
                     .ToList();
 
                 // Full outer join on these 2 lists.
-                var result = from sr in serviceRequests
-                             from i in invoices 
-                             where sr.Id == i.ServiceRequestId
-                             select new Orvosi.Shared.Model.UnsentInvoice
-                             {
-                                 ServiceRequest = sr,
-                                 Invoice = i
-                             }
+                var leftSide = from sr in serviceRequests
+                               join i in invoices on sr.Id equals i.ServiceRequestId into g
+                               from sub in g.DefaultIfEmpty()
+                               select new Orvosi.Shared.Model.UnsentInvoice
+                               {
+                                   ServiceRequest = sr,
+                                   Invoice = sub
+                               };
 
+                var rightSide = from i in invoices
+                                where !i.ServiceRequestId.HasValue
+                                select new Orvosi.Shared.Model.UnsentInvoice
+                                {
+                                    Invoice = i
+                                };
 
-                var model = filtered
-                    .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
-                    .Select(d => new Orvosi.Shared.Model.DayFolder
+                var result = leftSide.Concat(rightSide).ToList();
+
+                var model = result
+                    .GroupBy(d => new { Day = d.Day })
+                    .Select(d => new Orvosi.Shared.Model.UnsentInvoiceDayFolder
                     {
-                        DayAndTime = d.Key.Day.Value,
-                        ServiceRequests = d
-                            .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate))
-                            .ThenBy(sr => sr.StartTime)
+                        DayAndTime = d.Key.Day,
+                        UnsentInvoices = d
+                            .OrderBy(sr => d.Key.Day)
+                            .ThenBy(sr => sr.ServiceRequest.StartTime)
                     }).OrderBy(df => df.Day);
 
                 ViewBag.SelectedUserId = userId;
@@ -146,20 +155,47 @@ namespace WebApp.Controllers
                 Guid userId = GetServiceProviderId(serviceProviderId);
                 var now = SystemTime.Now();
 
-                var filtered = context.ServiceRequests
+                var serviceRequests = context.ServiceRequests
                     .ForPhysician(userId)
-                    .AreSent()
-                    .Select(ServiceRequestProjections.DetailsWithInvoices(userId, now))
+                    .HaveCompletedSubmitInvoiceTask()
+                    .Select(ServiceRequestProjections.BasicInfo(userId, now))
                     .ToList();
 
-                var model = filtered
-                    .GroupBy(d => new { Day = (d.AppointmentDate.HasValue ? d.AppointmentDate : d.DueDate) })
-                    .Select(d => new Orvosi.Shared.Model.DayFolder
+                var invoices = context.Invoices
+                    .AreOwnedBy(userId)
+                    .AreSent()
+                    .Select(InvoiceProjections.Header(userId, now))
+                    .ToList();
+
+                // Full outer join on these 2 lists.
+                var leftSide = from sr in serviceRequests
+                               join i in invoices on sr.Id equals i.ServiceRequestId into g
+                               from sub in g.DefaultIfEmpty()
+                               select new Orvosi.Shared.Model.UnsentInvoice
+                               {
+                                   ServiceRequest = sr,
+                                   Invoice = sub
+                               };
+
+                var rightSide = from i in invoices
+                                where !i.ServiceRequestId.HasValue
+                                select new Orvosi.Shared.Model.UnsentInvoice
+                                {
+                                    Invoice = i
+                                };
+
+                var result = leftSide.Concat(rightSide).ToList();
+
+                var model = result
+                    .GroupBy(d => new { Day = d.Day })
+                    .Select(d => new Orvosi.Shared.Model.UnsentInvoiceDayFolder
                     {
-                        DayAndTime = d.Key.Day.Value,
-                        ServiceRequests = d
-                            .OrderBy(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate : sr.DueDate)).ThenBy(sr => sr.StartTime)
+                        DayAndTime = d.Key.Day,
+                        UnsentInvoices = d
+                            .OrderBy(sr => d.Key.Day)
+                            .ThenBy(sr => sr.ServiceRequest.StartTime)
                     }).OrderBy(df => df.Day);
+
 
                 ViewBag.SelectedUserId = userId;
 
@@ -175,7 +211,7 @@ namespace WebApp.Controllers
             {
                 var model = context
                     .Invoices
-                    .OwnedBy(userId)
+                    .AreOwnedBy(userId)
                     .Select(InvoiceProjections.InvoiceList(userId, System.SystemTime.Now()))
                     .ToList();
                 ViewBag.SelectedUserId = userId;
@@ -322,6 +358,6 @@ namespace WebApp.Controllers
             return userId;
         }
 
-        
+
     }
 }

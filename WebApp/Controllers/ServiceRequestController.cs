@@ -169,62 +169,6 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public async Task<ActionResult> BoxManager(int serviceRequestId)
-        {
-            // Get the box folder id for the case
-            var serviceRequest = ctx.ServiceRequests.Find(serviceRequestId);
-
-            if (string.IsNullOrEmpty(serviceRequest.BoxCaseFolderId))
-            {
-                ModelState.AddModelError("", "BoxCaseFolderId is set to null.");
-                return new HttpNotFoundResult();
-            }
-
-            var orvosiBoxFolderCollaborations = serviceRequest
-                .ServiceRequestBoxCollaborations
-                .Where(bc => bc.ServiceRequestId == serviceRequestId)
-                .ToList();
-
-            var box = new BoxManager();
-            var boxFolder = box.GetFolder(serviceRequest.BoxCaseFolderId);
-            var boxFolderCollaborations = box.GetCollaborations(serviceRequest.BoxCaseFolderId).Entries.ToList();
-
-            var result = orvosiBoxFolderCollaborations
-                .FullGroupJoin(boxFolderCollaborations,
-                    o => o.BoxCollaborationId,
-                    b => b.Id,
-                    (key, o, b) => new BoxCollaborationFullOuterJoinResult
-                    {
-                        ServiceRequestId = serviceRequestId,
-                        BoxCollaborationId = key,
-                        OrvosiCollaborations = o,
-                        BoxCollaborations = b
-                    }).ToList();
-
-            var orvosiResources = serviceRequest
-                .ServiceRequestTasks
-                    .Where(t => t.AssignedTo.HasValue)
-                    .Select(sr => sr.AspNetUser_AssignedTo)
-                    .Distinct();
-
-            var resources = new List<BoxResource>();
-            foreach (var resource in orvosiResources)
-            {
-                var boxResource = new BoxResource() { Resource = resource };
-                boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
-                resources.Add(boxResource);
-            }
-
-            var vm = new BoxManagerViewModel();
-            vm.ServiceRequestId = serviceRequestId;
-            vm.Reconciliations = result;
-            vm.Resources = resources;
-            vm.BoxFolderCollaborations = boxFolderCollaborations;
-            vm.BoxFolder = boxFolder;
-            vm.ExpectedFolderName = serviceRequest.GetCaseFolderName();
-            return View(vm);
-        }
-
         [Authorize(Roles = "Case Coordinator, Super Admin")]
         public ActionResult ChangeCompany(int id)
         {
@@ -997,6 +941,62 @@ namespace WebApp.Controllers
 
         #region Box
 
+        public async Task<ActionResult> BoxManager(int serviceRequestId)
+        {
+            // Get the box folder id for the case
+            var serviceRequest = ctx.ServiceRequests.Find(serviceRequestId);
+
+            if (string.IsNullOrEmpty(serviceRequest.BoxCaseFolderId))
+            {
+                ModelState.AddModelError("", "BoxCaseFolderId is set to null.");
+                return new HttpNotFoundResult();
+            }
+
+            var orvosiBoxFolderCollaborations = serviceRequest
+                .ServiceRequestBoxCollaborations
+                .Where(bc => bc.ServiceRequestId == serviceRequestId)
+                .ToList();
+
+            var box = new BoxManager();
+            var boxFolder = box.GetFolder(serviceRequest.BoxCaseFolderId);
+            var boxFolderCollaborations = box.GetCollaborations(serviceRequest.BoxCaseFolderId).Entries.ToList();
+
+            var result = orvosiBoxFolderCollaborations
+                .FullGroupJoin(boxFolderCollaborations,
+                    o => o.BoxCollaborationId,
+                    b => b.Id,
+                    (key, o, b) => new BoxCollaborationFullOuterJoinResult
+                    {
+                        ServiceRequestId = serviceRequestId,
+                        BoxCollaborationId = key,
+                        OrvosiCollaborations = o,
+                        BoxCollaborations = b
+                    }).ToList();
+
+            var orvosiResources = serviceRequest
+                .ServiceRequestTasks
+                    .Where(t => t.AssignedTo.HasValue)
+                    .Select(sr => sr.AspNetUser_AssignedTo)
+                    .Distinct();
+
+            var resources = new List<BoxResource>();
+            foreach (var resource in orvosiResources)
+            {
+                var boxResource = new BoxResource() { Resource = resource };
+                boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
+                resources.Add(boxResource);
+            }
+
+            var vm = new BoxManagerViewModel();
+            vm.ServiceRequestId = serviceRequestId;
+            vm.Reconciliations = result;
+            vm.Resources = resources;
+            vm.BoxFolderCollaborations = boxFolderCollaborations;
+            vm.BoxFolder = boxFolder;
+            vm.ExpectedFolderName = serviceRequest.GetCaseFolderName();
+            return View(vm);
+        }
+
         [HttpPost]
         public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
         {
@@ -1047,7 +1047,7 @@ namespace WebApp.Controllers
             ctx.SaveChanges();
 
             // Redirect to display the Box Folder
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
         }
 
         [HttpPost]
@@ -1072,7 +1072,7 @@ namespace WebApp.Controllers
 
             box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
 
         }
 
@@ -1088,7 +1088,7 @@ namespace WebApp.Controllers
                 ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
                 ctx.SaveChanges();
             }
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
 
         }
 
@@ -1108,7 +1108,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
         }
 
         [HttpPost]
@@ -1116,7 +1116,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return RedirectToAction("BoxManager", new { id = ServiceRequestId });
         }
 
         #endregion

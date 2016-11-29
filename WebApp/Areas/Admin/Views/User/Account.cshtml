@@ -44,6 +44,14 @@
             </div>
         </div>
 
+        <div class="form-group">
+            @Html.LabelFor(model => model.Account.RoleId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Account.RoleId, Model.Roles, string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Account.RoleId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
         @if (Model.Account.RoleId == enums.AspNetRoles.Company)
         {
             <h3>Scopes</h3>

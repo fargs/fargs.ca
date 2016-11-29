@@ -353,6 +353,7 @@ namespace Orvosi.Shared.Model
             }
         }
 
+        public string Notes { get; set; }
     }
 
     public class UserRole

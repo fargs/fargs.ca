@@ -13,6 +13,7 @@ using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System.Data.Entity;
 using WebApp.Library.Extensions;
+using System.Net;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -255,6 +256,33 @@ namespace WebApp.Areas.Admin.Controllers
                 };
                 return View("Companies", vm);
             
+        }
+
+        public ActionResult Notes(Guid id)
+        {
+            var notes = db.AspNetUsers.Where(u => u.Id == id).Select(u => new Orvosi.Shared.Model.Person
+            {
+                Id = u.Id,
+                Title = u.Title,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Notes = u.Notes,
+            })
+            .First();
+
+            var user = db.AspNetUsers.Find(id);
+            var roleId = user.GetRoleId();
+            ViewBag.ParentId = db.AspNetRoles.FirstOrDefault(r => r.Id == roleId).RoleCategoryId;
+            return View(notes);
+        }
+
+        [HttpPost]
+        public ActionResult Notes(Orvosi.Shared.Model.Person person)
+        {
+            var user = db.AspNetUsers.Find(person.Id);
+            user.Notes = person.Notes;
+            db.SaveChanges();
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         //public async Task<ActionResult> Edit(string id)

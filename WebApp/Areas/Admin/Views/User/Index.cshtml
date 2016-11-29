@@ -32,6 +32,7 @@
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
                             <li role="presentation">@Html.ActionLink("Profile", "UserProfile", "User", new { area = "Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Notes", "Notes", "User", new { area = "Admin", id = item.Id }, new { })</li>
                             @if (item.RoleId == AspNetRoles.Physician)
                             {
                                 <li role="presentation">@Html.ActionLink("Additional Info", "Edit", "Physician", new { area = "Admin", userId = item.Id }, new { })</li>

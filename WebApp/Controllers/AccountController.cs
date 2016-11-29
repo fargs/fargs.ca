@@ -210,6 +210,7 @@ namespace WebApp.Controllers
             {
                 var user = new ApplicationUser
                 {
+                    Id = Guid.NewGuid(),
                     UserName = model.Email,
                     Email = model.Email,
                     FirstName = model.FirstName,

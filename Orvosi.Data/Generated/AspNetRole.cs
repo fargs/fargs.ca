@@ -26,6 +26,7 @@ namespace Orvosi.Data
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<OTask> OTasks { get; set; } // Task.FK_Task_AspNetRoles
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_AspNetRoles
 
         // Foreign keys
         public virtual RoleCategory RoleCategory { get; set; } // FK_AspNetRoles_RoleCategory
@@ -35,6 +36,7 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
+            ServiceRequestTemplateTasks = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             OTasks = new System.Collections.Generic.List<OTask>();
             InitializePartial();
         }

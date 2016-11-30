@@ -433,7 +433,7 @@ namespace WebApp.Controllers
                     st.DueDateDiff = template.OTask.DueDateDiff;
                     st.Guidance = template.OTask.Guidance;
                     st.ObjectGuid = Guid.NewGuid();
-                    st.ResponsibleRoleId = template.OTask.ResponsibleRoleId;
+                    st.ResponsibleRoleId = template.ResponsibleRoleId;
                     st.Sequence = template.Sequence;
                     st.ShortName = template.OTask.ShortName;
                     st.TaskId = template.OTask.Id;
@@ -441,7 +441,7 @@ namespace WebApp.Controllers
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
                     // Assign tasks to physician and case coordinator to start
-                    st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
@@ -597,7 +597,7 @@ namespace WebApp.Controllers
                     st.DueDateDiff = template.OTask.DueDateDiff;
                     st.Guidance = template.OTask.Guidance;
                     st.ObjectGuid = Guid.NewGuid();
-                    st.ResponsibleRoleId = template.OTask.ResponsibleRoleId;
+                    st.ResponsibleRoleId = template.ResponsibleRoleId;
                     st.Sequence = template.Sequence;
                     st.ShortName = template.OTask.ShortName;
                     st.TaskId = template.OTask.Id;
@@ -605,7 +605,7 @@ namespace WebApp.Controllers
                     st.ModifiedDate = SystemTime.Now();
                     st.ModifiedUser = User.Identity.Name;
                     // Assign tasks to physician and case coordinator to start
-                    st.AssignedTo = (template.OTask.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.OTask.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                    st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;

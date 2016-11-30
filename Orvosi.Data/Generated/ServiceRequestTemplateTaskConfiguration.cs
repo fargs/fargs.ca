@@ -34,8 +34,10 @@ namespace Orvosi.Data
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.DueDateType).HasColumnName(@"DueDateType").IsOptional().IsFixedLength().HasColumnType("nchar").HasMaxLength(10);
+            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("uniqueidentifier");
 
             // Foreign keys
+            HasOptional(a => a.AspNetRole).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.ResponsibleRoleId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_AspNetRoles
             HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_Task
             HasRequired(a => a.ServiceRequestTemplate).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.ServiceRequestTemplateId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
             HasMany(t => t.Parent).WithMany(t => t.Child).Map(m =>

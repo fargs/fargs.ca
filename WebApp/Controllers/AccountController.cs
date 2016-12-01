@@ -11,6 +11,8 @@ using Microsoft.Owin.Security;
 using WebApp.Models;
 using WebApp.ViewModels;
 using WebApp.Library.Extensions;
+using Orvosi.Data;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Controllers
 {
@@ -193,7 +195,6 @@ namespace WebApp.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
@@ -202,23 +203,36 @@ namespace WebApp.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var id = Guid.NewGuid();
                 var user = new ApplicationUser
                 {
+                    Id = id,
                     UserName = model.Email,
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    CompanyName = model.CompanyName
+                    CompanyName = model.CompanyName,
+                    Title = model.IsPhysician == "on" ? "Dr." : string.Empty
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    if (model.IsPhysician == "on")
+                    {
+                        using (var context = new OrvosiDbContext())
+                        {
+                            var physician = new Physician() { Id = id };
+                            context.Physicians.Add(physician);
+                            var role = new AspNetUserRole() { UserId = id, RoleId = AspNetRoles.Physician };
+                            context.AspNetUserRoles.Add(role);
+                            context.SaveChanges();
+                        }
+                    }
                     //  Comment the following line to prevent log in until the user is confirmed.
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
@@ -231,7 +245,7 @@ namespace WebApp.Controllers
 
                     //  Uncomment the following line to prevent log in until the user is confirmed.
                     //ViewBag.Message = "Check your email and confirm your account, you must be confirmed before you can log in.";
-                    return RedirectToAction("RegisterConfirmation");
+                    return RedirectToAction("Index", "User", new { area = "Admin" });
 
                     //  Comment the following line to prevent log in until the user is confirmed.
                     //return RedirectToAction("Index", "Home");

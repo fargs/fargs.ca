@@ -30,9 +30,12 @@
     [BoxAccessToken]       NVARCHAR (128)   NULL,
     [BoxRefreshToken]      NVARCHAR (128)   NULL,
     [HstNumber]            NVARCHAR (50)    NULL,
+    [Notes]                NVARCHAR (MAX)   NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_AspNetUsers_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id])
 );
+
+
 
 
 

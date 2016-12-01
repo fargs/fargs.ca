@@ -10,17 +10,24 @@ namespace WebApp.Areas.Admin.ViewModels
 {
     public class ListViewModel
     {
+        public List<AspNetRole> Roles { get; internal set; }
         public List<ListViewItem> Users { get; set; }
     }
 
     public class ListViewItem
     {
+
         public Guid Id { get; set; }
+        [Required]
+        [Display(Name = "User Name")]
         public string UserName { get; set; }
         public string Email { get; set; }
+        [Display(Name = "Email Confirmed")]
         public bool EmailConfirmed { get; set; }
         public string DisplayName { get; set; }
-        public Guid RoleId { get; set; }
+        [Required]
+        [Display(Name = "Role")]
+        public Guid? RoleId { get; set; }
         public string RoleName { get; set; }
         public bool IsTestRecord { get; set; }
     }
@@ -35,6 +42,7 @@ namespace WebApp.Areas.Admin.ViewModels
     {
         public Account Account { get; set; }
         public SelectList Companies { get; set; }
+        public SelectList Roles { get; internal set; }
     }
 
     public class ProfileViewModel

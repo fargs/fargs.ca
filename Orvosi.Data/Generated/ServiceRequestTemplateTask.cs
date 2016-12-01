@@ -24,6 +24,7 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public string DueDateType { get; set; } // DueDateType (length: 10)
+        public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequestTemplateTask
@@ -31,6 +32,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> Parent { get; set; } // Many to many mapping
 
         // Foreign keys
+        public virtual AspNetRole AspNetRole { get; set; } // FK_ServiceRequestTemplateTask_AspNetRoles
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTemplateTask_Task
         public virtual ServiceRequestTemplate ServiceRequestTemplate { get; set; } // FK_ServiceRequestTemplateTask_ServiceRequestTemplate
 

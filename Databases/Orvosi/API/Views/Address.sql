@@ -21,7 +21,7 @@ SELECT
 	,a.[Attention]
 	,a.[Address1]
 	,a.[Address2]
-	,a.[City]
+	,City = a.[Name]
 	,a.[PostalCode]
 	,a.[CountryID]
 	,a.[ProvinceID]
@@ -36,6 +36,7 @@ SELECT
 	,LocationShortName = l.ShortText
 FROM [dbo].[Address] a
 LEFT JOIN dbo.[AddressType] at ON a.AddressTypeId = at.Id
+LEFT JOIN dbo.City ci ON a.CityId = ci.Id
 LEFT JOIN dbo.Country c ON a.CountryId = c.Id
 LEFT JOIN dbo.Province p ON a.ProvinceId = p.Id
 LEFT JOIN dbo.LookupItem l ON a.LocationId = l.Id

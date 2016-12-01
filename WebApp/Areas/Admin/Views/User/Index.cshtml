@@ -6,10 +6,11 @@
 <h2>Users</h2>
 
 <p>
-    <a class="btn btn-success" href="~/Admin/User/Create"><i class="glyphicon glyphicon-plus"></i></a>
+    <a class="btn btn-success" href="~/Account/Register"><i class="glyphicon glyphicon-plus"></i></a>
 </p>
 
 <ul class="nav nav-tabs">
+    @Html.MenuLink("No Role", "Index", "User", "Admin", null)
     @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategories.Physician)
     @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategories.Company)
     @Html.MenuLink("Staff", "Index", "User", "Admin", RoleCategories.Staff)
@@ -30,13 +31,15 @@
                             <i class="glyphicon glyphicon-menu-hamburger"></i>
                         </a>
                         <ul class="dropdown-menu nav-uncondensed" role="menu">
-                            <li role="presentation">@Html.ActionLink("Profile", "UserProfile", "User", new { area="Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Profile", "UserProfile", "User", new { area = "Admin", id = item.Id }, new { })</li>
+                            <li role="presentation">@Html.ActionLink("Notes", "Notes", "User", new { area = "Admin", id = item.Id }, new { })</li>
                             @if (item.RoleId == AspNetRoles.Physician)
                             {
+                                <li role="presentation">@Html.ActionLink("Additional Info", "Edit", "Physician", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Licences", "Index", "PhysicianLicence", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Insurance", "Index", "PhysicianInsurance", new { area = "Admin", userId = item.Id }, new { })</li>
                                 <li role="presentation">@Html.ActionLink("Companies", "Companies", "User", new { area = "Admin", userId = item.Id }, new { })</li>
-                                <li role="presentation">@Html.ActionLink("Service Catalogue", "Index", "ServiceCatalogue", new { area = "Admin", physicianId = item.Id }, new { })</li>
+                                <li role="presentation">@Html.ActionLink("Service Catalogue", "Index", "ServiceCatalogue", new { area = "", userId = item.Id }, new { })</li>
                             }
                             <li role="separator" class="divider"></li>
                             <li role="presentation">@Html.ActionLink("Account", "Account", "User", new { area = "Admin", id = item.Id }, new { })</li>
@@ -45,6 +48,7 @@
                             <li role="presentation">@Html.ActionLink("Change Password", "ChangePassword", "User", new { area = "Admin", id = item.Id }, new { })</li>
                             @*<li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>*@
                         </ul>
+
                     </li>
                 </ul>
             </nav>

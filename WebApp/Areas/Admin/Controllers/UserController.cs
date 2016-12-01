@@ -13,6 +13,7 @@ using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System.Data.Entity;
 using WebApp.Library.Extensions;
+using System.Net;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -86,9 +87,19 @@ namespace WebApp.Areas.Admin.Controllers
             RoleManager = roleManager;
         }
 
-        public ActionResult Index(byte parentId)
+        public ActionResult Index(byte? parentId)
         {
-            var list = db.AspNetUsers.Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == parentId)
+            var list = db.AspNetUsers.AsQueryable();
+            if (parentId.HasValue)
+            {
+                list = list.Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == parentId);
+            }
+            else
+            {
+                list = list.Where(u => !u.AspNetUserRoles.Any());
+            }
+
+            var result = list
                 .AsEnumerable()
                 .Select(u => new ListViewItem
                 {
@@ -96,8 +107,8 @@ namespace WebApp.Areas.Admin.Controllers
                     Email = u.Email,
                     EmailConfirmed = u.EmailConfirmed,
                     DisplayName = u.GetDisplayName(),
-                    RoleId = u.GetRoleId(),
-                    RoleName = u.GetRole().Name,
+                    RoleId = !u.AspNetUserRoles.Any() ? (Guid?)null : u.GetRoleId(),
+                    RoleName = !u.AspNetUserRoles.Any() ? string.Empty : u.GetRole().Name,
                     IsTestRecord = u.IsTestRecord,
                     UserName = u.UserName
                 })
@@ -105,7 +116,7 @@ namespace WebApp.Areas.Admin.Controllers
 
             var vm = new ListViewModel()
             {
-                Users = list
+                Users = result
             };
 
             return View(vm);
@@ -151,12 +162,16 @@ namespace WebApp.Areas.Admin.Controllers
             user.IsTestRecord = profile.IsTestRecord;
             user.ColorCode = profile.ColorCode;
             user.HstNumber = profile.HstNumber;
+            user.BoxFolderId = profile.BoxFolderId;
+            user.BoxUserId = profile.BoxUserId;
             user.ModifiedDate = SystemTime.Now();
             user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
             var result = await db.SaveChangesAsync();
 
-            return RedirectToAction("Index", new { parentId = 1 });
+            var roleId = user.GetRoleId();
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == roleId).RoleCategoryId;
+            return RedirectToAction("Index", new { parentId = roleCategoryId });
 
         }
 
@@ -171,10 +186,13 @@ namespace WebApp.Areas.Admin.Controllers
             // drop down lists
             var companies = db.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
 
+            var roles = db.AspNetRoles.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
+
             var vm = new AccountViewModel()
             {
                 Account = obj,
-                Companies = new SelectList(companies, "Value", "Text", obj.CompanyId)
+                Companies = new SelectList(companies, "Value", "Text", obj.CompanyId),
+                Roles = new SelectList(roles, "Value", "Text", obj.RoleId)
             };
             return View(vm);
 
@@ -205,9 +223,15 @@ namespace WebApp.Areas.Admin.Controllers
             user.ModifiedDate = SystemTime.Now();
             user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
+            var userRoles = db.AspNetUserRoles.Where(ur => ur.UserId == account.Id);
+            db.AspNetUserRoles.RemoveRange(userRoles);
+            var userRole = new AspNetUserRole() { UserId = account.Id, RoleId = account.RoleId.Value, ModifiedDate = SystemTime.UtcNow(), ModifiedUser = User.Identity.GetGuidUserId().ToString() };
+            db.AspNetUserRoles.Add(userRole);
+
             var result = await db.SaveChangesAsync();
 
-            return RedirectToAction("Index", new { parentId = 1 });
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRole.RoleId).RoleCategoryId;
+            return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 
         public ActionResult Companies(Guid userId, Nullable<byte> parentId = null)
@@ -233,6 +257,33 @@ namespace WebApp.Areas.Admin.Controllers
                 };
                 return View("Companies", vm);
             
+        }
+
+        public ActionResult Notes(Guid id)
+        {
+            var notes = db.AspNetUsers.Where(u => u.Id == id).Select(u => new Orvosi.Shared.Model.Person
+            {
+                Id = u.Id,
+                Title = u.Title,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Notes = u.Notes,
+            })
+            .First();
+
+            var user = db.AspNetUsers.Find(id);
+            var roleId = user.GetRoleId();
+            ViewBag.ParentId = db.AspNetRoles.FirstOrDefault(r => r.Id == roleId).RoleCategoryId;
+            return View(notes);
+        }
+
+        [HttpPost]
+        public ActionResult Notes(Orvosi.Shared.Model.Person person)
+        {
+            var user = db.AspNetUsers.Find(person.Id);
+            user.Notes = person.Notes;
+            db.SaveChanges();
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         //public async Task<ActionResult> Edit(string id)
@@ -297,7 +348,8 @@ namespace WebApp.Areas.Admin.Controllers
                 throw new Exception("User to be deleted does not exist");
             }
             await this.UserManager.DeleteAsync(user);
-            return RedirectToAction("Index");
+            
+            return RedirectToAction("Index", new { parentId = 1 });
         }
 
         //public async Task<ActionResult> AssessorPackages(string id)
@@ -333,7 +385,8 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
             await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, AspNetRoles.Company);
 
-            return RedirectToAction("Index", new { parentId = 1 });
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+            return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 
         public async Task<ActionResult> ResetPassword(Guid userId)
@@ -346,7 +399,8 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
             await messenger.SendResetPasswordEmail(user.Email, user.UserName, callbackUrl);
 
-            return RedirectToAction("Index", new { parentId = 1 });
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+            return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 
         public ActionResult ChangePassword(Guid id)
@@ -373,7 +427,8 @@ namespace WebApp.Areas.Admin.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                return RedirectToAction("Index", new { parent = 1 });
+                var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+                return RedirectToAction("Index", new { parentId = roleCategoryId });
             }
             AddErrors(result);
             return View(model);

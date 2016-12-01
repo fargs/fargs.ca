@@ -16,6 +16,9 @@
             Task
         </th>
         <th>
+            Responsible Role
+        </th>
+        <th>
             Sequence
         </th>
         <th>
@@ -31,6 +34,9 @@
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.OTask.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AspNetRole.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Sequence)

@@ -20,8 +20,11 @@
     CONSTRAINT [FK_Address_AddressType] FOREIGN KEY ([AddressTypeID]) REFERENCES [dbo].[AddressType] ([Id]),
     CONSTRAINT [FK_Address_City] FOREIGN KEY ([CityId]) REFERENCES [dbo].[City] ([Id]),
     CONSTRAINT [FK_Address_Countries] FOREIGN KEY ([CountryID]) REFERENCES [dbo].[Country] ([Id]),
-    CONSTRAINT [FK_Address_Provinces] FOREIGN KEY ([ProvinceID]) REFERENCES [dbo].[Province] ([Id])
+    CONSTRAINT [FK_Address_Provinces] FOREIGN KEY ([ProvinceID]) REFERENCES [dbo].[Province] ([Id]),
+    CONSTRAINT [FK_Address_TimeZone] FOREIGN KEY ([TimeZone]) REFERENCES [dbo].[TimeZone] ([Name])
 );
+
+
 
 
 

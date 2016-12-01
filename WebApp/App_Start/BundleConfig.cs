@@ -25,6 +25,12 @@ namespace WebApp
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui-{version}.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/markdown").Include(
+                        "~/Scripts/MarkdownDeepLib.min.js"));
+
+            bundles.Add(new StyleBundle("~/Content/markdown").Include(
+                      "~/Scripts/mdd_styles.css"));
+
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                       "~/Scripts/knockout-3.3.0.js",
                       "~/Scripts/knockout.mapping-latest.js"));
@@ -59,9 +65,6 @@ namespace WebApp
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
                       "~/Content/font-awesome-4.6.3/css/font-awesome.min.css",
                       "~/Content/site.css"));
-
-            //bundles.Add(new StyleBundle("~/Content/jqueryui").Include(
-            //          "~/Content/jquery-ui.css"));
 
             //bundles.Add(new StyleBundle("~/Content/landing").Include(
             //          "~/Content/bootstrap.css",

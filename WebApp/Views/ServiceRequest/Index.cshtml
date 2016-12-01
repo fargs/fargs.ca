@@ -99,9 +99,9 @@
                 <th>
                     When
                 </th>
-                <th>
+                @*<th>
                     Tasks
-                </th>
+                </th>*@
                 <th>
                     Id
                 </th>
@@ -192,9 +192,9 @@
                             }
                             <div><i class="glyphicon glyphicon-file"></i><span class="@(item.DueDate.HasValue ? string.Empty : "text-muted")"> @(item.DueDate.HasValue ? item.DueDate.Value.ToString("ddd, MMM dd") : "Not Set")</span></div>
                         </td>
-                        <td>
+                        @*<td>
                             @Html.Action("NextTaskList", "ServiceRequestTask", new { serviceRequest = item, serviceRequestTasks = Model.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == item.Id).ToList()})
-                        </td>
+                        </td>*@
                         <td>
                             <div class="btn btn-circle disabled" style="color: white; background-color: @item.PhysicianColorCode;">@item.PhysicianInitials</div>
                             <div><strong>@item.Id</strong></div>

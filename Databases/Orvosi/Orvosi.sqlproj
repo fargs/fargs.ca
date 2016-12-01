@@ -79,6 +79,7 @@
     <Folder Include="Analysis\" />
     <Folder Include="Analysis\Views\" />
     <Folder Include="dbo\User Defined Types\" />
+    <Folder Include="_Data" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -273,6 +274,8 @@
     <Build Include="API\Stored Procedures\ToggleCancellation.sql" />
     <Build Include="dbo\User Defined Types\SelectedStatusIdsTVP.sql" />
     <Build Include="dbo\Tables\InvoiceSentLog.sql" />
+    <None Include="_Data\ReadMe.md" />
+    <Build Include="dbo\Tables\TimeZone.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />
@@ -309,6 +312,16 @@
     <None Include="Data\StaticData\dbo.ServiceRequestTemplateTask" />
     <None Include="Data\StaticData\dbo.Task" />
     <None Include="Orvosi.localdb.publish.xml" />
+    <None Include="_Data\dbo.AddressType.data.sql" />
+    <None Include="_Data\dbo.AspNetRoles.data.sql" />
+    <None Include="_Data\dbo.City.data.sql" />
+    <None Include="_Data\dbo.Country.data.sql" />
+    <None Include="_Data\dbo.PhysicianSpeciality.data.sql" />
+    <None Include="_Data\dbo.Province.data.sql" />
+    <None Include="_Data\dbo.RoleCategory.data.sql" />
+    <None Include="_Data\dbo.ServiceCategory.data.sql" />
+    <None Include="_Data\dbo.TaskStatus.data.sql" />
+    <None Include="_Data\dbo.TimeZone.data.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

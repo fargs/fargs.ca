@@ -92,6 +92,7 @@ namespace WebApp.Controllers
                 return HttpNotFound();
             }
             ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).Where(t => t.ServiceRequestTemplateId == serviceRequestTemplateTask.ServiceRequestTemplateId).OrderBy(t => t.Sequence);
+            ViewBag.ResponsibleRoleId = new SelectList(db.AspNetRoles, "Id", "Name", serviceRequestTemplateTask.ResponsibleRoleId);
             ViewBag.ServiceRequestTemplateId = new SelectList(db.ServiceRequestTemplates, "Id", "Name", serviceRequestTemplateTask.ServiceRequestTemplateId);
             ViewBag.TaskId = new SelectList(db.OTasks.Include(t => t.TaskPhase).OrderBy(t => t.TaskPhase.Sequence).ThenBy(t => t.Sequence), "Id", "Name", "TaskPhase.Name", serviceRequestTemplateTask.TaskId);
             return View(serviceRequestTemplateTask);
@@ -102,7 +103,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,DueDateType")] ServiceRequestTemplateTask serviceRequestTemplateTask)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,DueDateType,ResponsibleRoleId")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
             serviceRequestTemplateTask.ModifiedDate = SystemTime.UtcNow();
             serviceRequestTemplateTask.ModifiedUser = User.Identity.GetGuidUserId().ToString();
@@ -112,6 +113,7 @@ namespace WebApp.Controllers
                 model.TaskId = serviceRequestTemplateTask.TaskId;
                 model.Sequence = serviceRequestTemplateTask.Sequence;
                 model.DueDateType = serviceRequestTemplateTask.DueDateType;
+                model.ResponsibleRoleId = serviceRequestTemplateTask.ResponsibleRoleId;
                 model.ModifiedDate = SystemTime.Now();
                 model.ModifiedUser = User.Identity.Name;
                 model.Child.Clear();

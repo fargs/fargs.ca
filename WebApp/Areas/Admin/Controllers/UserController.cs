@@ -225,12 +225,15 @@ namespace WebApp.Areas.Admin.Controllers
 
             var userRoles = db.AspNetUserRoles.Where(ur => ur.UserId == account.Id);
             db.AspNetUserRoles.RemoveRange(userRoles);
-            var userRole = new AspNetUserRole() { UserId = account.Id, RoleId = account.RoleId.Value, ModifiedDate = SystemTime.UtcNow(), ModifiedUser = User.Identity.GetGuidUserId().ToString() };
-            db.AspNetUserRoles.Add(userRole);
+            byte? roleCategoryId = null;
+            if (account.RoleId.HasValue)
+            {
+                var userRole = new AspNetUserRole() { UserId = account.Id, RoleId = account.RoleId.Value, ModifiedDate = SystemTime.UtcNow(), ModifiedUser = User.Identity.GetGuidUserId().ToString() };
+                db.AspNetUserRoles.Add(userRole);
+                roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRole.RoleId).RoleCategoryId;
+            }
 
             var result = await db.SaveChangesAsync();
-
-            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRole.RoleId).RoleCategoryId;
             return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 

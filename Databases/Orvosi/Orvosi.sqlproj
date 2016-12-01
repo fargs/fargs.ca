@@ -322,6 +322,8 @@
     <None Include="_Data\dbo.ServiceCategory.data.sql" />
     <None Include="_Data\dbo.TaskStatus.data.sql" />
     <None Include="_Data\dbo.TimeZone.data.sql" />
+    <None Include="_Data\dbo.Task.data.sql" />
+    <None Include="_Data\dbo.TaskPhase.data.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

@@ -410,15 +410,15 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var slot = await ctx.AvailableSlots.FindAsync(sr.AvailableSlotId);
-                sr.ServiceId = serviceCatalogue.ServiceId;
+                sr.ServiceId = sr.ServiceId;
                 sr.PhysicianId = selectedPhysicianId;
                 sr.CompanyId = company.Id;
                 sr.AddressId = address.Id;
-                sr.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+                sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.AvailableSlotId = sr.AvailableSlotId;
                 sr.StartTime = slot.StartTime;
                 sr.EndTime = slot.EndTime;
-                sr.ServiceCataloguePrice = serviceCatalogue.Price;
+                sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
                 sr.NoShowRate = rates.NoShowRate;
                 sr.LateCancellationRate = rates.LateCancellationRate;
                 sr.ModifiedUser = User.Identity.Name;
@@ -572,7 +572,7 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                sr.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
+                sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.DueDate = sr.DueDate;
                 sr.CaseCoordinatorId = sr.CaseCoordinatorId;
                 sr.ClaimantName = sr.ClaimantName;
@@ -580,8 +580,8 @@ namespace WebApp.Controllers
                 sr.RequestedDate = sr.RequestedDate;
                 sr.CompanyId = sr.CompanyId;
                 sr.PhysicianId = sr.PhysicianId;
-                sr.ServiceId = serviceCatalogue.ServiceId;
-                sr.ServiceCataloguePrice = serviceCatalogue.Price;
+                sr.ServiceId = sr.ServiceId;
+                sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
                 sr.NoShowRate = rates.NoShowRate;
                 sr.LateCancellationRate = rates.LateCancellationRate;
                 sr.ServiceRequestTemplateId = sr.ServiceRequestTemplateId;
@@ -670,7 +670,7 @@ namespace WebApp.Controllers
             }
 
             var userSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId != e.RoleCategories.Company)
+                .Where(u => u.AspNetUserRoles.Any() && u.AspNetUserRoles.Any(ur => ur.AspNetRole.RoleCategoryId != e.RoleCategories.Company))
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {

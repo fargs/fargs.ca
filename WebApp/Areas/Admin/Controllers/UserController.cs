@@ -169,7 +169,8 @@ namespace WebApp.Areas.Admin.Controllers
 
             var result = await db.SaveChangesAsync();
 
-            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.GetRoleId()).RoleCategoryId;
+            var roleId = user.GetRoleId();
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == roleId).RoleCategoryId;
             return RedirectToAction("Index", new { parentId = roleCategoryId });
 
         }

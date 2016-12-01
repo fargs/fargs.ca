@@ -338,9 +338,13 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit(int invoiceDetailId)
+        public ActionResult Edit(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
+            var editForm = context.Invoices
+                    .WithId(invoiceId)
+                    .Select(InvoiceProjections.EditForm())
+                    .ToList();
             var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
 
             return Json(editForm, JsonRequestBehavior.AllowGet);

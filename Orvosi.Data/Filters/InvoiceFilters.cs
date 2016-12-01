@@ -18,6 +18,10 @@ namespace Orvosi.Data.Filters
 
             return data.Any() ? data.Max(i => long.Parse(i)) + 1 : 1;
         }
+        public static IQueryable<Invoice> WithId(this IQueryable<Invoice> invoices, long id)
+        {
+            return invoices.Where(i => i.Id == id);
+        }
         public static IQueryable<Invoice> AreOwnedBy(this IQueryable<Invoice> invoices, Guid userId)
         {
             return invoices.Where(i => i.ServiceProviderGuid == userId);

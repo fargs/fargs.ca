@@ -112,7 +112,7 @@ else
 <div class="modal right fade" id="edit-modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="edit-invoicedetail-form">
+            <form id="edit-invoice-form">
                 <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -208,7 +208,7 @@ else
             });
         }
 
-        function onEdit(invoiceDetailId, isNoShow, isLateCancellation) {
+        function onEdit(invoiceId, isNoShow, isLateCancellation) {
 
             if (isNoShow || isLateCancellation) {
                 $('#rate-form-group').css({ 'display': 'block' })
@@ -219,7 +219,7 @@ else
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
+                url: '@Url.Content("~/Accounting/Edit?invoiceId=")' + invoiceId,
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
 
@@ -229,7 +229,7 @@ else
                     modalDiv.find('#ClaimantName').html(result.ClaimantName);
                     modalDiv.find('#AdditionalNotes').val(result.AdditionalNotes);
 
-                    var form = $('#edit-invoicedetail-form');
+                    var form = $('#edit-invoice-form');
                     form.find('#Id').val(result.Id);
                     form.find('#To').val(result.To);
                     $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
@@ -246,16 +246,16 @@ else
             }, this);
         }
 
-        $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
+        $("#edit-invoice-form").submit(function (e, serviceRequestId) {
 
             var url = '@Url.Content("~/Accounting/Update")';
 
-            var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
+            var serviceRequestId = $("#edit-invoice-form").find('#ServiceRequestId').val();
 
             $.ajax({
                 type: "POST",
                 url: url,
-                data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
+                data: $("#edit-invoice-form").serialize(), // serializes the form's elements.
                 success: function () {
                     $("#edit-modal").modal('toggle');
                     toastr.success("Invoice updated successfully.");

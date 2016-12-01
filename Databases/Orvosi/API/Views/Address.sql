@@ -9,6 +9,7 @@
 
 
 
+
 CREATE VIEW [API].[Address]
 AS
 SELECT 
@@ -21,7 +22,7 @@ SELECT
 	,a.[Attention]
 	,a.[Address1]
 	,a.[Address2]
-	,City = a.[Name]
+	,City = ci.[Name]
 	,a.[PostalCode]
 	,a.[CountryID]
 	,a.[ProvinceID]

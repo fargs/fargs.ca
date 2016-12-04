@@ -1181,7 +1181,7 @@
     <Content Include="Views\ServiceRequestTask\_TaskFilter.cshtml" />
     <Content Include="Views\ServiceRequest\ChangeCompany.cshtml" />
     <Content Include="Views\Accounting\_EditInvoiceHeader.cshtml" />
-    <Content Include="Views\Accounting\_AddItem.cshtml" />
+    <Content Include="Views\Accounting\_EditInvoiceItem.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />

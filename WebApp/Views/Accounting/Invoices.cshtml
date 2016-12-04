@@ -28,7 +28,7 @@ else
     <div class="row o-dashboard-tr">
         <strong class="col-md-2 o-dashboard-td bg-warning">Case</strong>
         <strong class="col-md-2 o-dashboard-td">Header</strong>
-        <strong class="col-md-4 o-dashboard-td">Additional Items</strong>
+        <strong class="col-md-4 o-dashboard-td">Items</strong>
         <strong class="col-md-2 o-dashboard-td">Total</strong>
         <strong class="col-md-2 o-dashboard-td text-right">Actions</strong>
     </div>
@@ -67,19 +67,19 @@ else
                                     <i class="fa fa-pencil"></i> &nbsp;Edit Header Info
                                 </a>
                             </li>
+                            @foreach (var item in unsentInvoice.Invoice.InvoiceDetails)
+                            {
+                                <li>
+                                    <a onclick="onEditInvoiceItem(@item.Id)">
+                                        <i class="fa fa-pencil"></i> &nbsp;Edit Item
+                                    </a>
+                                </li>
+                            }
                             <li>
                                 <a onclick="onAddItem(@unsentInvoice.Invoice.Id , @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
                                     <i class="fa fa-plus"></i> &nbsp;Add Item
                                 </a>
                             </li>
-                            @foreach (var item in unsentInvoice.Invoice.InvoiceDetails)
-                            {
-                                <li>
-                                    <a onclick="onEditItem(@item.Id, @unsentInvoice.Invoice.Id, @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
-                                        <i class="fa fa-pencil"></i> &nbsp;Edit Item
-                                    </a>
-                                </li>
-                            }
                             @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
                         </ul>
                     </div>
@@ -136,6 +136,14 @@ else
     </div>
 </div>
 
+<div class="modal fade" id="edit-invoice-item-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="edit-invoice-item-form"></form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script type="text/javascript">
 
@@ -155,7 +163,7 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    toastr.success("Something went wrong.");
+                    toastr.error("Something went wrong.");
                 }
             });
         }
@@ -175,13 +183,12 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    toastr.success("Something went wrong.");
+                    toastr.error("Something went wrong.");
                 }
             });
         }
 
         function onEditInvoiceHeader(invoiceId) {
-            console.log('edit invoice header event');
             $.ajax({
                 cache: false,
                 type: "GET",
@@ -191,7 +198,7 @@ else
 
                     var modalDiv = $("#edit-invoice-header-modal");
                     var formContainer = $("#edit-invoice-header-form");
-                    
+
                     formContainer.replaceWith(result);
 
                     modalDiv.modal('toggle');
@@ -201,6 +208,68 @@ else
                     window.location.reload();
                 }
             }, this);
+        }
+
+        function invoiceHeaderSaveChanges() {
+            var url = '@Url.Content("~/Accounting/EditInvoiceHeader")';
+            var form = $('#edit-invoice-header-form');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function () {
+                    toastr.success("Invoice updated successfully");
+                    $("#edit-invoice-header-modal").modal('toggle');
+                    refreshInvoice(form.find('#Id').val());
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            });
+        }
+
+        function onEditInvoiceItem(invoiceDetailId) {
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Content("~/Accounting/EditInvoiceItem?invoiceDetailId=")' + invoiceDetailId,
+                contentType: "text/html",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-invoice-item-modal");
+                    var formContainer = $("#edit-invoice-item-form");
+
+                    formContainer.replaceWith(result);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+        }
+
+        function invoiceItemSaveChanges() {
+            var url = '@Url.Content("~/Accounting/EditInvoiceItem")';
+            var form = $('#edit-invoice-item-form');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function () {
+                    toastr.success("Invoice item updated successfully");
+                    $("#edit-invoice-item-modal").modal('toggle');
+                    refreshInvoice(form.find('#InvoiceId').val());
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            });
         }
 
         function onEdit(invoiceId, isNoShow, isLateCancellation) {
@@ -241,26 +310,6 @@ else
             }, this);
         }
 
-        function saveChangesToInvoiceHeader(e, serviceRequestId) {
-
-            var url = '@Url.Content("~/Accounting/Update")';
-
-            var serviceRequestId = $("#edit-invoice-header-form").find('#ServiceRequestId').val();
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $("#edit-invoice-form").serialize(), // serializes the form's elements.
-                success: function () {
-                    $("#edit-modal").modal('toggle');
-                    toastr.success("Invoice updated successfully.");
-                    refreshServiceRequest(serviceRequestId);
-                }
-            });
-
-            e.preventDefault(); // avoid to execute the actual submit of the form.
-        };
-
         function refreshServiceRequest(serviceRequestId) {
 
             $.ajax({
@@ -275,7 +324,21 @@ else
                     window.location.reload();
                 }
             }, this);
+        }
 
+        function refreshInvoice(invoiceId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#invoice-' + invoiceId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
         }
 </script>
 }

@@ -25,73 +25,6 @@ namespace WebApp.Controllers
     [Authorize(Roles = "Case Coordinator, Super Admin, Physician")]
     public class AccountingController : Controller
     {
-        [HttpGet]
-        public ActionResult AddInvoice(Guid? serviceProviderId)
-        {
-            using (var context = new OrvosiDbContext())
-            {
-                ViewBag.UserSelectList = GetServiceProviderList(context);
-                ViewBag.CustomerSelectList = GetCustomerList(context);
-            }
-
-            var invoice = new Orvosi.Data.Invoice()
-            {
-                ServiceProviderGuid = GetServiceProviderId(serviceProviderId),
-                InvoiceDate = SystemTime.Now()
-            };
-            return View(invoice);
-        }
-
-
-        public async Task<ActionResult> AddInvoiceDetail(Orvosi.Data.Invoice invoice)
-        {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
-            {
-                var serviceProvider = context.BillableEntities.First(c => c.EntityGuid == invoice.ServiceProviderGuid);
-                var customer = context.BillableEntities.First(c => c.EntityGuid == invoice.CustomerGuid);
-
-                var newInvoice = new Invoice();
-                newInvoice.BuildInvoice(serviceProvider, customer, 0, invoice.InvoiceDate, User.Identity.Name);
-                newInvoice.CustomerEmail = string.IsNullOrEmpty(newInvoice.CustomerEmail) ? newInvoice.CustomerEmail : invoice.CustomerEmail;
-                return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", newInvoice);
-            }
-        }
-
-        public async Task<ActionResult> PreviewInvoice(Guid id)
-        {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
-            {
-                var invoice = await context.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
-                return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
-            }
-        }
-
-        private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
-        {
-            var userSelectList = (from user in context.AspNetUsers
-                                  from userRole in context.AspNetUserRoles
-                                  from role in context.AspNetRoles
-                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
-                                  select new SelectListItem
-                                  {
-                                      Text = user.FirstName + " " + user.LastName,
-                                      Value = user.Id.ToString(),
-                                      Group = new SelectListGroup() { Name = role.Name }
-                                  }).ToList();
-            return userSelectList;
-        }
-
-        private List<SelectListItem> GetCustomerList(OrvosiDbContext context)
-        {
-            return context.Companies
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.Name,
-                    Value = c.ObjectGuid.ToString(),
-                    Group = new SelectListGroup() { Name = c.Parent.Name }
-                }).ToList();
-        }
-
         public ActionResult UnsentInvoices(Guid? serviceProviderId)
         {
             using (var context = new OrvosiDbContext())
@@ -239,7 +172,54 @@ namespace WebApp.Controllers
             }
         }
 
+        public ActionResult Invoice(int invoiceId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                var record = context.Invoices
+                    .WithId(invoiceId)
+                    .Select(InvoiceProjections.Header())
+                    .Single();
+
+                return PartialView("_Invoice", record);
+            }
+        }
+
         // API
+
+        [HttpPost]
+        public ActionResult Create(int serviceRequestId)
+        {
+            var repo = new Mapper(new Orvosi.Data.OrvosiDbContext());
+            repo.Create(serviceRequestId, User);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        public ActionResult AddInvoice(Guid? serviceProviderId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                ViewBag.UserSelectList = GetServiceProviderList(context);
+                ViewBag.CustomerSelectList = GetCustomerList(context);
+            }
+
+            var invoice = new Orvosi.Data.Invoice()
+            {
+                ServiceProviderGuid = GetServiceProviderId(serviceProviderId),
+                InvoiceDate = SystemTime.Now()
+            };
+            return View(invoice);
+        }
+
+        public async Task<ActionResult> PreviewInvoice(Guid id)
+        {
+            using (var context = new Orvosi.Data.OrvosiDbContext())
+            {
+                var invoice = await context.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
+                return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+            }
+        }
+
         public async Task<ActionResult> SendInvoice(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -273,32 +253,7 @@ namespace WebApp.Controllers
             await context.SaveChangesAsync();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
-
-        private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)
-        {
-            var message = new MailMessage();
-            message.To.Add(invoice.CustomerEmail);
-            message.From = new MailAddress(invoice.ServiceProviderEmail);
-            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
-            message.IsBodyHtml = true;
-            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
-
-            var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views/Shared/NotificationTemplates/Invoice.html");
-
-            ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
-            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
-
-            return message;
-        }
-
-        [HttpPost]
-        public ActionResult Create(int serviceRequestId)
-        {
-            var repo = new Mapper(new Orvosi.Data.OrvosiDbContext());
-            repo.Create(serviceRequestId, User);
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
+        
         [HttpPost]
         public async Task<ActionResult> Update(EditInvoiceDetailForm form)
         {
@@ -337,8 +292,6 @@ namespace WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        [OutputCache(NoStore = true, Duration = 0)]
-        [HttpGet]
         public ActionResult EditInvoiceHeader(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -353,17 +306,58 @@ namespace WebApp.Controllers
             //return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
-
         [HttpPost]
         public ActionResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
         {
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
-
-            //return Json(editForm, JsonRequestBehavior.AllowGet);
+            using (var context = new OrvosiDbContext())
+            {
+                var record = context.Invoices.Find(invoice.Id);
+                record.InvoiceDate = invoice.InvoiceDate;
+                record.TaxRateHst = invoice.TaxRateHst;
+                record.CustomerEmail = invoice.Customer.BillingEmail;
+                record.ModifiedDate = SystemTime.UtcNow();
+                record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                record.CalculateTotal();
+                context.SaveChanges();
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
         }
 
-        [HttpGet]
+        public ActionResult EditInvoiceItem(int invoiceDetailId)
+        {
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var editForm = context.InvoiceDetails
+                    .Where(id => id.Id == invoiceDetailId)
+                    .Select(InvoiceProjections.EditItemForm())
+                    .Single();
+
+            return PartialView("_EditInvoiceItem", editForm);
+        }
+
+        [HttpPost]
+        public ActionResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                var record = context.InvoiceDetails.Find(invoiceDetail.Id);
+                record.Description = invoiceDetail.Description;
+                record.AdditionalNotes = invoiceDetail.AdditionalNotes;
+                record.Amount = invoiceDetail.Amount;
+                record.Rate = invoiceDetail.Rate;
+                record.ModifiedDate = SystemTime.UtcNow();
+                record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                record.CalculateTotal();
+                context.SaveChanges();
+
+                var invoice = context.Invoices.Find(invoiceDetail.Invoice.Id);
+                invoice.CalculateTotal();
+
+                context.SaveChanges();
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+        }
+
         public ActionResult AddItem(int invoiceId)
         {
             //var context = new Orvosi.Data.OrvosiDbContext();
@@ -374,20 +368,23 @@ namespace WebApp.Controllers
             //return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult EditItem(int invoiceDetailId)
+        private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var editForm = context.InvoiceDetails
-                    .Where(id => id.Id == invoiceDetailId)
-                    //.Select(InvoiceProjections.EditForm())
-                    .ToList();
+            var message = new MailMessage();
+            message.To.Add(invoice.CustomerEmail);
+            message.From = new MailAddress(invoice.ServiceProviderEmail);
+            message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
+            message.IsBodyHtml = true;
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 
-            return PartialView("_EditForm", editForm);
-            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+            var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views/Shared/NotificationTemplates/Invoice.html");
 
-            //return Json(editForm, JsonRequestBehavior.AllowGet);
+            ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
+            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
+
+            return message;
         }
+
         private Guid GetServiceProviderId(Guid? serviceProviderId)
         {
             Guid userId = User.Identity.GetGuidUserId();
@@ -400,6 +397,31 @@ namespace WebApp.Controllers
             return userId;
         }
 
+        private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
+        {
+            var userSelectList = (from user in context.AspNetUsers
+                                  from userRole in context.AspNetUserRoles
+                                  from role in context.AspNetRoles
+                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
+                                  select new SelectListItem
+                                  {
+                                      Text = user.FirstName + " " + user.LastName,
+                                      Value = user.Id.ToString(),
+                                      Group = new SelectListGroup() { Name = role.Name }
+                                  }).ToList();
+            return userSelectList;
+        }
+
+        private List<SelectListItem> GetCustomerList(OrvosiDbContext context)
+        {
+            return context.Companies
+                .Select(c => new SelectListItem()
+                {
+                    Text = c.Name,
+                    Value = c.ObjectGuid.ToString(),
+                    Group = new SelectListGroup() { Name = c.Parent.Name }
+                }).ToList();
+        }
 
     }
 }

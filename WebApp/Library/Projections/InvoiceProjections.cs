@@ -9,26 +9,25 @@ namespace WebApp.Library.Projections
 {
     public static class InvoiceProjections
     {
-        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> EditItemForm()
+        public static Expression<Func<Orvosi.Data.InvoiceDetail, Orvosi.Shared.Model.InvoiceDetail>> EditItemForm()
         {
-            return i => new Orvosi.Shared.Model.Invoice
+            return id => new Orvosi.Shared.Model.InvoiceDetail
             {
-                Id = i.Id,
-                Customer = new Orvosi.Shared.Model.Customer
+                Id = id.Id,
+                Invoice = new Orvosi.Shared.Model.Invoice
                 {
-                    BillingEmail = i.CustomerEmail,
-                    Province = i.CustomerProvince
+                    Id = id.InvoiceId,
+                    InvoiceNumber = id.Invoice.InvoiceNumber
                 },
-                TaxRateHst = i.TaxRateHst,
-                InvoiceNumber = i.InvoiceNumber,
-                InvoiceDate = i.InvoiceDate,
-                InvoiceDetails = i.InvoiceDetails.Select(id => new Orvosi.Shared.Model.InvoiceDetail
+                Description = id.Description,
+                Amount = id.Amount.HasValue ? id.Amount.Value : 0,
+                Rate = id.Rate.HasValue ? id.Rate.Value : 1,
+                AdditionalNotes = id.AdditionalNotes,
+                ServiceRequest = id.ServiceRequest == null ? null : new Orvosi.Shared.Model.ServiceRequest
                 {
-                    Description = id.Description,
-                    Amount = id.Amount.HasValue ? id.Amount.Value : 0,
-                    Rate = id.Rate.HasValue ? id.Rate.Value : 1,
-                    AdditionalNotes = id.AdditionalNotes
-                })
+                    Id = id.ServiceRequest.Id,
+                    ClaimantName = id.ServiceRequest.ClaimantName
+                }
             };
         }
         public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> Header()
@@ -61,7 +60,14 @@ namespace WebApp.Library.Projections
                     City = i.CustomerCity,
                     Province = i.CustomerProvince
                 },
-                InvoiceDetails = i.InvoiceDetails.Select(id => new Orvosi.Shared.Model.InvoiceDetail { Id = id.Id, Description = id.Description, Amount = id.Amount.Value }),
+                InvoiceDetails = i.InvoiceDetails.Select(id => new Orvosi.Shared.Model.InvoiceDetail
+                {
+                    Id = id.Id,
+                    Description = id.Description,
+                    Amount = id.Amount.Value,
+                    Rate = id.Rate.HasValue ? id.Rate.Value : 1,
+                    AdditionalNotes = id.AdditionalNotes
+                }),
                 InvoiceDetailCount = i.InvoiceDetails.Count()
             };
         }

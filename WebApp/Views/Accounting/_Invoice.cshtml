@@ -11,9 +11,7 @@
     </div>
     <div class="col-md-6">
         @{
-            if (Model.InvoiceDetailCount > 1)
-            {
-                Model.InvoiceDetails.Skip(1);
+                //Model.InvoiceDetails.Skip(1);
                 foreach (var detail in Model.InvoiceDetails)
                 {
                     <div class="row">
@@ -43,14 +41,13 @@
                         </div>
                     </div>
                 }
-            }
         }
     </div>
     <div class="col-md-3">
         <dl class="dl-horizontal dl-clear-margins">
             <dt class="text-right">Sub Total</dt>
             <dd class="text-right">@Model.SubTotal.Value.ToString("C2")</dd>
-            <dt class="text-right">Tax (@(Model.TaxRateHst.Value.ToString("0%"))%)</dt>
+            <dt class="text-right">Tax (@(Model.TaxRateHst.Value.ToString("0%")))</dt>
             <dd class="text-right">@Model.Hst.Value.ToString("C2")</dd>
         </dl>
         <hr class="hr-smaller-margins" />

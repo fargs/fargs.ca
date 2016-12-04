@@ -2,61 +2,51 @@
 @model Orvosi.Shared.Model.Invoice
 
 <div class="row" id="invoice-@Model.Id">
-    <div class="col-md-4">
-        <h4>@Model.Customer.Name</h4>
+    <div class="col-md-3">
+        <div>@Model.InvoiceNumber</div>
+        <div>@Model.InvoiceDate.ToOrvosiDateFormat()</div>
+        <div><strong>@Model.Customer.Name</strong></div>
         <strong>@Model.Customer.BillingEmail</strong><br />
         @(Model.Customer.City), @Model.Customer.Province
     </div>
-    <div class="col-md-4">
-        Item Count: @Model.InvoiceDetailCount
-        @foreach (var detail in Model.InvoiceDetails)
-        {
-        <div class="row">
-            <div class="col-md-4 o-dashboard-td">
-                <div class="small">Description</div>
-                <span class="invoice-description">@Html.Raw(detail.Description)</span>
-                <div class="text-danger">@detail.AdditionalNotes</div>
-                @if (detail.ServiceRequest != null)
-                    {
-                    <p>
-                        <a href="~/ServiceRequest/Details/@detail.ServiceRequest.Id">View Case Details</a>
-                    </p>
-                    }
-            </div>
-            <div class="col-md-4 o-dashboard-td" style="text-align: right;">
-                <div class="small">Amount</div>
-                @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
-                    {
-                    <span>
-                        @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
-                    </span>
-                        if (detail.ServiceRequest.ServiceStatusId.HasValue)
-                        {
-                    <div>
-                        @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
+    <div class="col-md-6">
+        @{
+            if (Model.InvoiceDetailCount > 1)
+            {
+                Model.InvoiceDetails.Skip(1);
+                foreach (var detail in Model.InvoiceDetails)
+                {
+                    <div class="row">
+                        <div class="col-md-8 o-dashboard-td">
+                            <span>@detail.Description</span>
+                            <div class="text-danger">@detail.AdditionalNotes</div>
+                        </div>
+                        <div class="col-md-4 o-dashboard-td" style="text-align: right;">
+                            @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
+                            {
+                                <span>
+                                    @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
+                                </span>
+                                if (detail.ServiceRequest.ServiceStatusId.HasValue)
+                                {
+                                    <div>
+                                        @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span>
+                                    @detail.Amount.ToString("C2")
+                                </span>
+                            }
+                        </div>
                     </div>
-                        }
-                    }
-                    else
-                    {
-                    <span>
-                        @detail.Amount.ToString("C2")
-                    </span>
-                    }
-            </div>
-            <div class="col-md-3 o-dashboard-td" style="text-align: right;">
-                <div class="small">Total</div>
-                @detail.Total.ToString("C2")
-            </div>
-            <div class="col-md-1 o-dashboard-td" style="text-align: right;">
-                <button class="btn btn-default" style="border: none;" onclick="onEdit(@detail.Id, @detail.ServiceRequest.IsNoShow.ToString().ToLower(), @detail.ServiceRequest.IsLateCancellation.ToString().ToLower())">
-                    <i class="fa fa-pencil fa-lg"></i>
-                </button>
-            </div>
-        </div>
+                }
+            }
         }
     </div>
-    <div class="col-md-4 o-dashboard-td">
+    <div class="col-md-3">
         <dl class="dl-horizontal dl-clear-margins">
             <dt class="text-right">Sub Total</dt>
             <dd class="text-right">@Model.SubTotal.Value.ToString("C2")</dd>

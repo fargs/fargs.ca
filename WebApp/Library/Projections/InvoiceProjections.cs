@@ -9,7 +9,29 @@ namespace WebApp.Library.Projections
 {
     public static class InvoiceProjections
     {
-        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> Header(Guid serviceProviderId, DateTime now)
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> EditItemForm()
+        {
+            return i => new Orvosi.Shared.Model.Invoice
+            {
+                Id = i.Id,
+                Customer = new Orvosi.Shared.Model.Customer
+                {
+                    BillingEmail = i.CustomerEmail,
+                    Province = i.CustomerProvince
+                },
+                TaxRateHst = i.TaxRateHst,
+                InvoiceNumber = i.InvoiceNumber,
+                InvoiceDate = i.InvoiceDate,
+                InvoiceDetails = i.InvoiceDetails.Select(id => new Orvosi.Shared.Model.InvoiceDetail
+                {
+                    Description = id.Description,
+                    Amount = id.Amount.HasValue ? id.Amount.Value : 0,
+                    Rate = id.Rate.HasValue ? id.Rate.Value : 1,
+                    AdditionalNotes = id.AdditionalNotes
+                })
+            };
+        }
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> Header()
         {
             return i => new Orvosi.Shared.Model.Invoice
             {
@@ -39,6 +61,7 @@ namespace WebApp.Library.Projections
                     City = i.CustomerCity,
                     Province = i.CustomerProvince
                 },
+                InvoiceDetails = i.InvoiceDetails.Select(id => new Orvosi.Shared.Model.InvoiceDetail { Id = id.Id, Description = id.Description, Amount = id.Amount.Value }),
                 InvoiceDetailCount = i.InvoiceDetails.Count()
             };
         }

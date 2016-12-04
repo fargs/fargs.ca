@@ -1,0 +1,44 @@
+﻿
+@model Orvosi.Shared.Model.Invoice
+<form id="edit-invoice-form">
+    <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">
+            <span id="ClaimantName"></span>
+        </h4>
+        <div class="small text-muted">
+            Invoice <span id="InvoiceNumber"></span>
+        </div>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" id="Id" name="Id" />
+        <div class="form-group">
+            <label class="control-label">Email To</label>
+            <input type="text" class="form-control" id="To" name="To" />
+        </div>
+        <div class="form-group">
+            <label class="control-label">Invoice Date</label>
+            <div class="input-group date" style="width:100%" id="InvoiceDatePicker">
+                <input class="form-control" size="16" type="text" name="InvoiceDate" id="InvoiceDate">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Amount</label>
+            <input type="text" class="form-control" id="Amount" name="Amount" />
+        </div>
+        <div class="form-group" id="rate-form-group" style="display:none;">
+            <label class="control-label">Rate</label>
+            <input type="text" class="form-control" id="Rate" name="Rate" />
+            <div class="help-block">Less than 1 will be applied as a percentage. Greater than 1, the rate will override the amount.</div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Note</label>
+            <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input class="btn btn-success" type="submit" id="edit-modal-save" value="Save" />
+    </div>
+</form>

@@ -26,17 +26,17 @@ else
         </div>
     </div>
     <div class="row o-dashboard-tr">
-        <strong class="col-md-3 o-dashboard-td">Case</strong>
+        <strong class="col-md-2 o-dashboard-td bg-warning">Case</strong>
         <strong class="col-md-2 o-dashboard-td">Header</strong>
-        <strong class="col-md-2 o-dashboard-td">Items</strong>
+        <strong class="col-md-4 o-dashboard-td">Additional Items</strong>
         <strong class="col-md-2 o-dashboard-td">Total</strong>
-        <strong class="col-md-3 o-dashboard-td text-right">Actions</strong>
+        <strong class="col-md-2 o-dashboard-td text-right">Actions</strong>
     </div>
 
     foreach (var unsentInvoice in dayFolder.UnsentInvoices)
     {
         <div class="row o-dashboard-tr">
-            <div class="col-md-3 o-dashboard-td">
+            <div class="col-md-2 o-dashboard-td bg-warning">
                 @if (unsentInvoice.ServiceRequest != null)
                 {
                     @Html.Partial("_ServiceRequest", unsentInvoice.ServiceRequest)
@@ -48,18 +48,40 @@ else
             </div>
             @if (unsentInvoice.Invoice != null)
             {
-                <div class="col-md-6 o-dashboard-td">
+                <div class="col-md-8 o-dashboard-td">
                     @Html.Partial("_Invoice", unsentInvoice.Invoice)
                 </div>
-                <div class="col-md-3 o-dashboard-td" style="text-align: center;">
-                    <div class="pull-right">
-                        <button class="btn btn-default" style="border: none;" onclick="onEdit(@unsentInvoice.Invoice.Id , @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
-                            <i class="fa fa-pencil fa-lg"></i>
+                <div class="col-md-2 o-dashboard-td">
+                    <div class="pull-right dropdown">
+                        <button class="btn btn-default" data-toggle="dropdown" data-target="">
+                            <i class="fa fa-ellipsis-h fa-lg"></i>
                         </button>
-                        @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
-                        <a class="btn btn-default" style="border: none;" href="~/Accounting/PreviewInvoice/@unsentInvoice.Invoice.InvoiceGuid" target="_blank">
-                            <i class="fa fa-eye fa-lg"></i>
-                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="~/Accounting/PreviewInvoice/@unsentInvoice.Invoice.InvoiceGuid" target="_blank">
+                                    <i class="fa fa-eye"></i> &nbsp;Preview
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="onEditInvoiceHeader(@unsentInvoice.Invoice.Id)">
+                                    <i class="fa fa-pencil"></i> &nbsp;Edit Header Info
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="onAddItem(@unsentInvoice.Invoice.Id , @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
+                                    <i class="fa fa-plus"></i> &nbsp;Add Item
+                                </a>
+                            </li>
+                            @foreach (var item in unsentInvoice.Invoice.InvoiceDetails)
+                            {
+                                <li>
+                                    <a onclick="onEditItem(@item.Id, @unsentInvoice.Invoice.Id, @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
+                                        <i class="fa fa-pencil"></i> &nbsp;Edit Item
+                                    </a>
+                                </li>
+                            }
+                            @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
+                        </ul>
                     </div>
                     @if (unsentInvoice.Invoice.SentDate.HasValue)
                     {
@@ -82,10 +104,7 @@ else
                                 <input type="hidden" value="@unsentInvoice.ServiceRequest.Id" id="ServiceRequestId" name="ServiceRequestId" />
                                 <input type="hidden" value="@unsentInvoice.Invoice.Id" id="InvoiceId" name="InvoiceId" />
                                 <div>
-                                    <button type="button" class="btn btn-primary" onclick="onSend(@unsentInvoice.Invoice.Id)"><i class="fa fa-2x fa-send"></i></button>
-                                </div>
-                                <div class="help-block small">
-                                    To: @unsentInvoice.Invoice.Customer.BillingEmail
+                                    <button type="button" class="btn btn-primary" onclick="onSend(@unsentInvoice.Invoice.Id)"><i class="fa fa-send"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -94,7 +113,7 @@ else
             }
             else
             {
-                <div class="col-md-push-6 col-md-3 o-dashboard-td">
+                <div class="col-md-push-6 col-md-2 o-dashboard-td">
                     <div class="pull-right">
                         <form action="~/Invoice/Create" method="post" class="form-horizontal">
                             @Html.Hidden("Id", unsentInvoice.ServiceRequest.Id)
@@ -109,64 +128,17 @@ else
     }
 }
 
-<div class="modal right fade" id="edit-modal">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="edit-invoice-header-modal">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <form id="edit-invoice-form">
-                <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">
-                        <span id="ClaimantName"></span>
-                    </h4>
-                    <div class="small text-muted">
-                        Invoice <span id="InvoiceNumber"></span>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="Id" name="Id" />
-                    <div class="form-group">
-                        <label class="control-label">Email To</label>
-                        <input type="text" class="form-control" id="To" name="To" />
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Invoice Date</label>
-                        <div class="input-group date" style="width:100%" id="InvoiceDatePicker">
-                            <input class="form-control" size="16" type="text" name="InvoiceDate" id="InvoiceDate">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Amount</label>
-                        <input type="text" class="form-control" id="Amount" name="Amount" />
-                    </div>
-                    <div class="form-group" id="rate-form-group" style="display:none;">
-                        <label class="control-label">Rate</label>
-                        <input type="text" class="form-control" id="Rate" name="Rate" />
-                        <div class="help-block">Less than 1 will be applied as a percentage. Greater than 1, the rate will override the amount.</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Note</label>
-                        <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input class="btn btn-success" type="submit" id="edit-modal-save" value="Save" />
-                </div>
-            </form>
+            <form id="edit-invoice-header-form"></form>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script type="text/javascript">
-        $(function () {
 
-            $('#InvoiceDatePicker').datepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
-        });
 
         function onSend(invoiceId) {
             var url = '@Url.Content("~/Accounting/SendInvoice")';
@@ -208,6 +180,29 @@ else
             });
         }
 
+        function onEditInvoiceHeader(invoiceId) {
+            console.log('edit invoice header event');
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Content("~/Accounting/EditInvoiceHeader?invoiceId=")' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-invoice-header-modal");
+                    var formContainer = $("#edit-invoice-header-form");
+                    
+                    formContainer.replaceWith(result);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+        }
+
         function onEdit(invoiceId, isNoShow, isLateCancellation) {
 
             if (isNoShow || isLateCancellation) {
@@ -246,11 +241,11 @@ else
             }, this);
         }
 
-        $("#edit-invoice-form").submit(function (e, serviceRequestId) {
+        function saveChangesToInvoiceHeader(e, serviceRequestId) {
 
             var url = '@Url.Content("~/Accounting/Update")';
 
-            var serviceRequestId = $("#edit-invoice-form").find('#ServiceRequestId').val();
+            var serviceRequestId = $("#edit-invoice-header-form").find('#ServiceRequestId').val();
 
             $.ajax({
                 type: "POST",
@@ -264,7 +259,7 @@ else
             });
 
             e.preventDefault(); // avoid to execute the actual submit of the form.
-        });
+        };
 
         function refreshServiceRequest(serviceRequestId) {
 
@@ -282,5 +277,5 @@ else
             }, this);
 
         }
-    </script>
+</script>
 }

@@ -110,7 +110,7 @@ namespace WebApp.Controllers
                     .AreOwnedBy(userId)
                     .AreNotDeleted()
                     .AreNotSent()
-                    .Select(InvoiceProjections.Header(userId, now))
+                    .Select(InvoiceProjections.Header())
                     .ToList();
 
                 // Full outer join on these 2 lists.
@@ -164,7 +164,7 @@ namespace WebApp.Controllers
                 var invoices = context.Invoices
                     .AreOwnedBy(userId)
                     .AreSent()
-                    .Select(InvoiceProjections.Header(userId, now))
+                    .Select(InvoiceProjections.Header())
                     .ToList();
 
                 // Full outer join on these 2 lists.
@@ -337,19 +337,57 @@ namespace WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+        [OutputCache(NoStore = true, Duration = 0)]
         [HttpGet]
-        public ActionResult Edit(int invoiceId)
+        public ActionResult EditInvoiceHeader(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
-            var editForm = context.Invoices
+            var model = context.Invoices
                     .WithId(invoiceId)
-                    .Select(InvoiceProjections.EditForm())
-                    .ToList();
-            var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+                    .Select(InvoiceProjections.Header())
+                    .First();
 
-            return Json(editForm, JsonRequestBehavior.AllowGet);
+            return PartialView("_EditInvoiceHeader", model);
+            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+
+            //return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpPost]
+        public ActionResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+
+            //return Json(editForm, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult AddItem(int invoiceId)
+        {
+            //var context = new Orvosi.Data.OrvosiDbContext();
+
+            return PartialView("_AddItem");
+            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+
+            //return Json(editForm, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult EditItem(int invoiceDetailId)
+        {
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var editForm = context.InvoiceDetails
+                    .Where(id => id.Id == invoiceDetailId)
+                    //.Select(InvoiceProjections.EditForm())
+                    .ToList();
+
+            return PartialView("_EditForm", editForm);
+            // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
+
+            //return Json(editForm, JsonRequestBehavior.AllowGet);
+        }
         private Guid GetServiceProviderId(Guid? serviceProviderId)
         {
             Guid userId = User.Identity.GetGuidUserId();

@@ -358,14 +358,46 @@ namespace WebApp.Controllers
             }
         }
 
-        public ActionResult AddItem(int invoiceId)
+        public ActionResult AddInvoiceItem(int invoiceId)
         {
-            //var context = new Orvosi.Data.OrvosiDbContext();
+            using (var context = new OrvosiDbContext())
+            {
+                var newItem = new Orvosi.Data.InvoiceDetail()
+                {
+                    Description = "New Item",
+                    InvoiceId = invoiceId,
+                    Amount = 0,
+                    Rate = 1
+                };
+                context.InvoiceDetails.Add(newItem);
+                context.SaveChanges();
+                context.Entry(newItem).Reload();
 
-            return PartialView("_AddItem");
+                return Json(new
+                {
+                    data = newItem
+                });
+            }
             // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
 
             //return Json(editForm, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult DeleteInvoiceItem(int invoiceDetailId)
+        {
+            using (var context = new OrvosiDbContext())
+            {
+                var item = context.InvoiceDetails.Find(invoiceDetailId);
+                context.InvoiceDetails.Remove(item);
+                item.CalculateTotal();
+                context.SaveChanges();
+
+                var invoice = context.Invoices.Find(item.InvoiceId);
+                invoice.CalculateTotal();
+                context.SaveChanges();
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
         }
 
         private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)

@@ -10,38 +10,50 @@
         @(Model.Customer.City), @Model.Customer.Province
     </div>
     <div class="col-md-6">
-        @{
-                //Model.InvoiceDetails.Skip(1);
-                foreach (var detail in Model.InvoiceDetails)
-                {
-                    <div class="row">
-                        <div class="col-md-8 o-dashboard-td">
-                            <span>@detail.Description</span>
-                            <div class="text-danger">@detail.AdditionalNotes</div>
-                        </div>
-                        <div class="col-md-4 o-dashboard-td" style="text-align: right;">
-                            @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
+
+        <table class="table table-striped">
+            @foreach (var detail in Model.InvoiceDetails)
+            {
+                <tr>
+                    <td>
+                        <span>@detail.Description</span>
+                        <div class="text-danger">@detail.AdditionalNotes</div>
+                    </td>
+                    <td class="text-right">
+                        @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
+                        {
+                            <span>
+                                @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
+                            </span>
+                            if (detail.ServiceRequest.ServiceStatusId.HasValue)
                             {
-                                <span>
-                                    @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
-                                </span>
-                                if (detail.ServiceRequest.ServiceStatusId.HasValue)
-                                {
-                                    <div>
-                                        @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
-                                    </div>
-                                }
+                                <div>
+                                    @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
+                                </div>
                             }
-                            else
-                            {
-                                <span>
-                                    @detail.Amount.ToString("C2")
-                                </span>
-                            }
-                        </div>
-                    </div>
-                }
-        }
+                        }
+                        else
+                        {
+                            <span>
+                                @detail.Amount.ToString("C2")
+                            </span>
+                        }
+                    </td>
+                    <td class="text-right">
+                        <a onclick="onEditInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        @if (!detail.ServiceRequestId.HasValue)
+                        {
+                            <a onclick="onDeleteInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+
     </div>
     <div class="col-md-3">
         <dl class="dl-horizontal dl-clear-margins">

@@ -614,6 +614,7 @@ namespace Orvosi.Shared.Model
         public decimal Total { get; set; }
         public string AdditionalNotes { get; set; }
         public Invoice Invoice { get; set; }
+        public int? ServiceRequestId { get; set; }
         public ServiceRequest ServiceRequest { get; set; }
     }
 

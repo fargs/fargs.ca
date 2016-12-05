@@ -23,6 +23,7 @@ namespace WebApp.Library.Projections
                 Amount = id.Amount.HasValue ? id.Amount.Value : 0,
                 Rate = id.Rate.HasValue ? id.Rate.Value : 1,
                 AdditionalNotes = id.AdditionalNotes,
+                ServiceRequestId = id.ServiceRequestId,
                 ServiceRequest = id.ServiceRequest == null ? null : new Orvosi.Shared.Model.ServiceRequest
                 {
                     Id = id.ServiceRequest.Id,
@@ -66,7 +67,8 @@ namespace WebApp.Library.Projections
                     Description = id.Description,
                     Amount = id.Amount.Value,
                     Rate = id.Rate.HasValue ? id.Rate.Value : 1,
-                    AdditionalNotes = id.AdditionalNotes
+                    AdditionalNotes = id.AdditionalNotes,
+                    ServiceRequestId = id.ServiceRequestId
                 }),
                 InvoiceDetailCount = i.InvoiceDetails.Count()
             };
@@ -102,6 +104,7 @@ namespace WebApp.Library.Projections
                     Rate = id.Rate.Value,
                     Amount = id.Amount.Value,
                     Total = id.Total.Value,
+                    ServiceRequestId = id.ServiceRequestId,
                     ServiceRequest = !id.ServiceRequestId.HasValue ? null : new Orvosi.Shared.Model.ServiceRequest
                     {
                         Id = id.ServiceRequest.Id,

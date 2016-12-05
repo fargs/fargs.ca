@@ -63,24 +63,21 @@ else
                                 </a>
                             </li>
                             <li>
-                                <a onclick="onEditInvoiceHeader(@unsentInvoice.Invoice.Id)">
-                                    <i class="fa fa-pencil"></i> &nbsp;Edit Header Info
+                                <a href="~/Invoice/DownloadBody/@unsentInvoice.Invoice.InvoiceGuid" target="_blank">
+                                    <i class="fa fa-download"></i> &nbsp;Download
                                 </a>
                             </li>
-                            @foreach (var item in unsentInvoice.Invoice.InvoiceDetails)
-                            {
-                                <li>
-                                    <a onclick="onEditInvoiceItem(@item.Id)">
-                                        <i class="fa fa-pencil"></i> &nbsp;Edit Item
-                                    </a>
-                                </li>
-                            }
+                            <li class="divider"></li>
                             <li>
-                                <a onclick="onAddItem(@unsentInvoice.Invoice.Id , @unsentInvoice.ServiceRequest.IsNoShow.ToString().ToLower() , @unsentInvoice.ServiceRequest.IsLateCancellation.ToString().ToLower())">
+                                <a onclick="onEditInvoiceHeader(@unsentInvoice.Invoice.Id)" style="cursor:pointer;">
+                                    <i class="fa fa-pencil"></i> &nbsp;Edit Header
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="onAddInvoiceItem(@unsentInvoice.Invoice.Id)" style="cursor:pointer;">
                                     <i class="fa fa-plus"></i> &nbsp;Add Item
                                 </a>
                             </li>
-                            @*<a class="btn btn-default" style="border: none;" href="~/Invoice/DownloadBody/@detail.Invoice.InvoiceGuid" target="_blank">*@
                         </ul>
                     </div>
                     @if (unsentInvoice.Invoice.SentDate.HasValue)
@@ -104,7 +101,7 @@ else
                                 <input type="hidden" value="@unsentInvoice.ServiceRequest.Id" id="ServiceRequestId" name="ServiceRequestId" />
                                 <input type="hidden" value="@unsentInvoice.Invoice.Id" id="InvoiceId" name="InvoiceId" />
                                 <div>
-                                    <button type="button" class="btn btn-primary" onclick="onSend(@unsentInvoice.Invoice.Id)"><i class="fa fa-send"></i></button>
+                                    <button type="button" class="btn btn-primary" onclick="onSend(@unsentInvoice.Invoice.Id)"><i class="fa fa-2x fa-send"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -113,7 +110,7 @@ else
             }
             else
             {
-                <div class="col-md-push-6 col-md-2 o-dashboard-td">
+                <div class="col-md-push-8 col-md-2 o-dashboard-td">
                     <div class="pull-right">
                         <form action="~/Invoice/Create" method="post" class="form-horizontal">
                             @Html.Hidden("Id", unsentInvoice.ServiceRequest.Id)
@@ -205,7 +202,7 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
+                    toastr.error("Something went wrong.");
                 }
             }, this);
         }
@@ -247,7 +244,37 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        }
+
+        function onAddInvoiceItem(invoiceId) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: '@Url.Content("~/Accounting/AddInvoiceItem?invoiceId=")' + invoiceId,
+                success: function (result) {
+                    onEditInvoiceItem(result.data.Id);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        }
+
+        function onDeleteInvoiceItem(invoiceDetailId, invoiceId) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: '@Url.Content("~/Accounting/DeleteInvoiceItem?invoiceDetailId=")' + invoiceDetailId,
+                success: function (result) {
+                    refreshInvoice(invoiceId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
                 }
             }, this);
         }

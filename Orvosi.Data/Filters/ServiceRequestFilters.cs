@@ -9,6 +9,10 @@ namespace Orvosi.Data.Filters
 {
     public static class ServiceRequestFilters
     {
+        public static IQueryable<ServiceRequest> WithId(this IQueryable<ServiceRequest> serviceRequests, int id)
+        {
+            return serviceRequests.Where(sr => sr.Id == id);
+        }
         public static IQueryable<ServiceRequest> AreScheduledThisDay(this IQueryable<ServiceRequest> serviceRequests, DateTime day)
         {
             var endOfDay = day.Date.AddDays(1);
@@ -55,6 +59,27 @@ namespace Orvosi.Data.Filters
         public static IQueryable<ServiceRequest> AreNotCancellations(this IQueryable<ServiceRequest> serviceRequest)
         {
             return serviceRequest.Where(sr => sr.IsLateCancellation ? true : !sr.CancelledDate.HasValue);
+        }
+
+        public static IQueryable<ServiceRequest> AreForCompany(this IQueryable<ServiceRequest> serviceRequests, Guid? companyId)
+        {
+            if (companyId.HasValue)
+            {
+                return serviceRequests.Where(sr => sr.Company != null && sr.Company.ObjectGuid == companyId);
+            }
+            return serviceRequests;
+        }
+
+        public static IQueryable<ServiceRequest> AreWithinDateRange(this IQueryable<ServiceRequest> serviceRequests, int year, int? month)
+        {
+            serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Year : sr.DueDate.HasValue ? sr.DueDate.Value.Year : 0) == year);
+            // Apply the year and month filters.
+            if (month.HasValue)
+            {
+                return serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Month : sr.DueDate.HasValue ? sr.DueDate.Value.Month : 0) == month.Value);
+            }
+
+            return serviceRequests;
         }
     }
 }

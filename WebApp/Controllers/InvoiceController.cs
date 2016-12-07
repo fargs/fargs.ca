@@ -16,6 +16,7 @@ using System.Net;
 using System.IO;
 using WebApp.Library.Helpers;
 using Orvosi.Data.Filters;
+using WebApp.Library.Projections;
 
 namespace WebApp.Controllers
 {
@@ -63,13 +64,12 @@ namespace WebApp.Controllers
                 query = query.Where(i => i.CustomerGuid == args.CustomerId);
             }
 
-            args.Year = args.Year.HasValue ? args.Year.Value : DateTime.Today.Year;
             // Apply the year and month filters.
             query = query.Where(c => c.InvoiceDate.Year == args.Year);
 
             var invoices = await query.ToListAsync();
 
-            var startDate = new DateTime(args.Year.Value, 01, 01);
+            var startDate = new DateTime(args.Year, 01, 01);
             var endDate = startDate.AddYears(1);
             var dateRange = startDate.GetDateRangeTo(endDate);
 
@@ -174,14 +174,15 @@ namespace WebApp.Controllers
             }
 
             // Apply the year and month filters.
-            args.Year = args.Year.HasValue ? args.Year.Value : SystemTime.Now().Year;
-            query = query.Where(c => c.InvoiceDate.Year == args.Year.Value);
+            query = query.Where(c => c.InvoiceDate.Year == args.Year);
             if (args.Month.HasValue)
             {
                 query = query.Where(c => c.InvoiceDate.Month == args.Month);
             }
 
-            var invoices = await query.ToListAsync();
+            var model = query.Select(InvoiceProjections.Header());
+
+            var invoices = await model.ToListAsync();
 
             //var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
             //var nextMonth = thisMonth.AddMonths(1);
@@ -198,7 +199,7 @@ namespace WebApp.Controllers
 
             vm.FilterArgs = args;
 
-            vm.Invoices = invoices;
+            vm.UnsentInvoices = null;
 
             return View(vm);
         }

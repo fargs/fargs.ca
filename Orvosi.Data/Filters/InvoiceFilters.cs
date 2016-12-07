@@ -29,7 +29,8 @@ namespace Orvosi.Data.Filters
         public static IQueryable<Invoice> AreSent(this IQueryable<Invoice> invoices)
         {
             return invoices
-                .Where(i => i.SentDate.HasValue);
+                .Where(i => i.SentDate.HasValue
+                || i.InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.CompletedDate.HasValue)));
         }
         public static IQueryable<Invoice> AreNotSent(this IQueryable<Invoice> invoices)
         {
@@ -44,5 +45,25 @@ namespace Orvosi.Data.Filters
                 .Where(i => !i.IsDeleted);
         }
 
+        public static IQueryable<Invoice> AreForCustomer(this IQueryable<Invoice> invoices, Guid? customerId)
+        {
+            if (customerId.HasValue)
+            {
+                return invoices.Where(i => i.CustomerGuid == customerId.Value);
+            }
+            return invoices;
+        }
+
+        public static IQueryable<Invoice> AreWithinDateRange(this IQueryable<Invoice> invoices, int year, int? month)
+        {
+            invoices = invoices.Where(i => i.InvoiceDate.Year == year);
+            // Apply the year and month filters.
+            if (month.HasValue)
+            {
+                return invoices.Where(c => c.InvoiceDate.Month == month.Value);
+            }
+
+            return invoices;
+        }
     }
 }

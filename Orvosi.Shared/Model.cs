@@ -599,8 +599,9 @@ namespace Orvosi.Shared.Model
         public Customer Customer { get; set; }
         public Guid InvoiceGuid { get; set; }
         public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
-        public int? ServiceRequestId { get; set; }
         public int InvoiceDetailCount { get; set; }
+        public int? ServiceRequestId { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
     }
 
     public class InvoiceDetail

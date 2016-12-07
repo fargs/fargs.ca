@@ -9,6 +9,23 @@ namespace WebApp.Library.Projections
 {
     public class ServiceRequestProjections
     {
+        public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> MinimalInfo()
+        {
+            return sr => new Orvosi.Shared.Model.ServiceRequest
+            {
+                Id = sr.Id,
+                ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new Orvosi.Shared.Model.ServiceRequestTask
+                {
+                    Id = srt.Id,
+                    ProcessTask = new Orvosi.Shared.Model.ProcessTask
+                    {
+                        Id = srt.TaskId.Value
+                    },
+                    IsObsolete = srt.IsObsolete,
+                    CompletedDate = srt.CompletedDate
+                })
+            };
+        }
         public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> BasicInfo(Guid serviceProviderId, DateTime now)
         {
             return sr => new Orvosi.Shared.Model.ServiceRequest

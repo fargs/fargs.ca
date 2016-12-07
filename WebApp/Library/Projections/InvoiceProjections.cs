@@ -9,6 +9,15 @@ namespace WebApp.Library.Projections
 {
     public static class InvoiceProjections
     {
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> MinimalInfo()
+        {
+            return id => new Orvosi.Shared.Model.Invoice
+            {
+                Id = id.Id,
+                SentDate = id.SentDate
+            };
+        }
+
         public static Expression<Func<Orvosi.Data.InvoiceDetail, Orvosi.Shared.Model.InvoiceDetail>> EditItemForm()
         {
             return id => new Orvosi.Shared.Model.InvoiceDetail

@@ -43,7 +43,7 @@ namespace WebApp.API
                             Id = s.Id,
                             StartTime = s.StartTime,
                             Duration = s.Duration,
-                            Title = (s.ServiceRequests.Any() ? s.ServiceRequests.First().ClaimantName + " - " + s.ServiceRequests.First().Id.ToString() : string.Empty),
+                            Title = (s.ServiceRequests.Any() ? s.ServiceRequests.FirstOrDefault().ClaimantName + " - " + s.ServiceRequests.FirstOrDefault().Id.ToString() : string.Empty),
                             IsAvailable = !s.ServiceRequests.Any()
                         })
                 });

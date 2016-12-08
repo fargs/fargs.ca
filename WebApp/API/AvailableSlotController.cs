@@ -7,6 +7,7 @@ using System.Web.Http;
 using Orvosi.Data;
 using System.Data.Entity;
 using System.Web.Http.Results;
+using WebApp.Library.Extensions;
 
 namespace WebApp.API
 {
@@ -32,10 +33,10 @@ namespace WebApp.API
                     Day = ad.Day,
                     IsPrebook = ad.IsPrebook,
                     CompanyId = ad.CompanyId,
-                    CompanyName = ad.Company.Name,
+                    CompanyName = ad.Company == null ? string.Empty : ad.Company.Name,
                     LocationId = ad.LocationId,
-                    LocationName = ad.Address.Name,
-                    LocationOwner = ad.Address.OwnerGuid,
+                    LocationName = ad.Address == null ? string.Empty : ad.Address.Name,
+                    LocationOwner = ad.Address == null ? null : ad.Address.OwnerGuid,
                     Slots = ad.AvailableSlots
                         .OrderBy(s => s.StartTime)
                         .Select(s => new
@@ -43,8 +44,8 @@ namespace WebApp.API
                             Id = s.Id,
                             StartTime = s.StartTime,
                             Duration = s.Duration,
-                            Title = (s.ServiceRequests.Any() ? s.ServiceRequests.First().ClaimantName + " - " + s.ServiceRequests.First().Id.ToString() : string.Empty),
-                            IsAvailable = !s.ServiceRequests.Any()
+                            Title = (s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any() ? s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).FirstOrDefault().ClaimantName + " - " + s.ServiceRequests.FirstOrDefault().Id.ToString() : string.Empty),
+                            IsAvailable = !s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()
                         })
                 });
         }

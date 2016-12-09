@@ -36,7 +36,7 @@ namespace WebApp.Controllers
                     .AreNotCancellations()
                     .HaveNotCompletedSubmitInvoiceTask()
                     .AreForCompany(filterArgs.CustomerId)
-                    .AreWithinDateRange(filterArgs.Year, filterArgs.Month)
+                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
                     .Select(ServiceRequestProjections.BasicInfo(userId, now))
                     .ToList();
 
@@ -45,7 +45,7 @@ namespace WebApp.Controllers
                     .AreNotDeleted()
                     .AreNotSent()
                     .AreForCustomer(filterArgs.CustomerId)
-                    .AreWithinDateRange(filterArgs.Year, filterArgs.Month)
+                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
@@ -108,7 +108,7 @@ namespace WebApp.Controllers
                     .AreSent()
                     .AreUnpaid()
                     .AreForCustomer(filterArgs.CustomerId)
-                    .AreWithinDateRange(filterArgs.Year, filterArgs.Month)
+                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
@@ -158,7 +158,7 @@ namespace WebApp.Controllers
                     .AreOwnedBy(userId)
                     .AreNotDeleted()
                     .AreForCustomer(filterArgs.CustomerId)
-                    .AreWithinDateRange(filterArgs.Year, filterArgs.Month)
+                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
@@ -192,6 +192,95 @@ namespace WebApp.Controllers
             }
         }
 
+        public ActionResult Analytics(FilterArgs filterArgs)
+        {
+            Guid userId = GetServiceProviderId(filterArgs.ServiceProviderId);
+            var now = SystemTime.Now();
+            using (var context = new OrvosiDbContext())
+            {
+                var invoices = context.Invoices
+                    .AreOwnedBy(userId)
+                    .AreNotDeleted()
+                    .AreSent()
+                    .AreForCustomer(filterArgs.CustomerId)
+                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                    .Select(InvoiceProjections.Header())
+                    .ToList();
+
+                var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(2014,1,1);
+                var endDate = startDate.AddYears(1);
+                var dateRange = startDate.GetDateRangeTo(endDate);
+
+                var dates = dateRange.Select(r => new { r.Month, r.Date });
+
+                var invoiceTotals = invoices
+                    .Select(i => new
+                    {
+                        CustomerId = i.Customer.Id,
+                        ServiceProviderName = i.ServiceProvider.Name,
+                        i.InvoiceDate,
+                        i.Total,
+                        i.SubTotal,
+                        Hst = i.Total - i.SubTotal
+                    });
+
+                var netIncomeByMonth = dateRange
+                    .GroupJoin(invoiceTotals,
+                        r => r.Date,
+                        t => t.InvoiceDate,
+                        (r, t) => new
+                        {
+                            Date = r,
+                            Hst = t.Sum(c => c.Hst),
+                            SubTotal = t.Sum(c => c.SubTotal),
+                        })
+                    .GroupBy(c => new { c.Date.Month, c.Date.Year })
+                    .Select(c => new
+                    {
+                        Year = c.Key.Year,
+                        Month = c.Key.Month,
+                        Hst = c.Sum(s => s.Hst),
+                        SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
+                        Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                    });
+                var billableEntities = context.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
+                var netIncomeByCompany = invoiceTotals
+                    .Join(billableEntities,
+                        i => i.CustomerId,
+                        c => c.EntityGuid,
+                        (i, c) => new
+                        {
+                            EntityGuid = c.EntityGuid,
+                            CompanyName = c.EntityName,
+                            Hst = i.Hst,
+                            SubTotal = i.SubTotal
+                        })
+                    .GroupBy(c => new { c.EntityGuid, c.CompanyName })
+                    .Select(c => new
+                    {
+                        CompanyName = c.Key.CompanyName,
+                        Hst = c.Sum(i => i.Hst),
+                        SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
+                        Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                    });
+
+                var vm = new DashboardViewModel();
+
+                vm.Months = new string[12] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct().ToList();
+                vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.SubTotal).ToList();
+                vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.SubTotal).ToList();
+                vm.NetIncome = netIncomeByMonth.Sum(c => c.SubTotal);
+                vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
+                vm.Expenses = netIncomeByMonth.Sum(c => c.Expenses);
+                vm.InvoiceCount = invoiceTotals.Count();
+                vm.Invoices = invoices;
+                vm.FilterArgs = filterArgs;
+
+                return View("~/Views/Invoice/Dashboard.cshtml", vm);
+            }
+        }
+        
         public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
@@ -286,7 +375,7 @@ namespace WebApp.Controllers
                 }
 
                 var invoice = new Orvosi.Data.Invoice();
-                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
                 var invoiceDetail = new Orvosi.Data.InvoiceDetail();
                 invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
@@ -342,7 +431,7 @@ namespace WebApp.Controllers
                 var invoiceDate = form.InvoiceDate;
 
                 var invoice = new Orvosi.Data.Invoice();
-                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+                invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
                 context.Invoices.Add(invoice);
                 context.SaveChanges();

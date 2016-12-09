@@ -5,6 +5,7 @@
     <div class="col-md-3">
         <div>@Model.InvoiceNumber</div>
         <div>@Model.InvoiceDate.ToOrvosiDateFormat()</div>
+        <div>NET @Model.Terms days</div>
         <div><strong>@Model.Customer.Name</strong></div>
         <strong>@Model.Customer.BillingEmail</strong><br />
         @(Model.Customer.City), @Model.Customer.Province

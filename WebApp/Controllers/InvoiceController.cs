@@ -69,7 +69,7 @@ namespace WebApp.Controllers
 
             var invoices = await query.ToListAsync();
 
-            var startDate = new DateTime(args.Year, 01, 01);
+            var startDate = new DateTime(2016, 01, 01);
             var endDate = startDate.AddYears(1);
             var dateRange = startDate.GetDateRangeTo(endDate);
 
@@ -136,7 +136,7 @@ namespace WebApp.Controllers
             vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
             vm.Expenses = netIncomeByMonth.Sum(c => c.Expenses);
             vm.InvoiceCount = invoiceTotals.Count();
-            vm.Invoices = invoices;
+            //vm.Invoices = invoices;
             vm.FilterArgs = args;
 
             return View(vm);
@@ -261,7 +261,7 @@ namespace WebApp.Controllers
             }
 
             var invoice = new Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, User.Identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
             // Create or update the invoice detail for the service request
             InvoiceDetail invoiceDetail;

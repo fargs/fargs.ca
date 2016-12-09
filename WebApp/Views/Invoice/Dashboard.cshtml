@@ -29,23 +29,26 @@
         });
 
     ViewBag.Years = DateRanges.GetYears()
+        .Where(y => y.Key <= SystemTime.Now().Year)
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
             Value = c.Key.ToString()
-        });
+        }).ToList();
 
     ViewBag.Months = DateRanges.GetMonths()
+        .Where(y => y.Key <= SystemTime.Now().Month)
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
             Value = c.Key.ToString()
-        });
+        })
+        .ToList();
 }
 
 <div class="row" style="margin-bottom:20px">
     <div class="col-md-12">
-        <form action="~/Invoice/Dashboard/" method="get" class="form-inline">
+        <form action="~/Accounting/Analytics/" method="get" class="form-inline">
             @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin)
             {
                 @Html.Hidden("ServiceProviderId", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty)
@@ -54,7 +57,7 @@
                 </div>
             }
             <div class="form-group">
-                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year), new { @class = "form-control", onchange = "this.form.submit();" })
+                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), "-- Year --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
         </form>
     </div>
@@ -108,7 +111,7 @@
         </h2>
     </div>
     <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-        @Html.Action("Table", new { invoices = Model.Invoices })
+        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices })
     </div>
 </div>
 

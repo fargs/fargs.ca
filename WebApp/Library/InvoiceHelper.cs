@@ -13,15 +13,16 @@ namespace WebApp.Library
 {
     public static class InvoiceHelper
     {
-        public const byte PaymentDueInDays = 14;
+        public const byte PaymentDueInDays = 60;
 
-        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string userName)
+        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string terms, string userName)
         {
             var TaxRateHst = GetTaxRate(customer.ProvinceName);
-
+            var paymentTerms = string.IsNullOrEmpty(terms) ? "90" : terms;
             invoice.InvoiceNumber = invoiceNumber.ToString();
             invoice.InvoiceDate = invoiceDate;
-            invoice.DueDate = SystemTime.Now().AddDays(PaymentDueInDays);
+            invoice.Terms = paymentTerms;
+            invoice.DueDate = SystemTime.Now().AddDays(int.Parse(paymentTerms));
             invoice.Currency = "CAD";
             invoice.ServiceProviderGuid = serviceProvider.EntityGuid.Value;
             invoice.ServiceProviderName = serviceProvider.EntityName;
@@ -64,7 +65,7 @@ namespace WebApp.Library
             description.AppendLine(serviceRequest.Service.Name);
             if (serviceRequest.Service.HasAppointment)
             {
-                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
+                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City_CityId.Name);
             }
             invoiceDetail.Description = description.ToString();
             invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice.HasValue ? serviceRequest.ServiceCataloguePrice : 0;

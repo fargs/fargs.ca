@@ -28,6 +28,10 @@
             <label class="control-label">Tax Rate (@Model.Customer.Province)</label>
             <input type="text" class="form-control" id="TaxRateHst" name="TaxRateHst" value="@Model.TaxRateHst" />
         </div>
+        <div class="form-group">
+            <label class="control-label">Payment Terms in Days</label>
+            <input type="number" class="form-control" id="Terms" name="Terms" value="@Model.Terms" />
+        </div>
     </div>
     <div class="modal-footer">
         <input class="btn btn-success" type="button" onclick="invoiceHeaderSaveChanges()" value="Save" />

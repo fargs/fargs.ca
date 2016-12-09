@@ -18,11 +18,12 @@ namespace Orvosi.Data.Filters
             var endOfDay = day.Date.AddDays(1);
             return serviceRequests
                     .Where(d => d.AppointmentDate.HasValue
-                        && d.AppointmentDate.Value >= day.Date && d.AppointmentDate.Value < endOfDay);
+                        && d.AppointmentDate.Value >= day && d.AppointmentDate.Value < endOfDay);
         }
         public static IQueryable<ServiceRequest> AreScheduledOnOrBefore(this IQueryable<ServiceRequest> serviceRequests, DateTime now)
         {
-            return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate : s.DueDate) <= now.Date); // this filters out the days
+            now = now.Date.AddDays(1);
+            return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate.Value : s.DueDate.Value) <= now); // this filters out the days
         }
         public static IQueryable<ServiceRequest> ForPhysician(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {
@@ -70,16 +71,27 @@ namespace Orvosi.Data.Filters
             return serviceRequests;
         }
 
-        public static IQueryable<ServiceRequest> AreWithinDateRange(this IQueryable<ServiceRequest> serviceRequests, int year, int? month)
+        public static IQueryable<ServiceRequest> AreWithinDateRange(this IQueryable<ServiceRequest> serviceRequests, DateTime now, int? year, int? month)
         {
-            serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Year : sr.DueDate.HasValue ? sr.DueDate.Value.Year : 0) == year);
+            if (!year.HasValue && !month.HasValue)
+            {
+                return serviceRequests.AreScheduledOnOrBefore(now);
+            }
+
+            if (year.HasValue)
+            {
+                serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Year : sr.DueDate.HasValue ? sr.DueDate.Value.Year : 0) == year);
+            }
             // Apply the year and month filters.
             if (month.HasValue)
             {
-                return serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Month : sr.DueDate.HasValue ? sr.DueDate.Value.Month : 0) == month.Value);
+                serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Month : sr.DueDate.HasValue ? sr.DueDate.Value.Month : 0) == month.Value);
             }
 
-            return serviceRequests;
+            var addOns = serviceRequests
+                .AreAddOns();
+
+            return serviceRequests.Concat(addOns);           
         }
     }
 }

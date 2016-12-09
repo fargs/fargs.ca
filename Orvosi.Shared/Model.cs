@@ -589,6 +589,15 @@ namespace Orvosi.Shared.Model
         public int Id { get; set; }
         public string InvoiceNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
+        private string _terms;
+        public string Terms { get
+            {
+                return string.IsNullOrEmpty(_terms) ? "90" : _terms;
+            } set
+            {
+                _terms = value;
+            }
+        }
         public DateTime? PaymentDueDate { get; set; }
         public decimal? SubTotal { get; set; }
         public decimal? TaxRateHst { get; set; }

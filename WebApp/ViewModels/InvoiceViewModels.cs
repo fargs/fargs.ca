@@ -27,7 +27,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public AspNetUser User { get; set; }
         public FilterArgs FilterArgs { get; set; }
         public int InvoiceCount { get; internal set; }
-        public List<Invoice> Invoices { get; set; }
+        public List<Orvosi.Shared.Model.Invoice> Invoices { get; set; }
         public IEnumerable<decimal?> NetIncomeByCompany { get; internal set; }
         public IEnumerable<string> Months { get; internal set; }
         public IEnumerable<string> Companies { get; internal set; }
@@ -38,18 +38,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public Guid? ServiceProviderId { get; set; }
         public Guid? CustomerId { get; set; }
         public string SearchText { get; set; }
-        private int? _Year;
-        public int Year
-        {
-            get
-            {
-                return _Year.HasValue ? _Year.Value : SystemTime.Now().Year;
-            }
-            set
-            {
-                _Year = value;
-            }
-        }
+        public int? Year { get; set; }
         public int? Month { get; set; }
         public bool ShowSubmitted { get; set; } = false;
     }

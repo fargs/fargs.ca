@@ -18,6 +18,7 @@
         }).ToList();
 
     ViewBag.Years = DateRanges.GetYears()
+        .Where(y => y.Key <= SystemTime.Now().Year)
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
@@ -25,6 +26,7 @@
         }).ToList();
 
     ViewBag.Months = DateRanges.GetMonths()
+        .Where(y => y.Key <= SystemTime.Now().Month)
         .Select(c => new SelectListItem()
         {
             Text = c.Value,
@@ -44,7 +46,7 @@
                 </div>
             }
             <div class="form-group">
-                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year), new { @class = "form-control", onchange = "this.form.submit();" })
+                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), "-- Year --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
             <div class="form-group">
                 @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.HasValue ? Model.FilterArgs.Month.Value.ToString() : string.Empty), "-- Month --", new { @class = "form-control", onchange = "this.form.submit();" })

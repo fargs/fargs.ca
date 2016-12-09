@@ -154,6 +154,25 @@ else
             });
         }
 
+        function onPaid(invoiceId) {
+            let url = '@Url.Content("~/Accounting/CreateReceipt")';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    invoiceId: invoiceId
+                },
+                success: function () {
+                    toastr.success("Invoice has been paided in full");
+                    refreshInvoice(invoiceId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            });
+        }
+
         function onCreate(serviceRequestId) {
             var url = '@Url.Content("~/Accounting/Create")';
 

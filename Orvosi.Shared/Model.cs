@@ -584,6 +584,7 @@ namespace Orvosi.Shared.Model
         public Invoice()
         {
             InvoiceDetails = new List<InvoiceDetail>();
+            Receipts = new List<Receipt>();
         }
         public int Id { get; set; }
         public string InvoiceNumber { get; set; }
@@ -602,6 +603,43 @@ namespace Orvosi.Shared.Model
         public int InvoiceDetailCount { get; set; }
         public int? ServiceRequestId { get; set; }
         public ServiceRequest ServiceRequest { get; set; }
+        public IEnumerable<Receipt> Receipts { get; set; }
+        public decimal AmountPaid
+        {
+            get
+            {
+                return Receipts.Sum(r => r.Amount);
+            }
+        }
+        public decimal OutstandingBalance
+        {
+            get
+            {
+                return Total.Value - AmountPaid;
+            }
+        }
+        public bool IsPaid
+        {
+            get
+            {
+                return OutstandingBalance <= 0;
+            }
+        }
+        public bool IsSent
+        {
+            get
+            {
+                return SentDate.HasValue || InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue));
+            }
+        }
+
+        public bool IsPartiallyPaid
+        {
+            get
+            {
+                return OutstandingBalance > 0 && OutstandingBalance < Total.Value;
+            }
+        }
     }
 
     public class InvoiceDetail
@@ -617,6 +655,13 @@ namespace Orvosi.Shared.Model
         public Invoice Invoice { get; set; }
         public int? ServiceRequestId { get; set; }
         public ServiceRequest ServiceRequest { get; set; }
+    }
+
+    public class Receipt
+    {
+        public Guid Id { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime ReceivedDate { get; set; }
     }
 
     public class UnsentInvoice

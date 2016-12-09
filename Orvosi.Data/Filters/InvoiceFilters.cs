@@ -28,6 +28,7 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<Invoice> AreSent(this IQueryable<Invoice> invoices)
         {
+            // this where clause could be refactored into an expression because it is duped in the Shared.Model Invoice IsSent property.
             return invoices
                 .Where(i => i.SentDate.HasValue
                 || i.InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.CompletedDate.HasValue)));
@@ -37,6 +38,18 @@ namespace Orvosi.Data.Filters
             // where there is no invoice yet and the 
             return invoices
                 .Where(i => !i.SentDate.HasValue);
+        }
+        public static IQueryable<Invoice> ArePaid(this IQueryable<Invoice> invoices)
+        {
+            // this where clause could be refactored into an expression because it is duped in the Shared.Model Invoice IsSent property.
+            return invoices
+                .Where(i => i.Total <= i.Receipts.Sum(r => r.Amount));
+        }
+        public static IQueryable<Invoice> AreUnpaid(this IQueryable<Invoice> invoices)
+        {
+            // this where clause could be refactored into an expression because it is duped in the Shared.Model Invoice IsSent property.
+            return invoices
+                .Where(i => i.Total.Value > i.Receipts.Select(r => r.Amount).DefaultIfEmpty(0).Sum());
         }
         public static IQueryable<Invoice> AreNotDeleted(this IQueryable<Invoice> invoices)
         {

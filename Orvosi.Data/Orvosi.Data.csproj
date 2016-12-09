@@ -59,6 +59,7 @@
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
+    <Compile Include="Filters\ReceiptFilters.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
     <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
     <Compile Include="Generated\Account.cs">
@@ -346,6 +347,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\ProvinceConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\Receipt.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ReceiptConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\RefactorLog.cs">

@@ -66,6 +66,13 @@
         <dl class="dl-horizontal dl-clear-margins">
             <dt class="text-right">Total</dt>
             <dd class="text-right">@Model.Total.Value.ToString("C2")</dd>
+            @if (Model.IsSent)
+            {
+                <dt class="text-right">Amount Paid</dt>
+                <dd class="text-right">@Model.AmountPaid.ToString("C2")</dd>
+                <dt class="text-right">Outstanding Balance</dt>
+                <dd class="text-right">@Model.OutstandingBalance.ToString("C2")</dd>
+            }
         </dl>
     </div>
 </div>

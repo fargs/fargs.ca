@@ -276,6 +276,7 @@
     <Build Include="dbo\Tables\InvoiceSentLog.sql" />
     <None Include="_Data\ReadMe.md" />
     <Build Include="dbo\Tables\TimeZone.sql" />
+    <Build Include="dbo\Tables\Receipt.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

@@ -79,7 +79,13 @@ namespace WebApp.Library.Projections
                     AdditionalNotes = id.AdditionalNotes,
                     ServiceRequestId = id.ServiceRequestId
                 }),
-                InvoiceDetailCount = i.InvoiceDetails.Count()
+                InvoiceDetailCount = i.InvoiceDetails.Count(),
+                Receipts = i.Receipts.Select(r => new Orvosi.Shared.Model.Receipt
+                {
+                    Id = r.Id,
+                    ReceivedDate = r.ReceivedDate,
+                    Amount = r.Amount
+                })
             };
         }
         public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> InvoiceList(Guid serviceProviderId, DateTime now)

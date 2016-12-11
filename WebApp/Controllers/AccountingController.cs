@@ -207,7 +207,7 @@ namespace WebApp.Controllers
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
-                var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(2014,1,1);
+                var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(now.Year,1,1);
                 var endDate = startDate.AddYears(1);
                 var dateRange = startDate.GetDateRangeTo(endDate);
 

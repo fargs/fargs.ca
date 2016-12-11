@@ -57,6 +57,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
+        System.Data.Entity.DbSet<Receipt> Receipts { get; set; } // Receipt
         System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
         System.Data.Entity.DbSet<RoleCategory> RoleCategories { get; set; } // RoleCategory
         System.Data.Entity.DbSet<Service> Services { get; set; } // Service

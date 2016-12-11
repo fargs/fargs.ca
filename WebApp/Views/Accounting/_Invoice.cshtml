@@ -1,0 +1,79 @@
+﻿@using WebApp.Library.Extensions
+@model Orvosi.Shared.Model.Invoice
+
+<div class="row" id="invoice-@Model.Id">
+    <div class="col-md-3">
+        <div>@Model.InvoiceNumber</div>
+        <div>@Model.InvoiceDate.ToOrvosiDateFormat()</div>
+        <div>NET @Model.Terms days</div>
+        <div><strong>@Model.Customer.Name</strong></div>
+        <strong>@Model.Customer.BillingEmail</strong><br />
+        @(Model.Customer.City), @Model.Customer.Province
+    </div>
+    <div class="col-md-6">
+
+        <table class="table table-striped">
+            @foreach (var detail in Model.InvoiceDetails)
+            {
+                <tr>
+                    <td>
+                        <span>@detail.Description</span>
+                        <div class="text-danger">@detail.AdditionalNotes</div>
+                    </td>
+                    <td class="text-right">
+                        @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
+                        {
+                            <span>
+                                @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
+                            </span>
+                            if (detail.ServiceRequest.ServiceStatusId.HasValue)
+                            {
+                                <div>
+                                    @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span>
+                                @detail.Amount.ToString("C2")
+                            </span>
+                        }
+                    </td>
+                    <td class="text-right">
+                        <a onclick="onEditInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        @if (!detail.ServiceRequestId.HasValue)
+                        {
+                            <a onclick="onDeleteInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+
+    </div>
+    <div class="col-md-3">
+        <dl class="dl-horizontal dl-clear-margins">
+            <dt class="text-right">Sub Total</dt>
+            <dd class="text-right">@Model.SubTotal.Value.ToString("C2")</dd>
+            <dt class="text-right">Tax (@(Model.TaxRateHst.Value.ToString("0%")))</dt>
+            <dd class="text-right">@Model.Hst.Value.ToString("C2")</dd>
+        </dl>
+        <hr class="hr-smaller-margins" />
+        <dl class="dl-horizontal dl-clear-margins">
+            <dt class="text-right">Total</dt>
+            <dd class="text-right">@Model.Total.Value.ToString("C2")</dd>
+            @if (Model.IsSent)
+            {
+                <dt class="text-right">Amount Paid</dt>
+                <dd class="text-right">@Model.AmountPaid.ToString("C2")</dd>
+                <dt class="text-right">Outstanding Balance</dt>
+                <dd class="text-right">@Model.OutstandingBalance.ToString("C2")</dd>
+            }
+        </dl>
+    </div>
+</div>

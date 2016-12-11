@@ -60,6 +60,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         public System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
+        public System.Data.Entity.DbSet<Receipt> Receipts { get; set; } // Receipt
         public System.Data.Entity.DbSet<RefactorLog> RefactorLogs { get; set; } // __RefactorLog
         public System.Data.Entity.DbSet<RoleCategory> RoleCategories { get; set; } // RoleCategory
         public System.Data.Entity.DbSet<Service> Services { get; set; } // Service
@@ -175,6 +176,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PriceConfiguration());
             modelBuilder.Configurations.Add(new ProfileConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
+            modelBuilder.Configurations.Add(new ReceiptConfiguration());
             modelBuilder.Configurations.Add(new RefactorLogConfiguration());
             modelBuilder.Configurations.Add(new RoleCategoryConfiguration());
             modelBuilder.Configurations.Add(new ServiceConfiguration());
@@ -242,6 +244,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PriceConfiguration(schema));
             modelBuilder.Configurations.Add(new ProfileConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));
+            modelBuilder.Configurations.Add(new ReceiptConfiguration(schema));
             modelBuilder.Configurations.Add(new RefactorLogConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleCategoryConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceConfiguration(schema));

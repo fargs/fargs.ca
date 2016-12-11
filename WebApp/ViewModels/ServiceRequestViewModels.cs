@@ -40,7 +40,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     public class DetailsViewModel
     {
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
-        public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
+        public Orvosi.Shared.Model.ServiceRequest ServiceRequest { get; set; }
         public WebApp.Models.ServiceRequestModels.ServiceRequest ServiceRequestMapped { get; set; }
         public IEnumerable<WebApp.Models.ServiceRequestModels.ServiceRequestTask> TaskList { get; internal set; }
     }

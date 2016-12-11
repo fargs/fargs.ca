@@ -15,6 +15,8 @@ using System.Collections.Specialized;
 using System.Net;
 using System.IO;
 using WebApp.Library.Helpers;
+using Orvosi.Data.Filters;
+using WebApp.Library.Projections;
 
 namespace WebApp.Controllers
 {
@@ -62,13 +64,12 @@ namespace WebApp.Controllers
                 query = query.Where(i => i.CustomerGuid == args.CustomerId);
             }
 
-            args.Year = args.Year.HasValue ? args.Year.Value : DateTime.Today.Year;
             // Apply the year and month filters.
             query = query.Where(c => c.InvoiceDate.Year == args.Year);
 
             var invoices = await query.ToListAsync();
 
-            var startDate = new DateTime(args.Year.Value, 01, 01);
+            var startDate = new DateTime(2016, 01, 01);
             var endDate = startDate.AddYears(1);
             var dateRange = startDate.GetDateRangeTo(endDate);
 
@@ -135,7 +136,7 @@ namespace WebApp.Controllers
             vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
             vm.Expenses = netIncomeByMonth.Sum(c => c.Expenses);
             vm.InvoiceCount = invoiceTotals.Count();
-            vm.Invoices = invoices;
+            //vm.Invoices = invoices;
             vm.FilterArgs = args;
 
             return View(vm);
@@ -173,14 +174,15 @@ namespace WebApp.Controllers
             }
 
             // Apply the year and month filters.
-            args.Year = args.Year.HasValue ? args.Year.Value : SystemTime.Now().Year;
-            query = query.Where(c => c.InvoiceDate.Year == args.Year.Value);
+            query = query.Where(c => c.InvoiceDate.Year == args.Year);
             if (args.Month.HasValue)
             {
                 query = query.Where(c => c.InvoiceDate.Month == args.Month);
             }
 
-            var invoices = await query.ToListAsync();
+            var model = query.Select(InvoiceProjections.Header());
+
+            var invoices = await model.ToListAsync();
 
             //var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
             //var nextMonth = thisMonth.AddMonths(1);
@@ -197,7 +199,7 @@ namespace WebApp.Controllers
 
             vm.FilterArgs = args;
 
-            vm.Invoices = invoices;
+            vm.UnsentInvoices = null;
 
             return View(vm);
         }
@@ -246,7 +248,11 @@ namespace WebApp.Controllers
             var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
             var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
 
-            var invoiceNumber = db.GetNextInvoiceNumber().First();
+            var invoiceNumber = db.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
+            if (serviceProvider.EntityId == "8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c" || serviceProvider.EntityId == "8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9" || serviceProvider.EntityId == "48f9d9fd-deb5-471f-9454-066430a510f1") // Shariff, Zeeshan, Rajiv will use old invoice number approach
+            {
+                invoiceNumber = db.GetNextInvoiceNumber().First().NextInvoiceNumber.Cast<long>().First();
+            }
 
             var invoiceDate = SystemTime.Now();
             if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
@@ -255,7 +261,7 @@ namespace WebApp.Controllers
             }
 
             var invoice = new Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber.NextInvoiceNumber, invoiceDate, User.Identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
             // Create or update the invoice detail for the service request
             InvoiceDetail invoiceDetail;

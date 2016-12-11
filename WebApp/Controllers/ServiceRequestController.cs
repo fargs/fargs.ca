@@ -21,6 +21,7 @@ using e = Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using MoreLinq;
 using WebApp.ViewModels;
+using WebApp.Library.Projections;
 
 namespace WebApp.Controllers
 {
@@ -124,30 +125,15 @@ namespace WebApp.Controllers
         // GET: ServiceRequest/Details/5
         public async Task<ActionResult> Details(int id)
         {
+            var now = SystemTime.Now();
+            var userId = User.Identity.GetGuidUserId();
+
             var vm = new DetailsViewModel();
 
-            vm.ServiceRequest = await ctx.ServiceRequests.FirstAsync(srt => srt.Id == id);
-
-            // Get the data set
-            var source = await ctx.GetAssignedServiceRequestsAsync(null, SystemTime.Now(), null, id);
-
-            if (vm.ServiceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
-            {
-                vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAssessment(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
-            }
-            else if (vm.ServiceRequest.Service.ServiceCategoryId == ServiceCategories.AddOn)
-            {
-                vm.ServiceRequestMapped = WebApp.Models.ServiceRequestModels.ServiceRequestMapper.MapToAddOn(source, SystemTime.Now(), User.Identity.GetGuidUserId(), HttpContext.Server.MapPath("~/ServiceRequestTask/Details"));
-            }
-
-            if (User.Identity.GetRoleId() == AspNetRoles.Physician || User.Identity.GetRoleId() == AspNetRoles.IntakeAssistant || User.Identity.GetRoleId() == AspNetRoles.DocumentReviewer)
-            {
-                vm.TaskList = vm.ServiceRequestMapped.Tasks.Where(srt => srt.ResponsibleRoleId == AspNetRoles.Physician || srt.ResponsibleRoleId == AspNetRoles.IntakeAssistant || srt.ResponsibleRoleId == AspNetRoles.DocumentReviewer || srt.TaskId == Tasks.SaveMedBrief || srt.TaskId == Tasks.AssessmentDay);
-            }
-            else
-            {
-                vm.TaskList = vm.ServiceRequestMapped.Tasks;
-            }
+            vm.ServiceRequest = ctx.ServiceRequests
+                .Where(sr => sr.Id == id)
+                .Select(ServiceRequestProjections.AllDetails(userId, now))
+                .SingleOrDefault();
 
             if (vm.ServiceRequest == null)
             {
@@ -309,7 +295,7 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public async Task<ActionResult> Create(int availableDayId, Guid physicianId)
+        public async Task<ActionResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
         {
             var availableDay = await ctx.AvailableDays.FindAsync(availableDayId);
             var physician = await ctx.Physicians.FindAsync(physicianId);
@@ -333,10 +319,29 @@ namespace WebApp.Controllers
 
             vm.AvailableSlotSelectList = ctx.AvailableSlots
                 .Where(c => c.AvailableDayId == availableDayId)
+                .Select(slot => new
+                {
+                    Id = slot.Id,
+                    StartTime = slot.StartTime,
+                    ServiceRequests = slot.ServiceRequests
+                        .Where(sr => !sr.CancelledDate.HasValue)
+                        .Select(sr => new
+                        {
+                            sr.Id,
+                            sr.ClaimantName,
+                            Service = sr.Service.Code,
+                            Company = sr.Company.Name,
+                            Location = new
+                            {
+                                City = sr.Address.City_CityId.Name,
+                                BuildingName = sr.Address.Name
+                            }
+                        })
+                })
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
-                    Text = c.StartTime.ToString(@"hh\:mm") + " - " + c.GetTitle(),
+                    Text = c.StartTime.ToString(@"hh\:mm")  + " - " + (c.ServiceRequests.Count() > 1 ? "Multiple Assessments" : c.ServiceRequests.Count() == 0 ? "Available" : $"{c.ServiceRequests.Single().Service} - {c.ServiceRequests.Single().Company} - {c.ServiceRequests.Single().Location.City} - {c.ServiceRequests.Single().Location.BuildingName} - {c.ServiceRequests.Single().ClaimantName}"),
                     Value = c.Id.ToString()
                 })
                 .OrderBy(c => c.Text);
@@ -379,6 +384,8 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
 
+            ViewBag.ServiceIdHasErrors = serviceIdHasErrors;
+
             return View(vm);
         }
 
@@ -389,6 +396,11 @@ namespace WebApp.Controllers
             // These are the original parameters required by the Get method. AvailableDayId is not a property on ServiceRequest so it was added as a hidden field on the form. PhysicianId was added to be consistent.
             var selectedAvailableDayId = int.Parse(Request.Form.Get("SelectedAvailableDayId"));
             var selectedPhysicianId = new Guid(Request.Form.Get("SelectedPhysicianId"));
+            bool overrideServiceCatalogueMissingError = false;
+            if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
+            {
+                overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
+            }
 
             // Get the service catalogue
             var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == sr.AddressId);
@@ -396,7 +408,11 @@ namespace WebApp.Controllers
             var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == sr.ServiceId);
             if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
-                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+                if (!overrideServiceCatalogueMissingError)
+                {
+                    this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+                    ViewBag.ServiceIdHasErrors = true;
+                }
             }
 
             // Get the no show and late cancellation rates for this company
@@ -404,7 +420,11 @@ namespace WebApp.Controllers
             var rates = ctx.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
-                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+                if (!overrideServiceCatalogueMissingError)
+                {
+                    this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+                    ViewBag.ServiceIdHasErrors = true;
+                }
             }
 
             if (ModelState.IsValid)
@@ -471,7 +491,7 @@ namespace WebApp.Controllers
 
                 return RedirectToAction("Details", new { id = sr.Id });
             }
-            return await Create(selectedAvailableDayId, selectedPhysicianId);
+            return await Create(selectedAvailableDayId, selectedPhysicianId, ViewBag.ServiceIdHasErrors);
 
         }
 
@@ -495,7 +515,7 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public ActionResult CreateAddOn()
+        public ActionResult CreateAddOn(bool serviceIdHasErrors = false)
         {
             var vm = new CreateViewModel();
 
@@ -542,6 +562,8 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
 
+            ViewBag.ServiceIdHasErrors = serviceIdHasErrors;
+
             return View(vm);
         }
 
@@ -554,6 +576,12 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
             }
 
+            bool overrideServiceCatalogueMissingError = false;
+            if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
+            {
+                overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
+            }
+
             var company = await ctx.Companies.FirstOrDefaultAsync(c => c.Id == sr.CompanyId);
 
             var serviceCatalogues = ctx.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
@@ -561,7 +589,11 @@ namespace WebApp.Controllers
             var serviceCatalogue = serviceCatalogues.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
             if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
-                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+                if (!overrideServiceCatalogueMissingError)
+                {
+                    this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+                    ViewBag.ServiceIdHasErrors = true;
+                }
             }
 
             var rates = ctx.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
@@ -635,7 +667,7 @@ namespace WebApp.Controllers
                 return RedirectToAction("Details", new { id = sr.Id });
             }
 
-            return CreateAddOn();
+            return CreateAddOn(ViewBag.ServiceIdHasErrors);
         }
 
         private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId)

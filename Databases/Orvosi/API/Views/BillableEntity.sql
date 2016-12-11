@@ -6,6 +6,7 @@
 
 
 
+
 CREATE VIEW [API].[BillableEntity]
 AS
 
@@ -37,16 +38,19 @@ SELECT e.EntityGuid
 	, e.EntityType
 	, e.EntityId
 	, e.LogoCssClass
-	, AddressName = a.Name
+	, AddressName = a.[Name]
 	, a.Attention
 	, a.Address1
 	, a.Address2
-	, a.City
+	, City = c.[Name]
 	, a.PostalCode
-	, a.ProvinceName
-	, a.CountryName
+	, ProvinceName = p.ProvinceName
+	, CountryName = co.[Name]
 	, e.BillingEmail
 	, e.Phone
 	, e.HstNumber
 FROM Entity e
-LEFT JOIN API.[Address] a ON e.EntityGuid = a.OwnerGuid AND a.AddressTypeID = 4
+LEFT JOIN dbo.[Address] a ON e.EntityGuid = a.OwnerGuid AND a.AddressTypeID = 4
+LEFT JOIN dbo.City c ON a.CityId = c.Id
+LEFT JOIN dbo.Province p ON c.ProvinceId = p.Id
+LEFT JOIN dbo.Country co ON p.CountryID = co.Id

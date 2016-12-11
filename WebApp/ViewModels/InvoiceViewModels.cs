@@ -10,18 +10,10 @@ namespace WebApp.ViewModels.InvoiceViewModels
     {
         public IndexViewModel()
         {
-            this.Invoices = new List<Invoice>();
+            this.UnsentInvoices = new List<Orvosi.Shared.Model.UnsentInvoiceDayFolder>();
         }
-        public AspNetUser CurrentUser { get; set; }
-        public BillableEntity SelectedServiceProvider { get; set; }
-        public BillableEntity SelectedCustomer { get; set; }
-        public List<Invoice> Invoices { get; set; }
-        public System.Globalization.Calendar Calendar { get; set; }
-        public DateTime Today { get; internal set; }
+        public IEnumerable<Orvosi.Shared.Model.UnsentInvoiceDayFolder> UnsentInvoices { get; set; }
         public FilterArgs FilterArgs { get; set; }
-        public string[] Months { get; set; }
-        public decimal Money { get; set; }
-        public decimal Expenses { get; set; }
     }
 
     public class DashboardViewModel
@@ -35,7 +27,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public AspNetUser User { get; set; }
         public FilterArgs FilterArgs { get; set; }
         public int InvoiceCount { get; internal set; }
-        public List<Invoice> Invoices { get; set; }
+        public List<Orvosi.Shared.Model.Invoice> Invoices { get; set; }
         public IEnumerable<decimal?> NetIncomeByCompany { get; internal set; }
         public IEnumerable<string> Months { get; internal set; }
         public IEnumerable<string> Companies { get; internal set; }
@@ -45,10 +37,10 @@ namespace WebApp.ViewModels.InvoiceViewModels
     {
         public Guid? ServiceProviderId { get; set; }
         public Guid? CustomerId { get; set; }
+        public string SearchText { get; set; }
         public int? Year { get; set; }
         public int? Month { get; set; }
         public bool ShowSubmitted { get; set; } = false;
-        public DateTime FilterDate { get; set; }
     }
 
     public class EditInvoiceDetailForm
@@ -62,5 +54,12 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public decimal? Rate { get; set; }
         public string AdditionalNotes { get; set; }
         public int ServiceRequestId { get; internal set; }
+    }
+
+    public class CreateInvoiceForm
+    {
+        public Guid ServiceProviderGuid { get; set; }
+        public Guid CustomerGuid { get; set; }
+        public DateTime InvoiceDate { get; set; }
     }
 }

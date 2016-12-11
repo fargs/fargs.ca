@@ -1,0 +1,51 @@
+﻿@using System.Linq
+@using Orvosi.Data
+@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
+@model Orvosi.Data.Invoice
+
+@{
+    Layout = "~/Views/Accounting/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="new-invoice-form" method="post" action="~/Accounting/CreateInvoice">
+            <div class="form-group">
+                <label class="control-label">Service Provider</label>
+                @Html.DropDownList("ServiceProviderGuid", new SelectList(ViewBag.UserSelectList, "Value", "Text", "Group.Name", Model.ServiceProviderGuid), "-- Service Provider --", new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label class="control-label">Customer</label>
+                @Html.DropDownList("CustomerGuid", new SelectList(ViewBag.CustomerSelectList, "Value", "Text", "Group.Name", Model.CustomerGuid), "-- Customer --", new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label class="control-label">Invoice Date</label>
+                <div class="input-group date" style="width:100%" id="InvoiceDatePicker">
+                    @Html.TextBox("InvoiceDate", Model.InvoiceDate.ToOrvosiDateFormat(), new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(function () {
+
+            $('#InvoiceDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+
+        });
+    </script>
+}

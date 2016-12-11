@@ -1,132 +1,176 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@model IEnumerable<Orvosi.Shared.Model.DayFolder>
+@using Orvosi.Data
+@model WebApp.ViewModels.InvoiceViewModels.IndexViewModel
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
 
     var roleId = User.Identity.GetRoleId();
+
+    var db = new OrvosiDbContext();
+
+    ViewBag.BillableEntities = db.BillableEntities
+        .Select(c => new SelectListItem()
+        {
+            Text = c.EntityName,
+            Value = c.EntityGuid.ToString(),
+            Group = new SelectListGroup() { Name = c.EntityType }
+        }).ToList();
+
+    ViewBag.Years = DateRanges.GetYears()
+        .Where(y => y.Key <= SystemTime.Now().Year)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Value,
+            Value = c.Key.ToString()
+        }).ToList();
+
+    ViewBag.Months = DateRanges.GetMonths()
+        .Where(y => y.Key <= SystemTime.Now().Month)
+        .Select(c => new SelectListItem()
+        {
+            Text = c.Value,
+            Value = c.Key.ToString()
+        })
+        .ToList();
 }
 
-@if (Model.Count() == 0)
+<div class="row" style="margin-bottom:20px">
+    <div class="col-md-12">
+        <form action="~/@this.ViewContext.RouteData.Values["Controller"]/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
+            @Html.Hidden("ServiceProviderId", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty)
+            @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
+            {
+                <div class="form-group">
+                    @Html.DropDownList("CustomerId", new SelectList(ViewBag.BillableEntities, "Value", "Text", "Group.Name", Model.FilterArgs.CustomerId.HasValue ? Model.FilterArgs.CustomerId.Value : Guid.Empty), "-- Customer --", new { @class = "form-control", onchange = "this.form.submit();" })
+                </div>
+            }
+            <div class="form-group">
+                @Html.DropDownList("Year", new SelectList(ViewBag.Years, "Value", "Text", Model.FilterArgs.Year.HasValue ? Model.FilterArgs.Year.Value.ToString() : string.Empty), "-- Year --", new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+            <div class="form-group">
+                @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.HasValue ? Model.FilterArgs.Month.Value.ToString() : string.Empty), "-- Month --", new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+            @*<div class="form-group">
+                @Html.CheckBox("ShowSubmitted", false, new { @class = "form-control", onchange = "this.form.submit();" })
+                Show Submitted
+            </div>*@
+        </form>
+    </div>
+</div>
+
+@if (Model.UnsentInvoices.Count() == 0)
 {
     <p><strong>There are no invoices that need to be sent out.</strong></p>
 }
 else
 {
-    <p>You have <strong>@Model.Sum(day => day.ServiceRequests.Count())</strong> unsent invoices</p>
+    <p><strong>@Model.UnsentInvoices.Sum(day => day.UnsentInvoices.Count())</strong> invoices</p>
 }
 
-@foreach (var dayFolder in Model)
+@foreach (var dayFolder in Model.UnsentInvoices)
 {
     <div class="row o-th" style="background-color: aliceblue">
         <div class="col-md-12">
             <div class="h3">
                 @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
             </div>
-            @if (dayFolder.Address != null)
-            {
-                <div class="h4">
-                    @dayFolder.Address
-                </div>
-                <div class="small" style="padding-bottom:20px;">
-                    @dayFolder.Address.City
-                </div>
-            }
         </div>
     </div>
     <div class="row o-dashboard-tr">
-        <strong class="col-md-2 o-dashboard-td">Case</strong>
-        <strong class="col-md-1 o-dashboard-td">Invoice</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Item</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">SubTotal</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Hst</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: right;">Total</strong>
-        <strong class="col-md-3 o-dashboard-td" style="text-align: center;">Invoice Sent</strong>
-        <strong class="col-md-1 o-dashboard-td" style="text-align: center;">Edit</strong>
+        <strong class="col-md-2 o-dashboard-td bg-warning">Case</strong>
+        <strong class="col-md-2 o-dashboard-td">Header</strong>
+        <strong class="col-md-4 o-dashboard-td">Items</strong>
+        <strong class="col-md-2 o-dashboard-td">Total</strong>
+        <strong class="col-md-2 o-dashboard-td text-right">Actions</strong>
     </div>
-    <div>
-        @foreach (var assessment in dayFolder.ServiceRequests)
-        {
-            @Html.Partial("_ServiceRequest", assessment)
-        }
-    </div>
+
+    foreach (var unsentInvoice in dayFolder.UnsentInvoices)
+    {
+        <div class="row o-dashboard-tr">
+            <div class="col-md-2 o-dashboard-td bg-warning">
+                @if (unsentInvoice.ServiceRequest != null)
+                {
+                    @Html.Partial("_ServiceRequest", unsentInvoice.ServiceRequest)
+                }
+                else
+                {
+                    <div>No related service request</div>
+                }
+            </div>
+            <div class="col-md-8 o-dashboard-td" id="service-request-invoice-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.Id.ToString())">
+                @if (unsentInvoice.Invoice != null)
+                {
+                    @Html.Partial("_Invoice", unsentInvoice.Invoice)
+                }
+                else
+                {
+                    <div>No invoice</div>
+                }
+            </div>
+            <div class="col-md-2 o-dashboard-td" id="invoice-menu-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.Id.ToString())">
+                @Html.Partial("_InvoiceMenu", unsentInvoice)
+            </div>
+        </div>
+    }
 }
 
-<div class="modal fade" id="edit-modal">
+<div class="modal fade" id="edit-invoice-header-modal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <form id="edit-invoicedetail-form">
-                <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">
-                        <span id="ClaimantName"></span>
-                    </h4>
-                    <div class="small text-muted">
-                        Invoice <span id="InvoiceNumber"></span>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="Id" name="Id" />
-                    <div class="form-group">
-                        <label class="control-label">Email To</label>
-                        <input type="text" class="form-control" id="To" name="To" />
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Invoice Date</label>
-                        <div class="input-group date" style="width:100%" id="InvoiceDatePicker">
-                            <input class="form-control" size="16" type="text" name="InvoiceDate" id="InvoiceDate">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Amount</label>
-                        <input type="text" class="form-control" id="Amount" name="Amount" />
-                    </div>
-                    <div class="form-group" id="rate-form-group" style="display:none;">
-                        <label class="control-label">Rate</label>
-                        <input type="text" class="form-control" id="Rate" name="Rate" />
-                        <div class="help-block">Less than 1 will be applied as a percentage. Greater than 1, the rate will override the amount.</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Note</label>
-                        <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input class="btn btn-success" type="submit" id="edit-modal-save" value="Save" />
-                </div>
-            </form>
+            <form id="edit-invoice-header-form"></form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-invoice-item-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="edit-invoice-item-form"></form>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script type="text/javascript">
-        $(function () {
 
-            $('#InvoiceDatePicker').datepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
-        });
 
-        function onSend(invoiceId) {
+        function onSend(invoiceId, serviceRequestId) {
             var url = '@Url.Content("~/Accounting/SendInvoice")';
-            var form = $("#send-invoice-form-" + invoiceId);
-            var serviceRequestId = form.find('#ServiceRequestId').val();
 
             $.ajax({
                 type: "POST",
                 url: url,
-                data: form.serialize(), // serializes the form's elements.
+                data: {
+                    InvoiceId: invoiceId
+                },
                 success: function () {
                     toastr.success("Invoice sent successfully");
-                    refreshServiceRequest(serviceRequestId);
+                    refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(serviceRequestId, invoiceId);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    toastr.success("Something went wrong.");
+                    toastr.error("Something went wrong.");
+                }
+            });
+        }
+
+        function onPaid(invoiceId) {
+            let url = '@Url.Content("~/Accounting/CreateReceipt")';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    invoiceId: invoiceId
+                },
+                success: function () {
+                    toastr.success("Invoice has been paided in full");
+                    refreshInvoice(invoiceId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
                 }
             });
         }
@@ -140,90 +184,214 @@ else
                 data: {
                     serviceRequestId: serviceRequestId
                 }, // serializes the form's elements.
-                success: function () {
+                success: function (result) {
                     toastr.success("Invoice created successfully");
-                    refreshServiceRequest(serviceRequestId);
+                    refreshServiceRequest(serviceRequestId, result.id);
+                    refreshServiceRequestMenu(serviceRequestId, result.id);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    toastr.success("Something went wrong.");
+                    toastr.error("Something went wrong.");
                 }
             });
         }
 
-        function onEdit(invoiceDetailId, isNoShow, isLateCancellation) {
-
-            if (isNoShow || isLateCancellation) {
-                $('#rate-form-group').css({ 'display': 'block' })
-            }
-            else {
-                $('#rate-form-group').css({ 'display': 'none' })
-            }
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-
-                    var modalDiv = $("#edit-modal");
-                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                    modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
-                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
-                    modalDiv.find('#AdditionalNotes').val(result.AdditionalNotes);
-
-                    var form = $('#edit-invoicedetail-form');
-                    form.find('#Id').val(result.Id);
-                    form.find('#To').val(result.To);
-                    $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
-                    form.find('#Amount').val(result.Amount);
-                    if (isNoShow || isLateCancellation) {
-                        form.find('#Rate').val(result.Rate);
-                    }
-
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
-
-        $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
-
-            var url = '@Url.Content("~/Accounting/Update")';
-
-            var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
+        function onDeleteInvoice(serviceRequestId, invoiceId) {
+            var url = '@Url.Content("~/Accounting/DeleteInvoice")';
 
             $.ajax({
                 type: "POST",
                 url: url,
-                data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
+                data: {
+                    invoiceId: invoiceId
+                },
                 success: function () {
-                    $("#edit-modal").modal('toggle');
-                    toastr.success("Invoice updated successfully.");
-                    refreshServiceRequest(serviceRequestId);
+                    toastr.success("Invoice deleted successfully");
+                    refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(serviceRequestId, invoiceId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
                 }
             });
+        }
 
-            e.preventDefault(); // avoid to execute the actual submit of the form.
-        });
+        function onEditInvoiceHeader(invoiceId) {
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Content("~/Accounting/EditInvoiceHeader?invoiceId=")' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
 
-        function refreshServiceRequest(serviceRequestId) {
+                    var modalDiv = $("#edit-invoice-header-modal");
+                    var formContainer = $("#edit-invoice-header-form");
+
+                    formContainer.replaceWith(result);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        }
+
+        function invoiceHeaderSaveChanges() {
+            var url = '@Url.Content("~/Accounting/EditInvoiceHeader")';
+            var form = $('#edit-invoice-header-form');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function () {
+                    toastr.success("Invoice updated successfully");
+                    $("#edit-invoice-header-modal").modal('toggle');
+                    refreshInvoice(form.find('#Id').val());
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            });
+        }
+
+        function onEditInvoiceItem(invoiceDetailId) {
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: '@Url.Content("~/Accounting/EditInvoiceItem?invoiceDetailId=")' + invoiceDetailId,
+                contentType: "text/html",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-invoice-item-modal");
+                    var formContainer = $("#edit-invoice-item-form");
+
+                    formContainer.replaceWith(result);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        };
+
+        function onAddInvoiceItem(invoiceId) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: '@Url.Content("~/Accounting/AddInvoiceItem?invoiceId=")' + invoiceId,
+                success: function (result) {
+                    onEditInvoiceItem(result.data.Id);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        };
+
+        function onDeleteInvoiceItem(invoiceDetailId, invoiceId) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: '@Url.Content("~/Accounting/DeleteInvoiceItem?invoiceDetailId=")' + invoiceDetailId,
+                success: function (result) {
+                    refreshInvoice(invoiceId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            }, this);
+        }
+
+        function invoiceItemSaveChanges() {
+            var url = '@Url.Content("~/Accounting/EditInvoiceItem")';
+            var form = $('#edit-invoice-item-form');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function () {
+                    toastr.success("Invoice item updated successfully");
+                    $("#edit-invoice-item-modal").modal('toggle');
+                    refreshInvoice(form.find('#InvoiceId').val());
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error("Something went wrong.");
+                }
+            });
+        }
+
+        function refreshServiceRequest(serviceRequestId, invoiceId) {
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
+                url: '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId,
                 contentType: "text/html",
                 success: function (result) {
-                    $('#service-request-' + serviceRequestId).replaceWith(result);
+                    var invoiceContainer = $('#service-request-invoice-' + serviceRequestId);
+                    invoiceContainer.empty();
+                    invoiceContainer.append(result);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
                     window.location.reload();
                 }
             }, this);
+        }
 
+        function refreshInvoice(invoiceId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#invoice-' + invoiceId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+        }
+
+        function refreshInvoiceMenu(serviceRequestId, invoiceId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/InvoiceMenu?serviceRequestId=")' + serviceRequestId + '&invoiceId=' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#invoice-menu-' + invoiceId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+        }
+
+        function refreshServiceRequestMenu(serviceRequestId, invoiceId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/InvoiceMenu?serviceRequestId=")' + serviceRequestId + '&invoiceId=' + invoiceId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-invoice-menu-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
         }
     </script>
 }

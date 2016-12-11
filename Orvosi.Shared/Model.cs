@@ -150,6 +150,15 @@ namespace Orvosi.Shared.Model
         public IEnumerable<Assessment> Assessments { get; set; }
     }
 
+    public class UnsentInvoiceDayFolder : DayFolderBase
+    {
+        public UnsentInvoiceDayFolder()
+        {
+            UnsentInvoices = new List<UnsentInvoice>();
+        }
+        public IEnumerable<UnsentInvoice> UnsentInvoices { get; set; }
+    }
+
     public class DueDateDayFolder : DayFolderBase
     {
         public DueDateDayFolder()
@@ -164,6 +173,28 @@ namespace Orvosi.Shared.Model
         public string Name { get; set; }
         public string Code { get; set; }
         public string ColorCode { get; set; }
+        public short ServiceCategoryId { get; set; }
+        public bool HasReportDeliverable
+        {
+            get
+            {
+                return ServiceCategoryId == ServiceCategories.AddOn || ServiceCategoryId == ServiceCategories.IndependentMedicalExam;
+            }
+        }
+        public bool CanBeRescheduled
+        {
+            get
+            {
+                return ServiceCategoryId == ServiceCategories.IndependentMedicalExam || ServiceCategoryId == ServiceCategories.MedicalConsultation;
+            }
+        }
+        public bool HasAppointment
+        {
+            get
+            {
+                return ServiceCategoryId == ServiceCategories.IndependentMedicalExam || ServiceCategoryId == ServiceCategories.MedicalConsultation;
+            }
+        }
     }
 
     public class Company
@@ -202,6 +233,7 @@ namespace Orvosi.Shared.Model
         public IEnumerable<ServiceRequestTask> ServiceRequestTasks { get; set; }
         public IEnumerable<Person> People { get; set; }
         public IEnumerable<ServiceRequestMessage> ServiceRequestMessages { get; set; }
+        public Invoice Invoice { get; set; }  // used on Unsent Invoice for Traceability
         public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
         public Address Address { get; set; }
 
@@ -214,7 +246,7 @@ namespace Orvosi.Shared.Model
                 .AreActive();
 
             if (query.Any(srt => srt.Status.Id == TaskStatuses.ToDo)) return TaskStatuses.ToDo;
-            
+
             if (query.Any(srt => srt.Status.Id == TaskStatuses.Waiting)) return TaskStatuses.Waiting;
 
             if (IsNoShow) return TaskStatuses.Obsolete;
@@ -252,6 +284,13 @@ namespace Orvosi.Shared.Model
                 return CancelledDate.HasValue;
             }
         }
+        public bool IsCancellation
+        {
+            get
+            {
+                return CancelledDate.HasValue && !IsLateCancellation;
+            }
+        }
         public bool HasHighWorkload { get; internal set; }
         public bool? IsAppointmentComplete
         {
@@ -271,6 +310,13 @@ namespace Orvosi.Shared.Model
                 return $"https://orvosi.app.box.com/files/0/f/{BoxCaseFolderId}";
             }
         }
+        public DateTime EffectiveDate
+        {
+            get
+            {
+                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.Value;
+            }
+        }
 
         public Person CaseCoordinator { get; set; }
         public Person DocumentReviewer { get; set; }
@@ -283,6 +329,73 @@ namespace Orvosi.Shared.Model
             return this.ServiceRequestTasks
                 .Where(srt => (srt.AssignedTo == null ? null : srt.AssignedTo.Id) == userId)
                 .All(srt => srt.Status.Id == TaskStatuses.Done || srt.Status.Id == TaskStatuses.Obsolete);
+        }
+
+        public string CalendarEventTitle
+        {
+            get
+            {
+                return $"{this.Address.CityCode}: {ClaimantName} ({Service.Code}) {Company.Code}-{Id}";
+            }
+        }
+
+        public bool CanBeRescheduled
+        {
+            get
+            {
+                return this.Service.HasAppointment;
+            }
+        }
+
+        public bool CanBeCancelled
+        {
+            get
+            {
+                return !this.IsLateCancellation && !this.CancelledDate.HasValue && !this.IsNoShow;
+            }
+        }
+
+        public bool CanBeUncancelled
+        {
+            get
+            {
+                return this.IsLateCancellation || this.CancelledDate.HasValue;
+            }
+        }
+
+        public bool CanBeNoShow
+        {
+            get
+            {
+                if (Service.HasAppointment)
+                {
+                    return !CancelledDate.HasValue && !IsLateCancellation && !IsNoShow;
+                }
+                return false;
+            }
+        }
+
+        public bool CanNoShowBeUndone
+        {
+            get
+            {
+                if (Service.HasAppointment)
+                {
+                    return IsNoShow;
+                }
+                return false;
+            }
+        }
+
+        public bool IsReportSubmitted
+        {
+            get
+            {
+                if (!Service.HasReportDeliverable)
+                    throw new Exception("Submitting a report is not applicable to this service.");
+
+                return ServiceRequestTasks.First(c => c.ProcessTask.Id == Tasks.SubmitReport || c.ProcessTask.Id == 36).CompletedDate.HasValue;
+            }
         }
     }
 
@@ -458,16 +571,33 @@ namespace Orvosi.Shared.Model
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Address1 { get; set; }
+        public string PostalCode { get; set; }
         public string City { get; set; }
+        public string CityCode { get; set; }
         public string ProvinceCode { get; set; }
         public string TimeZone { get; set; }
     }
 
     public class Invoice
     {
+        public Invoice()
+        {
+            InvoiceDetails = new List<InvoiceDetail>();
+            Receipts = new List<Receipt>();
+        }
         public int Id { get; set; }
         public string InvoiceNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
+        private string _terms;
+        public string Terms { get
+            {
+                return string.IsNullOrEmpty(_terms) ? "90" : _terms;
+            } set
+            {
+                _terms = value;
+            }
+        }
         public DateTime? PaymentDueDate { get; set; }
         public decimal? SubTotal { get; set; }
         public decimal? TaxRateHst { get; set; }
@@ -475,8 +605,50 @@ namespace Orvosi.Shared.Model
         public decimal? Total { get; set; }
         public DateTime? SentDate { get; set; }
         public DateTime? PaymentReceivedDate { get; set; }
+        public ServiceProvider ServiceProvider { get; set; }
         public Customer Customer { get; set; }
         public Guid InvoiceGuid { get; set; }
+        public IEnumerable<InvoiceDetail> InvoiceDetails { get; set; }
+        public int InvoiceDetailCount { get; set; }
+        public int? ServiceRequestId { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
+        public IEnumerable<Receipt> Receipts { get; set; }
+        public decimal AmountPaid
+        {
+            get
+            {
+                return Receipts.Sum(r => r.Amount);
+            }
+        }
+        public decimal OutstandingBalance
+        {
+            get
+            {
+                return Total.Value - AmountPaid;
+            }
+        }
+        public bool IsPaid
+        {
+            get
+            {
+                return OutstandingBalance <= 0;
+            }
+        }
+        public bool IsSent
+        {
+            get
+            {
+                return SentDate.HasValue || InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue));
+            }
+        }
+
+        public bool IsPartiallyPaid
+        {
+            get
+            {
+                return OutstandingBalance > 0 && OutstandingBalance < Total.Value;
+            }
+        }
     }
 
     public class InvoiceDetail
@@ -490,6 +662,40 @@ namespace Orvosi.Shared.Model
         public decimal Total { get; set; }
         public string AdditionalNotes { get; set; }
         public Invoice Invoice { get; set; }
+        public int? ServiceRequestId { get; set; }
+        public ServiceRequest ServiceRequest { get; set; }
+    }
+
+    public class Receipt
+    {
+        public Guid Id { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime ReceivedDate { get; set; }
+    }
+
+    public class UnsentInvoice
+    {
+        public ServiceRequest ServiceRequest { get; set; }
+        public Invoice Invoice { get; set; }
+        public DateTime Day
+        {
+            get
+            {
+                if (ServiceRequest == null)
+                {
+                    return Invoice.InvoiceDate;
+                }
+                else if (Invoice == null)
+                {
+                    return ServiceRequest.EffectiveDate;
+                }
+                else
+                {
+                    return ServiceRequest.EffectiveDate;
+                    throw new Exception($"Invoice {Invoice.Id} Date nor Service Request {ServiceRequest.Id} Date exist.");
+                }
+            }
+        }
     }
 
     public class Customer
@@ -497,7 +703,17 @@ namespace Orvosi.Shared.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string BillingEmail { get; set; }
+        public string City { get; set; }
+        public string Province { get; set; }
+    }
 
+    public class ServiceProvider
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string City { get; set; }
+        public string Province { get; set; }
     }
 
     public class ServiceRequestMessage

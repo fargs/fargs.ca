@@ -23,17 +23,17 @@
                             <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
                             <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
                             <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company</a></li>
-                            @if (Model.ServiceRequest.CanBeRescheduled(SystemTime.Now()))
+                            @if (Model.ServiceRequest.CanBeRescheduled)
                             {
                                 <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
                             }
 
-                            @if (Model.ServiceRequest.CanBeUncancelled())
+                            @if (Model.ServiceRequest.CanBeUncancelled)
                             {
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
-                            else if (Model.ServiceRequest.CanBeCancelled())
+                            else if (Model.ServiceRequest.CanBeCancelled)
                             {
                                 <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
@@ -48,7 +48,7 @@
 
 <div class="row">
     <div class="col-sm-3">
-        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.Physician.AspNetUser.ColorCode">@Model.ServiceRequest.Physician.AspNetUser.GetInitials() </span> @Model.ServiceRequest.Physician.AspNetUser.GetDisplayName()</h4>
+        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.Physician.ColorCode">@Model.ServiceRequest.Physician.Initials </span> @Model.ServiceRequest.Physician.DisplayName</h4>
         <hr />
         <h3>@Model.ServiceRequest.ClaimantName</h3>
         <p class="small text-muted">@Model.ServiceRequest.Service.Name, @Model.ServiceRequest.Company.Name</p>
@@ -66,12 +66,12 @@
                     @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")
                     <br />
                     <strong><small class="text-muted">@Model.ServiceRequest.Address.Name</small></strong><br />
-                    <small><mark>@Model.ServiceRequest.Address.City_CityId.Name</mark>, @Model.ServiceRequest.Address.Province.ProvinceCode</small>
+                    <small><mark>@Model.ServiceRequest.Address.City</mark>, @Model.ServiceRequest.Address.ProvinceCode</small>
 
                 </p>
             </div>
         }
-        @if (Model.ServiceRequest.Service.HasReportDeliverable())
+        @if (Model.ServiceRequest.Service.HasReportDeliverable)
         {
             <div class="form-group">
                 <label class="control-label">Report</label>
@@ -89,13 +89,16 @@
         <div class="form-group">
             <label class="control-label">Assignments</label>
             <p class="form-control-static">
-                @Html.Partial("_ResourceAssignments", Model.ServiceRequest)
+                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.Physician == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.Physician)
+                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.IntakeAssistant == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.IntakeAssistant)
+                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.DocumentReviewer == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.DocumentReviewer)
+                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.CaseCoordinator == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.CaseCoordinator)
             </p>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-                @if (Model.ServiceRequest.CanNoShowBeUndone())
+                @if (Model.ServiceRequest.CanNoShowBeUndone)
                 {
                     <form action="~/ServiceRequest/UndoNoShow" method="post">
                         @Html.AntiForgeryToken()
@@ -104,7 +107,7 @@
                         <span><button class="btn btn-link">Undo</button></span>
                     </form>
                 }
-                else if (Model.ServiceRequest.CanBeNoShow())
+                else if (Model.ServiceRequest.CanBeNoShow)
                 {
                     <form action="~/ServiceRequest/NoShow" method="post">
                         @Html.AntiForgeryToken()
@@ -118,7 +121,15 @@
     </div>
     <div class="col-sm-5">
         <p>
-            <h4 style="line-height:30px;">@Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId) Case @Model.ServiceRequest.Id</h4>
+            <h4 style="line-height:30px;">
+                @if (Model.ServiceRequest.ServiceStatusId.HasValue)
+                {
+                    <span>
+                        @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId.Value)
+                    </span>
+                }
+                Case @Model.ServiceRequest.Id
+            </h4>
         </p>
         <hr />
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
@@ -141,7 +152,7 @@
             </div>
             <div class="panel-body">
                 <table class="table table-condensed">
-                    @foreach (var task in Model.TaskList.OrderBy(sr => sr.Sequence))
+                    @foreach (var task in Model.ServiceRequest.ServiceRequestTasks)
                     {
                         <tr>
                             @if (role == AspNetRoles.SuperAdmin)
@@ -155,7 +166,7 @@
                                 </td>
                             }
                             <td width="50px">
-                                @if (task.TaskType == "EVENT")
+                                @if (task.ProcessTask.Id == Tasks.AssessmentDay)
                                 {
                                     <span class="btn btn-sm btn-circle">
                                         <i class="fa fa-calendar fa-lg"></i>
@@ -163,46 +174,46 @@
                                 }
                                 else
                                 {
-                                    <span data-toggle="modal" title="@(task.AssignedTo.HasValue ? task.AssignedToDisplayName : "Unassigned")"
+                                    <span data-toggle="modal" title="@(task.AssignedTo != null ? task.AssignedTo.DisplayName : "Unassigned")"
                                           class="btn btn-sm btn-circle disabled pull-left"
-                                          style="cursor: pointer; color: white; background-color: @(task.AssignedTo.HasValue ? task.AssignedToColorCode : "red")"
+                                          style="cursor: pointer; color: white; background-color: @(task.AssignedTo != null ? task.AssignedTo.ColorCode : "red")"
                                           data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
-                                        <span class="small">@(task.AssignedTo.HasValue ? task.AssignedToInitials : "?")</span>
+                                        <span class="small">@(task.AssignedTo != null ? task.AssignedTo.Initials : "?")</span>
                                     </span>
-                                        <div id="task-modal-@task.Id" class="modal fade">
-                                            <div class="modal-dialog modal-sm">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                        <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form action="~/ServiceRequestTask/PickUp" method="post">
+                                    <div id="task-modal-@task.Id" class="modal fade">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="~/ServiceRequestTask/PickUp" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
+                                                        <input type="submit" value="Pick Up" class="btn btn-default" />
+                                                    </form>
+                                                    @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+                                                    {
+                                                        <div>Or</div>
+                                                        <form action="~/ServiceRequestTask/AssignTo" method="post">
                                                             @Html.AntiForgeryToken()
                                                             @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                            <input type="submit" value="Pick Up" class="btn btn-default" />
+                                                            <div class="form-group">
+                                                                <label class="control-label">Assign To: </label>
+                                                                @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
+                                                                @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
+                                                            </div>
                                                         </form>
-                                                        @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
-                                                        {
-                                                            <div>Or</div>
-                                                            <form action="~/ServiceRequestTask/AssignTo" method="post">
-                                                                @Html.AntiForgeryToken()
-                                                                @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                                <div class="form-group">
-                                                                    <label class="control-label">Assign To: </label>
-                                                                    @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                                    @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                                </div>
-                                                            </form>
-                                                        }
-                                                    </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                 }
                             </td>
                             <td width="20px">
-                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo) && task.TaskType != "EVENT")
+                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)
                                 {
                                     <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                         @Html.AntiForgeryToken()
@@ -211,9 +222,9 @@
                                             <label>
                                                 <input id="task-checkbox-@task.Id" type="checkbox"
                                                        name="IsComplete"
-                                                       value="@task.IsComplete"
-                                                       @(task.IsComplete ? "checked" : "")
-                                                       @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                                       value="@(task.Status.Id == TaskStatuses.Done)"
+                                                       @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
+                                                       @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
                                                        onclick="this.form.submit();">
                                             </label>
                                         </span>
@@ -223,9 +234,9 @@
                             <td width="100px">
                                 @Html.Partial("_TaskStatusLabel", task)
                             </td>
-                            <td>@task.Name</td>
+                            <td>@task.ProcessTask.Name</td>
                             <td>
-                                @if (task.StatusId == TaskStatuses.Done)
+                                @if (task.Status.Id == TaskStatuses.Done)
                                 {
                                     if (task.CompletedDate.HasValue)
                                     {
@@ -249,8 +260,8 @@
         }
         else
         {
-            <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequestMapped.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-                <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
+            <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
+            <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         }
         @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
         {
@@ -269,23 +280,23 @@
             if (Model.ServiceRequest.Service.HasAppointment)
             {
                 <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
-                    <hr />
-                    <h4>@Model.ServiceRequest.GetCalendarEventTitle()</h4>
+                <hr />
+                <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
                     <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
                     <div>@Model.ServiceRequest.StartTime</div>
-                    <div>@Model.ServiceRequest.EndTime</div>
                     <address>
                         <strong>@Model.ServiceRequest.Address.Name</strong><br>
                         @Model.ServiceRequest.Address.Address1<br>
-                        @Model.ServiceRequest.Address.City_CityId.Name, @Model.ServiceRequest.Address.Province.ProvinceName @Model.ServiceRequest.Address.PostalCode<br>
+                        @Model.ServiceRequest.Address.City, @Model.ServiceRequest.Address.ProvinceCode @Model.ServiceRequest.Address.PostalCode<br>
                     </address>
 
             }
         }
+        
         @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
             {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-                <hr />
+            <hr />
             if (role == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
@@ -293,12 +304,12 @@
                     <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
                 </form>
             }
-            else if (Model.ServiceRequest.InvoiceDetails.Count == 0)
+            else if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
             {
                 <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
             }
 
-            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails.Where(id => id.IsDeleted == false))
+            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
             {
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -311,7 +322,7 @@
                         }
                     </div>
                     <div class="panel-body">
-                        @Html.Action("ReadOnly", "Invoice", invoiceDetail.Invoice)
+                        @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
                     </div>
                 </div>
             }

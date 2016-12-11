@@ -64,6 +64,7 @@ namespace Orvosi.Data
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_Invoice
         public virtual System.Collections.Generic.ICollection<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog.FK_InvoiceSentLog_Invoice
+        public virtual System.Collections.Generic.ICollection<Receipt> Receipts { get; set; } // Receipt.FK_Receipt_Invoice
 
         public Invoice()
         {
@@ -73,6 +74,7 @@ namespace Orvosi.Data
             IsDeleted = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             InvoiceSentLogs = new System.Collections.Generic.List<InvoiceSentLog>();
+            Receipts = new System.Collections.Generic.List<Receipt>();
             InitializePartial();
         }
 

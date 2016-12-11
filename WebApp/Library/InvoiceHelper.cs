@@ -13,15 +13,16 @@ namespace WebApp.Library
 {
     public static class InvoiceHelper
     {
-        public const byte PaymentDueInDays = 14;
+        public const byte PaymentDueInDays = 60;
 
-        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, string invoiceNumber, DateTime invoiceDate, string userName)
+        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string terms, string userName)
         {
             var TaxRateHst = GetTaxRate(customer.ProvinceName);
-
-            invoice.InvoiceNumber = invoiceNumber;
+            var paymentTerms = string.IsNullOrEmpty(terms) ? "90" : terms;
+            invoice.InvoiceNumber = invoiceNumber.ToString();
             invoice.InvoiceDate = invoiceDate;
-            invoice.DueDate = SystemTime.Now().AddDays(PaymentDueInDays);
+            invoice.Terms = paymentTerms;
+            invoice.DueDate = SystemTime.Now().AddDays(int.Parse(paymentTerms));
             invoice.Currency = "CAD";
             invoice.ServiceProviderGuid = serviceProvider.EntityGuid.Value;
             invoice.ServiceProviderName = serviceProvider.EntityName;
@@ -64,31 +65,23 @@ namespace WebApp.Library
             description.AppendLine(serviceRequest.Service.Name);
             if (serviceRequest.Service.HasAppointment)
             {
-                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
+                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City_CityId.Name);
             }
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice;
+            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice.HasValue ? serviceRequest.ServiceCataloguePrice : 0;
             invoiceDetail.Rate = 1;
             invoiceDetail.CalculateTotal();
 
             if (serviceRequest.IsNoShow)
             {
-                if (!serviceRequest.NoShowRate.HasValue || serviceRequest.NoShowRate == 0)
-                {
-                    throw new Exception("No show rate must have a value");
-                }
-                var rate = serviceRequest.NoShowRate;
+                var rate = serviceRequest.NoShowRate.HasValue ? serviceRequest.NoShowRate : 1;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.NoShow,
                     rate);
             }
             else if (serviceRequest.IsLateCancellation)
             {
-                if (!serviceRequest.LateCancellationRate.HasValue || serviceRequest.LateCancellationRate == 0)
-                {
-                    throw new Exception("Late cancellation rate must have a value");
-                }
-                var rate = serviceRequest.LateCancellationRate;
+                var rate = serviceRequest.LateCancellationRate.HasValue ? serviceRequest.LateCancellationRate : 1;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.LateCancellation,
                     rate);
@@ -97,7 +90,7 @@ namespace WebApp.Library
 
         public static void CalculateTotal(this Invoice invoice)
         {
-            invoice.TaxRateHst = GetTaxRate(invoice.CustomerProvince); // This is to fix issue with Vancouver tax rates set to 13%. Could be taken out once the data is fixed.
+            invoice.TaxRateHst = invoice.TaxRateHst.HasValue ? invoice.TaxRateHst.Value : GetTaxRate(invoice.CustomerProvince); // This is to fix issue with Vancouver tax rates set to 13%. Could be taken out once the data is fixed.
             invoice.SubTotal = 0;
             invoice.Hst = 0;
             invoice.Total = 0;

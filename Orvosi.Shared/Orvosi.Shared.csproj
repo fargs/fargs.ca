@@ -41,9 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accounting\ICustomer.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
+    <Compile Include="Accounting\IInvoice.cs" />
+    <Compile Include="Accounting\IInvoiceDetail.cs" />
+    <Compile Include="Accounting\IServiceRequest.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="StringBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,0 +1,157 @@
+﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums
+@model IEnumerable<Orvosi.Shared.Model.Invoice>
+@{
+    Layout = "~/Views/Accounting/_Layout.cshtml";
+
+    var roleId = User.Identity.GetRoleId();
+}
+
+@if (!Model.Any())
+{
+    <p><strong>There are no invoices that need to be sent out.</strong></p>
+}
+else
+{
+    <p><strong>@Model.Count()</strong> invoices</p>
+}
+
+
+<div class="row o-dashboard-tr">
+    <strong class="col-md-2 o-dashboard-td">Customer</strong>
+    <strong class="col-md-4 o-dashboard-td">Invoice</strong>
+    <strong class="col-md-6 o-dashboard-td">Items</strong>
+</div>
+<div>
+    @foreach (var invoice in Model)
+    {
+        @Html.Partial("_Invoice", invoice)
+    }
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $('#InvoiceDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
+        });
+
+        function onSend(invoiceId) {
+            var url = '@Url.Content("~/Accounting/SendInvoice")';
+            var form = $("#send-invoice-form-" + invoiceId);
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    toastr.success("Invoice sent successfully");
+                    refreshServiceRequest(serviceRequestId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.success("Something went wrong.");
+                }
+            });
+        }
+
+        function onCreate(serviceRequestId) {
+            var url = '@Url.Content("~/Accounting/Create")';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    serviceRequestId: serviceRequestId
+                }, // serializes the form's elements.
+                success: function () {
+                    toastr.success("Invoice created successfully");
+                    refreshServiceRequest(serviceRequestId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.success("Something went wrong.");
+                }
+            });
+        }
+
+        function onEdit(invoiceDetailId, isNoShow, isLateCancellation) {
+
+            if (isNoShow || isLateCancellation) {
+                $('#rate-form-group').css({ 'display': 'block' })
+            }
+            else {
+                $('#rate-form-group').css({ 'display': 'none' })
+            }
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/Edit?invoiceDetailId=")' + invoiceDetailId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#InvoiceNumber').html(result.InvoiceNumber);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+                    modalDiv.find('#AdditionalNotes').val(result.AdditionalNotes);
+
+                    var form = $('#edit-invoicedetail-form');
+                    form.find('#Id').val(result.Id);
+                    form.find('#To').val(result.To);
+                    $('#InvoiceDatePicker').datepicker('setDate', result.InvoiceDate);
+                    form.find('#Amount').val(result.Amount);
+                    if (isNoShow || isLateCancellation) {
+                        form.find('#Rate').val(result.Rate);
+                    }
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-invoicedetail-form").submit(function (e, serviceRequestId) {
+
+            var url = '@Url.Content("~/Accounting/Update")';
+
+            var serviceRequestId = $("#edit-invoicedetail-form").find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#edit-invoicedetail-form").serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-modal").modal('toggle');
+                    toastr.success("Invoice updated successfully.");
+                    refreshServiceRequest(serviceRequestId);
+                }
+            });
+
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        });
+
+        function refreshServiceRequest(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Accounting/ServiceRequest?serviceProviderId=" + ViewBag.SelectedUserId)&serviceRequestId=' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-request-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+    </script>
+}

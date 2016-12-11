@@ -438,9 +438,10 @@
     <Compile Include="Library\Google\GoogleServices.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\IEmailService.cs" />
+    <Compile Include="Library\Projections\InvoiceProjections.cs" />
+    <Compile Include="Library\Projections\ServiceRequestProjections.cs" />
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
-    <Compile Include="Models\AccountingModel.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BoxModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -1172,9 +1173,15 @@
     <Content Include="Views\ServiceRequestMessage\_PostMessage.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\_Layout.cshtml" />
     <Content Include="Views\Dashboard\_SummaryCount.cshtml" />
+    <Content Include="Views\Accounting\AllInvoices.cshtml" />
+    <Content Include="Views\Accounting\_Invoice.cshtml" />
+    <Content Include="Views\Accounting\CreateInvoice.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />
     <Content Include="Views\ServiceRequestTask\_TaskFilter.cshtml" />
     <Content Include="Views\ServiceRequest\ChangeCompany.cshtml" />
+    <Content Include="Views\Accounting\_EditInvoiceHeader.cshtml" />
+    <Content Include="Views\Accounting\_EditInvoiceItem.cshtml" />
+    <Content Include="Views\Accounting\_InvoiceMenu.cshtml" />
     <None Include="Views\Shared\ReleaseNotes.md" />
     <Content Include="Views\Shared\_ValidationErrors.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
@@ -1193,6 +1200,7 @@
     <Content Include="Views\Task\Edit.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Note\_NoteModalForm.cshtml" />
+    <Content Include="Views\Shared\_LayoutPrintPreview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

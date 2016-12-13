@@ -7,6 +7,7 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNet.Identity.Owin;
+using MimeKit;
 using Newtonsoft.Json.Linq;
 using Orvosi.Data;
 using Orvosi.Shared.Enums;
@@ -207,10 +208,24 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task SendEmailFrom(string from, string to)
         {
+            var message = BuildSendTestMailMessage(to, from, Request.GetBaseUrl());
             var service = new GoogleServices();
-            var templateFolder = Url.Content("~/Views/Shared/NotificationTemplates/");
-            var baseUrl = Request.GetBaseUrl();
-            await service.SendEmailAsync(new MailMessage(from, to, "This is a test", "This is a test"));
+            await service.SendEmailAsync(message);
+        }
+
+        private MailMessage BuildSendTestMailMessage(string to, string from, string baseUrl)
+        {
+            var message = new MailMessage();
+            message.To.Add(to);
+            message.From = new MailAddress(from);
+            message.Subject = string.Format("Orvosi Diagnostics - Email from {0} - {1}", from, to);
+            message.IsBodyHtml = true;
+            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+
+            ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
+            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Shared/NotificationTemplates/TestEmail.cshtml", "http://www.google.ca");
+
+            return message;
         }
     }
 }

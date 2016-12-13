@@ -1049,7 +1049,7 @@
     <Content Include="Views\Shared\NotificationTemplates\Invoice.html" />
     <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
     <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />
-    <Content Include="Views\Shared\NotificationTemplates\TestEmail.html" />
+    <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -12,6 +12,7 @@ using System;
 using System.Threading.Tasks;
 using Orvosi.Data;
 using MimeKit;
+using Microsoft.Owin.Security.DataHandler.Encoder;
 
 namespace WebApp.Library
 {
@@ -61,9 +62,7 @@ namespace WebApp.Library
         public async Task SendEmailAsync(MailMessage message)
         {
             var mimeMessage = MimeMessage.CreateFromMailMessage(message);
-            byte[] encodedBytes = Encoding.UTF8.GetBytes(mimeMessage.ToString());
-            string base64EncodedText = HttpServerUtility.UrlTokenEncode(encodedBytes);
-
+            var base64EncodedText = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(mimeMessage.ToString());
             var googleMessage = new Google.Apis.Gmail.v1.Data.Message();
             googleMessage.Raw = base64EncodedText;
 

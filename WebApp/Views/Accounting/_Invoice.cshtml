@@ -1,6 +1,12 @@
 ﻿@using WebApp.Library.Extensions
 @model Orvosi.Shared.Model.Invoice
 
+@if (Model == null)
+{
+    <div>No invoice</div>
+}
+else
+{
 <div class="row" id="invoice-@Model.Id">
     <div class="col-md-3">
         <div>@Model.InvoiceNumber</div>
@@ -77,3 +83,4 @@
         </dl>
     </div>
 </div>
+}

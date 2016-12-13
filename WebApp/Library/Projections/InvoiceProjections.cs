@@ -47,6 +47,7 @@ namespace WebApp.Library.Projections
                 Id = i.Id,
                 InvoiceNumber = i.InvoiceNumber,
                 InvoiceDate = i.InvoiceDate,
+                Terms = i.Terms,
                 SubTotal = i.SubTotal,
                 TaxRateHst = i.TaxRateHst,
                 Hst = i.Hst,

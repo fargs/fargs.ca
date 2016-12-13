@@ -307,7 +307,7 @@ namespace WebApp.Controllers
                 var record = context.Invoices
                     .WithId(invoiceId)
                     .Select(InvoiceProjections.Header())
-                    .Single();
+                    .SingleOrDefault();
 
                 return PartialView("_Invoice", record);
             }

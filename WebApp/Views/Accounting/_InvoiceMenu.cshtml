@@ -24,7 +24,7 @@
                 }
                 else
                 {
-                    <button type="button" class="btn btn-primary" onclick="onSend(@Model.Invoice.Id)"><i class="fa fa-send"></i></button>
+                    <button type="button" class="btn btn-primary" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)"><i class="fa fa-send"></i></button>
                 }
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
@@ -54,7 +54,7 @@
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a onclick="onDeleteInvoice(@(Model.ServiceRequest == null ? 0 : Model.ServiceRequest.Id), @Model.Invoice.Id)" style="cursor:pointer;">
+                        <a onclick="onDeleteInvoice(@Model.Invoice.ServiceRequestId, @Model.Invoice.Id)" style="cursor:pointer;">
                             <i class="fa fa-remove"></i> &nbsp;Delete Invoice
                         </a>
                     </li>

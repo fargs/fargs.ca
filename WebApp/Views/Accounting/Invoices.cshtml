@@ -359,7 +359,8 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
+                    //window.location.reload();
+                    console.log(err.error);
                 }
             }, this);
         }
@@ -374,7 +375,8 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
+                    //window.location.reload();
+                    console.log(err.error);
                 }
             }, this);
         }

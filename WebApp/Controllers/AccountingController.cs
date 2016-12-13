@@ -503,6 +503,7 @@ namespace WebApp.Controllers
             {
                 var record = context.Invoices.Find(invoice.Id);
                 record.InvoiceDate = invoice.InvoiceDate;
+                record.Terms = invoice.Terms;
                 record.TaxRateHst = invoice.TaxRateHst;
                 record.CustomerEmail = invoice.Customer.BillingEmail;
                 record.ModifiedDate = SystemTime.UtcNow();

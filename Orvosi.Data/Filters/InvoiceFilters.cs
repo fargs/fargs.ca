@@ -90,7 +90,7 @@ namespace Orvosi.Data.Filters
                 var monthEnd = monthStart.AddMonths(1);
                 invoices = invoices.Where(c => c.InvoiceDate >= monthStart && c.InvoiceDate < monthEnd);
             }
-            return invoices; ;
+            return invoices;
         }
     }
 }

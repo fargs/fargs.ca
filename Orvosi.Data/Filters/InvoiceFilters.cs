@@ -81,7 +81,7 @@ namespace Orvosi.Data.Filters
             // Apply the year and month filters.
             if (month.HasValue)
             {
-                invoices.Where(c => c.InvoiceDate.Month == month.Value);
+                invoices = invoices.Where(c => c.InvoiceDate.Month == month.Value);
             }
             return invoices;
         }

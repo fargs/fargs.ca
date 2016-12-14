@@ -70,20 +70,27 @@ namespace Orvosi.Data.Filters
         public static IQueryable<Invoice> AreWithinDateRange(this IQueryable<Invoice> invoices, DateTime now, int? year, int? month)
         {
             now = now.Date.AddDays(1);
+            DateTime currentYear = new DateTime(now.Year, 01, 01);
+
             if (!year.HasValue && !month.HasValue)
             {
                 return invoices.Where(i => i.InvoiceDate <= now);
             }
+
             if (year.HasValue)
             {
-                invoices = invoices.Where(i => i.InvoiceDate.Year == year);
+                currentYear = new DateTime(year.Value, 01, 01);
+                invoices = invoices.Where(i => i.InvoiceDate >= currentYear);
             }
+
             // Apply the year and month filters.
             if (month.HasValue)
             {
-                invoices = invoices.Where(c => c.InvoiceDate.Month == month.Value);
+                var monthStart = currentYear.AddMonths(month.Value - 1);
+                var monthEnd = monthStart.AddMonths(1);
+                invoices = invoices.Where(c => c.InvoiceDate >= monthStart && c.InvoiceDate < monthEnd);
             }
-            return invoices;
+            return invoices; ;
         }
     }
 }

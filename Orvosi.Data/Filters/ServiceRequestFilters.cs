@@ -91,7 +91,7 @@ namespace Orvosi.Data.Filters
             var addOns = serviceRequests
                 .AreAddOns();
 
-            return serviceRequests.Concat(addOns);           
+            return serviceRequests.Concat(addOns);
         }
     }
 }

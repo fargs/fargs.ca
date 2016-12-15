@@ -21,7 +21,7 @@ using MoreLinq;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Case Coordinator, Super Admin, Physician")]
+    [Authorize(Roles = "Super Admin, Physician")]
     public class AccountingController : Controller
     {
         public ActionResult UnsentInvoices(FilterArgs filterArgs)

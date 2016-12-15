@@ -74,24 +74,25 @@
     <div class="row o-dashboard-tr">
         <div class="col-md-2" style="padding:15px 15px">
             <div>
-                <form action="~/Availability/CancelDay" method="post">
-                    @Html.Hidden("id", day.Id)
-                    @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequests.Any()))
+                
+                    @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()))
                     {
                         <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-check fa-lg text-success"></i>
                     }
-                    else if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
+                    else if (day.AvailableSlots.Any(a => a.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()))
                     {
                         <div class="pull-left bg-warning">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-exclamation fa-lg text-warning"></i>
                     }
                     else
                     {
-                        <div class="pull-left bg-danger">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
-                        <button type="submit" class="btn btn-link" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove"></i></button>
+                        <form action="~/Availability/CancelDay" method="post">
+                            @Html.Hidden("id", day.Id)
+                            <div class="pull-left bg-danger">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
+                            <button type="submit" class="btn btn-link" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove"></i></button>
+                        </form>
                     }
-                </form>
             </div>
             <span>
                 @if (day.LocationId == null)
@@ -174,10 +175,12 @@
                         <div class="pull-left" style="vertical-align: middle">
                             <form action="~/Availability/CancelSlot" method="post">
                                 @Html.Hidden("id", slot.Id)
-                                @if (slot.ServiceRequests.Any())
+                                @if (slot.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any())
                                 {
-                                    <div class="pull-left text-muted">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
-                                    <i class="fa fa-check fa-lg" style="color:green;"></i>
+                                    <a href="~/ServiceRequest/Details/@slot.ServiceRequests.First().Id" target="_blank">
+                                        <div class="pull-left text-muted">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
+                                        <i class="fa fa-check fa-lg" style="color:green;"></i>
+                                    </a>
                                 }
                                 else
                                 {

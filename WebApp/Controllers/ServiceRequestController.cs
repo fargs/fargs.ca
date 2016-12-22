@@ -571,11 +571,13 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
-            if (sr.ServiceId != Orvosi.Shared.Enums.Services.Addendum && sr.ServiceId != Orvosi.Shared.Enums.Services.PaperReview)
+            var serviceCategoryId = ctx.ServiceRequests.Single(s => s.Id == sr.Id).Service.ServiceCategoryId;
+
+            if (serviceCategoryId != ServiceCategories.AddOn)
             {
                 this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
             }
-
+           
             bool overrideServiceCatalogueMissingError = false;
             if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
             {

@@ -571,7 +571,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
-            var serviceCategoryId = ctx.ServiceRequests.Single(s => s.Id == sr.Id).Service.ServiceCategoryId;
+            var serviceCategoryId = ctx.Services.Single(s => s.Id == sr.ServiceId).ServiceCategoryId;
 
             if (serviceCategoryId != ServiceCategories.AddOn)
             {

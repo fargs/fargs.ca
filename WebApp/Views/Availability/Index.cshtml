@@ -1,11 +1,6 @@
 ﻿@using Orvosi.Data
 @using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
-@using System.Runtime.InteropServices
-
-
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-
 @model WebApp.ViewModels.AvailabilityViewModels.IndexViewModel
 @{
     ViewBag.Title = "Availability";
@@ -24,36 +19,12 @@
             Group = new SelectListGroup() { Name = c.AspNetUserRoles.First().AspNetRole.Name }
         });
 
-    ViewBag.Intake = db.AspNetUsers
-        .AsEnumerable()
-        .Where(a => a.GetRole().Id == AspNetRoles.Physician 
-        || a.GetRole().Id == AspNetRoles.DocumentReviewer
-        || a.GetRole().Id == AspNetRoles.IntakeAssistant)
+    ViewBag.Years = DateRanges.GetYears()
         .Select(c => new SelectListItem()
         {
-            Text = c.GetDisplayName(),
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.AspNetUserRoles.First().AspNetRole.Name }
-        });
-
-    
-
-    ViewBag.Provinces = db.Provinces
-    .AsEnumerable()
-    .Where(a => a.ProvinceCode == "CA-ON" || a.ProvinceCode == "CA-BC")
-    .OrderByDescending(b => b.Id)
-    .Select(c => new SelectListItem()
-    {
-        Text = c.ProvinceName,
-        Value = c.Id.ToString()
-    });
-
-    ViewBag.Years = DateRanges.GetYears()
-    .Select(c => new SelectListItem()
-    {
-        Text = c.Value,
-        Value = c.Key.ToString()
-    }).ToList();
+            Text = c.Value,
+            Value = c.Key.ToString()
+        }).ToList();
 
     ViewBag.Months = DateRanges.GetMonths()
         .Select(c => new SelectListItem()
@@ -70,13 +41,10 @@
     <div class="lead">@Model.SelectedUser.GetDisplayName()</div>
 }
 
-
-
 <h2>Availability</h2>
 
 <div class="row">
     <div class="col-md-12">
-        
         <form action="~/Availability/Index/" method="get" class="form-inline">
             @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
             {
@@ -97,26 +65,16 @@
 <p />
 <div class="row">
     <div class="col-md-12">
-        <form action="~/Availability/AddDay/@Model.SelectedUser.Id" method="get" class="form-inline">
-            <div class="form-group">
-                @Html.DropDownList("Province", new SelectList(ViewBag.Provinces, "Value", "Text", ViewBag.Provinces), new { @class = "form-control" })
-            </div>
-            <button type="submit" class="btn btn-primary">Add Available Day(s)</button>
-        </form>
-     </div>
+        <a href="~/Availability/AddDay/@Model.SelectedUser.Id" class="btn btn-primary">Add Available Day(s)</a>
+    </div>
 </div>
 <h3>@Model.FilterArgs.FilterDate.ToString("yyyy MMMM")</h3>
-@{
-    int i = 0;
-
-    //var selectedList = Model.Resources.Select(x => new { x.AppointmentDate, x.IntakeAssistantId, x.DocumentReviewerId}).Distinct();
-}
-
 @foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
 {
     <div class="row o-dashboard-tr">
         <div class="col-md-2" style="padding:15px 15px">
             <div>
+                
                     @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()))
                     {
                         <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
@@ -157,78 +115,7 @@
                     <strong class="small">@day.Company.Name</strong>
                 }
             </span>
-            <input type="button" data-target="#result@(i)" data-toggle="modal" value="Open Modal Popup" onclick="ShowModelPopUp();" />
-            <div id="result@(i)" class="modal" tabindex="-1" style="display:none;">                             
-                   @{
-                       Html.BeginForm("AssignResources", "Availability");
-                       //create IEnumerable of resources of each available day - null if empty
-                       IEnumerable<AvailableDayResource> resources;
-                       if (day.AvailableDayResources.FirstOrDefault(x => x.AvailableDayId == day.Id) != null)
-                       {
-                           resources = day.AvailableDayResources.Where(x => x.AvailableDayId == day.Id);
-                       }
-                       else
-                       {
-                           resources = null;
-                       }
-                }
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button class="close" data-dissmiss="modal">&times;</button>
-                            <h4 class="modal-title">
-                                Select Resources for 
-                                @Model.SelectedUser.GetDisplayName()
-                                 on
-                                @day.Day.ToString("dddd dd")
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                               
-                                @Html.Hidden("AvailabilityId", day.Id)             
-                                @{
-                                        //displays either List with selected values or without (based on DB)
-                                       if (resources != null)
-                                       {
-                                            @Html.ListBox("list", 
-                                            new MultiSelectList(ViewBag.Intake, "Value", "Text", resources.Select(x=>x.UserId)), 
-                                            new { name="list", @class = "form-control" });
-                                       }
-                                       else
-                                       {
-                                            @Html.ListBox("list",
-                                            new MultiSelectList(ViewBag.Intake, "Value", "Text"),
-                                            new { name = "list", @class = "form-control" });
-                                       }
-                                }
-                                </div>
-                            <!-- this script handles multiple input in listbox without using CTRL key-->
-                            <script>
-                                window.onmousedown = function (e) {
-                                    var el = e.target;
-                                    if (el.tagName.toLowerCase() == 'option' && el.parentNode.hasAttribute('multiple')) {
-                                        e.preventDefault();
-
-                                        // toggle selection
-                                        if (el.hasAttribute('selected')) el.removeAttribute('selected');
-                                        else el.setAttribute('selected', '');
-
-                                        // hack to correct buggy behavior
-                                        var select = el.parentNode.cloneNode(true);
-                                        el.parentNode.parentNode.replaceChild(select, el.parentNode);
-                                    }
-                                }
-                            </script>
-                        </div>                       
-                        <div class="modal-footer">                            
-                            <input class="btn btn-primary" value="Edit" type="submit">
-                            <button class="btn btn-primary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                 </div>
-            </div>
-        </div>   
+        </div>
         <div class="col-md-10" style="padding:15px 15px">
             <form action="~/Availability/AddSlots" method="post">
                 @Html.Hidden("AvailableDayId", day.Id)
@@ -311,6 +198,4 @@
             </ul>
         </div>
     </div>
-
-    i++;
 }

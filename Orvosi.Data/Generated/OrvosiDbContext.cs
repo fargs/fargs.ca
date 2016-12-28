@@ -28,7 +28,6 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
         public System.Data.Entity.DbSet<AspNetUserView> AspNetUserViews { get; set; } // User
         public System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
-        public System.Data.Entity.DbSet<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResources
         public System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
         public System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
         public System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
@@ -145,7 +144,6 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserViewConfiguration());
             modelBuilder.Configurations.Add(new AvailableDayConfiguration());
-            modelBuilder.Configurations.Add(new AvailableDayResourceConfiguration());
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration());
             modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration());
             modelBuilder.Configurations.Add(new BillableEntityConfiguration());
@@ -214,7 +212,6 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AspNetUserRoleConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserViewConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableDayConfiguration(schema));
-            modelBuilder.Configurations.Add(new AvailableDayResourceConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableSlotConfiguration(schema));
             modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration(schema));
             modelBuilder.Configurations.Add(new BillableEntityConfiguration(schema));

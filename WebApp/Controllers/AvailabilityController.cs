@@ -12,7 +12,6 @@ using System.Globalization;
 using WebApp.Library;
 using System.Net;
 using WebApp.Library.Extensions;
-using System.Diagnostics;
 
 namespace WebApp.Controllers
 {
@@ -80,71 +79,6 @@ namespace WebApp.Controllers
                 Day = SystemTime.Now()
             };
             return View(model);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> AssignResources(FormCollection formCollection)
-        {
-            if (ModelState.IsValid)
-            {
-                //Take post variables and place into local variables
-                short id = Convert.ToInt16(Request.Form["AvailabilityId"]);
-                //looks for all intake attached to this available day
-                var emptyResources = context.AvailableDayResources
-                                        .Where(c => c.AvailableDayId == id)
-                                        .Select(x => x.UserId);
-                //makes sure that selected list can be null (delete all intakes attached to that date)
-                string [] assistants = null;                
-                if (Request.Form["list"] != null)
-                {
-                    assistants = Request.Form["list"].Split(',');
-                }
-                List<string> exist = new List<string>();
-                if (assistants != null)
-                {
-                    foreach (var item in assistants)
-                    {
-                        //checks is selected item is already within DB
-                        //handles data insertion functions
-                        var oldResources = context.AvailableDayResources
-                                            .Where(c => c.AvailableDayId == id && c.UserId == new Guid(item))
-                                            .FirstOrDefault();
-                        if (oldResources == null)
-                        {
-                            var resource = new Orvosi.Data.AvailableDayResource()
-                            {
-                                AvailableDayId = id,
-                                UserId = new Guid(item)
-                            };
-                            context.AvailableDayResources.Add(resource);
-                        }
-                        //populates local array with the resources that exist in both the DB and selected items
-                        foreach (var empty in emptyResources)
-                        {
-                            if (empty.ToString() == item)
-                            {
-                                exist.Add(empty.ToString());
-                                break;
-                            }
-                        }
-                    }
-                }
-                //checks through all DB resources and sees if they exist in "exist" array populated just above code
-                //handles data removal functions
-                foreach (var empty1 in emptyResources)
-                {
-                    if (!exist.Contains(empty1.ToString()))
-                    {
-                        var resource = await context.AvailableDayResources
-                            .FirstAsync(c => c.AvailableDayId == id && c.UserId == empty1);
-                        context.AvailableDayResources.Remove(resource);
-                    }
-                }
-                // await until changes are synced
-                await context.SaveChangesAsync();
-            }     
-            //refresh page      
-            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [HttpPost]

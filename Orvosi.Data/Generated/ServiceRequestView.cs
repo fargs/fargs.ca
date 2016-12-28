@@ -71,7 +71,7 @@ namespace Orvosi.Data
         public string AddressTypeName { get; set; } // AddressTypeName (length: 50)
         public string Address1 { get; set; } // Address1 (length: 255)
         public string Address2 { get; set; } // Address2 (length: 255)
-        public string City { get; set; } // City (length: 128)
+        public string City { get; set; } // City (length: 50)
         public string PostalCode { get; set; } // PostalCode (length: 50)
         public short? ProvinceId { get; set; } // ProvinceId
         public string ProvinceName { get; set; } // ProvinceName (length: 50)

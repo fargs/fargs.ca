@@ -81,7 +81,7 @@ namespace Orvosi.Data
             Property(x => x.AddressTypeName).HasColumnName(@"AddressTypeName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.Address1).HasColumnName(@"Address1").IsOptional().HasColumnType("nvarchar").HasMaxLength(255);
             Property(x => x.Address2).HasColumnName(@"Address2").IsOptional().HasColumnType("nvarchar").HasMaxLength(255);
-            Property(x => x.City).HasColumnName(@"City").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.City).HasColumnName(@"City").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.PostalCode).HasColumnName(@"PostalCode").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.ProvinceId).HasColumnName(@"ProvinceId").IsOptional().HasColumnType("smallint");
             Property(x => x.ProvinceName).HasColumnName(@"ProvinceName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);

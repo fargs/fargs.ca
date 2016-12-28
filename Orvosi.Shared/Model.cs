@@ -331,6 +331,20 @@ namespace Orvosi.Shared.Model
                 .All(srt => srt.Status.Id == TaskStatuses.Done || srt.Status.Id == TaskStatuses.Obsolete);
         }
 
+        public string CaseFolderName
+        {
+            get
+            {
+                if (Service.ServiceCategoryId == ServiceCategories.AddOn)
+                {
+                    return $"{this.DueDate.Value.ToString("yyyy-MM-dd")} {ClaimantName} ({Service.Code}-{Physician.UserName}) {Company.Code}-{Id}";
+                }
+                else
+                {
+                    return $"{this.AppointmentDate.Value.ToString("yyyy-MM-dd")}({this.StartTime.Value.ToString(@"hhmm")})-{Address.CityCode}-{ClaimantName} ({Service.Code}-{Physician.UserName}) {Company.Code}-{Id}";
+                }
+            }
+        }
         public string CalendarEventTitle
         {
             get
@@ -442,6 +456,7 @@ namespace Orvosi.Shared.Model
         public string BoxUserId { get; set; }
         public string Email { get; set; }
         public IEnumerable<ServiceRequestTask> ServiceRequestTasks { get; set; }
+        public string Notes { get; set; }
 
         // computeds
         public string DisplayName
@@ -454,7 +469,6 @@ namespace Orvosi.Shared.Model
                     return $"{(!string.IsNullOrEmpty(Title) ? Title + " " : "")}{FirstName} {LastName}";
             }
         }
-
         public string Initials
         {
             get
@@ -465,8 +479,17 @@ namespace Orvosi.Shared.Model
                     return $"{FirstName.ToUpper().First()}{LastName.ToUpper().First()}";
             }
         }
+        public string UserName
+        {
+            get
+            {
+                return Email.Split('@')[0];
+            }
+        }
 
-        public string Notes { get; set; }
+        public string BoxFolderId { get; set; }
+        public string BoxCaseTemplateFolderId { get; set; }
+        public string BoxAddOnTemplateFolderId { get; set; }
     }
 
     public class UserRole
@@ -577,6 +600,7 @@ namespace Orvosi.Shared.Model
         public string CityCode { get; set; }
         public string ProvinceCode { get; set; }
         public string TimeZone { get; set; }
+        public short? ProvinceId { get; set; }
     }
 
     public class Invoice

@@ -21,8 +21,8 @@ namespace Orvosi.Data
             var addonServices = new short?[] { Services.Addendum, Services.PaperReview };
 
             // When service is not an addon
-            RuleFor(sr => sr.AvailableSlotId).NotNull().When(sr => !addonServices.Contains(sr.ServiceId));
-            RuleFor(sr => sr.AppointmentDate).NotNull().When(sr => !addonServices.Contains(sr.ServiceId));
+            //RuleFor(sr => sr.AvailableSlotId).NotNull().When(sr => !addonServices.Contains(sr.ServiceId));
+            //RuleFor(sr => sr.AppointmentDate).NotNull().When(sr => !addonServices.Contains(sr.ServiceId));
 
             // When service is an addon
             RuleFor(sr => sr.DueDate).NotNull().When(sr => addonServices.Contains(sr.ServiceId));

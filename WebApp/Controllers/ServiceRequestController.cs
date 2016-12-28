@@ -22,6 +22,7 @@ using WebApp.Library.Extensions;
 using MoreLinq;
 using WebApp.ViewModels;
 using WebApp.Library.Projections;
+using Orvosi.Data.Filters;
 
 namespace WebApp.Controllers
 {
@@ -515,7 +516,7 @@ namespace WebApp.Controllers
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
-        public ActionResult CreateAddOn(bool serviceIdHasErrors = false)
+        public async Task<ActionResult> CreateAddOn(bool serviceIdHasErrors = false)
         {
             var vm = new CreateViewModel();
 
@@ -669,7 +670,7 @@ namespace WebApp.Controllers
                 return RedirectToAction("Details", new { id = sr.Id });
             }
 
-            return CreateAddOn(ViewBag.ServiceIdHasErrors);
+            return await CreateAddOn(ViewBag.ServiceIdHasErrors);
         }
 
         private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId)
@@ -978,7 +979,10 @@ namespace WebApp.Controllers
         public async Task<ActionResult> BoxManager(int serviceRequestId)
         {
             // Get the box folder id for the case
-            var serviceRequest = ctx.ServiceRequests.Find(serviceRequestId);
+            var serviceRequest = ctx.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(ServiceRequestProjections.ForBoxManager())
+                .Single();
 
             if (string.IsNullOrEmpty(serviceRequest.BoxCaseFolderId))
             {
@@ -986,8 +990,7 @@ namespace WebApp.Controllers
                 return new HttpNotFoundResult();
             }
 
-            var orvosiBoxFolderCollaborations = serviceRequest
-                .ServiceRequestBoxCollaborations
+            var orvosiBoxFolderCollaborations = ctx.ServiceRequestBoxCollaborations
                 .Where(bc => bc.ServiceRequestId == serviceRequestId)
                 .ToList();
 
@@ -1007,8 +1010,8 @@ namespace WebApp.Controllers
                         BoxCollaborations = b
                     }).ToList();
 
-            var orvosiResources = serviceRequest
-                .ServiceRequestTasks
+            var orvosiResources = ctx.ServiceRequestTasks
+                    .Where(srt => srt.ServiceRequestId == serviceRequestId)
                     .Where(t => t.AssignedTo.HasValue)
                     .Select(sr => sr.AspNetUser_AssignedTo)
                     .Distinct();
@@ -1027,7 +1030,7 @@ namespace WebApp.Controllers
             vm.Resources = resources;
             vm.BoxFolderCollaborations = boxFolderCollaborations;
             vm.BoxFolder = boxFolder;
-            vm.ExpectedFolderName = serviceRequest.GetCaseFolderName();
+            vm.ExpectedFolderName = serviceRequest.CaseFolderName;
             return View(vm);
         }
 
@@ -1035,10 +1038,13 @@ namespace WebApp.Controllers
         public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
         {
             // Get the request
-            var request = ctx.ServiceRequests.Single(sr => sr.Id == serviceRequestId);
+            var serviceRequest = ctx.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(ServiceRequestProjections.ForBoxManager())
+                .Single();
 
             var box = new BoxManager();
-            var caseFolder = box.RenameCaseFolder(request.BoxCaseFolderId, request.GetCaseFolderName());
+            var caseFolder = box.RenameCaseFolder(serviceRequest.BoxCaseFolderId, serviceRequest.CaseFolderName);
             
             // Redirect to display the Box Folder
             return RedirectToAction("Details", new { serviceRequestId = serviceRequestId });
@@ -1048,36 +1054,39 @@ namespace WebApp.Controllers
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
             // Get the request
-            var request = ctx.ServiceRequests.Single(sr => sr.Id == ServiceRequestId);
+            var serviceRequest = ctx.ServiceRequests
+                .WithId(ServiceRequestId)
+                .Select(ServiceRequestProjections.ForBoxManager())
+                .Single();
 
             // Get the request and assert they have a Box Folder Id
-            var physician = ctx.AspNetUsers.Single(p => p.Id == request.PhysicianId);
+            var physician = ctx.AspNetUsers.Single(p => p.Id == serviceRequest.Physician.Id);
             //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
-            var physicianBoxFolderId = physician.BoxFolderId;
+            var physicianBoxFolderId = serviceRequest.Physician.BoxFolderId;
             if (string.IsNullOrEmpty(physicianBoxFolderId))
                 return PartialView("Error", "Physician does not have a cases folder setup in Box.");
 
             // Create the case folder
             var box = new BoxManager();
             BoxFolder caseFolder;
-            if (request.Service.ServiceCategoryId == ServiceCategories.AddOn)
+            if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.AddOn)
             {
-                var province = ctx.GetCompanyProvince(request.CompanyId).FirstOrDefault();
+                var province = ctx.GetCompanyProvince(serviceRequest.Company.Id).FirstOrDefault();
                 if (province == null)
                 {
                     province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
                 }
-                caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, request.DueDate.Value, request.GetCaseFolderName(), physician.Physician.BoxAddOnTemplateFolderId);
+                caseFolder = box.CreateAddOnFolder(physicianBoxFolderId, province.ProvinceName, serviceRequest.DueDate.Value, serviceRequest.CaseFolderName, serviceRequest.Physician.BoxAddOnTemplateFolderId);
             }
             else
             {
                 // Get the province which is used in the case folder path
-                var province = ctx.Provinces.Single(p => p.Id == request.Address.ProvinceId);
-                caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, request.AppointmentDate.Value, request.GetCaseFolderName(), physician.Physician.BoxCaseTemplateFolderId);
+                var province = ctx.Provinces.Single(p => p.Id == serviceRequest.Address.ProvinceId);
+                caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, serviceRequest.AppointmentDate.Value, serviceRequest.CaseFolderName, serviceRequest.Physician.BoxCaseTemplateFolderId);
             }
 
             // Persist the new case folder Id to the database.
-            request.BoxCaseFolderId = caseFolder.Id;
+            serviceRequest.BoxCaseFolderId = caseFolder.Id;
             ctx.SaveChanges();
 
             // Redirect to display the Box Folder

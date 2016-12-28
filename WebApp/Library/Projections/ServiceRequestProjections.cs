@@ -157,7 +157,6 @@ namespace WebApp.Library.Projections
                 })
             };
         }
-
         public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> AllDetails(Guid serviceProviderId, DateTime now)
         {
             return sr => new Orvosi.Shared.Model.ServiceRequest
@@ -366,6 +365,43 @@ namespace WebApp.Library.Projections
                         }
                     }
                 })
+            };
+        }
+        public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> ForBoxManager()
+        {
+            return sr => new Orvosi.Shared.Model.ServiceRequest
+            {
+                Id = sr.Id,
+                BoxCaseFolderId = sr.BoxCaseFolderId,
+                DueDate = sr.DueDate,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                ClaimantName = sr.ClaimantName,
+                Physician = new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.Physician.Id,
+                    Email = sr.Physician.AspNetUser.Email,
+                    BoxFolderId = sr.Physician.AspNetUser.BoxFolderId,
+                    BoxCaseTemplateFolderId = sr.Physician.BoxCaseTemplateFolderId,
+                    BoxAddOnTemplateFolderId = sr.Physician.BoxAddOnTemplateFolderId
+                },
+                Service = new Orvosi.Shared.Model.Service
+                {
+                    Id = sr.Service.Id,
+                    Code = sr.Service.Code,
+                    ServiceCategoryId = sr.Service.ServiceCategoryId.Value
+                },
+                Company = new Orvosi.Shared.Model.Company
+                {
+                    Id = sr.Company.Id,
+                    Name = sr.Company == null ? string.Empty : sr.Company.Name
+                },
+                Address = sr.Address == null ? null : new Orvosi.Shared.Model.Address
+                {
+                    Id = sr.AddressId.Value,
+                    CityCode = sr.Address == null ? string.Empty : sr.Address.City_CityId.Code,
+                    ProvinceId = sr.Address.ProvinceId
+                }
             };
         }
     }

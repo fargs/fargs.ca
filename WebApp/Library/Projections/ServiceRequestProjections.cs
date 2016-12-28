@@ -391,15 +391,16 @@ namespace WebApp.Library.Projections
                     Code = sr.Service.Code,
                     ServiceCategoryId = sr.Service.ServiceCategoryId.Value
                 },
-                Company = new Orvosi.Shared.Model.Company
+                Company = sr.Company == null ? null : new Orvosi.Shared.Model.Company
                 {
                     Id = sr.Company.Id,
-                    Name = sr.Company == null ? string.Empty : sr.Company.Name
+                    Name = sr.Company.Name,
+                    Code = sr.Company.Code
                 },
                 Address = sr.Address == null ? null : new Orvosi.Shared.Model.Address
                 {
                     Id = sr.AddressId.Value,
-                    CityCode = sr.Address == null ? string.Empty : sr.Address.City_CityId.Code,
+                    CityCode = sr.Address.City_CityId.Code,
                     ProvinceId = sr.Address.ProvinceId
                 }
             };

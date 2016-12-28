@@ -1086,7 +1086,8 @@ namespace WebApp.Controllers
             }
 
             // Persist the new case folder Id to the database.
-            serviceRequest.BoxCaseFolderId = caseFolder.Id;
+            var sr = ctx.ServiceRequests.Find(ServiceRequestId);
+            sr.BoxCaseFolderId = caseFolder.Id;
             ctx.SaveChanges();
 
             // Redirect to display the Box Folder

@@ -25,6 +25,7 @@
 
     var addresses = db.Addresses.ToList(); // needed to use the string.format in the Select below
     ViewBag.Addresses = addresses
+        .Where(c => c.ProvinceId == Convert.ToInt32(Request.Params["Province"]))
         .Select(c => new SelectListItem()
         {
             Text = string.Format("{0} - ({1})", c.Name, c.City),

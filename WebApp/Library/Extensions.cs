@@ -69,7 +69,7 @@ namespace WebApp.Library.Extensions
             if (self.Date == toDate.Date)
                 return new List<DateTime> { self.Date };
 
-            var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days);
+            var range = Enumerable.Range(0, new TimeSpan(toDate.Ticks - self.Ticks).Days + 1);
 
             return from p in range
                    select self.Date.AddDays(p);

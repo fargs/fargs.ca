@@ -24,27 +24,16 @@ else
                 <tr>
                     <td>
                         <span>@detail.Description</span>
-                        <div class="text-danger">@detail.AdditionalNotes</div>
+                        <div class="text-danger">@detail.DiscountDescription</div>
+                        @if (!string.IsNullOrEmpty(detail.AdditionalNotes))
+                        {
+                            <div><b>Notes:</b> <div>@detail.AdditionalNotes</div></div>
+                        }
                     </td>
                     <td class="text-right">
-                        @if (detail.ServiceRequest != null && (detail.ServiceRequest.IsNoShow || detail.ServiceRequest.IsLateCancellation))
-                        {
-                            <span>
-                                @string.Format("{0} of {1}", detail.Rate.ToString("0%"), detail.Amount.ToString("C2"))
-                            </span>
-                            if (detail.ServiceRequest.ServiceStatusId.HasValue)
-                            {
-                                <div>
-                                    @Html.Partial("_ServiceStatusLabel", detail.ServiceRequest.ServiceStatusId.Value)
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <span>
-                                @detail.Amount.ToString("C2")
-                            </span>
-                        }
+                        <span>
+                            @detail.Total.ToString("C2")
+                        </span>
                     </td>
                     <td class="text-right">
                         <a onclick="onEditInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">

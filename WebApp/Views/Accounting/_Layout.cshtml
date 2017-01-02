@@ -21,12 +21,25 @@
                           }).ToList();
 
     Guid userId = User.Identity.GetGuidUserId();
+    Guid serviceProviderId = userId;
     var param = Request.QueryString.Get("serviceProviderId");
-    var serviceProviderId = string.IsNullOrEmpty(param) ? (Guid?)null : (Guid?)new Guid(param);
+    var serviceProviderIdFromUrl = string.IsNullOrEmpty(param) ? (Guid?)null : (Guid?)new Guid(param);
     // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-    if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+    if (User.Identity.IsAdmin() && serviceProviderIdFromUrl.HasValue)
     {
-        userId = serviceProviderId.Value;
+        serviceProviderId = serviceProviderIdFromUrl.Value;
+    }
+
+    Orvosi.Shared.Model.Invoice selectedInvoice = null;
+    var paramInvoiceId = Request.QueryString.Get("invoiceId");
+    int invoiceId;
+    if (int.TryParse(paramInvoiceId, out invoiceId))
+    {
+        selectedInvoice = context.Invoices.Where(i => i.Id == invoiceId).Select(i => new Orvosi.Shared.Model.Invoice
+        {
+            Id = i.Id,
+            InvoiceNumber = i.InvoiceNumber
+        }).Single();
     }
 }
 
@@ -36,7 +49,7 @@
         <div class="col-md-12">
             <form action="~/@this.ViewContext.RouteData.Values["Controller"]/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
                 <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(userSelectList, "Value", "Text", "Group.Name", userId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
+                    @Html.DropDownList("ServiceProviderId", new SelectList(userSelectList, "Value", "Text", "Group.Name", serviceProviderId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
             </form>
         </div>
@@ -44,6 +57,22 @@
 }
 
 <p class="h3 text-muted">Accounting</p>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-8 col-md-4">
+        <form action="~/Accounting/AllInvoices/" method="get">
+            @Html.Hidden("ServiceProviderId", serviceProviderId)
+            <div class="form-group">
+                <select class="find-invoice-select" name="InvoiceId" value="@invoiceId" style="width:100%" onchange="this.form.submit()">
+                    @if (selectedInvoice != null)
+                    {
+                        <option value="@selectedInvoice.Id" selected>@selectedInvoice.InvoiceNumber</option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
 
 <ul class="nav nav-tabs">
     <li role="presentation" class="@Html.IsActive("Accounting", "UnsentInvoices")"><a href="~/Accounting/UnsentInvoices?@(Request.QueryString)">Unsent</a></li>
@@ -60,6 +89,68 @@
 
 @section Scripts{
 
-@RenderSection("scripts", required: false)
+    <script type="text/javascript">
 
+        function formatInvoiceListItem(invoice) {
+            if (invoice.loading) return invoice.text;
+
+            var markup =
+                '<div class="clearfix">' +
+                    '<div><strong>' + invoice.InvoiceNumber + '</strong></div>' +
+                    '<div><strong>' + invoice.ServiceRequest.ServiceCode + '</strong> <strong>' + invoice.ServiceRequest.ClaimantName + '</strong></div>' +
+                    '<div><em>' + moment(new Date(parseInt(invoice.InvoiceDate.substr(6)))).format('YYYY-MM-DD') + '</em> ' + invoice.ServiceRequest.City + '</div>' +
+                '</div>';
+
+            return markup;
+        }
+
+        function formatInvoiceListItemSelection(invoice) {
+            return invoice.InvoiceNumber || invoice.text;
+        }
+
+        $(document).ready(function () {
+
+            var url = '@Url.Content("~/Accounting/Search")';
+
+            $findInvoiceSelect = $(".find-invoice-select");
+            $findInvoiceSelect.select2({
+                placeholder: 'Find an invoice',
+                allowClear: true,
+                ajax: {
+                    url: url,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            serviceProviderId: '@serviceProviderId',
+                            searchTerm: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.items,
+                            pagination: {
+                                more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 3,
+                templateResult: formatInvoiceListItem, // omitted for brevity, see the source of this page
+                templateSelection: formatInvoiceListItemSelection // omitted for brevity, see the source of this page
+            });
+
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
 }

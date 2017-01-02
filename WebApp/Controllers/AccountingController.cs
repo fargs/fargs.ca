@@ -154,11 +154,25 @@ namespace WebApp.Controllers
                     .Select(ServiceRequestProjections.BasicInfo(userId, now))
                     .ToList();
 
-                var invoices = context.Invoices
-                    .AreOwnedBy(userId)
-                    .AreNotDeleted()
-                    .AreForCustomer(filterArgs.CustomerId)
-                    .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                // if the users searches for a specific invoice, only show that invoice.
+                var query = context.Invoices
+                    .AreOwnedBy(userId);
+
+                if (filterArgs.InvoiceId.HasValue)
+                {
+                    query = query
+                        .WithId(filterArgs.InvoiceId.Value);
+                }
+                else
+                {
+                    query = query
+                        .AreOwnedBy(userId)
+                        .AreNotDeleted()
+                        .AreForCustomer(filterArgs.CustomerId)
+                        .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month);
+                }
+                
+                var invoices = query
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
@@ -324,7 +338,7 @@ namespace WebApp.Controllers
 
                 var invoice = context.Invoices
                     .Where(i => i.Id == invoiceId)
-                    .Select(InvoiceProjections.MinimalInfo())
+                    .Select(InvoiceProjections.MinimalInfoWithStatus())
                     .FirstOrDefault();
 
                 var unsentInvoice = new Orvosi.Shared.Model.UnsentInvoice
@@ -334,6 +348,41 @@ namespace WebApp.Controllers
                 };
 
                 return PartialView("_InvoiceMenu", unsentInvoice);
+            }
+        }
+
+        public ActionResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
+        {
+            Guid userId = GetServiceProviderId(serviceProviderId);
+            var now = SystemTime.Now();
+
+            using (var context = new OrvosiDbContext())
+            {
+                var data = context.Invoices
+                    .AreOwnedBy(userId)
+                    .Where(i => i.InvoiceNumber.Contains(searchTerm)
+                        || i.InvoiceDetails.Any(id => id.Description.ToLower().Contains(searchTerm.ToLower())))
+                    .Select(i => new 
+                    {
+                        id = i.Id, // this needs to be id (not Id) so the select2 box maps it correctly to the <option> id value.
+                        InvoiceNumber = i.InvoiceNumber,
+                        InvoiceDate = i.InvoiceDate,
+                        ServiceRequest = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue) == null ? null : new
+                        {
+                            Id = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequest.Id,
+                            ClaimantName = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequest.ClaimantName,
+                            ServiceCode = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequest.Service.Code,
+                            City = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequest.Address.City_CityId.Name,
+                            ProvinceCode = i.InvoiceDetails.FirstOrDefault(id => id.ServiceRequestId.HasValue).ServiceRequest.Address.Province.ProvinceCode
+                        }
+                    })
+                    .ToList();
+
+                return Json(new
+                {
+                    total_count = data.Count(),
+                    items = data
+                }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -537,6 +586,18 @@ namespace WebApp.Controllers
                 record.Rate = invoiceDetail.Rate;
                 record.ModifiedDate = SystemTime.UtcNow();
                 record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+
+                // invoice detail passed in will not have the service request information
+                if (record.ServiceRequestId.HasValue && invoiceDetail.Rate != 1)
+                {
+                    var discountType = record.ServiceRequest.GetDiscountType();
+                    record.DiscountDescription = InvoiceHelper.GetDiscountDescription(discountType, invoiceDetail.Rate, invoiceDetail.Amount);
+                }
+                else
+                {
+                    record.DiscountDescription = null;
+                }
+
                 record.CalculateTotal();
                 context.SaveChanges();
 
@@ -682,6 +743,7 @@ namespace WebApp.Controllers
         }
 
         #endregion
+
         private Guid GetServiceProviderId(Guid? serviceProviderId)
         {
             Guid userId = User.Identity.GetGuidUserId();

@@ -41,6 +41,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public int? Year { get; set; }
         public int? Month { get; set; }
         public bool ShowSubmitted { get; set; } = false;
+        public int? InvoiceId { get; set; }
     }
 
     public class EditInvoiceDetailForm

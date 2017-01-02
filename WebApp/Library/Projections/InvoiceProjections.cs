@@ -18,6 +18,36 @@ namespace WebApp.Library.Projections
             };
         }
 
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> MinimalInfoWithStatus()
+        {
+            return i => new Orvosi.Shared.Model.Invoice
+            {
+                Id = i.Id,
+                SentDate = i.SentDate,
+                Total = i.Total,
+                Receipts = i.Receipts.Select(r => new Orvosi.Shared.Model.Receipt
+                {
+                    Id = r.Id,
+                    ReceivedDate = r.ReceivedDate,
+                    Amount = r.Amount
+                }),
+                ServiceRequest = i.InvoiceDetails.FirstOrDefault() == null ? null : !i.InvoiceDetails.FirstOrDefault().ServiceRequestId.HasValue ? null : new Orvosi.Shared.Model.ServiceRequest
+                {
+                    Id = i.InvoiceDetails.FirstOrDefault().ServiceRequest.Id,
+                    ServiceRequestTasks = i.InvoiceDetails.FirstOrDefault().ServiceRequest.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new Orvosi.Shared.Model.ServiceRequestTask
+                    {
+                        Id = srt.Id,
+                        ProcessTask = new Orvosi.Shared.Model.ProcessTask
+                        {
+                            Id = srt.TaskId.Value
+                        },
+                        IsObsolete = srt.IsObsolete,
+                        CompletedDate = srt.CompletedDate
+                    })
+                }
+            };
+        }
+
         public static Expression<Func<Orvosi.Data.InvoiceDetail, Orvosi.Shared.Model.InvoiceDetail>> EditItemForm()
         {
             return id => new Orvosi.Shared.Model.InvoiceDetail
@@ -77,8 +107,25 @@ namespace WebApp.Library.Projections
                     Description = id.Description,
                     Amount = id.Amount.Value,
                     Rate = id.Rate.HasValue ? id.Rate.Value : 1,
+                    Total = id.Total.Value,
+                    DiscountDescription = id.DiscountDescription,
                     AdditionalNotes = id.AdditionalNotes,
-                    ServiceRequestId = id.ServiceRequestId
+                    ServiceRequestId = id.ServiceRequestId,
+                    ServiceRequest = !id.ServiceRequestId.HasValue ? null : new Orvosi.Shared.Model.ServiceRequest
+                    {
+                        IsNoShow = id.ServiceRequest.IsNoShow,
+                        IsLateCancellation = id.ServiceRequest.IsLateCancellation,
+                        ServiceRequestTasks = i.InvoiceDetails.FirstOrDefault().ServiceRequest.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new Orvosi.Shared.Model.ServiceRequestTask
+                        {
+                            Id = srt.Id,
+                            ProcessTask = new Orvosi.Shared.Model.ProcessTask
+                            {
+                                Id = srt.TaskId.Value
+                            },
+                            IsObsolete = srt.IsObsolete,
+                            CompletedDate = srt.CompletedDate
+                        })
+                    }
                 }),
                 InvoiceDetailCount = i.InvoiceDetails.Count(),
                 Receipts = i.Receipts.Select(r => new Orvosi.Shared.Model.Receipt

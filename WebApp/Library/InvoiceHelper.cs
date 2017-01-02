@@ -114,7 +114,20 @@ namespace WebApp.Library
             }
         }
 
-        public static byte GetDiscountType(this ServiceRequest request)
+        public static byte GetDiscountType(this Orvosi.Shared.Model.ServiceRequest request)
+        {
+            if (request.IsNoShow)
+            {
+                return DiscountTypes.NoShow;
+            }
+            else if (request.IsLateCancellation)
+            {
+                return DiscountTypes.LateCancellation;
+            }
+            return 0;
+        }
+
+        public static byte GetDiscountType(this Orvosi.Data.ServiceRequest request)
         {
             if (request.IsNoShow)
             {
@@ -143,7 +156,7 @@ namespace WebApp.Library
             {
                 sb.Append(string.Format("Flat rate {0}, Original price {1}", rate.HasValue ? rate.Value.ToString("C2") : "NOT SET", amount.Value.ToString("C2")));
             }
-            else if (rate <= 1 && rate > 0)
+            else if (rate < 1 && rate > 0)
             {
                 sb.Append(string.Format("{0} of {1}", rate.HasValue ? rate.Value.ToString("0%") : "NOT SET", amount.Value.ToString("C2")));
             }

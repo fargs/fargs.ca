@@ -11,6 +11,7 @@ namespace WebApp
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.unobtrusive-ajax.js",
+                        "~/Scripts/select2.min.js",
                         "~/Scripts/list.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -64,6 +65,7 @@ namespace WebApp
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
                       "~/Content/font-awesome-4.6.3/css/font-awesome.min.css",
+                      "~/Content/css/select2.min.css",
                       "~/Content/site.css"));
 
             //bundles.Add(new StyleBundle("~/Content/landing").Include(

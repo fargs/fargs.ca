@@ -156,7 +156,7 @@ else
             });
         }
 
-        function onPaid(invoiceId) {
+        function onPaid(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/CreateReceipt")';
             $.ajax({
                 type: "POST",
@@ -167,6 +167,7 @@ else
                 success: function () {
                     toastr.success("Invoice has been paided in full");
                     refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(serviceRequestId, invoiceId);
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
@@ -260,6 +261,7 @@ else
         }
 
         function onEditInvoiceItem(invoiceDetailId) {
+
             $.ajax({
                 cache: false,
                 type: "GET",
@@ -359,8 +361,8 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
-                    //console.log(err.error);
+                    //window.location.reload();
+                    console.log(err.error);
                 }
             }, this);
         }
@@ -375,8 +377,8 @@ else
                 },
                 error: function (err) {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
-                    //console.log(err.error);
+                    //window.location.reload();
+                    console.log(err.error);
                 }
             }, this);
         }

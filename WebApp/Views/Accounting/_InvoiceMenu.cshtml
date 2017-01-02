@@ -5,22 +5,23 @@
 @if (Model.Invoice != null)
 {
         string sentMessage = string.Empty;
-        bool isSent = false;
         if (Model.Invoice.SentDate.HasValue)
         {
-            isSent = true;
             sentMessage = "Sent " + Model.Invoice.SentDate.ToOrvosiDateTimeFormat();
         }
         else if (Model.ServiceRequest != null && Model.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
         {
-            isSent = true;
             sentMessage = "Submit Invoice task checked on " + Model.ServiceRequest.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat();
         }
         <div id="invoice-menu-@Model.Invoice.Id" class="text-right">
             <div class="btn-group">
-                @if (isSent)
+                @if (Model.Invoice.IsPaid)
                 {
-                    <button type="button" class="btn btn-success" onclick="onPaid(@Model.Invoice.Id)"><i class="fa fa-usd"></i></button>
+                    <button type="button" class="btn btn-success" disabled><i class="fa fa-check fa-lg"></i></button>
+                }
+                else if (Model.Invoice.IsSent)
+                {
+                    <button type="button" class="btn btn-warning" onclick="onPaid(@Model.Invoice.Id, @Model.ServiceRequest.Id)"><i class="fa fa-usd fa-lg"></i></button>
                 }
                 else
                 {

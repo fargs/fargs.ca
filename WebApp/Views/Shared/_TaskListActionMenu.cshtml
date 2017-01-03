@@ -6,11 +6,9 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-right">
         <li>
-            <a href="#" onclick="addTask(@Model, @e.Tasks.AdditionalEdits)" id="addtask-additional-edits">Additional Doc Edits</a>
-            <form action="~/ServiceRequestTask/AddRespondToQACommentsTask" method="post">
-                @Html.Hidden("serviceRequestId", Model)
-                <input type="submit" value="Respond To QA Comments - Physician" class="btn btn-link" />
-            </form>
+            <a href="#" onclick="addTask(@Model, @e.Tasks.AdditionalEdits)">Additional Doc Edits</a>
+            <a href="#" onclick="addTask(@Model, @e.Tasks.RespondToQAComments)">Respond to QA Comments</a>
+            <a href="#" onclick="addTask(@Model, @e.Tasks.PaymentReceived)">Payment Received - Hawkeswood Only</a>
         </li>
     </ul>
 </div>

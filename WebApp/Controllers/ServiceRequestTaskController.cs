@@ -66,10 +66,6 @@ namespace WebApp.Controllers
             task.ModifiedDate = SystemTime.Now();
             task.ModifiedUser = User.Identity.Name;
 
-            request.ServiceRequestTasks.Add(task);
-
-            request.UpdateIsClosed();
-
             // this is currently hard coded but should be made editable by the user adding the task
             if (taskId == Tasks.AdditionalEdits)
             {
@@ -82,15 +78,45 @@ namespace WebApp.Controllers
                     approveReport.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
                     // make this task dependent on additional edits
-                    approveReport.Child.Add(task);
+                    task.Parent.Add(approveReport);
 
                     // make the task display before the approve report task
                     task.Sequence = (short)(approveReport.Sequence.Value - 2);
                 }
             }
 
-            //var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
-            //obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
+            if (taskId == Tasks.PaymentReceived) // THIS IS CURRENTLY SPECIFIC TO HAWKESWOOD
+            {
+                var submitReport = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitReport);
+                if (submitReport != null)
+                { 
+                    task.Parent.Add(submitReport);
+                    task.Sequence = (short)(submitReport.Sequence.Value - 2);
+                }
+                var submitInvoice = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitInvoice);
+                if (submitInvoice != null)
+                    task.Child.Add(submitInvoice);
+            }
+
+            if (taskId == Tasks.RespondToQAComments)
+            {
+                var closeCase = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.CloseCase);
+                if (closeCase != null)
+                {
+                    closeCase.CompletedDate = null;
+                    closeCase.CompletedBy = null;
+                    closeCase.ModifiedDate = SystemTime.UtcNow();
+                    closeCase.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+
+                    task.Parent.Add(closeCase);
+                    task.Sequence = (short)(closeCase.Sequence.Value - 2);
+                }
+            }
+
+            request.ServiceRequestTasks.Add(task);
+
+            request.UpdateIsClosed();
+
             db.SaveChanges();
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);

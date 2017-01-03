@@ -165,6 +165,7 @@ namespace Orvosi.Shared.Enums
         public const byte SaveMedBrief = 18;
         public const byte AssessmentDay = 133;
         public const byte ApproveReport = 9;
+        public const byte AdditionalEdits = 132;
     }
 
     //public static class TaskStatuses

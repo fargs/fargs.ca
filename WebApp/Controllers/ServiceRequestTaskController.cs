@@ -40,7 +40,61 @@ namespace WebApp.Controllers
 
             return View(vm);
         }
+        [HttpPost]
+        public ActionResult AddTask(int serviceRequestId, byte taskId)
+        {
+            var request = db.ServiceRequests.Find(serviceRequestId);
 
+            var st = db.OTasks.Single(t => t.Id == taskId);
+            var task = new ServiceRequestTask();
+            task.ServiceRequestId = serviceRequestId;
+            task.TaskId = taskId;
+            task.TaskName = st.Name;
+            task.TaskPhaseId = st.TaskPhaseId;
+            task.TaskPhaseName = st.TaskPhase.Name;
+            task.ResponsibleRoleId = st.ResponsibleRoleId;
+            task.ResponsibleRoleName = st.AspNetRole.Name;
+            task.Sequence = st.Sequence;
+            task.AssignedTo = db.ServiceRequestTasks.FirstOrDefault(sr => sr.ServiceRequestId == serviceRequestId && sr.ResponsibleRoleId == st.ResponsibleRoleId).AssignedTo;
+            task.IsBillable = st.IsBillable.Value;
+            task.HourlyRate = st.HourlyRate;
+            task.EstimatedHours = st.EstimatedHours;
+            task.DependsOn = st.DependsOn;
+            task.DueDateBase = st.DueDateBase;
+            task.DueDateDiff = st.DueDateDiff;
+            task.Guidance = st.Guidance;
+            task.ModifiedDate = SystemTime.Now();
+            task.ModifiedUser = User.Identity.Name;
+
+            request.ServiceRequestTasks.Add(task);
+
+            request.UpdateIsClosed();
+
+            // this is currently hard coded but should be made editable by the user adding the task
+            if (taskId == Tasks.AdditionalEdits)
+            {
+                var approveReport = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ApproveReport);
+                if (approveReport != null)
+                {
+                    approveReport.CompletedDate = null;
+                    approveReport.CompletedBy = null;
+                    approveReport.ModifiedDate = SystemTime.UtcNow();
+                    approveReport.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+
+                    // make this task dependent on additional edits
+                    approveReport.Child.Add(task);
+
+                    // make the task display before the approve report task
+                    task.Sequence = (short)(approveReport.Sequence.Value - 2);
+                }
+            }
+
+            //var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
+            //obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
         [HttpPost]
         public ActionResult AddRespondToQACommentsTask(int serviceRequestId)
         {

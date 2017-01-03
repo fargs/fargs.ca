@@ -143,7 +143,7 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
-                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
                 {
                     <div class="pull-right">
                         @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
@@ -240,7 +240,7 @@
                                 {
                                     if (task.CompletedDate.HasValue)
                                     {
-                                        <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
+                                        <div class="small text-muted" title="@task.CompletedBy.DisplayName">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
                                     }
                                 }
                             </td>
@@ -424,7 +424,36 @@
                     window.location.reload();
                 }
             }, this);
+        }
 
+        function addTask(serviceRequestId, taskId) {
+            let url = '@Url.Content("~/ServiceRequestTask/AddTask")';
+            $.post(
+                url,
+                {
+                    serviceRequestId: serviceRequestId,
+                    taskId: taskId
+                },
+                function (data) {
+                    refreshTaskList(serviceRequestId);
+                }
+            );
+        };
+
+        function refreshTaskList(serviceRequestId) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ServiceRequestTask/TaskList?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    
+                    //$('#tasklist-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    window.location.reload();
+                    //console.log(err.error);
+                }
+            }, this);
         }
 
     </script>

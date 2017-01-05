@@ -23,7 +23,7 @@ namespace Orvosi.Data.Filters
         public static IQueryable<ServiceRequest> AreScheduledOnOrBefore(this IQueryable<ServiceRequest> serviceRequests, DateTime now)
         {
             now = now.Date.AddDays(1);
-            return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate.Value : s.DueDate.Value) <= now); // this filters out the days
+            return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate.Value : new DateTime(1900,01,01)) <= now); // this filters out the days
         }
         public static IQueryable<ServiceRequest> ForPhysician(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {

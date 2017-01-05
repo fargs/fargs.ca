@@ -26,7 +26,6 @@
         }).ToList();
 
     ViewBag.Months = DateRanges.GetMonths()
-        .Where(y => y.Key <= SystemTime.Now().Month)
         .Select(c => new SelectListItem()
         {
             Text = c.Value,

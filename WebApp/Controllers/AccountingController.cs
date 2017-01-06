@@ -171,7 +171,7 @@ namespace WebApp.Controllers
                         .AreForCustomer(filterArgs.CustomerId)
                         .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month);
                 }
-                
+
                 var invoices = query
                     .Select(InvoiceProjections.Header())
                     .ToList();
@@ -221,7 +221,7 @@ namespace WebApp.Controllers
                     .Select(InvoiceProjections.Header())
                     .ToList();
 
-                var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(now.Year,1,1);
+                var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(now.Year, 1, 1);
                 var endDate = startDate.AddYears(1);
                 var dateRange = startDate.GetDateRangeTo(endDate);
 
@@ -294,7 +294,7 @@ namespace WebApp.Controllers
                 return View("~/Views/Invoice/Dashboard.cshtml", vm);
             }
         }
-        
+
         public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
@@ -362,7 +362,7 @@ namespace WebApp.Controllers
                     .AreOwnedBy(userId)
                     .Where(i => i.InvoiceNumber.Contains(searchTerm)
                         || i.InvoiceDetails.Any(id => id.Description.ToLower().Contains(searchTerm.ToLower())))
-                    .Select(i => new 
+                    .Select(i => new
                     {
                         id = i.Id, // this needs to be id (not Id) so the select2 box maps it correctly to the <option> id value.
                         InvoiceNumber = i.InvoiceNumber,
@@ -447,7 +447,7 @@ namespace WebApp.Controllers
         {
             using (var context = new OrvosiDbContext())
             {
-                ViewBag.UserSelectList = GetServiceProviderList(context);
+                // TODO: Need to filter this list to show customers specific to the service provider.
                 ViewBag.CustomerSelectList = GetCustomerList(context);
             }
 
@@ -754,21 +754,6 @@ namespace WebApp.Controllers
             }
 
             return userId;
-        }
-
-        private List<SelectListItem> GetServiceProviderList(OrvosiDbContext context)
-        {
-            var userSelectList = (from user in context.AspNetUsers
-                                  from userRole in context.AspNetUserRoles
-                                  from role in context.AspNetRoles
-                                  where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
-                                  select new SelectListItem
-                                  {
-                                      Text = user.FirstName + " " + user.LastName,
-                                      Value = user.Id.ToString(),
-                                      Group = new SelectListGroup() { Name = role.Name }
-                                  }).ToList();
-            return userSelectList;
         }
 
         private List<SelectListItem> GetCustomerList(OrvosiDbContext context)

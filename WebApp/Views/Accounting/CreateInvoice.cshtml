@@ -13,10 +13,7 @@
 <div class="row">
     <div class="col-md-4">
         <form id="new-invoice-form" method="post" action="~/Accounting/CreateInvoice">
-            <div class="form-group">
-                <label class="control-label">Service Provider</label>
-                @Html.DropDownList("ServiceProviderGuid", new SelectList(ViewBag.UserSelectList, "Value", "Text", "Group.Name", Model.ServiceProviderGuid), "-- Service Provider --", new { @class = "form-control" })
-            </div>
+            @Html.HiddenFor(model => model.ServiceProviderGuid)
             <div class="form-group">
                 <label class="control-label">Customer</label>
                 @Html.DropDownList("CustomerGuid", new SelectList(ViewBag.CustomerSelectList, "Value", "Text", "Group.Name", Model.CustomerGuid), "-- Customer --", new { @class = "form-control" })

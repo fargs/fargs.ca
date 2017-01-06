@@ -42,6 +42,11 @@
                             <i class="fa fa-download"></i> &nbsp;Download
                         </a>
                     </li>
+                    <li>
+                        <a href="#" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
+                            <i class="fa fa-send"></i> &nbsp;Send
+                        </a>
+                    </li>
                     <li class="divider"></li>
                     <li>
                         <a onclick="onEditInvoiceHeader(@Model.Invoice.Id)" style="cursor:pointer;">

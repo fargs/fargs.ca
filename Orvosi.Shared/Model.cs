@@ -655,7 +655,7 @@ namespace Orvosi.Shared.Model
         {
             get
             {
-                return OutstandingBalance <= 0;
+                return OutstandingBalance <= 0 && InvoiceDetailCount > 0;
             }
         }
         public bool IsSent

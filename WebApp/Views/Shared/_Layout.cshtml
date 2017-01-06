@@ -11,7 +11,7 @@
                     var userId = User.Identity.GetGuidUserId();
                     var roleId = User.Identity.GetRoleId();
                     var context = new OrvosiDbContext();
-                    var list = context.ServiceRequests.AsQueryable();
+                    var list = context.ServiceRequests.Where(sr => sr.IsDeleted == false).AsQueryable();
                     if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator)
                     {
                         list = list.Where(sr => sr.PhysicianId == userId || sr.CaseCoordinatorId == userId || sr.DocumentReviewerId == userId || sr.IntakeAssistantId == userId);

@@ -110,7 +110,7 @@ namespace WebApp.Library
             }
             else // this is a percentage
             {
-                invoiceDetail.Total = invoiceDetail.Amount * (invoiceDetail.Rate ?? 1);
+                invoiceDetail.Total = invoiceDetail.Amount.GetValueOrDefault(0) * (invoiceDetail.Rate.GetValueOrDefault(1));
             }
         }
 

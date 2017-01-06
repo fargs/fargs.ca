@@ -32,6 +32,7 @@
                             {
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
+                                <li>@Html.ActionLink("Delete", "Delete", new { id = Model.ServiceRequest.Id })</li>
                             }
                             else if (Model.ServiceRequest.CanBeCancelled)
                             {

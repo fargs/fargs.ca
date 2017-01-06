@@ -57,6 +57,8 @@ namespace Orvosi.Data
         public string DocumentReviewerBoxCollaborationId { get; set; } // DocumentReviewerBoxCollaborationId (length: 50)
         public short? ServiceRequestTemplateId { get; set; } // ServiceRequestTemplateId
         public bool IsClosed { get; set; } // IsClosed
+        public string CalendarEventId { get; set; } // CalendarEventId (length: 256)
+        public bool IsDeleted { get; set; } // IsDeleted
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest
@@ -82,6 +84,7 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             IsClosed = false;
+            IsDeleted = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();

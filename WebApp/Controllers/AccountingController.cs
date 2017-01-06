@@ -484,7 +484,7 @@ namespace WebApp.Controllers
 
                 context.Invoices.Add(invoice);
                 context.SaveChanges();
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
+                return RedirectToAction("AllInvoices", new FilterArgs() { ServiceProviderId = form.ServiceProviderGuid, InvoiceId = invoice.Id });
             }
         }
 
@@ -621,6 +621,7 @@ namespace WebApp.Controllers
                     Amount = 0,
                     Rate = 1
                 };
+                newItem.CalculateTotal();
                 context.InvoiceDetails.Add(newItem);
                 context.SaveChanges();
                 context.Entry(newItem).Reload();

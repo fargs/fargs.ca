@@ -844,7 +844,16 @@ namespace WebApp.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(id);
-            ctx.ServiceRequests.Remove(serviceRequest);
+
+            if (!serviceRequest.CancelledDate.HasValue)
+            {
+                this.ModelState.AddModelError("", "Service Request must be cancelled before being deleted.");
+                return View("Delete");
+            }
+
+            serviceRequest.IsDeleted = true;
+            serviceRequest.ModifiedDate = SystemTime.Now();
+            serviceRequest.ModifiedUser = User.Identity.GetGuidUserId().ToString();
             await ctx.SaveChangesAsync();
 
             //TODO: Unshare and delete folders from dropbox

@@ -1101,6 +1101,7 @@
     <Content Include="Views\Shared\NotificationTemplates\ResetPassword.html" />
     <Content Include="Views\Shared\NotificationTemplates\CompanyAccountActivation.html" />
     <Content Include="Views\Accounting\_InvoiceSearchItem.cshtml" />
+    <Content Include="Views\ServiceRequest\Delete.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -1,0 +1,14 @@
+﻿@model Orvosi.Data.ServiceRequest
+
+<form action="~/ServiceRequest/Delete" method="post">
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(model => model.Id)
+    <h2 class="text-danger">You are about to permanently delete request @Model.Id for @Model.ClaimantName.</h2>
+    <p>
+        Do you wish to continue?
+    </p>
+    <button type="submit" class="btn btn-danger">Yes, Permanently Delete Service Request</button>
+</form>

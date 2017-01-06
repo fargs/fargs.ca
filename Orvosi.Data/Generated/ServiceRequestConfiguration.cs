@@ -67,6 +67,8 @@ namespace Orvosi.Data
             Property(x => x.DocumentReviewerBoxCollaborationId).HasColumnName(@"DocumentReviewerBoxCollaborationId").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.ServiceRequestTemplateId).HasColumnName(@"ServiceRequestTemplateId").IsOptional().HasColumnType("smallint");
             Property(x => x.IsClosed).HasColumnName(@"IsClosed").IsRequired().HasColumnType("bit");
+            Property(x => x.CalendarEventId).HasColumnName(@"CalendarEventId").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
+            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address

@@ -39,6 +39,8 @@
     [DocumentReviewerBoxCollaborationId] NVARCHAR (50)    NULL,
     [ServiceRequestTemplateId]           SMALLINT         NULL,
     [IsClosed]                           BIT              CONSTRAINT [DF_ServiceRequest_IsClosed] DEFAULT ((0)) NOT NULL,
+    [CalendarEventId]                    NVARCHAR (256)   NULL,
+    [IsDeleted]                          BIT              CONSTRAINT [DF_ServiceRequest_IsDeleted] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequest_Address] FOREIGN KEY ([AddressId]) REFERENCES [dbo].[Address] ([Id]),
     CONSTRAINT [FK_ServiceRequest_AvailableSlot] FOREIGN KEY ([AvailableSlotId]) REFERENCES [dbo].[AvailableSlot] ([Id]),
@@ -49,6 +51,8 @@
     CONSTRAINT [FK_ServiceRequest_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id])
 );
+
+
 
 
 

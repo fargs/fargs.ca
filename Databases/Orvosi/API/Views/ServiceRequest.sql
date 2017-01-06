@@ -1,6 +1,7 @@
 ﻿
 
 
+
 CREATE VIEW [API].[ServiceRequest]
 AS
 WITH Tasks
@@ -151,3 +152,4 @@ LEFT JOIN ServicePhaseTasks spt ON sr.Id = spt.ServiceRequestId
 LEFT JOIN NextTask nt ON sr.Id = nt.ServiceRequestId
 LEFT JOIN dbo.LookupItem lisr ON dbo.GetServiceRequestStatusId(ts.OpenTasks) = lisr.Id
 LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
+WHERE ISNULL(sr.IsDeleted,0) = 0

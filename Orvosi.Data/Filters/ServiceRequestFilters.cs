@@ -88,10 +88,7 @@ namespace Orvosi.Data.Filters
                 serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Month : sr.DueDate.HasValue ? sr.DueDate.Value.Month : 0) == month.Value);
             }
 
-            var addOns = serviceRequests
-                .AreAddOns();
-
-            return serviceRequests.Concat(addOns);
+            return serviceRequests;
         }
     }
 }

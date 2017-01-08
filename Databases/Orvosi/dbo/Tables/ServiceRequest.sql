@@ -49,8 +49,15 @@
     CONSTRAINT [FK_ServiceRequest_DocumentReviewer] FOREIGN KEY ([DocumentReviewerId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequest_IntakeAssistant] FOREIGN KEY ([IntakeAssistantId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id]),
-    CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id])
+    CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate] FOREIGN KEY ([ServiceRequestTemplateId]) REFERENCES [dbo].[ServiceRequestTemplate] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate];
+
+
 
 
 

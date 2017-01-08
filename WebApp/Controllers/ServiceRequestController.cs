@@ -198,7 +198,8 @@ namespace WebApp.Controllers
                 })
                 .ToList();
 
-            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
+            vm.ServiceSelectList = ctx.Services
+                .Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
@@ -228,7 +229,10 @@ namespace WebApp.Controllers
             // Get the service catalogue
             var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
             var serviceCatalogues = ctx.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
-            var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == record.ServiceId);
+            var serviceCatalogueInMemoryQuery = serviceCatalogues.Where(c => c.ServiceId == record.ServiceId);
+            if (address != null)
+                serviceCatalogueInMemoryQuery.Where(sr => sr.LocationId == address.LocationId);
+            var serviceCatalogue = serviceCatalogueInMemoryQuery.FirstOrDefault();
             if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");

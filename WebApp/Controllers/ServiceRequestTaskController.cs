@@ -341,8 +341,7 @@ namespace WebApp.Controllers
         }
         
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin")]
+        [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)
         {
             using (var context = new OrvosiDbContext())
@@ -400,7 +399,6 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> PickUp(int serviceRequestTaskId)
         {
             var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -413,12 +411,12 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? AssignedTo)
+        [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
+        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? assignedTo)
         {
             var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
             var userId = User.Identity.GetGuidUserId();
-            task.AssignedTo = AssignedTo;
+            task.AssignedTo = assignedTo;
             task.ModifiedDate = SystemTime.Now();
             task.ModifiedUser = User.Identity.Name;
             await context.SaveChangesAsync();

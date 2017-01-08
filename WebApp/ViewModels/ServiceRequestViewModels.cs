@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
 using Box.V2.Models;
 using Orvosi.Data;
@@ -43,6 +44,16 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public Orvosi.Shared.Model.ServiceRequest ServiceRequest { get; set; }
         public WebApp.Models.ServiceRequestModels.ServiceRequest ServiceRequestMapped { get; set; }
         public IEnumerable<WebApp.Models.ServiceRequestModels.ServiceRequestTask> TaskList { get; internal set; }
+    }
+
+    public class ChangeProcessTemplateViewModel
+    {
+        [Required]
+        public int ServiceRequestId { get; set; }
+        public Guid PhysicianId { get; set; }
+        public SelectListItem CurrentServiceRequestTemplate { get; set; }
+        [Required]
+        public short NewServiceRequestTemplateId { get; set; }
     }
 
     public class BoxManagerViewModel

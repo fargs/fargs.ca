@@ -31,6 +31,7 @@ namespace Orvosi.Data
             Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.IsDefault).HasColumnName(@"IsDefault").IsRequired().HasColumnType("bit");
             InitializePartial();
         }
         partial void InitializePartial();

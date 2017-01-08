@@ -128,6 +128,8 @@ namespace WebApp.Controllers
         {
             var now = SystemTime.Now();
             var userId = User.Identity.GetGuidUserId();
+            var roleId = User.Identity.GetRoleId();
+            var adminRoles = new Guid[2] { AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 
             var vm = new DetailsViewModel();
 
@@ -145,13 +147,28 @@ namespace WebApp.Controllers
             vm.UserSelectList = (from user in ctx.AspNetUsers
                                  from userRole in ctx.AspNetUserRoles
                                  from role in ctx.AspNetRoles
-                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (role.Id == AspNetRoles.SuperAdmin || role.Id == AspNetRoles.CaseCoordinator || role.Id == AspNetRoles.DocumentReviewer || role.Id == AspNetRoles.IntakeAssistant || user.Id == vm.ServiceRequest.PhysicianId)
+                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (
+                                    role.Id == AspNetRoles.SuperAdmin 
+                                    || role.Id == AspNetRoles.CaseCoordinator
+                                    || user.Id == AspNetRoles.DocumentReviewer 
+                                    || role.Id == AspNetRoles.IntakeAssistant 
+                                    || user.Id == vm.ServiceRequest.PhysicianId)
                                  select new SelectListItem
                                  {
                                      Text = user.FirstName + " " + user.LastName,
                                      Value = user.Id.ToString(),
                                      Group = new SelectListGroup() { Name = role.Name }
                                  }).ToList();
+
+            if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator)
+            {
+                var caseTeam = new Guid[4];
+                caseTeam[0] = vm.ServiceRequest.PhysicianId;
+                caseTeam[1] = vm.ServiceRequest.CaseCoordinator.Id.Value;
+                if (vm.ServiceRequest.IntakeAssistant != null) { caseTeam[2] = vm.ServiceRequest.IntakeAssistant.Id.Value; };
+                if (vm.ServiceRequest.DocumentReviewer != null) { caseTeam[3] = vm.ServiceRequest.DocumentReviewer.Id.Value; };
+                vm.UserSelectList = vm.UserSelectList.Where(u => caseTeam.Contains(new Guid(u.Value)));
+            }
 
             return View(vm);
         }
@@ -245,6 +262,111 @@ namespace WebApp.Controllers
 
             await ctx.SaveChangesAsync();
             return RedirectToAction("Details", new { id = record.Id });
+        }
+
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public ActionResult ChangeProcessTemplate(int id)
+        {
+            var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == id);
+
+            var model = new ChangeProcessTemplateViewModel()
+            {
+                ServiceRequestId = serviceRequest.Id,
+                CurrentServiceRequestTemplate = serviceRequest.ServiceRequestTemplate == null ? null : new SelectListItem()
+                {
+                    Text = serviceRequest.ServiceRequestTemplate.Name,
+                    Value = serviceRequest.ServiceRequestTemplate.Id.ToString()
+                },
+                PhysicianId = serviceRequest.PhysicianId
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        public ActionResult ChangeProcessTemplate(ChangeProcessTemplateViewModel model)
+        {
+            var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == model.ServiceRequestId);
+            if (serviceRequest.ServiceRequestTemplateId == model.NewServiceRequestTemplateId)
+            {
+                ModelState.AddModelError("NewServiceRequestTemplateId", "New Template must be different than the current template");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var tasks = serviceRequest.ServiceRequestTasks.ToList();
+            // remove  TODO: improve this by removing foreach loops
+            foreach (var task in tasks)
+            {
+                foreach (var item in task.Child.ToList())
+                {
+                    task.Child.Remove(item);
+                }
+                foreach (var item in task.Parent.ToList())
+                {
+                    task.Parent.Remove(item);
+                }
+                // Parents are removed using referential integrity at the database level.
+                ctx.ServiceRequestTasks.Remove(task);
+            }
+
+            // add
+
+            serviceRequest.ServiceRequestTemplateId = model.NewServiceRequestTemplateId;
+
+            var requestTemplate = ctx.ServiceRequestTemplates.Find(serviceRequest.ServiceRequestTemplateId);
+
+            foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
+            {
+                var st = new Orvosi.Data.ServiceRequestTask();
+                st.DueDateBase = template.OTask.DueDateBase;
+                st.DueDateDiff = template.OTask.DueDateDiff;
+                st.Guidance = template.OTask.Guidance;
+                st.ObjectGuid = Guid.NewGuid();
+                st.ResponsibleRoleId = template.ResponsibleRoleId;
+                st.Sequence = template.Sequence;
+                st.ShortName = template.OTask.ShortName;
+                st.TaskId = template.OTask.Id;
+                st.TaskName = template.OTask.Name;
+                st.ModifiedDate = SystemTime.Now();
+                st.ModifiedUser = User.Identity.Name;
+                st.ServiceRequestTemplateTaskId = template.Id;
+                st.TaskType = template.OTask.TaskType;
+                st.Workload = template.OTask.Workload;
+                st.DueDate = GetTaskDueDate(template.DueDateType, serviceRequest.AppointmentDate, serviceRequest.DueDate);
+                // Assign tasks to physician and case coordinator to start
+                st.AssignedTo = GetTaskAssignment(
+                    template.ResponsibleRoleId,
+                    serviceRequest.PhysicianId,
+                    serviceRequest.CaseCoordinatorId,
+                    serviceRequest.IntakeAssistantId,
+                    serviceRequest.DocumentReviewerId);
+
+                serviceRequest.ServiceRequestTasks.Add(st);
+            }
+
+            serviceRequest.UpdateIsClosed();
+
+            ctx.SaveChanges();
+
+            // Clone the related tasks
+            foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+            {
+                foreach (var dependentTemplate in taskTemplate.Child)
+                {
+                    var task = serviceRequest.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
+                    var dependent = serviceRequest.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
+                    task.Child.Add(dependent);
+                }
+            }
+
+            ctx.SaveChanges();
+
+            return RedirectToAction("Details", new { id = serviceRequest.Id });
         }
 
         [Authorize(Roles = "Case Coordinator, Super Admin")]
@@ -673,7 +795,7 @@ namespace WebApp.Controllers
             return await CreateAddOn(ViewBag.ServiceIdHasErrors);
         }
 
-        private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId)
+        private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId, Guid? intakeAssistantId, Guid? documentReviewerId)
         {
             if (responsibleRoleId == AspNetRoles.Physician)
             {
@@ -682,6 +804,14 @@ namespace WebApp.Controllers
             else if (responsibleRoleId == AspNetRoles.CaseCoordinator)
             {
                 return caseCoordinatorId;
+            }
+            else if (responsibleRoleId == AspNetRoles.IntakeAssistant)
+            {
+                return intakeAssistantId;
+            }
+            else if (responsibleRoleId == AspNetRoles.DocumentReviewer)
+            {
+                return documentReviewerId;
             }
             else
             {
@@ -1175,6 +1305,18 @@ namespace WebApp.Controllers
         #endregion
 
         #region Private
+
+        private Guid GetServiceProviderId(Guid? serviceProviderId)
+        {
+            Guid userId = User.Identity.GetGuidUserId();
+            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
+            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
+            {
+                userId = serviceProviderId.Value;
+            }
+
+            return userId;
+        }
 
         private async Task GetPhysicianDropDownData()
         {

@@ -75,6 +75,7 @@ namespace Orvosi.Data
         public virtual Company Company { get; set; } // FK_ServiceRequest_Company
         public virtual Physician Physician { get; set; } // FK_ServiceRequest_Physician
         public virtual Service Service { get; set; } // FK_ServiceRequest_Service
+        public virtual ServiceRequestTemplate ServiceRequestTemplate { get; set; } // FK_ServiceRequest_ServiceRequestTemplate
 
         public ServiceRequest()
         {

@@ -6,9 +6,9 @@
 
 @{
     var identity = User.Identity.GetClaimsIdentity();
-    var role = identity.GetRoleId();
+    var roleId = identity.GetRoleId();
 }
-@if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
+@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator)
 {
     <p>
         <ul class="list-unstyled">
@@ -17,12 +17,13 @@
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Actions <span class="caret"></span>
                     </button>
-                    @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+                    @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin)
                     {
                         <ul class="dropdown-menu">
                             <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
                             <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
                             <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company</a></li>
+                            <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequest.Id">Change Process Template</a></li>
                             @if (Model.ServiceRequest.CanBeRescheduled)
                             {
                                 <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
@@ -30,7 +31,7 @@
 
                             @if (Model.ServiceRequest.CanBeUncancelled)
                             {
-                                <li role="separator" class="divider"></li>
+                                <li roleId="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                                 <li>@Html.ActionLink("Delete", "Delete", new { id = Model.ServiceRequest.Id })</li>
                             }
@@ -133,7 +134,7 @@
             </h4>
         </p>
         <hr />
-        @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
+        @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
         {
             <div id="notes">
                 @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
@@ -144,8 +145,7 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
-                @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
-                {
+                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)                {
                     <div class="pull-right">
                         @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
                     </div>
@@ -156,14 +156,45 @@
                     @foreach (var task in Model.ServiceRequest.ServiceRequestTasks)
                     {
                         <tr>
-                            @if (role == AspNetRoles.SuperAdmin)
+                            @if (roleId == AspNetRoles.SuperAdmin)
                             {
-                                <td>
-                                    <form action="~/ServiceRequestTask/Delete" method="post" class="pull-left">
-                                        @Html.AntiForgeryToken()
-                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                        <button type="submit" class="btn btn-sm btn-link"><i class="fa fa-remove"></i></button>
-                                    </form>
+                                <td width="50px">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link" data-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-h fa-lg"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                            <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
+                                            @if (new Guid[3] { AspNetRoles.SuperAdmin, AspNetRoles.Physician, AspNetRoles.CaseCoordinator }.Contains(roleId))
+                                            {
+                                                <li class="dropdown-submenu">
+                                                    <a tabindex="-1" class="assign-to" href="#">
+                                                        Assign To
+                                                        <span class="caret"></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu">
+                                                        @foreach (var teamMember in Model.UserSelectList)
+                                                        {
+                                                            if (teamMember.Value != task.AssignedTo.ToString())
+                                                            {
+                                                                <li>
+                                                                    <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+                                                                </li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </li>
+                                                @*<li class="divider"></li>
+                                                    <li><a href="#">Edit</a></li>
+                                                    <li><a href="#">Insert Below</a></li>
+                                                    <li><a href="#">Insert Above</a></li>
+                                                    <li><a href="#">Move Up</a></li>
+                                                    <li><a href="#">Move Down</a></li>*@
+                                                <li class="divider"></li>
+                                                <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </td>
                             }
                             <td width="50px">
@@ -175,46 +206,15 @@
                                 }
                                 else
                                 {
-                                    <span data-toggle="modal" title="@(task.AssignedTo != null ? task.AssignedTo.DisplayName : "Unassigned")"
+                                    <span title="@(task.AssignedTo != null ? task.AssignedTo.DisplayName : "Unassigned")"
                                           class="btn btn-sm btn-circle disabled pull-left"
-                                          style="cursor: pointer; color: white; background-color: @(task.AssignedTo != null ? task.AssignedTo.ColorCode : "red")"
-                                          data-target="#task-modal-@task.Id" data-trigger="focus" data-container="body" tabindex="-1">
+                                          style="color: white; background-color: @(task.AssignedTo != null ? task.AssignedTo.ColorCode : "red")">
                                         <span class="small">@(task.AssignedTo != null ? task.AssignedTo.Initials : "?")</span>
                                     </span>
-                                    <div id="task-modal-@task.Id" class="modal fade">
-                                        <div class="modal-dialog modal-sm">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">Task Actions</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="~/ServiceRequestTask/PickUp" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                        <input type="submit" value="Pick Up" class="btn btn-default" />
-                                                    </form>
-                                                    @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator)
-                                                    {
-                                                        <div>Or</div>
-                                                        <form action="~/ServiceRequestTask/AssignTo" method="post">
-                                                            @Html.AntiForgeryToken()
-                                                            @Html.Hidden("serviceRequestTaskId", task.Id)
-                                                            <div class="form-group">
-                                                                <label class="control-label">Assign To: </label>
-                                                                @Html.DropDownList("AssignedTo", new SelectList(Model.UserSelectList, "Value", "Text"), string.Empty, new { @class = "form-control", placeholder = "Assign To", onchange = "this.form.submit();" })
-                                                                @Html.ValidationMessage("AssignedTo", "", new { @class = "text-danger" })
-                                                            </div>
-                                                        </form>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 }
                             </td>
                             <td width="20px">
-                                @if ((role == AspNetRoles.SuperAdmin || role == AspNetRoles.CaseCoordinator || role == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)
+                                @if ((roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)
                                 {
                                     <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                         @Html.AntiForgeryToken()
@@ -264,7 +264,7 @@
             <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
             <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
         }
-        @if (role == AspNetRoles.CaseCoordinator || role == AspNetRoles.SuperAdmin)
+        @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin)
         {
             if (Model.ServiceRequest.BoxCaseFolderId != null)
             {
@@ -283,8 +283,8 @@
                 <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
                 <hr />
                 <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
-                    <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
-                    <div>@Model.ServiceRequest.StartTime</div>
+                <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
+                <div>@Model.ServiceRequest.StartTime</div>
                     <address>
                         <strong>@Model.ServiceRequest.Address.Name</strong><br>
                         @Model.ServiceRequest.Address.Address1<br>
@@ -293,12 +293,12 @@
 
             }
         }
-        
-        @if (role == AspNetRoles.SuperAdmin || role == AspNetRoles.Physician)
+
+        @if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
             {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
             <hr />
-            if (role == AspNetRoles.SuperAdmin)
+            if (roleId == AspNetRoles.SuperAdmin)
             {
                 <form action="~/Invoice/Create" method="post">
                     @Html.Hidden("Id", Model.ServiceRequest.Id)
@@ -315,7 +315,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Invoice @invoiceDetail.Invoice.InvoiceNumber
-                        @if (role == AspNetRoles.SuperAdmin)
+                        @if (roleId == AspNetRoles.SuperAdmin)
                         {
                             <div class="pull-right">
                                 @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
@@ -335,6 +335,16 @@
 
 @section Scripts {
     <script type="text/javascript">
+
+        $(document).ready(function(){
+            $('.dropdown-submenu a.assign-to').on("click", function(e){
+                $(this).next('ul').toggle();
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+
+        let serviceRequestId = @Model.ServiceRequest.Id;
 
         function onTaskChecked(checkbox, taskId) {
             var params = {
@@ -427,6 +437,33 @@
             }, this);
         }
 
+        function pickupTask(serviceRequestTaskId) {
+            let url = '@Url.Content("~/ServiceRequestTask/PickUp")';
+            $.post(
+                url,
+                {
+                    serviceRequestTaskId: serviceRequestTaskId
+                },
+                function (data) {
+                    refreshTaskList();
+                }
+            );
+        }
+
+        function assignTask(serviceRequestTaskId, assignedTo) {
+            let url = '@Url.Content("~/ServiceRequestTask/AssignTo")';
+            $.post(
+                url,
+                {
+                    serviceRequestTaskId: serviceRequestTaskId,
+                    assignedTo: assignedTo
+                },
+                function (data) {
+                    refreshTaskList();
+                }
+            );
+        }
+
         function addTask(serviceRequestId, taskId) {
             let url = '@Url.Content("~/ServiceRequestTask/AddTask")';
             $.post(
@@ -436,18 +473,31 @@
                     taskId: taskId
                 },
                 function (data) {
-                    refreshTaskList(serviceRequestId);
+                    refreshTaskList();
                 }
             );
         };
 
-        function refreshTaskList(serviceRequestId) {
+        function deleteTask(serviceRequestTaskId) {
+            let url = '@Url.Content("~/ServiceRequestTask/Delete")';
+            $.post(
+                url,
+                {
+                    serviceRequestTaskId: serviceRequestTaskId
+                },
+                function (data) {
+                    refreshTaskList();
+                }
+            );
+        }
+
+        function refreshTaskList() {
             $.ajax({
                 type: "GET",
                 url: '@Url.Content("~/ServiceRequestTask/TaskList?serviceRequestId=")' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
-                    
+                    window.location.reload();
                     //$('#tasklist-' + serviceRequestId).replaceWith(result);
                 },
                 error: function (err) {

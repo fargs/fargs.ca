@@ -421,6 +421,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
@@ -1103,6 +1104,8 @@
     <Content Include="Views\Accounting\_InvoiceSearchItem.cshtml" />
     <Content Include="Views\ServiceRequest\Delete.cshtml" />
     <Content Include="Views\ServiceRequest\ChangeProcessTemplate.cshtml" />
+    <Content Include="Views\Google\Calendar\Get.cshtml" />
+    <Content Include="Views\Google\Calendar\Add.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

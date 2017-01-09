@@ -28,11 +28,63 @@
     <button type="submit" class="btn btn-primary">Create a folder on Box</button>
 </form>
 
-<form method="post" action="~/Diagnostics/ConnectToGoogleCalendar" role="form">
+<h3>Google Calendar - Get Calendars</h3>
+<form method="post" action="~/Diagnostics/GetListOfGoogleCalendars" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <button type="submit" class="btn btn-primary">Get</button>
+</form>
+
+<h3>Google Calendar - Get Events</h3>
+<form method="post" action="~/Diagnostics/GetListOfEventsGoogleCalendar" role="form">
     <input type="email" name="email" placeholder="User Email Address" class="form-control" />
     <input type="date" name="start" placeholder="Start Date" class="form-control" />
     <input type="date" name="end" placeholder="End Date" class="form-control" />
-    <button type="submit" class="btn btn-primary">Connect to Google Calendar</button>
+    <button type="submit" class="btn btn-primary">Get</button>
+</form>
+
+<h3>Google Calendar - Get Event</h3>
+<form method="post" action="~/Diagnostics/GetEventGoogleCalendar" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <input type="text" name="eventId" placeholder="Event Id" class="form-control" />
+    <button type="submit" class="btn btn-primary">Get</button>
+</form>
+
+<h3>Google Calendar - Add Event</h3>
+<form method="post" action="~/Diagnostics/AddEventToGoogleCalendar" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <input type="datetime-local" name="start" placeholder="Start Date" class="form-control" />
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h3>Google Calendar - Update Event</h3>
+<form method="post" action="~/Diagnostics/UpdateEventToGoogleCalendar" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <input type="text" name="eventId" placeholder="Event Id" class="form-control" />
+    <input type="datetime-local" name="start" placeholder="Start Date" class="form-control" />
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h3>Google Calendar - Add Attendee</h3>
+<form method="post" action="~/Diagnostics/AddAttendeeToEventGoogleCalendar" role="form">
+    <input type="email" name="ownerEmail" placeholder="Event Owner Email Address" class="form-control" />
+    <input type="email" name="attendeeEmail" placeholder="Attendee Email Address" class="form-control" />
+    <input type="text" name="eventId" placeholder="Event Id" class="form-control" />
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h3>Google Calendar - Remove Attendee</h3>
+<form method="post" action="~/Diagnostics/RemoveAttendeeToEventGoogleCalendar" role="form">
+    <input type="email" name="ownerEmail" placeholder="Event Owner Email Address" class="form-control" />
+    <input type="email" name="attendeeEmail" placeholder="Attendee Email Address" class="form-control" />
+    <input type="text" name="eventId" placeholder="Event Id" class="form-control" />
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h3>Google Calendar - Cancel Event</h3>
+<form method="post" action="~/Diagnostics/CancelEventGoogleCalendar" role="form">
+    <input type="email" name="email" placeholder="User Email Address" class="form-control" />
+    <input type="text" name="eventId" placeholder="Event Id" class="form-control" />
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
 
 <h3>Google Email Service</h3>

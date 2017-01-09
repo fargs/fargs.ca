@@ -164,28 +164,20 @@ namespace WebApp.Controllers
             
         }
         [HttpPost]
-        public async Task<ActionResult> ConnectToGoogleCalendar(string email, DateTime start, DateTime end)
+        public async Task<ActionResult> GetListOfGoogleCalendars(string email)
         {
-            string[] scopes = new string[] {
-                CalendarService.Scope.Calendar,  // Manage your calendars
-                CalendarService.Scope.CalendarReadonly, // View your Calendars
-            };
-
-            var keyFilePath = Server.MapPath("~/orvosi-b54037435bbf.json");
-            var settings = JObject.Parse(System.IO.File.ReadAllText(keyFilePath));
-            var credential = new ServiceAccountCredential(
-                new ServiceAccountCredential.Initializer(settings["client_id"].ToString())
-                {
-                    User = email,
-                    Scopes = scopes
-                }.FromPrivateKey(settings["private_key"].ToString()));
-
-            // Create the service.
-            var service = new CalendarService(new BaseClientService.Initializer()
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+            CalendarList calendars = service.CalendarList.List().Execute();
+            var model = new
             {
-                HttpClientInitializer = credential,
-                ApplicationName = "Orvosi",
-            });
+                data = calendars
+            };
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public async Task<ActionResult> GetListOfEventsGoogleCalendar(string email, DateTime start, DateTime end)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
             // Define parameters of request.
             EventsResource.ListRequest request = service.Events.List("primary");
@@ -203,6 +195,136 @@ namespace WebApp.Controllers
                 data = events
             };
             return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetEventGoogleCalendar(string email, string eventId)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+
+            // Define parameters of request.
+            Event e = service.Events.Get("primary", eventId).Execute();
+            var model = new
+            {
+                data = e
+            };
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddEventToGoogleCalendar(string email, DateTime start, bool notify = false)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+
+            Event e = new Event()
+            {
+                Summary = "Test Event",
+                Location = "14 Farmingdale Cres, Stoney Creek ON",
+                Start = new EventDateTime()
+                {
+                    DateTime = start,
+                    TimeZone = "America/New_York"
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = start.AddHours(1),
+                    TimeZone = "America/New_York"
+                }
+            };
+
+            EventsResource.InsertRequest request = service.Events.Insert(e, "primary");
+            request.SendNotifications = true;
+            Event thisevent = request.Execute(); // Another error. "Does not contain a definition for Fetch"
+            
+            return Json(thisevent, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CancelEventGoogleCalendar(string email, string eventId)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+
+            // Define parameters of request.
+            var request = service.Events.Delete("primary", eventId);
+            request.SendNotifications = true;
+            var result = request.Execute();
+            var model = new
+            {
+                data = result
+            };
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> UpdateEventToGoogleCalendar(string email, string eventId, DateTime start)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+
+            var patch = new Event()
+            {
+                Start = new EventDateTime()
+                {
+                    DateTime = start,
+                    TimeZone = "America/Toronto"
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = start.AddHours(1),
+                    TimeZone = "America/Toronto"
+                }
+            };
+            var request = service.Events.Patch(patch, "primary", eventId);
+            request.SendNotifications = true;
+            var result = request.Execute();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> AddAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(ownerEmail);
+
+            Event originalEvent = service.Events.Get("primary", eventId).Execute();
+            EventAttendee attendee = new EventAttendee()
+            {
+                Email = attendeeEmail,
+                ResponseStatus = "accepted"
+            };
+            if (originalEvent.Attendees == null)
+            {
+                originalEvent.Attendees = new List<EventAttendee>();
+            }
+            originalEvent.Attendees.Add(attendee);
+            var request = service.Events.Update(
+                originalEvent,
+                "primary",
+                eventId);
+            request.SendNotifications = true;
+            var result = request.Execute();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> RemoveAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
+        {
+            var service = new WebApp.Library.GoogleServices().GetCalendarService(ownerEmail);
+
+            Event originalEvent = service.Events.Get("primary", eventId).Execute();
+            if (originalEvent.Attendees != null)
+            {
+                var attendee = originalEvent.Attendees.SingleOrDefault(a => a.Email == attendeeEmail);
+                if (attendee != null)
+                {
+                    originalEvent.Attendees.Remove(attendee);
+                }
+            }
+            var request = service.Events.Update(
+                originalEvent,
+                "primary",
+                eventId);
+            request.SendNotifications = true;
+            var result = request.Execute();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

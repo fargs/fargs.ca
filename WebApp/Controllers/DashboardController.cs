@@ -67,7 +67,7 @@ namespace WebApp.Controllers
                     Name = sr.Address.Name,
                     City = sr.Address.City_CityId.Name,
                     ProvinceCode = sr.Address.Province.ProvinceCode,
-                    TimeZone = sr.Address.TimeZone
+                    TimeZone = sr.Address.TimeZone.Name
                 },
                 Company = new Orvosi.Shared.Model.Company
                 {
@@ -83,7 +83,7 @@ namespace WebApp.Controllers
                 ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
                 {
                     Id = srm.Id,
-                    TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone,
+                    TimeZone = sr.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
                     Message = srm.Message,
                     PostedDate = srm.PostedDate,
                     PostedBy = new Orvosi.Shared.Model.Person
@@ -267,7 +267,7 @@ namespace WebApp.Controllers
                 ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
                 {
                     Id = srm.Id,
-                    TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone,
+                    TimeZone = sr.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
                     Message = srm.Message,
                     PostedDate = srm.PostedDate,
                     PostedBy = new Orvosi.Shared.Model.Person
@@ -454,7 +454,7 @@ namespace WebApp.Controllers
                     Name = sr.Address.Name,
                     City = sr.Address.City_CityId.Name,
                     ProvinceCode = sr.Address.Province.ProvinceCode,
-                    TimeZone = sr.Address.TimeZone
+                    TimeZone = sr.Address.TimeZone.Name
                 },
                 Company = new Orvosi.Shared.Model.Company
                 {
@@ -526,7 +526,7 @@ namespace WebApp.Controllers
                 ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
                 {
                     Id = srm.Id,
-                    TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone,
+                    TimeZone = sr.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
                     Message = srm.Message,
                     PostedDate = srm.PostedDate,
                     PostedBy = new Orvosi.Shared.Model.Person

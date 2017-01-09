@@ -65,10 +65,12 @@
             <div class="form-group">
                 <label class="control-label">Assessment</label>
                 <p class="form-control-static">
-                    @Model.ServiceRequest.AppointmentDate.Value.ToString("ddd MMM dd yyyy")
+                    @Model.ServiceRequest.AppointmentDate.ToOrvosiDateTimeFormat(Model.ServiceRequest.StartTime.HasValue ? Model.ServiceRequest.StartTime.Value : new TimeSpan(0, 0, 0))
                     <br />
                     <strong><small class="text-muted">@Model.ServiceRequest.Address.Name</small></strong><br />
+                    <small>@Model.ServiceRequest.Address.Address1</small>
                     <small><mark>@Model.ServiceRequest.Address.City</mark>, @Model.ServiceRequest.Address.ProvinceCode</small>
+                    <small>@Model.ServiceRequest.Address.PostalCode</small>
 
                 </p>
             </div>
@@ -145,7 +147,8 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
-                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)                {
+                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
+                {
                     <div class="pull-right">
                         @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
                     </div>
@@ -280,17 +283,11 @@
             }
             if (Model.ServiceRequest.Service.HasAppointment)
             {
-                <h4 style="line-height:30px;" class="section-top-padding">Calendar Integration</h4>
-                <hr />
-                <h4>@Model.ServiceRequest.CalendarEventTitle</h4>
-                <div>@Model.ServiceRequest.AppointmentDate.Value.GetDateTimeFormats('D')[0]</div>
-                <div>@Model.ServiceRequest.StartTime</div>
-                    <address>
-                        <strong>@Model.ServiceRequest.Address.Name</strong><br>
-                        @Model.ServiceRequest.Address.Address1<br>
-                        @Model.ServiceRequest.Address.City, @Model.ServiceRequest.Address.ProvinceCode @Model.ServiceRequest.Address.PostalCode<br>
-                    </address>
-
+                <h3>
+                    Calendar Integration
+                </h3>
+                <div id="google-calendar-integration">
+                </div>
             }
         }
 
@@ -342,6 +339,10 @@
                 e.stopPropagation();
                 e.preventDefault();
             });
+            @if (Model.ServiceRequest.AppointmentDate.HasValue)
+            {
+                @:refreshGoogleCalendarIntegration();
+            }
         });
 
         let serviceRequestId = @Model.ServiceRequest.Id;
@@ -505,6 +506,36 @@
                     //console.log(err.error);
                 }
             }, this);
+        }
+
+        function refreshGoogleCalendarIntegration() {
+            $.ajax({
+                type: "GET",
+                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequest.Id)',
+                contentType: "text/html",
+                success: function (result) {
+                    $('#google-calendar-integration').html(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
+            });
+        }
+
+        function addGoogleCalendarEvent(eventId) {
+            $.ajax({
+                type: "POST",
+                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequest.Id)',
+                contentType: "text/html",
+                success: function (result) {
+                    refreshGoogleCalendarIntegration();
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
+            });
         }
 
     </script>

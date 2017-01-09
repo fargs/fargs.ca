@@ -1,0 +1,35 @@
+﻿@using WebApp.Library.Extensions
+@model Google.Apis.Calendar.v3.Data.Event
+
+
+<div>
+    <i class="fa fa-check fa-2x text-success"></i> <small><a href="@Model.HtmlLink">Open in Google Calendar</a></small>
+</div>
+<div class="well well-sm">
+    <div>
+        @Model.Summary
+    </div>
+    <strong>When</strong>
+    <div>
+        @Model.Start.DateTime.Value.ToTimeZoneIana(Model.Start.TimeZone)
+        <small class="text-muted">@Model.Start.TimeZone</small>
+    </div>
+    <strong>Where</strong>
+    <div>
+        @Model.Location
+    </div>
+    <strong>Attendees</strong>
+    @if (Model.Attendees.Count <= 0)
+    {
+        <div>No attendees yet</div>
+    }
+    else
+    {
+        <ul>
+            @foreach (var item in Model.Attendees)
+            {
+                <li>@item.Email (@item.ResponseStatus)</li>
+            }
+        </ul>
+    }
+</div>

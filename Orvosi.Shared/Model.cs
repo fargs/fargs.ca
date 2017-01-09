@@ -226,6 +226,7 @@ namespace Orvosi.Shared.Model
         public string Notes { get; set; }
         public string City { get; set; }
         public Guid PhysicianId { get; set; }
+        public string CalendarEventId { get; set; }
 
         // references
         public Service Service { get; set; }
@@ -411,6 +412,8 @@ namespace Orvosi.Shared.Model
                 return ServiceRequestTasks.First(c => c.ProcessTask.Id == Tasks.SubmitReport || c.ProcessTask.Id == 36).CompletedDate.HasValue;
             }
         }
+
+        public TimeSpan? EndTime { get; set; }
     }
 
     public class Assessment : ServiceRequest
@@ -601,6 +604,12 @@ namespace Orvosi.Shared.Model
         public string ProvinceCode { get; set; }
         public string TimeZone { get; set; }
         public short? ProvinceId { get; set; }
+        public string TimeZoneIana { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Address1}, {City} {ProvinceCode}, {PostalCode}, {Name}";
+        }
     }
 
     public class Invoice

@@ -178,7 +178,7 @@ namespace WebApp.Models.ServiceRequestModels2
                             ServiceRequestMessages = srt.ServiceRequest.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
                             {
                                 Id = srm.Id,
-                                TimeZone = srm.ServiceRequest.Address.TimeZone,
+                                TimeZone = srm.ServiceRequest.Address.TimeZone.Name,
                                 Message = srm.Message,
                                 PostedDate = srm.PostedDate,
                                 PostedBy = new Person

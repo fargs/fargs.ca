@@ -64,6 +64,21 @@ namespace WebApp.Library.Extensions
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             return TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
         }
+        public static DateTime ToTimeZoneIana(this DateTime time, string timeZoneIana)
+        {
+            //TODO: This mapping info is already in the Timezone table. Needs to be loaded in and cached
+            string timeZone = TimeZones.EasternStandardTime;
+            switch (timeZoneIana)
+            {
+                case "America/Vancouver":
+                    timeZone = TimeZones.PacificStandardTime;
+                    break;
+                default:
+                    break;
+            }
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            return TimeZoneInfo.ConvertTime(time, cstZone);
+        }
         public static IEnumerable<DateTime> GetDateRangeTo(this DateTime self, DateTime toDate)
         {
             if (self.Date == toDate.Date)
@@ -120,12 +135,22 @@ namespace WebApp.Library.Extensions
 
         public static string ToOrvosiDateTimeFormat(this DateTime value)
         {
-            return value.ToString("yyyy-MM-dd HH:mm");
+            return value.ToString("yyyy-MM-dd hh:mm tt");
+        }
+
+        public static string ToOrvosiDateTimeFormat(this DateTime value, TimeSpan startTime)
+        {
+            return value.AddTicks(startTime.Ticks + 1).ToOrvosiDateTimeFormat();
         }
 
         public static string ToOrvosiDateTimeFormat(this DateTime? value)
         {
-            return value.HasValue ? value.Value.ToString("yyyy-MM-dd HH:mm") : string.Empty;
+            return value.HasValue ? value.Value.ToOrvosiDateTimeFormat() : string.Empty;
+        }
+
+        public static string ToOrvosiDateTimeFormat(this DateTime? value, TimeSpan startTime)
+        {
+            return value.HasValue ? value.Value.ToOrvosiDateTimeFormat(startTime) : string.Empty;
         }
 
         public static List<BoxItem> Entries(this BoxFolder value)

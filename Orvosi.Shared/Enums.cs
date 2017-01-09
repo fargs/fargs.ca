@@ -270,6 +270,6 @@ namespace Orvosi.Shared.Enums
     public static class TimeZones
     {
         public const string EasternStandardTime = "Eastern Standard Time";
-        public const string WestCoastTime = "Pacific Standard Time";
+        public const string PacificStandardTime = "Pacific Standard Time";
     }
 }

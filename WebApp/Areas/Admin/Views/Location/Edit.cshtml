@@ -59,7 +59,7 @@
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
-            Value = c.Name
+            Value = c.Id.ToString()
         }).ToList();
 }
 
@@ -161,8 +161,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">TimeZone</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.TimeZone, new SelectList(ViewBag.TimeZones, "Value", "Text"), string.Empty, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.TimeZone, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.TimeZoneId, new SelectList(ViewBag.TimeZones, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TimeZoneId, "", new { @class = "text-danger" })
             </div>
         </div>
 

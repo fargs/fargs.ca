@@ -43,14 +43,14 @@ namespace Orvosi.Data
             Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("smallint");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("smalldatetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(256);
-            Property(x => x.TimeZone).HasColumnName(@"TimeZone").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.TimeZoneId).HasColumnName(@"TimeZoneId").IsRequired().HasColumnType("smallint");
 
             // Foreign keys
             HasOptional(a => a.City_CityId).WithMany(b => b.Addresses).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_Address_City
             HasOptional(a => a.Province).WithMany(b => b.Addresses).HasForeignKey(c => c.ProvinceId).WillCascadeOnDelete(false); // FK_Address_Provinces
-            HasOptional(a => a.TimeZone_TimeZone).WithMany(b => b.Addresses).HasForeignKey(c => c.TimeZone).WillCascadeOnDelete(false); // FK_Address_TimeZone
             HasRequired(a => a.AddressType).WithMany(b => b.Addresses).HasForeignKey(c => c.AddressTypeId).WillCascadeOnDelete(false); // FK_Address_AddressType
             HasRequired(a => a.Country).WithMany(b => b.Addresses).HasForeignKey(c => c.CountryId).WillCascadeOnDelete(false); // FK_Address_Countries
+            HasRequired(a => a.TimeZone).WithMany(b => b.Addresses).HasForeignKey(c => c.TimeZoneId).WillCascadeOnDelete(false); // FK_Address_TimeZone
             InitializePartial();
         }
         partial void InitializePartial();

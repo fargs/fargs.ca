@@ -186,7 +186,7 @@ namespace WebApp.Library.Projections
                     PostalCode = sr.Address.PostalCode,
                     Address1 = sr.Address.Address1,
                     ProvinceCode = sr.Address.Province.ProvinceCode,
-                    TimeZone = sr.Address.TimeZone
+                    TimeZone = sr.Address.TimeZone.Name
                 },
                 Company = new Orvosi.Shared.Model.Company
                 {
@@ -259,7 +259,7 @@ namespace WebApp.Library.Projections
                 ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
                 {
                     Id = srm.Id,
-                    TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone,
+                    TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
                     Message = srm.Message,
                     PostedDate = srm.PostedDate,
                     PostedBy = new Orvosi.Shared.Model.Person
@@ -377,6 +377,7 @@ namespace WebApp.Library.Projections
                 AppointmentDate = sr.AppointmentDate,
                 StartTime = sr.StartTime,
                 ClaimantName = sr.ClaimantName,
+                CalendarEventId = sr.CalendarEventId,
                 Physician = new Orvosi.Shared.Model.Person
                 {
                     Id = sr.Physician.Id,
@@ -402,6 +403,55 @@ namespace WebApp.Library.Projections
                     Id = sr.AddressId.Value,
                     CityCode = sr.Address.City_CityId.Code,
                     ProvinceId = sr.Address.ProvinceId
+                }
+            };
+        }
+
+        public static Expression<Func<Orvosi.Data.ServiceRequest, Orvosi.Shared.Model.ServiceRequest>> ForGoogleCalendar(string baseUrl)
+        {
+            return sr => new Orvosi.Shared.Model.ServiceRequest
+            {
+                Id = sr.Id,
+                BoxCaseFolderId = sr.BoxCaseFolderId,
+                DueDate = sr.DueDate,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                EndTime = sr.EndTime,
+                ClaimantName = sr.ClaimantName,
+                CalendarEventId = sr.CalendarEventId,
+                URL = baseUrl + "/ServiceRequest/Details/" + sr.Id,
+                Physician = new Orvosi.Shared.Model.Person
+                {
+                    Id = sr.Physician.Id,
+                    Email = sr.Physician.AspNetUser.Email,
+                    BoxFolderId = sr.Physician.AspNetUser.BoxFolderId,
+                    BoxCaseTemplateFolderId = sr.Physician.BoxCaseTemplateFolderId,
+                    BoxAddOnTemplateFolderId = sr.Physician.BoxAddOnTemplateFolderId
+                },
+                Service = new Orvosi.Shared.Model.Service
+                {
+                    Id = sr.Service.Id,
+                    Code = sr.Service.Code,
+                    ServiceCategoryId = sr.Service.ServiceCategoryId.Value
+                },
+                Company = sr.Company == null ? null : new Orvosi.Shared.Model.Company
+                {
+                    Id = sr.Company.Id,
+                    Name = sr.Company.Name,
+                    Code = sr.Company.Code
+                },
+                Address = sr.Address == null ? null : new Orvosi.Shared.Model.Address
+                {
+                    Id = sr.AddressId.Value,
+                    Name = sr.Address.Name,
+                    Address1 = sr.Address.Address1,
+                    City = sr.Address.City_CityId.Name,
+                    CityCode = sr.Address.City_CityId.Code,
+                    ProvinceId = sr.Address.ProvinceId,
+                    ProvinceCode = sr.Address.Province.ProvinceCode,
+                    PostalCode = sr.Address.PostalCode,
+                    TimeZoneIana = sr.Address.TimeZone.Iana,
+                    TimeZone = sr.Address.TimeZone.Name
                 }
             };
         }

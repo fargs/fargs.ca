@@ -25,10 +25,11 @@ namespace Orvosi.Data
         public TimeZoneConfiguration(string schema)
         {
             ToTable(schema + ".TimeZone");
-            HasKey(x => x.Name);
+            HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(50).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.Iana).HasColumnName(@"IANA").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
             InitializePartial();
         }
         partial void InitializePartial();

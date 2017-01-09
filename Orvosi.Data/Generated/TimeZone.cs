@@ -17,8 +17,9 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class TimeZone
     {
-        public short Id { get; set; } // Id
-        public string Name { get; set; } // Name (Primary key) (length: 50)
+        public short Id { get; set; } // Id (Primary key)
+        public string Name { get; set; } // Name (length: 50)
+        public string Iana { get; set; } // IANA (length: 100)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_TimeZone

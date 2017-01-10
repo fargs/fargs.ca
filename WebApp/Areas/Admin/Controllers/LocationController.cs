@@ -46,7 +46,7 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZone")] Address location)
+        public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZoneId")] Address location)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZone")] Address location)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZoneId")] Address location)
         {
             if (ModelState.IsValid)
             {

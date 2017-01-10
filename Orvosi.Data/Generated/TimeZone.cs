@@ -19,7 +19,8 @@ namespace Orvosi.Data
     {
         public short Id { get; set; } // Id (Primary key)
         public string Name { get; set; } // Name (length: 50)
-        public string Iana { get; set; } // IANA (length: 100)
+        public string Iana { get; set; } // IANA (length: 50)
+        public string Iso { get; set; } // ISO (length: 50)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_TimeZone

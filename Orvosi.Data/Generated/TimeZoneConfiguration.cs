@@ -29,7 +29,8 @@ namespace Orvosi.Data
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
             Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(50);
-            Property(x => x.Iana).HasColumnName(@"IANA").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.Iana).HasColumnName(@"IANA").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
+            Property(x => x.Iso).HasColumnName(@"ISO").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             InitializePartial();
         }
         partial void InitializePartial();

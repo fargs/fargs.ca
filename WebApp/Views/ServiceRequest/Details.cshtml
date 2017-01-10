@@ -159,47 +159,44 @@
                     @foreach (var task in Model.ServiceRequest.ServiceRequestTasks)
                     {
                         <tr>
-                            @if (roleId == AspNetRoles.SuperAdmin)
-                            {
-                                <td width="50px">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-link" data-toggle="dropdown">
-                                            <i class="fa fa-ellipsis-h fa-lg"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                            <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
-                                            @if (new Guid[3] { AspNetRoles.SuperAdmin, AspNetRoles.Physician, AspNetRoles.CaseCoordinator }.Contains(roleId))
-                                            {
-                                                <li class="dropdown-submenu">
-                                                    <a tabindex="-1" class="assign-to" href="#">
-                                                        Assign To
-                                                        <span class="caret"></span>
-                                                    </a>
-                                                    <ul class="dropdown-menu">
-                                                        @foreach (var teamMember in Model.UserSelectList)
+                            <td width="50px">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link" data-toggle="dropdown">
+                                        <i class="fa fa-ellipsis-h fa-lg"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                        <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
+                                        @if (new Guid[3] { AspNetRoles.SuperAdmin, AspNetRoles.Physician, AspNetRoles.CaseCoordinator }.Contains(roleId))
+                                        {
+                                            <li class="dropdown-submenu">
+                                                <a tabindex="-1" class="assign-to" href="#">
+                                                    Assign To
+                                                    <span class="caret"></span>
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    @foreach (var teamMember in Model.UserSelectList)
+                                                    {
+                                                        if (teamMember.Value != task.AssignedTo.ToString())
                                                         {
-                                                            if (teamMember.Value != task.AssignedTo.ToString())
-                                                            {
-                                                                <li>
-                                                                    <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
-                                                                </li>
-                                                            }
+                                                            <li>
+                                                                <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+                                                            </li>
                                                         }
-                                                    </ul>
-                                                </li>
-                                                @*<li class="divider"></li>
-                                                    <li><a href="#">Edit</a></li>
-                                                    <li><a href="#">Insert Below</a></li>
-                                                    <li><a href="#">Insert Above</a></li>
-                                                    <li><a href="#">Move Up</a></li>
-                                                    <li><a href="#">Move Down</a></li>*@
-                                                <li class="divider"></li>
-                                                <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </td>
-                            }
+                                                    }
+                                                </ul>
+                                            </li>
+                                            @*<li class="divider"></li>
+                                                <li><a href="#">Edit</a></li>
+                                                <li><a href="#">Insert Below</a></li>
+                                                <li><a href="#">Insert Above</a></li>
+                                                <li><a href="#">Move Up</a></li>
+                                                <li><a href="#">Move Down</a></li>*@
+                                            <li class="divider"></li>
+                                            <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </td>
                             <td width="50px">
                                 @if (task.ProcessTask.Id == Tasks.AssessmentDay)
                                 {

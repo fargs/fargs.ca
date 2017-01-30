@@ -6,6 +6,9 @@
 
 
 
+
+
+
 CREATE VIEW [API].[Account]
 AS
 
@@ -40,6 +43,7 @@ SELECT u.[Id]
 	  ,r.RoleName
 	  ,CompanyName = c.Name
 	  ,LastActivationDate
+	  ,u.IsAppTester
 FROM [dbo].[AspNetUsers] u
 LEFT JOIN PrimaryRole r ON r.UserId = u.Id
 LEFT JOIN dbo.Company c ON u.CompanyId = c.Id

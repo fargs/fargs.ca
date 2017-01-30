@@ -1,20 +1,32 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel
+﻿@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.Library.Extensions
+@model WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel
+
+@{
+    var features = User.Identity.GetFeatures();
+}
 
 <div id="notes">
     @if (!string.IsNullOrEmpty(Model.Note))
     {
-        <h4 class="text-info">Note</h4>
-        @Html.Raw(Model.Note)
-        <span>
-            &nbsp;&nbsp;
-            <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><i class="fa fa-pencil"></i></a>
-        </span>
+        if (features.Contains(Features.ServiceRequest.ViewInvoiceNote))
+        {
+            <h4 class="text-info">Note</h4>
+            @Html.Raw(Model.Note)
+            <span>
+                &nbsp;&nbsp;
+                <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><i class="fa fa-pencil"></i></a>
+            </span>
+        }
     }
     else
     {
-        <div>
-            <i class="fa fa-sticky-note-o"></i>
-            <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><small>Add Note</small></a>
-        </div>
+        if (features.Contains(Features.ServiceRequest.ManageInvoiceNote))
+        {
+            <div>
+                <i class="fa fa-sticky-note-o"></i>
+                <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><small>Add Note</small></a>
+            </div>
+        }
     }
 </div>

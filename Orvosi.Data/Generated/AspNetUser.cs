@@ -49,12 +49,15 @@ namespace Orvosi.Data
         public string BoxRefreshToken { get; set; } // BoxRefreshToken (length: 128)
         public string HstNumber { get; set; } // HstNumber (length: 50)
         public string Notes { get; set; } // Notes
+        public bool IsAppTester { get; set; } // IsAppTester
 
         // Reverse navigation
         public virtual Physician Physician { get; set; } // Physician.FK_Physician_AspNetUsers
         public virtual System.Collections.Generic.ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims.FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId
         public virtual System.Collections.Generic.ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<Collaborator> CollaboratorUser { get; set; } // Collaborator.FK_Collaborator_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<Collaborator> User { get; set; } // Collaborator.FK_AspNetUsers_Collaborator
         public virtual System.Collections.Generic.ICollection<ServiceRequest> CaseCoordinator { get; set; } // ServiceRequest.FK_ServiceRequest_CaseCoordinator
         public virtual System.Collections.Generic.ICollection<ServiceRequest> DocumentReviewer { get; set; } // ServiceRequest.FK_ServiceRequest_DocumentReviewer
         public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
@@ -72,9 +75,12 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             IsTestRecord = false;
+            IsAppTester = false;
             AspNetUserClaims = new System.Collections.Generic.List<AspNetUserClaim>();
             AspNetUserLogins = new System.Collections.Generic.List<AspNetUserLogin>();
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
+            CollaboratorUser = new System.Collections.Generic.List<Collaborator>();
+            User = new System.Collections.Generic.List<Collaborator>();
             CaseCoordinator = new System.Collections.Generic.List<ServiceRequest>();
             DocumentReviewer = new System.Collections.Generic.List<ServiceRequest>();
             IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();

@@ -9,9 +9,12 @@ using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
+    [AuthorizeRole(Feature = Features.Admin.ManageProcessTemplates)]
     public class ServiceRequestTemplateTaskController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();

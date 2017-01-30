@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
 using WebApp.Areas.Admin.ViewModels.Role;
 using WebApp.Models;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    [AuthorizeRole(Feature = Features.SecurityAdmin.RoleManagement)]
     public class RoleController : BaseController
     {
 

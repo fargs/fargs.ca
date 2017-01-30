@@ -1,10 +1,11 @@
 ﻿@using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
+@using Features = Orvosi.Shared.Enums.Features
 @model WebApp.ViewModels.DashboardViewModels.AgendaViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
+    var features = User.Identity.GetFeatures();
 }
 <div class="row">
     <div class="col-md-2">
@@ -48,6 +49,7 @@
                             <label>
                                 <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
                                        value="@serviceRequest.IsNoShow"
+                                       checked="@serviceRequest.IsNoShow"
                                        @(serviceRequest.IsNoShow ? "checked" : "")
                                        onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
                                 No Show
@@ -70,10 +72,7 @@
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                {
-                    @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
-                }
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
             </div>
             <div class="col-md-4 o-dashboard-td">
                 @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.Id })

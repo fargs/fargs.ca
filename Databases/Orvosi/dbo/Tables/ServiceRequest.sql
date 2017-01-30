@@ -41,6 +41,8 @@
     [IsClosed]                           BIT              CONSTRAINT [DF_ServiceRequest_IsClosed] DEFAULT ((0)) NOT NULL,
     [CalendarEventId]                    NVARCHAR (256)   NULL,
     [IsDeleted]                          BIT              CONSTRAINT [DF_ServiceRequest_IsDeleted] DEFAULT ((0)) NOT NULL,
+    [CreatedDate]                        DATETIME         NOT NULL,
+    [CreatedUser]                        NVARCHAR (128)   NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequest_Address] FOREIGN KEY ([AddressId]) REFERENCES [dbo].[Address] ([Id]),
     CONSTRAINT [FK_ServiceRequest_AvailableSlot] FOREIGN KEY ([AvailableSlotId]) REFERENCES [dbo].[AvailableSlot] ([Id]),
@@ -52,6 +54,12 @@
     CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id]),
     CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate] FOREIGN KEY ([ServiceRequestTemplateId]) REFERENCES [dbo].[ServiceRequestTemplate] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate];
+
+
 
 
 GO

@@ -14,17 +14,20 @@ using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
 using WebApp.ViewModels.DiagnosticViewModels;
+using features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [AuthorizeRole()]
     public class DiagnosticsController : Controller
     {
         public ActionResult Index()
@@ -36,18 +39,25 @@ namespace WebApp.Controllers
             var db = new Orvosi.Data.OrvosiDbContext();
             return View(db.Invoices.First());
         }
-        public ActionResult ConnectToBox()
+        public async Task<ActionResult> ConnectToBox()
         {
-            return PartialView();
+            var manager = new BoxManager();
+            var client = manager.AdminClientAsUser("257722377");
+            //var folder = await client.FoldersManager.GetInformationAsync("0");
+
+            var userClient = manager.UserClient("257722377");
+            var folder = userClient.FoldersManager.GetInformationAsync("0").Result;
+
+            return PartialView(folder);
         }
         public ActionResult CreateBoxFolder()
         {
             //var box = new BoxManager();
-            
+
             //    var request = db.ServiceRequests.Single(sr => sr.Id == 131);
             //    var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title, );
             //    return PartialView(caseFolder);
-            
+
             return new HttpNotFoundResult();
         }
         // GET: Diagnostics
@@ -107,7 +117,7 @@ namespace WebApp.Controllers
             var client = await dropbox.GetServiceAccountClientAsync();
             var args = new ShareFolderArg(Path, MemberPolicy.Team.Instance);
             await client.Sharing.ShareFolderAsync(args);
-            
+
             return RedirectToAction("DropboxViewer");
         }
         public async Task<ActionResult> DropboxFolderDetails(string Path)
@@ -124,7 +134,7 @@ namespace WebApp.Controllers
             var sharedMembers = await client.Sharing.ListFolderMembersAsync(
                 new ListFolderMembersArgs(folder.AsFolder.SharingInfo.SharedFolderId)
             );
-            
+
             // Get the full member entities of the shared members
             var args = new List<UserSelectorArg>();
             foreach (var m in sharedMembers.Users)
@@ -161,7 +171,7 @@ namespace WebApp.Controllers
                 new TelemetryClient().TrackException(ex);
             }
             return View();
-            
+
         }
         [HttpPost]
         public async Task<ActionResult> GetListOfGoogleCalendars(string email)
@@ -335,6 +345,26 @@ namespace WebApp.Controllers
             await service.SendEmailAsync(message);
         }
 
+        [AuthorizeRole(Feature = features.Accounting.CreateInvoice)]
+        public async Task<ActionResult> AuthorizationAttribute_WithCreateInvoiceFeature()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+        [AuthorizeRole(Features = new short[2] { features.Accounting.CreateInvoice, features.Accounting.ViewInvoice })]
+        public async Task<ActionResult> AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+        [AuthorizeRole]
+        public async Task<ActionResult> AuthorizationAttribute_WithNoFeatures()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+        public async Task<ActionResult> AuthorizationAttribute_NoAttribute()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
         private MailMessage BuildSendTestMailMessage(string to, string from, string baseUrl)
         {
             var message = new MailMessage();
@@ -349,5 +379,6 @@ namespace WebApp.Controllers
 
             return message;
         }
+
     }
 }

@@ -1,10 +1,17 @@
 ﻿@using Orvosi.Data
 @using Orvosi.Shared.Enums
+@using WebApp.Library
 @model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
 
 @{
     ViewBag.Title = "Book an Assessment - Details";
     var physicianDisplayName = Model.SelectedPhysician.AspNetUser.GetDisplayName();
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var companySelectList = viewDataService.GetPhysicianCompanySelectList(Model.SelectedPhysician.Id);
+    var serviceSelectList = viewDataService.GetPhysicianServiceSelectList(Model.SelectedPhysician.Id);
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(Model.SelectedPhysician.Id);
+    var caseCoordinatorSelectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(Model.SelectedPhysician.Id);
+    var processTemplateSelectList = viewDataService.GetPhysicianProcessTemplateSelectList(Model.SelectedPhysician.Id);
 }
 
 <h3>Book an Assessment</h3>
@@ -63,7 +70,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Company</label>
         <div class="col-md-10">
-            @Html.DropDownList("CompanyId", new SelectList(Model.CompanySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CompanyId", new SelectList(companySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -95,7 +102,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Location</label>
             <div class="col-md-10">
-                @Html.DropDownList("AddressId", new SelectList(Model.AddressSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownList("AddressId", new SelectList(addressSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
             </div>
         </div>
@@ -112,7 +119,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Service</label>
         <div class="col-md-10">
-            @Html.DropDownList("ServiceId", new SelectList(Model.ServiceSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceId", new SelectList(serviceSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -156,7 +163,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Case Coordinator</label>
         <div class="col-md-10">
-            @Html.DropDownList("CaseCoordinatorId", new SelectList(Model.StaffSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CaseCoordinatorId", new SelectList(caseCoordinatorSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -164,7 +171,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Process Template</label>
         <div class="col-md-10">
-            @Html.DropDownList("ServiceRequestTemplateId", new SelectList(Model.ServiceRequestTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceRequestTemplateId", new SelectList(processTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceRequestTemplateId", "", new { @class = "text-danger" })
         </div>
     </div>

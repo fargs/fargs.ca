@@ -8,6 +8,8 @@ using System.Linq;
 using Orvosi.Shared.Enums;
 using WebApp.Areas.Admin.ViewModels;
 using WebApp.Library;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -15,7 +17,7 @@ namespace WebApp.Areas.Admin.Controllers
     {
         private OrvosiDbContext db = new OrvosiDbContext();
 
-        // GET: Admin/Location
+        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageAddresses, Features.Admin.ViewAddresses })]
         public async Task<ActionResult> Index()
         {
             // retrieve all the PHYSICIANS from the database
@@ -23,7 +25,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(result);
         }
 
-        // GET: Admin/Location/Details/5
+        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageAddresses, Features.Admin.ViewAddresses })]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,12 +40,10 @@ namespace WebApp.Areas.Admin.Controllers
             return View(address);
         }
 
-        // GET: Admin/Location/Create
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         public ActionResult Create() => View();
 
-        // POST: Admin/Location/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZoneId")] Address location)
@@ -61,7 +61,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(location);
         }
 
-        // GET: Admin/Location/Edit/5
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,9 +77,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(location);
         }
 
-        // POST: Admin/Location/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,OwnerGuid,AddressTypeID,Name,Attention,Address1,Address2,CityId,PostalCode,CountryID,ProvinceID,ModifiedUser,LocationId,TimeZoneId")] Address location)
@@ -96,7 +94,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(location);
         }
 
-        // GET: Admin/Location/Delete/5
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         public async Task<ActionResult> Delete(int? id)
         {
 
@@ -112,7 +110,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(location);
         }
 
-        // POST: Admin/Location/Delete/5
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)

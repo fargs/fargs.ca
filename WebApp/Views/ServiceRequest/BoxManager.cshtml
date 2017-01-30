@@ -28,10 +28,13 @@
                 @if (Model.BoxFolder != null)
                 {
                     <small><strong>@Model.BoxFolder.Name</strong></small>
-                    <small>@Model.ExpectedFolderName</small>
-                    <form action="~/ServiceRequest/UpdateBoxCaseFolderName?serviceRequestId=@Model.ServiceRequestId" method="post">
-                        <button type="submit" class="btn btn-@(Model.BoxFolder.Name != Model.ExpectedFolderName ? "danger" : "primary")">Update Case Folder Name</button>
-                    </form>
+                    if (Model.BoxFolder.Name != Model.ExpectedFolderName)
+                    {
+                        <div class="text-danger">Expected folder name: @Model.ExpectedFolderName</div>
+                        <form action="~/ServiceRequest/UpdateBoxCaseFolderName?serviceRequestId=@Model.ServiceRequestId" method="post">
+                            <button type="submit" class="btn btn-danger">Update Case Folder Name</button>
+                        </form>
+                    }
                 }
                 else
                 {
@@ -46,8 +49,12 @@
                 <div class="row top-buffer">
                     <div class="col-sm-12">
                         <span title="@string.Concat(item.Resource.GetDisplayName(), " - ", string.Join(" & ", item.Resource.AspNetUserRoles.Select(r => r.RoleId)))" class="btn btn-circle disabled pull-left" style="cursor: default; color: white; background-color: @item.Resource.ColorCode;">@item.Resource.GetInitials()</span>
-                        @if (item.BoxFolder == null)
-                    {
+                        @if (string.IsNullOrEmpty(item.Resource.BoxUserId))
+                        {
+                            <div>User does not have a box account.</div>
+                        }
+                        else if (item.BoxFolder == null)
+                        {
                             <form action="~/ServiceRequest/ShareBoxFolder" method="post">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
@@ -128,53 +135,60 @@
     </div>
 </div>
 
-<h4>Debug</h4>
-@foreach (var item in Model.Reconciliations)
-{
-    <ul>
-        <li>
-            @item.BoxCollaborationId
-            <span><i class="fa fa-times"></i></span>
-            <ul>
-                @if (item.OrvosiCollaborations.Any())
-                {
-                    foreach (var inner in item.OrvosiCollaborations)
+<h4>Integration Reconciliation</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Shared Collaboration Id
+            </th>
+            <th>
+                Orvosi
+            </th>
+            <th>
+                Box
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Reconciliations)
+            {
+            <tr>
+                <td>@item.BoxCollaborationId</td>
+                <td>
+                    @foreach (var inner in item.OrvosiCollaborations)
                     {
-                        <li>
-                            ORVOSI: @inner.AspNetUser.GetDisplayName()
-                        </li>
-                    }
-                }
-                else
-                {
-                    <li>
-                        ORVOSI: <em>Higher Level Accesss</em>
-                    </li>
-                }
-            </ul>
-            <ul>
-                @foreach (var inner in item.BoxCollaborations)
-                {
-                    <li>
-                        @if (inner.AccessibleBy.Type == BoxType.user.ToString())
+                        if (!item.BoxCollaborations.Any())
                         {
-                            <span>BOX: </span> @((inner.AccessibleBy as Box.V2.Models.BoxUser).Name)
+                            <button class="btn btn-link">Delete</button>
+                        }
+                        <span>
+                            @inner.AspNetUser.GetDisplayName()
+                        </span>
+                    }
+                </td>
+                <td>
+                    @foreach (var inner in item.BoxCollaborations)
+                    {
+                        if (inner.AccessibleBy.Type == BoxType.user.ToString())
+                        {
+                            <span>@((inner.AccessibleBy as Box.V2.Models.BoxUser).Name)</span>
                         }
                         else if (inner.AccessibleBy.Type == BoxType.group.ToString())
                         {
-                            <span>BOX: </span> @((inner.AccessibleBy as Box.V2.Models.BoxGroup).Name) <span class="label label-warning">Group</span>
+                            <span>@((inner.AccessibleBy as Box.V2.Models.BoxGroup).Name)</span> <span class="label label-warning">Group</span>
                         }
-                    </li>
-                }
-            </ul>
-        </li>
-    </ul>
-}
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 @*<form action="~/ServiceRequest/AddCollaboration/" method="get" class="form-inline">
-    <div class="form-group">
-        @Html.DropDownList("userId", new SelectList(userSelectList, "Value", "Text", "Group.Name", new { }), "-- User --", new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <button class="btn btn-primary">Share</button>
-    </div>
-</form>*@
+        <div class="form-group">
+            @Html.DropDownList("userId", new SelectList(userSelectList, "Value", "Text", "Group.Name", new { }), "-- User --", new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary">Share</button>
+        </div>
+    </form>*@

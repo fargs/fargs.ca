@@ -1,6 +1,7 @@
 ﻿@using WebApp.Library.Helpers
 @using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums.Features
 @using Orvosi.Data
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,27 +9,13 @@
     var roleId = User.Identity.GetRoleId();
     var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 
+    var features = User.Identity.GetFeatures();
+
     var context = new OrvosiDbContext();
-    var userSelectList = (from user in context.AspNetUsers
-                          from userRole in context.AspNetUserRoles
-                          from role in context.AspNetRoles
-                          where user.Id == userRole.UserId && role.Id == userRole.RoleId && userRole.RoleId == AspNetRoles.Physician
-                          select new SelectListItem
-                          {
-                              Text = user.FirstName + " " + user.LastName,
-                              Value = user.Id.ToString(),
-                              Group = new SelectListGroup() { Name = role.Name }
-                          }).ToList();
 
     Guid userId = User.Identity.GetGuidUserId();
-    Guid serviceProviderId = userId;
-    var param = Request.QueryString.Get("serviceProviderId");
-    var serviceProviderIdFromUrl = string.IsNullOrEmpty(param) ? (Guid?)null : (Guid?)new Guid(param);
-    // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-    if (User.Identity.IsAdmin() && serviceProviderIdFromUrl.HasValue)
-    {
-        serviceProviderId = serviceProviderIdFromUrl.Value;
-    }
+
+    Guid serviceProviderId = User.Identity.GetUserContext().Id;
 
     Orvosi.Shared.Model.Invoice selectedInvoice = null;
     var paramInvoiceId = Request.QueryString.Get("invoiceId");
@@ -43,21 +30,10 @@
     }
 }
 
-@if (roles.Contains(roleId))
-{
-    <div class="row" style="margin-bottom:20px">
-        <div class="col-md-12">
-            <form action="~/@this.ViewContext.RouteData.Values["Controller"]/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
-                <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(userSelectList, "Value", "Text", "Group.Name", serviceProviderId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
-                </div>
-            </form>
-        </div>
-    </div>
-}
-
 <p class="h3 text-muted">Accounting</p>
 
+@if (features.Contains(Accounting.SearchInvoices))
+{
 <div class="row">
     <div class="col-xs-12 col-sm-8 col-md-4">
         <form action="~/Accounting/AllInvoices/" method="get">
@@ -73,13 +49,29 @@
         </form>
     </div>
 </div>
+}
 
 <ul class="nav nav-tabs">
-    <li role="presentation" class="@Html.IsActive("Accounting", "UnsentInvoices")"><a href="~/Accounting/UnsentInvoices?@(Request.QueryString)">Unsent</a></li>
-    <li role="presentation" class="@Html.IsActive("Accounting", "UnpaidInvoices")"><a href="~/Accounting/UnpaidInvoices?@(Request.QueryString)">Unpaid</a></li>
-    <li role="presentation" class="@Html.IsActive("Accounting", "AllInvoices")"><a href="~/Accounting/AllInvoices?@(Request.QueryString)">All</a></li>
-    <li role="presentation" class="@Html.IsActive("Accounting", "Analytics")"><a href="~/Accounting/Analytics?@(Request.QueryString)">Analytics</a></li>
-    <li role="presentation" class="pull-right @Html.IsActive("Accounting", "CreateInvoice")"><a href="~/Accounting/CreateInvoice?@(Request.QueryString)"><i class="fa fa-plus-circle fa-lg" style="color:green"></i></a></li>
+    @if (features.Contains(Accounting.ViewUnsentInvoices))
+    {
+        <li role="presentation" class="@Html.IsActive("Accounting", "UnsentInvoices")"><a href="~/Accounting/UnsentInvoices?@(Request.QueryString)">Unsent</a></li>
+    }
+    @if (features.Contains(Accounting.ViewUnpaidInvoices))
+    {
+        <li role="presentation" class="@Html.IsActive("Accounting", "UnpaidInvoices")"><a href="~/Accounting/UnpaidInvoices?@(Request.QueryString)">Unpaid</a></li>
+    }
+    @if (features.Contains(Accounting.SearchInvoices))
+    {
+        <li role="presentation" class="@Html.IsActive("Accounting", "AllInvoices")"><a href="~/Accounting/AllInvoices?@(Request.QueryString)">All</a></li>
+    }
+    @if (features.Contains(Accounting.Analytics))
+    {
+        <li role="presentation" class="@Html.IsActive("Accounting", "Analytics")"><a href="~/Accounting/Analytics?@(Request.QueryString)">Analytics</a></li>
+    }
+    @if (features.Contains(Accounting.CreateInvoice))
+    {
+        <li role="presentation" class="pull-right @Html.IsActive("Accounting", "CreateInvoice")"><a href="~/Accounting/CreateInvoice?@(Request.QueryString)"><i class="fa fa-plus-circle fa-lg" style="color:green"></i></a></li>
+    }
 </ul>
 <section class="tab-content">
     <div role="tabpanel" class="tab-pane active panel-body">

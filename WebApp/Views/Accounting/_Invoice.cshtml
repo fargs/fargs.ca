@@ -1,5 +1,10 @@
 ﻿@using WebApp.Library.Extensions
+@using Orvosi.Shared.Enums.Features
 @model Orvosi.Shared.Model.Invoice
+
+@{
+    var features = User.Identity.GetFeatures();
+}
 
 @if (Model == null)
 {
@@ -36,14 +41,17 @@ else
                         </span>
                     </td>
                     <td class="text-right">
-                        <a onclick="onEditInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        @if (!detail.ServiceRequestId.HasValue)
+                        @if (features.Contains(Accounting.EditInvoice))
                         {
-                            <a onclick="onDeleteInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
-                                <i class="fa fa-remove"></i>
+                            <a onclick="onEditInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                                <i class="fa fa-pencil"></i>
                             </a>
+                            if (!detail.ServiceRequestId.HasValue)
+                            {
+                                <a onclick="onDeleteInvoiceItem(@detail.Id, @Model.Id)" style="cursor:pointer;">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            }
                         }
                     </td>
                 </tr>

@@ -1,16 +1,13 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
+﻿@using Orvosi.Data
+@using WebApp.Library.Extensions
+@using WebApp.Library
+@model WebApp.ViewModels.ServiceRequestViewModels.AvailabilityForm
 
 @{
     ViewBag.Title = "Create Booking - Availability";
-    var db = new Orvosi.Data.OrvosiDbContext();
-    ViewBag.Physicians = db.Physicians
-        .AsEnumerable()
-        .Select(c => new SelectListItem()
-        {
-            Text = c.AspNetUser.GetDisplayName(),
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.PhysicianSpeciality.Name }
-        }).ToList();
+    var userContext = User.Identity.GetUserContext();
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var physicianSelectList = viewDataService.GetPhysicianSelectList();
 }
 
 <h3>Book an Assessment</h3>
@@ -25,8 +22,10 @@
     <div class="form-group">
         <label class="control-label col-md-2">Physician</label>
         <div class="col-md-10">
-            @Html.DropDownListFor(c => c.PhysicianId, new SelectList(ViewBag.Physicians, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
-            @Html.ValidationMessageFor(c => c.PhysicianId, "", new { @class = "text-danger" })
+            @{
+                @Html.DropDownList("PhysicianId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), string.Empty, new { @class = "form-control", onchange = "refreshAvailability(this)" })
+                @Html.ValidationMessage("PhysicianId", "", new { @class = "text-danger" })
+            }
         </div>
     </div>
 
@@ -34,7 +33,7 @@
         <label class="control-label col-md-2">Appointment Date</label>
         <div class="col-md-10">
             <div class="input-group date" style="width:100%" id="AppointmentDatePicker">
-                @Html.TextBoxFor(c => c.AppointmentDate, new { @class="form-control", size="16" })
+                @Html.TextBoxFor(c => c.AppointmentDate, new { @class = "form-control", size = "16" })
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
             @Html.ValidationMessageFor(c => c.AppointmentDate, "", new { @class = "text-danger" })
@@ -49,14 +48,16 @@
 </form>
 
 @section Scripts {
-    
+
     @Scripts.Render("~/bundles/jqueryval")
 
     <script type="text/javascript">
 
-        $('#AppointmentDatePicker').datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true
+        $(function () {
+            $('#AppointmentDatePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true
+            });
         });
 
     </script>

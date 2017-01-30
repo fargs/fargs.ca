@@ -2,34 +2,51 @@
 @using WebApp.Library
 @using Orvosi.Shared.Enums
 @using Box.V2.Models
+@using Orvosi.Data
+@using Features = Orvosi.Shared.Enums.Features
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
 @{
     var identity = User.Identity.GetClaimsIdentity();
     var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+    var viewDataService = new ViewDataService(identity, new OrvosiDbContext());
+    var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.ServiceRequest.PhysicianId);
 }
-@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator)
-{
-    <p>
-        <ul class="list-unstyled">
-            <li>
-                <div class="btn-group">
+
+<p>
+    <ul class="list-unstyled">
+        <li>
+            <div class="btn-group">
+                @if (features.Contains(Features.ServiceRequest.Edit))
+                {
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Actions <span class="caret"></span>
                     </button>
-                    @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin)
-                    {
-                        <ul class="dropdown-menu">
-                            <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
+                    <ul class="dropdown-menu">
+                        <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
+                        @if (features.Contains(Features.ServiceRequest.AssignResources))
+                        {
                             <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
-                            <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company</a></li>
+                        }
+                        @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
+                        {
+                            <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company or Service</a></li>
+                        }
+                        @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
+                        {
                             <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequest.Id">Change Process Template</a></li>
-                            @if (Model.ServiceRequest.CanBeRescheduled)
+                        }
+                        @if (features.Contains(Features.ServiceRequest.Reschedule))
+                        {
+                            if (Model.ServiceRequest.CanBeRescheduled)
                             {
                                 <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
                             }
-
-                            @if (Model.ServiceRequest.CanBeUncancelled)
+                        }
+                        @if (features.Contains(Features.ServiceRequest.Cancel))
+                        {
+                            if (Model.ServiceRequest.CanBeUncancelled)
                             {
                                 <li roleId="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
@@ -39,15 +56,17 @@
                             {
                                 <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
-                        </ul>
-                    }
-                </div>
-            </li>
-        </ul>
-    </p>
-}
+                        }
+                    </ul>
+                }
+            </div>
+        </li>
+    </ul>
+</p>
 
-
+@*
+    LEFT COLUMN
+*@
 <div class="row">
     <div class="col-sm-3">
         <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.Physician.ColorCode">@Model.ServiceRequest.Physician.Initials </span> @Model.ServiceRequest.Physician.DisplayName</h4>
@@ -102,27 +121,34 @@
 
         <div class="row">
             <div class="col-md-12">
-                @if (Model.ServiceRequest.CanNoShowBeUndone)
+                @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
                 {
-                    <form action="~/ServiceRequest/UndoNoShow" method="post">
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                        <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-                        <span><button class="btn btn-link">Undo</button></span>
-                    </form>
-                }
-                else if (Model.ServiceRequest.CanBeNoShow)
-                {
-                    <form action="~/ServiceRequest/NoShow" method="post">
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                        <button class="btn btn-default">No Show</button>
-                        <div class="help-block">Click to flag this case as a "No Show"</div>
-                    </form>
+                    if (Model.ServiceRequest.CanNoShowBeUndone)
+                    {
+                        <form action="~/ServiceRequest/UndoNoShow" method="post">
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+                            <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
+                            <span><button class="btn btn-link">Undo</button></span>
+                        </form>
+                    }
+                    else if (Model.ServiceRequest.CanBeNoShow)
+                    {
+                        <form action="~/ServiceRequest/NoShow" method="post">
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
+                            <button class="btn btn-default">No Show</button>
+                            <div class="help-block">Click to flag this case as a "No Show"</div>
+                        </form>
+                    }
                 }
             </div>
         </div>
     </div>
+
+    @*
+        MIDDLE COLUMN
+    *@
     <div class="col-sm-5">
         <p>
             <h4 style="line-height:30px;">
@@ -132,71 +158,65 @@
                         @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId.Value)
                     </span>
                 }
-                Case @Model.ServiceRequest.Id
+                <span>Case @Model.ServiceRequest.Id</span>
             </h4>
         </p>
         <hr />
-        @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-        {
-            <div id="notes">
-                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
-            </div>
-        }
+        <div id="notes">
+            @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
+        </div>
         <p>
         </p>
         <div class="panel panel-success">
             <div class="panel-heading">
                 <strong>Tasks</strong>
-                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                {
-                    <div class="pull-right">
-                        @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
-                    </div>
-                }
+                <div class="pull-right">
+                    @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
+                </div>
             </div>
             <div class="panel-body">
                 <table class="table table-condensed">
                     @foreach (var task in Model.ServiceRequest.ServiceRequestTasks)
                     {
                         <tr>
-                            <td width="50px">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-link" data-toggle="dropdown">
-                                        <i class="fa fa-ellipsis-h fa-lg"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                        <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
-                                        @if (new Guid[3] { AspNetRoles.SuperAdmin, AspNetRoles.Physician, AspNetRoles.CaseCoordinator }.Contains(roleId))
-                                        {
-                                            <li class="dropdown-submenu">
-                                                <a tabindex="-1" class="assign-to" href="#">
-                                                    Assign To
-                                                    <span class="caret"></span>
-                                                </a>
-                                                <ul class="dropdown-menu">
-                                                    @foreach (var teamMember in Model.UserSelectList)
-                                                    {
-                                                        if (teamMember.Value != task.AssignedTo.ToString())
+                          @if (features.Contains(Features.ServiceRequest.ManageTasks))
+	                        {
+                                <td width="50px">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link" data-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-h fa-lg"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                            @if (features.Contains(Features.ServiceRequest.PickupTask))
+                                            {
+                                                <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
+                                            }
+                                            @if (features.Contains(Features.ServiceRequest.AssignTask))
+                                            {
+                                                <li class="dropdown-submenu">
+                                                    <a tabindex="-1" class="assign-to" href="#">
+                                                        Assign To
+                                                        <span class="caret"></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu">
+                                                        @foreach (var teamMember in teamMemberSelectList)
                                                         {
                                                             <li>
                                                                 <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
                                                             </li>
                                                         }
-                                                    }
-                                                </ul>
-                                            </li>
-                                            @*<li class="divider"></li>
-                                                <li><a href="#">Edit</a></li>
-                                                <li><a href="#">Insert Below</a></li>
-                                                <li><a href="#">Insert Above</a></li>
-                                                <li><a href="#">Move Up</a></li>
-                                                <li><a href="#">Move Down</a></li>*@
-                                            <li class="divider"></li>
-                                            <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
-                                        }
-                                    </ul>
-                                </div>
-                            </td>
+                                                    </ul>
+                                                </li>
+                                            }
+                                            @if (features.Contains(Features.ServiceRequest.DeleteTask))
+                                            {
+                                                <li class="divider"></li>
+                                                <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            }
                             <td width="50px">
                                 @if (task.ProcessTask.Id == Tasks.AssessmentDay)
                                 {
@@ -214,7 +234,7 @@
                                 }
                             </td>
                             <td width="20px">
-                                @if ((roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.Physician || User.Identity.GetGuidUserId() == task.AssignedTo.Id) && task.ProcessTask.Id != Tasks.AssessmentDay)
+                                @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
                                 {
                                     <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                         @Html.AntiForgeryToken()
@@ -251,44 +271,54 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
 
-        <h4 style="line-height:30px;">Case Files and Reports</h4>
-        <hr />
-        @if (Model.ServiceRequest.BoxCaseFolderId == null)
-            {
-            <div>The case folder has not been created yet.<br />Your case coordinator will take care of this once the files are received.</div>
-        }
-        else
+    @*
+        RIGHT COLUMN
+    *@
+
+    <div class="col-sm-4">
+        @if (features.Contains(Features.ServiceRequest_Box.ViewBoxFolder))
         {
-            <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-            <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
-        }
-        @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin)
-        {
-            if (Model.ServiceRequest.BoxCaseFolderId != null)
+            <h4 style="line-height:30px;">Case Files and Reports</h4>
+            <hr />
+            if (Model.ServiceRequest.BoxCaseFolderId == null)
             {
-                <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
+                if (features.Contains(Features.ServiceRequest_Box.CreateFolder))
+                {
+                    <div>
+                        <form action="~/ServiceRequest/CreateBoxCaseFolder?ServiceRequestId=@Model.ServiceRequest.Id" method="post">
+                            <button type="submit" class="btn btn-primary">Create Case Folder</button>
+                        </form>
+                    </div>
+                }
             }
             else
             {
-                <div>
-                    <form action="~/ServiceRequest/CreateBoxCaseFolder?ServiceRequestId=@Model.ServiceRequest.Id" method="post">
-                        <button type="submit" class="btn btn-primary">Create Case Folder</button>
-                    </form>
-                </div>
+                if (features.Contains(Features.ServiceRequest_Box.CreateFolder))
+                {
+                    <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
+                    <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
+                }
+                if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
+                { 
+                    <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
+                }
             }
+
             if (Model.ServiceRequest.Service.HasAppointment)
             {
-                <h3>
-                    Calendar Integration
-                </h3>
-                <div id="google-calendar-integration">
-                </div>
+                if(features.Contains(Features.ServiceRequest_Google.OpenInGoogle))
+                {
+                    <h3>
+                        Calendar Integration
+                    </h3>
+                    <div id="google-calendar-integration">
+                    </div>
+                }
             }
         }
 
-        @if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
+        @*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
             {
             <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
             <hr />
@@ -321,7 +351,7 @@
                     </div>
                 </div>
             }
-        }
+        }*@
     </div>
 </div>
 
@@ -339,7 +369,7 @@
             @if (Model.ServiceRequest.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
-            }
+                                                            }
         });
 
         let serviceRequestId = @Model.ServiceRequest.Id;

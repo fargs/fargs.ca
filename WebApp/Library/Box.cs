@@ -22,8 +22,9 @@ namespace WebApp.Library
         private string clientSecret;
         private Uri redirectUri;
         private Guid adminUserId;
+        private string adminBoxUserId = "257722377"; // lfarago@orvosi.ca
         private string enterpriseId = "785477";
-        private string privateKey = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "private_key.pem"));
+        private string privateKey;
         private string jwtPrivateKeyPassword = "Orvosi2015";
         private string jwtPublicKeyId = "c24a31nu";
         private string accessToken;
@@ -35,13 +36,14 @@ namespace WebApp.Library
         private OAuthSession _OAuthSession;
         public BoxManager()
         {
-            //var boxConfig = new BoxConfig(clientId, clientSecret, enterpriseId, privateKey, jwtPrivateKeyPassword, jwtPublicKeyId);
-            //_BoxJWT = new BoxJWTAuth(boxConfig);
             clientId = ConfigurationManager.AppSettings["BoxClientId"];
             clientSecret = ConfigurationManager.AppSettings["BoxClientSecret"];
-            redirectUri = new Uri(ConfigurationManager.AppSettings["BoxRedirectUri"]);
-            adminUserId = new Guid(ConfigurationManager.AppSettings["BoxAdminUserId"]);
-            boxConfig = new BoxConfig(clientId, clientSecret, redirectUri);
+            //redirectUri = new Uri(ConfigurationManager.AppSettings["BoxRedirectUri"]);
+            //adminUserId = new Guid(ConfigurationManager.AppSettings["BoxAdminUserId"]);
+            //boxConfig = new BoxConfig(clientId, clientSecret, redirectUri);
+            privateKey = System.IO.File.ReadAllText(System.IO.Path.Combine(System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath, "private_key.pem"));
+            var boxConfig = new BoxConfig(clientId, clientSecret, enterpriseId, privateKey, jwtPrivateKeyPassword, jwtPublicKeyId);
+            _BoxJWT = new BoxJWTAuth(boxConfig);
         }
 
         private BoxClient _AdminClient;
@@ -60,82 +62,60 @@ namespace WebApp.Library
             }
         }
 
+        public BoxClient AdminClientAsUser(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _AdminClient = null;
+            }
+            else if (_AdminClient == null)
+            {
+                _AdminToken = _BoxJWT.AdminToken(); //valid for 60 minutes so should be cached and re-used
+                _AdminClient = _BoxJWT.AdminClient(_AdminToken, userId, true);
+            }
+            return _AdminClient;
+        }
+
         private BoxClient _UserClient;
         private string _UserToken;
         public BoxClient UserClient(string userId)
         {
-            if (_UserClient == null)
-            {
-                //NOTE: you must set IsPlatformAccessOnly=true for an App User
-                //var userRequest = new BoxUserRequest() { Name = "CaseCoordinatorAgent", IsPlatformAccessOnly = true };
-                //var appUser = AdminClient.UsersManager.CreateEnterpriseUserAsync(userRequest).Result;
-                //var userList = AdminClient.UsersManager.GetEnterpriseUsersAsync(filterTerm: "AppUser_218182_xyGlkBUid6@boxdevedition.com").Result;
-                //var appUser = userList.Entries.First();
-                //get a user client
-                _UserToken = _BoxJWT.UserToken(userId); //valid for 60 minutes so should be cached and re-used
-                _UserClient = _BoxJWT.UserClient(_UserToken, userId);
-            }
+            _UserToken = _BoxJWT.UserToken(userId); //valid for 60 minutes so should be cached and re-used
+            _UserClient = _BoxJWT.UserClient(_UserToken, userId);
             return _UserClient;
         }
 
-
-        public BoxClient Client(string asUser = "")
+        public BoxClient UserClient()
         {
-            if (_client == null || _client.Auth.Session.ExpiresIn < 0 || !string.IsNullOrEmpty(asUser))
+            if (_UserClient == null)
             {
-                GetBoxTokensReturnModel tokens;
-                using (var db = new OrvosiDbContext())
-                {
-                    tokens = db.GetBoxTokens(adminUserId).First();
-                }
-                var auth = new OAuthSession(tokens.BoxAccessToken, tokens.BoxRefreshToken, 3600, "bearer");
-                if (string.IsNullOrEmpty(asUser))
-                {
-                    _client = new BoxClient(boxConfig, auth);
-                }
-                else
-                {
-                    _client = new BoxClient(boxConfig, auth, asUser: asUser);
-                }
-
-                _client.Auth.SessionAuthenticated += (sender, args) =>
-                {
-                    using (var db = new OrvosiDbContext())
-                    {
-                        db.SaveBoxTokens(args.Session.AccessToken, args.Session.RefreshToken, adminUserId);
-                    }
-                    _client = new BoxClient(boxConfig, args.Session);
-                };
-
-                //_client.Auth.SessionInvalidated += async (sender, args) =>
-                //{
-                //    var refresh = await _client.Auth.RefreshAccessTokenAsync(_client.Auth.Session.AccessToken);
-                //    using (var db = new OrvosiDbContext())
-                //    {
-                //        db.SaveBoxTokens(refresh.AccessToken, refresh.RefreshToken, adminUserId);
-                //    }
-                //    _client = new BoxClient(config, refresh);
-                //};
-
+                _UserToken = _BoxJWT.UserToken(adminBoxUserId); //valid for 60 minutes so should be cached and re-used
+                _UserClient = _BoxJWT.UserClient(_UserToken, adminBoxUserId);
             }
-            return _client;
+            return _UserClient;
         }
+        
 
         internal BoxCollection<BoxUser> GetUsers()
         {
-            return Client().UsersManager.GetEnterpriseUsersAsync().Result;
+            return UserClient(adminBoxUserId).UsersManager.GetEnterpriseUsersAsync().Result;
         }
 
         internal BoxFolder GetFolder(string folderId)
         {
-            return Client().FoldersManager.GetInformationAsync(folderId, fields: new List<string>() { "name", "sync_state" }).Result;
+            return UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(folderId, fields: new List<string>() { "name", "sync_state" }).Result;
         }
 
         internal async Task<BoxFolder> GetFolder(string folderId, string boxUserId)
         {
             try
             {
-                return await Client(boxUserId).FoldersManager.GetInformationAsync(folderId, fields: new List<string>() { "name", "sync_state" });
+                var _client = UserClient(boxUserId);
+                if (_client == null)
+                {
+                    return null;
+                }
+                return await _client.FoldersManager.GetInformationAsync(folderId, fields: new List<string>() { "name", "sync_state" });
             }
             catch (BoxException e)
             {
@@ -149,12 +129,12 @@ namespace WebApp.Library
 
         internal BoxCollection<BoxCollaboration> GetCollaborations(string folderId)
         {
-            return Client().FoldersManager.GetCollaborationsAsync(folderId).Result;
+            return UserClient(adminBoxUserId).FoldersManager.GetCollaborationsAsync(folderId).Result;
         }
 
         public BoxCollection<BoxItem> GetPhysicianFolder(string PhysicianFolderId)
         {
-            return Client().FoldersManager.GetFolderItemsAsync(PhysicianFolderId, 200).Result;
+            return UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(PhysicianFolderId, 200).Result;
         }
 
         public string GetCaseFolderPath(string ProvinceName, DateTime AppointmentDate, string CaseFolderName)
@@ -164,45 +144,45 @@ namespace WebApp.Library
 
         public BoxFolder CreateAddOnFolder(string PhysicianFolderId, string ProvinceName, DateTime DueDate, string CaseFolderName, string FolderTemplateId)
         {
-            var physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
+            var physicianFolder = UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
 
             var addOnFolderName = "Addendums and Paper Reviews";
-            var addOnFolder = Client().FoldersManager.GetFolderItemsAsync(physicianFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == addOnFolderName.ToUpper()) as BoxFolder;
+            var addOnFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(physicianFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == addOnFolderName.ToUpper()) as BoxFolder;
             if (addOnFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Parent = new BoxRequestEntity() { Id = physicianFolder.Id };
                 request.Name = addOnFolderName;
-                addOnFolder = Client().FoldersManager.CreateAsync(request).Result;
+                addOnFolder = UserClient(adminBoxUserId).FoldersManager.CreateAsync(request).Result;
             }
 
             var provinceYearFolderName = string.Format("{0} {1}", ProvinceName, DueDate.ToString("yyyy"));
-            var provinceYearFolder = Client().FoldersManager.GetFolderItemsAsync(addOnFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
+            var provinceYearFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(addOnFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
             if (provinceYearFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Parent = new BoxRequestEntity() { Id = addOnFolder.Id };
                 request.Name = provinceYearFolderName;
-                provinceYearFolder = Client().FoldersManager.CreateAsync(request).Result;
+                provinceYearFolder = UserClient(adminBoxUserId).FoldersManager.CreateAsync(request).Result;
             }
 
             var caseFolderName = CaseFolderName;
-            var caseFolder = Client().FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
+            var caseFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
             if (caseFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Id = FolderTemplateId;
                 request.Parent = new BoxRequestEntity() { Id = provinceYearFolder.Id };
                 request.Name = caseFolderName;
-                caseFolder = Client().FoldersManager.CopyAsync(request).Result;
+                caseFolder = UserClient(adminBoxUserId).FoldersManager.CopyAsync(request).Result;
             }
 
-            return Client().FoldersManager.GetInformationAsync(caseFolder.Id).Result;
+            return UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(caseFolder.Id).Result;
         }
 
         public BoxFolder CreateCaseFolder(string PhysicianFolderId, string ProvinceName, DateTime AppointmentDate, string CaseFolderName, string FolderTemplateId)
         {
-            var physicianFolder = Client().FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
+            var physicianFolder = UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(PhysicianFolderId).Result;
 
             var provinceYearFolderName = string.Format("{0} {1}", ProvinceName, AppointmentDate.ToString("yyyy"));
             var provinceYearFolder = physicianFolder.Entries().SingleOrDefault(i => i.Name.ToUpper() == provinceYearFolderName.ToUpper()) as BoxFolder;
@@ -211,46 +191,46 @@ namespace WebApp.Library
                 var request = new BoxFolderRequest();
                 request.Parent = new BoxRequestEntity() { Id = physicianFolder.Id };
                 request.Name = provinceYearFolderName;
-                provinceYearFolder = Client().FoldersManager.CreateAsync(request).Result;
+                provinceYearFolder = UserClient(adminBoxUserId).FoldersManager.CreateAsync(request).Result;
             }
 
             var monthFolderName = AppointmentDate.ToMonthFolderName();
-            var monthFolder = Client().FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == monthFolderName.ToUpper()) as BoxFolder;
+            var monthFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(provinceYearFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == monthFolderName.ToUpper()) as BoxFolder;
             if (monthFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Parent = new BoxRequestEntity() { Id = provinceYearFolder.Id };
                 request.Name = monthFolderName;
-                monthFolder = Client().FoldersManager.CreateAsync(request).Result;
+                monthFolder = UserClient(adminBoxUserId).FoldersManager.CreateAsync(request).Result;
             }
 
             var weekFolderName = AppointmentDate.ToWeekFolderName();
-            var weekFolder = Client().FoldersManager.GetFolderItemsAsync(monthFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == weekFolderName.ToUpper()) as BoxFolder;
+            var weekFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(monthFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == weekFolderName.ToUpper()) as BoxFolder;
             if (weekFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Parent = new BoxRequestEntity() { Id = monthFolder.Id };
                 request.Name = weekFolderName;
-                weekFolder = Client().FoldersManager.CreateAsync(request).Result;
+                weekFolder = UserClient(adminBoxUserId).FoldersManager.CreateAsync(request).Result;
             }
 
             var caseFolderName = CaseFolderName;
-            var caseFolder = Client().FoldersManager.GetFolderItemsAsync(weekFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
+            var caseFolder = UserClient(adminBoxUserId).FoldersManager.GetFolderItemsAsync(weekFolder.Id, 50).Result.Entries.SingleOrDefault(i => i.Name.ToUpper() == caseFolderName.ToUpper()) as BoxFolder;
             if (caseFolder == null)
             {
                 var request = new BoxFolderRequest();
                 request.Id = FolderTemplateId;
                 request.Parent = new BoxRequestEntity() { Id = weekFolder.Id };
                 request.Name = caseFolderName;
-                caseFolder = Client().FoldersManager.CopyAsync(request).Result;
+                caseFolder = UserClient(adminBoxUserId).FoldersManager.CopyAsync(request).Result;
             }
 
-            return Client().FoldersManager.GetInformationAsync(caseFolder.Id).Result;
+            return UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(caseFolder.Id).Result;
         }
 
         public BoxFolder RenameCaseFolder(string boxFolderId, string caseFolderName)
         {
-            var caseFolder = Client().FoldersManager.GetInformationAsync(boxFolderId).Result;
+            var caseFolder = UserClient(adminBoxUserId).FoldersManager.GetInformationAsync(boxFolderId).Result;
             if (caseFolder == null)
             {
                 throw new Exception("Folder does not exist");
@@ -259,7 +239,7 @@ namespace WebApp.Library
             var request = new BoxFolderRequest();
             request.Id = boxFolderId;
             request.Name = caseFolderName;
-            caseFolder = Client().FoldersManager.UpdateInformationAsync(request).Result;
+            caseFolder = UserClient(adminBoxUserId).FoldersManager.UpdateInformationAsync(request).Result;
 
             return caseFolder;
         }
@@ -282,7 +262,7 @@ namespace WebApp.Library
                 Role = BoxCollaborationRoles.Editor
             };
             // Create the collaboration
-            var collaboration = Client().CollaborationsManager.AddCollaborationAsync(request).Result;
+            var collaboration = UserClient(adminBoxUserId).CollaborationsManager.AddCollaborationAsync(request).Result;
             //collaboration = AcceptCollaboration(collaboration.Id, BoxUserId);
 
             return collaboration;
@@ -296,7 +276,7 @@ namespace WebApp.Library
                 Type = BoxType.folder,
                 SyncState = Status
             };
-            return Client(BoxUserId).FoldersManager.UpdateInformationAsync(syncRequest).Result;
+            return UserClient(BoxUserId).FoldersManager.UpdateInformationAsync(syncRequest).Result;
         }
 
         public BoxCollaboration AcceptCollaboration(string CollaborationId, string BoxUserId)
@@ -306,17 +286,17 @@ namespace WebApp.Library
                 Id = CollaborationId,
                 Status = "accepted"
             };
-            return Client(BoxUserId).CollaborationsManager.EditCollaborationAsync(request).Result;
+            return UserClient(BoxUserId).CollaborationsManager.EditCollaborationAsync(request).Result;
         }
 
         public bool RemoveCollaboration(string CollaborationId)
         {
-            return Client().CollaborationsManager.RemoveCollaborationAsync(CollaborationId).Result;
+            return UserClient(adminBoxUserId).CollaborationsManager.RemoveCollaborationAsync(CollaborationId).Result;
         }
 
         public BoxCollaboration GetCollaboration(string CollaborationId)
         {
-            return Client().CollaborationsManager.GetCollaborationAsync(CollaborationId).Result;
+            return UserClient(adminBoxUserId).CollaborationsManager.GetCollaborationAsync(CollaborationId).Result;
         }
     }
 }

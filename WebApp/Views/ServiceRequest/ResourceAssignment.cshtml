@@ -1,7 +1,13 @@
 ﻿@using WebApp.ViewModels.ServiceRequestViewModels
-@using Orvosi.Shared.Enums
+@using WebApp.Library
+@using Orvosi.Data
 
 @model ResourceAssignmentViewModel
+
+@{ 
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext());
+    var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.PhysicianId);
+}
 
 <form action="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId" method="post" class="form-horizontal">
 
@@ -16,7 +22,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Case Coordinator</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.CaseCoordinatorId, new SelectList(teamMemberSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CaseCoordinatorId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -24,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Intake Assistant</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.IntakeAssistantId, new SelectList(teamMemberSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.IntakeAssistantId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -32,7 +38,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Document Reviewer</label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.DocumentReviewerId, new SelectList(teamMemberSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.DocumentReviewerId, "", new { @class = "text-danger" })
             </div>
         </div>

@@ -1,28 +1,94 @@
 ﻿@using WebApp.Library.Extensions
+@using Orvosi.Data;
 @using Orvosi.Shared.Enums
+@using Features = Orvosi.Shared.Enums.Features
 @model WebApp.ViewModels.LoginPartialViewModel
 
-@{ 
+@{
     var identity = User.Identity.GetClaimsIdentity();
+    var isAppTester = identity.GetOriginalIsAppTester();
+    var userId = identity.GetGuidUserId();
+    var roleId = identity.GetRoleId();
+
+    var db = new OrvosiDbContext();
+    ViewBag.RoleSelectList = db.AspNetRoles
+        .Where(r => r.Id != roleId)
+        .Select(r => new SelectListItem
+        {
+            Text = r.Name,
+            Value = r.Id.ToString()
+        }).ToList();
+
+    ViewBag.UserSelectList = db.AspNetUsers
+        .Where(u => u.Id != userId)
+        .OrderBy(u => u.LastName)
+        .Select(r => new SelectListItem
+        {
+            Text = r.Email,
+            Value = r.Id.ToString()
+        })
+        .ToList();
 }
 
 @if (Model.IsAuthenticated)
 {
-    if (User.Identity.GetRoles().Contains(AspNetRoles.AppTester))
-    {
-        <form action="~/Account/ChangeRole/" method="get" class="navbar-form navbar-right">
-            <div class="form-group">
-                @Html.DropDownList("RoleId", new SelectList(Model.Roles, "Value", "Text", Model.RoleId), "-- Change your role --", new { @class = "form-control", onchange = "this.form.submit();" })
-            </div>
-        </form>
-    }
-
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
-            <li><a href='@Url.Content("~/Manage")'><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName | @identity.GetRoleName()</a></li>
+            <li class="dropdown">
+                <a data-toggle="dropdown" href="#">
+                    <i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                    <li><a tabindex="-1" href="~/Manage">Manage Account</a></li>
+                </ul>
+            </li>
+            @if (isAppTester)
+            {
+                <li>
+                    <a data-toggle="dropdown" href="#">
+                        @Model.RoleName
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (var role in ViewBag.RoleSelectList)
+                        {
+                            <li>
+                                <a tabindex="-1" href="#" onclick="changeRole('@(role.Value)')">@role.Text</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                <li>
+                    @if (User.Identity.IsImpersonating())
+                    {
+                        <a href="~/Account/RevertImpersonation">Log Out As</a>
+                    }
+                    else
+                    {
+                        <a data-toggle="dropdown" href="#">
+                            Log in as
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach (var user in ViewBag.UserSelectList)
+                            {
+                                <li>
+                                    <a tabindex="-1" href="~/Account/ImpersonateUser?userId=@user.Value">@user.Text</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+            @*<form action="~/Account/ChangeRole/" method="get" class="navbar-form">
+                    <div class="form-group">
+                        @Html.DropDownList("RoleId", new SelectList(ViewBag.RoleSelectList, "Value", "Text", Model.RoleId), "-- Change your role --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
+                    </div>
+                </form>*@
             <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
         </ul>
     }

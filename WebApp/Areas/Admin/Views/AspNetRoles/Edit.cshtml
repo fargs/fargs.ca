@@ -49,6 +49,29 @@
             </div>
         </div>
 
+        <div class="editor-label">
+            @Html.Label("Features", "Features")
+        </div>
+
+        <div class="editor-field">
+            <ul>
+                @foreach (var feature in ViewBag.Features)
+                {
+                    <li>
+                        @if (Model.AspNetRolesFeatures.Any(e => e.FeatureId == feature.Id))
+                        {
+                            <input type="checkbox" name="AspNetRolesFeatures" value="@feature.Id" checked="checked" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="AspNetRolesFeatures" value="@feature.Id" />
+                        }
+                        @feature.Name
+                    </li>
+                }
+            </ul>
+        </div>
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

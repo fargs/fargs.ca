@@ -7,9 +7,12 @@ using Orvosi.Shared.Model;
 using System.Net;
 using WebApp.Library.Extensions;
 using Orvosi.Shared.Enums;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
 
 namespace WebApp.Controllers
 {
+    [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]
     public class ServiceRequestMessageController : Controller
     {
         // GET: ServiceRequestMessage

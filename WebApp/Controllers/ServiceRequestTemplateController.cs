@@ -9,9 +9,12 @@ using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
+    [AuthorizeRole(Feature = Features.Admin.ManageProcessTemplates)]
     public class ServiceRequestTemplateController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();
@@ -48,7 +51,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name")] ServiceRequestTemplate serviceRequestTemplate)
+        public async Task<ActionResult> Create(short processTemplateId, ServiceRequestTemplate serviceRequestTemplate)
         {
             serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
             serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();
@@ -56,6 +59,39 @@ namespace WebApp.Controllers
             {
                 db.ServiceRequestTemplates.Add(serviceRequestTemplate);
                 await db.SaveChangesAsync();
+                await db.Entry(serviceRequestTemplate).ReloadAsync();
+
+                // get the task from the default template
+                var tasks = db.ServiceRequestTemplateTasks.Where(t => t.ServiceRequestTemplateId == processTemplateId);
+                foreach (var template in tasks)
+                {
+                    var st = new Orvosi.Data.ServiceRequestTemplateTask();
+                    st.Id = Guid.NewGuid();
+                    st.ResponsibleRoleId = template.ResponsibleRoleId;
+                    st.Sequence = template.Sequence;
+                    st.TaskId = template.OTask.Id;
+                    st.DueDateType = template.DueDateType;
+                    st.ModifiedDate = SystemTime.Now();
+                    st.ModifiedUser = User.Identity.Name;
+
+                    serviceRequestTemplate.ServiceRequestTemplateTasks.Add(st);
+                }
+                
+                await db.SaveChangesAsync();
+
+                // Clone the related tasks
+                foreach (var taskTemplate in tasks)
+                {
+                    foreach (var dependentTemplate in taskTemplate.Child)
+                    {
+                        var task = serviceRequestTemplate.ServiceRequestTemplateTasks.First(srt => srt.TaskId == taskTemplate.TaskId);
+                        var dependent = serviceRequestTemplate.ServiceRequestTemplateTasks.First(srt => srt.TaskId == dependentTemplate.TaskId);
+                        task.Child.Add(dependent);
+                    }
+                }
+
+                await db.SaveChangesAsync();
+
                 return RedirectToAction("Index");
             }
 
@@ -82,7 +118,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name")] ServiceRequestTemplate serviceRequestTemplate)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,PhysicianId")] ServiceRequestTemplate serviceRequestTemplate)
         {
             serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
             serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();

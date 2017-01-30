@@ -1,33 +1,31 @@
 ﻿@using WebApp.Library.Helpers
 @using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
+@using Orvosi.Data
+@using Features = Orvosi.Shared.Enums.Features
 @{ 
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var roleId = User.Identity.GetRoleId();
-    var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
-}
-
-@if (roles.Contains(roleId))
-{
-    <div class="row" style="margin-bottom:20px">
-        <div class="col-md-12">
-            <form action="~/Dashboard/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
-                <div class="form-group">
-                    @Html.DropDownList("ServiceProviderId", new SelectList(Model.UserSelectList, "Value", "Text", "Group.Name", Model.SelectedUserId), "-- Service Provider --", new { @class = "form-control", onchange = "this.form.submit();" })
-                </div>
-            </form>
-        </div>
-    </div>
+    var features = User.Identity.GetFeatures();
 }
 
 <p class="h3 text-muted">Work</p>
 
 <ul class="nav nav-tabs">
-    <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda <strong>(@Html.Action("RefreshAgendaSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"], day = Request.QueryString["day"] }))</strong></a></li>
-    <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
-    <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule <strong>(@Html.Action("RefreshScheduleSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
-    <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong>(@Html.Action("RefreshAdditionalsSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+    @if (features.Contains(Features.Work.Agenda))
+    {
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda <strong>(@Html.Action("RefreshAgendaSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"], day = Request.QueryString["day"] }))</strong></a></li>
+    }
+    @if (features.Contains(Features.Work.DueDates))
+    {
+        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+    }
+    @if (features.Contains(Features.Work.Schedule))
+    {
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule <strong>(@Html.Action("RefreshScheduleSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+    }
+    @if (features.Contains(Features.Work.Additionals))
+    {
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong>(@Html.Action("RefreshAdditionalsSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+    }
 </ul>
 <section class="tab-content">
     <div role="tabpanel" class="tab-pane active panel-body">

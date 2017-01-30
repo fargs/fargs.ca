@@ -10,13 +10,15 @@ using System.Web;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
 using WebApp.Library.Projections;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers.Google
 {
     public class CalendarController : Controller
-    {
-        
+    {        
         [Route("Google/Calendar/Get")]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Google.OpenInGoogle)]
         public ActionResult Get(int serviceRequestId)
         {
             
@@ -72,16 +74,8 @@ namespace WebApp.Controllers.Google
             }
         }
 
-        private string GetPhysicianCalendarEmail(string email)
-        {
-            if (email == "zwaseem@orvosi.ca")
-            {
-                return "ime@orvosi.ca";
-            }
-            return email;
-        }
-
         [Route("Google/Calendar/List")]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Google.OpenInGoogle)]
         public ActionResult List(int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
@@ -110,6 +104,7 @@ namespace WebApp.Controllers.Google
         }
 
         [Route("Google/Calendar/Add")]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Google.CreateEvent)]
         public ActionResult Add(int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
@@ -159,5 +154,15 @@ namespace WebApp.Controllers.Google
                 });
             }
         }
+
+        private string GetPhysicianCalendarEmail(string email)
+        {
+            if (email == "zwaseem@orvosi.ca")
+            {
+                return "ime@orvosi.ca";
+            }
+            return email;
+        }
+
     }
 }

@@ -18,17 +18,19 @@ using Orvosi.Data;
 using Orvosi.Data.Filters;
 using WebApp.Library.Projections;
 using MoreLinq;
+using WebApp.Library.Filters;
+using Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Physician")]
     public class AccountingController : Controller
     {
+        [AuthorizeRole(Feature = Accounting.ViewUnsentInvoices)]
         public ActionResult UnsentInvoices(FilterArgs filterArgs)
         {
             using (var context = new OrvosiDbContext())
             {
-                Guid userId = GetServiceProviderId(filterArgs.ServiceProviderId);
+                Guid userId = User.Identity.GetUserContext().Id;
                 var now = SystemTime.Now();
 
                 var serviceRequests = context.ServiceRequests
@@ -88,11 +90,12 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewUnpaidInvoices)]
         public ActionResult UnpaidInvoices(FilterArgs filterArgs)
         {
             using (var context = new OrvosiDbContext())
             {
-                Guid userId = GetServiceProviderId(filterArgs.ServiceProviderId);
+                Guid userId = User.Identity.GetUserContext().Id;
                 var now = SystemTime.Now();
 
                 var serviceRequests = context.ServiceRequests
@@ -142,11 +145,12 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.SearchInvoices)]
         public ActionResult AllInvoices(FilterArgs filterArgs)
         {
             using (var context = new OrvosiDbContext())
             {
-                Guid userId = GetServiceProviderId(filterArgs.ServiceProviderId);
+                Guid userId = User.Identity.GetUserContext().Id;
                 var now = SystemTime.Now();
 
                 var serviceRequests = context.ServiceRequests
@@ -206,9 +210,10 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.Analytics)]
         public ActionResult Analytics(FilterArgs filterArgs)
         {
-            Guid userId = GetServiceProviderId(filterArgs.ServiceProviderId);
+            Guid userId = User.Identity.GetUserContext().Id;
             var now = SystemTime.Now();
             using (var context = new OrvosiDbContext())
             {
@@ -295,11 +300,12 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
             {
-                Guid userId = GetServiceProviderId(serviceProviderId);
+                Guid userId = User.Identity.GetUserContext().Id;
                 var now = SystemTime.Now();
 
                 var serviceRequests = context
@@ -314,6 +320,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult Invoice(int invoiceId)
         {
             using (var context = new OrvosiDbContext())
@@ -327,6 +334,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult InvoiceMenu(int serviceRequestId, int invoiceId)
         {
             using (var context = new OrvosiDbContext())
@@ -351,9 +359,10 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.SearchInvoices)]
         public ActionResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
         {
-            Guid userId = GetServiceProviderId(serviceProviderId);
+            Guid userId = User.Identity.GetUserContext().Id;
             var now = SystemTime.Now();
 
             using (var context = new OrvosiDbContext())
@@ -389,6 +398,7 @@ namespace WebApp.Controllers
         #region InvoiceAPI
 
         [HttpPost]
+        [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult Create(int serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
@@ -443,6 +453,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult CreateInvoice(Guid? serviceProviderId)
         {
             using (var context = new OrvosiDbContext())
@@ -453,13 +464,14 @@ namespace WebApp.Controllers
 
             var invoice = new Orvosi.Data.Invoice()
             {
-                ServiceProviderGuid = GetServiceProviderId(serviceProviderId),
+                ServiceProviderGuid = User.Identity.GetUserContext().Id,
                 InvoiceDate = SystemTime.Now()
             };
             return View(invoice);
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult CreateInvoice(CreateInvoiceForm form)
         {
             using (var context = new OrvosiDbContext())
@@ -488,6 +500,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public async Task<ActionResult> PreviewInvoice(Guid id)
         {
             using (var context = new Orvosi.Data.OrvosiDbContext())
@@ -497,6 +510,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.SendInvoice)]
         public async Task<ActionResult> SendInvoice(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -521,7 +535,7 @@ namespace WebApp.Controllers
                 ModifiedUser = User.Identity.Name
             });
 
-            foreach (var item in invoice.InvoiceDetails)
+            foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
             {
                 var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
                 task.CompletedDate = SystemTime.Now();
@@ -531,6 +545,7 @@ namespace WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceHeader(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -546,6 +561,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
         {
             using (var context = new OrvosiDbContext())
@@ -563,6 +579,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceItem(int invoiceDetailId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -575,6 +592,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
         {
             using (var context = new OrvosiDbContext())
@@ -610,6 +628,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult AddInvoiceItem(int invoiceId)
         {
             using (var context = new OrvosiDbContext())
@@ -636,6 +655,7 @@ namespace WebApp.Controllers
             //return Json(editForm, JsonRequestBehavior.AllowGet);
         }
 
+        [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult DeleteInvoiceItem(int invoiceDetailId)
         {
             using (var context = new OrvosiDbContext())
@@ -653,6 +673,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
         public ActionResult DeleteInvoice(int invoiceId)
         {
             using (var context = new OrvosiDbContext())
@@ -686,6 +707,7 @@ namespace WebApp.Controllers
 
         #region ReceiptAPI
 
+        [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult CreateReceipt(int invoiceId, decimal? amount)
         {
             var userId = User.Identity.GetGuidUserId();
@@ -715,6 +737,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult DeleteReceipt(Guid receiptId)
         {
             using (var context = new OrvosiDbContext())
@@ -726,6 +749,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult EditReceipt(Receipt receipt)
         {
             using (var context = new OrvosiDbContext())
@@ -744,18 +768,6 @@ namespace WebApp.Controllers
         }
 
         #endregion
-
-        private Guid GetServiceProviderId(Guid? serviceProviderId)
-        {
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
-
-            return userId;
-        }
 
         private List<SelectListItem> GetCustomerList(OrvosiDbContext context)
         {

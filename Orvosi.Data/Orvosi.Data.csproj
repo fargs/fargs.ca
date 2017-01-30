@@ -86,6 +86,12 @@
     <Compile Include="Generated\AspNetRoleConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\AspNetRolesFeature.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AspNetRolesFeatureConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\AspNetUser.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -146,6 +152,12 @@
     <Compile Include="Generated\CityConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\Collaborator.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\CollaboratorConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Company.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -174,6 +186,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\DocumentTypeConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\Feature.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\FeatureConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\GetAssignedServiceRequestsReturnModel.cs">
@@ -317,6 +335,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianLocationConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianService.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\PhysicianServiceConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\PhysicianServiceRequestTemplate.cs">

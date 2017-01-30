@@ -1,20 +1,11 @@
 ﻿@using Orvosi.Data
-@using Orvosi.Shared.Enums
+@using WebApp.Library
 @using WebApp.Library.Extensions
 @model ServiceRequest
 
-@{ 
-    var addresses = new WebApp.Library.DataHelper().LoadAddressesWithOwner(new OrvosiDbContext());
-    ViewBag.AddressSelectList = addresses
-        .Where(loc => loc.Address.AddressTypeId != AddressTypes.BillingAddress)
-        .AsEnumerable()
-        .Select(c => new SelectListItem()
-        {
-            Text = string.Format("{0} - {1}", c.Owner, c.Address.Name),
-            Value = c.Address.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.Address.City_CityId.Name }
-        })
-        .OrderBy(c => c.Group.Name).ThenBy(c => c.Text);
+@{
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext());
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(Model.PhysicianId);
 }
 
 <h3>Reschedule Assessment @Model.ClaimantName</h3>
@@ -71,7 +62,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Location</label>
         <div class="col-md-10">
-            @Html.DropDownList("AddressId", new SelectList(ViewBag.AddressSelectList, "Value", "Text", "Group.Name", Model.AddressId), new { @class = "form-control" })
+            @Html.DropDownList("AddressId", new SelectList(addressSelectList, "Value", "Text", "Group.Name", Model.AddressId), new { @class = "form-control" })
             @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
             <div id="locationMessage" class="text-danger"></div>
         </div>

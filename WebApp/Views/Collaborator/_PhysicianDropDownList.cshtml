@@ -1,0 +1,8 @@
+﻿@using WebApp.Library.Extensions
+@model WebApp.ViewModels.UIElements.DropDownListViewModel<Guid?>
+
+@Html.DropDownList(
+    Model.Name,
+    new SelectList(Model.SelectList, "Value", "Text", "Group.Name", Model.SelectedValue),
+    "-- Physician --", 
+    new { @class = "form-control input-sm", onchange = (Model.TriggerFormSubmit == true ? "this.form.submit();" : "") })

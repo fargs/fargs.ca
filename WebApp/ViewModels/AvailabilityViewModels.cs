@@ -8,9 +8,8 @@ namespace WebApp.ViewModels.AvailabilityViewModels
 {
     public class IndexViewModel
     {
-        public Orvosi.Data.AspNetUser CurrentUser { get; set; }
-        public Orvosi.Data.AspNetUser SelectedUser { get; set; }
-        public IEnumerable<Orvosi.Data.AvailableDay> AvailableDays { get; set; }
+
+        public List<MonthGroup> Months { get; set; }
         public System.Globalization.Calendar Calendar { get; set; }
         public DateTime Today { get; internal set; }
         public Orvosi.Data.AvailableDay NewAvailableDay { get; set; }
@@ -19,9 +18,12 @@ namespace WebApp.ViewModels.AvailabilityViewModels
 
     public class FilterArgs
     {
-        public Guid? PhysicianId { get; set; }
         public int? Year { get; set; }
         public int? Month { get; set; }
-        public DateTime FilterDate { get; set; }
+    }
+
+    public class MonthGroup    {
+        public DateTime Month { get; set; }
+        public IEnumerable<Orvosi.Data.AvailableDay> AvailableDays { get; set; }
     }
 }

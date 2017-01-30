@@ -10,10 +10,13 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using WebApp.ViewModels.ServiceCatalogueViewModels;
 using WebApp.Library;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
+using WebApp.Library.Extensions;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Case Coordinator")]
+    [AuthorizeRole(Feature = Features.Services.Manage)]
     public class ServiceCatalogueController : Controller
     {
         OrvosiDbContext db = new OrvosiDbContext();
@@ -25,23 +28,19 @@ namespace WebApp.Controllers
 
             vm.FilterArgs = args;
 
-            vm.SelectedUser = await db.AspNetUsers.SingleOrDefaultAsync(u => u.Id == args.UserId);
-            if (vm.SelectedUser != null)
+            var userContext = User.Identity.GetUserContext();
+            vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
+            if (vm.SelectedCompany != null)
             {
-                vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
-                var userGuid = args.UserId;
-                if (vm.SelectedCompany != null)
-                {
-                    vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(args.UserId, args.CompanyId).OrderBy(c => c.LocationName).ToList();
-                }
-                else
-                {
-                    vm.ServiceCatalogues = db.GetServiceCatalogue(args.UserId).OrderBy(c => c.LocationName).ToList();
-                }
-                var inheritedValues = db.GetServiceCatalogueRate(userGuid, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
-                vm.ServiceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
-                vm.ServiceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
+                vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(userContext.Id, args.CompanyId).OrderBy(c => c.LocationName).ToList();
             }
+            else
+            {
+                vm.ServiceCatalogues = db.GetServiceCatalogue(userContext.Id).OrderBy(c => c.LocationName).ToList();
+            }
+            var inheritedValues = db.GetServiceCatalogueRate(userContext.Id, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
+            vm.ServiceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
+            vm.ServiceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
             return View(vm);
         }
 
@@ -70,15 +69,15 @@ namespace WebApp.Controllers
             if (!exists)
             {
                 var sc = new ServiceCatalogue()
-                    {
-                        CompanyId = form.CompanyId,
-                        PhysicianId = form.PhysicianId,
-                        LocationId = form.LocationId,
-                        ServiceId = form.ServiceId,
-                        Price = form.Price,
-                        ModifiedUser = User.Identity.Name
-                    };
-                    db.ServiceCatalogues.Add(sc);
+                {
+                    CompanyId = form.CompanyId,
+                    PhysicianId = form.PhysicianId,
+                    LocationId = form.LocationId,
+                    ServiceId = form.ServiceId,
+                    Price = form.Price,
+                    ModifiedUser = User.Identity.Name
+                };
+                db.ServiceCatalogues.Add(sc);
             }
             else
             {
@@ -93,7 +92,7 @@ namespace WebApp.Controllers
                 }
             }
             await db.SaveChangesAsync();
-            
+
             return RedirectToAction("Index", new FilterArgs() { CompanyId = form.CompanyId, UserId = form.PhysicianId });
         }
 

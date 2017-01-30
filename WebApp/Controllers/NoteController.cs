@@ -6,13 +6,15 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
 
 namespace WebApp.Controllers
 {
     public class NoteController : Controller
     {
         [HttpGet]
-        // GET: Note
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
         public async Task<ActionResult> EditNote(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -29,6 +31,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
         public async Task<ActionResult> UpdateNote(NoteEditForm form)
         {
             var context = new Orvosi.Data.OrvosiDbContext();

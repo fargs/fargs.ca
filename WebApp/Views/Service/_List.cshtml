@@ -1,0 +1,18 @@
+﻿@model WebApp.Library.Projections.ServiceProjections.ListViewModel
+
+<p>
+    Services: @Model.ServiceCount
+</p>
+<div class="row">
+    @foreach (var service in Model.Services)
+    {
+        <div class="col-sm-4 col-md-3">
+            <div>
+                <h4>
+                    @service.DisplayName
+                    <button type="button" class="btn btn-link" onclick="removeService('@(service.Id)')"><i class="fa fa-times text-danger"></i></button>
+                </h4>
+            </div>
+        </div>
+    }
+</div>

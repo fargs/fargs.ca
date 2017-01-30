@@ -25,7 +25,7 @@ namespace Orvosi.Data
         public AccountConfiguration(string schema)
         {
             ToTable(schema + ".Account");
-            HasKey(x => new { x.Id, x.EmailConfirmed, x.PhoneNumberConfirmed, x.TwoFactorEnabled, x.LockoutEnabled, x.AccessFailedCount, x.UserName, x.ModifiedDate, x.ModifiedUser, x.IsTestRecord });
+            HasKey(x => new { x.Id, x.EmailConfirmed, x.PhoneNumberConfirmed, x.TwoFactorEnabled, x.LockoutEnabled, x.AccessFailedCount, x.UserName, x.ModifiedDate, x.ModifiedUser, x.IsTestRecord, x.IsAppTester });
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.Email).HasColumnName(@"Email").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
@@ -47,6 +47,7 @@ namespace Orvosi.Data
             Property(x => x.RoleName).HasColumnName(@"RoleName").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
             Property(x => x.CompanyName).HasColumnName(@"CompanyName").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.LastActivationDate).HasColumnName(@"LastActivationDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.IsAppTester).HasColumnName(@"IsAppTester").IsRequired().HasColumnType("bit");
             InitializePartial();
         }
         partial void InitializePartial();

@@ -32,6 +32,10 @@ namespace Orvosi.Data
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.IsDefault).HasColumnName(@"IsDefault").IsRequired().HasColumnType("bit");
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").IsOptional().HasColumnType("uniqueidentifier");
+
+            // Foreign keys
+            HasOptional(a => a.Physician).WithMany(b => b.ServiceRequestTemplates).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplate_Physician
             InitializePartial();
         }
         partial void InitializePartial();

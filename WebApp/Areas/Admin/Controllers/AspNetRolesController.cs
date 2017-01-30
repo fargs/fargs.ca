@@ -8,9 +8,13 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
+using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    [AuthorizeRole(Feature = Features.SecurityAdmin.RoleManagement)]
     public class AspNetRolesController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();
@@ -19,7 +23,7 @@ namespace WebApp.Areas.Admin.Controllers
         public async Task<ActionResult> Index()
         {
             var aspNetRoles = db.AspNetRoles.Include(a => a.RoleCategory);
-            return View(await aspNetRoles.ToListAsync());
+            return View(await aspNetRoles.OrderBy(c => c.RoleCategory.Name).ToListAsync());
         }
 
         // GET: Admin/AspNetRoles/Details/5
@@ -76,6 +80,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return HttpNotFound();
             }
             ViewBag.RoleCategoryId = new SelectList(db.RoleCategories, "Id", "Name", aspNetRole.RoleCategoryId);
+            ViewBag.Features = db.Features;
             return View(aspNetRole);
         }
 
@@ -90,9 +95,28 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 db.Entry(aspNetRole).State = EntityState.Modified;
                 await db.SaveChangesAsync();
+
+                var roleFeatures = db.AspNetRolesFeatures.Where(r => r.AspNetRolesId == aspNetRole.Id);
+                db.AspNetRolesFeatures.RemoveRange(roleFeatures);
+
+                var features = Request.Form.GetValues("AspNetRolesFeatures") == null ? new string[0] : Request.Form.GetValues("AspNetRolesFeatures");
+                foreach (var id in features)
+                {
+                    var feature = new AspNetRolesFeature()
+                    {
+                        AspNetRolesId = aspNetRole.Id,
+                        FeatureId = short.Parse(id),
+                        IsActive = true,
+                        ModifiedBy = User.Identity.GetGuidUserId().ToString(),
+                        ModifiedDate = SystemTime.Now()
+                    };
+                    db.AspNetRolesFeatures.Add(feature);
+                }
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             ViewBag.RoleCategoryId = new SelectList(db.RoleCategories, "Id", "Name", aspNetRole.RoleCategoryId);
+            ViewBag.Features = db.Features;
             return View(aspNetRole);
         }
 

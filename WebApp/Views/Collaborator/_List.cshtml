@@ -1,0 +1,31 @@
+﻿@model WebApp.ViewModels.CollaboratorViewModel.IndexViewModel
+
+<p>
+    Team Members: @Model.Total
+</p>
+@foreach (var role in Model.Roles)
+{
+    <div class="row" style="background-color: aliceblue">
+        <div class="col-md-12">
+            <h3>@(role.Name)@(role.People.Count() > 1 ? "s" : "")</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <p></p>
+        @foreach (var member in role.People)
+        {
+            <div class="col-sm-4 col-md-3">
+                <div>
+                    <h4>
+                        <span class="btn btn-sm btn-circle btn-circle-groupitem"
+                              style="margin-right: 2px; color: white; background-color: @(member.ColorCode);">
+                            @member.Initials
+                        </span>
+                        @member.DisplayName <button type="button" class="btn btn-link" onclick="removeCollaborator('@(member.Id)')"><i class="fa fa-times text-danger"></i></button>
+                    </h4>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using Orvosi.Data;
 using Microsoft.AspNet.Identity;
 using Orvosi.Shared.Enums;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -16,14 +18,15 @@ namespace WebApp.Areas.Admin.Controllers
     {
         private OrvosiDbContext db = new OrvosiDbContext();
 
-        // GET: Admin/Service
+
+        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageServices, Features.Admin.ViewServices })]
         public ActionResult Index(byte parentId)
         {
             var list = db.Services.Where(s => s.ServicePortfolioId == parentId).OrderBy(c => c.ServiceCategoryId).ToList();
             return View(list);
         }
 
-        // GET: Admin/Service/Details/5
+        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageServices, Features.Admin.ViewServices})]
         public ActionResult Details(short? id)
         {
             if (id == null)
@@ -38,7 +41,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(service);
         }
 
-        // GET: Admin/Service/Create
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         public ActionResult Create()
         {
             ViewBag.ServiceCategories = db.ServiceCategories.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() }).ToList();
@@ -46,9 +49,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Service/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Service service)
@@ -64,7 +65,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(service);
         }
 
-        // GET: Admin/Service/Edit/5
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         public ActionResult Edit(short? id)
         {
             if (id == null)
@@ -83,9 +84,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(service);
         }
 
-        // POST: Admin/Service/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Service service)
@@ -100,7 +99,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(service);
         }
 
-        // GET: Admin/Service/Delete/5
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         public ActionResult Delete(short? id)
         {
             if (id == null)
@@ -115,7 +114,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(service);
         }
 
-        // POST: Admin/Service/Delete/5
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(short id)

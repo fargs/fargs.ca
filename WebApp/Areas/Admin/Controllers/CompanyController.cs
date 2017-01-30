@@ -9,13 +9,16 @@ using WebApp.Areas.Admin.ViewModels.CompanyViewModels;
 using Microsoft.AspNet.Identity;
 using System.Net;
 using System.Data.Entity;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
     public class CompanyController : BaseController
     {
         OrvosiDbContext db = new OrvosiDbContext();
-        // GET: Admin/Company
+
+        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageCompanies, Features.Admin.ViewCompanies })]
         public ActionResult Index(Nullable<byte> parentId)
         {
             var companies = db.Companies.Where(c => c.ParentId == parentId && c.IsParent == false).ToList(); // exclude examworks and scm
@@ -30,7 +33,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(vm);
         }
 
-        // GET: Admin/company/Create
+        [AuthorizeRole(Feature = Features.Admin.ManageCompanies)]
         public ActionResult Create()
         {
             ViewBag.ParentCompanies = db.Companies
@@ -40,9 +43,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/company/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageCompanies)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Exclude = "Id,ObjectGuid,ModifiedDate,ModifiedUser")]Company company)
@@ -58,7 +59,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(company);
         }
 
-        // GET: Admin/company/Edit/5
+        [AuthorizeRole(Feature = Features.Admin.ManageCompanies)]
         public ActionResult Edit(short? id)
         {
             if (id == null)
@@ -79,9 +80,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(company);
         }
 
-        // POST: Admin/company/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeRole(Feature = Features.Admin.ManageCompanies)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Company company)

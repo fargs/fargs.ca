@@ -59,6 +59,8 @@ namespace Orvosi.Data
         public bool IsClosed { get; set; } // IsClosed
         public string CalendarEventId { get; set; } // CalendarEventId (length: 256)
         public bool IsDeleted { get; set; } // IsDeleted
+        public System.DateTime CreatedDate { get; set; } // CreatedDate
+        public string CreatedUser { get; set; } // CreatedUser (length: 128)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest

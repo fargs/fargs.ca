@@ -59,6 +59,7 @@ namespace Orvosi.Data
             Property(x => x.BoxRefreshToken).HasColumnName(@"BoxRefreshToken").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.HstNumber).HasColumnName(@"HstNumber").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.Notes).HasColumnName(@"Notes").IsOptional().HasColumnType("nvarchar");
+            Property(x => x.IsAppTester).HasColumnName(@"IsAppTester").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.Company).WithMany(b => b.AspNetUsers).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_AspNetUsers_Company

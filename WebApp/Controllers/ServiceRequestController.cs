@@ -23,12 +23,15 @@ using MoreLinq;
 using WebApp.ViewModels;
 using WebApp.Library.Projections;
 using Orvosi.Data.Filters;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
+using WebApp.ViewModels.UIElements;
 
 namespace WebApp.Controllers
 {
     public delegate void NoShowToggledHandler(object sender, EventArgs e);
 
-    [Authorize]
+    [AuthorizeRole(Feature = Features.ServiceRequest.View)]
     public class ServiceRequestController : Controller
     {
         private OrvosiDbContext ctx = new OrvosiDbContext();
@@ -47,6 +50,7 @@ namespace WebApp.Controllers
             }
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
             var vm = new IndexViewModel();
@@ -123,7 +127,7 @@ namespace WebApp.Controllers
             return View(list);
         }
 
-        // GET: ServiceRequest/Details/5
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public async Task<ActionResult> Details(int id)
         {
             var now = SystemTime.Now();
@@ -173,7 +177,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public ActionResult ChangeCompany(int id)
         {
             var vm = ctx.ServiceRequests
@@ -219,7 +223,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public async Task<ActionResult> ChangeCompany(ChangeCompanyFormViewModel form)
         {
             var record = ctx.ServiceRequests
@@ -268,7 +272,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Details", new { id = record.Id });
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
         public ActionResult ChangeProcessTemplate(int id)
         {
             var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == id);
@@ -288,7 +292,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
         public ActionResult ChangeProcessTemplate(ChangeProcessTemplateViewModel model)
         {
             var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == model.ServiceRequestId);
@@ -373,7 +377,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Details", new { id = serviceRequest.Id });
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.Reschedule)]
         public ActionResult Reschedule(int id)
         {
             var model = ctx.ServiceRequests.Single(c => c.Id == id);
@@ -381,7 +385,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.Reschedule)]
         public async Task<ActionResult> Reschedule(ServiceRequest serviceRequest)
         {
             var sr = ctx.ServiceRequests.Single(c => c.Id == serviceRequest.Id);
@@ -397,11 +401,11 @@ namespace WebApp.Controllers
             return RedirectToAction("Details", new { id = sr.Id });
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
         public ActionResult Availability() => View();
 
         [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Availability(AvailabilityForm form)
         {
@@ -421,7 +425,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
         public async Task<ActionResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
         {
             var availableDay = await ctx.AvailableDays.FindAsync(availableDayId);
@@ -517,7 +521,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
         public async Task<ActionResult> Create(Orvosi.Data.ServiceRequest sr)
         {
             // These are the original parameters required by the Get method. AvailableDayId is not a property on ServiceRequest so it was added as a hidden field on the form. PhysicianId was added to be consistent.
@@ -570,6 +574,8 @@ namespace WebApp.Controllers
                 sr.LateCancellationRate = rates.LateCancellationRate;
                 sr.ModifiedUser = User.Identity.Name;
                 sr.ModifiedDate = SystemTime.Now();
+                sr.CreatedUser = User.Identity.Name;
+                sr.CreatedDate = SystemTime.Now();
 
                 var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
@@ -622,26 +628,13 @@ namespace WebApp.Controllers
 
         }
 
-        private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
-        {
-            switch (dueDateType)
-            {
-                case DueDateTypes.AppointmentDate:
-                    return appointmentDate;
-                case DueDateTypes.ReportDueDate:
-                    return dueDate;
-                default:
-                    return null;
-            }
-        }
-
         [HttpGet]
         public ActionResult CreateSuccess(CreateSuccessViewModel obj)
         {
             return View(obj);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.SubmitRequest)]
         public async Task<ActionResult> CreateAddOn(bool serviceIdHasErrors = false)
         {
             var vm = new CreateViewModel();
@@ -652,24 +645,6 @@ namespace WebApp.Controllers
                     Text = c.Name,
                     Value = c.Id.ToString(),
                     Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
-                });
-
-            vm.CompanySelectList = ctx.Companies
-                .Where(c => c.IsParent == false)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
-                });
-
-            vm.PhysicianSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.FirstOrDefault().AspNetRole.RoleCategoryId == e.RoleCategories.Physician)
-                .AsEnumerable()
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.GetDisplayName(),
-                    Value = c.Id.ToString()
                 });
 
             vm.StaffSelectList = ctx.AspNetUsers
@@ -694,7 +669,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.SubmitRequest)]
         [HttpPost]
         public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
@@ -748,6 +723,8 @@ namespace WebApp.Controllers
                 sr.ServiceRequestTemplateId = sr.ServiceRequestTemplateId;
                 sr.ModifiedUser = User.Identity.Name;
                 sr.ModifiedDate = SystemTime.Now();
+                sr.CreatedUser = User.Identity.Name;
+                sr.CreatedDate = SystemTime.Now();
 
                 var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
@@ -799,31 +776,39 @@ namespace WebApp.Controllers
             return await CreateAddOn(ViewBag.ServiceIdHasErrors);
         }
 
-        private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId, Guid? intakeAssistantId, Guid? documentReviewerId)
+        [HttpGet]
+        public ActionResult RefreshCompanyDropDown(Guid physicianId)
         {
-            if (responsibleRoleId == AspNetRoles.Physician)
-            {
-                return physicianId;
-            }
-            else if (responsibleRoleId == AspNetRoles.CaseCoordinator)
-            {
-                return caseCoordinatorId;
-            }
-            else if (responsibleRoleId == AspNetRoles.IntakeAssistant)
-            {
-                return intakeAssistantId;
-            }
-            else if (responsibleRoleId == AspNetRoles.DocumentReviewer)
-            {
-                return documentReviewerId;
-            }
-            else
-            {
-                return null;
-            }
+            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
+            return PartialView("_CreateAddOnCompanyDropDown", companySelectList);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [HttpGet]
+        public ActionResult RefreshServiceDropDown(Guid physicianId)
+        {
+            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var selectList = viewDataService.GetPhysicianServiceSelectList(physicianId);
+            return PartialView("_CreateAddOnServiceDropDown", selectList);
+        }
+
+        [HttpGet]
+        public ActionResult RefreshCaseCoordinatorDropDown(Guid physicianId)
+        {
+            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var selectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physicianId);
+            return PartialView("_CreateAddOnCaseCoordinatorDropDown", selectList);
+        }
+
+        [HttpGet]
+        public ActionResult RefreshProcessTemplateDropDown(Guid physicianId)
+        {
+            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
+            return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
+        }
+
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignResources)]
         public async Task<ActionResult> ResourceAssignment(int? id)
         {
             if (id == null)
@@ -837,24 +822,14 @@ namespace WebApp.Controllers
             {
                 return HttpNotFound();
             }
-
-            var userSelectList = ctx.AspNetUsers
-                .Where(u => u.AspNetUserRoles.Any() && u.AspNetUserRoles.Any(ur => ur.AspNetRole.RoleCategoryId != e.RoleCategories.Company))
-                .AsEnumerable()
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.GetDisplayName(),
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.AspNetUserRoles.FirstOrDefault().AspNetRole.Name }
-                });
-
+            
             var vm = new ResourceAssignmentViewModel()
             {
                 ServiceRequestId = serviceRequest.Id,
+                PhysicianId = serviceRequest.PhysicianId,
                 CaseCoordinatorId = serviceRequest.CaseCoordinatorId,
                 DocumentReviewerId = serviceRequest.DocumentReviewerId,
-                IntakeAssistantId = serviceRequest.IntakeAssistantId,
-                UserSelectList = userSelectList
+                IntakeAssistantId = serviceRequest.IntakeAssistantId
             };
 
             // TODO: Update the calendar and dropbox folder if appropriate.
@@ -866,7 +841,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignResources)]
         public async Task<ActionResult> ResourceAssignment(ResourceAssignmentViewModel model)
         {
             if (ModelState.IsValid)
@@ -898,7 +873,7 @@ namespace WebApp.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Edit)]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -931,7 +906,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Edit)]
         public async Task<ActionResult> Edit(EditViewModel sr)
         {
             if (ModelState.IsValid)
@@ -956,7 +931,7 @@ namespace WebApp.Controllers
             return View(sr);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Delete)]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -974,7 +949,7 @@ namespace WebApp.Controllers
         // POST: ServiceRequest/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Delete)]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(id);
@@ -994,7 +969,7 @@ namespace WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
         public async Task<ActionResult> Cancel(int serviceRequestId)
         {
             ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
@@ -1010,7 +985,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
         public async Task<ActionResult> Cancel(CancellationForm form)
         {
             var serviceRequest = await ctx.ServiceRequests.FindAsync(form.ServiceRequestId);
@@ -1038,7 +1013,7 @@ namespace WebApp.Controllers
             return View(serviceRequest);
         }
 
-        [Authorize(Roles = "Case Coordinator, Super Admin")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
         public async Task<ActionResult> UndoCancel(int serviceRequestId)
         {
             var serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
@@ -1064,6 +1039,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
         public async Task<ActionResult> NoShow()
         {
             var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
@@ -1088,6 +1064,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
         public async Task<ActionResult> UndoNoShow()
         {
             var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
@@ -1110,6 +1087,7 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
         public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -1163,7 +1141,14 @@ namespace WebApp.Controllers
             foreach (var resource in orvosiResources)
             {
                 var boxResource = new BoxResource() { Resource = resource };
-                boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
+                if (string.IsNullOrEmpty(boxResource.Resource.BoxUserId))
+                {
+                    boxResource.BoxFolder = null;
+                }
+                else
+                {
+                    boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
+                }
                 resources.Add(boxResource);
             }
 
@@ -1178,6 +1163,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.UpdateFolder)]
         public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
         {
             // Get the request
@@ -1194,6 +1180,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.CreateFolder)]
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
             // Get the request
@@ -1238,6 +1225,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.AddCollaborator)]
         public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
             var resources = ctx.GetServiceRequestResources(ServiceRequestId);
@@ -1263,6 +1251,7 @@ namespace WebApp.Controllers
 
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.RemoveCollaborator)]
         public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
         {
 
@@ -1291,6 +1280,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
         public ActionResult UnsyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
@@ -1299,6 +1289,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
         public ActionResult SyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
@@ -1309,18 +1300,6 @@ namespace WebApp.Controllers
         #endregion
 
         #region Private
-
-        private Guid GetServiceProviderId(Guid? serviceProviderId)
-        {
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
-
-            return userId;
-        }
 
         private async Task GetPhysicianDropDownData()
         {
@@ -1399,6 +1378,43 @@ namespace WebApp.Controllers
                     Text = ValueConverters.GetDisplayName(c.Title, c.FirstName, c.LastName),
                     Value = c.Id.ToString()
                 });
+        }
+
+        private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
+        {
+            switch (dueDateType)
+            {
+                case DueDateTypes.AppointmentDate:
+                    return appointmentDate;
+                case DueDateTypes.ReportDueDate:
+                    return dueDate;
+                default:
+                    return null;
+            }
+        }
+
+        private Guid? GetTaskAssignment(Guid? responsibleRoleId, Guid physicianId, Guid? caseCoordinatorId, Guid? intakeAssistantId, Guid? documentReviewerId)
+        {
+            if (responsibleRoleId == AspNetRoles.Physician)
+            {
+                return physicianId;
+            }
+            else if (responsibleRoleId == AspNetRoles.CaseCoordinator)
+            {
+                return caseCoordinatorId;
+            }
+            else if (responsibleRoleId == AspNetRoles.IntakeAssistant)
+            {
+                return intakeAssistantId;
+            }
+            else if (responsibleRoleId == AspNetRoles.DocumentReviewer)
+            {
+                return documentReviewerId;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion

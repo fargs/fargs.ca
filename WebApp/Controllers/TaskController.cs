@@ -8,9 +8,14 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
+using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
+
 
 namespace WebApp.Controllers
 {
+    [AuthorizeRole(Feature = Features.Admin.ManageTasks)]
     public class TaskController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();
@@ -55,10 +60,12 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Create([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] OTask task)
+        public async threading.Task<ActionResult> Create([Bind(Include = "Id,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,ShortName")] OTask task)
         {
             if (ModelState.IsValid)
             {
+                task.ObjectGuid = Guid.NewGuid();
+                task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.OTasks.Add(task);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -91,10 +98,11 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,ObjectGuid,ServiceCategoryId,ServiceId,Name,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,IsMilestone,ModifiedDate,ModifiedUser,DependsOn,DueDateBase,DueDateDiff,ShortName,IsCriticalPath")] OTask task)
+        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,ShortName")] OTask task)
         {
             if (ModelState.IsValid)
             {
+                task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.Entry(task).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");

@@ -87,9 +87,38 @@
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
 
+<div><a href="~/Diagnostics/AuthorizationAttribute_WithCreateInvoiceFeature">AuthorizationAttribute_WithCreateInvoiceFeature</a></div>
+<div><a href="~/Diagnostics/AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures">AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures</a></div>
+<div><a href="~/Diagnostics/AuthorizationAttribute_WithNoFeatures">AuthorizationAttribute_WithNoFeatures</a></div>
+<div><a href="~/Diagnostics/AuthorizationAttribute_NoAttribute">AuthorizationAttribute_NoAttribute</a></div>
+<div><a href="#" onclick="authorizationAttribute_Async('@Url.Content("~/Diagnostics/AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures")')">AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeaturesAsync</a></div>
+<div><a href="#" onclick="authorizationAttribute_Async('@Url.Content("~/Diagnostics/AuthorizationAttribute_WithCreateInvoiceFeature")')">AuthorizationAttribute_WithCreateInvoiceFeatureAsync</a></div>
+<div><a href="#" onclick="authorizationAttribute_Async('@Url.Content("~/Diagnostics/AuthorizationAttribute_WithNoFeatures")')">AuthorizationAttribute_WithNoFeaturesAsync</a></div>
+
 <h3>Google Email Service</h3>
 <form method="post" action="~/Diagnostics/SendEmailFrom" role="form">
     <input type="email" name="from" placeholder="From" class="form-control" />
     <input type="email" name="to" placeholder="To" class="form-control" />
     <button type="submit" class="btn btn-primary">Send Email From</button>
 </form>
+
+@section Scripts {
+    <script type="text/javascript">
+        function authorizationAttribute_Async(url) {
+            $.get(url)
+                .done(function (data, textStatus, xhr) {
+                    toastr.success("You have access to this feature");
+                })
+                .fail(function(xhr) {
+                    if (xhr.status == 403) {
+                        toastr.warning("You do not have access to this feature");
+                    }
+                    else
+                        toastr.warning("Sorry. An unexpected error occurred.");
+                })
+                .always(function() {
+                    toastr.info("Finished");
+                });
+        };
+    </script>
+    }

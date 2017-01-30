@@ -1,0 +1,18 @@
+﻿@model WebApp.ViewModels.PhysicianCompanyViewModels.IndexViewModel
+
+<p>
+    Companies: @Model.CompanyCount
+</p>
+<div class="row">
+    @foreach (var company in Model.Companies)
+    {
+        <div class="col-sm-4 col-md-3">
+            <div>
+                <h4>
+                    @company.Name
+                    <button type="button" class="btn btn-link" onclick="removeCompany('@(company.Id)')"><i class="fa fa-times text-danger"></i></button>
+                </h4>
+            </div>
+        </div>
+    }
+</div>

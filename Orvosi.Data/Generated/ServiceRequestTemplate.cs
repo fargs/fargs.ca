@@ -22,11 +22,15 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public bool IsDefault { get; set; } // IsDefault
+        public System.Guid? PhysicianId { get; set; } // PhysicianId
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_ServiceRequestTemplate
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_ServiceRequestTemplate
+
+        // Foreign keys
+        public virtual Physician Physician { get; set; } // FK_ServiceRequestTemplate_Physician
 
         public ServiceRequestTemplate()
         {

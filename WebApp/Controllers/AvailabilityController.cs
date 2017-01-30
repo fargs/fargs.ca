@@ -12,49 +12,64 @@ using System.Globalization;
 using WebApp.Library;
 using System.Net;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class AvailabilityController : Controller
     {
         //OrvosiDbContext db = new OrvosiDbContext();
         Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
 
         // GET: Availability
+        [AuthorizeRole(Feature = Features.Availability.ViewUnpublished)]
         public async Task<ActionResult> Index(FilterArgs args)
         {
-            var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
-            var nextMonth = thisMonth.AddMonths(1);
+            // if one of the params is set, both are required
+            if ((args.Year.HasValue && !args.Month.HasValue) || (!args.Year.HasValue && args.Month.HasValue))
+            {
+                ModelState.AddModelError("", "Both the year and month must be set to a value");
+                
+                return View(new IndexViewModel
+                {
+                    Months = new List<MonthGroup>(),
+                    FilterArgs = args
+                });
+            }
+
+            var userContext = User.Identity.GetUserContext();
+
+            var availableDays = context.AvailableDays
+                .Where(c => c.PhysicianId == userContext.Id);
+
             if (args.Year.HasValue && args.Month.HasValue)
             {
-                thisMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
-                nextMonth = thisMonth.AddMonths(1);
-            }
-            args.Year = thisMonth.Year;
-            args.Month = thisMonth.Month;
-            args.FilterDate = thisMonth;
-
-            //TODO: this will not be limited to just physicians, intakes should be able to manage their availability as well.
-            // Admins will be able to manage available days on behalf of others, other roles can only manage their own.
-            if ((User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator) && args.PhysicianId.HasValue)
-            {
-                args.PhysicianId = args.PhysicianId;
+                var selectedMonth = new DateTime(args.Year.Value, args.Month.Value, 1);
+                var nextMonth = selectedMonth.AddMonths(1);
+                availableDays = availableDays
+                    .Where(c => c.Day >= selectedMonth && c.Day < nextMonth);
             }
             else
             {
-                args.PhysicianId = User.Identity.GetGuidUserId();
+                var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
+                availableDays = availableDays
+                    .Where(c => c.Day >= thisMonth);
             }
 
-            var availableDays = context.AvailableDays
-                .Where(c => c.PhysicianId == args.PhysicianId && (c.Day >= thisMonth && c.Day < nextMonth));
+            var result = availableDays.ToList();
 
-            var selectedUser = await context.AspNetUsers.SingleOrDefaultAsync(c => c.Id == args.PhysicianId);
+            var months = result
+                .GroupBy(ad => new { Month = new DateTime(ad.Day.Year, ad.Day.Month, 1) })
+                .Select(ad => new MonthGroup
+                {
+                    Month = ad.Key.Month,
+                    AvailableDays = ad
+                }).ToList();
 
             var model = new IndexViewModel()
             {
-                AvailableDays = availableDays,
-                SelectedUser = selectedUser,
+                Months = months,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
                 Today = SystemTime.Now(),
                 FilterArgs = args
@@ -64,6 +79,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> AddDay(Guid id)
         {
             var physician = context.AspNetUsers.Single(c => c.Id == id);
@@ -82,6 +98,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> AddDay(AvailableDay model)
         {
             if (ModelState.IsValid)
@@ -106,6 +123,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> AddSlots(short AvailableDayId, short StartHour, short StartMinute, short Duration, byte Repeat)
         {
             var firstStartTime = new TimeSpan(StartHour, StartMinute, 0);
@@ -127,6 +145,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> CancelDay(int id)
         {
             var day = await context.AvailableDays.FirstAsync(c => c.Id == id);
@@ -141,6 +160,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> CancelSlot(int id)
         {
             var slot = await context.AvailableSlots.FirstAsync(c => c.Id == id);

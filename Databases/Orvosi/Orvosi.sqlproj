@@ -277,6 +277,10 @@
     <None Include="_Data\ReadMe.md" />
     <Build Include="dbo\Tables\TimeZone.sql" />
     <Build Include="dbo\Tables\Receipt.sql" />
+    <Build Include="dbo\Tables\Feature.sql" />
+    <Build Include="dbo\Tables\AspNetRolesFeature.sql" />
+    <Build Include="dbo\Tables\Collaborator.sql" />
+    <Build Include="dbo\Tables\PhysicianService.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

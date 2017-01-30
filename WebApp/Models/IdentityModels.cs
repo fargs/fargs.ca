@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using Orvosi.Shared.Enums;
+using System.Web.Mvc;
 
 namespace WebApp.Models
 {
@@ -32,6 +33,7 @@ namespace WebApp.Models
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
             userIdentity.AddClaim(new Claim("RoleId", Roles.First().RoleId.ToString()));
             userIdentity.AddClaim(new Claim("Roles", string.Join("|", Roles.Select(r => r.RoleId))));
+            userIdentity.AddClaim(new Claim("IsAppTester", this.IsAppTester.ToString()));
 
             // ASP.NET Identity automatically creates ClaimTypes.Role for all the associated Roles. We only want to have one role at a time. Delete all except for the default.
             var roles = userIdentity.FindAll(i => i.Type == ClaimTypes.Role).Where(r => r.Value != defaultRole);
@@ -77,6 +79,9 @@ namespace WebApp.Models
                     return $"{FirstName.ToUpper().First()}{LastName.ToUpper().First()}";
             }
         }
+        public short[] Features { get; set; }
+        public Guid[] Physicians { get; set; }
+        public bool IsAppTester { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>

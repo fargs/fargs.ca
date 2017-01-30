@@ -13,10 +13,13 @@ using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System.Data.Entity;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
 using System.Net;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    [AuthorizeRole(Feature = Features.SecurityAdmin.UserManagement)]
     public class UserController : BaseController
     {
         private ApplicationSignInManager _signInManager;
@@ -222,6 +225,7 @@ namespace WebApp.Areas.Admin.Controllers
             user.TwoFactorEnabled = account.TwoFactorEnabled;
             user.ModifiedDate = SystemTime.Now();
             user.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            user.IsAppTester = account.IsAppTester;
 
             var userRoles = db.AspNetUserRoles.Where(ur => ur.UserId == account.Id);
             db.AspNetUserRoles.RemoveRange(userRoles);

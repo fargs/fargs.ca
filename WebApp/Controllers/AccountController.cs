@@ -141,11 +141,7 @@ namespace WebApp.Controllers
                 model.UserDisplayName = cp.FindFirst("DisplayName").Value;
                 model.RoleName = cp.FindFirst(ClaimTypes.Role).Value;
                 model.RoleId = cp.GetRoleId();
-                model.Roles = cp.GetRoles().Select(r => new SelectListItem
-                {
-                    Text = r.ToString(),
-                    Value = r.ToString()
-                }).ToList();
+                //model.UserContext = cp.FindFirst("UserContext") != null ? new Guid(cp.FindFirst("UserContext").Value) : (Guid?)null;
             }
             return PartialView(model);
         }
@@ -512,6 +508,75 @@ namespace WebApp.Controllers
             identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
             var authenticationManager = this.HttpContext.GetOwinContext().Authentication;
             authenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true });
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public ActionResult ChangeUserContext(Guid? userId)
+        {
+            var identity = User.Identity.GetClaimsIdentity();
+            var userContextClaim = identity.FindFirst("UserContext");
+            if (userContextClaim != null)
+                identity.RemoveClaim(userContextClaim);
+
+            if (userId.HasValue)
+            {
+                var collaboratorUserId = User.Identity.GetGuidUserId();
+                using (var context = new OrvosiDbContext())
+                {
+                    var collaboration = context.Collaborators.SingleOrDefault(c => c.UserId == userId && c.CollaboratorUserId == collaboratorUserId);
+                    if (collaboration == null && !User.Identity.GetOriginalIsAppTester())
+                    {
+                        TempData["UserContextMessage"] = "You do not have access to this user's information";
+                        return Redirect(Request.UrlReferrer.ToString());
+                    }
+                }
+
+                var user = UserManager.Users.FirstOrDefault(c => c.Id == userId);
+                identity.AddClaim(new Claim("UserContext", new UserContextViewModel
+                {
+                    Id = user.Id,
+                    DisplayName = user.DisplayName
+                }.ToJson()));
+            }
+            AuthenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true });
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public async Task<ActionResult> ImpersonateUser(Guid userId)
+        {
+            var originalUserId = User.Identity.GetGuidUserId();
+            var originalIsAppTester = User.Identity.GetIsAppTester();
+
+            var impersonatedUser = UserManager.FindById(userId);
+
+            var impersonatedIdentity = await impersonatedUser.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
+            //var impersonatedIdentity = UserManager.CreateIdentity(impersonatedUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+            impersonatedIdentity.AddClaim(new Claim("UserImpersonation", "true"));
+            impersonatedIdentity.AddClaim(new Claim("OriginalUserId", originalUserId.ToString()));
+            impersonatedIdentity.AddClaim(new Claim("OriginalIsAppTester", originalIsAppTester.ToString()));
+
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, impersonatedIdentity);
+
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public async Task<ActionResult> RevertImpersonation()
+        {
+            if (!User.Identity.IsImpersonating())
+            {
+                throw new Exception("Unable to remove impersonation because there is no impersonation");
+            }
+
+            var originalUserId = User.Identity.GetOriginalUserId();
+
+            var originalUser = await UserManager.FindByIdAsync(originalUserId);
+
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            SignInManager.SignIn(originalUser, true, false);
 
             return Redirect(Request.UrlReferrer.ToString());
         }

@@ -8,10 +8,14 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using WebApp.Models;
 using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using Orvosi.Data;
+using System.Data.Entity;
+using WebApp.Library.Projections;
 
 namespace WebApp.Controllers
 {
-    [Authorize()]
+    [AuthorizeRole()]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -64,16 +68,26 @@ namespace WebApp.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var userId = User.Identity.GetGuidUserId();
-            var model = new IndexViewModel
+            using (var context = new OrvosiDbContext())
             {
-                HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId.ToString())
+                var userId = User.Identity.GetGuidUserId();
+
+                var addresses = await context.Addresses
+                    .Where(a => a.OwnerGuid == userId)
+                    .Select(AddressProjections.MinimalInfo())
+                    .ToListAsync();
+
+                var model = new IndexViewModel
+                {
+                    HasPassword = HasPassword(),
+                    PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
+                    TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                    Logins = await UserManager.GetLoginsAsync(userId),
+                    BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId.ToString()),
+                    Addresses = addresses
             };
             return View(model);
+            }
         }
 
         //

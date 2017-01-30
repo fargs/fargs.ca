@@ -1,0 +1,135 @@
+﻿@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.Library.Extensions
+@model WebApp.Library.Projections.ServiceProjections.ListViewModel
+
+@{
+    var features = User.Identity.GetFeatures();
+    var userId = User.Identity.GetUserContext().Id;
+}
+
+<h1>Services </h1>
+
+@if (features.Contains(Features.Services.Manage))
+{
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-4">
+            <form action="~/Service/Create/" method="post" id="add-service-form">
+                <div class="input-group">
+                    <select class="find-service-select" id="serviceId" name="serviceId" style="width:100%"></select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-success btn-sm" onclick="addService()" type="button">Add</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+<p></p>
+<div id="service-list">
+    @Html.Action("List", "Service", null)
+</div>
+
+@section Scripts{
+
+<script type="text/javascript">
+
+    function addService() {
+        var url = '@Url.Content("~/Service/Create")';
+        var form = $('#add-service-form');
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            if (result.success) {
+                toastr.success("Service added successfully");
+                refreshServiceList();
+            }
+            else {
+                toastr.error(result.errorMessage);
+            }
+        })
+        .error(function (result) {
+            toastr.error(result.errorMessage);
+        });
+    }
+
+    function removeService(serviceId) {
+        var url = '@Url.Content("~/Service/Remove?serviceId=")' + serviceId;
+
+        $.post(url)
+        .done(function (result) {
+            toastr.success("Service removed successfully");
+            refreshServiceList();
+        });
+    }
+
+    function refreshServiceList() {
+        let url = '@Url.Content("~/Service/List")';
+        $.get(url)
+            .done(function (result) {
+                $('#service-list').html(result);
+            })
+            .error(function () {
+                window.location.reload();
+            });
+    }
+
+    function formatServiceListItem(service) {
+        if (service.loading) return service.text;
+
+        var markup =
+            '<div>' +
+                service.Name
+        '</div>';
+
+        return markup;
+    }
+
+    function formatServiceListItemSelection(service) {
+        return service.Name || service.text;
+    }
+
+    $(document).ready(function () {
+
+        var url = '@Url.Content("~/Service/Search")';
+
+        $findServiceSelect = $(".find-service-select");
+        $findServiceSelect.select2({
+            placeholder: 'Find a service',
+            allowClear: true,
+            ajax: {
+                url: url,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        searchTerm: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    // parse the results into the format expected by Select2
+                    // since we are using custom formatting functions we do not need to
+                    // alter the remote JSON data, except to indicate that infinite
+                    // scrolling can be used
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: false
+            },
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 3,
+            templateResult: formatServiceListItem, // omitted for brevity, see the source of this page
+            templateSelection: formatServiceListItemSelection, // omitted for brevity, see the source of this page
+            tags: true
+        });
+    });
+</script>
+}

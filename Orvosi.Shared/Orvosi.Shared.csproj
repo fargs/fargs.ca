@@ -49,6 +49,7 @@
     <Compile Include="Accounting\IInvoiceDetail.cs" />
     <Compile Include="Accounting\IServiceRequest.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="Enums\Features.cs" />
     <Compile Include="StringBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

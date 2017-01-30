@@ -13,6 +13,8 @@ using WebApp.ViewModels.ServiceRequestViewModels;
 using System.Net;
 using System.Data.Entity;
 using Orvosi.Data.Filters;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -26,13 +28,13 @@ namespace WebApp.Controllers
             return RedirectToAction("Agenda");
         }
 
+        [AuthorizeRole(Feature = Features.Work.Agenda)]
         public async Task<ActionResult> Agenda(Guid? serviceProviderId, DateTime? day, int? serviceRequestId = null)
         {
             // Set date range variables used in where conditions
-
             var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
             var dayOrDefault = GetDayOrDefault(day);
-            var userId = GetServiceProviderIdOrDefault(serviceProviderId);
+            var userId = User.Identity.GetUserContext().Id;
 
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
@@ -56,6 +58,8 @@ namespace WebApp.Controllers
                 AppointmentDate = sr.AppointmentDate,
                 Now = now,
                 StartTime = sr.StartTime,
+                IsLateCancellation = sr.IsLateCancellation,
+                IsNoShow = sr.IsNoShow,
                 CancelledDate = sr.CancelledDate,
                 IsClosed = sr.IsClosed,
                 Notes = sr.Notes,
@@ -200,6 +204,7 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Agenda", vm);
         }
 
+        [AuthorizeRole(Feature = Features.Work.DueDates)]
         public async Task<ActionResult> DueDates(Guid? serviceProviderId, short[] selectedTaskTypes = null, int? serviceRequestId = null)
         {
             // Set date range variables used in where conditions
@@ -207,12 +212,7 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
+            Guid userId = User.Identity.GetUserContext().Id;
 
             // a list of responsible roles that is used to filter out the task list
             var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
@@ -248,6 +248,8 @@ namespace WebApp.Controllers
                 AppointmentDate = sr.AppointmentDate,
                 Now = now,
                 StartTime = sr.StartTime,
+                IsLateCancellation = sr.IsLateCancellation,
+                IsNoShow = sr.IsNoShow,
                 CancelledDate = sr.CancelledDate,
                 IsClosed = sr.IsClosed,
                 Notes = sr.Notes,
@@ -391,18 +393,14 @@ namespace WebApp.Controllers
             return PartialView("DueDates", vm);
         }
 
+        [AuthorizeRole(Feature = Features.Work.Schedule)]
         public async Task<ActionResult> Schedule(Guid? serviceProviderId, short[] selectedTaskTypes = null, int? serviceRequestId = null)
         {
             var now = SystemTime.UtcNow();
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            Guid userId = User.Identity.GetGuidUserId();
-            // Admins can see the Service Provider dropdown and view other's dashboards. Otherwise, it displays the data of the current user.
-            if (User.Identity.IsAdmin() && serviceProviderId.HasValue)
-            {
-                userId = serviceProviderId.Value;
-            }
+            Guid userId = User.Identity.GetUserContext().Id;
 
             // a list of responsible roles that is used to filter out the task list
             var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
@@ -694,6 +692,7 @@ namespace WebApp.Controllers
             return PartialView("Schedule", vm);
         }
 
+        [AuthorizeRole(Feature = Features.Work.Additionals)]
         public async Task<ActionResult> Additionals(Guid? serviceProviderId)
         {
             // Set date range variables used in where conditions
@@ -701,7 +700,7 @@ namespace WebApp.Controllers
             var loggedInUserId = User.Identity.GetGuidUserId();
             var baseUrl = Request.GetBaseUrl();
 
-            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
 
             var requests = await context.GetAssignedServiceRequestsAsync(serviceProviderIdOrDefault, now, false, null);
 
@@ -726,6 +725,7 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Additionals", vm);
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public ActionResult RefreshServiceRequestTasks(int serviceRequestId, Guid serviceProviderId)
         {
             var now = SystemTime.UtcNow();
@@ -798,6 +798,7 @@ namespace WebApp.Controllers
             return PartialView("_ServiceRequestTasks_Today", result);
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ActionResult RefreshServiceStatus(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
@@ -813,29 +814,32 @@ namespace WebApp.Controllers
             return PartialView("_ServiceStatus", request);
         }
 
+        [AuthorizeRole(Feature = Features.Work.Agenda)]
         public ActionResult RefreshAgendaSummaryCount(Guid? serviceProviderId, DateTime? day)
         {
             var dayOrDefault = GetDayOrDefault(day);
-            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
 
             var count = Models.ServiceRequestModels2.ServiceRequestMapper2.ScheduleThisDayCount(serviceProviderIdOrDefault, dayOrDefault);
 
             return PartialView("_SummaryCount", count);
         }
 
+        [AuthorizeRole(Feature = Features.Work.DueDates)]
         public ActionResult RefreshDueDateSummaryCount(Guid? serviceProviderId)
         {
             var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
-            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
 
             var count = Models.ServiceRequestModels2.ServiceRequestMapper2.DueDatesCount(serviceProviderIdOrDefault, now);
 
             return PartialView("_SummaryCount", count);
         }
 
+        [AuthorizeRole(Feature = Features.Work.Schedule)]
         public ActionResult RefreshScheduleSummaryCount(Guid? serviceProviderId)
         {
-            var userId = GetServiceProviderIdOrDefault(serviceProviderId);
+            Guid userId = User.Identity.GetUserContext().Id;
 
             var count = context.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
@@ -848,32 +852,26 @@ namespace WebApp.Controllers
             return PartialView("_SummaryCount", count);
         }
 
+        [AuthorizeRole(Feature = Features.Work.Additionals)]
         public ActionResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)
         {
-            var serviceProviderIdOrDefault = GetServiceProviderIdOrDefault(serviceProviderId);
+            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
 
             var count = Models.ServiceRequestModels2.ServiceRequestMapper2.AdditionalsCount(serviceProviderIdOrDefault);
 
             return PartialView("_SummaryCount", count);
         }
 
-        private static DateTime GetDayOrDefault(DateTime? day)
-        {
-            return day.HasValue ? day.Value : SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
-        }
-
-        private Guid GetServiceProviderIdOrDefault(Guid? serviceProviderId)
-        {
-            return (User.Identity.IsAdmin() && serviceProviderId.HasValue) ? serviceProviderId.Value : User.Identity.GetGuidUserId();
-        }
-
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
         public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var note = await context.ServiceRequests.FindAsync(serviceRequestId);
             return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
         }
+
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateTaskStatus2(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
         {
             var now = SystemTime.Now();
@@ -912,6 +910,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
         {
             var now = SystemTime.Now();
@@ -952,6 +951,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
         public async Task<ActionResult> ToggleNoShow(int serviceRequestId, bool isChecked, Guid? serviceProviderGuid)
         {
             var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
@@ -997,6 +997,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public async Task<ActionResult> TaskList(int serviceRequestId)
         {
             var now = SystemTime.Now();
@@ -1030,6 +1031,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]
         public async Task<ActionResult> Discussion(int serviceRequestId)
         {
             var now = SystemTime.Now();
@@ -1044,6 +1046,9 @@ namespace WebApp.Controllers
             return PartialView("_DiscussionModal", assessment);
         }
 
-
+        private static DateTime GetDayOrDefault(DateTime? day)
+        {
+            return day.HasValue ? day.Value : SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
+        }
     }
 }

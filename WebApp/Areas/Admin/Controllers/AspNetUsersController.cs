@@ -8,9 +8,12 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Orvosi.Data;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    [AuthorizeRole(Feature = Features.SecurityAdmin.UserManagement)]
     public class AspNetUsersController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();

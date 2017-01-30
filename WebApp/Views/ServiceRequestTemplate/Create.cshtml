@@ -1,32 +1,53 @@
-﻿@model Orvosi.Data.ServiceRequestTemplate
+﻿@using WebApp.Library
+@using Orvosi.Data
+@using WebApp.Library.Extensions
+    @model Orvosi.Data.ServiceRequestTemplate
 
-@{
-    ViewBag.Title = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+    @{
+        ViewBag.Title = "Create";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+        var userContext = User.Identity.GetUserContext();
+        var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+        var processTemplateSelectList = viewDataService.GetDefaultProcessTemplateSelectList();
+        var physicianSelectList = viewDataService.GetPhysicianSelectList();
+    }
 
-<h2>Create</h2>
+    <h2>Create</h2>
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>ServiceRequestTemplate</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>ServiceRequestTemplate</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label class="control-label col-md-2">Process Template To Clone</label>
+                <div class="col-md-6">
+                    @Html.DropDownList("processTemplateId", new SelectList(processTemplateSelectList, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
+                    @Html.ValidationMessage("processTemplateId", "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Physician</label>
+                <div class="col-md-6">
+                    @Html.DropDownList("PhysicianId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), string.Empty, new { @class = "form-control", onchange = "refreshCompanyDropDown(this)" })
+                    @Html.ValidationMessage("PhysicianId", "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
             </div>
         </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
+    }

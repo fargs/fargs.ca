@@ -18,7 +18,6 @@ namespace WebApp.ViewModels
         public string RoleName { get; set; }
         public string ProfilePicture { get; set; }
         public Guid RoleId { get; set; }
-
-        public List<SelectListItem> Roles { get; set; }
+        public Guid LoginAsUserId { get; set; }
     }
 }

@@ -11,10 +11,12 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
-    [Authorize(Roles = "Super Admin")]
+    [AuthorizeRole(Feature = Features.ServiceRequest_Box.ManageBoxFolder)]
     public class BoxController : Controller
     {
         private OrvosiDbContext context = new OrvosiDbContext();
@@ -66,7 +68,7 @@ namespace WebApp.Controllers
         public ActionResult LogInAs(string id)
         {
             var box = new BoxManager();
-            var user = box.Client(id).UsersManager.GetCurrentUserInformationAsync().Result;
+            var user = box.UserClient(id).UsersManager.GetCurrentUserInformationAsync().Result;
             return View(user);
         }
     }

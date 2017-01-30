@@ -19,6 +19,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
         System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
+        System.Data.Entity.DbSet<AspNetRolesFeature> AspNetRolesFeatures { get; set; } // AspNetRolesFeature
         System.Data.Entity.DbSet<AspNetUser> AspNetUsers { get; set; } // AspNetUsers
         System.Data.Entity.DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims
         System.Data.Entity.DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } // AspNetUserLogins
@@ -29,11 +30,13 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
         System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         System.Data.Entity.DbSet<City> Cities { get; set; } // City
+        System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
         System.Data.Entity.DbSet<DocumentTemplate> DocumentTemplates { get; set; } // DocumentTemplate
         System.Data.Entity.DbSet<DocumentType> DocumentTypes { get; set; } // DocumentType
+        System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
         System.Data.Entity.DbSet<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog
@@ -52,6 +55,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
         System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
+        System.Data.Entity.DbSet<PhysicianService> PhysicianServices { get; set; } // PhysicianService
         System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         System.Data.Entity.DbSet<Price> Prices { get; set; } // Price

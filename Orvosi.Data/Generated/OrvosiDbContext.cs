@@ -22,6 +22,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         public System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
         public System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
+        public System.Data.Entity.DbSet<AspNetRolesFeature> AspNetRolesFeatures { get; set; } // AspNetRolesFeature
         public System.Data.Entity.DbSet<AspNetUser> AspNetUsers { get; set; } // AspNetUsers
         public System.Data.Entity.DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims
         public System.Data.Entity.DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } // AspNetUserLogins
@@ -32,11 +33,13 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
         public System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         public System.Data.Entity.DbSet<City> Cities { get; set; } // City
+        public System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
         public System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         public System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
         public System.Data.Entity.DbSet<DocumentTemplate> DocumentTemplates { get; set; } // DocumentTemplate
         public System.Data.Entity.DbSet<DocumentType> DocumentTypes { get; set; } // DocumentType
+        public System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         public System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         public System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
         public System.Data.Entity.DbSet<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog
@@ -55,6 +58,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         public System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
         public System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
+        public System.Data.Entity.DbSet<PhysicianService> PhysicianServices { get; set; } // PhysicianService
         public System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         public System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
         public System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
@@ -138,6 +142,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AddressConfiguration());
             modelBuilder.Configurations.Add(new AddressTypeConfiguration());
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration());
+            modelBuilder.Configurations.Add(new AspNetRolesFeatureConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserClaimConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserLoginConfiguration());
@@ -148,11 +153,13 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration());
             modelBuilder.Configurations.Add(new BillableEntityConfiguration());
             modelBuilder.Configurations.Add(new CityConfiguration());
+            modelBuilder.Configurations.Add(new CollaboratorConfiguration());
             modelBuilder.Configurations.Add(new CompanyConfiguration());
             modelBuilder.Configurations.Add(new CountryConfiguration());
             modelBuilder.Configurations.Add(new DocumentConfiguration());
             modelBuilder.Configurations.Add(new DocumentTemplateConfiguration());
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration());
+            modelBuilder.Configurations.Add(new FeatureConfiguration());
             modelBuilder.Configurations.Add(new InvoiceConfiguration());
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration());
             modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration());
@@ -171,6 +178,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianServiceConfiguration());
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration());
             modelBuilder.Configurations.Add(new PriceConfiguration());
@@ -206,6 +214,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AddressConfiguration(schema));
             modelBuilder.Configurations.Add(new AddressTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration(schema));
+            modelBuilder.Configurations.Add(new AspNetRolesFeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserClaimConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserLoginConfiguration(schema));
@@ -216,11 +225,13 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AvailableSlotViewConfiguration(schema));
             modelBuilder.Configurations.Add(new BillableEntityConfiguration(schema));
             modelBuilder.Configurations.Add(new CityConfiguration(schema));
+            modelBuilder.Configurations.Add(new CollaboratorConfiguration(schema));
             modelBuilder.Configurations.Add(new CompanyConfiguration(schema));
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentTypeConfiguration(schema));
+            modelBuilder.Configurations.Add(new FeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration(schema));
@@ -239,6 +250,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianServiceConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration(schema));
             modelBuilder.Configurations.Add(new PriceConfiguration(schema));

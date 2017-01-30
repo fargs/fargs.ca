@@ -37,6 +37,7 @@ namespace Orvosi.Data
         public string RoleName { get; set; } // RoleName (length: 256)
         public string CompanyName { get; set; } // CompanyName (length: 128)
         public System.DateTime? LastActivationDate { get; set; } // LastActivationDate
+        public bool IsAppTester { get; set; } // IsAppTester
 
         public Account()
         {

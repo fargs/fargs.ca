@@ -72,10 +72,7 @@
                                 </p>
                             </div>
                             <div class="col-md-2 o-dashboard-td">
-                                @if (roleId == AspNetRoles.CaseCoordinator || roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                                {
-                                    @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
-                                }
+                                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
                             </div>
                             <div class="col-md-4">
                                 @Html.Partial("_ServiceRequestTasks_Today", serviceRequest)

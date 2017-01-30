@@ -1,52 +1,74 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
+@using Orvosi.Shared.Enums.Features
 @model Orvosi.Shared.Model.UnsentInvoice
+
+@{
+    var features = User.Identity.GetFeatures();
+}
 
 @if (Model.Invoice != null)
 {
-        string sentMessage = string.Empty;
-        if (Model.Invoice.SentDate.HasValue)
-        {
-            sentMessage = "Sent " + Model.Invoice.SentDate.ToOrvosiDateTimeFormat();
-        }
-        else if (Model.ServiceRequest != null && Model.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
-        {
-            sentMessage = "Submit Invoice task checked on " + Model.ServiceRequest.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat();
-        }
-        <div id="invoice-menu-@Model.Invoice.Id" class="text-right">
-            <div class="btn-group">
-                @if (Model.Invoice.IsPaid)
-                {
-                    <button type="button" class="btn btn-success" disabled><i class="fa fa-check fa-lg"></i></button>
-                }
-                else if (Model.Invoice.IsSent)
+    string sentMessage = string.Empty;
+    if (Model.Invoice.SentDate.HasValue)
+    {
+        sentMessage = "Sent " + Model.Invoice.SentDate.ToOrvosiDateTimeFormat();
+    }
+    else if (Model.ServiceRequest != null && Model.ServiceRequest.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
+    {
+        sentMessage = "Submit Invoice task checked on " + Model.ServiceRequest.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat();
+    }
+    <div id="invoice-menu-@Model.Invoice.Id" class="text-right">
+        <div class="btn-group">
+            @if (Model.Invoice.IsPaid)
+            {
+                <button type="button" class="btn btn-success" disabled><i class="fa fa-check fa-lg"></i></button>
+            }
+            else if (Model.Invoice.IsSent)
+            {
+                if (features.Contains(Accounting.ManageReceipts))
                 {
                     <button type="button" class="btn btn-warning" onclick="onPaid(@Model.Invoice.Id, @Model.ServiceRequest.Id)"><i class="fa fa-usd fa-lg"></i></button>
                 }
-                else
+            }
+            else
+            {
+                if (features.Contains(Accounting.SendInvoice))
                 {
                     <button type="button" class="btn btn-primary" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)"><i class="fa fa-send"></i></button>
                 }
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right">
+            }
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                @if (features.Contains(Accounting.ViewInvoice))
+                {
                     <li>
                         <a href="~/Accounting/PreviewInvoice/@Model.Invoice.InvoiceGuid" target="_blank">
                             <i class="fa fa-eye"></i> &nbsp;Preview
                         </a>
                     </li>
+                }
+                @if (features.Contains(Accounting.DownloadInvoice))
+                {
                     <li>
                         <a href="~/Invoice/DownloadBody/@Model.Invoice.InvoiceGuid" target="_blank">
                             <i class="fa fa-download"></i> &nbsp;Download
                         </a>
                     </li>
+                }
+                @if (features.Contains(Accounting.SendInvoice))
+                {
                     <li>
                         <a href="#" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
                             <i class="fa fa-send"></i> &nbsp;Send
                         </a>
                     </li>
+                }
+                @if (features.Contains(Accounting.EditInvoice))
+                {
                     <li class="divider"></li>
                     <li>
                         <a onclick="onEditInvoiceHeader(@Model.Invoice.Id)" style="cursor:pointer;">
@@ -58,24 +80,31 @@
                             <i class="fa fa-plus"></i> &nbsp;Add Item
                         </a>
                     </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a onclick="onDeleteInvoice(@Model.Invoice.ServiceRequestId, @Model.Invoice.Id)" style="cursor:pointer;">
-                            <i class="fa fa-remove"></i> &nbsp;Delete Invoice
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <small class="help-block">
-                @sentMessage
-            </small>
+                }
+                @if (features.Contains(Accounting.DeleteInvoice) && features.Contains(Accounting.EditInvoice))
+                {
+                <li class="divider"></li>
+                <li>
+                    <a onclick="onDeleteInvoice(@Model.Invoice.ServiceRequestId, @Model.Invoice.Id)" style="cursor:pointer;">
+                        <i class="fa fa-remove"></i> &nbsp;Delete Invoice
+                    </a>
+                </li>
+                }
+            </ul>
         </div>
-        }
-        else
-        {
-            <div id="service-request-invoice-menu-@Model.ServiceRequest.Id">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@Model.ServiceRequest.Id)"><i class="fa fa-lg fa-plus"></i></button>
-                </div>
-            </div>
-        }
+        <small class="help-block">
+            @sentMessage
+        </small>
+    </div>
+}
+else
+{
+    if (features.Contains(Accounting.CreateInvoice))
+    {
+    <div id="service-request-invoice-menu-@Model.ServiceRequest.Id">
+        <div class="pull-right">
+            <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@Model.ServiceRequest.Id)"><i class="fa fa-lg fa-plus"></i></button>
+        </div>
+    </div>
+    }
+}

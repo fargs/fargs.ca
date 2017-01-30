@@ -128,6 +128,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     public class ResourceAssignmentViewModel
     {
         public int ServiceRequestId { get; set; }
+        public Guid PhysicianId { get; set; }
         public Guid? CaseCoordinatorId { get; set; }
         public Guid? DocumentReviewerId { get; set; }
         public Guid? IntakeAssistantId { get; set; }

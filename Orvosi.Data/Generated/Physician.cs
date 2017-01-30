@@ -37,7 +37,9 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance.FK_PhysicianInsurance_Physician
         public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Physician
         public virtual System.Collections.Generic.ICollection<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation.FK_PhysicianLocation_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianService> PhysicianServices { get; set; } // PhysicianService.FK_PhysicianService_Physician
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Physician
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate.FK_ServiceRequestTemplate_Physician
 
         // Foreign keys
         public virtual AspNetUser AspNetUser { get; set; } // FK_Physician_AspNetUsers
@@ -52,7 +54,9 @@ namespace Orvosi.Data
             PhysicianInsurances = new System.Collections.Generic.List<PhysicianInsurance>();
             PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
             PhysicianLocations = new System.Collections.Generic.List<PhysicianLocation>();
+            PhysicianServices = new System.Collections.Generic.List<PhysicianService>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
+            ServiceRequestTemplates = new System.Collections.Generic.List<ServiceRequestTemplate>();
             InitializePartial();
         }
 

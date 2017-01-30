@@ -1,8 +1,18 @@
-﻿@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
+﻿@using WebApp.Library.Extensions
+@using WebApp.Library
+@using Orvosi.Data
+@model WebApp.ViewModels.ServiceRequestViewModels.CreateViewModel
 
 @{
     ViewBag.Title = "Create a Paper Review/Addendum - Details";
-    
+    var userContext = User.Identity.GetUserContext();
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var physicianSelectList = viewDataService.GetPhysicianSelectList();
+    var companySelectList = viewDataService.GetPhysicianCompanySelectList(userContext.Id);
+    var serviceSelectList = viewDataService.GetPhysicianServiceSelectList(userContext.Id);
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(userContext.Id);
+    var caseCoordinatorSelectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(userContext.Id);
+    var processTemplateSelectList = viewDataService.GetPhysicianProcessTemplateSelectList(userContext.Id);
 }
 
 <h3>Create Paper Review/Addendum</h3>
@@ -16,7 +26,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Physician</label>
         <div class="col-md-6">
-            @Html.DropDownList("PhysicianId", new SelectList(Model.PhysicianSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("PhysicianId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), string.Empty, new { @class = "form-control", onchange="refreshCompanyDropDown(this)" })
             @Html.ValidationMessage("PhysicianId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -24,7 +34,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Company</label>
         <div class="col-md-6">
-            @Html.DropDownList("CompanyId", new SelectList(Model.CompanySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CompanyId", new SelectList(companySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -32,7 +42,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Service</label>
         <div class="col-md-6">
-            @Html.DropDownList("ServiceId", new SelectList(Model.ServiceSelectList, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceId", new SelectList(serviceSelectList, "Value", "Text", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -76,7 +86,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Case Coordinator</label>
         <div class="col-md-6">
-            @Html.DropDownList("CaseCoordinatorId", new SelectList(Model.StaffSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CaseCoordinatorId", new SelectList(caseCoordinatorSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CaseCoordinatorId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -84,7 +94,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Process Template</label>
         <div class="col-md-6">
-            @Html.DropDownList("ServiceRequestTemplateId", new SelectList(Model.ServiceRequestTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("ServiceRequestTemplateId", new SelectList(processTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("ServiceRequestTemplateId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -104,6 +114,40 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
+
+        function refreshCompanyDropDown(e) {
+            let url = '@Url.Content("~/ServiceRequest/RefreshCompanyDropDown")';
+            $.get(url, {
+                physicianId: e.value
+            })
+            .done(function (result) {
+                $('#CompanyId').html(result);
+            });
+
+            url = '@Url.Content("~/ServiceRequest/RefreshServiceDropDown")';
+            $.get(url, {
+                physicianId: e.value
+            })
+            .done(function (result) {
+                $('#ServiceId').html(result);
+            });
+
+            url = '@Url.Content("~/ServiceRequest/RefreshCaseCoordinatorDropDown")';
+            $.get(url, {
+                physicianId: e.value
+            })
+            .done(function (result) {
+                $('#CaseCoordinatorId').html(result);
+            });
+
+            url = '@Url.Content("~/ServiceRequest/RefreshProcessTemplateDropDown")';
+            $.get(url, {
+                physicianId: e.value
+            })
+            .done(function (result) {
+                $('#ServiceRequestTemplateId').html(result);
+            });
+        }
 
         $(function () {
 

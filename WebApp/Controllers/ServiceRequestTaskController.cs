@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using WebApp.Library;
 using WebApp.Library.Extensions;
 using MoreLinq;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -40,7 +42,9 @@ namespace WebApp.Controllers
 
             return View(vm);
         }
+
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.AddTask)]
         public ActionResult AddTask(int serviceRequestId, byte taskId)
         {
             var request = db.ServiceRequests.Find(serviceRequestId);
@@ -121,50 +125,16 @@ namespace WebApp.Controllers
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
-        [HttpPost]
-        public ActionResult AddRespondToQACommentsTask(int serviceRequestId)
-        {
-            var request = db.ServiceRequests.Find(serviceRequestId);
-
-            var st = db.OTasks.Single(t => t.Id == Tasks.RespondToQAComments);
-            var task = new ServiceRequestTask();
-            task.ServiceRequestId = serviceRequestId;
-            task.TaskId = Tasks.RespondToQAComments;
-            task.TaskName = st.Name;
-            task.TaskPhaseId = st.TaskPhaseId;
-            task.TaskPhaseName = st.TaskPhase.Name;
-            task.ResponsibleRoleId = st.ResponsibleRoleId;
-            task.ResponsibleRoleName = st.AspNetRole.Name;
-            task.Sequence = st.Sequence;
-            task.AssignedTo = db.ServiceRequestTasks.First(sr => sr.ResponsibleRoleId == st.ResponsibleRoleId).AssignedTo;
-            task.IsBillable = st.IsBillable.Value;
-            task.HourlyRate = st.HourlyRate;
-            task.EstimatedHours = st.EstimatedHours;
-            task.DependsOn = st.DependsOn;
-            task.DueDateBase = st.DueDateBase;
-            task.DueDateDiff = st.DueDateDiff;
-            task.Guidance = st.Guidance;
-            task.ModifiedDate = SystemTime.Now();
-            task.ModifiedUser = User.Identity.Name;
-
-            request.ServiceRequestTasks.Add(task);
-
-            request.UpdateIsClosed();
-
-            //var obtainFinalReportCompanyTask = db.ServiceRequestTasks.Single(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ObtainFinalReportCompany);
-            //obtainFinalReportCompanyTask.DependsOn = Tasks.RespondToQAComments.ToString();
-            db.SaveChanges();
-            
-            return Redirect(Request.UrlReferrer.ToString());
-        }
 
         [ChildActionOnly]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public ActionResult MyTaskList(Guid serviceProviderId, byte serviceRequestCategoryId)
         {
             return PartialView("MyTaskList");
         }
 
         [ChildActionOnly]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public ActionResult TaskList(Orvosi.Data.ServiceRequest serviceRequest, bool hideCaseCoordinator = false, bool useShortName = false, bool myTasksOnly = true, bool collapsed = false)
         {
             ViewBag.HideCaseCoordinator = hideCaseCoordinator;
@@ -242,6 +212,7 @@ namespace WebApp.Controllers
         }
 
         [ChildActionOnly]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public ActionResult NextTaskList(ServiceRequestView serviceRequest, IEnumerable<ServiceRequestTask> serviceRequestTasks)
         {
             // get the user
@@ -341,7 +312,7 @@ namespace WebApp.Controllers
         }
         
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)
         {
             using (var context = new OrvosiDbContext())
@@ -364,6 +335,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleObsolete(int serviceRequestTaskId)
         {
             var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -381,6 +353,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleCompleted(int serviceRequestTaskId)
         {
             var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -399,6 +372,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.PickupTask)]
         public async Task<ActionResult> PickUp(int serviceRequestTaskId)
         {
             var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -411,7 +385,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Case Coordinator, Physician")]
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignTask)]
         public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? assignedTo)
         {
             var task = await context.ServiceRequestTasks.FindAsync(serviceRequestTaskId);

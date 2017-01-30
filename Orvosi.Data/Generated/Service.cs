@@ -31,6 +31,7 @@ namespace Orvosi.Data
         public string ColorCode { get; set; } // ColorCode (length: 10)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<PhysicianService> PhysicianServices { get; set; } // PhysicianService.FK_PhysicianService_Service
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Service
 
         // Foreign keys
@@ -42,6 +43,7 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             IsLocationRequired = true;
+            PhysicianServices = new System.Collections.Generic.List<PhysicianService>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

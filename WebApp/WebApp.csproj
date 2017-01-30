@@ -27,6 +27,7 @@
     </NuGetPackageImportStamp>
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/dda60743-a5ee-4b67-b253-53ba97bcb271/resourcegroups/orvosi/providers/microsoft.insights/components/orvosiapp</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,8 +63,12 @@
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="bouncy_castle_hmac_sha_pcl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle-PCL.1.0.0.6\lib\bouncy_castle_hmac_sha_pcl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Box.V2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Box.V2.2.12.1\lib\portable-net40+sl50+win+wp80\Box.V2.dll</HintPath>
+      <HintPath>..\packages\Box.V2.2.14.0\lib\portable-net40+sl50+win+wp80\Box.V2.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Box.V2.JWTAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
@@ -138,32 +143,32 @@
       <HintPath>..\packages\MarkdownDeep.Full.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.1.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.2.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.1.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.2.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.1.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.2.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Web, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.1.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    <Reference Include="Microsoft.AI.Web, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.2.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.WindowsServer, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.1.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.2.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.2.1.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.2.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -191,12 +196,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.0.0\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.0.0\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -259,8 +264,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.0.0\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.30826.1200, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.3.308261200\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net" />
@@ -395,6 +400,8 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AspNetRolesFeatureController.cs" />
+    <Compile Include="Areas\Admin\Controllers\FeatureController.cs" />
     <Compile Include="Areas\Admin\Controllers\PhysicianController.cs" />
     <Compile Include="Areas\Admin\ViewModels\AddressViewModel.cs" />
     <Compile Include="Areas\Admin\Controllers\AspNetRolesController.cs" />
@@ -419,12 +426,16 @@
     <Compile Include="Controllers\BoxController.cs" />
     <Compile Include="Controllers\BoxTokenManagerController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\CollaboratorController.cs" />
+    <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestMessageController.cs" />
     <Compile Include="Controllers\ServiceRequestTaskController.cs" />
@@ -436,13 +447,24 @@
     <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\Enums.cs" />
+    <Compile Include="Library\Filters\AuthorizeRoleAttribute.cs" />
     <Compile Include="Library\Google\GoogleServices.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\IEmailService.cs" />
+    <Compile Include="Library\ImpersonatingSecurityStampValidator.cs" />
+    <Compile Include="Library\Projections\AspNetUserProjections.cs" />
+    <Compile Include="Library\Projections\CollaboratorProjections.cs" />
+    <Compile Include="Library\Projections\AddressProjections.cs" />
+    <Compile Include="Library\Projections\CompanyProjections.cs" />
+    <Compile Include="Library\Projections\OwnerViewModel.cs" />
+    <Compile Include="Library\Projections\PhysicianCompanyProjections.cs" />
     <Compile Include="Library\Projections\InvoiceProjections.cs" />
+    <Compile Include="Library\Projections\ServiceProjections.cs" />
     <Compile Include="Library\Projections\ServiceRequestProjections.cs" />
+    <Compile Include="Library\Projections\ServiceRequestTemplateProjections.cs" />
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
+    <Compile Include="Library\ViewDataService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BoxModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -458,6 +480,8 @@
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
+    <Compile Include="ViewModels\PhysicianCompanyViewModels\Company.cs" />
+    <Compile Include="ViewModels\PhysicianCompanyViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
@@ -481,6 +505,9 @@
     <Compile Include="ViewModels\TaskFilterViewModel.cs" />
     <Compile Include="ViewModels\TaskListItemViewModel.cs" />
     <Compile Include="ViewModels\InitialsViewModel.cs" />
+    <Compile Include="ViewModels\CollaboratorViewModel.cs" />
+    <Compile Include="ViewModels\UIElements\DropDownListViewModel.cs" />
+    <Compile Include="ViewModels\UserContextViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeTemplates\AddController\ApiController.tt" />
@@ -981,6 +1008,7 @@
     <Content Include="Areas\Admin\Views\PhysicianLocationArea\Index.cshtml" />
     <Content Include="Scripts\ww.jquery.js" />
     <Content Include="Scripts\ww.jquery.min.js" />
+    <Content Include="Views\Collaborator\_PhysicianDropDownList.cshtml" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="ApplicationInsights.config">
@@ -1000,6 +1028,16 @@
     <Content Include="Areas\Admin\Views\User\Account.cshtml" />
     <Content Include="Areas\Admin\Views\Physician\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\Notes.cshtml" />
+    <Content Include="Areas\Admin\Views\Feature\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Feature\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Feature\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Feature\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Feature\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\AspNetRolesFeature\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\AspNetRolesFeature\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\AspNetRolesFeature\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\AspNetRolesFeature\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\AspNetRolesFeature\Index.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1011,7 +1049,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-custom\orvosi.less" />
-    <Content Include="private_key.pem" />
+    <Content Include="private_key.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\font-awesome-4.6.3\fonts\fontawesome-webfont.eot">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1106,6 +1146,18 @@
     <Content Include="Views\ServiceRequest\ChangeProcessTemplate.cshtml" />
     <Content Include="Views\Google\Calendar\Get.cshtml" />
     <Content Include="Views\Google\Calendar\Add.cshtml" />
+    <Content Include="Views\Collaborator\Index.cshtml" />
+    <Content Include="Views\Collaborator\Details.cshtml" />
+    <Content Include="Views\Collaborator\_List.cshtml" />
+    <Content Include="Views\PhysicianCompany\Index.cshtml" />
+    <Content Include="Views\PhysicianCompany\_List.cshtml" />
+    <Content Include="Views\ServiceRequest\_CreateAddOnCompanyDropDown.cshtml" />
+    <Content Include="Views\Service\_CompanyDropDownList.cshtml" />
+    <Content Include="Views\Service\_List.cshtml" />
+    <Content Include="Views\Service\Index.cshtml" />
+    <Content Include="Views\ServiceRequest\_CreateAddOnCaseCoordinatorDropDown.cshtml" />
+    <Content Include="Views\ServiceRequest\_CreateAddOnServiceDropDown.cshtml" />
+    <Content Include="Views\ServiceRequest\_CreateAddOnProcessTemplateDropDown.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1258,6 +1310,7 @@
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Note\_NoteModalForm.cshtml" />
     <Content Include="Views\Shared\_LayoutPrintPreview.cshtml" />
+    <Content Include="Views\Shared\Unauthorized.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1265,7 +1318,7 @@
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
-    <Folder Include="Library\Filters\" />
+    <Folder Include="Views\Home\" />
     <Folder Include="Views\ServiceRequestHub\" />
   </ItemGroup>
   <ItemGroup>

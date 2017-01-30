@@ -1,0 +1,5 @@
+﻿@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.Library.Extensions
+@model List<SelectListItem>
+
+@Html.DropDownList("CaseCoordinatorId", new SelectList(Model, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })

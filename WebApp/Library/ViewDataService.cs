@@ -69,6 +69,19 @@ namespace WebApp.Library
                 .ToList();
         }
 
+        public List<SelectListItem> GetPhysicianCompanySelectListWithGuid(Guid? physicianId)
+        {
+            List<CompanyProjections.CompanySearchResult> data = GetPhysicianCompanies(physicianId);
+
+            return data
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.ObjectGuid.ToString()
+                })
+                .ToList();
+        }
+
         public List<ServiceProjections.ServiceResult> GetPhysicianServices(Guid? physicianId)
         {
             return dbContext.PhysicianServices

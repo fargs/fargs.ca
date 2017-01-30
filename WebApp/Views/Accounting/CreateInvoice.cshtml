@@ -2,12 +2,14 @@
 @using Orvosi.Data
 @using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
+@using WebApp.Library
 @model Orvosi.Data.Invoice
 
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
-
-    var roleId = User.Identity.GetRoleId();
+    var userContext = User.Identity.GetUserContext();
+    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var companySelectList = viewDataService.GetPhysicianCompanySelectListWithGuid(userContext.Id);
 }
 
 <div class="row">
@@ -16,7 +18,7 @@
             @Html.HiddenFor(model => model.ServiceProviderGuid)
             <div class="form-group">
                 <label class="control-label">Customer</label>
-                @Html.DropDownList("CustomerGuid", new SelectList(ViewBag.CustomerSelectList, "Value", "Text", "Group.Name", Model.CustomerGuid), "-- Customer --", new { @class = "form-control" })
+                @Html.DropDownList("CustomerGuid", new SelectList(companySelectList, "Value", "Text", "Group.Name", Model.CustomerGuid), "-- Customer --", new { @class = "form-control" })
             </div>
             <div class="form-group">
                 <label class="control-label">Invoice Date</label>

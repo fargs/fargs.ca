@@ -12,7 +12,13 @@
     var features = identity.GetFeatures();
     var viewDataService = new ViewDataService(identity, new OrvosiDbContext());
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.ServiceRequest.PhysicianId);
-}
+    teamMemberSelectList.Add(new SelectListItem
+    {
+        Text = Model.ServiceRequest.Physician.DisplayName,
+        Value = Model.ServiceRequest.Physician.Id.ToString(),
+        Group = new SelectListGroup { Name = Model.ServiceRequest.Physician.Role.Name }
+    });
+            }
 
 <p>
     <ul class="list-unstyled">
@@ -199,7 +205,7 @@
                                                         <span class="caret"></span>
                                                     </a>
                                                     <ul class="dropdown-menu">
-                                                        @foreach (var teamMember in teamMemberSelectList)
+                                                        @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
                                                         {
                                                             <li>
                                                                 <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>

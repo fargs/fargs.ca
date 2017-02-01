@@ -20,6 +20,7 @@ using WebApp.Library.Projections;
 using MoreLinq;
 using WebApp.Library.Filters;
 using Orvosi.Shared.Enums.Features;
+using System.Text;
 
 namespace WebApp.Controllers
 {

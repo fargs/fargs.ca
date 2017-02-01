@@ -117,23 +117,20 @@ else
 <div class="modal fade" id="edit-invoice-message-modal">
     <div class="modal-dialog">
         <div class="modal-content" id="edit-invoice-message-form-container">
-            
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="edit-invoice-header-modal">
     <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <form id="edit-invoice-header-form"></form>
+        <div class="modal-content" id="edit-invoice-header-form-container">
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="edit-invoice-item-modal">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="edit-invoice-item-form"></form>
+        <div class="modal-content" id="edit-invoice-item-form-container">
         </div>
     </div>
 </div>
@@ -230,9 +227,9 @@ else
             $.get(url).done(function (result) {
 
                 var modalDiv = $("#edit-invoice-header-modal");
-                var formContainer = $("#edit-invoice-header-form");
+                var formContainer = $("#edit-invoice-header-form-container");
 
-                formContainer.replaceWith(result);
+                formContainer.html(result);
 
                 modalDiv.modal('toggle');
             });
@@ -257,9 +254,9 @@ else
             $.get(url).done(function (result) {
 
                 var modalDiv = $("#edit-invoice-item-modal");
-                var formContainer = $("#edit-invoice-item-form");
+                var formContainer = $("#edit-invoice-item-form-container");
 
-                formContainer.replaceWith(result);
+                formContainer.html(result);
 
                 modalDiv.modal('toggle');
             });

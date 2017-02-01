@@ -35,7 +35,7 @@
             {
                 if (features.Contains(Accounting.SendInvoice))
                 {
-                    <button type="button" class="btn btn-primary" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)"><i class="fa fa-send"></i></button>
+                    <button type="button" class="btn btn-primary" onclick="onEditAndSendInvoice(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)"><i class="fa fa-send"></i></button>
                 }
             }
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -62,16 +62,8 @@
                 @if (features.Contains(Accounting.SendInvoice))
                 {
                     <li>
-                        <a href="#" onclick="onSend(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
-                            <i class="fa fa-send"></i> &nbsp;Send
-                        </a>
-                    </li>
-                }
-                @if (features.Contains(Accounting.SendInvoice))
-                {
-                    <li>
                         <a href="#" onclick="onEditAndSendInvoice(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
-                            <i class="fa fa-send"></i> &nbsp;Edit and Send
+                            <i class="fa fa-send"></i> &nbsp;Send
                         </a>
                     </li>
                 }

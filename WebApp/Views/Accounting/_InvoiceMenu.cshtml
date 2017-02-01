@@ -67,6 +67,14 @@
                         </a>
                     </li>
                 }
+                @if (features.Contains(Accounting.SendInvoice))
+                {
+                    <li>
+                        <a href="#" onclick="onEditAndSendInvoice(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
+                            <i class="fa fa-send"></i> &nbsp;Edit and Send
+                        </a>
+                    </li>
+                }
                 @if (features.Contains(Accounting.EditInvoice))
                 {
                     <li class="divider"></li>

@@ -114,6 +114,14 @@ else
     }
 }
 
+<div class="modal fade" id="edit-invoice-message-modal">
+    <div class="modal-dialog">
+        <div class="modal-content" id="edit-invoice-message-form-container">
+            
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="edit-invoice-header-modal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -133,6 +141,39 @@ else
 @section Scripts {
     <script type="text/javascript">
 
+        function onEditAndSendInvoice(invoiceId, serviceRequestId) {
+            let url = '@Url.Content("~/Accounting/EditAndSendInvoice?invoiceId=")' + invoiceId + '&serviceRequestId=' + serviceRequestId;
+            $.get(url).done(function (result) {
+
+                var modalDiv = $("#edit-invoice-message-modal");
+                var formContainer = $("#edit-invoice-message-form-container");
+
+                formContainer.html(result);
+
+                modalDiv.modal('toggle');
+            });
+        }
+
+        function editAndSendInvoiceSaveChanges(invoiceId, serviceRequestId) {
+            let url = '@Url.Content("~/Accounting/EditAndSendInvoice")';
+            let form = $('#edit-invoice-message-form');
+            let formData = new FormData(form[0]);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    toastr.success("Invoice sent successfully");
+                    $("#edit-invoice-message-modal").modal('toggle');
+                    refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(serviceRequestId, invoiceId);
+                }
+            });
+        }
 
         function onSend(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/SendInvoice")';

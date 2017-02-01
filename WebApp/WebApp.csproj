@@ -480,6 +480,7 @@
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
+    <Compile Include="ViewModels\MailMessage.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\Company.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
@@ -1158,6 +1159,7 @@
     <Content Include="Views\ServiceRequest\_CreateAddOnCaseCoordinatorDropDown.cshtml" />
     <Content Include="Views\ServiceRequest\_CreateAddOnServiceDropDown.cshtml" />
     <Content Include="Views\ServiceRequest\_CreateAddOnProcessTemplateDropDown.cshtml" />
+    <Content Include="Views\Accounting\_EditAndSendInvoice.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

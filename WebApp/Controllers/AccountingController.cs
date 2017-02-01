@@ -511,13 +511,58 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
+        public async Task<ActionResult> EditAndSendInvoice(int invoiceId, int serviceRequestId)
+        {
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
+
+            var message = BuildSendInvoiceMailMessage(invoice, Request.GetBaseUrl());
+            var viewModel = new WebApp.ViewModels.MailMessageViewModel
+            {
+                InvoiceId = invoiceId,
+                ServiceRequestId = serviceRequestId,
+                Message = message
+            };
+            return PartialView("_EditAndSendInvoice", viewModel);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Accounting.SendInvoice)]
+        public async Task<ActionResult> EditAndSendInvoice()
+        {
+            var message = new MailMessage();
+            message.From = new MailAddress(Request.Form["Message.From"]);
+            message.To.Add(Request.Form["Message.To"]);
+
+            var cc = Request.Form["Message.CC"];
+            if (!string.IsNullOrEmpty(cc))
+                message.CC.Add(cc);
+
+            message.Subject = Request.Form["Message.Subject"];
+            message.Body = Request.Form["Message.Body"];
+
+            var invoiceId = int.Parse(Request.Form["InvoiceId"]);
+
+            var attachment = new Attachment(Request.Files["Attachment1"].InputStream, Request.Files["Attachment1"].FileName);
+            message.Attachments.Add(attachment);
+
+            var context = new Orvosi.Data.OrvosiDbContext();
+            var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
+            return await SendMessageUsingGoogle(context, invoice, message);
+        }
+
+        [AuthorizeRole(Feature = Accounting.SendInvoice)]
         public async Task<ActionResult> SendInvoice(int invoiceId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
 
             var message = BuildSendInvoiceMailMessage(invoice, Request.GetBaseUrl());
+            return await SendMessageUsingGoogle(context, invoice, message);
+        }
 
+        private async Task<ActionResult> SendMessageUsingGoogle(OrvosiDbContext context, Invoice invoice, MailMessage message)
+        {
             // this should get created using a DI container and configured in the Startup.
             await new GoogleServices()
                 .SendEmailAsync(message);
@@ -698,7 +743,7 @@ namespace WebApp.Controllers
             var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views/Shared/NotificationTemplates/Invoice.html");
 
             ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
-            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
+            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderPartialViewToString(this, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
 
             return message;
         }

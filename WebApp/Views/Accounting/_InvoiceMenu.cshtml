@@ -62,7 +62,7 @@
                 @if (features.Contains(Accounting.SendInvoice))
                 {
                     <li>
-                        <a href="#" onclick="onEditAndSendInvoice(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)">
+                        <a onclick="onEditAndSendInvoice(@Model.Invoice.Id, @Model.Invoice.ServiceRequestId)" style="cursor:pointer;">
                             <i class="fa fa-send"></i> &nbsp;Send
                         </a>
                     </li>

@@ -17,6 +17,7 @@ else
         <div>@Model.InvoiceDate.ToOrvosiDateFormat()</div>
         <div>NET @Model.Terms days</div>
         <strong>@Model.Customer.BillingEmail</strong><br />
+        @(Model.Customer.City), @Model.Customer.Province
     </div>
     <div class="col-md-6">
 

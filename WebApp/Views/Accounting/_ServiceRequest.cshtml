@@ -6,7 +6,10 @@
     var assessment = Model;
 }
 <div id="service-request-@assessment.Id">
-    <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Name</strong>
+    <h4>
+        <a target="_blank" href="~/ServiceRequest/Details/@assessment.Id">@assessment.ClaimantName (@assessment.Id)</a>
+    </h4>
+    <div style="color: @assessment.Service.ColorCode;">@assessment.Service.Name</div>
 
     <div>@assessment.Company.Name</div>
     @if (assessment.Address != null)
@@ -21,9 +24,6 @@
             @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
         </div>
     }
-    <div>
-        <span class="text-muted">@assessment.ClaimantName</span> (<a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a>)
-    </div>
     @if (!string.IsNullOrEmpty(assessment.Notes))
     {
         <div class="text-danger form-group">

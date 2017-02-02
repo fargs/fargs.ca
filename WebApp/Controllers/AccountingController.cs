@@ -58,7 +58,6 @@ namespace WebApp.Controllers
                                from sub in g.DefaultIfEmpty()
                                select new Orvosi.Shared.Model.UnsentInvoice
                                {
-                                   UnsentInvoiceId = $"{(sr != null ? sr.Id.ToString() : string.Empty)}-{(sub != null ? sub.Id.ToString() : string.Empty)}",
                                    ServiceRequest = sr,
                                    Invoice = sub
                                };
@@ -67,7 +66,6 @@ namespace WebApp.Controllers
                                 where !i.ServiceRequestId.HasValue
                                 select new Orvosi.Shared.Model.UnsentInvoice
                                 {
-                                    UnsentInvoiceId = $"-{i.Id}",
                                     Invoice = i
                                 };
 

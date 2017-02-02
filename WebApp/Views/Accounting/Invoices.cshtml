@@ -89,7 +89,7 @@ else
 
     foreach (var unsentInvoice in dayFolder.UnsentInvoices)
     {
-        <div class="row o-dashboard-tr" id="invoice-container-@unsentInvoice.UnsentInvoiceId">
+        <div class="row o-dashboard-tr">
             <div class="col-md-2 o-dashboard-td bg-warning">
                 @if (unsentInvoice.ServiceRequest != null)
                 {

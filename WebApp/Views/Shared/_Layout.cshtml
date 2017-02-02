@@ -130,25 +130,29 @@
                                     Sys Admin <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    @if (features.Contains(Features.Admin.ViewProcessTemplates))
+                                    @if (features.Contains(Features.SysAdmin.ViewProcessTemplates))
                                     {
                                         <li>@Html.ActionLink("Process Template Master List", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
                                     }
-                                    @if (features.Contains(Features.Admin.ViewCompanies))
+                                    @if (features.Contains(Features.SysAdmin.ViewCompanies))
                                     {
                                         <li>@Html.ActionLink("Company Master List", "", "Company", new { area = "Admin" }, null)</li>
                                     }
-                                    @if (features.Contains(Features.Admin.ViewAddresses))
+                                    @if (features.Contains(Features.SysAdmin.ViewAddresses))
                                     {
                                         <li>@Html.ActionLink("Address Master List", "", "Location", new { area = "Admin" }, null)</li>
                                     }
-                                    @if (features.Contains(Features.Admin.ViewServices))
+                                    @if (features.Contains(Features.SysAdmin.ViewServices))
                                     {
                                         <li>@Html.ActionLink("Service Master List", "", "Service", new { area = "Admin", parentId = ServicePortfolios.Physician }, null)</li>
                                     }
-                                    @if (features.Contains(Features.Admin.ManageTasks))
+                                    @if (features.Contains(Features.SysAdmin.ManageTasks))
                                     {
                                         <li>@Html.ActionLink("Task Master List", "", "Task", new { area = "" }, null)</li>
+                                    }
+                                    @if (features.Contains(Features.ServiceRequest.View))
+                                    {
+                                        <li>@Html.ActionLink("Service Request Master List", "Index", "ServiceRequest", new { area = "" }, null)</li>
                                     }
                                 </ul>
                             </li>

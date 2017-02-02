@@ -58,6 +58,7 @@ namespace WebApp.Controllers
                                from sub in g.DefaultIfEmpty()
                                select new Orvosi.Shared.Model.UnsentInvoice
                                {
+                                   UnsentInvoiceId = $"{(sr != null ? sr.Id.ToString() : string.Empty)}-{(sub != null ? sub.Id.ToString() : string.Empty)}",
                                    ServiceRequest = sr,
                                    Invoice = sub
                                };
@@ -66,6 +67,7 @@ namespace WebApp.Controllers
                                 where !i.ServiceRequestId.HasValue
                                 select new Orvosi.Shared.Model.UnsentInvoice
                                 {
+                                    UnsentInvoiceId = $"-{i.Id}",
                                     Invoice = i
                                 };
 
@@ -336,14 +338,18 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public ActionResult InvoiceMenu(int serviceRequestId, int invoiceId)
+        public ActionResult InvoiceMenu(int invoiceId, int? serviceRequestId)
         {
             using (var context = new OrvosiDbContext())
             {
-                var serviceRequest = context.ServiceRequests
-                    .WithId(serviceRequestId)
+                Orvosi.Shared.Model.ServiceRequest serviceRequest = null;
+                if (serviceRequestId.HasValue)
+                {
+                    serviceRequest = context.ServiceRequests
+                    .WithId(serviceRequestId.Value)
                     .Select(ServiceRequestProjections.MinimalInfo())
                     .FirstOrDefault();
+                }
 
                 var invoice = context.Invoices
                     .Where(i => i.Id == invoiceId)
@@ -512,7 +518,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
-        public async Task<ActionResult> EditAndSendInvoice(int invoiceId, int serviceRequestId)
+        public async Task<ActionResult> EditAndSendInvoice(int invoiceId, int? serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);

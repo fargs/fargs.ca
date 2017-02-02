@@ -1,0 +1,11 @@
+﻿@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
+@model Orvosi.Shared.Model.ServiceRequest
+
+@if (Model != null && Model.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
+{
+    <small class="help-block">
+        <span>Submit Invoice task checked on </span> @Model.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat()
+    </small>
+}
+

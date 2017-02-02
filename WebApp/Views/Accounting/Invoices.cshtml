@@ -1,6 +1,7 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
 @using Orvosi.Data
+@using Orvosi.Shared.Enums.Features
 @model WebApp.ViewModels.InvoiceViewModels.IndexViewModel
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
@@ -32,6 +33,8 @@
             Value = c.Key.ToString()
         })
         .ToList();
+
+    var features = User.Identity.GetFeatures();
 }
 
 <div class="row" style="margin-bottom:20px">
@@ -51,9 +54,9 @@
                 @Html.DropDownList("Month", new SelectList(ViewBag.Months, "Value", "Text", Model.FilterArgs.Month.HasValue ? Model.FilterArgs.Month.Value.ToString() : string.Empty), "-- Month --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
             @*<div class="form-group">
-                @Html.CheckBox("ShowSubmitted", false, new { @class = "form-control", onchange = "this.form.submit();" })
-                Show Submitted
-            </div>*@
+                    @Html.CheckBox("ShowSubmitted", false, new { @class = "form-control", onchange = "this.form.submit();" })
+                    Show Submitted
+                </div>*@
         </form>
     </div>
 </div>
@@ -86,7 +89,7 @@ else
 
     foreach (var unsentInvoice in dayFolder.UnsentInvoices)
     {
-        <div class="row o-dashboard-tr">
+        <div class="row o-dashboard-tr" id="invoice-container-@unsentInvoice.UnsentInvoiceId">
             <div class="col-md-2 o-dashboard-td bg-warning">
                 @if (unsentInvoice.ServiceRequest != null)
                 {
@@ -108,7 +111,26 @@ else
                 }
             </div>
             <div class="col-md-2 o-dashboard-td" id="invoice-menu-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.Id.ToString())">
-                @Html.Partial("_InvoiceMenu", unsentInvoice)
+                @if (unsentInvoice.Invoice == null)
+                {
+                    if (features.Contains(Accounting.CreateInvoice))
+                    {
+                        <div id="service-request-invoice-menu-@unsentInvoice.ServiceRequest.Id">
+                            <div class="pull-right">
+                                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@unsentInvoice.ServiceRequest.Id)"><i class="fa fa-lg fa-plus"></i></button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @Html.Partial("_InvoiceMenu", unsentInvoice)
+                }
+
+                @if (unsentInvoice.ServiceRequest != null)
+                {
+                    @Html.Partial("_SubmitInvoiceTaskStatus", unsentInvoice.ServiceRequest)
+                }
             </div>
         </div>
     }
@@ -139,7 +161,7 @@ else
     <script type="text/javascript">
 
         function onEditAndSendInvoice(invoiceId, serviceRequestId) {
-            let url = '@Url.Content("~/Accounting/EditAndSendInvoice?invoiceId=")' + invoiceId + '&serviceRequestId=' + serviceRequestId;
+            let url = '@Url.Content("~/Accounting/EditAndSendInvoice?invoiceId=")' + invoiceId + (serviceRequestId != null ? '&serviceRequestId=' + serviceRequestId : '');
             $.get(url).done(function (result) {
 
                 var modalDiv = $("#edit-invoice-message-modal");
@@ -167,32 +189,32 @@ else
                     toastr.success("Invoice sent successfully");
                     $("#edit-invoice-message-modal").modal('toggle');
                     refreshInvoice(invoiceId);
-                    refreshInvoiceMenu(serviceRequestId, invoiceId);
+                    refreshInvoiceMenu(invoiceId, serviceRequestId);
                 }
             });
         }
 
         function onSend(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/SendInvoice")';
-            $.post(url,{
+            $.post(url, {
                 InvoiceId: invoiceId
             })
             .done(function () {
                 toastr.success("Invoice sent successfully");
                 refreshInvoice(invoiceId);
-                refreshInvoiceMenu(serviceRequestId, invoiceId);
+                refreshInvoiceMenu(invoiceId, serviceRequestId);
             });
         }
 
         function onPaid(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/CreateReceipt")';
-            $.post(url,{
+            $.post(url, {
                 invoiceId: invoiceId
             })
             .done(function () {
                 toastr.success("Invoice has been paided in full");
                 refreshInvoice(invoiceId);
-                refreshInvoiceMenu(serviceRequestId, invoiceId);
+                refreshInvoiceMenu(invoiceId, serviceRequestId);
             });
         }
 
@@ -209,7 +231,7 @@ else
             });
         }
 
-        function onDeleteInvoice(serviceRequestId, invoiceId) {
+        function onDeleteInvoice(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/DeleteInvoice")';
 
             $.post(url, {
@@ -217,8 +239,14 @@ else
             })
             .done(function () {
                 toastr.success("Invoice deleted successfully");
-                refreshInvoice(invoiceId);
-                refreshInvoiceMenu(serviceRequestId, invoiceId);
+                if (serviceRequestId) {
+                    refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(invoiceId, serviceRequestId);
+                }
+                else {
+                    var invoiceContainer = document.getElementById('invoice-' + invoiceId).parentNode.parentNode;
+                    invoiceContainer.remove();
+                }
             });
         }
 
@@ -290,6 +318,28 @@ else
             });
         }
 
+        function refreshInvoice(invoiceId) {
+            let url = '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId;
+            $.get(url)
+                .done(function (result) {
+                    $('#invoice-' + invoiceId).replaceWith(result);
+                })
+                .error(function () {
+                    //window.location.reload();
+                });
+        }
+
+        function refreshInvoiceMenu(invoiceId, serviceRequestId) {
+            let url = '@Url.Content("~/Accounting/InvoiceMenu?invoiceId=")' + invoiceId + (serviceRequestId != null ? '&serviceRequestId=' + serviceRequestId : '');
+            $.get(url)
+                .done(function (result) {
+                    $('#invoice-menu-' + invoiceId).replaceWith(result);
+                })
+                .error(function () {
+                    //window.location.reload();
+                });
+        }
+
         function refreshServiceRequest(serviceRequestId, invoiceId) {
             let url = '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId;
             $.get(url)
@@ -299,29 +349,7 @@ else
                     invoiceContainer.append(result);
                 })
                 .error(function () {
-                    window.location.reload();
-                });
-        }
-
-        function refreshInvoice(invoiceId) {
-            let url = '@Url.Content("~/Accounting/Invoice?invoiceId=")' + invoiceId;
-            $.get(url)
-                .done(function (result) {
-                    $('#invoice-' + invoiceId).replaceWith(result);
-                })
-                .error(function () {
-                    window.location.reload();
-                });
-        }
-
-        function refreshInvoiceMenu(serviceRequestId, invoiceId) {
-            let url = '@Url.Content("~/Accounting/InvoiceMenu?serviceRequestId=")' + serviceRequestId + '&invoiceId=' + invoiceId;
-            $.get(url)
-                .done(function (result) {
-                    $('#invoice-menu-' + invoiceId).replaceWith(result);
-                })
-                .error(function () {
-                    window.location.reload();
+                    //window.location.reload();
                 });
         }
 
@@ -333,7 +361,7 @@ else
                 })
                 .error(function () {
                     // undo the UI change made before the ajax call
-                    window.location.reload();
+                    //window.location.reload();
                 });
         }
     </script>

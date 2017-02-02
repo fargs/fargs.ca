@@ -178,12 +178,20 @@ namespace WebApp.Library
                 .Select(a => new OwnerViewModel { Id = a.Id, Name = a.DisplayName });
 
             // retrieve all the companies from the database
-            var query2 = GetPhysicianCompanies(physicianId)
-                .Select(c => new OwnerViewModel { Id = c.ObjectGuid, Name = c.Name })
+            var pc = GetPhysicianCompanies(physicianId)
                 .ToList();
 
+            var query2 = pc
+                .Select(c => new OwnerViewModel { Id = c.ObjectGuid, Name = c.Name });
+
+            // retrieve any parent ids
+            var query3 = pc
+                .Where(c => c.ParentObjectGuid.HasValue)
+                .Select(c => new OwnerViewModel { Id = c.ParentObjectGuid, Name = c.ParentName })
+                .Distinct();
+
             // concat them into 1 list
-            var entities = query1.Concat(query2);
+            var entities = query1.Concat(query2).Concat(query3);
 
             var ownerIds = entities.Select(e => e.Id).ToArray();
             var addresses = dbContext.Addresses

@@ -16,7 +16,8 @@ namespace WebApp.Library.Projections
                 Id = c.Id,
                 ObjectGuid = c.ObjectGuid,
                 CompanyName = c.Name,
-                ParentName = c.Parent == null ? string.Empty : c.Parent.Name
+                ParentName = c.Parent == null ? string.Empty : c.Parent.Name,
+                ParentObjectGuid = c.Parent == null ? (Guid?)null : c.Parent.ObjectGuid
             };
         }
         public class CompanySearchResult
@@ -32,6 +33,8 @@ namespace WebApp.Library.Projections
                     return string.IsNullOrEmpty(ParentName) ? CompanyName : $"{ParentName} - {CompanyName}";
                 }
             }
+
+            public Guid? ParentObjectGuid { get; set; }
         }
     }
 }

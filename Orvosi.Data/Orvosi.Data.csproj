@@ -128,6 +128,12 @@
     <Compile Include="Generated\AvailableDayConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\AvailableDayResource.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AvailableDayResourceConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\AvailableSlot.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

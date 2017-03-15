@@ -56,7 +56,6 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } // AspNetUserClaims.FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId
         public virtual System.Collections.Generic.ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
-        public virtual System.Collections.Generic.ICollection<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource.FK_UserResource_ToTable
         public virtual System.Collections.Generic.ICollection<Collaborator> CollaboratorUser { get; set; } // Collaborator.FK_Collaborator_AspNetUsers
         public virtual System.Collections.Generic.ICollection<Collaborator> User { get; set; } // Collaborator.FK_AspNetUsers_Collaborator
         public virtual System.Collections.Generic.ICollection<ServiceRequest> CaseCoordinator { get; set; } // ServiceRequest.FK_ServiceRequest_CaseCoordinator
@@ -80,7 +79,6 @@ namespace Orvosi.Data
             AspNetUserClaims = new System.Collections.Generic.List<AspNetUserClaim>();
             AspNetUserLogins = new System.Collections.Generic.List<AspNetUserLogin>();
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
-            AvailableDayResources = new System.Collections.Generic.List<AvailableDayResource>();
             CollaboratorUser = new System.Collections.Generic.List<Collaborator>();
             User = new System.Collections.Generic.List<Collaborator>();
             CaseCoordinator = new System.Collections.Generic.List<ServiceRequest>();

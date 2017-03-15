@@ -26,7 +26,6 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<AspNetUserRole> AspNetUserRoles { get; set; } // AspNetUserRoles
         System.Data.Entity.DbSet<AspNetUserView> AspNetUserViews { get; set; } // User
         System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
-        System.Data.Entity.DbSet<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource
         System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
         System.Data.Entity.DbSet<AvailableSlotView> AvailableSlotViews { get; set; } // AvailableSlot
         System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity

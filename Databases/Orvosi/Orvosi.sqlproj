@@ -281,6 +281,10 @@
     <Build Include="dbo\Tables\AspNetRolesFeature.sql" />
     <Build Include="dbo\Tables\Collaborator.sql" />
     <Build Include="dbo\Tables\PhysicianService.sql" />
+    <Build Include="Analysis\Views\ServiceCatalogueCleanUp.sql" />
+    <Build Include="Analysis\Views\InvoiceServiceCatalogueReconciliation.sql" />
+    <Build Include="dbo\Functions\GetServiceStatusId2.sql" />
+    <Build Include="API\Stored Procedures\UpdateAssessmentDayTaskState.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

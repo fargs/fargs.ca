@@ -27,6 +27,7 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource.FK_AvailableDayResources_ToTable
         public virtual System.Collections.Generic.ICollection<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot.FK_AvailableDay_AvailableSlot
 
         // Foreign keys
@@ -39,6 +40,7 @@ namespace Orvosi.Data
             IsPrebook = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            AvailableDayResources = new System.Collections.Generic.List<AvailableDayResource>();
             AvailableSlots = new System.Collections.Generic.List<AvailableSlot>();
             InitializePartial();
         }

@@ -1,11 +1,18 @@
 ﻿@using WebApp.Library
-@using System.Security.Claims
-@using Orvosi.Shared.Enums
-@using WebApp.ViewModels
-@model IEnumerable<Orvosi.Data.ServiceRequestTask>
+@using Orvosi.Data
+@using Features = Orvosi.Shared.Enums.Features
+@model TaskListViewModel
 
 @{ 
-    var identity = (User.Identity as ClaimsIdentity);
+    var identity = User.Identity.GetClaimsIdentity();
+    var features = identity.GetFeatures();
+    var viewDataService = new ViewDataService(identity, new OrvosiDbContext());
+    var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.Physician.Id);
+    teamMemberSelectList.Add(new SelectListItem
+    {
+        Text = Model.Physician.Name,
+        Value = Model.Physician.Id.ToString()
+    });
 }
 
 @helper ShowTree(IEnumerable<Orvosi.Data.ServiceRequestTask> tasks, byte level)
@@ -25,7 +32,7 @@
                     <span class="pull-right" style="margin-left: 5px;">
                         @if (item.AssignedTo.HasValue)
                         {
-                            @Html.Partial("_Initials", item.AspNetUser)
+                            @Html.Partial("_Initials", item.AspNetUser_AssignedTo)
                         }
                     </span>
                     @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Done)
@@ -55,63 +62,127 @@
     </div>
 }
 
-@if (Model.Count() == 0)
+@if (Model.Tasks.Count() == 0)
 {
     <div>No tasks are assigned to you.</div>
 }
-<ul class="list-group">
-    @foreach (var item in Model)
-    {
-        byte level = 1;
-        var rowId = Guid.NewGuid().ToString();
-        if (!(ViewBag.HideCaseCoordinator && item.AspNetUser.AspNetUserRoles.First().RoleId == AspNetRoles.CaseCoordinator))
-        {
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <span class="pull-left" style="margin-right: 5px;">
-                            @Html.Partial("_TaskButton", item)
-                        </span>
-                        <span>
-                            @(ViewBag.UseShortName ? item.ShortName : item.TaskName)
-                        </span>
-                        @if (identity.Claims.Any(c => c.Type == ClaimTypes.Role && (c.Value == AspNetRoles.CaseCoordinatorName || c.Value == AspNetRoles.SuperAdminName)))
-                        {
-                            <span class="pull-right" style="margin-left: 5px;">
-                                @Html.Partial("_TaskActionMenu", item)
-                            </span>
-                        }
-                        @if (item.AssignedTo.HasValue)
-                        {
-                            <span class="pull-right" style="margin-left: 5px;">
-
-                                @Html.Partial("_Initials", item.AspNetUser)
-                            </span>
-                        }
-                        @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Done)
-                        {
-                            <span class="small pull-right">@item.CompletedDate.Value.ToString("ddd, MMM dd") at @item.CompletedDate.Value.ToShortTimeString()</span>
-                        }
-                        else if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
-                        {
-                            <span class="pull-right">
-                                <a href="#task-row-@rowId"
-                                   data-toggle="collapse">
-                                    <span class="badge">
-                                        @(item.DependsOn == "ExamDate" ? "E" : item.GetDependents().Count().ToString())
-                                    </span>
-                                </a>
-                            </span>
-                        }
-                    </div>
-                </div>
-                @if (item.GetStatus(SystemTime.Now()) == TaskStatuses.Waiting)
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <strong>Tasks</strong>
+        <div class="pull-right">
+            @Html.Partial("_TaskListActionMenu", Model.ServiceRequestId)
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-condensed">
+            @foreach (var task in Model.Tasks)
+            {
+                <tr>
+                    @if (features.Contains(Features.ServiceRequest.ManageTasks))
                     {
-                    <div id="task-row-@rowId" class="collapse @(ViewBag.Collapsed ? string.Empty : "in")">
-                        @ShowTree(item.GetDependents(), level++)
-                    </div>
-                }
-            </li>
-        }
-    }
-</ul>
+                        <td width="50px">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link" data-toggle="dropdown">
+                                    <i class="fa fa-ellipsis-h fa-lg"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                    @if (features.Contains(Features.ServiceRequest.PickupTask))
+                                    {
+                                        <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
+                                    }
+                                    @if (features.Contains(Features.ServiceRequest.AssignTask))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a tabindex="-1" class="assign-to" href="#">
+                                                Assign To
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
+                                                {
+                                                    <li>
+                                                        <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
+                                    {
+                                        <li class="divider"></li>
+                                            <li>
+                                                <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.OnHold)">
+                                                    On Hold
+                                                    @if (task.StatusId == TaskStatuses.OnHold)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
+                                                    Obsolete
+                                                    @if (task.StatusId == TaskStatuses.Obsolete)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                </a>
+                                            </li>
+                                    }
+                                    @if (features.Contains(Features.ServiceRequest.DeleteTask))
+                                    {
+                                        <li class="divider"></li>
+                                                <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </td>
+                    }
+                    <td width="50px">
+                        @if (task.TaskId == Tasks.AssessmentDay)
+                        {
+                            <span class="btn btn-sm btn-circle">
+                                <i class="fa fa-calendar fa-lg"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            @Html.Partial("_Initials2", task.AssignedTo == null ? new LookupViewModel<Guid>() : task.AssignedTo)
+                        }
+                    </td>
+                    <td width="20px">
+                        @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
+                        {
+                            <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
+                                @Html.Hidden("serviceRequestTaskId", task.Id)
+                                <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                                    <label>
+                                        <input id="task-checkbox-@task.Id" type="checkbox"
+                                               name="isChecked"
+                                               value="@(task.StatusId == TaskStatuses.Done)"
+                                               @(task.StatusId == TaskStatuses.Done ? "checked" : "")
+                                               @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                               onclick="toggleCompleted(this)">
+                                    </label>
+                                </span>
+                            </form>
+                        }
+                    </td>
+                    <td width="100px">
+                        @Html.Partial("_TaskStatusLabel2", task.StatusId)
+                    </td>
+                    <td>@task.Name</td>
+                    <td>
+                        @if (task.StatusId == TaskStatuses.Done)
+                        {
+                            if (task.TaskStatusChangedDate.HasValue)
+                            {
+                                <div class="small text-muted" title="@task.TaskStatusChangedBy.Name">@task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") at @task.TaskStatusChangedDate.Value.ToShortTimeString()</div>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

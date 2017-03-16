@@ -10,15 +10,7 @@
     var identity = User.Identity.GetClaimsIdentity();
     var roleId = identity.GetRoleId();
     var features = identity.GetFeatures();
-    var viewDataService = new ViewDataService(identity, new OrvosiDbContext());
-    var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.ServiceRequest.PhysicianId);
-    teamMemberSelectList.Add(new SelectListItem
-    {
-        Text = Model.ServiceRequest.Physician.DisplayName,
-        Value = Model.ServiceRequest.Physician.Id.ToString(),
-        Group = new SelectListGroup { Name = Model.ServiceRequest.Physician.Role.Name }
-    });
-            }
+}
 
 <p>
     <ul class="list-unstyled">
@@ -26,44 +18,44 @@
             <div class="btn-group">
                 @if (features.Contains(Features.ServiceRequest.Edit))
                 {
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Actions <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                        @if (features.Contains(Features.ServiceRequest.AssignResources))
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
+                    @if (features.Contains(Features.ServiceRequest.AssignResources))
                         {
-                            <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
+                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
                         }
-                        @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
+                    @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
                         {
-                            <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company or Service</a></li>
+                        <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company or Service</a></li>
                         }
-                        @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
+                    @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
                         {
-                            <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequest.Id">Change Process Template</a></li>
+                        <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequest.Id">Change Process Template</a></li>
                         }
-                        @if (features.Contains(Features.ServiceRequest.Reschedule))
+                    @if (features.Contains(Features.ServiceRequest.Reschedule))
                         {
                             if (Model.ServiceRequest.CanBeRescheduled)
                             {
-                                <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
+                        <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
                             }
                         }
-                        @if (features.Contains(Features.ServiceRequest.Cancel))
+                    @if (features.Contains(Features.ServiceRequest.Cancel))
                         {
                             if (Model.ServiceRequest.CanBeUncancelled)
                             {
-                                <li roleId="separator" class="divider"></li>
-                                <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
-                                <li>@Html.ActionLink("Delete", "Delete", new { id = Model.ServiceRequest.Id })</li>
+                        <li roleId="separator" class="divider"></li>
+                        <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
+                        <li>@Html.ActionLink("Delete", "Delete", new { id = Model.ServiceRequest.Id })</li>
                             }
                             else if (Model.ServiceRequest.CanBeCancelled)
                             {
-                                <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
+                        <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
                             }
                         }
-                    </ul>
+                </ul>
                 }
             </div>
         </li>
@@ -173,109 +165,9 @@
         </div>
         <p>
         </p>
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <strong>Tasks</strong>
-                <div class="pull-right">
-                    @Html.Partial("_TaskListActionMenu", Model.ServiceRequest.Id)
-                </div>
-            </div>
-            <div class="panel-body">
-                <table class="table table-condensed">
-                    @foreach (var task in Model.ServiceRequest.ServiceRequestTasks)
-                    {
-                        <tr>
-                          @if (features.Contains(Features.ServiceRequest.ManageTasks))
-	                        {
-                                <td width="50px">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-link" data-toggle="dropdown">
-                                            <i class="fa fa-ellipsis-h fa-lg"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                            @if (features.Contains(Features.ServiceRequest.PickupTask))
-                                            {
-                                                <li><a tabindex="-1" href="#" onclick="pickupTask(@task.Id)">Pickup</a></li>
-                                            }
-                                            @if (features.Contains(Features.ServiceRequest.AssignTask))
-                                            {
-                                                <li class="dropdown-submenu">
-                                                    <a tabindex="-1" class="assign-to" href="#">
-                                                        Assign To
-                                                        <span class="caret"></span>
-                                                    </a>
-                                                    <ul class="dropdown-menu">
-                                                        @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
-                                                        {
-                                                            <li>
-                                                                <a tabindex="-1" href="#" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                </li>
-                                            }
-                                            @if (features.Contains(Features.ServiceRequest.DeleteTask))
-                                            {
-                                                <li class="divider"></li>
-                                                <li><a href="#" onclick="deleteTask(@task.Id)">Delete</a></li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </td>
-                            }
-                            <td width="50px">
-                                @if (task.ProcessTask.Id == Tasks.AssessmentDay)
-                                {
-                                    <span class="btn btn-sm btn-circle">
-                                        <i class="fa fa-calendar fa-lg"></i>
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span title="@(task.AssignedTo != null ? task.AssignedTo.DisplayName : "Unassigned")"
-                                          class="btn btn-sm btn-circle disabled pull-left"
-                                          style="color: white; background-color: @(task.AssignedTo != null ? task.AssignedTo.ColorCode : "red")">
-                                        <span class="small">@(task.AssignedTo != null ? task.AssignedTo.Initials : "?")</span>
-                                    </span>
-                                }
-                            </td>
-                            <td width="20px">
-                                @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
-                                {
-                                    <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
-                                        @Html.AntiForgeryToken()
-                                        @Html.Hidden("serviceRequestTaskId", task.Id)
-                                        <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
-                                            <label>
-                                                <input id="task-checkbox-@task.Id" type="checkbox"
-                                                       name="IsComplete"
-                                                       value="@(task.Status.Id == TaskStatuses.Done)"
-                                                       @(task.Status.Id == TaskStatuses.Done ? "checked" : "")
-                                                       @(task.Status.Id == TaskStatuses.Waiting || task.Status.Id == TaskStatuses.Obsolete ? "disabled" : "")
-                                                       onclick="this.form.submit();">
-                                            </label>
-                                        </span>
-                                    </form>
-                                }
-                            </td>
-                            <td width="100px">
-                                @Html.Partial("_TaskStatusLabel", task)
-                            </td>
-                            <td>@task.ProcessTask.Name</td>
-                            <td>
-                                @if (task.Status.Id == TaskStatuses.Done)
-                                {
-                                    if (task.CompletedDate.HasValue)
-                                    {
-                                        <div class="small text-muted" title="@task.CompletedBy.DisplayName">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
-                                    }
-                                }
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
+        <section id="tasklist-container">
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+        </section>
     </div>
 
     @*
@@ -306,14 +198,14 @@
                     <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
                 }
                 if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
-                { 
+                {
                     <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
                 }
             }
 
             if (Model.ServiceRequest.Service.HasAppointment)
             {
-                if(features.Contains(Features.ServiceRequest_Google.OpenInGoogle))
+                if (features.Contains(Features.ServiceRequest_Google.OpenInGoogle))
                 {
                     <h3>
                         Calendar Integration
@@ -325,39 +217,39 @@
         }
 
         @*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-            {
-            <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-            <hr />
-            if (roleId == AspNetRoles.SuperAdmin)
-            {
-                <form action="~/Invoice/Create" method="post">
-                    @Html.Hidden("Id", Model.ServiceRequest.Id)
-                    <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
-                </form>
-            }
-            else if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
-            {
-                <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
-            }
+                {
+                <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
+                <hr />
+                if (roleId == AspNetRoles.SuperAdmin)
+                {
+                    <form action="~/Invoice/Create" method="post">
+                        @Html.Hidden("Id", Model.ServiceRequest.Id)
+                        <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
+                    </form>
+                }
+                else if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
+                {
+                    <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
+                }
 
-            foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
-            {
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice @invoiceDetail.Invoice.InvoiceNumber
-                        @if (roleId == AspNetRoles.SuperAdmin)
-                        {
-                            <div class="pull-right">
-                                @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
-                            </div>
-                        }
+                foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Invoice @invoiceDetail.Invoice.InvoiceNumber
+                            @if (roleId == AspNetRoles.SuperAdmin)
+                            {
+                                <div class="pull-right">
+                                    @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
+                                </div>
+                            }
+                        </div>
+                        <div class="panel-body">
+                            @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
-                    </div>
-                </div>
-            }
-        }*@
+                }
+            }*@
     </div>
 </div>
 
@@ -365,6 +257,8 @@
 
 @section Scripts {
     <script type="text/javascript">
+
+        let tasklistContainer = document.getElementById('tasklist-container');
 
         $(document).ready(function(){
             $('.dropdown-submenu a.assign-to').on("click", function(e){
@@ -375,43 +269,31 @@
             @if (Model.ServiceRequest.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
-                                                            }
+                                                                        }
         });
 
         let serviceRequestId = @Model.ServiceRequest.Id;
 
-        function onTaskChecked(checkbox, taskId) {
-            var params = {
-                taskId: taskId,
-                checkbox: checkbox
-            }
+        function toggleCompleted(context) {
+            let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskCompleted")';
 
-            if (checkbox.checked) {
-                console.log(taskId + ' is now checked');
-            } else {
-                console.log(taskId + ' is now unchecked');
-            }
+            $.post(url, $(context.form).serialize())
+                .done(function (data) {
+                    refreshTaskList(data.serviceRequestId)
+                });
+        }
 
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
-                data: JSON.stringify({
-                    taskId: taskId,
-                    isChecked: checkbox.checked
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
+        function toggleTaskStatus(serviceRequestTaskId, taskStatusId) {
+            let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskStatus")';
 
-                    //// get the updated assessment data
-                    //SetAssessmentTotals(assessment[0], params.assessmentId);
-                    //updateTaskStatuses(assessment[0], params.assessmentId);
-
-                    console.log('success: ' + result);
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
+            $.post(url,
+                {
+                    serviceRequestTaskId: serviceRequestTaskId,
+                    taskStatusId: taskStatusId
+                })
+                .done(function (data) {
+                    refreshTaskList(data.serviceRequestId)
+                });
         }
 
         function onEdit(serviceRequestId) {
@@ -526,19 +408,15 @@
         }
 
         function refreshTaskList() {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/ServiceRequestTask/TaskList?serviceRequestId=")' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    window.location.reload();
-                    //$('#tasklist-' + serviceRequestId).replaceWith(result);
-                },
-                error: function (err) {
-                    window.location.reload();
-                    //console.log(err.error);
-                }
-            }, this);
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, { serviceRequestId: serviceRequestId })
+                .done(function (result) {
+                    tasklistContainer.innerHTML = result;
+                })
+                .always(function () {
+                    //loader.hide();
+                });
         }
 
         function refreshGoogleCalendarIntegration() {

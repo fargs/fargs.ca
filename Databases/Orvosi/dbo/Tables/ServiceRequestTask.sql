@@ -32,13 +32,22 @@
     [TaskType]                     VARCHAR (20)     NULL,
     [CompletedBy]                  UNIQUEIDENTIFIER NULL,
     [DueDate]                      DATETIME         NULL,
+    [TaskStatusId]                 SMALLINT         NULL,
+    [TaskStatusChangedBy]          UNIQUEIDENTIFIER NULL,
+    [TaskStatusChangedDate]        DATETIME         NULL,
     CONSTRAINT [PK_ServiceRequestTask] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequestTask_AspNetUsers] FOREIGN KEY ([AssignedTo]) REFERENCES [dbo].[AspNetUsers] ([Id]),
+    CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy] FOREIGN KEY ([TaskStatusChangedBy]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequestTask_AspNetUsers1] FOREIGN KEY ([CompletedBy]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequestTask_ServiceRequest] FOREIGN KEY ([ServiceRequestId]) REFERENCES [dbo].[ServiceRequest] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_ServiceRequestTask_ServiceRequestTemplateTask] FOREIGN KEY ([ServiceRequestTemplateTaskId]) REFERENCES [dbo].[ServiceRequestTemplateTask] ([Id]),
-    CONSTRAINT [FK_ServiceRequestTask_Task] FOREIGN KEY ([TaskId]) REFERENCES [dbo].[Task] ([Id])
+    CONSTRAINT [FK_ServiceRequestTask_Task] FOREIGN KEY ([TaskId]) REFERENCES [dbo].[Task] ([Id]),
+    CONSTRAINT [FK_ServiceRequestTask_TaskStatus] FOREIGN KEY ([TaskStatusId]) REFERENCES [dbo].[TaskStatus] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy];
 
 
 GO
@@ -52,7 +61,17 @@ ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask
 
 
 GO
-ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers1];
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy];
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_Task];
+
+
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_TaskStatusChangedBy];
 
 
 GO

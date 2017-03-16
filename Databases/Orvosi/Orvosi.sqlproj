@@ -335,6 +335,9 @@
     <None Include="_Data\dbo.TaskPhase.data.sql" />
     <None Include="_Data\dbo.AspNetRolesFeature.data.sql" />
     <None Include="_Data\dbo.Feature.data.sql" />
+    <None Include="_Data\dbo.ServiceRequestTemplate.data.sql" />
+    <None Include="_Data\dbo.ServiceRequestTemplateTask.data.sql" />
+    <None Include="_Data\dbo.ServiceRequestTemplateTaskDependent.data.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

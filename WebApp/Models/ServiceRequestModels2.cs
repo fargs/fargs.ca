@@ -407,11 +407,11 @@ namespace WebApp.Models.ServiceRequestModels2
                             CompletedDate = srt.CompletedDate,
                             CompletedBy = new Person
                             {
-                                Id = srt.AspNetUser_CompletedBy == null ? (Guid?)null : srt.AspNetUser_CompletedBy.Id,
-                                Title = srt.AspNetUser_CompletedBy.Title,
-                                FirstName = srt.AspNetUser_CompletedBy.FirstName,
-                                LastName = srt.AspNetUser_CompletedBy.LastName,
-                                ColorCode = srt.AspNetUser_CompletedBy.ColorCode
+                                Id = srt.AspNetUser_TaskStatusChangedBy == null ? (Guid?)null : srt.AspNetUser_TaskStatusChangedBy.Id,
+                                Title = srt.AspNetUser_TaskStatusChangedBy.Title,
+                                FirstName = srt.AspNetUser_TaskStatusChangedBy.FirstName,
+                                LastName = srt.AspNetUser_TaskStatusChangedBy.LastName,
+                                ColorCode = srt.AspNetUser_TaskStatusChangedBy.ColorCode
                             },
                             IsObsolete = srt.IsObsolete,
                             Dependencies = srt.Child.Select(c => new ServiceRequestTaskDependent

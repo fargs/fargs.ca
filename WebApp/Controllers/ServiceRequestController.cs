@@ -176,7 +176,7 @@ namespace WebApp.Controllers
 
             return View(vm);
         }
-
+        
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public ActionResult ChangeCompany(int id)
         {
@@ -1419,6 +1419,29 @@ namespace WebApp.Controllers
 
         #endregion
 
+
+
+        [HttpGet]
+        //[AuthorizeRole(Feature = Features.SysAdmin.ManageTasks)]
+        public async Task<ActionResult> GetAllServiceRequestIds()
+        {
+            var ids = ctx.ServiceRequests.Select(sr => sr.Id).OrderBy(sr => sr).ToList();
+            return Json(ids, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)
+        {
+            var service = new WorkService(ctx, User.Identity);
+
+            await service.UpdateDependentTaskStatuses(serviceRequestId);
+
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
+        }
 
         protected override void Dispose(bool disposing)
         {

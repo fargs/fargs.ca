@@ -22,8 +22,12 @@ namespace Orvosi.Data
         public byte DependentPrecedence { get; set; } // DependentPrecedence
         public byte ServiceRequestPrecedence { get; set; } // ServiceRequestPrecedence
 
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_TaskStatus
+
         public TaskStatu()
         {
+            ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();
         }
 

@@ -173,6 +173,7 @@
                                     <li>@Html.ActionLink("AspNetRoles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
                                     <li class="divider"></li>
                                     <li><a href="http://orvosi-hangfire.azurewebsites.net/522b64d4-53c7-450f-85b1-a82191a33704">Hangfire</a></li>
+                                    <li><a onclick="updateAllWorkStatuses()">Update All Task Statuses</a></li>
                                 </ul>
                             </li>
                         }
@@ -195,9 +196,11 @@
                     @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- Service Provider --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
                 </div>
             </form>
-                <hr />
+            <hr />
         }
         @RenderBody()
+
+        <div id="admin-tasks-messages"></div>
     </div>
     <footer class="panel-footer">
         <div class="container-fluid">
@@ -293,6 +296,35 @@
 
         window.appInsights = appInsights;
         appInsights.trackPageView();
+    </script>
+
+    <script type="text/javascript">
+        function updateAllWorkStatuses() {
+            let urlIds = '@Url.Content("~/ServiceRequest/GetAllServiceRequestIds")';
+            let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateDependentTaskStatuses")';
+            let urlRequestUpdate = '@Url.Content("~/ServiceRequest/UpdateServiceRequestStatus")';
+            let adminMessages = document.getElementById('admin-tasks-messages');
+            $.get(urlIds)
+                .done(function (data) {
+                    for (var i = 0; i < data.length - 1; i++) {
+                        $.post(urlUpdate, { serviceRequestId: data[i] })
+                            .done(function (data) {
+                                $(adminMessages).append('<div class="text-success">tasks success ' + data.serviceRequestId + '</div>');
+                                //$.post(urlRequestUpdate, { serviceRequestId: data.serviceRequestId })
+                                //    .done(function (data) {
+                                //        $(adminMessages).append('<div class="text-success">request success ' + data.serviceRequestId + '</div>');
+                                //    })
+                                //    .error(function () {
+                                //        $(adminMessages).append('<div class="alert alert-danger">request error</div>');
+                                //    });
+                            })
+                            .error(function () {
+                                $(adminMessages).append('<div class="alert alert-danger">tasks error</div>');
+                            });
+                    }
+                });
+
+        }
     </script>
 
     @RenderSection("scripts", required: false)

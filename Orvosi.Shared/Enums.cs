@@ -184,6 +184,7 @@ namespace Orvosi.Shared.Enums
         public const byte ToDo = 2;
         public const byte Done = 3;
         public const byte Obsolete = 4;
+        public const byte OnHold = 5;
     }
 
     public static class Timeline

@@ -313,13 +313,13 @@ namespace WebApp.Library.Projections
                         },
                         CompletedBy = new Orvosi.Shared.Model.Person
                         {
-                            Id = t.AspNetUser_CompletedBy == null ? (Guid?)null : t.AspNetUser_CompletedBy.Id,
-                            Title = t.AspNetUser_CompletedBy.Title,
-                            FirstName = t.AspNetUser_CompletedBy.FirstName,
-                            LastName = t.AspNetUser_CompletedBy.LastName,
-                            Email = t.AspNetUser_CompletedBy.Email,
-                            ColorCode = t.AspNetUser_CompletedBy.ColorCode,
-                            Role = t.AspNetUser_CompletedBy.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
+                            Id = t.AspNetUser_TaskStatusChangedBy == null ? (Guid?)null : t.AspNetUser_TaskStatusChangedBy.Id,
+                            Title = t.AspNetUser_TaskStatusChangedBy.Title,
+                            FirstName = t.AspNetUser_TaskStatusChangedBy.FirstName,
+                            LastName = t.AspNetUser_TaskStatusChangedBy.LastName,
+                            Email = t.AspNetUser_TaskStatusChangedBy.Email,
+                            ColorCode = t.AspNetUser_TaskStatusChangedBy.ColorCode,
+                            Role = t.AspNetUser_TaskStatusChangedBy.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
                             {
                                 Id = r.AspNetRole.Id,
                                 Name = r.AspNetRole.Name

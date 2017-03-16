@@ -1,0 +1,22 @@
+﻿@using Orvosi.Shared.Enums
+@model short?
+@if (Model == TaskStatuses.ToDo)
+{
+    <span class="label label-danger">To Do</span>
+}
+else if (Model == TaskStatuses.Waiting)
+{
+    <span class="label label-warning">Waiting</span>
+}
+else if (Model == TaskStatuses.Done)
+{
+    <i class="fa fa-check fa-lg" style="color: green;"></i>
+}
+else if (Model == TaskStatuses.Obsolete)
+{
+    <span class="label label-info">Obsolete</span>
+}
+else if (Model == TaskStatuses.OnHold)
+{
+    <span class="label label-info">On Hold</span>
+}

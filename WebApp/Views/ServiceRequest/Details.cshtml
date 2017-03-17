@@ -167,7 +167,7 @@
         <p>
         </p>
         <section id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, options = TaskListViewModelOptions.AllTasks })
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, viewOptions = TaskListViewOptions.Details })
         </section>
     </div>
 
@@ -262,15 +262,15 @@
         let tasklistContainer = document.getElementById('tasklist-container');
 
         $(document).ready(function(){
-            $('.dropdown-submenu a.assign-to').on("click", function(e){
-                $(this).next('ul').toggle();
-                e.stopPropagation();
-                e.preventDefault();
-            });
+            //$('.dropdown-submenu a.assign-to').on("click", function(e){
+            //    $(this).next('ul').toggle();
+            //    e.stopPropagation();
+            //    e.preventDefault();
+            //});
             @if (Model.ServiceRequest.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
-                                                                        }
+            }
         });
 
         let serviceRequestId = @Model.ServiceRequest.Id;
@@ -335,7 +335,11 @@
         function refreshCase() {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
-            $.get(url, { serviceRequestId: serviceRequestId, options: 'AllTasks' })
+            $.get(url, 
+                { 
+                    serviceRequestId: serviceRequestId, 
+                    viewOptions: '@TaskListViewOptions.Details' 
+                })
                 .done(function (result) {
                     tasklistContainer.innerHTML = result;
                 })

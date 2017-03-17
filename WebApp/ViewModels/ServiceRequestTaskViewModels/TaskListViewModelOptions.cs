@@ -5,8 +5,12 @@ using System.Web;
 
 namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 {
-    public enum TaskListViewModelOptions
+    public enum TaskListViewModelFilter
     {
-        AllTasks, MyTasks, CriticalPath
+        AllTasks, MyTasks, PrimaryRolesOnly
+    }
+    public enum TaskListViewOptions
+    {
+        Dashboard, Details
     }
 }

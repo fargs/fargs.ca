@@ -32,5 +32,13 @@ namespace WebApp.Models
             return tasks
                 .Where(s => s.DueDate.HasValue && s.DueDate.Value >= startDate && s.DueDate.Value < endDate); // this filters out the days
         }
+        public static IEnumerable<TaskDto> AreAssignedToRoles(this IEnumerable<TaskDto> tasks, Guid?[] rolesThatShouldBeSeen)
+        {
+            return tasks.Where(t => rolesThatShouldBeSeen.Contains(t.ResponsibleRoleId));
+        }
+        public static IEnumerable<TaskDto> AreAssignedToUserOrRoles(this IEnumerable<TaskDto> tasks, Guid userId, Guid?[] rolesThatShouldBeSeen)
+        {
+            return tasks.Where(t => rolesThatShouldBeSeen.Contains(t.ResponsibleRoleId) || t.AssignedToId == userId);
+        }
     }
 }

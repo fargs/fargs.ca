@@ -4,6 +4,7 @@
     function menuDropdownClick(e, element) {
         $(element).next('ul').toggle();
         e.stopPropagation();
+        e.preventDefault();
     };
 
     function toggleCompleted(context) {
@@ -52,7 +53,7 @@
     }
 
     function pickupTask(serviceRequestTaskId) {
-        let url = '@Url.Content("~/ServiceRequestTask/PickUpTask")';
+        let url = '@Url.Content("~/ServiceRequestTask/PickUp")';
         $.post(
             url,
             {
@@ -65,7 +66,7 @@
     }
 
     function assignTask(serviceRequestTaskId, assignedTo) {
-        let url = '@Url.Content("~/ServiceRequestTask/AssignTaskTo")';
+        let url = '@Url.Content("~/ServiceRequestTask/AssignTo")';
         $.post(
             url,
             {
@@ -93,7 +94,7 @@
     };
 
     function deleteTask(serviceRequestTaskId) {
-        let url = '@Url.Content("~/ServiceRequestTask/DeleteTask")';
+        let url = '@Url.Content("~/ServiceRequestTask/Delete")';
         $.post(
             url,
             {

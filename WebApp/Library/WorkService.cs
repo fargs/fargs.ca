@@ -10,6 +10,7 @@ using WebApp.FormModels;
 using MoreLinq;
 using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
+using WebApp.ViewModels;
 
 namespace WebApp.Library
 {
@@ -18,14 +19,116 @@ namespace WebApp.Library
         IOrvosiDbContext db;
         IIdentity identity;
         DateTime now;
+        Guid userId;
+        Guid physicianId;
+        UserContextViewModel userContext;
+
         public WorkService(IOrvosiDbContext db, IIdentity identity)
         {
             this.db = db;
             this.identity = identity;
+            userId = identity.GetGuidUserId();
+            userContext = identity.GetUserContext();
+            physicianId = userContext.Id;
             this.now = SystemTime.Now();
         }
 
+        public async Task AddTask(int serviceRequestId, byte taskId)
+        {
+            var request = await db.ServiceRequests.FindAsync(serviceRequestId);
 
+            var st = db.OTasks.Single(t => t.Id == taskId);
+            var task = new ServiceRequestTask();
+            task.ServiceRequestId = serviceRequestId;
+            task.TaskId = taskId;
+            task.TaskName = st.Name;
+            task.TaskPhaseId = st.TaskPhaseId;
+            task.TaskPhaseName = st.TaskPhase.Name;
+            task.ResponsibleRoleId = st.ResponsibleRoleId;
+            task.ResponsibleRoleName = st.AspNetRole.Name;
+            task.Sequence = st.Sequence;
+            task.AssignedTo = (await db.ServiceRequestTasks.FirstOrDefaultAsync(sr => sr.ServiceRequestId == serviceRequestId && sr.ResponsibleRoleId == st.ResponsibleRoleId)).AssignedTo;
+            task.IsBillable = st.IsBillable.Value;
+            task.HourlyRate = st.HourlyRate;
+            task.EstimatedHours = st.EstimatedHours;
+            task.DependsOn = st.DependsOn;
+            task.DueDateBase = st.DueDateBase;
+            task.DueDateDiff = st.DueDateDiff;
+            task.Guidance = st.Guidance;
+            task.IsCriticalPath = true;
+            task.ModifiedDate = SystemTime.Now();
+            task.ModifiedUser = identity.Name;
+            task.TaskStatusId = TaskStatuses.ToDo;
+            task.TaskStatusChangedBy = identity.GetGuidUserId();
+            task.TaskStatusChangedDate = now;
+
+            // this is currently hard coded but should be made editable by the user adding the task
+            if (taskId == Tasks.AdditionalEdits)
+            {
+                var approveReport = await db.ServiceRequestTasks.FirstOrDefaultAsync(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ApproveReport);
+                if (approveReport != null)
+                {
+                    approveReport.CompletedDate = null;
+                    approveReport.CompletedBy = null;
+                    approveReport.ModifiedDate = SystemTime.UtcNow();
+                    approveReport.ModifiedUser = identity.GetGuidUserId().ToString();
+
+                    // make this task dependent on additional edits
+                    task.Parent.Add(approveReport);
+
+                    // make the task display before the approve report task
+                    task.Sequence = (short)(approveReport.Sequence.Value - 2);
+                }
+            }
+
+            if (taskId == Tasks.PaymentReceived) // THIS IS CURRENTLY SPECIFIC TO HAWKESWOOD
+            {
+                var submitReport = await db.ServiceRequestTasks.FirstOrDefaultAsync(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitReport);
+                if (submitReport != null)
+                {
+                    task.Parent.Add(submitReport);
+                    task.Sequence = (short)(submitReport.Sequence.Value - 2);
+                }
+                var submitInvoice = await db.ServiceRequestTasks.FirstOrDefaultAsync(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitInvoice);
+                if (submitInvoice != null)
+                    task.Child.Add(submitInvoice);
+            }
+
+            if (taskId == Tasks.RespondToQAComments)
+            {
+                var closeCase = await db.ServiceRequestTasks.FirstOrDefaultAsync(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.CloseCase);
+                if (closeCase != null)
+                {
+                    closeCase.CompletedDate = null;
+                    closeCase.CompletedBy = null;
+                    closeCase.ModifiedDate = SystemTime.UtcNow();
+                    closeCase.ModifiedUser = identity.GetGuidUserId().ToString();
+
+                    task.Parent.Add(closeCase);
+                    task.Sequence = (short)(closeCase.Sequence.Value - 2);
+                }
+            }
+
+            request.ServiceRequestTasks.Add(task);
+
+            await db.SaveChangesAsync();
+        }
+        public async Task PickUpTask(int serviceRequestTaskId)
+        {
+            var task = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            task.AssignedTo = userId;
+            task.ModifiedDate = now;
+            task.ModifiedUser = userId.ToString();
+            await db.SaveChangesAsync();
+        }
+        public async Task AssignTaskTo(int serviceRequestTaskId, Guid? assignedTo)
+        {
+            var task = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            task.AssignedTo = assignedTo;
+            task.ModifiedDate = now;
+            task.ModifiedUser = userId.ToString();
+            await db.SaveChangesAsync();
+        }
         public async Task ChangeTaskStatus(int serviceRequestTaskId, short newTaskStatusId)
         {
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -33,6 +136,23 @@ namespace WebApp.Library
             if (srt == null) throw new ArgumentNullException($"Task with Id {serviceRequestTaskId} not found.");
 
             await UpdateTaskStatus(srt, newTaskStatusId);
+        }
+        public async Task DeleteTask(int serviceRequestTaskId)
+        {
+            var task = db.ServiceRequestTasks.Single(srt => srt.Id == serviceRequestTaskId);
+
+            foreach (var item in task.Child.ToList())
+            {
+                task.Child.Remove(item);
+            }
+            foreach (var item in task.Parent.ToList())
+            {
+                task.Parent.Remove(item);
+            }
+            // Parents are removed using referential integrity at the database level.
+            db.ServiceRequestTasks.Remove(task);
+
+            await db.SaveChangesAsync();
         }
         public async Task ToggleTaskStatus(int serviceRequestTaskId, short currentTaskStatusId)
         {

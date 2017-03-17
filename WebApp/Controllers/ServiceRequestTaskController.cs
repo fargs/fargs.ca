@@ -48,85 +48,14 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.AddTask)]
-        public ActionResult AddTask(int serviceRequestId, byte taskId)
+        public async Task<ActionResult> AddTask(int serviceRequestId, byte taskId)
         {
-            var request = db.ServiceRequests.Find(serviceRequestId);
+            await service.AddTask(serviceRequestId, taskId);
 
-            var st = db.OTasks.Single(t => t.Id == taskId);
-            var task = new ServiceRequestTask();
-            task.ServiceRequestId = serviceRequestId;
-            task.TaskId = taskId;
-            task.TaskName = st.Name;
-            task.TaskPhaseId = st.TaskPhaseId;
-            task.TaskPhaseName = st.TaskPhase.Name;
-            task.ResponsibleRoleId = st.ResponsibleRoleId;
-            task.ResponsibleRoleName = st.AspNetRole.Name;
-            task.Sequence = st.Sequence;
-            task.AssignedTo = db.ServiceRequestTasks.FirstOrDefault(sr => sr.ServiceRequestId == serviceRequestId && sr.ResponsibleRoleId == st.ResponsibleRoleId).AssignedTo;
-            task.IsBillable = st.IsBillable.Value;
-            task.HourlyRate = st.HourlyRate;
-            task.EstimatedHours = st.EstimatedHours;
-            task.DependsOn = st.DependsOn;
-            task.DueDateBase = st.DueDateBase;
-            task.DueDateDiff = st.DueDateDiff;
-            task.Guidance = st.Guidance;
-            task.ModifiedDate = SystemTime.Now();
-            task.ModifiedUser = User.Identity.Name;
-
-            // this is currently hard coded but should be made editable by the user adding the task
-            if (taskId == Tasks.AdditionalEdits)
+            return Json(new
             {
-                var approveReport = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.ApproveReport);
-                if (approveReport != null)
-                {
-                    approveReport.CompletedDate = null;
-                    approveReport.CompletedBy = null;
-                    approveReport.ModifiedDate = SystemTime.UtcNow();
-                    approveReport.ModifiedUser = User.Identity.GetGuidUserId().ToString();
-
-                    // make this task dependent on additional edits
-                    task.Parent.Add(approveReport);
-
-                    // make the task display before the approve report task
-                    task.Sequence = (short)(approveReport.Sequence.Value - 2);
-                }
-            }
-
-            if (taskId == Tasks.PaymentReceived) // THIS IS CURRENTLY SPECIFIC TO HAWKESWOOD
-            {
-                var submitReport = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitReport);
-                if (submitReport != null)
-                { 
-                    task.Parent.Add(submitReport);
-                    task.Sequence = (short)(submitReport.Sequence.Value - 2);
-                }
-                var submitInvoice = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.SubmitInvoice);
-                if (submitInvoice != null)
-                    task.Child.Add(submitInvoice);
-            }
-
-            if (taskId == Tasks.RespondToQAComments)
-            {
-                var closeCase = db.ServiceRequestTasks.FirstOrDefault(srt => srt.ServiceRequestId == serviceRequestId && srt.TaskId == Tasks.CloseCase);
-                if (closeCase != null)
-                {
-                    closeCase.CompletedDate = null;
-                    closeCase.CompletedBy = null;
-                    closeCase.ModifiedDate = SystemTime.UtcNow();
-                    closeCase.ModifiedUser = User.Identity.GetGuidUserId().ToString();
-
-                    task.Parent.Add(closeCase);
-                    task.Sequence = (short)(closeCase.Sequence.Value - 2);
-                }
-            }
-
-            request.ServiceRequestTasks.Add(task);
-
-            request.UpdateIsClosed();
-
-            db.SaveChanges();
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+                serviceRequestId = serviceRequestId
+            });
         }
 
         [ChildActionOnly]
@@ -138,7 +67,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult TaskList(int serviceRequestId, TaskListViewModelOptions options = TaskListViewModelOptions.CriticalPath)
+        public ActionResult TaskList(int serviceRequestId, TaskListViewOptions viewOptions, TaskListViewModelFilter options = TaskListViewModelFilter.PrimaryRolesOnly)
         {
             var viewModel = db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -148,29 +77,29 @@ namespace WebApp.Controllers
                 .Select(ViewModels.TaskListViewModel.FromServiceRequestDtoWithNoTasks.Expand())
                 .Single(); // to view model
 
-            // I could embed this into the projection on TaskListViewModel but for clarity I like to keep in filter login on tasks in here as it is the primary focus of this controller action.
-            var query = db.ServiceRequestTasks
-                .WithServiceRequestId(serviceRequestId);
+            // I could embed this into the projection on TaskListViewModel but for clarity I like to keep the filter on tasks in here as it is the primary focus of this controller action.
+            var tasks = db.ServiceRequestTasks
+                .WithServiceRequestId(serviceRequestId)
+                .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
+                .OrderBy(t => t.Sequence)
+                .AsEnumerable();
 
             switch (options)
             {
-                case TaskListViewModelOptions.MyTasks:
-                    query = query.AreAssignedToUser(userId);
+                case TaskListViewModelFilter.PrimaryRolesOnly:
+                    var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
+                    tasks = tasks.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen);
                     break;
-                case TaskListViewModelOptions.CriticalPath:
-                    query = query.AreOnCriticalPath();
+                case TaskListViewModelFilter.MyTasks:
+                    tasks = tasks.AreAssignedToUser(userId);
                     break;
                 default: // default to all tasks
                     break;
             }
 
-            var tasks = query.Select(TaskDto.FromServiceRequestTaskEntity.Expand())
-                .OrderBy(t => t.Sequence)
-                .ToList()
-                .AsQueryable()
-                .Select(ViewModels.TaskViewModel.FromTaskDto.Expand());
+            viewModel.Tasks = tasks.AsQueryable().Select(ViewModels.TaskViewModel.FromTaskDto.Expand());
 
-            viewModel.Tasks = tasks;
+            ViewBag.ViewOptions = viewOptions;
 
             return PartialView("TaskList", viewModel);
         }
@@ -274,26 +203,21 @@ namespace WebApp.Controllers
             }
             return task;
         }
-        
+
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)
         {
-            var  task = db.ServiceRequestTasks.Single(srt => srt.Id == serviceRequestTaskId);
-            foreach (var item in task.Child.ToList())
-            {
-                task.Child.Remove(item);
-            }
-            foreach (var item in task.Parent.ToList())
-            {
-                task.Parent.Remove(item);
-            }
-            // Parents are removed using referential integrity at the database level.
-            db.ServiceRequestTasks.Remove(task);
-            await db.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
-        }
+            var serviceRequestId = (await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId)).ServiceRequestId;
 
+            await service.DeleteTask(serviceRequestTaskId);
+
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
+        }
+        
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleTaskStatus(int serviceRequestTaskId, short taskStatusId)
@@ -350,26 +274,28 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.PickupTask)]
         public async Task<ActionResult> PickUp(int serviceRequestTaskId)
         {
-            var task = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            var userId = User.Identity.GetGuidUserId();
-            task.AssignedTo = userId;
-            task.ModifiedDate = SystemTime.Now();
-            task.ModifiedUser = User.Identity.Name;
-            await db.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
+            await service.PickUpTask(serviceRequestTaskId);
+
+            var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            
+            return Json(new
+            {
+                serviceRequestId = srt.ServiceRequestId
+            });
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.AssignTask)]
         public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? assignedTo)
         {
-            var task = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            var userId = User.Identity.GetGuidUserId();
-            task.AssignedTo = assignedTo;
-            task.ModifiedDate = SystemTime.Now();
-            task.ModifiedUser = User.Identity.Name;
-            await db.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
+            await service.AssignTaskTo(serviceRequestTaskId, assignedTo);
+
+            var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+
+            return Json(new
+            {
+                serviceRequestId = srt.ServiceRequestId
+            });
         }
 
         protected override void Dispose(bool disposing)

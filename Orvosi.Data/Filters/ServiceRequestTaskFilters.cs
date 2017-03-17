@@ -43,5 +43,14 @@ namespace Orvosi.Data.Filters
         {
             return s => s.ServiceRequestId == serviceRequestId;
         }
+        public static IQueryable<ServiceRequestTask> AreOnCriticalPath(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        {
+            return serviceRequestTasks
+                .Where(AreOnCriticalPath());
+        }
+        public static Expression<Func<ServiceRequestTask, bool>> AreOnCriticalPath()
+        {
+            return srt => srt.IsCriticalPath == true;
+        }
     }
 }

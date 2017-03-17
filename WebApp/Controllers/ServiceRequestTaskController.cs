@@ -138,13 +138,8 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult TaskList(int serviceRequestId, bool criticalPathOnly = false, bool useShortName = false, bool myTasksOnly = false, bool collapsed = false)
+        public ActionResult TaskList(int serviceRequestId, TaskListViewModelOptions options = TaskListViewModelOptions.CriticalPath)
         {
-            ViewBag.criticalPathOnly = criticalPathOnly;
-            ViewBag.UseShortName = useShortName;
-            ViewBag.MyTasksOnly = myTasksOnly;
-            ViewBag.Collapsed = collapsed;
-
             var viewModel = db.ServiceRequests
                 .WithId(serviceRequestId)
                 .Select(ServiceRequestDto.FromServiceRequestEntity.Expand())
@@ -156,10 +151,17 @@ namespace WebApp.Controllers
             // I could embed this into the projection on TaskListViewModel but for clarity I like to keep in filter login on tasks in here as it is the primary focus of this controller action.
             var query = db.ServiceRequestTasks
                 .WithServiceRequestId(serviceRequestId);
-                
-            if (myTasksOnly) 
+
+            switch (options)
             {
-                query = query.AreAssignedToUser(userId);
+                case TaskListViewModelOptions.MyTasks:
+                    query = query.AreAssignedToUser(userId);
+                    break;
+                case TaskListViewModelOptions.CriticalPath:
+                    query = query.AreOnCriticalPath();
+                    break;
+                default: // default to all tasks
+                    break;
             }
 
             var tasks = query.Select(TaskDto.FromServiceRequestTaskEntity.Expand())
@@ -169,57 +171,6 @@ namespace WebApp.Controllers
                 .Select(ViewModels.TaskViewModel.FromTaskDto.Expand());
 
             viewModel.Tasks = tasks;
-
-            //var tasks = query
-            //    .Select(t => new TaskViewModel()
-            //    {
-            //        Id = t.Id,
-            //        ServiceRequestId = t.ServiceRequestId,
-            //        TaskId = t.TaskId,
-            //        Name = t.TaskName,
-            //        ShortName = t.ShortName,
-            //        CompletedDate = t.CompletedDate,
-            //        AssignedToDisplayName = t.AspNetUser.GetDisplayName(),
-            //        AssignedTo = t.AssignedTo,
-            //        AssignedToRoleId = t.ResponsibleRoleId,
-            //        AssignedToColorCode = t.AspNetUser.ColorCode,
-            //        Initials = t.AspNetUser.GetInitials(),
-            //        DueDateBase = t.DueDateBase,
-            //        DueDateDiff = t.DueDateDiff,
-            //        AppointmentDate = serviceRequest.AppointmentDate,
-            //        ReportDate = serviceRequest.DueDate,
-            //        DependsOn = t.DependsOn,
-            //        Sequence = t.Sequence
-            //    })
-            //    .OrderBy(t => t.Sequence)
-            //    .ToList();
-
-            //var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase || t.TaskId == Tasks.CloseAddOn);
-
-            //BuildDependencies(closeOutTask, null, tasks);
-
-            //if (myTasksOnly)
-            //{
-            //    tasks = tasks.Where(t => (t.AssignedTo ?? string.Empty).ToLower() == user.Id.ToLower()).ToList();
-            //}
-
-            //var tasks = db.ServiceRequestTasks.Where(srt => srt.ServiceRequestId == serviceRequestId)
-            //    .GroupBy(srt => new
-            //    {
-            //        srt.AssignedToDisplayName,
-            //        srt.AssignedTo,
-            //        srt.TaskId,
-            //        srt.TaskName
-            //    })
-            //    .Select(c => new
-            //    {
-            //        c.Key.AssignedToDisplayName,
-            //        c.Key.AssignedTo,
-            //        c.Key.TaskId,
-            //        c.Key.TaskName,
-            //        CompletedTaskCount = c.Count(t => t.CompletedDate == null),
-            //        ActiveTaskCount = c.Count(t => t.CompletedDate != null)
-            //    });
 
             return PartialView("TaskList", viewModel);
         }
@@ -430,4 +381,5 @@ namespace WebApp.Controllers
             base.Dispose(disposing);
         }
     }
+
 }

@@ -67,8 +67,8 @@
                 -
                 <span>@serviceRequest.Company.Name</span>
             </div>
-            <div class="col-md-3">
-                @Html.Partial("_ServiceRequestTasks_Today", serviceRequest)
+            <div class="col-md-3 o-dashboard-td" id="case-container-@serviceRequest.Id">
+                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = serviceRequest.Id })
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
@@ -98,27 +98,6 @@ else
             autoclose: true
         })
 
-        function onTaskChecked(checkbox, taskId, serviceRequestId) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
-                data: JSON.stringify({
-                    taskId: taskId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    toastr.success("Task updated successfully.", "Task Updated");
-                    refreshServiceRequestTasks(serviceRequestId);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    toastr.success("Task was not updated.", "Something went wrong!");
-                }
-            }, this);
-        }
-
         function onToggleNoShow(checkbox, serviceRequestId) {
 
             $.ajax({
@@ -139,23 +118,6 @@ else
                     alert(err.status + " - " + err.statusText);
                 }
             }, this);
-        }
-
-        function refreshServiceRequestTasks(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/Agenda?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId' + '&day=@Model.Day.Date',
-                contentType: "text/html",
-                success: function (result) {
-                    $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
-
         }
 
         function refreshServiceStatus(serviceRequestId) {
@@ -233,7 +195,25 @@ else
 
         }
 
+        function refreshCase(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, {
+                serviceRequestId: serviceRequestId
+            })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                    //joinRoom(serviceRequestId);
+                    //refreshValidationResults(serviceRequestId);
+                })
+                .always(function () {
+                    //loader.hide();
+                });
+        }
+
     </script>
 
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    
     @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

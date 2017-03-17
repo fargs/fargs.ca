@@ -1,0 +1,108 @@
+﻿<script type="text/javascript">
+
+
+    function menuDropdownClick(e, element) {
+        $(element).next('ul').toggle();
+        e.stopPropagation();
+    };
+
+    function toggleCompleted(context) {
+        let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskCompleted")';
+
+        $.post(url, $(context.form).serialize())
+            .done(function (data) {
+                refreshCase(data.serviceRequestId)
+            });
+    }
+
+    function toggleTaskStatus(serviceRequestTaskId, taskStatusId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskStatus")';
+
+        $.post(url,
+            {
+                serviceRequestTaskId: serviceRequestTaskId,
+                taskStatusId: taskStatusId
+            })
+            .done(function (data) {
+                refreshCase(data.serviceRequestId)
+            });
+    }
+
+    function changeToDoTasksToWaiting(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequestTask/UpdateDependentTaskStatuses")';
+        $.post(
+            url,
+            {
+                serviceRequestId: serviceRequestId
+            },
+            function (data) {
+                refreshCase(data.serviceRequestId);
+            }
+        );
+    }
+
+    function onHold(form) {
+        let url = '@Url.Content("~/ServiceRequestTask/OnHold")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            refreshCase(data.serviceRequestId)
+            showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
+        });
+    }
+
+    function pickupTask(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/PickUpTask")';
+        $.post(
+            url,
+            {
+                serviceRequestTaskId: serviceRequestTaskId
+            },
+            function (data) {
+                refreshCase(data.serviceRequestId);
+            }
+        );
+    }
+
+    function assignTask(serviceRequestTaskId, assignedTo) {
+        let url = '@Url.Content("~/ServiceRequestTask/AssignTaskTo")';
+        $.post(
+            url,
+            {
+                serviceRequestTaskId: serviceRequestTaskId,
+                assignedTo: assignedTo
+            },
+            function (data) {
+                refreshCase(data.serviceRequestId);
+            }
+        );
+    }
+
+    function addTask(serviceRequestId, taskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/AddTask")';
+        $.post(
+            url,
+            {
+                serviceRequestId: serviceRequestId,
+                taskId: taskId
+            },
+            function (data) {
+                refreshCase(data.serviceRequestId);
+            }
+        );
+    };
+
+    function deleteTask(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/DeleteTask")';
+        $.post(
+            url,
+            {
+                serviceRequestTaskId: serviceRequestTaskId
+            },
+            function (data) {
+                refreshCase(data.serviceRequestId);
+            }
+        );
+    }
+
+</script>

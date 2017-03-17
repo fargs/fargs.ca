@@ -4,6 +4,7 @@
 @using Box.V2.Models
 @using Orvosi.Data
 @using Features = Orvosi.Shared.Enums.Features
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
 
 @{
@@ -166,7 +167,7 @@
         <p>
         </p>
         <section id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id })
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, options = TaskListViewModelOptions.AllTasks })
         </section>
     </div>
 
@@ -274,28 +275,6 @@
 
         let serviceRequestId = @Model.ServiceRequest.Id;
 
-        function toggleCompleted(context) {
-            let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskCompleted")';
-
-            $.post(url, $(context.form).serialize())
-                .done(function (data) {
-                    refreshTaskList(data.serviceRequestId)
-                });
-        }
-
-        function toggleTaskStatus(serviceRequestTaskId, taskStatusId) {
-            let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskStatus")';
-
-            $.post(url,
-                {
-                    serviceRequestTaskId: serviceRequestTaskId,
-                    taskStatusId: taskStatusId
-                })
-                .done(function (data) {
-                    refreshTaskList(data.serviceRequestId)
-                });
-        }
-
         function onEdit(serviceRequestId) {
 
             $.ajax({
@@ -353,64 +332,10 @@
             }, this);
         }
 
-        function pickupTask(serviceRequestTaskId) {
-            let url = '@Url.Content("~/ServiceRequestTask/PickUp")';
-            $.post(
-                url,
-                {
-                    serviceRequestTaskId: serviceRequestTaskId
-                },
-                function (data) {
-                    refreshTaskList();
-                }
-            );
-        }
-
-        function assignTask(serviceRequestTaskId, assignedTo) {
-            let url = '@Url.Content("~/ServiceRequestTask/AssignTo")';
-            $.post(
-                url,
-                {
-                    serviceRequestTaskId: serviceRequestTaskId,
-                    assignedTo: assignedTo
-                },
-                function (data) {
-                    refreshTaskList();
-                }
-            );
-        }
-
-        function addTask(serviceRequestId, taskId) {
-            let url = '@Url.Content("~/ServiceRequestTask/AddTask")';
-            $.post(
-                url,
-                {
-                    serviceRequestId: serviceRequestId,
-                    taskId: taskId
-                },
-                function (data) {
-                    refreshTaskList();
-                }
-            );
-        };
-
-        function deleteTask(serviceRequestTaskId) {
-            let url = '@Url.Content("~/ServiceRequestTask/Delete")';
-            $.post(
-                url,
-                {
-                    serviceRequestTaskId: serviceRequestTaskId
-                },
-                function (data) {
-                    refreshTaskList();
-                }
-            );
-        }
-
-        function refreshTaskList() {
+        function refreshCase() {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
-            $.get(url, { serviceRequestId: serviceRequestId })
+            $.get(url, { serviceRequestId: serviceRequestId, options: 'AllTasks' })
                 .done(function (result) {
                     tasklistContainer.innerHTML = result;
                 })
@@ -451,3 +376,5 @@
 
     </script>
 }
+
+@Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")

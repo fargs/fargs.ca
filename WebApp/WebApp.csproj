@@ -514,6 +514,7 @@
     <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskListViewModel.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskListViewModelOptions.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
@@ -1190,6 +1191,8 @@
     <Content Include="Views\ServiceRequest\_CreateAddOnProcessTemplateDropDown.cshtml" />
     <Content Include="Views\Accounting\_EditAndSendInvoice.cshtml" />
     <Content Include="Views\Accounting\_SubmitInvoiceTaskStatus.cshtml" />
+    <Content Include="Views\Dashboard\_TaskListJS.cshtml" />
+    <Content Include="Views\ServiceRequestTask\TaskListJS.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

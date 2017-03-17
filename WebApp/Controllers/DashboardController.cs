@@ -872,82 +872,16 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateTaskStatus2(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
-        {
-            var now = SystemTime.Now();
-            var loggedInUserId = User.Identity.GetGuidUserId();
-            var baseUrl = Request.GetBaseUrl();
-
-            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
-            if (serviceRequestTask == null)
-            {
-                return HttpNotFound();
-            }
-            serviceRequestTask.CompletedDate = isChecked ? SystemTime.Now() : (DateTime?)null;
-            serviceRequestTask.CompletedBy = isChecked ? loggedInUserId : (Guid?)null;
-            serviceRequestTask.ModifiedDate = SystemTime.Now();
-            serviceRequestTask.ModifiedUser = User.Identity.Name;
-            serviceRequestTask.ServiceRequest.UpdateIsClosed();
-            await context.SaveChangesAsync();
-
-            if (includeSummaries)
-            {
-                var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, null);
-                var result = ServiceRequestMapper.MapToWeekFolders(request, now, loggedInUserId, baseUrl);
-                return Json(new { WeekFolders = result });
-            }
-            else if (isAddOn)
-            {
-                //var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
-                var result = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToServiceRequest(serviceRequestTask.ServiceRequestId, now, loggedInUserId, baseUrl);
-                return Json(result);
-            }
-            else
-            {
-                var result = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToServiceRequest(serviceRequestTask.ServiceRequestId, now, loggedInUserId, baseUrl);
-                return Json(result);
-            }
-        }
-
-        [HttpPost]
-        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
         {
-            var now = SystemTime.Now();
-            var loggedInUserId = User.Identity.GetGuidUserId();
-            var baseUrl = Request.GetBaseUrl();
-
-            var serviceRequestTask = await context.ServiceRequestTasks.FindAsync(taskId);
-            if (serviceRequestTask == null)
+            using (var service = new WorkService(context, User.Identity))
             {
-                return HttpNotFound();
-            }
-            serviceRequestTask.CompletedDate = isChecked ? SystemTime.Now() : (DateTime?)null;
-            serviceRequestTask.CompletedBy = isChecked ? User.Identity.GetGuidUserId() : (Guid?)null;
-            serviceRequestTask.ModifiedDate = SystemTime.Now();
-            serviceRequestTask.ModifiedUser = User.Identity.Name;
-            serviceRequestTask.ServiceRequest.UpdateIsClosed();
-            await context.SaveChangesAsync();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+                var taskStatusId = isChecked ? TaskStatuses.Done : TaskStatuses.ToDo;
 
-            //if (includeSummaries)
-            //{
-            //    var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, null);
-            //    var result = ServiceRequestMapper.MapToWeekFolders(request, now, loggedInUserId, baseUrl);
-            //    return Json(new { WeekFolders = result });
-            //}
-            //else if (isAddOn)
-            //{
-            //    var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
-            //    var result = ServiceRequestMapper.MapToAddOn(request, now, loggedInUserId, baseUrl);
-            //    return Json(result);
-            //}
-            //else
-            //{
-            //    var request = await context.GetAssignedServiceRequestsAsync(serviceRequestTask.AssignedTo, now, false, serviceRequestTask.ServiceRequestId);
-            //    var result = ServiceRequestMapper.MapToAssessment(request, now, loggedInUserId, baseUrl);
-            //    return Json(result);
-            //}
+                await service.ToggleTaskStatus(taskId, taskStatusId);
+                
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
         }
 
         [HttpPost]

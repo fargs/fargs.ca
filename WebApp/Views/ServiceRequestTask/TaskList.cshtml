@@ -66,12 +66,15 @@
 {
     <div>No tasks are assigned to you.</div>
 }
-<div class="panel panel-success">
+<div class="panel panel-default">
     <div class="panel-heading">
         <strong>Tasks</strong>
+        @if (features.Contains(Features.ServiceRequest.ManageTasks))
+        { 
         <div class="pull-right">
             @Html.Partial("_TaskListActionMenu", Model.ServiceRequestId)
         </div>
+        }
     </div>
     <div class="panel-body">
         <table class="table table-condensed">
@@ -168,19 +171,10 @@
                             </form>
                         }
                     </td>
-                    <td width="100px">
+                    <td width="100px" title="@(task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "Not recorded")">
                         @Html.Partial("_TaskStatusLabel2", task.StatusId)
                     </td>
                     <td>@task.Name</td>
-                    <td>
-                        @if (task.StatusId == TaskStatuses.Done)
-                        {
-                            if (task.TaskStatusChangedDate.HasValue)
-                            {
-                                <div class="small text-muted" title="@task.TaskStatusChangedBy.Name">@task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") at @task.TaskStatusChangedDate.Value.ToShortTimeString()</div>
-                            }
-                        }
-                    </td>
                 </tr>
             }
         </table>

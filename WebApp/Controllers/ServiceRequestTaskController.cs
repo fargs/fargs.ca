@@ -86,6 +86,9 @@ namespace WebApp.Controllers
 
             switch (options)
             {
+                case TaskListViewModelFilter.CriticalPathOrAssignedToUser:
+                    tasks = tasks.AreOnCriticalPathOrAssignedToUser(userId).ToList();
+                    break;
                 case TaskListViewModelFilter.CriticalPathOnly:
                     tasks = tasks.AreOnCriticalPath().ToList();
                     break;
@@ -104,7 +107,7 @@ namespace WebApp.Controllers
             if (roleId == AspNetRoles.IntakeAssistant || roleId == AspNetRoles.DocumentReviewer)
             {
                 tasks = tasks
-                    .AreOnCriticalPath()
+                    .AreOnCriticalPathOrAssignedToUser(userId)
                     .ExcludeSubmitInvoice()
                     .ToList();
             }

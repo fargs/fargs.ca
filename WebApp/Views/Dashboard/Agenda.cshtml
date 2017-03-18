@@ -35,9 +35,9 @@
     <div>
         @Model.DayFolder.Address.Name
     </div>
-        <div class="small text-muted" style="padding-bottom:20px;">
-            @Model.DayFolder.Address.City
-        </div>
+    <div class="small text-muted" style="padding-bottom:20px;">
+        @Model.DayFolder.Address.City
+    </div>
     foreach (var serviceRequest in Model.DayFolder.ServiceRequests.OrderBy(a => a.StartTime))
     {
         <div class="row o-dashboard-tr">
@@ -69,7 +69,12 @@
                 <span>@serviceRequest.Company.Name</span>
             </div>
             <div class="col-md-3 o-dashboard-td" id="case-container-@serviceRequest.Id">
-                @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = serviceRequest.Id, viewOptions = TaskListViewOptions.Dashboard, options = TaskListViewModelFilter.CriticalPathOnly })
+                @Html.Action("TaskList", "ServiceRequestTask", new
+                {
+                    serviceRequestId = serviceRequest.Id,
+                    viewOptions = TaskListViewOptions.Dashboard,
+                    options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                })
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
@@ -202,7 +207,7 @@ else
             $.get(url, {
                 serviceRequestId: serviceRequestId,
                 viewOptions: '@TaskListViewOptions.Dashboard',
-                options: '@TaskListViewModelFilter.CriticalPathOnly'
+                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
                 .done(function (result) {
                     document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
@@ -217,6 +222,6 @@ else
     </script>
 
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    
+
     @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

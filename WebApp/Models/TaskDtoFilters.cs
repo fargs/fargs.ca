@@ -1,4 +1,5 @@
-﻿using Orvosi.Shared.Enums;
+﻿using LinqKit;
+using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,10 @@ namespace WebApp.Models
         public static IEnumerable<TaskDto> AreAssignedToUserOrRoles(this IEnumerable<TaskDto> tasks, Guid userId, Guid?[] rolesThatShouldBeSeen)
         {
             return tasks.Where(t => rolesThatShouldBeSeen.Contains(t.ResponsibleRoleId) || t.AssignedToId == userId);
+        }
+        public static IEnumerable<TaskDto> AreOnCriticalPathOrAssignedToUser(this IEnumerable<TaskDto> tasks, Guid userId)
+        {
+            return tasks.Where(t => t.IsCriticalPath || t.AssignedToId == userId);
         }
         public static IEnumerable<TaskDto> AreOnCriticalPath(this IEnumerable<TaskDto> tasks)
         {

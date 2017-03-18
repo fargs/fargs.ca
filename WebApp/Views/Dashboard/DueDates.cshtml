@@ -1,5 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model WebApp.ViewModels.DashboardViewModels.DueDatesViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
@@ -74,9 +75,13 @@
                             <div class="col-md-2 o-dashboard-td">
                                 @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
                             </div>
-                            <div class="col-md-4">
-                                @Html.Partial("_ServiceRequestTasks_Today", serviceRequest)
-
+                            <div class="col-md-4" id="tasklist-container-@serviceRequest.Id">
+                                @Html.Action("TaskList", "ServiceRequestTask", new
+                                {
+                                    serviceRequestId = serviceRequest.Id,
+                                    viewOptions = TaskListViewOptions.Dashboard,
+                                    options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                                })
                             </div>
                             <div class="col-md-4 o-dashboard-td">
                                 @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", serviceRequest)
@@ -195,7 +200,24 @@
 
         }
 
+        function refreshCase(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                viewOptions: '@TaskListViewOptions.Dashboard',
+                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+            })
+            .done(function (result) {
+                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+            })
+            .always(function () {
+                //loader.hide();
+            });
+        }
+
     </script>
 
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
     @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

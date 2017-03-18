@@ -40,5 +40,13 @@ namespace WebApp.Models
         {
             return tasks.Where(t => rolesThatShouldBeSeen.Contains(t.ResponsibleRoleId) || t.AssignedToId == userId);
         }
+        public static IEnumerable<TaskDto> AreOnCriticalPath(this IEnumerable<TaskDto> tasks)
+        {
+            return tasks.Where(t => t.IsCriticalPath);
+        }
+        public static IEnumerable<TaskDto> ExcludeSubmitInvoice(this IEnumerable<TaskDto> tasks)
+        {
+            return tasks.Where(t => t.TaskId != Tasks.SubmitInvoice);
+        }
     }
 }

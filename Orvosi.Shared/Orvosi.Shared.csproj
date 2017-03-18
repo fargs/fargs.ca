@@ -45,6 +45,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Enums\ValidationTypeEnum.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Filters\ServiceRequestFilters.cs" />
     <Compile Include="Filters\ServiceRequestTaskFilters.cs" />
     <Compile Include="Accounting\IInvoice.cs" />
     <Compile Include="Accounting\IInvoiceDetail.cs" />

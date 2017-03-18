@@ -23,6 +23,7 @@ using MoreLinq;
 using WebApp.ViewModels;
 using WebApp.Library.Projections;
 using Orvosi.Data.Filters;
+using Orvosi.Shared.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Library.Filters;
 using WebApp.ViewModels.UIElements;
@@ -138,15 +139,16 @@ namespace WebApp.Controllers
             var vm = new DetailsViewModel();
 
             vm.ServiceRequest = ctx.ServiceRequests
-                .Where(sr => sr.Id == id)
+                .WithId(id)
+                .CanAccess(userId, roleId)
                 .Select(ServiceRequestProjections.AllDetails(userId, now))
                 .SingleOrDefault();
 
             if (vm.ServiceRequest == null)
             {
-                return HttpNotFound();
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
-
+            
             //vm.UserSelectList = (from user in ctx.AspNetUsers
             vm.UserSelectList = (from user in ctx.AspNetUsers
                                  from userRole in ctx.AspNetUserRoles

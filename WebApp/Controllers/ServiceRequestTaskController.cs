@@ -82,19 +82,31 @@ namespace WebApp.Controllers
                 .WithServiceRequestId(serviceRequestId)
                 .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
                 .OrderBy(t => t.Sequence)
-                .AsEnumerable();
+                .ToList();
 
             switch (options)
             {
+                case TaskListViewModelFilter.CriticalPathOnly:
+                    tasks = tasks.AreOnCriticalPath().ToList();
+                    break;
                 case TaskListViewModelFilter.PrimaryRolesOnly:
                     var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
-                    tasks = tasks.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen);
+                    tasks = tasks.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen).ToList();
                     break;
                 case TaskListViewModelFilter.MyTasks:
-                    tasks = tasks.AreAssignedToUser(userId);
+                    tasks = tasks.AreAssignedToUser(userId).ToList();
                     break;
                 default: // default to all tasks
                     break;
+            }
+
+            // role based filters that override everything
+            if (roleId == AspNetRoles.IntakeAssistant || roleId == AspNetRoles.DocumentReviewer)
+            {
+                tasks = tasks
+                    .AreOnCriticalPath()
+                    .ExcludeSubmitInvoice()
+                    .ToList();
             }
 
             viewModel.Tasks = tasks.AsQueryable().Select(ViewModels.TaskViewModel.FromTaskDto.Expand());

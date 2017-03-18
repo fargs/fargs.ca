@@ -167,7 +167,7 @@
         <p>
         </p>
         <section id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, viewOptions = TaskListViewOptions.Details })
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, viewOptions = TaskListViewOptions.Details, options = TaskListViewModelFilter.AllTasks })
         </section>
     </div>
 
@@ -338,7 +338,8 @@
             $.get(url, 
                 { 
                     serviceRequestId: serviceRequestId, 
-                    viewOptions: '@TaskListViewOptions.Details' 
+                    viewOptions: '@TaskListViewOptions.Details',
+                    options: '@TaskListViewModelFilter.AllTasks'
                 })
                 .done(function (result) {
                     tasklistContainer.innerHTML = result;

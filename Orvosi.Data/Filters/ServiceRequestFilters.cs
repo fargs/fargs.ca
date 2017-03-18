@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,12 @@ namespace Orvosi.Data.Filters
         public static IQueryable<ServiceRequest> WithId(this IQueryable<ServiceRequest> serviceRequests, int id)
         {
             return serviceRequests.Where(sr => sr.Id == id);
+        }
+        public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> serviceRequests, Guid userId, Guid roleId)
+        {
+            // TODO: add AssignedToId to the ServiceRequestTask Model class to avoid the need for the null reference check
+            return serviceRequests
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId) || roleId == AspNetRoles.SuperAdmin);
         }
         public static IQueryable<ServiceRequest> AreScheduledThisDay(this IQueryable<ServiceRequest> serviceRequests, DateTime day)
         {
@@ -56,12 +63,10 @@ namespace Orvosi.Data.Filters
             return serviceRequests
                 .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && !srt.CompletedDate.HasValue && !srt.IsObsolete));
         }
-
         public static IQueryable<ServiceRequest> AreNotCancellations(this IQueryable<ServiceRequest> serviceRequest)
         {
             return serviceRequest.Where(sr => sr.IsLateCancellation ? true : !sr.CancelledDate.HasValue);
         }
-
         public static IQueryable<ServiceRequest> AreForCompany(this IQueryable<ServiceRequest> serviceRequests, Guid? companyId)
         {
             if (companyId.HasValue)
@@ -70,7 +75,6 @@ namespace Orvosi.Data.Filters
             }
             return serviceRequests;
         }
-
         public static IQueryable<ServiceRequest> AreWithinDateRange(this IQueryable<ServiceRequest> serviceRequests, DateTime now, int? year, int? month)
         {
             if (!year.HasValue && !month.HasValue)

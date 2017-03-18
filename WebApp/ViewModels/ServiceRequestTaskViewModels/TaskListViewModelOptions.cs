@@ -7,10 +7,14 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 {
     public enum TaskListViewModelFilter
     {
-        AllTasks, MyTasks, PrimaryRolesOnly
+        AllTasks,
+        MyTasks,
+        PrimaryRolesOnly,
+        CriticalPathOnly
     }
     public enum TaskListViewOptions
     {
-        Dashboard, Details
+        Dashboard,
+        Details
     }
 }

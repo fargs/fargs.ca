@@ -27,6 +27,7 @@ namespace WebApp.Models
         public Guid? ResponsibleRoleId { get; set; }
         public string ResponsibleRoleName { get; set; }
         public DateTime? EffectiveDate { get; set; }
+        public bool IsCriticalPath { get; set; }
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntity = srt => srt == null ? null : new TaskDto()
         {
@@ -41,7 +42,8 @@ namespace WebApp.Models
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
             StatusId = srt.TaskStatusId.Value,
             ResponsibleRoleId = srt.ResponsibleRoleId,
-            ResponsibleRoleName = srt.ResponsibleRoleName
+            ResponsibleRoleName = srt.ResponsibleRoleName,
+            IsCriticalPath = srt.IsCriticalPath
         };
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntityForSummary = srt => srt == null ? null : new TaskDto()

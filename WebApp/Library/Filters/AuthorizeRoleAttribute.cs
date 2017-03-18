@@ -31,6 +31,8 @@ namespace WebApp.Library.Filters
 
         public override void OnAuthorization(System.Web.Mvc.AuthorizationContext filterContext)
         {
+            if (filterContext.IsChildAction) return;
+
             var identity = filterContext.HttpContext.User.Identity;
 
             if (!identity.IsAuthenticated)

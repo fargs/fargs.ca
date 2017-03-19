@@ -1,5 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model WebApp.ViewModels.DashboardViewModels.IndexViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
@@ -39,22 +40,13 @@
                 <tr id="assessment-@assessment.Id" class="collapse">
                     <td></td>
                     <td colspan="4">
-                        <div>
-                            @foreach (var task in assessment.People.First(p => p.Id == Model.SelectedUserId).Tasks)
+                        <div id="tasklist-container-@assessment.Id">
+                            @Html.Action("TaskList", "ServiceRequestTask", new
                             {
-                                <form action="~/Dashboard/UpdateTaskStatus">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input id="task-checkbox-@task.Id" type="checkbox"
-                                                   value="@task.IsComplete"
-                                                   @(task.IsComplete ? "checked" : "")
-                                                   @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
-                                                   onclick="onTaskChecked(this, @task.Id, @assessment.Id);">
-                                            @Html.Partial("_TaskStatusLabel", task) @task.Name
-                                        </label>
-                                    </div>
-                                </form>
-                            }
+                                serviceRequestId = assessment.Id,
+                                viewOptions = TaskListViewOptions.Dashboard,
+                                options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                            })
                         </div>
                         <div style="padding-top: 5px;">
                             <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
@@ -80,6 +72,22 @@
 @section Scripts {
 
     <script>
+
+        function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                viewOptions: '@TaskListViewOptions.Dashboard',
+                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+            })
+            .done(function (result) {
+                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+            })
+            .always(function () {
+                //loader.hide();
+            });
+        }
 
         function SetAssessmentStatus(assessmentFromResult, assessmentIdForEl) {
             var assessmentEl = $('#header-assessment-' + assessmentIdForEl);
@@ -193,4 +201,6 @@
         }
 
     </script>
+
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
 }

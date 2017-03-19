@@ -459,6 +459,7 @@
     <Compile Include="Library\Google\GoogleServices.cs" />
     <Compile Include="Library\Helpers.cs" />
     <Compile Include="Library\IEmailService.cs" />
+    <Compile Include="Library\IIdentityExtensions.cs" />
     <Compile Include="Library\ImpersonatingSecurityStampValidator.cs" />
     <Compile Include="Library\Projections\AspNetUserProjections.cs" />
     <Compile Include="Library\Projections\CollaboratorProjections.cs" />
@@ -475,11 +476,15 @@
     <Compile Include="Library\ViewDataService.cs" />
     <Compile Include="Library\WorkService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AddressDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
+    <Compile Include="Models\ContactDto.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LookupDto.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Library\InvoiceHelper.cs" />
+    <Compile Include="Models\MessageDto.cs" />
+    <Compile Include="Library\ContextPerRequest.cs" />
     <Compile Include="Models\ServiceRequestDtoFilters.cs">
       <DependentUpon>ServiceRequestDto.cs</DependentUpon>
     </Compile>

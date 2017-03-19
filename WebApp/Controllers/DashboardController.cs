@@ -15,14 +15,18 @@ using System.Data.Entity;
 using Orvosi.Data.Filters;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
-
+using WebApp.Models;
 namespace WebApp.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        private Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
+        private Orvosi.Data.OrvosiDbContext context;
 
+        public DashboardController()
+        {
+            context = ContextPerRequest.db;
+        }
         public ActionResult Index(Guid? serviceProviderId, bool showClosed = false, bool onlyMine = true)
         {
             return RedirectToAction("Agenda");
@@ -725,6 +729,9 @@ namespace WebApp.Controllers
             return new NegotiatedResult("Additionals", vm);
         }
 
+
+
+
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         public ActionResult RefreshServiceRequestTasks(int serviceRequestId, Guid serviceProviderId)
         {
@@ -870,6 +877,8 @@ namespace WebApp.Controllers
             return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
         }
 
+
+
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
@@ -913,6 +922,8 @@ namespace WebApp.Controllers
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
+
+
 
         [HttpGet]
         public async Task<ActionResult> TaskHierarchy(int serviceRequestId, int? taskId = null)

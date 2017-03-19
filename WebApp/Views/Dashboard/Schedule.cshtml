@@ -1,5 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @model WebApp.ViewModels.DashboardViewModels.ScheduleViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
@@ -120,8 +121,13 @@
                                                     <p class="">
                                                         @assessment.Notes
                                                     </p>
-                                                    <div>
-                                                        @Html.Partial("_ServiceRequestTasks_Today", assessment)
+                                                    <div id="tasklist-container-@assessment.Id">
+                                                        @Html.Action("TaskList", "ServiceRequestTask", new
+                                                        {
+                                                            serviceRequestId = assessment.Id,
+                                                            viewOptions = TaskListViewOptions.Dashboard,
+                                                            options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                                                        })
                                                     </div>
                                                 </div>
                                                 <div style="padding-top: 5px;">
@@ -163,44 +169,6 @@
 @section Scripts{
     <script>
 
-        function onTaskChecked(checkbox, taskId, serviceRequestId) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
-                data: JSON.stringify({
-                    taskId: taskId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    toastr.success("Task updated successfully.", "Task Updated");
-                    refreshServiceRequestTasks(serviceRequestId);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    toastr.success("Task was not updated.", "Something went wrong!");
-                }
-            }, this);
-        }
-
-        function refreshServiceRequestTasks(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/Schedule?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId',
-                contentType: "text/html",
-                success: function (result) {
-                    $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
-
-        }
-
         function onToggleNoShow(checkbox, serviceRequestId) {
 
             $.ajax({
@@ -221,6 +189,23 @@
                     alert(err.status + " - " + err.statusText);
                 }
             }, this);
+        }
+
+        // this is called from the TaskJS functions
+        function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                viewOptions: '@TaskListViewOptions.Dashboard',
+                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+            })
+            .done(function (result) {
+                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+            })
+            .always(function () {
+                //loader.hide();
+            });
         }
 
         function refreshServiceStatus(serviceRequestId) {
@@ -357,4 +342,6 @@
         }
 
     </script>
+
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
 }

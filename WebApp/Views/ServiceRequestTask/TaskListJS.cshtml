@@ -12,7 +12,7 @@
 
         $.post(url, $(context.form).serialize())
             .done(function (data) {
-                refreshCase(data.serviceRequestId)
+                tasklistChanged(data.serviceRequestId)
             });
     }
 
@@ -25,7 +25,7 @@
                 taskStatusId: taskStatusId
             })
             .done(function (data) {
-                refreshCase(data.serviceRequestId)
+                tasklistChanged(data.serviceRequestId)
             });
     }
 
@@ -37,7 +37,7 @@
                 serviceRequestId: serviceRequestId
             },
             function (data) {
-                refreshCase(data.serviceRequestId);
+                tasklistChanged(data.serviceRequestId);
             }
         );
     }
@@ -47,7 +47,7 @@
         $.post(url,
             form.serialize()
         ).done(function (data) {
-            refreshCase(data.serviceRequestId)
+            tasklistChanged(data.serviceRequestId)
             showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
         });
     }
@@ -60,7 +60,7 @@
                 serviceRequestTaskId: serviceRequestTaskId
             },
             function (data) {
-                refreshCase(data.serviceRequestId);
+                tasklistChanged(data.serviceRequestId);
             }
         );
     }
@@ -74,7 +74,7 @@
                 assignedTo: assignedTo
             },
             function (data) {
-                refreshCase(data.serviceRequestId);
+                tasklistChanged(data.serviceRequestId);
             }
         );
     }
@@ -88,7 +88,7 @@
                 taskId: taskId
             },
             function (data) {
-                refreshCase(data.serviceRequestId);
+                tasklistChanged(data.serviceRequestId);
             }
         );
     };
@@ -101,7 +101,7 @@
                 serviceRequestTaskId: serviceRequestTaskId
             },
             function (data) {
-                refreshCase(data.serviceRequestId);
+                tasklistChanged(data.serviceRequestId);
             }
         );
     }

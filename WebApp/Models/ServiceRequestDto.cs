@@ -17,7 +17,7 @@ namespace WebApp.Models
         {
             //Resources = new List<ResourceDto>();
             Tasks = new List<TaskDto>();
-            //Messages = new List<MessageDto>();
+            Messages = new List<MessageDto>();
             //Comments = new List<CommentDto>();
         }
         public int Id { get; set; }
@@ -35,7 +35,7 @@ namespace WebApp.Models
 
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
-        //public AddressDto Address { get; set; }
+        public AddressDto Address { get; set; }
 
         public PersonDto Physician { get; set; }
         public PersonDto CaseCoordinator { get; set; }
@@ -44,7 +44,7 @@ namespace WebApp.Models
 
         //public IEnumerable<ResourceDto> Resources { get; set; }
         public IEnumerable<TaskDto> Tasks { get; set; }
-        //public IEnumerable<MessageDto> Messages { get; internal set; }
+        public IEnumerable<MessageDto> Messages { get; internal set; }
         //public IEnumerable<CommentDto> Comments { get; internal set; }
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntity = sr => new ServiceRequestDto
@@ -63,7 +63,7 @@ namespace WebApp.Models
 
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
-            //Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
             Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
             CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
             DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
@@ -71,7 +71,7 @@ namespace WebApp.Models
 
             //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
-            //Messages = sr.ServiceRequestMessages.AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
+            Messages = sr.ServiceRequestMessages.AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
             //Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
         };
 

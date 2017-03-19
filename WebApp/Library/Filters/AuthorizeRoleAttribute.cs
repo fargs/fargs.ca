@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
 using WebApp.Library.Projections;
+using WebApp.Models;
 
 namespace WebApp.Library.Filters
 {
@@ -44,21 +45,18 @@ namespace WebApp.Library.Filters
             var roleId = identity.GetRoleId();
 
             short[] roleFeatures;
-            // should inject this using dependency injection so it is not building up and tearing down the connection multiple times within a request.
-            using (var context = new OrvosiDbContext())
-            {
-                if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
-                    roleFeatures = context.Features.Select(srf => srf.Id).ToArray();
-                else
-                    roleFeatures = context.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
+            var context = ContextPerRequest.db;
+            if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
+                roleFeatures = context.Features.Select(srf => srf.Id).ToArray();
+            else
+                roleFeatures = context.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
 
-                identity.GetApplicationUser().Features = roleFeatures;
+            identity.GetApplicationUser().Features = roleFeatures;
 
                 //if (identity.GetApplicationUser().Physicians == null)
                 //{
-                    identity.GetApplicationUser().Physicians = GetPhysicians(identity, context);
+            identity.GetApplicationUser().Physicians = GetPhysicians(identity, context);
                 //}
-            }
             
 
             // Super Admin role has access to all features

@@ -731,80 +731,6 @@ namespace WebApp.Controllers
 
 
 
-
-        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult RefreshServiceRequestTasks(int serviceRequestId, Guid serviceProviderId)
-        {
-            var now = SystemTime.UtcNow();
-            // This should be updated to include only the data required to refresh the _ServiceRequestTasks_Today view. 
-            // Currently the Agenda and DueDates page are using the ServiceRequestId parametere on the DueDates and Agenda action methods to get the data.
-            var result = context.ServiceRequests.Where(sr => sr.Id == serviceRequestId)
-                .Select(sr => new Orvosi.Shared.Model.ServiceRequest
-                {
-                    Id = sr.Id,
-                    ClaimantName = sr.ClaimantName,
-                    ServiceRequestTasks = sr.ServiceRequestTasks
-                        .Where(srt => srt.AssignedTo == serviceProviderId)
-                        .OrderBy(srt => srt.Sequence)
-                        .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
-                        {
-                            Id = t.Id,
-                            ServiceRequestId = t.ServiceRequestId,
-                            AppointmentDate = t.ServiceRequest.AppointmentDate,
-                            DueDate = t.DueDate,
-                            Now = now,
-                            ProcessTask = new Orvosi.Shared.Model.ProcessTask
-                            {
-                                Id = t.OTask.Id,
-                                Name = t.OTask.Name,
-                                Sequence = t.OTask.Sequence.Value,
-                                ResponsibleRole = t.OTask.AspNetRole == null ? null : new Orvosi.Shared.Model.UserRole
-                                {
-                                    Id = t.OTask.AspNetRole.Id,
-                                    Name = t.OTask.AspNetRole.Name
-                                }
-                            },
-                            AssignedTo = new Orvosi.Shared.Model.Person
-                            {
-                                Id = t.AspNetUser_AssignedTo == null ? (Guid?)null : t.AspNetUser_AssignedTo.Id,
-                                Title = t.AspNetUser_AssignedTo.Title,
-                                FirstName = t.AspNetUser_AssignedTo.FirstName,
-                                LastName = t.AspNetUser_AssignedTo.LastName,
-                                Email = t.AspNetUser_AssignedTo.Email,
-                                ColorCode = t.AspNetUser_AssignedTo.ColorCode,
-                                Role = t.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
-                                {
-                                    Id = r.AspNetRole.Id,
-                                    Name = r.AspNetRole.Name
-                                }).FirstOrDefault()
-                            },
-                            CompletedBy = new Orvosi.Shared.Model.Person
-                            {
-                                Id = t.AspNetUser_TaskStatusChangedBy == null ? (Guid?)null : t.AspNetUser_TaskStatusChangedBy.Id,
-                                Title = t.AspNetUser_TaskStatusChangedBy.Title,
-                                FirstName = t.AspNetUser_TaskStatusChangedBy.FirstName,
-                                LastName = t.AspNetUser_TaskStatusChangedBy.LastName,
-                                Email = t.AspNetUser_TaskStatusChangedBy.Email,
-                                ColorCode = t.AspNetUser_TaskStatusChangedBy.ColorCode,
-                                Role = t.AspNetUser_TaskStatusChangedBy.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
-                                {
-                                    Id = r.AspNetRole.Id,
-                                    Name = r.AspNetRole.Name
-                                }).FirstOrDefault()
-                            },
-                            CompletedDate = t.CompletedDate,
-                            IsObsolete = t.IsObsolete,
-                            Dependencies = t.Child.Select(c => new Orvosi.Shared.Model.ServiceRequestTaskDependent
-                            {
-                                TaskId = c.TaskId.Value,
-                                CompletedDate = c.CompletedDate,
-                                IsObsolete = c.IsObsolete
-                            })
-                        })
-                }).Single();
-            return PartialView("_ServiceRequestTasks_Today", result);
-        }
-
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ActionResult RefreshServiceStatus(int serviceRequestId)
         {
@@ -880,20 +806,6 @@ namespace WebApp.Controllers
 
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateTaskStatus(int taskId, bool isChecked, Guid? serviceProviderGuid, bool includeSummaries = false, bool isAddOn = false)
-        {
-            using (var service = new WorkService(context, User.Identity))
-            {
-                var taskStatusId = isChecked ? TaskStatuses.Done : TaskStatuses.ToDo;
-
-                await service.ToggleTaskStatus(taskId, taskStatusId);
-                
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
-        }
-
-        [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
         public async Task<ActionResult> ToggleNoShow(int serviceRequestId, bool isChecked, Guid? serviceProviderGuid)
         {
@@ -941,39 +853,6 @@ namespace WebApp.Controllers
             return PartialView("_TaskHierarchy", vm);
         }
 
-        [HttpGet]
-        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public async Task<ActionResult> TaskList(int serviceRequestId)
-        {
-            var now = SystemTime.Now();
-            Guid? userId = User.Identity.GetGuidUserId();
-
-            var requests = await context.GetServiceRequestAsync(serviceRequestId, now);
-            var assessment = new Assessment
-            {
-                ClaimantName = requests.First().ClaimantName,
-                Tasks = from o in requests
-                            //where o.ResponsibleRoleId != Roles.CaseCoordinator || o.TaskId == Tasks.SaveMedBrief
-                        orderby o.TaskSequence
-                        select new ServiceRequestTask
-                        {
-                            Id = o.Id,
-                            Name = o.TaskName,
-                            CompletedDate = o.CompletedDate,
-                            StatusId = o.TaskStatusId.Value,
-                            Status = o.TaskStatusName,
-                            AssignedTo = o.AssignedTo,
-                            AssignedToDisplayName = o.AssignedToDisplayName,
-                            AssignedToColorCode = o.AssignedToColorCode,
-                            AssignedToInitials = o.AssignedToInitials,
-                            IsComplete = o.TaskStatusId.Value == TaskStatuses.Done,
-                            ServiceRequestId = o.ServiceRequestId
-
-                        }
-            };
-
-            return PartialView("_TaskList", assessment);
-        }
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]

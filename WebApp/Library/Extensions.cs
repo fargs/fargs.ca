@@ -155,6 +155,11 @@ namespace WebApp.Library.Extensions
             return value.HasValue ? value.Value.ToOrvosiDateTimeFormat(startTime) : string.Empty;
         }
 
+        public static string ToOrvosiLongDateFormat(this DateTime value)
+        {
+            return value.ToString("ddd dd, MMM");
+        }
+
         public static List<BoxItem> Entries(this BoxFolder value)
         {
             return value.ItemCollection == null ? new List<BoxItem>() : value.ItemCollection.Entries;

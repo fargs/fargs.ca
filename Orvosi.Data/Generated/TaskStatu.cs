@@ -21,6 +21,7 @@ namespace Orvosi.Data
         public string Name { get; set; } // Name (length: 128)
         public byte DependentPrecedence { get; set; } // DependentPrecedence
         public byte ServiceRequestPrecedence { get; set; } // ServiceRequestPrecedence
+        public string ColorCode { get; set; } // ColorCode (length: 10)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_TaskStatus

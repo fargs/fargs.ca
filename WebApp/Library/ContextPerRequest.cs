@@ -51,10 +51,9 @@ namespace WebApp.Library
                 var db = HttpContext.Current.Items[dbKey] as OrvosiDbContext;
                 if (db == null)
                 {
-                    db = new OrvosiDbContext();
-                    HttpContext.Current.Items[dbKey] = db;
+                    HttpContext.Current.Items[dbKey] = new OrvosiDbContext();
                 }
-                return db;
+                return HttpContext.Current.Items[dbKey] as OrvosiDbContext;
             }
         }
 

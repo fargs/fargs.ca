@@ -27,15 +27,17 @@ using Orvosi.Shared.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Library.Filters;
 using WebApp.ViewModels.UIElements;
+using LinqKit;
+using m = WebApp.Models;
+using WebApp.FormModels;
 
 namespace WebApp.Controllers
 {
     public delegate void NoShowToggledHandler(object sender, EventArgs e);
 
     [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-    public class ServiceRequestController : Controller
+    public class ServiceRequestController : BaseController
     {
-        private OrvosiDbContext ctx = new OrvosiDbContext();
         private OrvosiDropbox _dropbox;
 
         public OrvosiDropbox dropbox
@@ -60,7 +62,7 @@ namespace WebApp.Controllers
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
             filterArgs.StatusId = (filterArgs.StatusId ?? e.ServiceRequestStatus.Open);
 
-            var sr = ctx.ServiceRequestViews.AsQueryable();
+            var sr = db.ServiceRequestViews.AsQueryable();
 
             if (!string.IsNullOrEmpty(filterArgs.Ids))
             {
@@ -105,7 +107,7 @@ namespace WebApp.Controllers
             vm.ServiceRequests = await sr.ToListAsync();
 
             var serviceRequestIds = vm.ServiceRequests.Select(item => item.Id);
-            vm.ServiceRequestTasks = await ctx.ServiceRequestTasks
+            vm.ServiceRequestTasks = await db.ServiceRequestTasks
                     .Include(srt => srt.AspNetUser_AssignedTo)
                     .Include(srt => srt.OTask)
                 .Where(srt => serviceRequestIds.Contains(srt.ServiceRequestId)
@@ -121,7 +123,7 @@ namespace WebApp.Controllers
         {
             var userId = User.Identity.GetGuidUserId();
 
-            var list = await ctx.ServiceRequests
+            var list = await db.ServiceRequests
                 .Where(sr => sr.CaseCoordinatorId == userId || sr.IntakeAssistantId == userId || sr.DocumentReviewerId == userId || sr.PhysicianId == userId)
                 .ToListAsync();
 
@@ -131,58 +133,68 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public async Task<ActionResult> Details(int id)
         {
-            var now = SystemTime.Now();
-            var userId = User.Identity.GetGuidUserId();
-            var roleId = User.Identity.GetRoleId();
-            var adminRoles = new Guid[2] { AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
-
-            var vm = new DetailsViewModel();
-
-            vm.ServiceRequest = ctx.ServiceRequests
+            var dto = db.ServiceRequests
                 .WithId(id)
-                .CanAccess(userId, roleId)
-                .Select(ServiceRequestProjections.AllDetails(userId, now))
+                .CanAccess(userId, physicianId, roleId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
                 .SingleOrDefault();
 
-            if (vm.ServiceRequest == null)
+            if (dto == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
-            
-            //vm.UserSelectList = (from user in ctx.AspNetUsers
-            vm.UserSelectList = (from user in ctx.AspNetUsers
-                                 from userRole in ctx.AspNetUserRoles
-                                 from role in ctx.AspNetRoles
-                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId && (
-                                    role.Id == AspNetRoles.SuperAdmin 
-                                    || role.Id == AspNetRoles.CaseCoordinator
-                                    || user.Id == AspNetRoles.DocumentReviewer 
-                                    || role.Id == AspNetRoles.IntakeAssistant 
-                                    || user.Id == vm.ServiceRequest.PhysicianId)
-                                 select new SelectListItem
-                                 {
-                                     Text = user.FirstName + " " + user.LastName,
-                                     Value = user.Id.ToString(),
-                                     Group = new SelectListGroup() { Name = role.Name }
-                                 }).ToList();
 
-            if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator)
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            return View(viewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public async Task<ActionResult> Case(int serviceRequestId, CaseViewOptions viewOptions = CaseViewOptions.Details)
+        {
+            var dto = await db.ServiceRequests
+                .WithId(serviceRequestId)
+                .CanAccess(userId, physicianId, roleId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .SingleOrDefaultAsync();
+
+            if (dto == null)
             {
-                var caseTeam = new Guid[4];
-                caseTeam[0] = vm.ServiceRequest.PhysicianId;
-                caseTeam[1] = vm.ServiceRequest.CaseCoordinator.Id.Value;
-                if (vm.ServiceRequest.IntakeAssistant != null) { caseTeam[2] = vm.ServiceRequest.IntakeAssistant.Id.Value; };
-                if (vm.ServiceRequest.DocumentReviewer != null) { caseTeam[3] = vm.ServiceRequest.DocumentReviewer.Id.Value; };
-                vm.UserSelectList = vm.UserSelectList.Where(u => caseTeam.Contains(new Guid(u.Value)));
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
-            return View(vm);
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            ViewData["CaseViewOptions"] = viewOptions;
+
+            return PartialView(viewModel);
         }
-        
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public async Task<ActionResult> ActionMenu(int serviceRequestId)
+        {
+            var dto = await db.ServiceRequests
+                .WithId(serviceRequestId)
+                .CanAccess(userId, physicianId, roleId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .SingleOrDefaultAsync();
+
+            if (dto == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            return PartialView(viewModel);
+        }
+
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public ActionResult ChangeCompany(int id)
         {
-            var vm = ctx.ServiceRequests
+            var vm = db.ServiceRequests
                 .Where(sr => sr.Id == id)
                 .Select(sr => new ChangeCompanyViewModel
                 {
@@ -194,7 +206,7 @@ namespace WebApp.Controllers
                 })
                 .First();
 
-            vm.CompanySelectList = ctx.Companies
+            vm.CompanySelectList = db.Companies
                 .Where(c => c.IsParent == false)
                 .Select(c => new SelectListItem()
                 {
@@ -204,7 +216,7 @@ namespace WebApp.Controllers
                 })
                 .ToList();
 
-            vm.ServiceSelectList = ctx.Services
+            vm.ServiceSelectList = db.Services
                 .Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
                 .Select(c => new SelectListItem()
                 {
@@ -228,13 +240,13 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public async Task<ActionResult> ChangeCompany(ChangeCompanyFormViewModel form)
         {
-            var record = ctx.ServiceRequests
+            var record = db.ServiceRequests
                 .Where(sr => sr.Id == form.ServiceRequestId)
                 .Single();
 
             // Get the service catalogue
-            var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
-            var serviceCatalogues = ctx.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
+            var address = await db.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
+            var serviceCatalogues = db.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
             var serviceCatalogueInMemoryQuery = serviceCatalogues.Where(c => c.ServiceId == record.ServiceId);
             if (address != null)
                 serviceCatalogueInMemoryQuery.Where(sr => sr.LocationId == address.LocationId);
@@ -245,8 +257,8 @@ namespace WebApp.Controllers
             }
 
             // Get the no show and late cancellation rates for this company
-            var company = ctx.Companies.FirstOrDefault(c => c.Id == record.CompanyId);
-            var rates = ctx.GetServiceCatalogueRate(record.PhysicianId, company?.ObjectGuid).First();
+            var company = db.Companies.FirstOrDefault(c => c.Id == record.CompanyId);
+            var rates = db.GetServiceCatalogueRate(record.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
@@ -270,14 +282,14 @@ namespace WebApp.Controllers
             record.ModifiedDate = SystemTime.UtcNow();
             record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = record.Id });
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
         public ActionResult ChangeProcessTemplate(int id)
         {
-            var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == id);
+            var serviceRequest = db.ServiceRequests.Single(sr => sr.Id == id);
 
             var model = new ChangeProcessTemplateViewModel()
             {
@@ -297,7 +309,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
         public ActionResult ChangeProcessTemplate(ChangeProcessTemplateViewModel model)
         {
-            var serviceRequest = ctx.ServiceRequests.Single(sr => sr.Id == model.ServiceRequestId);
+            var serviceRequest = db.ServiceRequests.Single(sr => sr.Id == model.ServiceRequestId);
             if (serviceRequest.ServiceRequestTemplateId == model.NewServiceRequestTemplateId)
             {
                 ModelState.AddModelError("NewServiceRequestTemplateId", "New Template must be different than the current template");
@@ -321,14 +333,14 @@ namespace WebApp.Controllers
                     task.Parent.Remove(item);
                 }
                 // Parents are removed using referential integrity at the database level.
-                ctx.ServiceRequestTasks.Remove(task);
+                db.ServiceRequestTasks.Remove(task);
             }
 
             // add
 
             serviceRequest.ServiceRequestTemplateId = model.NewServiceRequestTemplateId;
 
-            var requestTemplate = ctx.ServiceRequestTemplates.Find(serviceRequest.ServiceRequestTemplateId);
+            var requestTemplate = db.ServiceRequestTemplates.Find(serviceRequest.ServiceRequestTemplateId);
 
             foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
             {
@@ -361,7 +373,7 @@ namespace WebApp.Controllers
 
             serviceRequest.UpdateIsClosed();
 
-            ctx.SaveChanges();
+            db.SaveChanges();
 
             // Clone the related tasks
             foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
@@ -374,7 +386,7 @@ namespace WebApp.Controllers
                 }
             }
 
-            ctx.SaveChanges();
+            db.SaveChanges();
 
             return RedirectToAction("Details", new { id = serviceRequest.Id });
         }
@@ -382,7 +394,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.Reschedule)]
         public ActionResult Reschedule(int id)
         {
-            var model = ctx.ServiceRequests.Single(c => c.Id == id);
+            var model = db.ServiceRequests.Single(c => c.Id == id);
             return View(model);
         }
 
@@ -390,8 +402,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.Reschedule)]
         public async Task<ActionResult> Reschedule(ServiceRequest serviceRequest)
         {
-            var sr = ctx.ServiceRequests.Single(c => c.Id == serviceRequest.Id);
-            var slot = ctx.AvailableSlots.Single(c => c.Id == serviceRequest.AvailableSlotId);
+            var sr = db.ServiceRequests.Single(c => c.Id == serviceRequest.Id);
+            var slot = db.AvailableSlots.Single(c => c.Id == serviceRequest.AvailableSlotId);
             sr.AvailableSlotId = serviceRequest.AvailableSlotId;
             sr.AppointmentDate = slot.AvailableDay.Day;
             sr.StartTime = slot.StartTime;
@@ -399,7 +411,7 @@ namespace WebApp.Controllers
             sr.AddressId = serviceRequest.AddressId;
             sr.ModifiedDate = SystemTime.Now();
             sr.ModifiedUser = User.Identity.Name;
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = sr.Id });
         }
 
@@ -411,7 +423,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Availability(AvailabilityForm form)
         {
-            var ad = await ctx.AvailableDays
+            var ad = await db.AvailableDays
                 .FirstOrDefaultAsync(c => c.PhysicianId == form.PhysicianId && c.Day == form.AppointmentDate);
 
             if (ad == null)
@@ -430,8 +442,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
         public async Task<ActionResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
         {
-            var availableDay = await ctx.AvailableDays.FindAsync(availableDayId);
-            var physician = await ctx.Physicians.FindAsync(physicianId);
+            var availableDay = await db.AvailableDays.FindAsync(availableDayId);
+            var physician = await db.Physicians.FindAsync(physicianId);
             var serviceRequest = new Orvosi.Data.ServiceRequest();
             serviceRequest.PhysicianId = physicianId;
             serviceRequest.AppointmentDate = availableDay.Day;
@@ -442,7 +454,7 @@ namespace WebApp.Controllers
             vm.SelectedPhysician = physician;
             vm.ServiceRequest = serviceRequest;
 
-            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
+            vm.ServiceSelectList = db.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == e.ServiceCategories.IndependentMedicalExam)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
@@ -450,7 +462,7 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
                 });
 
-            vm.AvailableSlotSelectList = ctx.AvailableSlots
+            vm.AvailableSlotSelectList = db.AvailableSlots
                 .Where(c => c.AvailableDayId == availableDayId)
                 .Select(slot => new
                 {
@@ -479,7 +491,7 @@ namespace WebApp.Controllers
                 })
                 .OrderBy(c => c.Text);
 
-            vm.CompanySelectList = ctx.Companies
+            vm.CompanySelectList = db.Companies
                 .Where(c => c.IsParent == false)
                 .Select(c => new SelectListItem()
                 {
@@ -488,7 +500,7 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ParentId.ToString() }
                 });
 
-            var addresses = new DataHelper().LoadAddressesWithOwner(ctx);
+            var addresses = new DataHelper().LoadAddressesWithOwner(db);
             vm.AddressSelectList = addresses
                 .Where(loc => loc.Address.AddressTypeId != e.AddressTypes.BillingAddress)
                 .AsEnumerable()
@@ -500,7 +512,7 @@ namespace WebApp.Controllers
                 })
                 .OrderBy(c => c.Group.Name).ThenBy(c => c.Text);
 
-            vm.StaffSelectList = ctx.AspNetUsers
+            vm.StaffSelectList = db.AspNetUsers
                 .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
@@ -509,7 +521,7 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
 
-            vm.ServiceRequestTemplateSelectList = ctx.ServiceRequestTemplates
+            vm.ServiceRequestTemplateSelectList = db.ServiceRequestTemplates
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -536,8 +548,8 @@ namespace WebApp.Controllers
             }
 
             // Get the service catalogue
-            var address = await ctx.Addresses.FirstOrDefaultAsync(c => c.Id == sr.AddressId);
-            var serviceCatalogues = ctx.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            var address = await db.Addresses.FirstOrDefaultAsync(c => c.Id == sr.AddressId);
+            var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
             var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == sr.ServiceId);
             if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
             {
@@ -549,8 +561,8 @@ namespace WebApp.Controllers
             }
 
             // Get the no show and late cancellation rates for this company
-            var company = ctx.Companies.FirstOrDefault(c => c.Id == sr.CompanyId);
-            var rates = ctx.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
+            var company = db.Companies.FirstOrDefault(c => c.Id == sr.CompanyId);
+            var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
                 if (!overrideServiceCatalogueMissingError)
@@ -562,7 +574,7 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var slot = await ctx.AvailableSlots.FindAsync(sr.AvailableSlotId);
+                var slot = await db.AvailableSlots.FindAsync(sr.AvailableSlotId);
                 sr.ServiceId = sr.ServiceId;
                 sr.PhysicianId = selectedPhysicianId;
                 sr.CompanyId = company.Id;
@@ -579,7 +591,7 @@ namespace WebApp.Controllers
                 sr.CreatedUser = User.Identity.Name;
                 sr.CreatedDate = SystemTime.Now();
 
-                var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
+                var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
                 foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
                 {
@@ -607,9 +619,9 @@ namespace WebApp.Controllers
 
                 sr.UpdateIsClosed();
 
-                ctx.ServiceRequests.Add(sr);
+                db.ServiceRequests.Add(sr);
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 // Clone the related tasks
                 foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
@@ -622,7 +634,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = sr.Id });
             }
@@ -641,7 +653,7 @@ namespace WebApp.Controllers
         {
             var vm = new CreateViewModel();
 
-            vm.ServiceSelectList = ctx.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == ServiceCategories.AddOn)
+            vm.ServiceSelectList = db.Services.Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician && c.ServiceCategoryId == ServiceCategories.AddOn)
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,
@@ -649,7 +661,7 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
                 });
 
-            vm.StaffSelectList = ctx.AspNetUsers
+            vm.StaffSelectList = db.AspNetUsers
                 .Where(u => u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.CaseCoordinator || u.AspNetUserRoles.FirstOrDefault().RoleId == AspNetRoles.SuperAdmin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
@@ -658,7 +670,7 @@ namespace WebApp.Controllers
                     Value = c.Id.ToString()
                 });
 
-            vm.ServiceRequestTemplateSelectList = ctx.ServiceRequestTemplates
+            vm.ServiceRequestTemplateSelectList = db.ServiceRequestTemplates
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
                 {
@@ -675,7 +687,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateAddOn(Orvosi.Data.ServiceRequest sr)
         {
-            var serviceCategoryId = ctx.Services.Single(s => s.Id == sr.ServiceId).ServiceCategoryId;
+            var serviceCategoryId = db.Services.Single(s => s.Id == sr.ServiceId).ServiceCategoryId;
 
             if (serviceCategoryId != ServiceCategories.AddOn)
             {
@@ -688,9 +700,9 @@ namespace WebApp.Controllers
                 overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
             }
 
-            var company = await ctx.Companies.FirstOrDefaultAsync(c => c.Id == sr.CompanyId);
+            var company = await db.Companies.FirstOrDefaultAsync(c => c.Id == sr.CompanyId);
 
-            var serviceCatalogues = ctx.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
             var serviceCatalogue = serviceCatalogues.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
             if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
@@ -702,7 +714,7 @@ namespace WebApp.Controllers
                 }
             }
 
-            var rates = ctx.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
+            var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
             if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
             {
                 this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
@@ -728,7 +740,7 @@ namespace WebApp.Controllers
                 sr.CreatedUser = User.Identity.Name;
                 sr.CreatedDate = SystemTime.Now();
 
-                var requestTemplate = await ctx.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
+                var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
                 foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
                 {
@@ -755,9 +767,9 @@ namespace WebApp.Controllers
 
                 sr.UpdateIsClosed();
 
-                ctx.ServiceRequests.Add(sr);
+                db.ServiceRequests.Add(sr);
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 // Clone the related tasks
                 foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
@@ -770,7 +782,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = sr.Id });
             }
@@ -781,7 +793,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCompanyDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var viewDataService = new ViewDataService(User.Identity, db);
             var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
             return PartialView("_CreateAddOnCompanyDropDown", companySelectList);
         }
@@ -789,7 +801,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshServiceDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var viewDataService = new ViewDataService(User.Identity, db);
             var selectList = viewDataService.GetPhysicianServiceSelectList(physicianId);
             return PartialView("_CreateAddOnServiceDropDown", selectList);
         }
@@ -797,7 +809,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCaseCoordinatorDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var viewDataService = new ViewDataService(User.Identity, db);
             var selectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physicianId);
             return PartialView("_CreateAddOnCaseCoordinatorDropDown", selectList);
         }
@@ -805,7 +817,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshProcessTemplateDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, ctx);
+            var viewDataService = new ViewDataService(User.Identity, db);
             var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
             return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
         }
@@ -818,7 +830,7 @@ namespace WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var serviceRequest = await ctx.ServiceRequests.FindAsync(id);
+            var serviceRequest = await db.ServiceRequests.FindAsync(id);
 
             if (serviceRequest == null)
             {
@@ -849,7 +861,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 // get the tracked object from the database
-                var obj = await ctx.ServiceRequests.FindAsync(model.ServiceRequestId);
+                var obj = await db.ServiceRequests.FindAsync(model.ServiceRequestId);
 
                 // update the resource assignments
                 obj.CaseCoordinatorId = model.CaseCoordinatorId;
@@ -868,7 +880,7 @@ namespace WebApp.Controllers
                         task.AssignedTo = obj.PhysicianId;
                 }
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = obj.Id });
             }
@@ -883,7 +895,7 @@ namespace WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(id);
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
 
             if (serviceRequest == null)
             {
@@ -914,7 +926,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 // get the tracked object from the database
-                var obj = await ctx.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.ServiceRequestId);
+                var obj = await db.ServiceRequests.SingleOrDefaultAsync(c => c.Id == sr.ServiceRequestId);
 
                 // update the resource assignments
                 obj.ClaimantName = sr.ClaimantName;
@@ -926,7 +938,7 @@ namespace WebApp.Controllers
                 obj.ModifiedDate = SystemTime.Now();
                 obj.ModifiedUser = User.Identity.GetGuidUserId().ToString();
 
-                await ctx.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Details", new { id = sr.ServiceRequestId });
             }
@@ -940,7 +952,7 @@ namespace WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(id);
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
@@ -954,7 +966,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.Delete)]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(id);
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(id);
 
             if (!serviceRequest.CancelledDate.HasValue)
             {
@@ -965,7 +977,7 @@ namespace WebApp.Controllers
             serviceRequest.IsDeleted = true;
             serviceRequest.ModifiedDate = SystemTime.Now();
             serviceRequest.ModifiedUser = User.Identity.GetGuidUserId().ToString();
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             //TODO: Unshare and delete folders from dropbox
             return RedirectToAction("Index");
@@ -974,7 +986,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
         public async Task<ActionResult> Cancel(int serviceRequestId)
         {
-            ServiceRequest serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
+            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
 
             if (serviceRequest == null)
             {
@@ -985,40 +997,40 @@ namespace WebApp.Controllers
             return View(serviceRequest);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
-        public async Task<ActionResult> Cancel(CancellationForm form)
-        {
-            var serviceRequest = await ctx.ServiceRequests.FindAsync(form.ServiceRequestId);
-            if (serviceRequest == null)
-            {
-                return HttpNotFound();
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
+        //public async Task<ActionResult> Cancel(CancellationForm form)
+        //{
+        //    var serviceRequest = await db.ServiceRequests.FindAsync(form.ServiceRequestId);
+        //    if (serviceRequest == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                serviceRequest.CancelledDate = form.CancelledDate;
-                serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
-                serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
+        //    if (ModelState.IsValid)
+        //    {
+        //        serviceRequest.CancelledDate = form.CancelledDate;
+        //        serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
+        //        serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
 
-                serviceRequest.MarkActiveTasksAsObsolete();
+        //        serviceRequest.UpdateToDoTasksToObsolete();
 
-                serviceRequest.UpdateIsClosed();
+        //        serviceRequest.UpdateIsClosed();
 
-                serviceRequest.UpdateInvoice(ctx);
+        //        serviceRequest.UpdateInvoice(db);
 
-                await ctx.SaveChangesAsync();
+        //        await db.SaveChangesAsync();
 
-                return RedirectToAction("Details", new { id = serviceRequest.Id });
-            }
-            return View(serviceRequest);
-        }
+        //        return RedirectToAction("Details", new { id = serviceRequest.Id });
+        //    }
+        //    return View(serviceRequest);
+        //}
 
         [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
         public async Task<ActionResult> UndoCancel(int serviceRequestId)
         {
-            var serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
+            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
@@ -1028,15 +1040,39 @@ namespace WebApp.Controllers
             serviceRequest.IsLateCancellation = false;
             serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', "Cancellation Undone");
 
-            serviceRequest.MarkObsoleteTasksAsActive();
+            serviceRequest.UpdateObsoleteTasksToToDo();
 
             serviceRequest.UpdateIsClosed();
 
-            serviceRequest.UpdateInvoice(ctx);
+            serviceRequest.UpdateInvoice(db);
 
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
+        public async Task<ActionResult> ToggleNoShow(NoShowForm form)
+        {
+            await service.NoShow(form);
+
+            return Json(new
+            {
+                serviceRequestId = form.ServiceRequestId
+            });
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
+        public async Task<ActionResult> ToggleOnHold(OnHoldForm form)
+        {
+            await service.OnHold(form);
+
+            return Json(new
+            {
+                serviceRequestId = form.ServiceRequestId
+            });
         }
 
         [HttpPost]
@@ -1045,7 +1081,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> NoShow()
         {
             var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
-            var serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
+            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
@@ -1053,13 +1089,13 @@ namespace WebApp.Controllers
 
             serviceRequest.IsNoShow = true;
 
-            serviceRequest.MarkActiveTasksAsObsolete();
+            serviceRequest.UpdateToDoTasksToObsolete();
 
             serviceRequest.UpdateIsClosed();
 
-            serviceRequest.UpdateInvoice(ctx);
+            serviceRequest.UpdateInvoice(db);
 
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -1070,7 +1106,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> UndoNoShow()
         {
             var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
-            var serviceRequest = await ctx.ServiceRequests.FindAsync(serviceRequestId);
+            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
             if (serviceRequest == null)
             {
                 return HttpNotFound();
@@ -1078,13 +1114,13 @@ namespace WebApp.Controllers
 
             serviceRequest.IsNoShow = false;
 
-            serviceRequest.MarkObsoleteTasksAsActive();
+            serviceRequest.UpdateObsoleteTasksToToDo();
 
             serviceRequest.UpdateIsClosed();
 
-            serviceRequest.UpdateInvoice(ctx);
+            serviceRequest.UpdateInvoice(db);
 
-            await ctx.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -1102,7 +1138,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> BoxManager(int serviceRequestId)
         {
             // Get the box folder id for the case
-            var serviceRequest = ctx.ServiceRequests
+            var serviceRequest = db.ServiceRequests
                 .WithId(serviceRequestId)
                 .Select(ServiceRequestProjections.ForBoxManager())
                 .Single();
@@ -1113,7 +1149,7 @@ namespace WebApp.Controllers
                 return new HttpNotFoundResult();
             }
 
-            var orvosiBoxFolderCollaborations = ctx.ServiceRequestBoxCollaborations
+            var orvosiBoxFolderCollaborations = db.ServiceRequestBoxCollaborations
                 .Where(bc => bc.ServiceRequestId == serviceRequestId)
                 .ToList();
 
@@ -1133,7 +1169,7 @@ namespace WebApp.Controllers
                         BoxCollaborations = b
                     }).ToList();
 
-            var orvosiResources = ctx.ServiceRequestTasks
+            var orvosiResources = db.ServiceRequestTasks
                     .Where(srt => srt.ServiceRequestId == serviceRequestId)
                     .Where(t => t.AssignedTo.HasValue)
                     .Select(sr => sr.AspNetUser_AssignedTo)
@@ -1169,7 +1205,7 @@ namespace WebApp.Controllers
         public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
         {
             // Get the request
-            var serviceRequest = ctx.ServiceRequests
+            var serviceRequest = db.ServiceRequests
                 .WithId(serviceRequestId)
                 .Select(ServiceRequestProjections.ForBoxManager())
                 .Single();
@@ -1186,13 +1222,13 @@ namespace WebApp.Controllers
         public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
         {
             // Get the request
-            var serviceRequest = ctx.ServiceRequests
+            var serviceRequest = db.ServiceRequests
                 .WithId(ServiceRequestId)
                 .Select(ServiceRequestProjections.ForBoxManager())
                 .Single();
 
             // Get the request and assert they have a Box Folder Id
-            var physician = ctx.AspNetUsers.Single(p => p.Id == serviceRequest.Physician.Id);
+            var physician = db.AspNetUsers.Single(p => p.Id == serviceRequest.Physician.Id);
             //var physicianBoxFolderId = "7027883033"; // This overrides to HanSolo box folder while developing. Comment out for production.
             var physicianBoxFolderId = serviceRequest.Physician.BoxFolderId;
             if (string.IsNullOrEmpty(physicianBoxFolderId))
@@ -1203,7 +1239,7 @@ namespace WebApp.Controllers
             BoxFolder caseFolder;
             if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.AddOn)
             {
-                var province = ctx.GetCompanyProvince(serviceRequest.Company.Id).FirstOrDefault();
+                var province = db.GetCompanyProvince(serviceRequest.Company.Id).FirstOrDefault();
                 if (province == null)
                 {
                     province = new GetCompanyProvinceReturnModel() { ProvinceID = 0, ProvinceName = "Ontario" };
@@ -1213,14 +1249,14 @@ namespace WebApp.Controllers
             else
             {
                 // Get the province which is used in the case folder path
-                var province = ctx.Provinces.Single(p => p.Id == serviceRequest.Address.ProvinceId);
+                var province = db.Provinces.Single(p => p.Id == serviceRequest.Address.ProvinceId);
                 caseFolder = box.CreateCaseFolder(physicianBoxFolderId, province.ProvinceName, serviceRequest.AppointmentDate.Value, serviceRequest.CaseFolderName, serviceRequest.Physician.BoxCaseTemplateFolderId);
             }
 
             // Persist the new case folder Id to the database.
-            var sr = ctx.ServiceRequests.Find(ServiceRequestId);
+            var sr = db.ServiceRequests.Find(ServiceRequestId);
             sr.BoxCaseFolderId = caseFolder.Id;
-            ctx.SaveChanges();
+            db.SaveChanges();
 
             // Redirect to display the Box Folder
             return RedirectToAction("Details", new { id = ServiceRequestId });
@@ -1230,12 +1266,12 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.AddCollaborator)]
         public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
-            var resources = ctx.GetServiceRequestResources(ServiceRequestId);
+            var resources = db.GetServiceRequestResources(ServiceRequestId);
             var resource = resources.Single(r => r.Id == UserId);
 
             var box = new BoxManager();
             var collaboration = box.AddCollaboration(FolderId, resource.BoxUserId, resource.Email);
-            ctx.ServiceRequestBoxCollaborations.Add(
+            db.ServiceRequestBoxCollaborations.Add(
                 new ServiceRequestBoxCollaboration()
                 {
                     BoxCollaborationId = collaboration.Id,
@@ -1245,7 +1281,7 @@ namespace WebApp.Controllers
                     ModifiedDate = SystemTime.Now()
                 }
             );
-            ctx.SaveChanges();
+            db.SaveChanges();
 
             box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
@@ -1262,9 +1298,9 @@ namespace WebApp.Controllers
 
             if (success)
             {
-                var collaboration = ctx.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
-                ctx.ServiceRequestBoxCollaborations.Remove(collaboration);
-                ctx.SaveChanges();
+                var collaboration = db.ServiceRequestBoxCollaborations.SingleOrDefault(b => b.BoxCollaborationId == CollaborationId);
+                db.ServiceRequestBoxCollaborations.Remove(collaboration);
+                db.SaveChanges();
             }
             return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
 
@@ -1274,7 +1310,7 @@ namespace WebApp.Controllers
         {
             string boxUserId;
 
-            var user = ctx.Profiles.Single(p => p.Id == UserId);
+            var user = db.Profiles.Single(p => p.Id == UserId);
             boxUserId = user.BoxUserId;
             var box = new BoxManager();
             var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
@@ -1305,7 +1341,7 @@ namespace WebApp.Controllers
 
         private async Task GetPhysicianDropDownData()
         {
-            var physicians = await ctx.Physicians
+            var physicians = await db.Physicians
                 .Select(p => new
                 {
                     p.AspNetUser.FirstName,
@@ -1333,7 +1369,7 @@ namespace WebApp.Controllers
             //    companies = companies.Where(c => c.ParentId == availableDay.CompanyId);
             //}
 
-            ViewBag.Services = await ctx.Services
+            ViewBag.Services = await db.Services
                 .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
                 .Select(c => new SelectListItem()
                 {
@@ -1342,7 +1378,7 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
                 }).ToListAsync();
 
-            var slots = await ctx.AvailableSlotViews
+            var slots = await db.AvailableSlotViews
                 .Where(c => c.AvailableDayId == availableDay.Id).ToListAsync();
 
             ViewBag.AvailableSlots = slots.Select(c => new SelectListItem()
@@ -1353,7 +1389,7 @@ namespace WebApp.Controllers
             .OrderBy(c => c.Text)
             .ToList();
 
-            ViewBag.Companies = await ctx.Companies
+            ViewBag.Companies = await db.Companies
                 .Where(c => c.IsParent == false)
                 .Select(c => new SelectListItem()
                 {
@@ -1362,7 +1398,7 @@ namespace WebApp.Controllers
                     Group = new SelectListGroup() { Name = c.Parent.Name }
                 }).ToListAsync();
 
-            var l = new WebApp.Library.DataHelper().LoadAddressesWithOwner(ctx);
+            var l = new WebApp.Library.DataHelper().LoadAddressesWithOwner(db);
             ViewBag.Locations = l
                 .Where(a => a.Address.AddressTypeId != AddressTypes.BillingAddress)
                 .Select(c => new SelectListItem()
@@ -1372,7 +1408,7 @@ namespace WebApp.Controllers
                 Group = new SelectListGroup() { Name = c.Owner }
             });
 
-            ViewBag.Staff = ctx.AspNetUsers
+            ViewBag.Staff = db.AspNetUsers
                 .Where(u => u.GetRoleId() == AspNetRoles.CaseCoordinator || u.GetRoleId() == AspNetRoles.DocumentReviewer || u.GetRoleId() == AspNetRoles.IntakeAssistant || u.GetRoleId() == AspNetRoles.SuperAdmin)
                 .AsEnumerable()
                 .Select(c => new SelectListItem()
@@ -1427,7 +1463,7 @@ namespace WebApp.Controllers
         //[AuthorizeRole(Feature = Features.SysAdmin.ManageTasks)]
         public async Task<ActionResult> GetAllServiceRequestIds()
         {
-            var ids = ctx.ServiceRequests.Select(sr => sr.Id).OrderBy(sr => sr).ToList();
+            var ids = db.ServiceRequests.Select(sr => sr.Id).OrderBy(sr => sr).ToList();
             return Json(ids, JsonRequestBehavior.AllowGet);
         }
 
@@ -1435,7 +1471,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)
         {
-            var service = new WorkService(ctx, User.Identity);
+            var service = new WorkService(db, User.Identity);
 
             await service.UpdateDependentTaskStatuses(serviceRequestId);
 
@@ -1449,7 +1485,7 @@ namespace WebApp.Controllers
         {
             if (disposing)
             {
-                ctx.Dispose();
+                db.Dispose();
             }
             base.Dispose(disposing);
         }

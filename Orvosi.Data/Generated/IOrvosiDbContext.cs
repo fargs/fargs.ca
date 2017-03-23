@@ -31,6 +31,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         System.Data.Entity.DbSet<City> Cities { get; set; } // City
         System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
+        System.Data.Entity.DbSet<CommentType> CommentTypes { get; set; } // CommentType
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
@@ -71,7 +72,11 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServicePortfolio> ServicePortfolios { get; set; } // ServicePortfolio
         System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest
         System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
+        System.Data.Entity.DbSet<ServiceRequestComment> ServiceRequestComments { get; set; } // ServiceRequestComment
+        System.Data.Entity.DbSet<ServiceRequestCommentAccess> ServiceRequestCommentAccesses { get; set; } // ServiceRequestCommentAccess
         System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
+        System.Data.Entity.DbSet<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource
+        System.Data.Entity.DbSet<ServiceRequestStatu> ServiceRequestStatus { get; set; } // ServiceRequestStatus
         System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask

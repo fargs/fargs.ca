@@ -27,6 +27,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<AspNetRolesFeature> AspNetRolesFeatures { get; set; } // AspNetRolesFeature.FK_AspNetRolesFeature_AspNetRoles
         public virtual System.Collections.Generic.ICollection<AspNetUserRole> AspNetUserRoles { get; set; } // Many to many mapping
         public virtual System.Collections.Generic.ICollection<OTask> OTasks { get; set; } // Task.FK_Task_AspNetRoles
+        public virtual System.Collections.Generic.ICollection<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource.FK_ServiceRequestResource_AspNetRoles
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_AspNetRoles
 
         // Foreign keys
@@ -38,6 +39,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             AspNetRolesFeatures = new System.Collections.Generic.List<AspNetRolesFeature>();
             AspNetUserRoles = new System.Collections.Generic.List<AspNetUserRole>();
+            ServiceRequestResources = new System.Collections.Generic.List<ServiceRequestResource>();
             ServiceRequestTemplateTasks = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             OTasks = new System.Collections.Generic.List<OTask>();
             InitializePartial();

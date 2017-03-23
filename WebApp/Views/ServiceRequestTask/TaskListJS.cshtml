@@ -12,7 +12,8 @@
 
         $.post(url, $(context.form).serialize())
             .done(function (data) {
-                tasklistChanged(data.serviceRequestId)
+                tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             });
     }
 
@@ -25,7 +26,8 @@
                 taskStatusId: taskStatusId
             })
             .done(function (data) {
-                tasklistChanged(data.serviceRequestId)
+                tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             });
     }
 
@@ -38,6 +40,7 @@
             },
             function (data) {
                 tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
     }
@@ -47,7 +50,8 @@
         $.post(url,
             form.serialize()
         ).done(function (data) {
-            tasklistChanged(data.serviceRequestId)
+            tasklistChanged(data.serviceRequestId);
+            serviceRequestStatusChanged(data.serviceRequestId);
             showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
         });
     }
@@ -61,6 +65,7 @@
             },
             function (data) {
                 tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
     }
@@ -75,6 +80,7 @@
             },
             function (data) {
                 tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
     }
@@ -89,21 +95,21 @@
             },
             function (data) {
                 tasklistChanged(data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
     };
 
     function deleteTask(serviceRequestTaskId) {
         let url = '@Url.Content("~/ServiceRequestTask/Delete")';
-        $.post(
-            url,
+        $.post(url,
             {
                 serviceRequestTaskId: serviceRequestTaskId
-            },
-            function (data) {
+            })
+            .done(function (data) {
                 tasklistChanged(data.serviceRequestId);
-            }
-        );
+                serviceRequestStatusChanged(data.serviceRequestId);
+            });
     }
 
 </script>

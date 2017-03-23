@@ -43,6 +43,12 @@
     [IsDeleted]                          BIT              CONSTRAINT [DF_ServiceRequest_IsDeleted] DEFAULT ((0)) NOT NULL,
     [CreatedDate]                        DATETIME         NOT NULL,
     [CreatedUser]                        NVARCHAR (128)   NOT NULL,
+    [ServiceRequestStatusId]             SMALLINT         CONSTRAINT [DF_ServiceRequest_ServiceRequestStatusId] DEFAULT ((2)) NOT NULL,
+    [ServiceRequestStatusChangedBy]      UNIQUEIDENTIFIER NULL,
+    [ServiceRequestStatusChangedDate]    DATETIME         NULL,
+    [HasErrors]                          BIT              CONSTRAINT [DF_ServiceRequest_HasErrors] DEFAULT ((0)) NOT NULL,
+    [HasWarnings]                        BIT              CONSTRAINT [DF_ServiceRequest_HasWarnings] DEFAULT ((0)) NOT NULL,
+    [IsOnHold]                           BIT              CONSTRAINT [DF_ServiceRequest_IsOnHold] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_ServiceRequest] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequest_Address] FOREIGN KEY ([AddressId]) REFERENCES [dbo].[Address] ([Id]),
     CONSTRAINT [FK_ServiceRequest_AvailableSlot] FOREIGN KEY ([AvailableSlotId]) REFERENCES [dbo].[AvailableSlot] ([Id]),
@@ -52,8 +58,15 @@
     CONSTRAINT [FK_ServiceRequest_IntakeAssistant] FOREIGN KEY ([IntakeAssistantId]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Physician] FOREIGN KEY ([PhysicianId]) REFERENCES [dbo].[Physician] ([Id]),
     CONSTRAINT [FK_ServiceRequest_Service] FOREIGN KEY ([ServiceId]) REFERENCES [dbo].[Service] ([Id]),
+    CONSTRAINT [FK_ServiceRequest_ServiceRequestStatus] FOREIGN KEY ([ServiceRequestStatusId]) REFERENCES [dbo].[ServiceRequestStatus] ([Id]),
     CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate] FOREIGN KEY ([ServiceRequestTemplateId]) REFERENCES [dbo].[ServiceRequestTemplate] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate];
+
+
 
 
 GO

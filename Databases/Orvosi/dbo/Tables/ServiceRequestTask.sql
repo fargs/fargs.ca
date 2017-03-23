@@ -35,6 +35,11 @@
     [TaskStatusId]                 SMALLINT         NULL,
     [TaskStatusChangedBy]          UNIQUEIDENTIFIER NULL,
     [TaskStatusChangedDate]        DATETIME         NULL,
+    [CreatedDate]                  DATETIME         NULL,
+    [CreatedUser]                  NVARCHAR (100)   NULL,
+    [EffectiveDate]                DATETIME         NULL,
+    [EffectiveDateBase]            TINYINT          NULL,
+    [EffectiveDateDiff]            SMALLINT         NULL,
     CONSTRAINT [PK_ServiceRequestTask] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ServiceRequestTask_AspNetUsers] FOREIGN KEY ([AssignedTo]) REFERENCES [dbo].[AspNetUsers] ([Id]),
     CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy] FOREIGN KEY ([TaskStatusChangedBy]) REFERENCES [dbo].[AspNetUsers] ([Id]),
@@ -65,13 +70,27 @@ ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask
 
 
 GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers1];
+
+
+GO
 ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_Task];
 
 
 
 
 GO
-ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_TaskStatusChangedBy];
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy];
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_Task];
+
+
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy];
 
 
 GO

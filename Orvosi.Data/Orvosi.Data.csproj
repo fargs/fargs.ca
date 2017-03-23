@@ -58,6 +58,7 @@
     <Compile Include="AspNetUser.cs" />
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
+    <Compile Include="Extensions\ServiceRequestExtensions.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
     <Compile Include="Filters\ReceiptFilters.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
@@ -156,6 +157,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\CollaboratorConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\CommentType.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\CommentTypeConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\Company.cs">
@@ -430,6 +437,18 @@
     <Compile Include="Generated\ServiceRequestBoxCollaborationConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\ServiceRequestComment.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestCommentAccess.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestCommentAccessConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestCommentConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\ServiceRequestConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
@@ -437,6 +456,18 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\ServiceRequestMessageConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestResource.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestResourceConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestStatu.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\ServiceRequestStatuConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\ServiceRequestTask.cs">

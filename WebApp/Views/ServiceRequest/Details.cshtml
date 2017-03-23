@@ -1,11 +1,7 @@
 ﻿@using WebApp.Library.Extensions
-@using WebApp.Library
-@using Orvosi.Shared.Enums
-@using Box.V2.Models
-@using Orvosi.Data
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
-@model WebApp.ViewModels.ServiceRequestViewModels.DetailsViewModel
+@model CaseViewModel
 
 @{
     var identity = User.Identity.GetClaimsIdentity();
@@ -13,253 +9,93 @@
     var features = identity.GetFeatures();
 }
 
-<p>
-    <ul class="list-unstyled">
-        <li>
-            <div class="btn-group">
-                @if (features.Contains(Features.ServiceRequest.Edit))
-                {
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequest.Id">Edit</a></li>
-                    @if (features.Contains(Features.ServiceRequest.AssignResources))
-                        {
-                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequest.Id">Resource Assignment</a></li>
-                        }
-                    @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
-                        {
-                        <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequest.Id">Change Company or Service</a></li>
-                        }
-                    @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
-                        {
-                        <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequest.Id">Change Process Template</a></li>
-                        }
-                    @if (features.Contains(Features.ServiceRequest.Reschedule))
-                        {
-                            if (Model.ServiceRequest.CanBeRescheduled)
-                            {
-                        <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequest.Id">Reschedule</a></li>
-                            }
-                        }
-                    @if (features.Contains(Features.ServiceRequest.Cancel))
-                        {
-                            if (Model.ServiceRequest.CanBeUncancelled)
-                            {
-                        <li roleId="separator" class="divider"></li>
-                        <li>@Html.ActionLink("Undo Cancellation", "UndoCancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
-                        <li>@Html.ActionLink("Delete", "Delete", new { id = Model.ServiceRequest.Id })</li>
-                            }
-                            else if (Model.ServiceRequest.CanBeCancelled)
-                            {
-                        <li>@Html.ActionLink("Cancel", "Cancel", new { serviceRequestId = Model.ServiceRequest.Id })</li>
-                            }
-                        }
-                </ul>
-                }
-            </div>
-        </li>
-    </ul>
-</p>
+<div id="actionmenu-container" class="col-md-12">
+    @Html.Partial("ActionMenu", Model)
+</div>
 
-@*
-    LEFT COLUMN
-*@
 <div class="row">
-    <div class="col-sm-3">
-        <h4><span class="btn btn-circle" style="color: white; background-color: @Model.ServiceRequest.Physician.ColorCode">@Model.ServiceRequest.Physician.Initials </span> @Model.ServiceRequest.Physician.DisplayName</h4>
+    <div class="col-md-3">
+        @Html.Partial("PhysicianLabel", Model.Physician)
         <hr />
-        <h3>@Model.ServiceRequest.ClaimantName</h3>
-        <p class="small text-muted">@Model.ServiceRequest.Service.Name, @Model.ServiceRequest.Company.Name</p>
-        @if (Model.ServiceRequest.IsClosed)
-        {
-            <span class="label label-danger">
-                Closed
-            </span>
-        }
-        @if (Model.ServiceRequest.Service.HasAppointment)
-        {
-            <div class="form-group">
-                <label class="control-label">Assessment</label>
-                <p class="form-control-static">
-                    @Model.ServiceRequest.AppointmentDate.ToOrvosiDateTimeFormat(Model.ServiceRequest.StartTime.HasValue ? Model.ServiceRequest.StartTime.Value : new TimeSpan(0, 0, 0))
-                    <br />
-                    <strong><small class="text-muted">@Model.ServiceRequest.Address.Name</small></strong><br />
-                    <small>@Model.ServiceRequest.Address.Address1</small>
-                    <small><mark>@Model.ServiceRequest.Address.City</mark>, @Model.ServiceRequest.Address.ProvinceCode</small>
-                    <small>@Model.ServiceRequest.Address.PostalCode</small>
-
-                </p>
-            </div>
-        }
-        @if (Model.ServiceRequest.Service.HasReportDeliverable)
-        {
-            <div class="form-group">
-                <label class="control-label">Report</label>
-                @if (Model.ServiceRequest.DueDate.HasValue)
-                {
-                    <p class="form-control-static">@Model.ServiceRequest.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
-                }
-                else
-                {
-                    <p class="form-control-static">Not Set</p>
-                }
-            </div>
-        }
-
-        <div class="form-group">
-            <label class="control-label">Assignments</label>
-            <p class="form-control-static">
-                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.Physician == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.Physician)
-                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.IntakeAssistant == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.IntakeAssistant)
-                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.DocumentReviewer == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.DocumentReviewer)
-                @Html.Partial("~/Views/Shared/_Initials.cshtml", Model.ServiceRequest.CaseCoordinator == null ? new Orvosi.Shared.Model.Person() : Model.ServiceRequest.CaseCoordinator)
-            </p>
+        <div id="case-container">
+            @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Details } })
         </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
-                {
-                    if (Model.ServiceRequest.CanNoShowBeUndone)
-                    {
-                        <form action="~/ServiceRequest/UndoNoShow" method="post">
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                            <span class="alert alert-danger"><i class="glyphicon gyphicon-info-sign"></i> This case was a <strong>No Show</strong></span>
-                            <span><button class="btn btn-link">Undo</button></span>
-                        </form>
-                    }
-                    else if (Model.ServiceRequest.CanBeNoShow)
-                    {
-                        <form action="~/ServiceRequest/NoShow" method="post">
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("ServiceRequestId", Model.ServiceRequest.Id)
-                            <button class="btn btn-default">No Show</button>
-                            <div class="help-block">Click to flag this case as a "No Show"</div>
-                        </form>
-                    }
-                }
-            </div>
+        <hr />
+        <div id="box-integration"></div>
+        <hr />
+        <div id="google-calendar-integration"></div>
+    </div>
+    <div class="col-md-4">
+        <h4>Tasks</h4>
+        <hr />
+        <div id="tasklist-container">
+            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequestId, viewOptions = TaskListViewOptions.Details, options = TaskListViewModelFilter.AllTasks })
         </div>
     </div>
-
-    @*
-        MIDDLE COLUMN
-    *@
-    <div class="col-sm-5">
-        <p>
-            <h4 style="line-height:30px;">
-                @if (Model.ServiceRequest.ServiceStatusId.HasValue)
-                {
-                    <span>
-                        @Html.Partial("_ServiceStatusLabel", Model.ServiceRequest.ServiceStatusId.Value)
-                    </span>
-                }
-                <span>Case @Model.ServiceRequest.Id</span>
-            </h4>
-        </p>
+    <div class="col-md-5">
+        <h4>Messages</h4>
         <hr />
         <div id="notes">
-            @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequest.Id, Note = Model.ServiceRequest.Notes })
+            @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
         </div>
-        <p>
-        </p>
-        <section id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequest.Id, viewOptions = TaskListViewOptions.Details, options = TaskListViewModelFilter.AllTasks })
-        </section>
+        <div id="livechat-container">
+            @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
+            @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
+        </div>
     </div>
+</div>
 
-    @*
-        RIGHT COLUMN
-    *@
 
-    <div class="col-sm-4">
-        @if (features.Contains(Features.ServiceRequest_Box.ViewBoxFolder))
-        {
-            <h4 style="line-height:30px;">Case Files and Reports</h4>
+
+    @*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
+            {
+            <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
             <hr />
-            if (Model.ServiceRequest.BoxCaseFolderId == null)
+            if (roleId == AspNetRoles.SuperAdmin)
             {
-                if (features.Contains(Features.ServiceRequest_Box.CreateFolder))
-                {
-                    <div>
-                        <form action="~/ServiceRequest/CreateBoxCaseFolder?ServiceRequestId=@Model.ServiceRequest.Id" method="post">
-                            <button type="submit" class="btn btn-primary">Create Case Folder</button>
-                        </form>
-                    </div>
-                }
+                <form action="~/Invoice/Create" method="post">
+                    @Html.Hidden("Id", Model.Id)
+                    <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
+                </form>
             }
-            else
+            else if (Model.InvoiceDetails.Count() == 0)
             {
-                if (features.Contains(Features.ServiceRequest_Box.CreateFolder))
-                {
-                    <p><a class="btn btn-default" target="_blank" href="@Model.ServiceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-                    <div class="help-block">This folder contains the supporting case files provided by the company and the report.</div>
-                }
-                if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
-                {
-                    <a href="~/ServiceRequest/BoxManager?serviceRequestId=@Model.ServiceRequest.Id" class="btn btn-primary">Box Share and Sync Manager</a>
-                }
+                <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
             }
 
-            if (Model.ServiceRequest.Service.HasAppointment)
+            foreach (var invoiceDetail in Model.InvoiceDetails)
             {
-                if (features.Contains(Features.ServiceRequest_Google.OpenInGoogle))
-                {
-                    <h3>
-                        Calendar Integration
-                    </h3>
-                    <div id="google-calendar-integration">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Invoice @invoiceDetail.Invoice.InvoiceNumber
+                        @if (roleId == AspNetRoles.SuperAdmin)
+                        {
+                            <div class="pull-right">
+                                @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
+                            </div>
+                        }
                     </div>
-                }
+                    <div class="panel-body">
+                        @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
+                    </div>
+                </div>
             }
-        }
+        }*@
 
-        @*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-                {
-                <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-                <hr />
-                if (roleId == AspNetRoles.SuperAdmin)
-                {
-                    <form action="~/Invoice/Create" method="post">
-                        @Html.Hidden("Id", Model.ServiceRequest.Id)
-                        <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
-                    </form>
-                }
-                else if (Model.ServiceRequest.InvoiceDetails.Count() == 0)
-                {
-                    <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
-                }
 
-                foreach (var invoiceDetail in Model.ServiceRequest.InvoiceDetails)
-                {
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Invoice @invoiceDetail.Invoice.InvoiceNumber
-                            @if (roleId == AspNetRoles.SuperAdmin)
-                            {
-                                <div class="pull-right">
-                                    @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
-                                </div>
-                            }
-                        </div>
-                        <div class="panel-body">
-                            @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
-                        </div>
-                    </div>
-                }
-            }*@
+
+<div id="modal-container" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="modal-content">
+        </div>
     </div>
 </div>
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
 @section Scripts {
-    <script type="text/javascript">
 
-        let tasklistContainer = document.getElementById('tasklist-container');
+    <script type="text/javascript">
 
         $(document).ready(function(){
             //$('.dropdown-submenu a.assign-to').on("click", function(e){
@@ -267,13 +103,13 @@
             //    e.stopPropagation();
             //    e.preventDefault();
             //});
-            @if (Model.ServiceRequest.AppointmentDate.HasValue)
+            @if (Model.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
             }
         });
 
-        let serviceRequestId = @Model.ServiceRequest.Id;
+        let serviceRequestId = @Model.ServiceRequestId;
 
         function onEdit(serviceRequestId) {
 
@@ -332,27 +168,41 @@
             }, this);
         }
 
-        function tasklistChanged() {
+        function tasklistChanged(serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
-
-            $.get(url, 
-                { 
-                    serviceRequestId: serviceRequestId, 
+            $.get(url,
+                {
+                    serviceRequestId: serviceRequestId,
                     viewOptions: '@TaskListViewOptions.Details',
                     options: '@TaskListViewModelFilter.AllTasks'
                 })
                 .done(function (result) {
-                    tasklistContainer.innerHTML = result;
+                    document.getElementById('tasklist-container').innerHTML = result;
+                });
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId
                 })
-                .always(function () {
-                    //loader.hide();
+                .done(function (result) {
+                    document.getElementById('case-container').innerHTML = result;
+                });
+
+            $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('actionmenu-container').innerHTML = result;
                 });
         }
 
         function refreshGoogleCalendarIntegration() {
             $.ajax({
                 type: "GET",
-                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequest.Id)',
+                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequestId)',
                 contentType: "text/html",
                 success: function (result) {
                     $('#google-calendar-integration').html(result);
@@ -367,7 +217,7 @@
         function addGoogleCalendarEvent(eventId) {
             $.ajax({
                 type: "POST",
-                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequest.Id)',
+                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequestId)',
                 contentType: "text/html",
                 success: function (result) {
                     refreshGoogleCalendarIntegration();
@@ -380,6 +230,11 @@
         }
 
     </script>
-}
 
-@Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+
+}

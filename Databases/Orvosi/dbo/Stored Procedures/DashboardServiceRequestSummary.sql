@@ -22,7 +22,7 @@ AS (
 		, ServiceRequestStatusId = t.TaskStatusId
 	FROM (	
 		SELECT ServiceRequestId = sr.Id
-			, TaskStatusId
+			, t.TaskStatusId
 			, AppointmentDate = ISNULL(sr.AppointmentDate, sr.DueDate)
 			, s.ServiceCategoryId
 			, RowNum = ROW_NUMBER() OVER(PARTITION BY sr.Id ORDER BY t.TaskStatusId)

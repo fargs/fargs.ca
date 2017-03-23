@@ -51,8 +51,13 @@ namespace Orvosi.Data
         public System.Guid? CompletedBy { get; set; } // CompletedBy
         public System.DateTime? DueDate { get; set; } // DueDate
         public short? TaskStatusId { get; set; } // TaskStatusId
-        public System.DateTime? TaskStatusChangedDate { get; set; } // TaskStatusChangedDate
         public System.Guid? TaskStatusChangedBy { get; set; } // TaskStatusChangedBy
+        public System.DateTime? TaskStatusChangedDate { get; set; } // TaskStatusChangedDate
+        public System.DateTime? CreatedDate { get; set; } // CreatedDate
+        public string CreatedUser { get; set; } // CreatedUser (length: 100)
+        public System.DateTime? EffectiveDate { get; set; } // EffectiveDate
+        public byte? EffectiveDateBase { get; set; } // EffectiveDateBase
+        public short? EffectiveDateDiff { get; set; } // EffectiveDateDiff
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Child { get; set; } // Many to many mapping
@@ -60,8 +65,8 @@ namespace Orvosi.Data
 
         // Foreign keys
         public virtual AspNetUser AspNetUser_AssignedTo { get; set; } // FK_ServiceRequestTask_AspNetUsers
-        public virtual AspNetUser AspNetUser_TaskStatusChangedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
         public virtual AspNetUser AspNetUser_CompletedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers1
+        public virtual AspNetUser AspNetUser_TaskStatusChangedBy { get; set; } // FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
         public virtual ServiceRequestTemplateTask ServiceRequestTemplateTask { get; set; } // FK_ServiceRequestTask_ServiceRequestTemplateTask
@@ -75,7 +80,6 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsObsolete = false;
             IsCriticalPath = false;
-            TaskStatusId = 2;
             Child = new System.Collections.Generic.List<ServiceRequestTask>();
             Parent = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();

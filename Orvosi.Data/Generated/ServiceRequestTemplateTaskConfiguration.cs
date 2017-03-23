@@ -35,6 +35,10 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.DueDateType).HasColumnName(@"DueDateType").IsOptional().IsFixedLength().HasColumnType("nchar").HasMaxLength(10);
             Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.DueDateBase).HasColumnName(@"DueDateBase").IsOptional().HasColumnType("tinyint");
+            Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
+            Property(x => x.EffectiveDateBase).HasColumnName(@"EffectiveDateBase").IsOptional().HasColumnType("tinyint");
+            Property(x => x.EffectiveDateDiff).HasColumnName(@"EffectiveDateDiff").IsOptional().HasColumnType("smallint");
 
             // Foreign keys
             HasOptional(a => a.AspNetRole).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.ResponsibleRoleId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_AspNetRoles

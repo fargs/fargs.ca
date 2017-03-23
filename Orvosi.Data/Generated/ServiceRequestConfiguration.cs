@@ -71,6 +71,12 @@ namespace Orvosi.Data
             Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
             Property(x => x.CreatedDate).HasColumnName(@"CreatedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.CreatedUser).HasColumnName(@"CreatedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.ServiceRequestStatusId).HasColumnName(@"ServiceRequestStatusId").IsRequired().HasColumnType("smallint");
+            Property(x => x.ServiceRequestStatusChangedBy).HasColumnName(@"ServiceRequestStatusChangedBy").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.ServiceRequestStatusChangedDate).HasColumnName(@"ServiceRequestStatusChangedDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.HasErrors).HasColumnName(@"HasErrors").IsRequired().HasColumnType("bit");
+            Property(x => x.HasWarnings).HasColumnName(@"HasWarnings").IsRequired().HasColumnType("bit");
+            Property(x => x.IsOnHold).HasColumnName(@"IsOnHold").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address
@@ -82,6 +88,7 @@ namespace Orvosi.Data
             HasOptional(a => a.Service).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_ServiceRequest_Service
             HasOptional(a => a.ServiceRequestTemplate).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceRequestTemplateId).WillCascadeOnDelete(false); // FK_ServiceRequest_ServiceRequestTemplate
             HasRequired(a => a.Physician).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceRequest_Physician
+            HasRequired(a => a.ServiceRequestStatu).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceRequestStatusId).WillCascadeOnDelete(false); // FK_ServiceRequest_ServiceRequestStatus
             InitializePartial();
         }
         partial void InitializePartial();

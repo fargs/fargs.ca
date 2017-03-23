@@ -1,0 +1,80 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@model CaseViewModel
+
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+}
+
+<ul class="list-unstyled">
+    <li>
+        <div class="btn-group">
+            @if (features.Contains(Features.ServiceRequest.Edit))
+            {
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequestId">Edit</a></li>
+                    @if (features.Contains(Features.ServiceRequest.AssignResources))
+                    {
+                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId">Resource Assignment</a></li>
+                    }
+                    @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
+                    {
+                        <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequestId">Change Company or Service</a></li>
+                    }
+                    @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
+                    {
+                        <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequestId">Change Process Template</a></li>
+                    }
+                    @if (features.Contains(Features.ServiceRequest.Reschedule))
+                    {
+                        if (Model.CanBeRescheduled)
+                        {
+                            <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequestId">Reschedule</a></li>
+                        }
+                    }
+                    @if (features.Contains(Features.ServiceRequest.Cancel))
+                    {
+                        if (Model.CanBeUncancelled)
+                        {
+                            <li roleId="separator" class="divider"></li>
+                                <li><a onclick="undoCancellation(@Model.ServiceRequestId)">Undo Cancel</a></li>
+                                    <li><a onclick="deleteRequest(@Model.ServiceRequestId)">Delete</a></li>
+                        }
+                        else if (Model.CanBeCancelled)
+                        {
+                            <li><a onclick="showCancellationForm(@Model.ServiceRequestId)">Cancel</a></li>
+                        }
+                    }
+                    @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
+                    {
+                        <li class="divider"></li>
+                            <li>
+                                <a>
+                                    <form id="onhold-form">
+                                        <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       name="IsOnHold"
+                                                       value="true"
+                                                       @(Model.IsOnHold ? "checked" : "")
+                                                       onclick="onHold($(this.form))" />
+                                            </label> On Hold
+                                        </div>
+                                        <input type="hidden" name="IsOnHold" value="false" />
+                                    </form>
+                                </a>
+                            </li>
+                    }
+                </ul>
+            }
+        </div>
+    </li>
+</ul>
+

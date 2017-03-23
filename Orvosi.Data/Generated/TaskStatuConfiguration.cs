@@ -31,6 +31,7 @@ namespace Orvosi.Data
             Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.DependentPrecedence).HasColumnName(@"DependentPrecedence").IsRequired().HasColumnType("tinyint");
             Property(x => x.ServiceRequestPrecedence).HasColumnName(@"ServiceRequestPrecedence").IsRequired().HasColumnType("tinyint");
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").IsOptional().HasColumnType("nvarchar").HasMaxLength(10);
             InitializePartial();
         }
         partial void InitializePartial();

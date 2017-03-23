@@ -169,14 +169,12 @@ namespace Orvosi.Shared.Enums
         public const byte PaymentReceived = 134;
     }
 
-    //public static class TaskStatuses
-    //{
-    //    public const byte ToDo = 14;
-    //    public const byte InProgress = 15;
-    //    public const byte Waiting = 16;
-    //    public const byte Done = 47;
-    //    public const byte Obsolete = 40;
-    //}
+    public static class ServiceRequestStatuses
+    {
+        public const byte Active = 1;
+        public const byte OnHold = 2;
+        public const byte Closed = 3;
+    }
 
     public static class TaskStatuses
     {

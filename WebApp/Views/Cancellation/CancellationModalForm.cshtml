@@ -1,0 +1,48 @@
+﻿@using WebApp.FormModels
+@model CancellationForm
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Cancellation Form
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="cancellation-form">
+        @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+
+        <div class="form-group">
+            <label class="control-label">Cancelled Date</label>
+            <div class="input-group date" style="width:100%" id="CancelledDatePicker">
+                <input type="text" name="CancelledDate" , value="@Model.CancelledDate.ToOrvosiDateFormat()" class="form-control" />
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessageFor(c => c.CancelledDate, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="IsLate"> Is Late
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Additional Notes</label>
+            <textarea class="form-control" name="Notes" rows="3"></textarea>
+            @Html.ValidationMessage("Notes", "", new { @class = "text-danger" })
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" onclick="cancellation($('#cancellation-form'))">Save</button>
+</div>
+
+
+<script type="text/javascript">
+    $('#CancelledDatePicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+</script>

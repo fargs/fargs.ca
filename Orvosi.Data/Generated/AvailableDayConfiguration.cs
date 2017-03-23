@@ -35,6 +35,8 @@ namespace Orvosi.Data
             Property(x => x.LocationId).HasColumnName(@"LocationId").IsOptional().HasColumnType("int");
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.HasErrors).HasColumnName(@"HasErrors").IsRequired().HasColumnType("bit");
+            Property(x => x.HasWarnings).HasColumnName(@"HasWarnings").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.AvailableDays).HasForeignKey(c => c.LocationId).WillCascadeOnDelete(false); // FK_AvailableDay_AvailableDay

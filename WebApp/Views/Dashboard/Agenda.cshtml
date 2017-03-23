@@ -1,87 +1,84 @@
 ﻿@using WebApp.Library.Extensions
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
-@using Features = Orvosi.Shared.Enums.Features
-@model WebApp.ViewModels.DashboardViewModels.AgendaViewModel
+@using WebApp.ViewModels.CalendarViewModels
+@model DayViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
 }
-<div class="row">
-    <div class="col-md-2">
-        <div>
-            <form action="~/Dashboard/Agenda" method="get" class="form-inline">
-                <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
-                <div class="input-group date" id="AppointmentDatePicker">
-                    @Html.TextBox("day", Model.Day, "{0:yyyy-MM-dd}", new { @class = "form-control", size = "16", onchange = "this.form.submit();" })
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                </div>
-                <div class="btn-group">
-                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(-1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i></a>
-                    <a href="~/Dashboard/Agenda?serviceProviderId=@Model.SelectedUserId&day=@Model.Day.AddDays(1).Date.ToOrvosiDateFormat()" class="btn btn-sm btn-default"><i class="fa fa-arrow-right"></i></a>
-                </div>
-            </form>
+
+@Html.Action("CalendarNavigation")
+
+@if (Model != null)
+{
+    <div style="display:flex; flex-direction:row; align-content:center; align-self:stretch;">
+        <div style="padding:10px;">
+            @foreach (var address in Model.Addresses)
+                {
+                <div>@address</div>
+            }
+        </div>
+        <div class="text-muted" style="padding:10px;">
+            @foreach (var company in Model.Companies)
+                {
+                <div>@company.ToString()</div>
+            }
         </div>
     </div>
-    <span class="h3" style="vertical-align:middle;">
-        @Model.Day.ToString("MMMdd")<span class="small"> @Model.Day.ToString("dddd")</span>
-    </span>
-
-</div>
-<p></p>
-@if (Model.DayFolder != null)
-{
-    <div>
-        @Model.DayFolder.Address.Name
-    </div>
-    <div class="small text-muted" style="padding-bottom:20px;">
-        @Model.DayFolder.Address.City
-    </div>
-    foreach (var serviceRequest in Model.DayFolder.ServiceRequests.OrderBy(a => a.StartTime))
+    foreach (var serviceRequest in Model.Cases)
     {
         <div class="row o-dashboard-tr">
-            <div class="col-md-1 o-dashboard-td">
-                <strong>@serviceRequest.StartTime.ToShortTimeSafe()</strong>
-                @if (!serviceRequest.IsLateCancellation && !serviceRequest.IsCancelled)
-                    {
-                    <form>
-                        <div class="checkbox">
-                            <label>
-                                <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
-                                       value="@serviceRequest.IsNoShow"
-                                       checked="@serviceRequest.IsNoShow"
-                                       @(serviceRequest.IsNoShow ? "checked" : "")
-                                       onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
-                                No Show
-                            </label>
-                        </div>
-                    </form>
-                }
-                <div class="o-dashboard-td">
-                    @Html.Partial("_ServiceStatus", serviceRequest)
+            <div class="col-md-2">
+                <div id="case-container-@serviceRequest.ServiceRequestId">
+                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Dashboard } })
                 </div>
             </div>
-            <div class="col-md-2 o-dashboard-td">
-                <div><a target="_blank" class="" href="~/ServiceRequest/Details/@serviceRequest.Id">@serviceRequest.ClaimantName (@serviceRequest.Id)</a></div>
-                <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
-                -
-                <span>@serviceRequest.Company.Name</span>
-            </div>
-            <div class="col-md-3 o-dashboard-td" id="case-container-@serviceRequest.Id">
-                @Html.Action("TaskList", "ServiceRequestTask", new
-                {
-                    serviceRequestId = serviceRequest.Id,
-                    viewOptions = TaskListViewOptions.Dashboard,
-                    options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
-                })
+            @*<div class="col-md-1 o-dashboard-td">
+                    <strong>@serviceRequest.StartTime.ToShortTimeSafe()</strong>
+                    @if (serviceRequest.CanBeNoShow)
+                        {
+                        <form>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
+                                           value="@serviceRequest.IsNoShow"
+                                           checked="@serviceRequest.IsNoShow"
+                                           @(serviceRequest.IsNoShow ? "checked" : "")
+                                           onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
+                                    No Show
+                                </label>
+                            </div>
+                        </form>
+                    }
+                    <div class="o-dashboard-td">
+                        @Html.Partial("_ServiceStatus", serviceRequest)
+                    </div>
+                </div>
+                <div class="col-md-2 o-dashboard-td">
+                    <div><a target="_blank" class="" href="~/ServiceRequest/Details/@serviceRequest.Id">@serviceRequest.ClaimantName (@serviceRequest.Id)</a></div>
+                    <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
+                    -
+                    <span>@serviceRequest.Company.Name</span>
+                </div>*@
+            <div class="col-md-3 o-dashboard-td">
+                <div id="tasklist-container-@serviceRequest.ServiceRequestId">
+                    @Html.Action("TaskList", "ServiceRequestTask", new
+               {
+                   serviceRequestId = serviceRequest.ServiceRequestId,
+                   viewOptions = TaskListViewOptions.Dashboard,
+                   options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+               })
+                </div>
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
             </div>
-            <div class="col-md-4 o-dashboard-td">
-                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.Id })
+            <div class="col-md-5 o-dashboard-td">
+                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
             </div>
         </div>
@@ -103,28 +100,6 @@ else
             format: 'yyyy-mm-dd',
             autoclose: true
         })
-
-        function onToggleNoShow(checkbox, serviceRequestId) {
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/Dashboard/ToggleNoShow")',
-                data: JSON.stringify({
-                    serviceRequestId: serviceRequestId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    toastr.success("Request updated successfully.", "Request Updated");
-                    refreshServiceRequestTasks(serviceRequestId);
-                    refreshServiceStatus(serviceRequestId);
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
 
         function refreshServiceStatus(serviceRequestId) {
 
@@ -210,7 +185,7 @@ else
                 options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
                 .done(function (result) {
-                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                    document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
                     //joinRoom(serviceRequestId);
                     //refreshValidationResults(serviceRequestId);
                 })
@@ -219,9 +194,22 @@ else
                 });
         }
 
+        function serviceRequestStatusChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@CaseViewOptions.Dashboard',
+                })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                });
+        }
+
     </script>
 
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = Model == null ? null : Model.Cases.Select(c => c.ServiceRequestId).ToArray() })
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-
-    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
+    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 }

@@ -80,6 +80,8 @@
     <Folder Include="Analysis\Views\" />
     <Folder Include="dbo\User Defined Types\" />
     <Folder Include="_Data" />
+    <Folder Include="Migrate\" />
+    <Folder Include="Migrate\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -266,7 +268,6 @@
     <Build Include="dbo\Functions\GetServiceRequestTaskStatus.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatus.sql" />
     <Build Include="dbo\Stored Procedures\DashboardServiceRequestSummary.sql" />
-    <Build Include="dbo\Stored Procedures\_Migrations_DependentTasks.sql" />
     <Build Include="dbo\User Defined Types\SelectedServiceRequestTVP.sql" />
     <Build Include="Security\Analysis.sql" />
     <Build Include="dbo\Tables\PhysicianCompanyStatus.sql" />
@@ -284,7 +285,20 @@
     <Build Include="Analysis\Views\ServiceCatalogueCleanUp.sql" />
     <Build Include="Analysis\Views\InvoiceServiceCatalogueReconciliation.sql" />
     <Build Include="dbo\Functions\GetServiceStatusId2.sql" />
-    <Build Include="API\Stored Procedures\UpdateAssessmentDayTaskState.sql" />
+    <Build Include="dbo\Tables\ServiceRequestStatus.sql" />
+    <Build Include="dbo\Tables\ServiceRequestResource.sql" />
+    <Build Include="dbo\Tables\ServiceRequestCommentAccess.sql" />
+    <Build Include="dbo\Tables\ServiceRequestComment.sql" />
+    <Build Include="dbo\Tables\CommentType.sql" />
+    <Build Include="Migrate\Stored Procedures\FixMissingResponsibleRoleNames.sql" />
+    <Build Include="Migrate\Stored Procedures\PopulateTaskStatusId.sql" />
+    <Build Include="Migrate\Stored Procedures\PopulateServiceRequestResourcesFromTaskList.sql" />
+    <Build Include="Migrate\Stored Procedures\UpdateAllTaskStatuses.sql" />
+    <Build Include="Migrate\Stored Procedures\DependentTasks.sql" />
+    <Build Include="Migrate\Stored Procedures\UpdateAssessmentDayTaskState.sql" />
+    <Build Include="Migrate\Stored Procedures\UpdateTaskDueDates.sql" />
+    <Build Include="Migrate\Stored Procedures\TaskIsCriticalPath.sql" />
+    <Build Include="Security\Migrate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

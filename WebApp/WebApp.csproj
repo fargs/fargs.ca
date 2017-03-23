@@ -95,6 +95,10 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentDateTime, Version=1.13.0.0, Culture=neutral, PublicKeyToken=6ccbc613702e6c71, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentDateTime.1.13.0\Lib\NET35\FluentDateTime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
@@ -431,6 +435,7 @@
     <Compile Include="Controllers\BoxController.cs" />
     <Compile Include="Controllers\BoxTokenManagerController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -447,12 +452,15 @@
     <Compile Include="Controllers\ServiceRequestTemplateController.cs" />
     <Compile Include="Controllers\ServiceRequestTemplateTaskController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="FormModels\CancellationForm.cs" />
+    <Compile Include="FormModels\NoShowForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\DateFilter.cs" />
     <Compile Include="Library\Dropbox.cs" />
+    <Compile Include="Library\EnumExtensions.cs" />
     <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Filters\AuthorizeRoleAttribute.cs" />
     <Compile Include="Library\Filters\ChildActionOnlyOrAjaxAttribute.cs" />
@@ -471,8 +479,10 @@
     <Compile Include="Library\Projections\ServiceProjections.cs" />
     <Compile Include="Library\Projections\ServiceRequestProjections.cs" />
     <Compile Include="Library\Projections\ServiceRequestTemplateProjections.cs" />
+    <Compile Include="Library\QueryStringExtensions.cs" />
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
+    <Compile Include="Library\UriExtensions.cs" />
     <Compile Include="Library\ViewDataService.cs" />
     <Compile Include="Library\WorkService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -503,9 +513,16 @@
     <Compile Include="Models\TaskDtoFilters.cs">
       <DependentUpon>TaskDto.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
+    <Compile Include="ViewModels\CalendarViewModels\DayViewModel.cs" />
+    <Compile Include="ViewModels\CalendarViewOptions.cs" />
+    <Compile Include="ViewModels\CancellationViewModel.cs" />
+    <Compile Include="ViewModels\CaseViewModel.cs" />
+    <Compile Include="ViewModels\CaseViewModelOptions.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
+    <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
@@ -513,6 +530,7 @@
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\LookupViewModel.cs" />
     <Compile Include="ViewModels\MailMessage.cs" />
+    <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\Company.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
@@ -1198,6 +1216,16 @@
     <Content Include="Views\Accounting\_SubmitInvoiceTaskStatus.cshtml" />
     <Content Include="Views\Dashboard\_TaskListJS.cshtml" />
     <Content Include="Views\ServiceRequestTask\TaskListJS.cshtml" />
+    <Content Include="Views\Cancellation\CancellationJS.cshtml" />
+    <Content Include="Views\Cancellation\CancellationModalForm.cshtml" />
+    <Content Include="Views\Cancellation\DeleteModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\StatusLabel.cshtml" />
+    <Content Include="Views\ServiceRequest\Case.cshtml" />
+    <Content Include="Views\ServiceRequest\ActionMenu.cshtml" />
+    <Content Include="Views\ServiceRequest\PhysicianLabel.cshtml" />
+    <Content Include="Views\Box\CaseFolder.cshtml" />
+    <Content Include="Views\ServiceRequest\CaseJS.cshtml" />
+    <Content Include="Views\Shared\CalendarNavigation.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1312,7 +1340,7 @@
     <Content Include="Views\Accounting\_Layout.cshtml" />
     <Content Include="Views\Accounting\_ServiceRequest.cshtml" />
     <Content Include="Views\Box\BoxUsers.cshtml" />
-    <Content Include="Views\ServiceRequest\_Note.cshtml" />
+    <Content Include="Views\ServiceRequest\Note.cshtml" />
     <Content Include="Views\Dashboard\_Note.cshtml" />
     <Content Include="Views\Dashboard\_ServiceRequestTasks_Today.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_Discussion.cshtml" />
@@ -1352,6 +1380,7 @@
     <Content Include="Views\Shared\Unauthorized.cshtml" />
     <Content Include="Views\Shared\_Initials2.cshtml" />
     <Content Include="Views\Shared\_TaskStatusLabel2.cshtml" />
+    <Content Include="Views\Shared\_ServiceStatusLabel2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

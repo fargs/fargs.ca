@@ -1,0 +1,100 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@model CaseViewModel
+
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+    var caseViewModel = (CaseViewOptions)ViewData["CaseViewOptions"];
+}
+
+<div>
+    @if (caseViewModel == CaseViewOptions.Details)
+    {
+        <h4>@Model.ClaimantName (@(Model.ServiceRequestId))</h4>
+    }
+    else
+    {
+        <h4><a href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@(Model.ServiceRequestId))</a></h4>
+    }
+    <p class="text-muted">
+        @Model.Company.Name<br />
+        @Model.Service.Name
+</p>
+@Html.Partial("~/Views/ServiceRequest/StatusLabel.cshtml", Model.ServiceRequestStatus)
+@if (Model.HasAppointment)
+{
+    <div id="section-case-togglenoshow">
+        @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
+        {
+            if (Model.CanBeNoShow)
+            {
+                <form id="noshow-form">
+                    <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
+                    <input type="checkbox"
+                           name="IsNoShow"
+                           value="true"
+                           @(Model.CancellationViewModel.IsNoShow ? "checked" : "")
+                           onclick="noShow($(this.form))" />
+                    <input type="hidden" name="IsNoShow" value="false" />
+                    <span>No Show</span>
+                </form>
+            }
+        }
+    </div>
+        <p></p>
+        @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
+        <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
+    if (caseViewModel == CaseViewOptions.Details)
+    {
+        <p>
+            <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
+            <small class="text-muted">@Model.Address.Name</small><br />
+            <small>@Model.Address.Address1</small><br />
+            <strong>@Model.Address.City</strong>
+            <small>@Model.Address.ProvinceCode</small><br />
+            <small>@Model.Address.PostalCode</small>
+        </p>
+    }
+}
+@if (Model.HasReportDeliverable)
+{
+    <h4>Due Date</h4>
+    if (Model.DueDate.HasValue)
+    {
+        <p>@Model.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
+    }
+    else
+    {
+        <p>Not Set</p>
+    }
+}
+
+<div class="form-group">
+    <label class="control-label">Assignments</label>
+    <p class="form-control-static">
+        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
+        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
+        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
+        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.CaseCoordinator == null ? new LookupViewModel<Guid>() : Model.CaseCoordinator)
+    </p>
+</div>
+
+@*<section id="section-case-togglenohold">
+        @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
+        {
+            <form id="onhold-form">
+                <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
+                <input type="checkbox"
+                        name="IsOnHold"
+                        value="true"
+                        @(Model.IsOnHold ? "checked" : "")
+                        onclick="onHold($('#onhold-form'))" />
+                <input type="hidden" name="IsOnHold" value="false" />
+                <span>On Hold</span>
+            </form>
+        }
+    </section>*@
+</div>

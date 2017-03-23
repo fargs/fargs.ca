@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using WebApp.Library.Extensions;
 using System.Linq;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Models
 {
@@ -62,6 +63,28 @@ namespace WebApp.Models
             get
             {
                 return DueDate.HasValue ? DueDate.Value.ToWeekFolderName() : "No Due Date";
+            }
+        }
+
+        public string BoxCaseFolderURL
+        {
+            get
+            {
+                return $"https://orvosi.app.box.com/files/0/f/{BoxCaseFolderId}";
+            }
+        }
+        public bool HasAppointment
+        {
+            get
+            {
+                return this.AppointmentDate.HasValue;
+            }
+        }
+        public bool HasReportDeliverable
+        {
+            get
+            {
+                return this.DueDate.HasValue;
             }
         }
 

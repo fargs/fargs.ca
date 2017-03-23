@@ -14,7 +14,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Library
 {
-    public class WorkService : IDisposable
+    public class WorkService
     {
         IOrvosiDbContext db;
         IIdentity identity;
@@ -32,6 +32,110 @@ namespace WebApp.Library
             physicianId = userContext.Id;
             this.now = SystemTime.Now();
         }
+
+
+        public async Task UpdateServiceRequestStatus(int serviceRequestId)
+        {
+            var sr = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            if (sr == null) throw new ArgumentNullException($"Service Request with Id {serviceRequestId} not found.");
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task ChangeServiceRequestStatus(int serviceRequestId, short newServiceRequestStatusId)
+        {
+            var sr = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            if (sr == null) throw new ArgumentNullException($"Service Request with Id {serviceRequestId} not found.");
+
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task CancelRequest(CancellationForm form)
+        {
+            var sr = await db.ServiceRequests.FindAsync(form.ServiceRequestId);
+
+            sr.CancelledDate = form.CancelledDate;
+            sr.IsLateCancellation = form.IsLate == "on" ? true : false;
+
+            var query = sr.ServiceRequestTasks
+                .Where(srt => srt.TaskStatusId != TaskStatuses.Done);
+
+            if (sr.IsLateCancellation)
+            {
+                query = query.Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+            }
+            foreach (var task in query)
+            {
+                await SaveTaskStatusChange(task, TaskStatuses.Obsolete);
+            }
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task CancelRequestUndo(int serviceRequestId)
+        {
+            var sr = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            sr.CancelledDate = null;
+            sr.IsLateCancellation = false;
+
+            var query = sr.ServiceRequestTasks
+                .Where(srt => srt.TaskStatusId != TaskStatuses.Done);
+
+            if (sr.IsLateCancellation)
+            {
+                query = query.Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+            }
+            foreach (var task in query)
+            {
+                await SaveTaskStatusChange(task, TaskStatuses.ToDo);
+            }
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task NoShow(NoShowForm form)
+        {
+            var sr = await db.ServiceRequests.FindAsync(form.ServiceRequestId);
+
+            sr.IsNoShow = form.IsNoShow;
+
+            byte newTaskStatus = form.IsNoShow ? TaskStatuses.Obsolete : TaskStatuses.ToDo;
+
+            foreach (var task in sr.ServiceRequestTasks
+                .Where(srt => srt.TaskStatusId != TaskStatuses.Done)
+                .Where(srt => srt.TaskId != Tasks.SubmitInvoice))
+            {
+                await SaveTaskStatusChange(task, newTaskStatus);
+            }
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task OnHold(OnHoldForm form)
+        {
+            var sr = await db.ServiceRequests.FindAsync(form.ServiceRequestId);
+
+            sr.IsOnHold = form.IsOnHold;
+
+            byte newTaskStatus = form.IsOnHold ? TaskStatuses.OnHold : TaskStatuses.ToDo;
+
+            foreach (var task in sr.ServiceRequestTasks.Where(srt => srt.TaskStatusId != TaskStatuses.Done))
+            {
+                await SaveTaskStatusChange(task, newTaskStatus);
+            }
+            await SaveDependentTaskStatusChanges(sr);
+
+            // update the request status
+            var newServiceRequestStatusId = form.IsOnHold ? ServiceRequestStatuses.OnHold : CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, ServiceRequestStatuses.Active);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+
 
         public async Task AddTask(int serviceRequestId, byte taskId)
         {
@@ -112,6 +216,11 @@ namespace WebApp.Library
             request.ServiceRequestTasks.Add(task);
 
             await db.SaveChangesAsync();
+
+            await SaveDependentTaskStatusChanges(request);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(request.ServiceRequestTasks, request.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(request, newServiceRequestStatusId);
         }
         public async Task PickUpTask(int serviceRequestTaskId)
         {
@@ -135,24 +244,36 @@ namespace WebApp.Library
 
             if (srt == null) throw new ArgumentNullException($"Task with Id {serviceRequestTaskId} not found.");
 
-            await UpdateTaskStatus(srt, newTaskStatusId);
+            await SaveTaskStatusChange(srt, newTaskStatusId);
+
+            var sr = srt.ServiceRequest;
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
         public async Task DeleteTask(int serviceRequestTaskId)
         {
-            var task = db.ServiceRequestTasks.Single(srt => srt.Id == serviceRequestTaskId);
+            var srt = db.ServiceRequestTasks.Single(t => t.Id == serviceRequestTaskId);
 
-            foreach (var item in task.Child.ToList())
+            foreach (var item in srt.Child.ToList())
             {
-                task.Child.Remove(item);
+                srt.Child.Remove(item);
             }
-            foreach (var item in task.Parent.ToList())
+            foreach (var item in srt.Parent.ToList())
             {
-                task.Parent.Remove(item);
+                srt.Parent.Remove(item);
             }
             // Parents are removed using referential integrity at the database level.
-            db.ServiceRequestTasks.Remove(task);
+            db.ServiceRequestTasks.Remove(srt);
 
             await db.SaveChangesAsync();
+
+            var sr = db.ServiceRequests.Single(s => s.Id == srt.ServiceRequestId);
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
         public async Task ToggleTaskStatus(int serviceRequestTaskId, short currentTaskStatusId)
         {
@@ -162,21 +283,16 @@ namespace WebApp.Library
 
             var newTaskStatusId = srt.TaskStatusId == currentTaskStatusId ? TaskStatuses.ToDo : currentTaskStatusId;
 
-            await UpdateTaskStatus(srt, newTaskStatusId);
+            await SaveTaskStatusChange(srt, newTaskStatusId);
+
+            var sr = srt.ServiceRequest;
+            await SaveDependentTaskStatusChanges(sr);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
 
-        private async Task UpdateTaskStatus(ServiceRequestTask srt, short newTaskStatusId)
-        {
-            srt.TaskStatusId = newTaskStatusId;
-            srt.TaskStatusChangedBy = identity.GetGuidUserId();
-            srt.TaskStatusChangedDate = now;
-            srt.ModifiedDate = now;
-            srt.ModifiedUser = identity.GetGuidUserId().ToString();
 
-            await db.SaveChangesAsync();
-
-            await UpdateDependentTaskStatuses(srt.ServiceRequestId);
-        }
         public async Task UpdateAssessmentDayTaskStatus(int serviceRequestId)
         {
             var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
@@ -209,6 +325,22 @@ namespace WebApp.Library
                 throw new ArgumentNullException($"Service request with Id {serviceRequestId} not found.");
             }
 
+            await SaveDependentTaskStatusChanges(serviceRequest);
+        }
+
+
+        private async Task SaveTaskStatusChange(ServiceRequestTask srt, short newTaskStatusId)
+        {
+            srt.TaskStatusId = newTaskStatusId;
+            srt.TaskStatusChangedBy = identity.GetGuidUserId();
+            srt.TaskStatusChangedDate = now;
+            srt.ModifiedDate = now;
+            srt.ModifiedUser = identity.GetGuidUserId().ToString();
+
+            await db.SaveChangesAsync();
+        }
+        private async Task SaveDependentTaskStatusChanges(ServiceRequest serviceRequest)
+        {
             foreach (var srt in serviceRequest.ServiceRequestTasks)
             {
                 if (srt.TaskId != Tasks.AssessmentDay)
@@ -221,11 +353,31 @@ namespace WebApp.Library
                     }
                 }
             }
+            await db.SaveChangesAsync();
+        }
+        private async Task SaveServiceRequestStatusChange(ServiceRequest sr, short newServiceRequestStatusId)
+        {
+            sr.ServiceRequestStatusId = newServiceRequestStatusId;
+            sr.ServiceRequestStatusChangedBy = userId;
+            sr.ServiceRequestStatusChangedDate = now;
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = userId.ToString();
 
             await db.SaveChangesAsync();
         }
-
-    
+        private short CalculateNewServiceRequestStatus(IEnumerable<ServiceRequestTask> tasks, short currentStatus)
+        {
+            //TODO: insert to a log table
+            if (tasks.Any(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold))
+            {
+                // return on hold if it was explicitely set, otherwise return active
+                return currentStatus == ServiceRequestStatuses.OnHold ? ServiceRequestStatuses.OnHold : ServiceRequestStatuses.Active;
+            }
+            else
+            {
+                return ServiceRequestStatuses.Closed;
+            }
+        }
         private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
         {
             switch (dueDateType)
@@ -261,38 +413,5 @@ namespace WebApp.Library
                 return null;
             }
         }
-
-
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    this.db.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-                this.identity = null;
-                disposedValue = true;
-            }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
-
-
     }
 }

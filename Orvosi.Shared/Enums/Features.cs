@@ -64,6 +64,7 @@ namespace Orvosi.Shared.Enums.Features
         public const short ChangeProcessTemplate = 237;
         public const short Reschedule = 238;
         public const short Delete = 239;
+        public const short ToggleOnHold = 240;
         public const short ManageInvoiceNote = 280;
         public const short ViewInvoiceNote = 282;
         public const short LiveChat = 284;

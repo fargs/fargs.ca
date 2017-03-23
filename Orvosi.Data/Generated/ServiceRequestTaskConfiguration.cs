@@ -61,13 +61,18 @@ namespace Orvosi.Data
             Property(x => x.CompletedBy).HasColumnName(@"CompletedBy").IsOptional().HasColumnType("uniqueidentifier");
             Property(x => x.DueDate).HasColumnName(@"DueDate").IsOptional().HasColumnType("datetime");
             Property(x => x.TaskStatusId).HasColumnName(@"TaskStatusId").IsOptional().HasColumnType("smallint");
-            Property(x => x.TaskStatusChangedDate).HasColumnName(@"TaskStatusChangedDate").IsOptional().HasColumnType("datetime");
             Property(x => x.TaskStatusChangedBy).HasColumnName(@"TaskStatusChangedBy").IsOptional().HasColumnType("uniqueidentifier");
+            Property(x => x.TaskStatusChangedDate).HasColumnName(@"TaskStatusChangedDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.CreatedDate).HasColumnName(@"CreatedDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.CreatedUser).HasColumnName(@"CreatedUser").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.EffectiveDate).HasColumnName(@"EffectiveDate").IsOptional().HasColumnType("datetime");
+            Property(x => x.EffectiveDateBase).HasColumnName(@"EffectiveDateBase").IsOptional().HasColumnType("tinyint");
+            Property(x => x.EffectiveDateDiff).HasColumnName(@"EffectiveDateDiff").IsOptional().HasColumnType("smallint");
 
             // Foreign keys
             HasOptional(a => a.AspNetUser_AssignedTo).WithMany(b => b.AssignedTo).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers
-            HasOptional(a => a.AspNetUser_TaskStatusChangedBy).WithMany(b => b.TaskStatusChangedBy).HasForeignKey(c => c.TaskStatusChangedBy).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
             HasOptional(a => a.AspNetUser_CompletedBy).WithMany(b => b.CompletedBy).HasForeignKey(c => c.CompletedBy).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers1
+            HasOptional(a => a.AspNetUser_TaskStatusChangedBy).WithMany(b => b.TaskStatusChangedBy).HasForeignKey(c => c.TaskStatusChangedBy).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
             HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_Task
             HasOptional(a => a.ServiceRequestTemplateTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestTemplateTaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_ServiceRequestTemplateTask
             HasOptional(a => a.TaskStatu).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskStatusId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_TaskStatus

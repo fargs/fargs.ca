@@ -34,6 +34,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<BillableEntity> BillableEntities { get; set; } // BillableEntity
         public System.Data.Entity.DbSet<City> Cities { get; set; } // City
         public System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
+        public System.Data.Entity.DbSet<CommentType> CommentTypes { get; set; } // CommentType
         public System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         public System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
@@ -74,7 +75,11 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServicePortfolio> ServicePortfolios { get; set; } // ServicePortfolio
         public System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest
         public System.Data.Entity.DbSet<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration
+        public System.Data.Entity.DbSet<ServiceRequestComment> ServiceRequestComments { get; set; } // ServiceRequestComment
+        public System.Data.Entity.DbSet<ServiceRequestCommentAccess> ServiceRequestCommentAccesses { get; set; } // ServiceRequestCommentAccess
         public System.Data.Entity.DbSet<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage
+        public System.Data.Entity.DbSet<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource
+        public System.Data.Entity.DbSet<ServiceRequestStatu> ServiceRequestStatus { get; set; } // ServiceRequestStatus
         public System.Data.Entity.DbSet<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
@@ -154,6 +159,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new BillableEntityConfiguration());
             modelBuilder.Configurations.Add(new CityConfiguration());
             modelBuilder.Configurations.Add(new CollaboratorConfiguration());
+            modelBuilder.Configurations.Add(new CommentTypeConfiguration());
             modelBuilder.Configurations.Add(new CompanyConfiguration());
             modelBuilder.Configurations.Add(new CountryConfiguration());
             modelBuilder.Configurations.Add(new DocumentConfiguration());
@@ -194,7 +200,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServicePortfolioConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestCommentConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestCommentAccessConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestResourceConfiguration());
+            modelBuilder.Configurations.Add(new ServiceRequestStatuConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
@@ -226,6 +236,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new BillableEntityConfiguration(schema));
             modelBuilder.Configurations.Add(new CityConfiguration(schema));
             modelBuilder.Configurations.Add(new CollaboratorConfiguration(schema));
+            modelBuilder.Configurations.Add(new CommentTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new CompanyConfiguration(schema));
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentConfiguration(schema));
@@ -266,7 +277,11 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServicePortfolioConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestBoxCollaborationConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestCommentConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestCommentAccessConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestMessageConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestResourceConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceRequestStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));

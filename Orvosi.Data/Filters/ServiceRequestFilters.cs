@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +15,22 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests.Where(sr => sr.Id == id);
         }
-        public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> serviceRequests, Guid userId, Guid roleId)
+        public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> query, Guid userId, Guid physicianId, Guid roleId)
         {
-            // TODO: add AssignedToId to the ServiceRequestTask Model class to avoid the need for the null reference check
-            return serviceRequests
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId) || roleId == AspNetRoles.SuperAdmin);
+            if (roleId == AspNetRoles.Physician) // physicians should see all there cases
+            {
+                query = query.ForPhysician(userId);
+            }
+            else if (userId != physicianId) // users that have selected a physician context see all the physician cases
+            {
+                query = query.ForPhysician(physicianId);
+            }
+            else // non physician users see cases where tasks are assigned to them
+            {
+                query = query.AreAssignedToUser(userId);
+            }
+
+            return query;
         }
         public static IQueryable<ServiceRequest> AreScheduledThisDay(this IQueryable<ServiceRequest> serviceRequests, DateTime day)
         {
@@ -38,7 +50,11 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<ServiceRequest> AreAssignedToUser(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {
-            return serviceRequests.Where(sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId));
+            return serviceRequests.Where(AreAssignedToUser(userId));
+        }
+        public static Expression<Func<ServiceRequest, bool>> AreAssignedToUser(Guid userId)
+        {
+            return sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId);
         }
         public static IQueryable<ServiceRequest> AreOpen(this IQueryable<ServiceRequest> serviceRequests)
         {

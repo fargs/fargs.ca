@@ -1,0 +1,47 @@
+﻿<script type="text/javascript">
+
+    function showCancellationForm(serviceRequestId) {
+        let url = '@Url.Content("~/Cancellation/ShowCancelRequest")';
+        $.get(url, {
+            serviceRequestId: serviceRequestId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function cancellation(form) {
+        let url = '@Url.Content("~/Cancellation/CancelRequest")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            serviceRequestStatusChanged(data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+        })
+        .error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function undoCancellation(serviceRequestId) {
+        let url = '@Url.Content("~/Cancellation/CancelRequestUndo")';
+        $.post(url,
+            { serviceRequestId: serviceRequestId }
+        ).done(function (data) {
+            serviceRequestStatusChanged(data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+        });
+    }
+
+    function deleteRequest(form) {
+        let url = '@Url.Content("~/Cancellation/Delete")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            serviceRequestStatusChanged(data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+        });
+    }
+
+</script>

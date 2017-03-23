@@ -117,24 +117,24 @@
                                     @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
                                     {
                                         <li class="divider"></li>
-                                            <li>
-                                                <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.OnHold)">
-                                                    On Hold
-                                                    @if (task.StatusId == TaskStatuses.OnHold)
-                                                    {
-                                                        <i class="fa fa-check"></i>
-                                                    }
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
-                                                    Obsolete
-                                                    @if (task.StatusId == TaskStatuses.Obsolete)
-                                                    {
-                                                        <i class="fa fa-check"></i>
-                                                    }
-                                                </a>
-                                            </li>
+                                        <li>
+                                            <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.OnHold)">
+                                                On Hold
+                                                @if (task.StatusId == TaskStatuses.OnHold)
+                                                {
+                                                    <i class="fa fa-check"></i>
+                                                }
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
+                                                Obsolete
+                                                @if (task.StatusId == TaskStatuses.Obsolete)
+                                                {
+                                                    <i class="fa fa-check"></i>
+                                                }
+                                            </a>
+                                        </li>
                                     }
                                     @if (features.Contains(Features.ServiceRequest.DeleteTask))
                                     {

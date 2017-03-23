@@ -1,17 +1,17 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
-@model Orvosi.Shared.Model.ServiceRequest
+@model CaseViewModel
 @{ 
     var features = User.Identity.GetFeatures();
 }
 @if (features.Contains(Features.ServiceRequest.LiveChat))
 {
-<div class="divtoscroll" id="service-request-message-container-@Model.Id">
-    <div class="divwithscroll" id="service-request-message-scroll-@Model.Id">
-        <ul id="service-request-message-list-@Model.Id" class="list-unstyled">
-            @foreach (var item in Model.ServiceRequestMessages)
+<div class="divtoscroll" id="service-request-message-container-@Model.ServiceRequestId">
+    <div class="divwithscroll" id="service-request-message-scroll-@Model.ServiceRequestId">
+        <ul id="service-request-message-list-@Model.ServiceRequestId" class="list-unstyled">
+            @foreach (var item in Model.Messages)
             {
-                    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessage.cshtml", item)
+                @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessage.cshtml", item)
             }
         </ul>
     </div>

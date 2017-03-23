@@ -1,0 +1,69 @@
+﻿@model CalendarNavigationViewModel
+@{
+    var now = SystemTime.Now();
+    var view = (Request.QueryString["contentView"] ?? "Day").ToEnum<CalendarViewOptions>();
+}
+@functions
+{
+    string IsActive(CalendarViewOptions viewButton, CalendarViewOptions view)
+    {
+        if (view.ToString().ToLower() == viewButton.ToString().ToLower())
+            return "active";
+
+        return string.Empty;
+    }
+
+    string ViewText(CalendarViewOptions view)
+    {
+        switch (view)
+        {
+            case CalendarViewOptions.Year:
+                return "This Year";
+            case CalendarViewOptions.Month:
+                return "This Month";
+            case CalendarViewOptions.Week:
+                return "This Week";
+            case CalendarViewOptions.Day:
+                return "Today";
+            default:
+                return null;
+        }
+    }
+
+    string ViewDateFormat(CalendarViewOptions view)
+    {
+        switch (view)
+        {
+            case CalendarViewOptions.Year:
+                return "yyyy";
+            case CalendarViewOptions.Month:
+                return "MMMM yyyy";
+            case CalendarViewOptions.Week:
+                return "www";
+            case CalendarViewOptions.Day:
+                return "ddd MMMM, dd yyyy";
+            default:
+                return null;
+        }
+    }
+}
+<div style="display:flex; padding-top:10px; padding-bottom:10px; justify-content: space-between;" class="btn btn-group">
+    <div>
+        <a href="@Model.Links["Previous"]"><i class="fa fa-chevron-left"></i></a>
+        <a href="@Model.Links["Next"]"><i class="fa fa-chevron-right"></i></a>
+        <input type="date" required value="@Model.SelectedDate.ToOrvosiDateFormat()" onchange="window.location.href='@Url.Content("~/Dashboard/Agenda?selectedDate=")' + this.value" />
+        <a href="@Model.Links["Now"]">@ViewText(view)</a>
+    </div>
+    <div style="flex:1 1 auto;">
+        <h4>@Model.SelectedDate.ToString(ViewDateFormat(view))</h4>
+    </div>
+    <div>
+        <div class="btn-group">
+            <a href="@Model.Links["Year"]" class="btn btn-default @IsActive(CalendarViewOptions.Year, view)">Year</a>
+            <a href="@Model.Links["Month"]" class="btn btn-default @IsActive(CalendarViewOptions.Month, view)">Month</a>
+            <a href="@Model.Links["Week"]" class="btn btn-default @IsActive(CalendarViewOptions.Week, view)">Week</a>
+            <a href="@Model.Links["Day"]" class="btn btn-default @IsActive(CalendarViewOptions.Day, view)">Day</a>
+        </div>
+        <a href="@Model.Links["Now"]" class="btn btn-default">Today</a>
+    </div>
+</div>

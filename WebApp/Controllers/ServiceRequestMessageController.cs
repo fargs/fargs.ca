@@ -9,96 +9,52 @@ using WebApp.Library.Extensions;
 using Orvosi.Shared.Enums;
 using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Library.Filters;
+using WebApp.ViewModels;
+using Orvosi.Data.Filters;
+using WebApp.Models;
+using LinqKit;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]
-    public class ServiceRequestMessageController : Controller
+    public class ServiceRequestMessageController : BaseController
     {
         // GET: ServiceRequestMessage
         public ActionResult Discussion(int serviceRequestId)
         {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
-            {
-                var data = context.ServiceRequests
-                    .Where(sr => sr.Id == serviceRequestId)
-                    .Select(sr => new ServiceRequest
-                    {
-                        Id = sr.Id,
-                        ClaimantName = sr.ClaimantName,
-                        ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new ServiceRequestMessage
-                        {
-                            Id = srm.Id,
-                            TimeZone = sr.Address.TimeZone.Name,
-                            Message = srm.Message,
-                            PostedDate = srm.PostedDate,
-                            PostedBy = new Person
-                            {
-                                Id = srm.AspNetUser.Id,
-                                Title = srm.AspNetUser.Title,
-                                FirstName = srm.AspNetUser.FirstName,
-                                LastName = srm.AspNetUser.LastName,
-                                Email = srm.AspNetUser.Email,
-                                ColorCode = srm.AspNetUser.ColorCode,
-                                Role = srm.AspNetUser.AspNetUserRoles.Select(r => new UserRole
-                                {
-                                    Id = r.AspNetRole.Id,
-                                    Name = r.AspNetRole.Name
-                                }).FirstOrDefault()
-                            }
-                        })
-                    }).FirstOrDefault();
-                return PartialView("_Discussion", data);
-            }
+            var dto = db.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(ServiceRequestDto.FromEntityForMessages.Expand())
+                .Single();
+
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+            return PartialView("_Discussion", viewModel);
         }
 
         public ActionResult PostMessage(int serviceRequestId, string message)
         {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
+            var newMessage = new Orvosi.Data.ServiceRequestMessage()
             {
-                var newMessage = new Orvosi.Data.ServiceRequestMessage()
-                {
-                    Id = Guid.NewGuid(),
-                    Message = message,
-                    UserId = User.Identity.GetGuidUserId(),
-                    PostedDate = SystemTime.UtcNow(),
-                    ServiceRequestId = serviceRequestId
-                };
-                context.ServiceRequestMessages.Add(newMessage);
-                context.SaveChanges();
-                return Json(newMessage);
-            }
+                Id = Guid.NewGuid(),
+                Message = message,
+                UserId = userId,
+                PostedDate = now,
+                ServiceRequestId = serviceRequestId
+            };
+            db.ServiceRequestMessages.Add(newMessage);
+            db.SaveChanges();
+            return Json(newMessage);
         }
 
         public ActionResult GetMessage(Guid serviceRequestMessageId)
         {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
-            {
-                var data = context.ServiceRequestMessages
-                    .Where(srm => srm.Id == serviceRequestMessageId)
-                    .Select(srm => new ServiceRequestMessage
-                    {
-                        Id = srm.Id,
-                        Message = srm.Message,
-                        PostedDate = srm.PostedDate,
-                        TimeZone = srm.ServiceRequest.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
-                        PostedBy = new Person
-                        {
-                            Id = srm.AspNetUser.Id,
-                            Title = srm.AspNetUser.Title,
-                            FirstName = srm.AspNetUser.FirstName,
-                            LastName = srm.AspNetUser.LastName,
-                            Email = srm.AspNetUser.Email,
-                            ColorCode = srm.AspNetUser.ColorCode,
-                            Role = srm.AspNetUser.AspNetUserRoles.Select(r => new UserRole
-                            {
-                                Id = r.AspNetRole.Id,
-                                Name = r.AspNetRole.Name
-                            }).FirstOrDefault()
-                        }
-                    }).FirstOrDefault();
-                return PartialView("_ServiceRequestMessage", data);
-            }
+            var dto = db.ServiceRequestMessages
+                .Where(srm => srm.Id == serviceRequestMessageId)
+                .Select(MessageDto.FromServiceRequestMessageEntity.Expand())
+                .Single();
+
+            var viewModel = MessageViewModel.FromMessageDto.Invoke(dto);
+            return PartialView("_ServiceRequestMessage", viewModel);
         }
     }
 }

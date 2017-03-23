@@ -62,10 +62,13 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequest> DocumentReviewer { get; set; } // ServiceRequest.FK_ServiceRequest_DocumentReviewer
         public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
         public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<ServiceRequestComment> ServiceRequestComments { get; set; } // ServiceRequestComment.FK_ServiceRequestComment_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<ServiceRequestCommentAccess> ServiceRequestCommentAccesses { get; set; } // ServiceRequestCommentAccess.FK_ServiceRequestCommentAccess_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource.FK_ServiceRequestResource_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> AssignedTo { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
-        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> TaskStatusChangedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> CompletedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers1
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> TaskStatusChangedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
         public virtual System.Collections.Generic.ICollection<UserInbox> UserInboxes { get; set; } // UserInbox.FK_UserInbox_AspNetUsers
 
         // Foreign keys
@@ -86,10 +89,13 @@ namespace Orvosi.Data
             DocumentReviewer = new System.Collections.Generic.List<ServiceRequest>();
             IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
+            ServiceRequestComments = new System.Collections.Generic.List<ServiceRequestComment>();
+            ServiceRequestCommentAccesses = new System.Collections.Generic.List<ServiceRequestCommentAccess>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();
+            ServiceRequestResources = new System.Collections.Generic.List<ServiceRequestResource>();
             AssignedTo = new System.Collections.Generic.List<ServiceRequestTask>();
-            TaskStatusChangedBy = new System.Collections.Generic.List<ServiceRequestTask>();
             CompletedBy = new System.Collections.Generic.List<ServiceRequestTask>();
+            TaskStatusChangedBy = new System.Collections.Generic.List<ServiceRequestTask>();
             UserInboxes = new System.Collections.Generic.List<UserInbox>();
             InitializePartial();
         }

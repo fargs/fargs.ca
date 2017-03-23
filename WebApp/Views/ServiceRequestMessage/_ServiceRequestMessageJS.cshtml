@@ -1,9 +1,7 @@
 ﻿@using WebApp.Library.Extensions
 @model WebApp.ViewModels.ServiceRequestMessageJSViewModel
-
-@{ 
-
-    var queryString = Newtonsoft.Json.JsonConvert.SerializeObject(Model.QueryString.ToDictionary(false));
+@{
+    var queryString = Newtonsoft.Json.JsonConvert.SerializeObject(Request.QueryString.ToDictionary(false));
 }
 <script type="text/javascript">
 
@@ -28,6 +26,10 @@
         });
 
     });
+
+    function joinRoom(serviceRequestId) {
+        chat.server.joinRoom(serviceRequestId)
+    }
 
     function postMessage(serviceRequestId) {
 
@@ -61,7 +63,7 @@
             },
             error: function (err) {
                 // undo the UI change made before the ajax call
-                window.location.reload();
+                //window.location.reload();
             }
         }, this);
 
@@ -80,7 +82,7 @@
             },
             error: function (err) {
                 // undo the UI change made before the ajax call
-                window.location.reload();
+                //window.location.reload();
             }
         }, this);
 

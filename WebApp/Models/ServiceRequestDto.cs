@@ -29,12 +29,15 @@ namespace WebApp.Models
         public bool IsLateCancellation { get; set; }
         public DateTime? CancelledDate { get; set; }
         public short ServiceRequestStatusId { get; internal set; }
+        public string BoxCaseFolderId { get; set; }
+        public decimal? ServiceCataloguePrice { get; set; }
         public string Notes { get; set; }
         public bool HasErrors { get; set; }
         public bool HasWarnings { get; set; }
 
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
+        public LookupDto<short> ServiceRequestStatus { get; set; }
         public AddressDto Address { get; set; }
 
         public PersonDto Physician { get; set; }
@@ -57,10 +60,14 @@ namespace WebApp.Models
             CancelledDate = sr.CancelledDate,
             IsNoShow = sr.IsNoShow,
             IsLateCancellation = sr.IsLateCancellation,
-            //ServiceRequestStatusId = sr.ServiceRequestStatusId,
-            //HasErrors = sr.HasErrors,
-            //HasWarnings = sr.HasWarnings,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            HasErrors = sr.HasErrors,
+            HasWarnings = sr.HasWarnings,
+            BoxCaseFolderId = sr.BoxCaseFolderId,
+            ServiceCataloguePrice = sr.ServiceCataloguePrice,
+            Notes = sr.Notes,
 
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
@@ -75,6 +82,40 @@ namespace WebApp.Models
             //Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
         };
 
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCase = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            AppointmentDate = sr.AppointmentDate,
+            StartTime = sr.StartTime,
+            DueDate = sr.DueDate,
+            CancelledDate = sr.CancelledDate,
+            IsNoShow = sr.IsNoShow,
+            IsLateCancellation = sr.IsLateCancellation,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            HasErrors = sr.HasErrors,
+            HasWarnings = sr.HasWarnings,
+            BoxCaseFolderId = sr.BoxCaseFolderId,
+            ServiceCataloguePrice = sr.ServiceCataloguePrice,
+
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+            Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+            Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
+            DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
+            IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant)
+
+            //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+        };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForMessages = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            Messages = sr.ServiceRequestMessages.AsQueryable().OrderBy(m => m.PostedDate).Select(MessageDto.FromServiceRequestMessageEntity.Expand())
+        };
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForSummary = sr => new ServiceRequestDto
         {
             Id = sr.Id,
@@ -85,9 +126,9 @@ namespace WebApp.Models
             CancelledDate = sr.CancelledDate,
             IsNoShow = sr.IsNoShow,
             IsLateCancellation = sr.IsLateCancellation,
-            //ServiceRequestStatusId = sr.ServiceRequestStatusId,
-            //HasErrors = sr.HasErrors,
-            //HasWarnings = sr.HasWarnings
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            HasErrors = sr.HasErrors,
+            HasWarnings = sr.HasWarnings
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntitySummary = sr => new ServiceRequestDto
@@ -100,13 +141,13 @@ namespace WebApp.Models
             CancelledDate = sr.CancelledDate,
             IsNoShow = sr.IsNoShow,
             IsLateCancellation = sr.IsLateCancellation,
-            //ServiceRequestStatusId = sr.ServiceRequestStatusId,
-            //HasErrors = sr.HasErrors,
-            //HasWarnings = sr.HasWarnings,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            HasErrors = sr.HasErrors,
+            HasWarnings = sr.HasWarnings,
 
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
-            //Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
             Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
 
@@ -117,7 +158,7 @@ namespace WebApp.Models
                 Id = sr.Id,
                 AppointmentDate = sr.AppointmentDate,
                 DueDate = sr.DueDate,
-                //ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
                 CancelledDate = sr.CancelledDate,
                 IsNoShow = sr.IsNoShow,
                 IsLateCancellation = sr.IsLateCancellation,

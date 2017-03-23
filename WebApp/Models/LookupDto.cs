@@ -14,24 +14,36 @@ namespace WebApp.Models
         public string Code { get; set; }
         public string ColorCode { get; set; }
 
+        public static Expression<Func<ServiceRequestStatu, LookupDto<short>>> FromServiceRequestStatusEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<Service, LookupDto<short>>> FromServiceEntity = e => e == null ? null : new LookupDto<short>
         {
             Id = e.Id,
             Name = e.Name,
-            Code = e.Code
+            Code = e.Code,
+            ColorCode = e.ColorCode
         };
 
         public static Expression<Func<Company, LookupDto<short>>> FromCompanyEntity = e => e == null ? null : new LookupDto<short>
         {
             Id = e.Id,
             Name = e.Name,
-            Code = e.Code
+            Code = e.Code,
+            ColorCode = string.Empty
         };
 
         public static Expression<Func<AspNetRole, LookupDto<Guid>>> FromAspNetRoleEntity = e => e == null ? null : new LookupDto<Guid>
         {
             Id = e.Id,
-            Name = e.Name
+            Name = e.Name,
+            Code = e.Name.Substring(0, 2),
+            ColorCode = string.Empty
         };
     }
 }

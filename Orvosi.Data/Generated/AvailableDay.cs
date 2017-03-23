@@ -25,6 +25,8 @@ namespace Orvosi.Data
         public int? LocationId { get; set; } // LocationId
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public bool HasErrors { get; set; } // HasErrors
+        public bool HasWarnings { get; set; } // HasWarnings
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot.FK_AvailableDay_AvailableSlot
@@ -39,6 +41,8 @@ namespace Orvosi.Data
             IsPrebook = false;
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            HasErrors = false;
+            HasWarnings = false;
             AvailableSlots = new System.Collections.Generic.List<AvailableSlot>();
             InitializePartial();
         }

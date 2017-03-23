@@ -1,0 +1,20 @@
+﻿<script type="text/javascript">
+    function noShow(form) {
+        let url = '@Url.Content("~/ServiceRequest/ToggleNoShow")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            serviceRequestStatusChanged(data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+        });
+    }
+    function onHold(form) {
+        let url = '@Url.Content("~/ServiceRequest/ToggleOnHold")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            serviceRequestStatusChanged(data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+        });
+    }
+</script>

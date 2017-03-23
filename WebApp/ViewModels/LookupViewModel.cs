@@ -50,6 +50,14 @@ namespace WebApp.ViewModels
             ColorCode = e.ColorCode
         };
 
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromServiceRequestStatusDto = e => e == null ? null : new LookupViewModel<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<PersonDto, LookupViewModel<Guid>>> FromPersonDto = e => e == null ? null : new LookupViewModel<Guid>
         {
             Id = e.Id,

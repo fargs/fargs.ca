@@ -25,6 +25,10 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public string DueDateType { get; set; } // DueDateType (length: 10)
         public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
+        public byte? DueDateBase { get; set; } // DueDateBase
+        public short? DueDateDiff { get; set; } // DueDateDiff
+        public byte? EffectiveDateBase { get; set; } // EffectiveDateBase
+        public short? EffectiveDateDiff { get; set; } // EffectiveDateDiff
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequestTemplateTask

@@ -1,13 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
-using Orvosi.Data;
-using Orvosi.Shared.Enums;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using WebApp.Library;
 using WebApp.Library.Extensions;
 
 namespace WebApp
@@ -36,9 +28,9 @@ namespace WebApp
                 Clients.Group(roomName).addChatMessage(newMessage.Id, serviceRequestId);
             }
         }
-        public System.Threading.Tasks.Task JoinRoom(string roomName)
+        public System.Threading.Tasks.Task JoinRoom(int serviceRequestId)
         {
-            return Groups.Add(Context.ConnectionId, roomName);
+            return Groups.Add(Context.ConnectionId, $"{_roomPrefix}{serviceRequestId.ToString()}");
         }
         public async System.Threading.Tasks.Task JoinRooms(int[] serviceRequestIds)
         {
@@ -47,9 +39,9 @@ namespace WebApp
                 await Groups.Add(Context.ConnectionId, $"{_roomPrefix}{id}");
             }
         }
-        public System.Threading.Tasks.Task LeaveRoom(string roomName)
+        public System.Threading.Tasks.Task LeaveRoom(int serviceRequestId)
         {
-            return Groups.Remove(Context.ConnectionId, roomName);
+            return Groups.Remove(Context.ConnectionId, $"{_roomPrefix}{serviceRequestId.ToString()}");
         }
         public async System.Threading.Tasks.Task LeaveRooms(int[] serviceRequestIds)
         {
@@ -90,7 +82,7 @@ namespace WebApp
             //{
             //    // Retrieve user.
             //    var dayFolder = Models.ServiceRequestModels2.ServiceRequestMapper2.MapToToday(userId, day, now, userId, Context.Request.Url.ToString());
-                
+
             //    if (dayFolder != null)
             //    {
             //        // Add to each assigned group.

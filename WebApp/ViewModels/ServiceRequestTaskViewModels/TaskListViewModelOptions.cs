@@ -11,7 +11,8 @@ namespace WebApp.ViewModels.ServiceRequestTaskViewModels
         MyTasks,
         PrimaryRolesOnly,
         CriticalPathOnly,
-        CriticalPathOrAssignedToUser
+        CriticalPathOrAssignedToUser,
+        MyActiveTasks
     }
     public enum TaskListViewOptions
     {

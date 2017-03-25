@@ -11,10 +11,7 @@ namespace WebApp.ViewModels.DashboardViewModels
         public DueDatesViewModel()
         {
         }
-        public IEnumerable<Orvosi.Shared.Model.DueDateDayFolder> DueDates { get; set; }
-        public Guid SelectedUserId { get; set; }
-        public List<SelectListItem> UserSelectList { get; set; }
-        public ServiceRequestMessageJSViewModel ServiceRequestMessageJSViewModel { get; set; }
+        public IEnumerable<DueDateViewModel> DueDates { get; set; }
         public TaskFilterViewModel TaskFilterViewModel { get; set; }
     }
 }

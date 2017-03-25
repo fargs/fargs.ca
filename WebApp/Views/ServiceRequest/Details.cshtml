@@ -1,49 +1,55 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
-@model CaseViewModel
+@using WebApp.ViewDataModels
+    @model CaseViewModel
 
-@{
-    var identity = User.Identity.GetClaimsIdentity();
-    var roleId = identity.GetRoleId();
-    var features = identity.GetFeatures();
-}
+    @{
+        var identity = User.Identity.GetClaimsIdentity();
+        var roleId = identity.GetRoleId();
+        var features = identity.GetFeatures();
+    }
 
-<div id="actionmenu-container" class="col-md-12">
-    @Html.Partial("ActionMenu", Model)
-</div>
+    <div id="actionmenu-container" class="col-md-12">
+        @Html.Partial("ActionMenu", Model)
+    </div>
 
-<div class="row">
-    <div class="col-md-3">
-        @Html.Partial("PhysicianLabel", Model.Physician)
-        <hr />
-        <div id="case-container">
-            @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Details } })
+    <div class="row">
+        <div class="col-md-3">
+            @Html.Partial("PhysicianLabel", Model.Physician)
+            <hr />
+            <div id="case-container">
+                @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Details } })
+            </div>
+            <hr />
+            <div id="box-integration"></div>
+            <hr />
+            <div id="google-calendar-integration"></div>
         </div>
-        <hr />
-        <div id="box-integration"></div>
-        <hr />
-        <div id="google-calendar-integration"></div>
+        <div class="col-md-4">
+            <h4>Tasks</h4>
+            <hr />
+            <div id="tasklist-container">
+                @Html.Action("TaskList", "ServiceRequestTask", new TaskListFilterArgs
+                {
+                    ServiceRequestId = Model.ServiceRequestId,
+                    ViewOptions = TaskListViewOptions.Details,
+                    Options = TaskListViewModelFilter.AllTasks
+                })
+            </div>
+        </div>
+        <div class="col-md-5">
+            <h4>Messages</h4>
+            <hr />
+            <div id="notes">
+                @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
+            </div>
+            <div id="livechat-container">
+                @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
+                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h4>Tasks</h4>
-        <hr />
-        <div id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequestId, viewOptions = TaskListViewOptions.Details, options = TaskListViewModelFilter.AllTasks })
-        </div>
-    </div>
-    <div class="col-md-5">
-        <h4>Messages</h4>
-        <hr />
-        <div id="notes">
-            @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
-        </div>
-        <div id="livechat-container">
-            @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
-            @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
-        </div>
-    </div>
-</div>
 
 
 
@@ -84,157 +90,157 @@
 
 
 
-<div id="modal-container" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content" id="modal-content">
+    <div id="modal-container" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content">
+            </div>
         </div>
     </div>
-</div>
 
-@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+    @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
-@section Scripts {
+    @section Scripts {
 
-    <script type="text/javascript">
+        <script type="text/javascript">
 
-        $(document).ready(function(){
-            //$('.dropdown-submenu a.assign-to').on("click", function(e){
-            //    $(this).next('ul').toggle();
-            //    e.stopPropagation();
-            //    e.preventDefault();
-            //});
-            @if (Model.AppointmentDate.HasValue)
+            $(document).ready(function(){
+                //$('.dropdown-submenu a.assign-to').on("click", function(e){
+                //    $(this).next('ul').toggle();
+                //    e.stopPropagation();
+                //    e.preventDefault();
+                //});
+                @if (Model.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
+                            }
+            });
+
+            let serviceRequestId = @Model.ServiceRequestId;
+
+            function onEdit(serviceRequestId) {
+
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+
+                        var modalDiv = $("#edit-note-modal");
+                        modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                        modalDiv.find('#Notes').html(result.Notes);
+                        modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                        modalDiv.modal('toggle');
+                    },
+                    error: function (err) {
+                        alert(err.status + " - " + err.statusText);
+                    }
+                }, this);
             }
-        });
 
-        let serviceRequestId = @Model.ServiceRequestId;
+            $("#edit-note-form").submit(function (e) {
 
-        function onEdit(serviceRequestId) {
+                var url = '@Url.Content("~/Note/UpdateNote")';
 
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
+                var form = $("#edit-note-form");
+                var serviceRequestId = form.find('#ServiceRequestId').val();
 
-                    var modalDiv = $("#edit-note-modal");
-                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                    modalDiv.find('#Notes').html(result.Notes);
-                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
-
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
-
-        $("#edit-note-form").submit(function (e) {
-
-            var url = '@Url.Content("~/Note/UpdateNote")';
-
-            var form = $("#edit-note-form");
-            var serviceRequestId = form.find('#ServiceRequestId').val();
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // serializes the form's elements.
-                success: function () {
-                    $("#edit-note-modal").modal('toggle');
-                    toastr.success("The note was updated successfully.");
-                    refreshNote(serviceRequestId);
-                }
-            });
-            e.preventDefault();
-        });
-
-        function refreshNote(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    $('#notes').replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
-        }
-
-        function tasklistChanged(serviceRequestId) {
-            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
-            $.get(url,
-                {
-                    serviceRequestId: serviceRequestId,
-                    viewOptions: '@TaskListViewOptions.Details',
-                    options: '@TaskListViewModelFilter.AllTasks'
-                })
-                .done(function (result) {
-                    document.getElementById('tasklist-container').innerHTML = result;
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // serializes the form's elements.
+                    success: function () {
+                        $("#edit-note-modal").modal('toggle');
+                        toastr.success("The note was updated successfully.");
+                        refreshNote(serviceRequestId);
+                    }
                 });
-        }
-
-        function serviceRequestStatusChanged(serviceRequestId) {
-            $.get('@Url.Content("~/ServiceRequest/Case")',
-                {
-                    serviceRequestId: serviceRequestId
-                })
-                .done(function (result) {
-                    document.getElementById('case-container').innerHTML = result;
-                });
-
-            $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
-                {
-                    serviceRequestId: serviceRequestId
-                })
-                .done(function (result) {
-                    document.getElementById('actionmenu-container').innerHTML = result;
-                });
-        }
-
-        function refreshGoogleCalendarIntegration() {
-            $.ajax({
-                type: "GET",
-                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequestId)',
-                contentType: "text/html",
-                success: function (result) {
-                    $('#google-calendar-integration').html(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    toastr.error(err);
-                }
+                e.preventDefault();
             });
-        }
 
-        function addGoogleCalendarEvent(eventId) {
-            $.ajax({
-                type: "POST",
-                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequestId)',
-                contentType: "text/html",
-                success: function (result) {
-                    refreshGoogleCalendarIntegration();
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    toastr.error(err);
-                }
-            });
-        }
+            function refreshNote(serviceRequestId) {
 
-    </script>
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
+                    contentType: "text/html",
+                    success: function (result) {
+                        $('#notes').replaceWith(result);
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        window.location.reload();
+                    }
+                }, this);
+            }
 
-    <script src="@Url.Content("~/signalr/hubs")"></script>
-    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+            function tasklistChanged(serviceRequestId) {
+                let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+                $.get(url,
+                    {
+                        serviceRequestId: serviceRequestId,
+                        viewOptions: '@TaskListViewOptions.Details',
+                        options: '@TaskListViewModelFilter.AllTasks'
+                    })
+                    .done(function (result) {
+                        document.getElementById('tasklist-container').innerHTML = result;
+                    });
+            }
 
-}
+            function serviceRequestStatusChanged(serviceRequestId) {
+                $.get('@Url.Content("~/ServiceRequest/Case")',
+                    {
+                        serviceRequestId: serviceRequestId
+                    })
+                    .done(function (result) {
+                        document.getElementById('case-container').innerHTML = result;
+                    });
+
+                $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
+                    {
+                        serviceRequestId: serviceRequestId
+                    })
+                    .done(function (result) {
+                        document.getElementById('actionmenu-container').innerHTML = result;
+                    });
+            }
+
+            function refreshGoogleCalendarIntegration() {
+                $.ajax({
+                    type: "GET",
+                    url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequestId)',
+                    contentType: "text/html",
+                    success: function (result) {
+                        $('#google-calendar-integration').html(result);
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        toastr.error(err);
+                    }
+                });
+            }
+
+            function addGoogleCalendarEvent(eventId) {
+                $.ajax({
+                    type: "POST",
+                    url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequestId)',
+                    contentType: "text/html",
+                    success: function (result) {
+                        refreshGoogleCalendarIntegration();
+                    },
+                    error: function (err) {
+                        // undo the UI change made before the ajax call
+                        toastr.error(err);
+                    }
+                });
+            }
+
+        </script>
+
+        <script src="@Url.Content("~/signalr/hubs")"></script>
+        @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
+        @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+        @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+
+    }

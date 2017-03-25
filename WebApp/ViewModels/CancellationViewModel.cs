@@ -7,6 +7,7 @@ using WebApp.Models;
 
 namespace WebApp.ViewModels
 {
+    //TODO: Move the CanBeCancelled, CanBeUncancelled, CanBeNoShow, CanNoShowBeUndone properties from CaseViewModel to here
     public class CancellationViewModel
     {
         public bool IsNoShow { get; set; }

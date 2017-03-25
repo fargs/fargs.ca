@@ -18,6 +18,7 @@ namespace WebApp.ViewModels
         public LookupViewModel<Guid> TaskStatusChangedBy { get; set; }
         public short Sequence { get; set; }
         public short StatusId { get; set; }
+        public DateTime? DueDate { get; set; }
         public LookupViewModel<Guid> AssignedTo { get; set; }
 
         public static Expression<Func<TaskDto, TaskViewModel>> FromTaskDto = dto => dto == null ? null : new TaskViewModel
@@ -30,7 +31,8 @@ namespace WebApp.ViewModels
             AssignedTo = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
             TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.TaskStatusChangedBy),
             TaskStatusChangedDate = dto.TaskStatusChangedDate,
-            StatusId = dto.StatusId
+            StatusId = dto.TaskStatusId,
+            DueDate = dto.DueDate
         };
     }
 }

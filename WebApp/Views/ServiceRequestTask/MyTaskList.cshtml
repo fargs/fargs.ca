@@ -1,6 +1,23 @@
 ﻿@using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
-@model List<WebApp.ViewModels.ServiceRequestTaskViewModels.AssessmentTaskViewModel>
+@model IEnumerable<TaskListViewModel>
+
+@Html.Partial("Components/TaskListFilter")
+
+
+@if (Model == null)
+{
+    <div>No tasks</div>
+}
+else
+{
+    foreach (var task in Model)
+    {
+        <div>@task.ServiceRequest.ClaimantName</div>
+        <div>
+            @Html.Action("TaskList", new { serviceRequestId = task.ServiceRequestId })
+        </div>
+    }
+}
 
 @*<div class="thumbnail alert">
     <div class="caption">

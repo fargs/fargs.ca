@@ -1,0 +1,91 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@using WebApp.ViewModels.CalendarViewModels
+@model DayViewModel
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+}
+@if (Model != null)
+{
+    <div style="display:flex; flex-direction:row; align-content:center; align-self:stretch;">
+        <div style="padding:10px;">
+            @foreach (var address in Model.Addresses)
+                {
+                <div>@address</div>
+            }
+        </div>
+        <div class="text-muted" style="padding:10px;">
+            @foreach (var company in Model.Companies)
+                {
+                <div>@company.ToString()</div>
+            }
+        </div>
+    </div>
+    foreach (var serviceRequest in Model.Cases)
+    {
+        <div class="row o-dashboard-tr">
+            <div class="col-md-2">
+                <div id="case-container-@serviceRequest.ServiceRequestId">
+                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Agenda } })
+                </div>
+            </div>
+            @*<div class="col-md-1 o-dashboard-td">
+                    <strong>@serviceRequest.StartTime.ToShortTimeSafe()</strong>
+                    @if (serviceRequest.CanBeNoShow)
+                        {
+                        <form>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
+                                           value="@serviceRequest.IsNoShow"
+                                           checked="@serviceRequest.IsNoShow"
+                                           @(serviceRequest.IsNoShow ? "checked" : "")
+                                           onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
+                                    No Show
+                                </label>
+                            </div>
+                        </form>
+                    }
+                    <div class="o-dashboard-td">
+                        @Html.Partial("_ServiceStatus", serviceRequest)
+                    </div>
+                </div>
+                <div class="col-md-2 o-dashboard-td">
+                    <div><a target="_blank" class="" href="~/ServiceRequest/Details/@serviceRequest.Id">@serviceRequest.ClaimantName (@serviceRequest.Id)</a></div>
+                    <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
+                    -
+                    <span>@serviceRequest.Company.Name</span>
+                </div>*@
+            <div class="col-md-3 o-dashboard-td">
+                <div id="tasklist-container-@serviceRequest.ServiceRequestId">
+                    @Html.Action("TaskList", "ServiceRequestTask", new
+               {
+                   serviceRequestId = serviceRequest.ServiceRequestId,
+                   viewOptions = TaskListViewOptions.Dashboard,
+                   options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+               })
+                </div>
+            </div>
+            <div class="col-md-2 o-dashboard-td">
+                <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
+            </div>
+            <div class="col-md-5 o-dashboard-td">
+                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
+                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p></p>
+    <p><strong> No assessments today</strong></p>
+}
+
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+
+

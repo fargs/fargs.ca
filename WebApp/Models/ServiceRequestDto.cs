@@ -128,7 +128,10 @@ namespace WebApp.Models
             IsLateCancellation = sr.IsLateCancellation,
             ServiceRequestStatusId = sr.ServiceRequestStatusId,
             HasErrors = sr.HasErrors,
-            HasWarnings = sr.HasWarnings
+            HasWarnings = sr.HasWarnings,
+
+            Tasks = sr.ServiceRequestTasks.AsQueryable()
+                    .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntitySummary = sr => new ServiceRequestDto
@@ -169,35 +172,16 @@ namespace WebApp.Models
             };
         }
 
-        private static ExpressionStarter<ServiceRequestTask> GetTaskPredicate(short[] taskIds)
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTaskStatusSummary(Guid userId, short[] taskIds)
         {
-            var taskPredicate = PredicateBuilder.New<ServiceRequestTask>();
-            foreach (var id in taskIds)
-            {
-                taskPredicate = taskPredicate.Or(srt => srt.TaskId == id);
-            }
-            return taskPredicate;
-        }
-
-        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTaskStatusSummary(Guid userId, List<short> taskIds)
-        {
-            var predicate = PredicateBuilder.New<ServiceRequestTask>();
-            predicate = predicate.And(ServiceRequestTaskFilters.AreAssignedToUser(userId));
-            //predicate = predicate.And(ServiceRequestTaskFilters.AreNotDeleted());
-            var taskPredicate = PredicateBuilder.New<ServiceRequestTask>();
-            foreach (var id in taskIds)
-            {
-                taskPredicate = taskPredicate.Or(srt => srt.TaskId == id);
-            }
-            predicate = predicate.And(taskPredicate);
-
             return sr => new ServiceRequestDto
             {
                 Id = sr.Id,
                 AppointmentDate = sr.AppointmentDate,
 
                 Tasks = sr.ServiceRequestTasks.AsQueryable()
-                    .Where(predicate)
+                    .AreAssignedToUser(userId)
+                    .WithTaskIds(taskIds)
                     .AsQueryable()
                     .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
             };

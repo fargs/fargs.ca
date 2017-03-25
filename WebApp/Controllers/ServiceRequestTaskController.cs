@@ -19,6 +19,8 @@ using WebApp.Models;
 using MoreLinq;
 using LinqKit;
 using System.ComponentModel.DataAnnotations;
+using WebApp.ViewDataModels;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -58,19 +60,19 @@ namespace WebApp.Controllers
             });
         }
 
-        [ChildActionOnly]
-        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult MyTaskList(Guid serviceProviderId, byte serviceRequestCategoryId)
-        {
-            return PartialView("MyTaskList");
-        }
-
+        //[ChildActionOnly]
+        //[AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
+        //public ActionResult MyTaskList(Guid serviceProviderId, byte serviceRequestCategoryId)
+        //{
+        //    return PartialView("MyTaskList");
+        //}
+        
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult TaskList(int serviceRequestId, TaskListViewOptions viewOptions, TaskListViewModelFilter options = TaskListViewModelFilter.PrimaryRolesOnly)
+        public ActionResult TaskList(TaskListFilterArgs args)
         {
             var viewModel = db.ServiceRequests
-                .WithId(serviceRequestId)
+                .WithId(args.ServiceRequestId)
                 .Select(ServiceRequestDto.FromServiceRequestEntity.Expand())
                 .ToList() // to dto -> execute the query against the database
                 .AsQueryable()
@@ -78,43 +80,54 @@ namespace WebApp.Controllers
                 .Single(); // to view model
 
             // I could embed this into the projection on TaskListViewModel but for clarity I like to keep the filter on tasks in here as it is the primary focus of this controller action.
-            var tasks = db.ServiceRequestTasks
-                .WithServiceRequestId(serviceRequestId)
+            var tasksDto = db.ServiceRequestTasks
+                .WithServiceRequestId(args.ServiceRequestId)
                 .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
                 .OrderBy(t => t.Sequence)
                 .ToList();
 
-            switch (options)
+            IEnumerable<TaskDto> query = tasksDto;
+            switch (args.Options)
             {
                 case TaskListViewModelFilter.CriticalPathOrAssignedToUser:
-                    tasks = tasks.AreOnCriticalPathOrAssignedToUser(userId).ToList();
+                    query = tasksDto.AreOnCriticalPathOrAssignedToUser(userId);
                     break;
                 case TaskListViewModelFilter.CriticalPathOnly:
-                    tasks = tasks.AreOnCriticalPath().ToList();
+                    query = tasksDto.AreOnCriticalPath();
                     break;
                 case TaskListViewModelFilter.PrimaryRolesOnly:
                     var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
-                    tasks = tasks.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen).ToList();
+                    query = tasksDto.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen);
                     break;
                 case TaskListViewModelFilter.MyTasks:
-                    tasks = tasks.AreAssignedToUser(userId).ToList();
+                    query = tasksDto.AreAssignedToUser(userId);
+                    break;
+                case TaskListViewModelFilter.MyActiveTasks:
+                    query = tasksDto
+                        .AreActive()
+                        .AreAssignedToUser(userId);
                     break;
                 default: // default to all tasks
                     break;
             }
 
+            if (args.DateRange != null)
+            {
+                query = query.AreDueBetween(args.DateRange);
+            }
+
             // role based filters that override everything
             if (roleId == AspNetRoles.IntakeAssistant || roleId == AspNetRoles.DocumentReviewer)
             {
-                tasks = tasks
+                query = query
                     .AreOnCriticalPathOrAssignedToUser(userId)
                     .ExcludeSubmitInvoice()
                     .ToList();
             }
 
-            viewModel.Tasks = tasks.AsQueryable().Select(ViewModels.TaskViewModel.FromTaskDto.Expand());
+            viewModel.Tasks = query.AsQueryable().Select(ViewModels.TaskViewModel.FromTaskDto.Expand()).ToList();
 
-            ViewBag.ViewOptions = viewOptions;
+            ViewData.TaskListFilterArgs_Set(args);
 
             return PartialView("TaskList", viewModel);
         }
@@ -134,7 +147,7 @@ namespace WebApp.Controllers
             //var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
             var tasks = serviceRequestTasks
-                .Select(t => new TaskViewModel()
+                .Select(t => new WebApp.ViewModels.ServiceRequestTaskViewModels.TaskViewModel()
                 {
                     Id = t.Id,
                     ServiceRequestId = t.ServiceRequestId,
@@ -170,7 +183,7 @@ namespace WebApp.Controllers
                     return t;
                 }).ToList();
 
-            BuildDependencies(closeOutTask, null, tasks);
+            //BuildDependencies(closeOutTask, null, tasks);
 
             var nextTasks = tasks
                         .Where(c => c.Status.Id != TaskStatuses.Done)
@@ -200,24 +213,24 @@ namespace WebApp.Controllers
             return PartialView("NextTaskList", nextTasks);
         }
 
-        private TaskViewModel BuildDependencies(TaskViewModel task, TaskViewModel parent, List<TaskViewModel> tasks)
-        {
-            if (!string.IsNullOrEmpty(task.DependsOn) && task.DependsOn != "ExamDate")
-            {
-                var depends = task.DependsOn.Split(',');
-                foreach (var item in depends)
-                {
-                    var id = int.Parse(item);
-                    var depTask = tasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
-                    if (depTask != null)
-                    {
-                        depTask.Parent = parent;
-                        task.Dependencies.Add(BuildDependencies(depTask, task, tasks));
-                    }
-                }
-            }
-            return task;
-        }
+        //private TaskViewModel BuildDependencies(TaskViewModel task, TaskViewModel parent, List<TaskViewModel> tasks)
+        //{
+        //    if (!string.IsNullOrEmpty(task.DependsOn) && task.DependsOn != "ExamDate")
+        //    {
+        //        var depends = task.DependsOn.Split(',');
+        //        foreach (var item in depends)
+        //        {
+        //            var id = int.Parse(item);
+        //            var depTask = tasks.SingleOrDefault(t => t.TaskId == id); // Obsolete tasks can be referenced by the DependsOn but will not be returned. Need a null check.
+        //            if (depTask != null)
+        //            {
+        //                depTask.Parent = parent;
+        //                task.Dependencies.Add(BuildDependencies(depTask, task, tasks));
+        //            }
+        //        }
+        //    }
+        //    return task;
+        //}
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]

@@ -7,7 +7,10 @@ namespace WebApp.ViewModels
 {
     public enum CaseViewOptions
     {
-        Dashboard,
+        Agenda,
+        DueDates,
+        Schedule,
+        Additionals,
         Details
     }
 }

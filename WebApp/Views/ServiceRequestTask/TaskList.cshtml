@@ -175,7 +175,7 @@
                             </form>
                         }
                     </td>
-                    <td width="100px" title="@(task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "Not recorded")">
+                    <td width="100px" title="@("Due on " + task.DueDate.ToOrvosiDateFormat() + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
                         @Html.Partial("_TaskStatusLabel2", task.StatusId)
                     </td>
                     <td>@task.Name</td>

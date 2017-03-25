@@ -19,6 +19,8 @@ using WebApp.Models;
 using LinqKit;
 using WebApp.ViewModels;
 using WebApp.ViewModels.CalendarViewModels;
+using WebApp.ViewDataModels;
+using WebApp.ViewModels.ServiceRequestTaskViewModels;
 
 namespace WebApp.Controllers
 {
@@ -31,190 +33,47 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Agenda)]
-        public async Task<ActionResult> Agenda(DateTime? selectedDate)
+        public ActionResult Agenda(DateTime? selectedDate)
         {
-            // Set date range variables used in where conditions
-            var localtime = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
-            var dayOrDefault = GetDayOrDefault(selectedDate);
-
-            var dto = await db.ServiceRequests
-                .AreScheduledThisDay(dayOrDefault)
-                .AreNotCancellations()
-                .CanAccess(userId, physicianId, roleId)
-                .Select(ServiceRequestDto.FromServiceRequestEntity.Expand())
-                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
-                .ToListAsync();
-            
-            var caseViewModels = dto.AsQueryable().Select(CaseViewModel.FromServiceRequestDto.Expand());
-
-            var dayViewModel = caseViewModels
-                .GroupBy(c => c.AppointmentDate.Value)
-                .AsQueryable()
-                .Select(DayViewModel.FromServiceRequestGroupingDto.Expand())
-                .SingleOrDefault();
-
-            return View(dayViewModel);
+            ViewData["selectedDate"] = selectedDate.GetValueOrDefault(SystemTime.Now()).ToOrvosiDateFormat();
+            return View();
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
-        public async Task<ActionResult> DueDates(Guid? serviceProviderId, short[] selectedTaskTypes = null, int? serviceRequestId = null)
+        public async Task<ActionResult> DueDates(TaskListFilterArgs args)
         {
-            // Set date range variables used in where conditions
-            var now = SystemTime.UtcNow();
-            var loggedInUserId = User.Identity.GetGuidUserId();
-            var baseUrl = Request.GetBaseUrl();
-
-            Guid userId = User.Identity.GetUserContext().Id;
-
-            // a list of responsible roles that is used to filter out the task list
-            var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
-
             // get a list of service request Ids from the users active tasks
             // also passed to the view for signalr to create a discussion room for each request
-            var serviceRequestIdsQuery = db.ServiceRequestTasks
-                                .AreAssignedToUser(userId)
-                                .AreActive();
-
-            selectedTaskTypes = selectedTaskTypes == null ? new short[0] : selectedTaskTypes;
-            if (selectedTaskTypes.Any()) serviceRequestIdsQuery = serviceRequestIdsQuery.Where(srt => selectedTaskTypes.Contains(srt.TaskId.Value));  // Cannot be refactored because the list is not an IQueryable <need to look into this>
-
-            var serviceRequestIds = serviceRequestIdsQuery
-                                .Select(srt => srt.ServiceRequestId)
-                                .Distinct()
-                                .ToArray();
-
-            // get all the service requests where the user has an active task
-            var source = db.ServiceRequests.AsQueryable();
-
-            // either return a refreshed view of a single request or return the list of all requests grouped by day
-            source = serviceRequestId.HasValue ?
-                source.Where(s => s.Id == serviceRequestId) :
-                source.Where(sr => serviceRequestIds.Contains(sr.Id));
-
-            // retrieve the required information from the database and project it to the view model
-            var result = source.Select(sr => new Orvosi.Shared.Model.ServiceRequest
-            {
-                Id = sr.Id,
-                ClaimantName = sr.ClaimantName,
-                DueDate = sr.DueDate,
-                AppointmentDate = sr.AppointmentDate,
-                Now = now,
-                StartTime = sr.StartTime,
-                IsLateCancellation = sr.IsLateCancellation,
-                IsNoShow = sr.IsNoShow,
-                CancelledDate = sr.CancelledDate,
-                IsClosed = sr.IsClosed,
-                Notes = sr.Notes,
-                BoxCaseFolderId = sr.BoxCaseFolderId,
-                PhysicianId = sr.PhysicianId,
-                Company = new Orvosi.Shared.Model.Company
+            var viewModel = db.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .WithTaskIds(args.TaskIds)
+                .AreActive()
+                .Where(srt => srt.DueDate.HasValue)
+                .GroupBy(srt => srt.DueDate.Value)
+                .Select(c => new DayViewModel
                 {
-                    Id = sr.Company.Id,
-                    Name = sr.Company.Name
-                },
-                Service = new Orvosi.Shared.Model.Service
-                {
-                    Id = sr.Service.Id,
-                    Name = sr.Service.Name,
-                    Code = sr.Service.Code
-                },
-                ServiceRequestMessages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).Select(srm => new Orvosi.Shared.Model.ServiceRequestMessage
-                {
-                    Id = srm.Id,
-                    TimeZone = sr.Address == null ? TimeZones.EasternStandardTime : srm.ServiceRequest.Address.TimeZone.Name,
-                    Message = srm.Message,
-                    PostedDate = srm.PostedDate,
-                    PostedBy = new Orvosi.Shared.Model.Person
+                    Day = c.Key,
+                    TaskStatusSummary = new dvm.TaskStatusSummaryViewModel
                     {
-                        Id = srm.AspNetUser.Id,
-                        Title = srm.AspNetUser.Title,
-                        FirstName = srm.AspNetUser.FirstName,
-                        LastName = srm.AspNetUser.LastName,
-                        Email = srm.AspNetUser.Email,
-                        ColorCode = srm.AspNetUser.ColorCode,
-                        Role = srm.AspNetUser.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
-                        {
-                            Id = r.AspNetRole.Id,
-                            Name = r.AspNetRole.Name
-                        }).FirstOrDefault()
+                        Count = c.Count(),
+                        ToDoCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.ToDo),
+                        WaitingCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Waiting),
+                        DoneCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Done)
                     }
-                }),
-                ServiceRequestTasks = sr.ServiceRequestTasks
-                    .Where(srt => srt.AssignedTo == userId || rolesThatShouldBeSeen.Contains(srt.ResponsibleRoleId))
-                    .Where(srt => srt.TaskId != Tasks.AssessmentDay)
-                    .OrderBy(srt => srt.Sequence)
-                    .Select(t => new Orvosi.Shared.Model.ServiceRequestTask
-                    {
-                        Id = t.Id,
-                        ServiceRequestId = t.ServiceRequestId,
-                        AppointmentDate = sr.AppointmentDate,
-                        DueDate = t.DueDate,
-                        Now = now,
-                        ProcessTask = new Orvosi.Shared.Model.ProcessTask
-                        {
-                            Id = t.OTask.Id,
-                            Name = t.OTask.Name,
-                            Sequence = t.OTask.Sequence.Value,
-                            ResponsibleRole = t.OTask.AspNetRole == null ? null : new Orvosi.Shared.Model.UserRole
-                            {
-                                Id = t.OTask.AspNetRole.Id,
-                                Name = t.OTask.AspNetRole.Name
-                            }
-                        },
-                        AssignedTo = new Orvosi.Shared.Model.Person
-                        {
-                            Id = t.AspNetUser_AssignedTo == null ? (Guid?)null : t.AspNetUser_AssignedTo.Id,
-                            Title = t.AspNetUser_AssignedTo.Title,
-                            FirstName = t.AspNetUser_AssignedTo.FirstName,
-                            LastName = t.AspNetUser_AssignedTo.LastName,
-                            Email = t.AspNetUser_AssignedTo.Email,
-                            ColorCode = t.AspNetUser_AssignedTo.ColorCode,
-                            Role = t.AspNetUser_AssignedTo.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
-                            {
-                                Id = r.AspNetRole.Id,
-                                Name = r.AspNetRole.Name
-                            }).FirstOrDefault()
-                        },
-                        CompletedBy = new Orvosi.Shared.Model.Person
-                        {
-                            Id = t.AspNetUser_TaskStatusChangedBy == null ? (Guid?)null : t.AspNetUser_TaskStatusChangedBy.Id,
-                            Title = t.AspNetUser_TaskStatusChangedBy.Title,
-                            FirstName = t.AspNetUser_TaskStatusChangedBy.FirstName,
-                            LastName = t.AspNetUser_TaskStatusChangedBy.LastName,
-                            Email = t.AspNetUser_TaskStatusChangedBy.Email,
-                            ColorCode = t.AspNetUser_TaskStatusChangedBy.ColorCode,
-                            Role = t.AspNetUser_TaskStatusChangedBy.AspNetUserRoles.Select(r => new Orvosi.Shared.Model.UserRole
-                            {
-                                Id = r.AspNetRole.Id,
-                                Name = r.AspNetRole.Name
-                            }).FirstOrDefault()
-                        },
-                        CompletedDate = t.CompletedDate,
-                        IsObsolete = t.IsObsolete,
-                        Dependencies = t.Child.Select(c => new Orvosi.Shared.Model.ServiceRequestTaskDependent
-                        {
-                            TaskId = c.TaskId.Value,
-                            CompletedDate = c.CompletedDate,
-                            IsObsolete = c.IsObsolete
-                        })
-                    })
-            }).ToList();
+                })
+                .ToList();
 
-            // we have what we need to refresh a single request so return it. This is expected to be called via an ajax call
-            if (serviceRequestId.HasValue && Request.IsAjaxRequest()) return PartialView("_ServiceRequestTasks_Today", result.First());
+            ViewData.TaskListFilterArgs_Set(args);
 
-            // otherwise create a view model and load the due dates page.
-            var vm = new dvm.DueDatesViewModel();
+            //var caseViewModels = dto.AsQueryable()
+            //      .Select(CaseViewModel.FromServiceRequestDto.Expand());
 
-            // group the results by day
-            vm.DueDates = from s in result
-                          group s by s.DueDate into days
-                          select new Orvosi.Shared.Model.DueDateDayFolder
-                          {
-                              DayAndTime = days.Key,
-                              Company = days.Min(c => c.Company.Name),
-                              ServiceRequests = days
-                          };
+            //  var dayViewModels = caseViewModels
+            //      .GroupBy(c => c.DueDate.Value)
+            //      .AsQueryable()
+            //      .Select(DayViewModel.FromServiceRequestGroupingDtoWithSummary.Expand());
+
+            return View(viewModel);
 
             // This page uses the TaskFilter component and must therefore supply the view model for it
             var taskFilters = db.ServiceRequestTasks
@@ -225,24 +84,7 @@ namespace WebApp.Controllers
                                 .OrderBy(srt => srt.Sequence.Value)
                                 .ToList();
 
-            vm.TaskFilterViewModel = new ViewModels.TaskFilterViewModel() { Tasks = taskFilters, SelectedTaskTypes = selectedTaskTypes, SelectedUserId = userId };
-
-            // This page uses the Discussion component and must therefore supply the view model for it
-            vm.ServiceRequestMessageJSViewModel = new ViewModels.ServiceRequestMessageJSViewModel() { QueryString = Request.QueryString, ServiceRequestIds = serviceRequestIds };
-            vm.SelectedUserId = userId;
-            vm.UserSelectList = await (from user in db.AspNetUsers
-                                       from userRole in db.AspNetUserRoles
-                                       from role in db.AspNetRoles
-                                       where user.Id == userRole.UserId && role.Id == userRole.RoleId
-                                       select new SelectListItem
-                                       {
-                                           Text = user.FirstName + " " + user.LastName,
-                                           Value = user.Id.ToString(),
-                                           Group = new SelectListGroup() { Name = role.Name }
-                                       }).ToListAsync();
-
-            // return the Due Dates view
-            return PartialView("DueDates", vm);
+            var taskFilterViewModel = new ViewModels.TaskFilterViewModel() { Tasks = taskFilters, SelectedTaskTypes = args.TaskIds, SelectedUserId = userId };
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]

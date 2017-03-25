@@ -469,6 +469,7 @@
     <Compile Include="Library\IEmailService.cs" />
     <Compile Include="Library\IIdentityExtensions.cs" />
     <Compile Include="Library\ImpersonatingSecurityStampValidator.cs" />
+    <Compile Include="Library\ObjectExtensions.cs" />
     <Compile Include="Library\Projections\AspNetUserProjections.cs" />
     <Compile Include="Library\Projections\CollaboratorProjections.cs" />
     <Compile Include="Library\Projections\AddressProjections.cs" />
@@ -513,6 +514,8 @@
     <Compile Include="Models\TaskDtoFilters.cs">
       <DependentUpon>TaskDto.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewDataModels\DateFilterArgs.cs" />
+    <Compile Include="ViewDataModels\ServiceRequestTask\TaskListFilterArgs.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
@@ -525,7 +528,9 @@
     <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
+    <Compile Include="ViewModels\DashboardViewModels\DueDateViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
+    <Compile Include="ViewModels\DashboardViewModels\TaskStatusSummaryViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\LookupViewModel.cs" />
@@ -1226,6 +1231,9 @@
     <Content Include="Views\Box\CaseFolder.cshtml" />
     <Content Include="Views\ServiceRequest\CaseJS.cshtml" />
     <Content Include="Views\Shared\CalendarNavigation.cshtml" />
+    <Content Include="Views\Dashboard\Agenda.cshtml" />
+    <Content Include="Views\ServiceRequest\DueDate.cshtml" />
+    <Content Include="Views\ServiceRequest\CaseLink.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1330,7 +1338,7 @@
     <Content Include="Views\ServiceRequestTemplate\Details.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Edit.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Index.cshtml" />
-    <Content Include="Views\Dashboard\Agenda.cshtml" />
+    <Content Include="Views\ServiceRequest\Agenda.cshtml" />
     <Content Include="Views\Dashboard\_Layout.cshtml" />
     <Content Include="Views\Dashboard\DueDates.cshtml" />
     <Content Include="Views\Dashboard\Schedule.cshtml" />
@@ -1341,7 +1349,7 @@
     <Content Include="Views\Accounting\_ServiceRequest.cshtml" />
     <Content Include="Views\Box\BoxUsers.cshtml" />
     <Content Include="Views\ServiceRequest\Note.cshtml" />
-    <Content Include="Views\Dashboard\_Note.cshtml" />
+    <Content Include="Views\ServiceRequest\_Note.cshtml" />
     <Content Include="Views\Dashboard\_ServiceRequestTasks_Today.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_Discussion.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessageJS.cshtml" />
@@ -1353,7 +1361,7 @@
     <Content Include="Views\Accounting\_Invoice.cshtml" />
     <Content Include="Views\Accounting\CreateInvoice.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />
-    <Content Include="Views\ServiceRequestTask\_TaskFilter.cshtml" />
+    <Content Include="Views\ServiceRequestTask\Components\TaskListFilter.cshtml" />
     <Content Include="Views\ServiceRequest\ChangeCompany.cshtml" />
     <Content Include="Views\Accounting\_EditInvoiceHeader.cshtml" />
     <Content Include="Views\Accounting\_EditInvoiceItem.cshtml" />

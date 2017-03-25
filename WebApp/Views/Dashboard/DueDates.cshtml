@@ -1,99 +1,109 @@
-﻿@using WebApp.Library.Extensions
+﻿@using FluentDateTime
+@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
-@model WebApp.ViewModels.DashboardViewModels.DueDatesViewModel
+@using WebApp.ViewModels.CalendarViewModels
+@using tv = WebApp.ViewModels.ServiceRequestTaskViewModels
+@model IEnumerable<DayViewModel>
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
 }
 
-<form action="~/Dashboard/DueDates" method="get">
-    <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
-    <ul class="list-unstyled list-inline">
-        @foreach (var item in Model.TaskFilterViewModel.Tasks)
-        {
-            <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
-        }
-        <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
-    </ul>
-</form>
+@*<form action="~/Dashboard/DueDates" method="get">
+        <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+        <ul class="list-unstyled list-inline">
+            @foreach (var item in Model.TaskFilterViewModel.Tasks)
+            {
+                <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
+            }
+            <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
+        </ul>
+    </form>*@
 
 <div id="day-folders" class="panel-group">
 
     <div class="panel">
         <div class="panel-heading">
             <div class="row">
-                <div class="col-xs-12 col-sm-10"><strong>Day</strong></div>
+                <div class="col-xs-12 col-sm-9"><strong>Day</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>To Do</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>Waiting On</strong></div>
+                <div class="col-xs-12 col-sm-1 text-center"><strong>On Hold</strong></div>
             </div>
         </div>
     </div>
-    @foreach (var day in Model.DueDates.OrderBy(d => d.Day))
+    @foreach (var day in Model.OrderBy(d => d.Day))
     {
-        <div class="panel 
-            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) > SystemTime.Now().Date ? " panel-default" : string.Empty )
-            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) == SystemTime.Now().Date ? " panel-success" : string.Empty )
-            @((day.Day.HasValue ? day.Day.Value.Date : day.Day) < SystemTime.Now().Date ? " panel-danger" : string.Empty )">
-            <div id="header-dayfolder-@day.DayTicks" class="panel-heading" role="tab">
-                <a role="button" data-toggle="collapse" data-parent="#day-folders" href="#dayfolder-@day.DayTicks">
+        <div class="panel
+            @(day.Day.Date > SystemTime.Now().Date ? " panel-default" : string.Empty )
+            @(day.Day.Date == SystemTime.Now().Date ? " panel-success" : string.Empty )
+            @(day.Day.Date < SystemTime.Now().Date ? " panel-danger" : string.Empty )">
+            <div id="header-dayfolder-@day.Day.Ticks" class="panel-heading" role="tab">
+                <a role="button" onclick="getDay('@day.Day.ToOrvosiDateFormat()', 'dayfolder-@day.Day.Ticks')">
                     <div class="panel-title">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-10">
-                                <span>@day.DayFormatted_MMMdd</span><span class="small"> @day.DayFormatted_dddd.ToUpper()</span>
+                            <div class="col-xs-12 col-sm-9">
+                                <span>@day.Day.ToString("MMM dd dddd").ToUpper()</span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="todo-total-label" class="small label @(day.ToDoCount(Model.SelectedUserId) > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@(day.ToDoCount(Model.SelectedUserId))</strong></span>
+                                <span id="todo-total-label" class="small label @(day.TaskStatusSummary.ToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@day.TaskStatusSummary.ToDoCount</strong></span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="waiting-total-label" class="small label @(day.WaitingCount(Model.SelectedUserId) > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@(day.WaitingCount(Model.SelectedUserId))</strong></span>
+                                <span id="waiting-total-label" class="small label @(day.TaskStatusSummary.WaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@(day.TaskStatusSummary.WaitingCount)</strong></span>
+                            </div>
+                            <div class="col-xs-12 col-sm-1 text-center">
+                                <span id="onhold-total-label" class="small label @(day.TaskStatusSummary.OnHoldCount > 0 ? "label-info" : "bg-info")"><strong id="onhold-total">@day.TaskStatusSummary.OnHoldCount</strong></span>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <section id="dayfolder-@day.DayTicks" class="panel-collapse collapse">
-                <div class="panel-body">
-                    @foreach (var serviceRequest in day.ServiceRequests.OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime))
-                {
-                        <div class="row o-dashboard-tr">
-                            <div class="col-md-2 o-dashboard-td">
-                                <a target="_blank" class="small" href="~/ServiceRequest/Details/@serviceRequest.Id"><h4>@serviceRequest.ClaimantName - @serviceRequest.Id</h4></a>
-                                <div>@serviceRequest.Company.Name</div>
-                                <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
-                                @if (serviceRequest.AppointmentDate.HasValue)
-                                {
-                                    <div class="small text-muted">
-                                        on @serviceRequest.AppointmentDate.ToOrvosiDateFormat() @serviceRequest.StartTime.ToShortTimeSafe()
-                                    </div>
-                                }
-                                <p>
-                                    <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                                </p>
-                            </div>
-                            <div class="col-md-2 o-dashboard-td">
-                                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.Id, Note = serviceRequest.Notes })
-                            </div>
-                            <div class="col-md-4" id="tasklist-container-@serviceRequest.Id">
-                                @Html.Action("TaskList", "ServiceRequestTask", new
-                                {
-                                    serviceRequestId = serviceRequest.Id,
-                                    viewOptions = TaskListViewOptions.Dashboard,
-                                    options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
-                                })
-                            </div>
-                            <div class="col-md-4 o-dashboard-td">
-                                @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", serviceRequest)
-                                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
-                            </div>
-                        </div>
-                    }
-                </div>
+            <section id="dayfolder-@day.Day.Ticks" class="panel-collapse collapse">
             </section>
-            </div>
-            }
+            @*<section id="dayfolder-@day.Day.Ticks" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        @foreach (var serviceRequest in day.Cases.OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime))
+                        {
+                            <div class="row o-dashboard-tr">
+                                <div class="col-md-2 o-dashboard-td">
+                                    <a target="_blank" class="small" href="~/ServiceRequest/Details/@serviceRequest.ServiceRequestId"><h4>@serviceRequest.ClaimantName - @serviceRequest.ServiceRequestId</h4></a>
+                                    <div>@serviceRequest.Company.Name</div>
+                                    <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
+                                    @if (serviceRequest.AppointmentDate.HasValue)
+                                    {
+                                        <div class="small text-muted">
+                                            on @serviceRequest.AppointmentDate.ToOrvosiDateFormat() @serviceRequest.StartTime.ToShortTimeSafe()
+                                        </div>
+                                    }
+                                    <p>
+                                        <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+                                    </p>
+                                </div>
+                                <div class="col-md-2 o-dashboard-td">
+                                    @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
+                                </div>
+                                <div class="col-md-4" id="tasklist-container-@serviceRequest.ServiceRequestId">
+                                    @Html.Action("TaskList", "ServiceRequestTask", new
+                                    {
+                                        serviceRequestId = serviceRequest.ServiceRequestId,
+                                        viewOptions = TaskListViewOptions.Dashboard,
+                                        options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                                    })
+                                </div>
+                                <div class="col-md-4 o-dashboard-td">
+                                    @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", serviceRequest)
+                                    @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </section>*@
         </div>
+    }
+</div>
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
@@ -101,13 +111,37 @@
 
     <script>
 
-        let serviceProviderId = '@Model.SelectedUserId';
+        function getDay(day, targetId) {
+            let url = '@Url.Content("~/ServiceRequest/DueDate")';
+            
+            var container = $(document.getElementById(targetId));
+            if (!container.hasClass('in')) {
+                $.post(url, {
+                    DateRange: {
+                        StartDate: day,
+                        EndDate: day,
+                        FilterType: 'On'
+                    },
+                    ViewOptions: "Dashboard",
+                    Options: "MyActiveTasks"
+                })
+                .done(function (result) {
+                    document.getElementById(targetId).innerHTML = result;
+                    container.collapse('toggle');
+                    //joinRoom(serviceRequestId);
+                    //refreshValidationResults(serviceRequestId);
+                });
+            }
+            else {
+                container.collapse('toggle');
+            }
+        }
 
         function refreshServiceRequestTasks(serviceRequestId) {
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/DueDates?serviceRequestId=")' + serviceRequestId + '&serviceProviderId=@Model.SelectedUserId',
+                url: '@Url.Content("~/Dashboard/DueDates?serviceRequestId=")' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
                     $('#service-request-tasks-' + serviceRequestId).replaceWith(result);
@@ -126,8 +160,7 @@
                 url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
                 data: JSON.stringify({
                     taskId: taskId,
-                    isChecked: checkbox.checked,
-                    serviceProviderGuid: '@Model.SelectedUserId'
+                    isChecked: checkbox.checked
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
@@ -205,8 +238,8 @@
 
             $.get(url, {
                 serviceRequestId: serviceRequestId,
-                viewOptions: '@TaskListViewOptions.Dashboard',
-                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                viewOptions: '@tv.TaskListViewOptions.Dashboard',
+                options: '@tv.TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
             .done(function (result) {
                 document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
@@ -219,5 +252,4 @@
     </script>
 
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", Model.ServiceRequestMessageJSViewModel)
 }

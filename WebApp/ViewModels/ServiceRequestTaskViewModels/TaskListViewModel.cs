@@ -11,6 +11,7 @@ namespace WebApp.ViewModels
     public class TaskListViewModel
     {
         public LookupViewModel<Guid> Physician { get; set; }
+        public CaseViewModel ServiceRequest { get; set; }
         public int ServiceRequestId { get; set; }
         public IEnumerable<TaskViewModel> Tasks { get; set; }
 

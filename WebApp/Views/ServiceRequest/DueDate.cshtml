@@ -1,0 +1,30 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewDataModels
+@using WebApp.ViewModels.ServiceRequestTaskViewModels
+@model IEnumerable<TaskListFilterArgs>
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+}
+@if (Model != null)
+{
+    foreach (var args in Model)
+    {
+        <div style="padding-left:20px;">
+            <h4>
+                @Html.Action("CaseLink", "ServiceRequest", new
+                {
+                    serviceRequestId = args.ServiceRequestId
+                })
+            </h4>
+        </div>
+        @Html.Action("TaskList", "ServiceRequestTask", args);
+    }
+}
+else
+{
+    <p></p>
+    <p><strong> No assessments today</strong></p>
+}

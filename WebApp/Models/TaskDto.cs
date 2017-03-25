@@ -23,7 +23,7 @@ namespace WebApp.Models
         public short Sequence { get; set; }
         public Guid? AssignedToId { get; set; }
         public PersonDto AssignedTo { get; set; }
-        public short StatusId { get; set; }
+        public short TaskStatusId { get; set; }
         public Guid? ResponsibleRoleId { get; set; }
         public string ResponsibleRoleName { get; set; }
         public DateTime? EffectiveDate { get; set; }
@@ -40,10 +40,11 @@ namespace WebApp.Models
             Sequence = srt.Sequence.Value,
             AssignedToId = srt.AssignedTo,
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
-            StatusId = srt.TaskStatusId.Value,
+            TaskStatusId = srt.TaskStatusId.Value,
             ResponsibleRoleId = srt.ResponsibleRoleId,
             ResponsibleRoleName = srt.ResponsibleRoleName,
-            IsCriticalPath = srt.IsCriticalPath
+            IsCriticalPath = srt.IsCriticalPath,
+            DueDate = srt.DueDate
         };
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntityForSummary = srt => srt == null ? null : new TaskDto()
@@ -51,7 +52,7 @@ namespace WebApp.Models
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
             Name = srt.OTask.Name,
-            StatusId = srt.TaskStatusId.Value,
+            TaskStatusId = srt.TaskStatusId.Value,
             DueDate = srt.DueDate
         };
     }

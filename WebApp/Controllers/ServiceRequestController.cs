@@ -30,6 +30,9 @@ using WebApp.ViewModels.UIElements;
 using LinqKit;
 using m = WebApp.Models;
 using WebApp.FormModels;
+using WebApp.ViewModels.CalendarViewModels;
+using WebApp.ViewDataModels;
+using WebApp.ViewModels.ServiceRequestTaskViewModels;
 
 namespace WebApp.Controllers
 {
@@ -54,9 +57,9 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> Index(FilterArgs filterArgs)
+        public async Task<ActionResult> Index(WebApp.ViewModels.ServiceRequestViewModels.FilterArgs filterArgs)
         {
-            var vm = new IndexViewModel();
+            var vm = new WebApp.ViewModels.ServiceRequestViewModels.IndexViewModel();
             // get the user
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
@@ -146,18 +149,98 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
+            ViewData.TaskListFilterArgs_Set(new TaskListFilterArgs
+            {
+                ServiceRequestId = id,
+                ViewOptions = TaskListViewOptions.Details,
+                Options = TaskListViewModelFilter.AllTasks
+            });
+
             return View(viewModel);
         }
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> Case(int serviceRequestId, CaseViewOptions viewOptions = CaseViewOptions.Details)
+        public ActionResult Agenda(DateTime selectedDate, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
         {
-            var dto = await db.ServiceRequests
+            // Set date range variables used in where conditions
+            var dto = db.ServiceRequests
+                .AreScheduledThisDay(selectedDate)
+                .AreNotCancellations()
+                .CanAccess(userId, physicianId, roleId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
+                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
+                .ToList();
+
+            var caseViewModels = dto.AsQueryable()
+                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+
+            var dayViewModel = caseViewModels
+                .GroupBy(c => c.AppointmentDate.Value)
+                .AsQueryable()
+                .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand())
+                .SingleOrDefault();
+
+            return PartialView(dayViewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        [HttpPost]
+        public ActionResult DueDate(TaskListFilterArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
+        {
+            var dto = db.ServiceRequestTasks
+                .AreDueBetween(args.DateRange.StartDate, args.DateRange.EndDate)
+                .AreAssignedToUser(userId)
+                .WithTaskIds(args.TaskIds)
+                .AreActive()
+                .Where(srt => srt.DueDate.HasValue)
+                .Select(srt => srt.ServiceRequestId)
+                .Distinct()
+                .ToList();
+
+            var viewModel = dto.Select(sr => new TaskListFilterArgs
+            {
+                AssignedTo = args.AssignedTo,
+                DateRange = args.DateRange,
+                Options = args.Options,
+                ServiceRequestId = sr,
+                TaskIds = args.TaskIds,
+                TaskStatusIds = args.TaskStatusIds,
+                ViewOptions = args.ViewOptions
+            });
+            
+            return PartialView(viewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public ActionResult CaseLink(int serviceRequestId)
+        {
+            var dto = db.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .SingleOrDefault();
+
+            if (dto == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            return PartialView(viewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public ActionResult Case(int serviceRequestId, CaseViewOptions viewOptions = CaseViewOptions.Details)
+        {
+            var dto = db.ServiceRequests
                 .WithId(serviceRequestId)
                 .CanAccess(userId, physicianId, roleId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
 
             if (dto == null)
             {
@@ -1479,15 +1562,6 @@ namespace WebApp.Controllers
             {
                 serviceRequestId = serviceRequestId
             });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

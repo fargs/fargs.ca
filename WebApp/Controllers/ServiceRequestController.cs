@@ -161,7 +161,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Agenda(DateTime selectedDate, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
+        public ActionResult Agenda(DateTime selectedDate, ViewTarget viewOptions = ViewTarget.Agenda)
         {
             // Set date range variables used in where conditions
             var dto = db.ServiceRequests
@@ -190,7 +190,7 @@ namespace WebApp.Controllers
         public ActionResult DueDate(TaskListFilterArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
         {
             var dto = db.ServiceRequestTasks
-                .AreDueBetween(args.DateRange.StartDate, args.DateRange.EndDate)
+                .AreDueBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
                 .AreAssignedToUser(userId)
                 .WithTaskIds(args.TaskIds)
                 .AreActive()
@@ -215,10 +215,58 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult CaseLink(int serviceRequestId)
+        public ActionResult ScheduleDateRange(TaskListFilterArgs args)
+        {
+            var ids = db.ServiceRequestTasks
+                .AreScheduledBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
+                .AreAssignedToUser(userId)
+                .WithTaskIds(args.TaskIds)
+                .AreActive()
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
+                .Select(srt => srt.ServiceRequestId)
+                .Distinct();
+
+            var dto = db.ServiceRequests
+                .AreNotCancellations()
+                .Where(sr => sr.AppointmentDate.HasValue)
+                .Where(sr => ids.Contains(sr.Id))
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .ToList();
+
+            var viewModel = dto
+                .AsQueryable()
+                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+
+            var dayViewModel = viewModel
+                .GroupBy(c => c.AppointmentDate.Value)
+                .AsQueryable()
+                .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand());
+
+            ViewData.CaseViewArgs_Set(new CaseLinkArgs
+            {
+                ServiceRequestId = args.ServiceRequestId,
+                ViewTarget = ViewTarget.Schedule
+            });
+            //var viewModel = dto.Select(sr => new TaskListFilterArgs
+            //{
+            //    AssignedTo = args.AssignedTo,
+            //    DateRange = args.DateRange,
+            //    Options = args.Options,
+            //    ServiceRequestId = sr,
+            //    TaskIds = args.TaskIds,
+            //    TaskStatusIds = args.TaskStatusIds,
+            //    ViewOptions = args.ViewOptions
+            //});
+
+            return PartialView(dayViewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public ActionResult CaseLink(CaseLinkArgs args)
         {
             var dto = db.ServiceRequests
-                .WithId(serviceRequestId)
+                .WithId(args.ServiceRequestId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
                 .SingleOrDefault();
 
@@ -229,12 +277,14 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
+            ViewData.CaseViewArgs_Set(args);
+
             return PartialView(viewModel);
         }
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Case(int serviceRequestId, CaseViewOptions viewOptions = CaseViewOptions.Details)
+        public ActionResult Case(int serviceRequestId, ViewTarget viewOptions = ViewTarget.Details)
         {
             var dto = db.ServiceRequests
                 .WithId(serviceRequestId)

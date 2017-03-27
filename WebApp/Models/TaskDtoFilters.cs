@@ -30,7 +30,7 @@ namespace WebApp.Models
         public static IEnumerable<TaskDto> AreDueBetween(this IEnumerable<TaskDto> tasks, DateFilterArgs range)
         {
             var startDate = range.StartDate.Date;
-            var endDate = range.EndDate.Date.AddDays(1);
+            var endDate = range.EndDate.Value.Date.AddDays(1);
             return tasks
                 .Where(s => s.DueDate.HasValue && s.DueDate.Value >= startDate && s.DueDate.Value < endDate); // this filters out the days
         }

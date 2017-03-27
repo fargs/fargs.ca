@@ -19,7 +19,7 @@
             @Html.Partial("PhysicianLabel", Model.Physician)
             <hr />
             <div id="case-container">
-                @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Details } })
+                @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", ViewTarget.Details } })
             </div>
             <hr />
             <div id="box-integration"></div>

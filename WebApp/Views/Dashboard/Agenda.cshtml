@@ -120,7 +120,7 @@
             $.get('@Url.Content("~/ServiceRequest/Case")',
                 {
                     serviceRequestId: serviceRequestId,
-                    viewOptions: '@CaseViewOptions.Agenda',
+                    viewOptions: '@ViewTarget.Agenda',
                 })
                 .done(function (result) {
                     document.getElementById('case-container-' + serviceRequestId).innerHTML = result;

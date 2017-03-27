@@ -516,6 +516,7 @@
     </Compile>
     <Compile Include="ViewDataModels\DateFilterArgs.cs" />
     <Compile Include="ViewDataModels\ServiceRequestTask\TaskListFilterArgs.cs" />
+    <Compile Include="ViewDataModels\ServiceRequest\CaseViewArgs.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
@@ -1234,6 +1235,7 @@
     <Content Include="Views\Dashboard\Agenda.cshtml" />
     <Content Include="Views\ServiceRequest\DueDate.cshtml" />
     <Content Include="Views\ServiceRequest\CaseLink.cshtml" />
+    <Content Include="Views\ServiceRequest\ScheduleDateRange.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

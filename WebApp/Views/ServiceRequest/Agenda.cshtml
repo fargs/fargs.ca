@@ -29,7 +29,7 @@
         <div class="row o-dashboard-tr">
             <div class="col-md-2">
                 <div id="case-container-@serviceRequest.ServiceRequestId">
-                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, new ViewDataDictionary { { "CaseViewOptions", CaseViewOptions.Agenda } })
+                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, new ViewDataDictionary { { "CaseViewOptions", ViewTarget.Agenda } })
                 </div>
             </div>
             @*<div class="col-md-1 o-dashboard-td">

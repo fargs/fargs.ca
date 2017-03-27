@@ -82,6 +82,17 @@ namespace Orvosi.Data.Filters
             endDate = endDate.Date.AddDays(1);
             return s => s.DueDate.HasValue && s.DueDate.Value >= startDate && s.DueDate.Value < endDate;
         }
+        public static IQueryable<ServiceRequestTask> AreScheduledBetween(this IQueryable<ServiceRequestTask> serviceRequestTasks, DateTime startDate, DateTime endDate)
+        {
+            return serviceRequestTasks
+                .Where(AreScheduledBetween(startDate, endDate)); // this filters out the days
+        }
+        public static Expression<Func<ServiceRequestTask, bool>> AreScheduledBetween(DateTime startDate, DateTime endDate)
+        {
+            startDate = startDate.Date;
+            endDate = endDate.Date.AddDays(1);
+            return s => s.ServiceRequest.AppointmentDate.HasValue && s.ServiceRequest.AppointmentDate.Value >= startDate && s.ServiceRequest.AppointmentDate.Value < endDate;
+        }
         public static IQueryable<ServiceRequestTask> ThatAreOverdue(this IQueryable<ServiceRequestTask> serviceRequestTasks, DateTime now)
         {
             return serviceRequestTasks

@@ -1,0 +1,54 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewDataModels
+@using WebApp.ViewModels.CalendarViewModels
+@model IEnumerable<DayViewModel>
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+}
+@if (Model != null)
+{
+    <div class="row">
+        @foreach (var day in Model)
+        {
+        <div class="col-md-3">
+            <div style="padding-left:10px; padding-right:10px; padding-top:10px;">@day.Day.ToOrvosiDateFormat()</div>
+            <div style="display:flex; flex-direction:row; align-content:center; align-self:stretch;">
+                <div style="padding:10px;">
+                    @foreach (var address in day.Addresses)
+                    {
+                        <div>@address</div>
+                    }
+                </div>
+                <div class="text-muted" style="padding:10px;">
+                    @foreach (var company in day.Companies)
+                    {
+                        <div>@company.ToString()</div>
+                    }
+                </div>
+            </div>
+            <table class="table table-condensed">
+                @foreach (var item in day.Cases)
+                {
+                    <tr>
+                        @Html.Partial("CaseLink", item, ViewData)
+                        @*@Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
+                            {
+                                ServiceRequestId = item.ServiceRequestId,
+                                ViewTarget = ViewTarget.Schedule
+                            })*@
+                    </tr>
+
+                }
+            </table>
+        </div>
+        }
+    </div>
+}
+else
+{
+    <p></p>
+    <p><strong> No assessments today</strong></p>
+}

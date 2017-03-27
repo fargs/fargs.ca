@@ -44,6 +44,18 @@ namespace Orvosi.Data.Filters
             now = now.Date.AddDays(1);
             return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate.Value : new DateTime(1900,01,01)) <= now); // this filters out the days
         }
+
+        public static IQueryable<ServiceRequest> AreScheduledBetween(this IQueryable<ServiceRequest> serviceRequests, DateTime startDate, DateTime endDate)
+        {
+            return serviceRequests
+                .Where(AreScheduledBetween(startDate, endDate)); // this filters out the days
+        }
+        public static Expression<Func<ServiceRequest, bool>> AreScheduledBetween(DateTime startDate, DateTime endDate)
+        {
+            startDate = startDate.Date;
+            endDate = endDate.Date.AddDays(1);
+            return s => s.AppointmentDate.HasValue && s.AppointmentDate.Value >= startDate && s.AppointmentDate.Value < endDate;
+        }
         public static IQueryable<ServiceRequest> ForPhysician(this IQueryable<ServiceRequest> serviceRequests, Guid userId)
         {
             return serviceRequests.Where(sr => sr.PhysicianId == userId);

@@ -1,6 +1,7 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
 @using WebApp.ViewModels.ServiceRequestTaskViewModels
+@using FluentDateTime
 @model WebApp.ViewModels.DashboardViewModels.ScheduleViewModel
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
@@ -9,7 +10,27 @@
     var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
 }
 
-<form action="~/Dashboard/Schedule" method="get">
+@functions {
+
+    string WeekStyle(DateTime day)
+    {
+        var now = SystemTime.Now();
+        if (day < now.FirstDayOfWeek())
+        {
+            return "panel-danger";
+        }
+        else if (day > now.LastDayOfWeek())
+        {
+            return "panel-default";
+        }
+        else
+        {
+            return "panel-success";
+        }
+    }
+}
+
+@*<form action="~/Dashboard/Schedule" method="get">
     <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
     <ul class="list-unstyled list-inline">
         @foreach (var item in Model.TaskFilterViewModel.Tasks)
@@ -18,156 +39,75 @@
         }
         <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
     </ul>
-</form>
+</form>*@
 
 <div id="week-folders" class="panel-group">
 
     <div class="panel">
         <div class="panel-heading">
             <div class="row">
-                <div class="col-xs-12 col-sm-10"><strong>Week</strong></div>
+                <div class="col-xs-12 col-sm-9"><strong>Week</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>To Do</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>Waiting On</strong></div>
+                <div class="col-xs-12 col-sm-1 text-center"><strong>On Hold</strong></div>
             </div>
         </div>
     </div>
     @foreach (var weekFolder in Model.WeekFolders)//.ThisWeekCards)
     {
-        <div class="panel @(SystemTime.Now() >= weekFolder.StartDate && SystemTime.Now() < weekFolder.EndDate ? "panel-success" : "panel-default")">
-            <div id="header-weekfolder-@weekFolder.StartDateTicks" class="panel-heading" role="tab">
-                <a role="button" data-toggle="collapse" data-parent="#week-folders" href="#weekfolder-@weekFolder.StartDateTicks">
+        <div class="panel @WeekStyle(weekFolder.Day)">
+            <div id="header-weekfolder-@weekFolder.Day.Ticks" class="panel-heading" role="tab">
+                <a role="button" onclick="getWeek('@weekFolder.Day.ToOrvosiDateFormat()', 'week-@weekFolder.Day.Ticks')">
                     <div class="panel-title">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-10">
-                                <span>@weekFolder.WeekFolderName</span>
+                            <div class="col-xs-12 col-sm-9">
+                                <span>@weekFolder.Day.ToOrvosiDateFormat()</span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="todo-total-label" class="small label @(weekFolder.ToDoCount(Model.SelectedUserId) > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.ToDoCount(Model.SelectedUserId)</strong></span>
+                                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.ToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.TaskStatusSummary.ToDoCount</strong></span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="waiting-total-label" class="small label @(weekFolder.WaitingCount(Model.SelectedUserId) > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.WaitingCount(Model.SelectedUserId)</strong></span>
+                                <span id="waiting-total-label" class="small label @(weekFolder.TaskStatusSummary.WaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.TaskStatusSummary.WaitingCount</strong></span>
+                            </div>
+                            <div class="col-xs-12 col-sm-1 text-center">
+                                <span id="onhold-total-label" class="small label @(weekFolder.TaskStatusSummary.OnHoldCount > 0 ? "label-info" : "bg-info")"><strong id="onhold-total">@weekFolder.TaskStatusSummary.OnHoldCount</strong></span>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div id="weekfolder-@weekFolder.StartDateTicks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                <div class="panel-body">
-                    <div class="row">
-                        @foreach (var dayFolder in weekFolder.DayFolders)
-                        {
-                            <div class="col-xs-12 col-md-6" id="dayfolder-@dayFolder.DayTicks">
-                                <strong>
-                                    @dayFolder.DayFormatted_dddd<span class="small"> @dayFolder.DayFormatted_MMMdd</span>
-                                </strong>
-                                <div>
-                                    @dayFolder.Address.Name
-                                </div>
-                                <div class="small text-muted" style="padding-bottom:20px;">
-                                    @dayFolder.City
-                                </div>
-                                <table class="table table-condensed">
-                                    @foreach (var assessment in dayFolder.ServiceRequests)
-                                    {
-                                        <tr id="header-assessment-@assessment.Id">
-                                            <td style="vertical-align: text-top; width:40px;">
-                                                <strong style="color: @assessment.Service.ColorCode;">@assessment.Service.Code</strong>
-                                            </td>
-                                            <td style="vertical-align: text-top; width:30px;">
-                                                @if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.Obsolete)
-                                                {
-                                                    <span id="assessment-total-label" class="fa fa-frown-o" style="color: dodgerblue;" title="@(assessment.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
-                                                }
-                                                else if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.ToDo)
-                                                {
-                                                    <span id="assessment-total-label" style="color: red;" class="small @(assessment.HasHighWorkload ? "fa fa-pencil" : "label label-danger")">&nbsp;</span>
-                                                }
-                                                else if (assessment.ServiceRequestStatusId(Model.SelectedUserId) == TaskStatuses.Waiting)
-                                                {
-                                                    <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning" onclick="onShowTaskHierarchy(@assessment.Id)">&nbsp;</span>
-                                                }
-                                                else
-                                                {
-                                                    <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>
-                                                }
-                                            </td>
-                                            <td style="vertical-align: text-top; width:80px;">
-                                                @assessment.StartTime.ToShortTimeSafe()
-                                            </td>
-                                            <td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
-                                                <a data-toggle="collapse" href="#assessment-@assessment.Id" title="@assessment.ClaimantName">
-                                                    @if (!string.IsNullOrEmpty(assessment.Notes))
-                                                    {
-                                                        <i class="fa fa-sticky-note" style="color:goldenrod;"></i>
-                                                    }
-                                                    @assessment.ClaimantName
-                                                </a>
-                                            </td>
-                                            <td style="vertical-align: text-top; width:100px;" class="text-right">
-                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.DocumentReviewer == null ? new Orvosi.Shared.Model.Person() : assessment.DocumentReviewer)
-                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.IntakeAssistant == null ? new Orvosi.Shared.Model.Person() : assessment.IntakeAssistant)
-                                                @Html.Partial("~/Views/Shared/_Initials.cshtml", assessment.Physician == null ? new Orvosi.Shared.Model.Person() : assessment.Physician)
-                                            </td>
-                                        </tr>
-                                        <tr id="assessment-@assessment.Id" class="collapse">
-                                            <td></td>
-                                            <td colspan="4">
-                                                <div style="padding-top: 5px;">
-                                                    <div><strong>@assessment.ClaimantName</strong></div>
-                                                    @if (assessment.ServiceStatusId.HasValue)
-                                                    {
-                                                        @Html.Partial("_ServiceStatusLabel", assessment.ServiceStatusId.Value)
-                                                    }
-                                                    <p class="">
-                                                        @assessment.Notes
-                                                    </p>
-                                                    <div id="tasklist-container-@assessment.Id">
-                                                        @Html.Action("TaskList", "ServiceRequestTask", new
-                                                        {
-                                                            serviceRequestId = assessment.Id,
-                                                            viewOptions = TaskListViewOptions.Dashboard,
-                                                            options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
-                                                        })
-                                                    </div>
-                                                </div>
-                                                <div style="padding-top: 5px;">
-
-                                                    <p><a class="btn btn-default" target="_blank" href="@assessment.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a></p>
-                                                    <div>
-                                                        <div class="pull-left">
-                                                            @if (!assessment.IsLateCancellation && !assessment.IsCancelled)
-                                                            {
-                                                                <form action="~/Dashboard/ToggleNoShow">
-                                                                    <div class="checkbox">
-                                                                        <label>
-                                                                            <input id="task-checkbox-@assessment.Id" type="checkbox"
-                                                                                   value="@assessment.IsNoShow"
-                                                                                   @(assessment.IsNoShow ? "checked" : "")
-                                                                                   onclick="onToggleNoShow(this, @assessment.Id, @dayFolder.DayTicks, @weekFolder.StartDateTicks);">
-                                                                            No Show
-                                                                        </label>
-                                                                    </div>
-                                                                </form>
-                                                            }
-                                                        </div>
-                                                        <span class="pull-right" style="line-height:40px"><a target="_blank" class="small" href="~/ServiceRequest/Details/@assessment.Id">@assessment.Id</a></span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+            <section id="week-@weekFolder.Day.Ticks" class="panel-collapse collapse"></section>
         </div>
     }
 </div>
 
 @section Scripts{
     <script>
+
+        function getWeek(day, targetId) {
+            let url = '@Url.Content("~/ServiceRequest/ScheduleDateRange")';
+
+            var container = $(document.getElementById(targetId));
+            if (!container.hasClass('in')) {
+                $.post(url, {
+                    DateRange: {
+                        StartDate: day,
+                        FilterType: 'Week'
+                    },
+                    ViewOptions: "Dashboard",
+                    Options: "MyActiveTasks"
+                })
+                .done(function (result) {
+                    document.getElementById(targetId).innerHTML = result;
+                    container.collapse('toggle');
+                    //joinRoom(serviceRequestId);
+                    //refreshValidationResults(serviceRequestId);
+                });
+            }
+            else {
+                container.collapse('toggle');
+            }
+        }
 
         function onToggleNoShow(checkbox, serviceRequestId) {
 

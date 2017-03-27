@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebApp.ViewModels
 {
-    public enum CaseViewOptions
+    public enum ViewTarget
     {
         Agenda,
         DueDates,

@@ -14,9 +14,10 @@
     {
         <div style="padding-left:20px;">
             <h4>
-                @Html.Action("CaseLink", "ServiceRequest", new
+                @Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
                 {
-                    serviceRequestId = args.ServiceRequestId
+                    ServiceRequestId = args.ServiceRequestId,
+                    ViewTarget = ViewTarget.DueDates
                 })
             </h4>
         </div>

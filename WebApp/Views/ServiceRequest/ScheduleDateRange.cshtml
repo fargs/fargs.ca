@@ -10,40 +10,37 @@
 }
 @if (Model != null)
 {
-    <div class="row">
+
+    <div style="display:flex; flex-direction: row; flex-wrap: wrap;">
         @foreach (var day in Model)
         {
-        <div class="col-md-3">
-            <div style="padding-left:10px; padding-right:10px; padding-top:10px;">@day.Day.ToOrvosiDateFormat()</div>
-            <div style="display:flex; flex-direction:row; align-content:center; align-self:stretch;">
-                <div style="padding:10px;">
-                    @foreach (var address in day.Addresses)
-                    {
-                        <div>@address</div>
-                    }
+            <div style="padding:10px; min-width: 400px;">
+                <div style="padding-top:10px;">
+                    <strong>@day.Day.ToOrvosiDateFormat()</strong>
                 </div>
-                <div class="text-muted" style="padding:10px;">
-                    @foreach (var company in day.Companies)
+                <div style="display:flex; flex-wrap:nowrap; flex-direction:row; align-content:center; align-self:stretch;">
+                    <div style="padding-top:5px; padding-bottom:5px">
+                        @foreach (var address in day.Addresses)
                     {
-                        <div>@company.ToString()</div>
-                    }
+                            <div>@address</div>
+                        }
+                    </div>
                 </div>
-            </div>
-            <table class="table table-condensed">
-                @foreach (var item in day.Cases)
-                {
-                    <tr>
-                        @Html.Partial("CaseLink", item, ViewData)
-                        @*@Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
-                            {
-                                ServiceRequestId = item.ServiceRequestId,
-                                ViewTarget = ViewTarget.Schedule
-                            })*@
-                    </tr>
+                <table class="table table-condensed">
+                    @foreach (var item in day.Cases)
+                    {
+                        <tr>
+                            @Html.Partial("CaseLink", item, ViewData)
+                            @*@Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
+                                {
+                                    ServiceRequestId = item.ServiceRequestId,
+                                    ViewTarget = ViewTarget.Schedule
+                                })*@
+                        </tr>
 
-                }
-            </table>
-        </div>
+                    }
+                </table>
+            </div>
         }
     </div>
 }

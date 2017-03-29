@@ -1,25 +1,25 @@
 ﻿@model CaseViewModel
-@{ 
+@{
     var args = ViewData.CaseViewArgs_Get();
 }
-    <td style="vertical-align: text-top; width:40px;">
-        <strong style="color: @Model.Service.ColorCode;">@Model.Service.Code</strong>
-    </td>
-    @if (args.ViewTarget != ViewTarget.DueDates)
-    {
-        <td style="vertical-align: text-top; width:80px;">@Model.StartTime.ToShortTimeSafe()</td>
-    }
-    @if (!string.IsNullOrEmpty(Model.Notes))
-    {
-        <td><i class="fa fa-sticky-note" style="color:goldenrod;"></i></td>
-    }
-    <td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
-        <a href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName</a>
-        <div>@Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)</div>
-    </td>
-    <td style="vertical-align: text-top; width:100px;" class="text-right">
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
-    </td>
-</div>
+<td style="vertical-align: text-top; width:40px;">
+    <strong style="color: @Model.Service.ColorCode;">@Model.Service.Code</strong>
+</td>
+@if (args.ViewTarget != ViewTarget.DueDates)
+{
+    <td style="vertical-align: text-top; width:80px;">@Model.StartTime.ToShortTimeSafe()</td>
+}
+@if (!string.IsNullOrEmpty(Model.Notes))
+{
+    <td><i class="fa fa-sticky-note" style="color:goldenrod;"></i></td>
+}
+<td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
+    @*<a href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName</a>*@
+    <a onclick="showCaseDetails(@Model.ServiceRequestId)">@Model.ClaimantName</a>
+    <div>@Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)</div>
+</td>
+<td style="vertical-align: text-top; width:100px;" class="text-right">
+    @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
+    @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
+    @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
+</td>

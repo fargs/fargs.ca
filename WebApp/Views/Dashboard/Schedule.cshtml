@@ -81,6 +81,8 @@
     }
 </div>
 
+@Html.Partial("ModalContainer")
+
 @section Scripts{
     <script>
 
@@ -136,12 +138,25 @@
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
             $.get(url, {
-                serviceRequestId: serviceRequestId,
-                viewOptions: '@TaskListViewOptions.Dashboard',
-                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                serviceRequestId: serviceRequestId
             })
             .done(function (result) {
-                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                document.getElementById('tasklist-container').innerHTML = result;
+            })
+            .always(function () {
+                //loader.hide();
+            });
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequest/Case")';
+
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                viewOptions: '@ViewTarget.Modal'
+            })
+            .done(function (result) {
+                document.getElementById('case-container').innerHTML = result;
             })
             .always(function () {
                 //loader.hide();
@@ -283,5 +298,7 @@
 
     </script>
 
+    <script src="@Url.Content("~/signalr/hubs")"></script>
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 }

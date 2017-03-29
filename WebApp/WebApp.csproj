@@ -517,6 +517,7 @@
     <Compile Include="ViewDataModels\DateFilterArgs.cs" />
     <Compile Include="ViewDataModels\ServiceRequestTask\TaskListFilterArgs.cs" />
     <Compile Include="ViewDataModels\ServiceRequest\CaseViewArgs.cs" />
+    <Compile Include="ViewDataModels\ViewTarget.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
@@ -524,7 +525,6 @@
     <Compile Include="ViewModels\CalendarViewOptions.cs" />
     <Compile Include="ViewModels\CancellationViewModel.cs" />
     <Compile Include="ViewModels\CaseViewModel.cs" />
-    <Compile Include="ViewModels\CaseViewModelOptions.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
@@ -1236,6 +1236,8 @@
     <Content Include="Views\ServiceRequest\DueDate.cshtml" />
     <Content Include="Views\ServiceRequest\CaseLink.cshtml" />
     <Content Include="Views\ServiceRequest\ScheduleDateRange.cshtml" />
+    <Content Include="Views\ServiceRequest\Details2.cshtml" />
+    <Content Include="Views\Shared\ModalContainer.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -7,22 +7,25 @@
     var identity = User.Identity.GetClaimsIdentity();
     var roleId = identity.GetRoleId();
     var features = identity.GetFeatures();
-    var caseViewModel = (ViewTarget)ViewData["CaseViewOptions"];
+    var viewTarget = ViewData.ViewTarget_Get();
 }
 
 <div>
-    @if (caseViewModel == ViewTarget.Details)
+    @if (viewTarget != ViewTarget.Modal)
     {
+        if (viewTarget == ViewTarget.Details)
+        {
         <h4>@Model.ClaimantName (@(Model.ServiceRequestId))</h4>
-    }
-    else
-    {
+        }
+        else
+        {
         <h4><a href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@(Model.ServiceRequestId))</a></h4>
+        }
     }
     <p class="text-muted">
         @Model.Company.Name<br />
         @Model.Service.Name
-</p>
+    </p>
 @Html.Partial("~/Views/ServiceRequest/StatusLabel.cshtml", Model.ServiceRequestStatus)
 @if (Model.HasAppointment)
 {
@@ -47,7 +50,7 @@
         <p></p>
         @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
         <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
-    if (caseViewModel == ViewTarget.Details)
+    if (viewTarget == ViewTarget.Details)
     {
         <p>
             <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />

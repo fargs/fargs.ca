@@ -134,6 +134,19 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public ActionResult Details2(int serviceRequestId)
+        {
+            var dto =  db.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
+                .Single();
+
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            return PartialView(viewModel);
+        }
+
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public async Task<ActionResult> Details(int id)
         {
             var dto = db.ServiceRequests
@@ -223,13 +236,17 @@ namespace WebApp.Controllers
                 .WithTaskIds(args.TaskIds)
                 .AreActive()
                 .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
-                .Select(srt => srt.ServiceRequestId)
-                .Distinct();
+                .GroupBy(srt => srt.ServiceRequestId)
+                .Select(grp => new
+                {
+                    ServiceRequestId = grp.Key,
+                    NextTaskStatusId = grp.Min(srt => srt.TaskStatusId)
+                });
 
             var dto = db.ServiceRequests
                 .AreNotCancellations()
                 .Where(sr => sr.AppointmentDate.HasValue)
-                .Where(sr => ids.Contains(sr.Id))
+                .Where(sr => ids.Select(s => s.ServiceRequestId).Contains(sr.Id))
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
                 .ToList();
 
@@ -299,7 +316,7 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
-            ViewData["CaseViewOptions"] = viewOptions;
+            ViewData.ViewTarget_Set(viewOptions);
 
             return PartialView(viewModel);
         }

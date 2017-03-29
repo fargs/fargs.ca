@@ -78,7 +78,7 @@ namespace WebApp.Models
 
             //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
-            Messages = sr.ServiceRequestMessages.AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
+            Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
             //Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
         };
 

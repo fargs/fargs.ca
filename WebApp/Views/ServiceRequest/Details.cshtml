@@ -8,6 +8,8 @@
         var identity = User.Identity.GetClaimsIdentity();
         var roleId = identity.GetRoleId();
         var features = identity.GetFeatures();
+        var viewData = new ViewDataDictionary();
+        viewData.ViewTarget_Set(ViewTarget.Details);
     }
 
     <div id="actionmenu-container" class="col-md-12">
@@ -16,10 +18,10 @@
 
     <div class="row">
         <div class="col-md-3">
-            @Html.Partial("PhysicianLabel", Model.Physician)
+            @Html.Partial("PhysicianLabel", Model.Physician, viewData)
             <hr />
             <div id="case-container">
-                @Html.Partial("Case", Model, new ViewDataDictionary { { "CaseViewOptions", ViewTarget.Details } })
+                @Html.Partial("Case", Model, viewData)
             </div>
             <hr />
             <div id="box-integration"></div>
@@ -90,12 +92,7 @@
 
 
 
-    <div id="modal-container" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content" id="modal-content">
-            </div>
-        </div>
-    </div>
+    @Html.Partial("ModalContainer")
 
     @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 

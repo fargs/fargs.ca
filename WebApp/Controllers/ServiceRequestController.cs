@@ -259,11 +259,6 @@ namespace WebApp.Controllers
                 .AsQueryable()
                 .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand());
 
-            ViewData.CaseViewArgs_Set(new CaseLinkArgs
-            {
-                ServiceRequestId = args.ServiceRequestId,
-                ViewTarget = ViewTarget.Schedule
-            });
             //var viewModel = dto.Select(sr => new TaskListFilterArgs
             //{
             //    AssignedTo = args.AssignedTo,
@@ -280,6 +275,26 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public ActionResult Additionals(TaskListFilterArgs args)
+        {
+            var dto = db.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .WithTaskIds(args.TaskIds)
+                .AreActive()
+                .Where(srt => !srt.ServiceRequest.AppointmentDate.HasValue)
+                .GroupBy(srt => srt.ServiceRequest)
+                .Select(grp => grp.Key)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .ToList();
+
+            var viewModel = dto
+                .AsQueryable()
+                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+
+            return PartialView(viewModel);
+        }
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ActionResult CaseLink(CaseLinkArgs args)
         {
             var dto = db.ServiceRequests
@@ -293,9 +308,7 @@ namespace WebApp.Controllers
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
-
-            ViewData.CaseViewArgs_Set(args);
-
+            
             return PartialView(viewModel);
         }
 

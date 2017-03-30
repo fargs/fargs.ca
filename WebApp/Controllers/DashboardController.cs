@@ -118,36 +118,9 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Additionals)]
-        public async Task<ActionResult> Additionals(Guid? serviceProviderId)
+        public ActionResult Additionals()
         {
-            // Set date range variables used in where conditions
-            var now = SystemTime.Now();
-            var loggedInUserId = User.Identity.GetGuidUserId();
-            var baseUrl = Request.GetBaseUrl();
-
-            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
-
-            var requests = await db.GetAssignedServiceRequestsAsync(serviceProviderIdOrDefault, now, false, null);
-
-            // Populate the view model
-            var vm = new dvm.IndexViewModel();
-
-            vm.AddOns = ServiceRequestMapper.MapToAddOns(requests, now, serviceProviderIdOrDefault, baseUrl);
-
-            // Additional view data.
-            vm.SelectedUserId = serviceProviderIdOrDefault;
-            vm.UserSelectList = (from user in db.AspNetUsers
-                                 from userRole in db.AspNetUserRoles
-                                 from role in db.AspNetRoles
-                                 where user.Id == userRole.UserId && role.Id == userRole.RoleId
-                                 select new SelectListItem
-                                 {
-                                     Text = user.FirstName + " " + user.LastName,
-                                     Value = user.Id.ToString(),
-                                     Group = new SelectListGroup() { Name = role.Name }
-                                 }).ToList();
-
-            return new NegotiatedResult("Additionals", vm);
+            return View();   
         }
 
 

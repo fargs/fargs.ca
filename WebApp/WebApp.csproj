@@ -1238,6 +1238,7 @@
     <Content Include="Views\ServiceRequest\ScheduleDateRange.cshtml" />
     <Content Include="Views\ServiceRequest\Details2.cshtml" />
     <Content Include="Views\Shared\ModalContainer.cshtml" />
+    <Content Include="Views\ServiceRequest\Additionals.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

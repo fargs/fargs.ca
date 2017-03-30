@@ -7,6 +7,9 @@
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
+
+    var viewData = new ViewDataDictionary();
+    viewData.ViewTarget_Set(ViewTarget.DueDates);
 }
 @if (Model != null)
 {
@@ -14,11 +17,7 @@
     {
         <div style="padding-left:20px;">
             <h4>
-                @Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
-                {
-                    ServiceRequestId = args.ServiceRequestId,
-                    ViewTarget = ViewTarget.DueDates
-                })
+                @Html.Action("CaseLink", "ServiceRequest", viewData)
             </h4>
         </div>
         @Html.Action("TaskList", "ServiceRequestTask", args);

@@ -10,6 +10,9 @@
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
+
+    var viewData = new ViewDataDictionary();
+    viewData.ViewTarget_Set(ViewTarget.DueDates);
 }
 
 @*<form action="~/Dashboard/DueDates" method="get">

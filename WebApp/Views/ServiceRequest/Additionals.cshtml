@@ -1,0 +1,26 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewDataModels
+@using WebApp.ViewModels.CalendarViewModels
+@model IEnumerable<CaseViewModel>
+
+@{ 
+    var caseLinkViewData = new ViewDataDictionary();
+    caseLinkViewData.ViewTarget_Set(ViewTarget.Additionals);
+}
+
+@if (Model != null)
+{
+        <table class="table table-condensed">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @Html.Partial("CaseLink", item, caseLinkViewData)
+                </tr>
+            }
+        </table>
+}
+else
+{
+    <p></p>
+    <p><strong> No additionals</strong></p>
+}

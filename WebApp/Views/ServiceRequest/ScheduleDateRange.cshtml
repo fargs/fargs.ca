@@ -7,6 +7,8 @@
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
+    var viewData = new ViewDataDictionary();
+    viewData.ViewTarget_Set(ViewTarget.Schedule);
 }
 @if (Model != null)
 {
@@ -30,12 +32,7 @@
                     @foreach (var item in day.Cases)
                     {
                         <tr>
-                            @Html.Partial("CaseLink", item, ViewData)
-                            @*@Html.Action("CaseLink", "ServiceRequest", new CaseLinkArgs
-                                {
-                                    ServiceRequestId = item.ServiceRequestId,
-                                    ViewTarget = ViewTarget.Schedule
-                                })*@
+                            @Html.Partial("CaseLink", item, viewData)   
                         </tr>
 
                     }

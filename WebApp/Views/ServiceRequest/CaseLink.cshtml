@@ -1,11 +1,11 @@
 ﻿@model CaseViewModel
 @{
-    var args = ViewData.CaseViewArgs_Get();
+    var viewTarget = ViewData.ViewTarget_Get();
 }
 <td style="vertical-align: text-top; width:40px;">
     <strong style="color: @Model.Service.ColorCode;">@Model.Service.Code</strong>
 </td>
-@if (args.ViewTarget != ViewTarget.DueDates)
+@if (viewTarget != ViewTarget.DueDates)
 {
     <td style="vertical-align: text-top; width:80px;">@Model.StartTime.ToShortTimeSafe()</td>
 }

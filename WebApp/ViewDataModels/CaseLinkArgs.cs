@@ -13,7 +13,7 @@ namespace WebApp.ViewDataModels
         public ViewTarget ViewTarget { get; set; }
     }
 
-    public static class CaseViewArgsExtensions
+    public static class CaseLinkArgsExtensions
     {
         public const string Key = "caseViewArgs";
         public static CaseLinkArgs CaseViewArgs_Get(this ViewDataDictionary viewData)

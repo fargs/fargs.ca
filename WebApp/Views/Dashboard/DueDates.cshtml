@@ -1,19 +1,16 @@
 ﻿@using FluentDateTime
 @using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
 @using WebApp.ViewModels.CalendarViewModels
-@using tv = WebApp.ViewModels.ServiceRequestTaskViewModels
-@model IEnumerable<DayViewModel>
+@model TaskListArgs
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
-
-    var viewData = new ViewDataDictionary();
-    viewData.ViewTarget_Set(ViewTarget.DueDates);
 }
+
+@Html.Action("TaskGrid", "ServiceRequestTask", Model)
 
 @*<form action="~/Dashboard/DueDates" method="get">
         <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
@@ -24,7 +21,7 @@
             }
             <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
         </ul>
-    </form>*@
+    </form>
 
 <div id="day-folders" class="panel-group">
 
@@ -103,20 +100,25 @@
                             </div>
                         }
                     </div>
-                </section>*@
+                </section>
         </div>
     }
 </div>
-
+*@
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+@Html.Partial("ModalContainer")
 
 @section Scripts {
+
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 
     <script>
 
         function getDay(day, targetId) {
-            let url = '@Url.Content("~/ServiceRequest/DueDate")';
-            
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
             var container = $(document.getElementById(targetId));
             if (!container.hasClass('in')) {
                 $.post(url, {
@@ -125,8 +127,8 @@
                         EndDate: day,
                         FilterType: 'On'
                     },
-                    ViewOptions: "Dashboard",
-                    Options: "MyActiveTasks"
+                    ViewTarget: "DueDates",
+                    ViewFilter: "MyActiveTasks"
                 })
                 .done(function (result) {
                     document.getElementById(targetId).innerHTML = result;
@@ -236,23 +238,23 @@
 
         }
 
-        function tasklistChanged(serviceRequestId) {
-            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+        function taskChanged(id, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskGridRow")';
 
             $.get(url, {
-                serviceRequestId: serviceRequestId,
-                viewOptions: '@tv.TaskListViewOptions.Dashboard',
-                options: '@tv.TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                serviceRequestTaskId: id
             })
             .done(function (result) {
-                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                document.getElementById('task-container-' + id).innerHTML = result;
             })
             .always(function () {
                 //loader.hide();
             });
         }
 
-    </script>
+        function serviceRequestStatusChanged(serviceRequestId) {
+            
+        }
 
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    </script>
 }

@@ -12,6 +12,7 @@
 
         $.post(url, $(context.form).serialize())
             .done(function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
@@ -26,6 +27,7 @@
                 taskStatusId: taskStatusId
             })
             .done(function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
@@ -39,6 +41,7 @@
                 serviceRequestId: serviceRequestId
             },
             function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
@@ -50,6 +53,7 @@
         $.post(url,
             form.serialize()
         ).done(function (data) {
+            taskChanged(data.id, data.serviceRequestId);
             tasklistChanged(data.serviceRequestId);
             serviceRequestStatusChanged(data.serviceRequestId);
             showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
@@ -64,6 +68,7 @@
                 serviceRequestTaskId: serviceRequestTaskId
             },
             function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
@@ -79,6 +84,7 @@
                 assignedTo: assignedTo
             },
             function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
@@ -94,6 +100,7 @@
                 taskId: taskId
             },
             function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
@@ -107,9 +114,24 @@
                 serviceRequestTaskId: serviceRequestTaskId
             })
             .done(function (data) {
+                taskChanged(data.id, data.serviceRequestId);
                 tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
+    }
+
+    // these are default handlers.
+
+    function taskChanged(serviceRequestTaskId, serviceRequestId) {
+
+    }
+
+    function tasklistChanged(serviceRequestId) {
+
+    }
+
+    function serviceRequestStatusChanged(serviceRequestId) {
+
     }
 
 </script>

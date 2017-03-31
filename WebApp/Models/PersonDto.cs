@@ -43,5 +43,12 @@ namespace WebApp.Models
             LastName = a.LastName,
             ColorCode = a.ColorCode
         };
+        public static Expression<Func<Collaborator, PersonDto>> FromCollaboratorEntity = a => a == null ? null : new PersonDto
+        {
+            Id = a.CollaboratorUser.Id,
+            FirstName = a.CollaboratorUser.FirstName,
+            LastName = a.CollaboratorUser.LastName,
+            ColorCode = a.CollaboratorUser.ColorCode
+        };
     }
 }

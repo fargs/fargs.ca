@@ -1,6 +1,5 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @using WebApp.ViewDataModels
     @model CaseViewModel
 
@@ -32,11 +31,11 @@
             <h4>Tasks</h4>
             <hr />
             <div id="tasklist-container">
-                @Html.Action("TaskList", "ServiceRequestTask", new TaskListFilterArgs
+                @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
                 {
                     ServiceRequestId = Model.ServiceRequestId,
-                    ViewOptions = TaskListViewOptions.Details,
-                    Options = TaskListViewModelFilter.AllTasks
+                    ViewTarget = ViewTarget.Details,
+                    ViewFilter = TaskListViewModelFilter.AllTasks
                 })
             </div>
         </div>
@@ -176,7 +175,7 @@
                 $.get(url,
                     {
                         serviceRequestId: serviceRequestId,
-                        viewOptions: '@TaskListViewOptions.Details',
+                        viewOptions: '@ViewTarget.Details',
                         options: '@TaskListViewModelFilter.AllTasks'
                     })
                     .done(function (result) {

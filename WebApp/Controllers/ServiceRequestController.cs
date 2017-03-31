@@ -162,11 +162,11 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
-            ViewData.TaskListFilterArgs_Set(new TaskListFilterArgs
+            ViewData.TaskListArgs_Set(new TaskListArgs
             {
                 ServiceRequestId = id,
-                ViewOptions = TaskListViewOptions.Details,
-                Options = TaskListViewModelFilter.AllTasks
+                ViewTarget = ViewTarget.Details,
+                ViewFilter = TaskListViewModelFilter.AllTasks
             });
 
             return View(viewModel);
@@ -200,35 +200,47 @@ namespace WebApp.Controllers
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         [HttpPost]
-        public ActionResult DueDate(TaskListFilterArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
+        public ActionResult DueDate(DueDateArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
         {
             var dto = db.ServiceRequestTasks
-                .AreDueBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
+                .AreDueBetween(args.TaskListArgs.DateRange.StartDate, args.TaskListArgs.DateRange.EndDate.Value)
                 .AreAssignedToUser(userId)
-                .WithTaskIds(args.TaskIds)
+                .WithTaskIds(args.TaskListArgs.TaskIds)
                 .AreActive()
                 .Where(srt => srt.DueDate.HasValue)
                 .Select(srt => srt.ServiceRequestId)
                 .Distinct()
                 .ToList();
 
-            var viewModel = dto.Select(sr => new TaskListFilterArgs
+            var caseLinkArgs = dto.Select(sr => new CaseLinkArgs
             {
-                AssignedTo = args.AssignedTo,
-                DateRange = args.DateRange,
-                Options = args.Options,
                 ServiceRequestId = sr,
-                TaskIds = args.TaskIds,
-                TaskStatusIds = args.TaskStatusIds,
-                ViewOptions = args.ViewOptions
+                ViewTarget = ViewTarget.DueDates
             });
-            
+
+            var taskListArgs = dto.Select(sr => new TaskListArgs
+            {
+                AssignedTo = args.TaskListArgs.AssignedTo,
+                DateRange = args.TaskListArgs.DateRange,
+                ViewTarget = args.ViewTarget, // Copy the default to pass into the task list
+                ServiceRequestId = sr, // this is the service request id for each task list
+                TaskIds = args.TaskListArgs.TaskIds,
+                TaskStatusIds = args.TaskListArgs.TaskStatusIds,
+                ViewFilter = args.TaskListArgs.ViewFilter
+            });
+
+            var viewModel = new DueDateViewModel
+            {
+                DueDateArgs = args,
+                TaskListArgs = taskListArgs,
+            };
+
             return PartialView(viewModel);
         }
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult ScheduleDateRange(TaskListFilterArgs args)
+        public ActionResult ScheduleDateRange(TaskListArgs args)
         {
             var ids = db.ServiceRequestTasks
                 .AreScheduledBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
@@ -259,7 +271,7 @@ namespace WebApp.Controllers
                 .AsQueryable()
                 .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand());
 
-            //var viewModel = dto.Select(sr => new TaskListFilterArgs
+            //var viewModel = dto.Select(sr => new TaskListArgs
             //{
             //    AssignedTo = args.AssignedTo,
             //    DateRange = args.DateRange,
@@ -275,7 +287,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Additionals(TaskListFilterArgs args)
+        public ActionResult Additionals(TaskListArgs args)
         {
             var dto = db.ServiceRequestTasks
                 .AreAssignedToUser(userId)

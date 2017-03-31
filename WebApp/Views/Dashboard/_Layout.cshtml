@@ -16,7 +16,7 @@
     }
     @if (features.Contains(Features.Work.DueDates))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Due Dates <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Tasks <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
     }
     @if (features.Contains(Features.Work.Schedule))
     {

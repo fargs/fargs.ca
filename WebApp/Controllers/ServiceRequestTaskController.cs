@@ -21,62 +21,121 @@ using LinqKit;
 using System.ComponentModel.DataAnnotations;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
+using NinjaNye.SearchExtensions;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class ServiceRequestTaskController : BaseController
     {
-
-        // GET: ServiceRequestTasks
-        public ActionResult Index(FilterArgs filterArgs)
+        public ActionResult TaskGrid(TaskListArgs args)
         {
-            // get the user
-            var sr = db.ServiceRequestTasks.Where(srt => !srt.IsObsolete).AsQueryable<ServiceRequestTask>();
+            var dto = db.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .AreActive()
+                .Where(srt => srt.DueDate.HasValue)
+                .OrderBy(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence)
+                .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())
+                .ToList();
 
-            if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin && filterArgs.ShowAll.Value) { }
-            else
+            var query = dto.AsQueryable();
+            if (!string.IsNullOrEmpty(args.searchTerms))
             {
-                sr.Where(c => c.AssignedTo == User.Identity.GetGuidUserId());
+                var search = args.searchTerms.Split(' ');
+                query = query
+                    .Search(i => i.ServiceRequest.Id.ToString(),
+                        i => i.ServiceRequest.ClaimantName,
+                        i => i.Name,
+                        i => i.ServiceRequest.Company.Name,
+                        i => i.ServiceRequest.Company.Code)
+                    .ContainingAll(search);
             }
 
-            var vm = new WebApp.ViewModels.ServiceRequestTaskViewModels.IndexViewModel() // namespace is needed because Models/ManageViewModels didn't come with a namespace.
+            if (!string.IsNullOrEmpty(args.sort))
             {
-                Tasks = sr.ToList()
+                switch (args.sort)
+                {
+                    case "dueDate":
+                        query = args.sortDir.ToLower() == "desc" ?
+                            query.OrderBy(i => i.DueDate) :
+                            query.OrderByDescending(i => i.DueDate);
+                        break;
+                    case "claimantName":
+                        query = args.sortDir.ToLower() == "desc" ?
+                            query.OrderBy(i => i.ServiceRequest.ClaimantName) :
+                            query.OrderByDescending(i => i.ServiceRequest.ClaimantName);
+                        break;
+                    case "physician":
+                        query = args.sortDir.ToLower() == "desc" ?
+                            query.OrderBy(i => i.ServiceRequest.Physician.DisplayName) :
+                            query.OrderByDescending(i => i.ServiceRequest.Physician.DisplayName);
+                        break;
+                    case "appointmentDate":
+                        query = args.sortDir.ToLower() == "desc" ?
+                            query.OrderBy(i => i.ServiceRequest.AppointmentDate) :
+                            query.OrderByDescending(i => i.ServiceRequest.AppointmentDate);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            var data = query
+                .Skip(args.take * args.skip)
+                .Take(args.take)
+                .ToList();
+
+            var total = query.Count();
+            var pageCount = total / args.take;
+
+
+            var taskViewModels = query
+                .Select(TaskWithCaseViewModel.FromTaskDto.Expand())
+                .ToList();
+
+            var viewModel = new TaskGridViewModel
+            {
+                Data = taskViewModels,
+                Total = total,
+                Args = args,
+                Pager = new PagerViewModel
+                {
+                    PageCount = pageCount,
+                    CurrentPage = args.skip,
+                    NextPage = args.skip >= pageCount ? pageCount : args.skip + 1,
+                    PreviousPage = args.skip <= 0 ? 0 : args.skip - 1
+                }
             };
-
-            return View(vm);
+            
+            return PartialView("TaskGrid", viewModel);
         }
 
-        [HttpPost]
-        [AuthorizeRole(Feature = Features.ServiceRequest.AddTask)]
-        public async Task<ActionResult> AddTask(int serviceRequestId, byte taskId)
-        {
-            await service.AddTask(serviceRequestId, taskId);
-
-            return Json(new
-            {
-                serviceRequestId = serviceRequestId
-            });
-        }
-
-        //[ChildActionOnly]
-        //[AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        //public ActionResult MyTaskList(Guid serviceProviderId, byte serviceRequestCategoryId)
-        //{
-        //    return PartialView("MyTaskList");
-        //}
-        
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult TaskList(TaskListFilterArgs args)
+
+        public ActionResult TaskGridRow(int serviceRequestTaskId)
         {
+            var dto = db.ServiceRequestTasks
+                .WithId(serviceRequestTaskId)
+                .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())
+                .Single();
+
+            var viewModel = TaskWithCaseViewModel.FromTaskDto.Invoke(dto);
+
+            return PartialView("Task", viewModel);
+        }
+
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
+        public ActionResult TaskList(TaskListArgs args)
+        {
+
             var viewModel = db.ServiceRequests
                 .WithId(args.ServiceRequestId)
                 .Select(ServiceRequestDto.FromServiceRequestEntity.Expand())
                 .ToList() // to dto -> execute the query against the database
                 .AsQueryable()
-                .Select(ViewModels.TaskListViewModel.FromServiceRequestDtoWithNoTasks.Expand())
+                .Select(TaskListViewModel.FromServiceRequestDtoWithNoTasks.Expand())
                 .Single(); // to view model
 
             // I could embed this into the projection on TaskListViewModel but for clarity I like to keep the filter on tasks in here as it is the primary focus of this controller action.
@@ -87,7 +146,7 @@ namespace WebApp.Controllers
                 .ToList();
 
             IEnumerable<TaskDto> query = tasksDto;
-            switch (args.Options)
+            switch (args.ViewFilter)
             {
                 case TaskListViewModelFilter.CriticalPathOrAssignedToUser:
                     query = tasksDto.AreOnCriticalPathOrAssignedToUser(userId);
@@ -127,91 +186,91 @@ namespace WebApp.Controllers
 
             viewModel.Tasks = query.AsQueryable().Select(ViewModels.TaskViewModel.FromTaskDto.Expand()).ToList();
 
-            ViewData.TaskListFilterArgs_Set(args);
+            ViewData.TaskListArgs_Set(args);
 
-            return PartialView("TaskList", viewModel);
+            return PartialView(viewModel);
         }
 
-        [ChildActionOnly]
-        [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult NextTaskList(ServiceRequestView serviceRequest, IEnumerable<ServiceRequestTask> serviceRequestTasks)
-        {
-            // get the user
-            var userId = User.Identity.GetGuidUserId();
-            var roleId = User.Identity.GetRoleId();
-            if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId && !srt.IsObsolete))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
+        //[ChildActionOnlyOrAjax]
+        //[AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
+        //public ActionResult NextTaskList(ServiceRequestView serviceRequest, IEnumerable<ServiceRequestTask> serviceRequestTasks)
+        //{
+        //    // get the user
+        //    var userId = User.Identity.GetGuidUserId();
+        //    var roleId = User.Identity.GetRoleId();
+        //    if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator && !db.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId && !srt.IsObsolete))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+        //    }
 
-            //var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
+        //    //var serviceRequest = db.ServiceRequests.Single(c => c.Id == serviceRequestId);
 
-            var tasks = serviceRequestTasks
-                .Select(t => new WebApp.ViewModels.ServiceRequestTaskViewModels.TaskViewModel()
-                {
-                    Id = t.Id,
-                    ServiceRequestId = t.ServiceRequestId,
-                    TaskId = t.TaskId,
-                    Name = t.TaskName,
-                    ShortName = t.ShortName,
-                    CompletedDate = t.CompletedDate,
-                    AssignedToDisplayName = t.AspNetUser_AssignedTo?.GetDisplayName(),
-                    AssignedTo = t.AssignedTo,
-                    AssignedToRoleId = t.ResponsibleRoleId,
-                    AssignedToColorCode = t.AspNetUser_AssignedTo?.ColorCode,
-                    Initials = t.AspNetUser_AssignedTo?.GetInitials(),
-                    DueDateBase = t.DueDateBase,
-                    DueDateDiff = t.DueDateDiff,
-                    AppointmentDate = serviceRequest.AppointmentDate,
-                    ReportDate = serviceRequest.DueDate,
-                    DependsOn = t.DependsOn,
-                    Sequence = t.Sequence
-                })
-                .OrderBy(t => t.Sequence)
-                .ToList();
+        //    var tasks = serviceRequestTasks
+        //        .Select(t => new WebApp.ViewModels.ServiceRequestTaskViewModels.TaskViewModel()
+        //        {
+        //            Id = t.Id,
+        //            ServiceRequestId = t.ServiceRequestId,
+        //            TaskId = t.TaskId,
+        //            Name = t.TaskName,
+        //            ShortName = t.ShortName,
+        //            CompletedDate = t.CompletedDate,
+        //            AssignedToDisplayName = t.AspNetUser_AssignedTo?.GetDisplayName(),
+        //            AssignedTo = t.AssignedTo,
+        //            AssignedToRoleId = t.ResponsibleRoleId,
+        //            AssignedToColorCode = t.AspNetUser_AssignedTo?.ColorCode,
+        //            Initials = t.AspNetUser_AssignedTo?.GetInitials(),
+        //            DueDateBase = t.DueDateBase,
+        //            DueDateDiff = t.DueDateDiff,
+        //            AppointmentDate = serviceRequest.AppointmentDate,
+        //            ReportDate = serviceRequest.DueDate,
+        //            DependsOn = t.DependsOn,
+        //            Sequence = t.Sequence
+        //        })
+        //        .OrderBy(t => t.Sequence)
+        //        .ToList();
 
-            var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
+        //    var closeOutTask = tasks.Single(t => t.TaskId == Tasks.CloseCase);
 
-            tasks = tasks
-                .Where(t => !t.IsObsolete)
-                .Select(t => {
-                    if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue && serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
-                    {
-                        var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(3);
-                        t.DueDate = t.DueDateBase == 1 ? serviceRequest.AppointmentDate.Value.AddDays(t.DueDateDiff.Value) : reportDueDate.AddDays(t.DueDateDiff.Value);
-                    }
-                    return t;
-                }).ToList();
+        //    tasks = tasks
+        //        .Where(t => !t.IsObsolete)
+        //        .Select(t => {
+        //            if (t.DueDateBase.HasValue && t.DueDateDiff.HasValue && serviceRequest.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+        //            {
+        //                var reportDueDate = serviceRequest.DueDate.HasValue ? serviceRequest.DueDate.Value : serviceRequest.AppointmentDate.Value.AddDays(3);
+        //                t.DueDate = t.DueDateBase == 1 ? serviceRequest.AppointmentDate.Value.AddDays(t.DueDateDiff.Value) : reportDueDate.AddDays(t.DueDateDiff.Value);
+        //            }
+        //            return t;
+        //        }).ToList();
 
-            //BuildDependencies(closeOutTask, null, tasks);
+        //    //BuildDependencies(closeOutTask, null, tasks);
 
-            var nextTasks = tasks
-                        .Where(c => c.Status.Id != TaskStatuses.Done)
-                        .OrderBy(o => o.Sequence)
-                        .GroupBy(g => g.AssignedTo)
-                        .Select(s => new { s, Count = s.Count() })
-                        .SelectMany(sm => sm.s.Select(s => s)
-                                          .Zip(Enumerable.Range(1, sm.Count), (task, index)
-                                              => new NextTaskViewModel() {
-                                                  RowNum = index,
-                                                  Id = task.Id,
-                                                  ServiceRequestId = task.ServiceRequestId,
-                                                  DueDate = task.DueDate,
-                                                  ShortName = task.ShortName,
-                                                  TaskId = task.TaskId,
-                                                  Name = task.Name,
-                                                  Initials = task.Initials,
-                                                  AssignedToRoleId = task.AssignedToRoleId,
-                                                  AssignedToColorCode = task.AssignedToColorCode,
-                                                  AssignedTo = task.AssignedTo,
-                                                  AssignedToDisplayName = task.AssignedToDisplayName,
-                                                  StatusId = task.Status.Id,
-                                                  StatusName = task.Status.Name })
-                                    ).Where(t => t.RowNum == 1)
-                                    .ToList();
+        //    var nextTasks = tasks
+        //                .Where(c => c.Status.Id != TaskStatuses.Done)
+        //                .OrderBy(o => o.Sequence)
+        //                .GroupBy(g => g.AssignedTo)
+        //                .Select(s => new { s, Count = s.Count() })
+        //                .SelectMany(sm => sm.s.Select(s => s)
+        //                                  .Zip(Enumerable.Range(1, sm.Count), (task, index)
+        //                                      => new NextTaskViewModel() {
+        //                                          RowNum = index,
+        //                                          Id = task.Id,
+        //                                          ServiceRequestId = task.ServiceRequestId,
+        //                                          DueDate = task.DueDate,
+        //                                          ShortName = task.ShortName,
+        //                                          TaskId = task.TaskId,
+        //                                          Name = task.Name,
+        //                                          Initials = task.Initials,
+        //                                          AssignedToRoleId = task.AssignedToRoleId,
+        //                                          AssignedToColorCode = task.AssignedToColorCode,
+        //                                          AssignedTo = task.AssignedTo,
+        //                                          AssignedToDisplayName = task.AssignedToDisplayName,
+        //                                          StatusId = task.Status.Id,
+        //                                          StatusName = task.Status.Name })
+        //                            ).Where(t => t.RowNum == 1)
+        //                            .ToList();
 
-            return PartialView("NextTaskList", nextTasks);
-        }
+        //    return PartialView("NextTaskList", nextTasks);
+        //}
 
         //private TaskViewModel BuildDependencies(TaskViewModel task, TaskViewModel parent, List<TaskViewModel> tasks)
         //{
@@ -233,6 +292,19 @@ namespace WebApp.Controllers
         //}
 
         [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.AddTask)]
+        public async Task<ActionResult> AddTask(int serviceRequestId, byte taskId)
+        {
+            var task = await service.AddTask(serviceRequestId, taskId);
+
+            return Json(new
+            {
+                id = task.Id,
+                serviceRequestId = serviceRequestId
+            });
+        }
+
+        [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)
         {
@@ -242,10 +314,11 @@ namespace WebApp.Controllers
 
             return Json(new
             {
+                id = serviceRequestTaskId,
                 serviceRequestId = serviceRequestId
             });
         }
-        
+
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleTaskStatus(int serviceRequestTaskId, short taskStatusId)
@@ -258,6 +331,7 @@ namespace WebApp.Controllers
 
             return Json(new
             {
+                id = serviceRequestTaskId,
                 serviceRequestId = srt.ServiceRequestId
             });
         }
@@ -267,17 +341,21 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleObsolete(int serviceRequestTaskId)
         {
-            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            if (serviceRequestTask == null)
+            var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            if (srt == null)
             {
                 return HttpNotFound();
             }
-            serviceRequestTask.IsObsolete = !serviceRequestTask.IsObsolete;
-            serviceRequestTask.ModifiedDate = SystemTime.Now();
-            serviceRequestTask.ModifiedUser = User.Identity.Name;
-            serviceRequestTask.ServiceRequest.UpdateIsClosed();
+            srt.IsObsolete = !srt.IsObsolete;
+            srt.ModifiedDate = SystemTime.Now();
+            srt.ModifiedUser = User.Identity.Name;
+            srt.ServiceRequest.UpdateIsClosed();
             await db.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
+            return Json(new
+            {
+                id = serviceRequestTaskId,
+                serviceRequestId = srt.ServiceRequestId
+            });
         }
 
         [HttpPost]
@@ -294,6 +372,7 @@ namespace WebApp.Controllers
 
             return Json(new
             {
+                id = serviceRequestTaskId,
                 serviceRequestId = srt.ServiceRequestId
             });
         }
@@ -305,9 +384,10 @@ namespace WebApp.Controllers
             await service.PickUpTask(serviceRequestTaskId);
 
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            
+
             return Json(new
             {
+                id = serviceRequestTaskId,
                 serviceRequestId = srt.ServiceRequestId
             });
         }
@@ -322,6 +402,7 @@ namespace WebApp.Controllers
 
             return Json(new
             {
+                id = serviceRequestTaskId,
                 serviceRequestId = srt.ServiceRequestId
             });
         }

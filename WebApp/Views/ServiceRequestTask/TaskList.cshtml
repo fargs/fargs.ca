@@ -1,6 +1,5 @@
 ﻿@using WebApp.Library
 @using Orvosi.Data
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @using Features = Orvosi.Shared.Enums.Features
 @model TaskListViewModel
 
@@ -67,8 +66,8 @@
 {
     <div>No tasks are assigned to you.</div>
 }
-<div class="panel @(ViewBag.ViewOptions == TaskListViewOptions.Details ? "panel-default" : null)">
-    @if (ViewBag.ViewOptions == TaskListViewOptions.Details)
+<div class="panel @(ViewBag.ViewOptions == ViewTarget.Details ? "panel-default" : null)">
+    @if (ViewBag.ViewOptions == ViewTarget.Details)
     {
     <div class="panel-heading">
         <strong>Tasks</strong>
@@ -128,7 +127,7 @@
                                         </li>
                                         <li>
                                             <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
-                                                Obsolete
+                                                Cancel
                                                 @if (task.StatusId == TaskStatuses.Obsolete)
                                                 {
                                                     <i class="fa fa-check"></i>

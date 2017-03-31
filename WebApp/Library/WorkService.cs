@@ -137,7 +137,7 @@ namespace WebApp.Library
         }
 
 
-        public async Task AddTask(int serviceRequestId, byte taskId)
+        public async Task<ServiceRequestTask> AddTask(int serviceRequestId, byte taskId)
         {
             var request = await db.ServiceRequests.FindAsync(serviceRequestId);
 
@@ -221,6 +221,10 @@ namespace WebApp.Library
 
             var newServiceRequestStatusId = CalculateNewServiceRequestStatus(request.ServiceRequestTasks, request.ServiceRequestStatusId);
             await SaveServiceRequestStatusChange(request, newServiceRequestStatusId);
+
+            await (db as OrvosiDbContext).Entry(task).ReloadAsync();
+
+            return task;
         }
         public async Task PickUpTask(int serviceRequestTaskId)
         {

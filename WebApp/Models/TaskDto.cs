@@ -13,6 +13,7 @@ namespace WebApp.Models
         public int Id { get; set; }
         public short TaskId { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
         public bool IsObsolete { get; set; }
         public DateTime? TaskStatusChangedDate { get; set; }
         public PersonDto TaskStatusChangedBy { get; set; }
@@ -24,16 +25,19 @@ namespace WebApp.Models
         public Guid? AssignedToId { get; set; }
         public PersonDto AssignedTo { get; set; }
         public short TaskStatusId { get; set; }
+        public LookupDto<short> TaskStatus { get; set; }
         public Guid? ResponsibleRoleId { get; set; }
         public string ResponsibleRoleName { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public bool IsCriticalPath { get; set; }
+        public ServiceRequestDto ServiceRequest { get; set; }
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntity = srt => srt == null ? null : new TaskDto()
         {
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
-            Name = srt.TaskName,
+            Name = srt.OTask.Name,
+            ShortName = srt.OTask.ShortName,
             IsObsolete = srt.IsObsolete,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
@@ -44,7 +48,29 @@ namespace WebApp.Models
             ResponsibleRoleId = srt.ResponsibleRoleId,
             ResponsibleRoleName = srt.ResponsibleRoleName,
             IsCriticalPath = srt.IsCriticalPath,
-            DueDate = srt.DueDate
+            DueDate = srt.DueDate,
+            TaskStatus = LookupDto<short>.FromTaskStatusEntity.Invoke(srt.TaskStatu)
+        };
+
+        public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskAndServiceRequestEntity = srt => srt == null ? null : new TaskDto()
+        {
+            Id = srt.Id,
+            TaskId = srt.TaskId.Value,
+            Name = srt.OTask.Name,
+            ShortName = srt.OTask.ShortName,
+            IsObsolete = srt.IsObsolete,
+            TaskStatusChangedDate = srt.TaskStatusChangedDate,
+            TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
+            Sequence = srt.Sequence.Value,
+            AssignedToId = srt.AssignedTo,
+            AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
+            TaskStatusId = srt.TaskStatusId.Value,
+            ResponsibleRoleId = srt.ResponsibleRoleId,
+            ResponsibleRoleName = srt.ResponsibleRoleName,
+            IsCriticalPath = srt.IsCriticalPath,
+            DueDate = srt.DueDate,
+            TaskStatus = LookupDto<short>.FromTaskStatusEntity.Invoke(srt.TaskStatu),
+            ServiceRequest = ServiceRequestDto.FromServiceRequestEntityForCase.Invoke(srt.ServiceRequest)
         };
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntityForSummary = srt => srt == null ? null : new TaskDto()
@@ -52,6 +78,7 @@ namespace WebApp.Models
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
             Name = srt.OTask.Name,
+            ShortName = srt.OTask.ShortName,
             TaskStatusId = srt.TaskStatusId.Value,
             DueDate = srt.DueDate
         };

@@ -1,7 +1,4 @@
-﻿@using WebApp.Library.Extensions
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
-@using WebApp.ViewModels.CalendarViewModels
-@{
+﻿@{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
 }
 
@@ -103,7 +100,7 @@
 
             $.get(url, {
                 serviceRequestId: serviceRequestId,
-                viewOptions: '@TaskListViewOptions.Dashboard',
+                viewOptions: '@ViewTarget.Agenda',
                 options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
                 .done(function (result) {

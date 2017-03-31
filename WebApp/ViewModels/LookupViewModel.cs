@@ -26,20 +26,24 @@ namespace WebApp.ViewModels
         {
             Id = e.Id,
             Name = e.Name,
-            Code = e.Code
+            Code = e.Code,
+            ColorCode = e.ColorCode
         };
 
         public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromCompanyDto = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,
             Name = e.Name,
-            Code = e.Code
+            Code = e.Code,
+            ColorCode = e.ColorCode
         };
 
         public static Expression<Func<LookupDto<Guid>, LookupViewModel<Guid>>> FromRoleDto = e => e == null ? null : new LookupViewModel<Guid>
         {
             Id = e.Id,
-            Name = e.Name
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
         };
 
         public static Expression<Func<LookupDto<byte>, LookupViewModel<byte>>> FromCommentTypeDto = e => e == null ? null : new LookupViewModel<byte>
@@ -51,6 +55,14 @@ namespace WebApp.ViewModels
         };
 
         public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromServiceRequestStatusDto = e => e == null ? null : new LookupViewModel<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromTaskStatusDto = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,
             Name = e.Name,

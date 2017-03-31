@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Mvc;
+using Microsoft.ApplicationInsights.Extensibility;
 using Orvosi.Data;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,10 @@ namespace WebApp
             FluentValidationModelValidatorProvider.Configure();
             // This turns off code first migrations on the database
             Database.SetInitializer<Models.ApplicationDbContext>(null);
+
+#if DEBUG
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+#endif
         }
 
         protected virtual void Application_EndRequest()

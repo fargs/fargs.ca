@@ -11,6 +11,15 @@ namespace Orvosi.Data.Filters
 {
     public static class ServiceRequestTaskFilters
     {
+        public static IQueryable<ServiceRequestTask> WithId(this IQueryable<ServiceRequestTask> serviceRequestTasks, int id)
+        {
+            return serviceRequestTasks
+                .Where(WithId(id)); // this filters out the days
+        }
+        public static Expression<Func<ServiceRequestTask, bool>> WithId(int id)
+        {
+            return s => s.Id == id;
+        }
         public static IQueryable<ServiceRequestTask> AreActive(this IQueryable<ServiceRequestTask> serviceRequestTasks)
         {
             return serviceRequestTasks
@@ -52,10 +61,17 @@ namespace Orvosi.Data.Filters
             return predicate;
         }
 
-        public static IQueryable<ServiceRequestTask> WithServiceRequestId(this IQueryable<ServiceRequestTask> serviceRequestTasks, int serviceRequestId)
+        public static IQueryable<ServiceRequestTask> WithServiceRequestId(this IQueryable<ServiceRequestTask> serviceRequestTasks, int? serviceRequestId)
         {
-            return serviceRequestTasks
-                .Where(WithServiceRequestId(serviceRequestId)); // this filters out the days
+            if (!serviceRequestId.HasValue)
+            {
+                return serviceRequestTasks;
+            }
+            else
+            {
+                return serviceRequestTasks
+                .Where(WithServiceRequestId(serviceRequestId.Value)); // this filters out the days
+            }
         }
         public static Expression<Func<ServiceRequestTask, bool>> WithServiceRequestId(int serviceRequestId)
         {

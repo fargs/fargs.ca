@@ -236,6 +236,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NinjaNye.SearchExtensions, Version=2.0.6149.33145, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NinjaNye.SearchExtensions.2.0.6149.33145\lib\net40\NinjaNye.SearchExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nito.AsyncEx, Version=2.1.3.0, Culture=neutral, PublicKeyToken=09d695329ca273b7, processorArchitecture=MSIL">
       <HintPath>..\packages\Nito.AsyncEx.2.1.3\lib\net45\Nito.AsyncEx.dll</HintPath>
       <Private>True</Private>
@@ -514,10 +518,12 @@
     <Compile Include="Models\TaskDtoFilters.cs">
       <DependentUpon>TaskDto.cs</DependentUpon>
     </Compile>
-    <Compile Include="ViewDataModels\DateFilterArgs.cs" />
-    <Compile Include="ViewDataModels\ServiceRequestTask\TaskListFilterArgs.cs" />
-    <Compile Include="ViewDataModels\ServiceRequest\CaseViewArgs.cs" />
-    <Compile Include="ViewDataModels\ViewTarget.cs" />
+    <Compile Include="ViewDataModels\Common\DateFilterArgs.cs" />
+    <Compile Include="ViewDataModels\Common\GridArgs.cs" />
+    <Compile Include="ViewDataModels\DueDateArgs.cs" />
+    <Compile Include="ViewDataModels\TaskListArgs.cs" />
+    <Compile Include="ViewDataModels\CaseLinkArgs.cs" />
+    <Compile Include="ViewDataModels\Common\ViewTarget.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
@@ -533,17 +539,20 @@
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\TaskStatusSummaryViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticViewModels.cs" />
+    <Compile Include="ViewModels\DueDateViewModel.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\LookupViewModel.cs" />
     <Compile Include="ViewModels\MailMessage.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="ViewModels\PagerViewModel.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\Company.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskGridViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskListViewModel.cs" />
-    <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskListViewModelOptions.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskWithCaseViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
@@ -1239,6 +1248,9 @@
     <Content Include="Views\ServiceRequest\Details2.cshtml" />
     <Content Include="Views\Shared\ModalContainer.cshtml" />
     <Content Include="Views\ServiceRequest\Additionals.cshtml" />
+    <Content Include="Views\ServiceRequestTask\Task.cshtml" />
+    <Content Include="Views\ServiceRequestTask\TaskGrid.cshtml" />
+    <Content Include="Views\ServiceRequestTask\Components\TaskListFilter.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1276,7 +1288,6 @@
     <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <Content Include="Areas\Admin\Views\User\Index_js.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Availability\Index.cshtml" />
     <Content Include="Views\Account\_Layout.cshtml" />
     <Content Include="Views\Account\_ViewStart.cshtml" />
@@ -1289,7 +1300,6 @@
     <Content Include="Views\ServiceRequest\Availability.cshtml" />
     <Content Include="Views\ServiceRequest\CreateSuccess.cshtml" />
     <Content Include="Views\ServiceRequest\Cancel.cshtml" />
-    <Content Include="Views\ServiceRequestTask\Index.cshtml" />
     <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />
@@ -1366,7 +1376,6 @@
     <Content Include="Views\Accounting\_Invoice.cshtml" />
     <Content Include="Views\Accounting\CreateInvoice.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />
-    <Content Include="Views\ServiceRequestTask\Components\TaskListFilter.cshtml" />
     <Content Include="Views\ServiceRequest\ChangeCompany.cshtml" />
     <Content Include="Views\Accounting\_EditInvoiceHeader.cshtml" />
     <Content Include="Views\Accounting\_EditInvoiceItem.cshtml" />

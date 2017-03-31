@@ -28,7 +28,7 @@ namespace WebApp.Controllers
     [Authorize]
     public class DashboardController : BaseController
     {
-        public ActionResult Index(Guid? serviceProviderId, bool showClosed = false, bool onlyMine = true)
+        public ActionResult Index()
         {
             return RedirectToAction("Agenda");
         }
@@ -41,9 +41,18 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
-        public async Task<ActionResult> DueDates(TaskListFilterArgs args)
+        public async Task<ActionResult> DueDates(TaskListArgs args)
         {
-            var viewModel = db.ServiceRequestTasks
+            args.ViewTarget = ViewTarget.DueDates;
+            args.ViewFilter = TaskListViewModelFilter.MyActiveTasks;
+            
+            if (true)//args.UseGridView)
+            {
+                return View(args);
+            }
+            else
+            {
+                var viewModel = db.ServiceRequestTasks
                 .AreAssignedToUser(userId)
                 .WithTaskIds(args.TaskIds)
                 .AreActive()
@@ -62,13 +71,12 @@ namespace WebApp.Controllers
                 })
                 .ToList();
 
-            ViewData.TaskListFilterArgs_Set(args);
-
-            return View(viewModel);
+                return View(viewModel);
+            }
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
-        public async Task<ActionResult> Schedule(TaskListFilterArgs args)
+        public async Task<ActionResult> Schedule(TaskListArgs args)
         {
             var dayViewModels = db.ServiceRequestTasks
                 .AreAssignedToUser(userId)
@@ -107,7 +115,7 @@ namespace WebApp.Controllers
                     }
                 };
 
-            ViewData.TaskListFilterArgs_Set(args);
+            ViewData.TaskListArgs_Set(args);
 
             // otherwise create a view model and load the due dates page.
             var vm = new ViewModels.DashboardViewModels.ScheduleViewModel();

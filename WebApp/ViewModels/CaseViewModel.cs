@@ -20,6 +20,7 @@ namespace WebApp.ViewModels
         public string ClaimantName { get; set; }
         public DateTime? AppointmentDate { get; set; }
         public TimeSpan? StartTime { get; set; }
+        public DateTime? AppointmentDateAndStartTime { get; set; }
         public DateTime? DueDate { get; set; }
         public string Notes { get; set; }
         public string BoxCaseFolderId { get; set; }
@@ -54,6 +55,7 @@ namespace WebApp.ViewModels
             ClaimantName = dto.ClaimantName,
             AppointmentDate = dto.AppointmentDate,
             StartTime = dto.StartTime,
+            AppointmentDateAndStartTime = dto.AppointmentDateAndStartTime,
             DueDate = dto.DueDate,
             Notes = dto.Notes,
             BoxCaseFolderId = dto.BoxCaseFolderId,

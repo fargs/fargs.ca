@@ -22,6 +22,14 @@ namespace WebApp.Models
             ColorCode = e.ColorCode
         };
 
+        public static Expression<Func<TaskStatu, LookupDto<short>>> FromTaskStatusEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = "",
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<Service, LookupDto<short>>> FromServiceEntity = e => e == null ? null : new LookupDto<short>
         {
             Id = e.Id,
@@ -35,7 +43,7 @@ namespace WebApp.Models
             Id = e.Id,
             Name = e.Name,
             Code = e.Code,
-            ColorCode = string.Empty
+            ColorCode = ""
         };
 
         public static Expression<Func<AspNetRole, LookupDto<Guid>>> FromAspNetRoleEntity = e => e == null ? null : new LookupDto<Guid>
@@ -43,7 +51,7 @@ namespace WebApp.Models
             Id = e.Id,
             Name = e.Name,
             Code = e.Name.Substring(0, 2),
-            ColorCode = string.Empty
+            ColorCode = ""
         };
     }
 }

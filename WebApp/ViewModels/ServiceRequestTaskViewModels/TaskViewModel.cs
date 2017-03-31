@@ -13,11 +13,13 @@ namespace WebApp.ViewModels
         public int Id { get; set; }
         public short TaskId { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
         public bool IsObsolete { get; set; }
         public DateTime? TaskStatusChangedDate { get; set; }
         public LookupViewModel<Guid> TaskStatusChangedBy { get; set; }
         public short Sequence { get; set; }
         public short StatusId { get; set; }
+        public LookupViewModel<short> Status { get; set; }
         public DateTime? DueDate { get; set; }
         public LookupViewModel<Guid> AssignedTo { get; set; }
 
@@ -26,12 +28,14 @@ namespace WebApp.ViewModels
             Id = dto.Id,
             TaskId = dto.TaskId,
             Name = dto.Name,
+            ShortName = dto.ShortName,
             IsObsolete = dto.IsObsolete,
             Sequence = dto.Sequence,
             AssignedTo = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
             TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.TaskStatusChangedBy),
             TaskStatusChangedDate = dto.TaskStatusChangedDate,
             StatusId = dto.TaskStatusId,
+            Status = LookupViewModel<short>.FromServiceRequestStatusDto.Invoke(dto.TaskStatus),
             DueDate = dto.DueDate
         };
     }

@@ -1,4 +1,5 @@
-﻿using Orvosi.Data;
+﻿using LinqKit;
+using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
 using WebApp.Library.Projections;
+using WebApp.Models;
+using WebApp.ViewModels;
 
 namespace WebApp.Library
 {
@@ -233,12 +236,25 @@ namespace WebApp.Library
             public OwnerViewModel Owner { get; set; }
         }
 
-        public List<Orvosi.Shared.Model.Person> GetCollaborations(Guid physicianId)
+        public const string collaboratorsKey = "collaborators";
+        public List<LookupViewModel<Guid>> GetCollaborations(Guid physicianId)
         {
-            return dbContext.Collaborators
-                .Where(ww => ww.UserId == physicianId)
-                .Select(CollaboratorProjections.Basic())
-                .ToList();
+            var item = HttpContext.Current.Items[collaboratorsKey] as List<LookupViewModel<Guid>>;
+            if (item == null)
+            {
+                var dto = dbContext.Collaborators
+                    .Where(ww => ww.UserId == physicianId)
+                    .Select(PersonDto.FromCollaboratorEntity.Expand())
+                    .ToList();
+
+                var viewModel = dto
+                    .AsQueryable()
+                    .Select(LookupViewModel<Guid>.FromPersonDto.Expand())
+                    .ToList();
+
+                HttpContext.Current.Items[collaboratorsKey] = item = viewModel;
+            }
+            return item;
         }
 
         public List<SelectListItem> GetCollaborationSelectList(Guid physicianId)
@@ -248,9 +264,9 @@ namespace WebApp.Library
             return data
                 .Select(d => new SelectListItem
                 {
-                    Text = d.DisplayName,
-                    Value = d.Id.ToString(),
-                    Group = new SelectListGroup { Name = d.Role.Name }
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                    //Group = new SelectListGroup { Name = d.Role.Name }
                 })
                 .ToList();
         }

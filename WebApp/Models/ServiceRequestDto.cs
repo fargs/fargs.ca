@@ -35,6 +35,13 @@ namespace WebApp.Models
         public bool HasErrors { get; set; }
         public bool HasWarnings { get; set; }
 
+        public DateTime? AppointmentDateAndStartTime {
+            get
+            {
+                return AppointmentDate.HasValue && StartTime.HasValue ? AppointmentDate.Value.AddTicks(StartTime.HasValue ? StartTime.Value.Ticks : 0) : (DateTime?)null;
+            }
+        }
+
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
         public LookupDto<short> ServiceRequestStatus { get; set; }
@@ -97,6 +104,7 @@ namespace WebApp.Models
             HasWarnings = sr.HasWarnings,
             BoxCaseFolderId = sr.BoxCaseFolderId,
             ServiceCataloguePrice = sr.ServiceCataloguePrice,
+            Notes = sr.Notes,
 
             ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),

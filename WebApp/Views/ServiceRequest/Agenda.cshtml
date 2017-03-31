@@ -1,5 +1,4 @@
 ﻿@using WebApp.Library.Extensions
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
 @using WebApp.ViewModels.CalendarViewModels
 @model DayViewModel
 @{
@@ -64,7 +63,7 @@
                     @Html.Action("TaskList", "ServiceRequestTask", new
                {
                    serviceRequestId = serviceRequest.ServiceRequestId,
-                   viewOptions = TaskListViewOptions.Dashboard,
+                   viewOptions = ViewTarget.Agenda,
                    options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
                })
                 </div>

@@ -134,10 +134,19 @@ namespace WebApp.Library.Extensions
         {
             return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
         }
+        public static string ToOrvosiDateShortFormat(this DateTime value)
+        {
+            return value.ToString("MMM dd");
+        }
 
         public static string ToOrvosiDateTimeFormat(this DateTime value)
         {
             return value.ToString("yyyy-MM-dd hh:mm tt");
+        }
+
+        public static string ToOrvosiDateTimeShortFormat(this DateTime value)
+        {
+            return value.ToString("MMM dd hh:mm tt");
         }
 
         public static string ToOrvosiDateTimeFormat(this DateTime value, TimeSpan startTime)

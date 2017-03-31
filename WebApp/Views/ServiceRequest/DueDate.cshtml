@@ -1,26 +1,21 @@
 ﻿@using WebApp.Library.Extensions
-@using WebApp.ViewDataModels
-@using WebApp.ViewModels.ServiceRequestTaskViewModels
-@model IEnumerable<TaskListFilterArgs>
+@model DueDateViewModel
 @{
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
-
-    var viewData = new ViewDataDictionary();
-    viewData.ViewTarget_Set(ViewTarget.DueDates);
 }
 @if (Model != null)
 {
-    foreach (var args in Model)
+    foreach (var item in Model.TaskListArgs)
     {
         <div style="padding-left:20px;">
             <h4>
-                @Html.Action("CaseLink", "ServiceRequest", viewData)
+                @Html.Action("CaseLink", "ServiceRequest", item.ViewTarget)
             </h4>
         </div>
-        @Html.Action("TaskList", "ServiceRequestTask", args);
+        @Html.Action("TaskList", "ServiceRequestTask", item);
     }
 }
 else

@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Web;
 using WebApp.ViewModels;
 using WebApp.Library.Extensions;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Library
 {
@@ -13,36 +14,8 @@ namespace WebApp.Library
     {
         public const string dbKey = "dbContext";
         public const string workServiceKey = "workServiceKey";
-
-        public const string userKey = "userContext";
-        public const string physicianKey = "physicianContext";
-
-        public Guid UserId { get; set; }
-        public Guid PhysicianId { get; set; }
-
-        public ContextPerRequest(IIdentity identity)
-        {
-            HttpContext.Current.Items[userKey] = identity.GetUserContext();
-
-            HttpContext.Current.Items[physicianKey] = identity.GetApplicationUser();
-
-        }
-
-        public static UserContextViewModel User
-        {
-            get
-            {
-                return HttpContext.Current.Items[userKey] as UserContextViewModel;
-            }
-        }
-
-        public static UserContextViewModel Physician
-        {
-            get
-            {
-                return HttpContext.Current.Items[physicianKey] as UserContextViewModel;
-            }
-        }
+        public const string viewDataServiceKey = "viewDataServiceKey";
+        public const string featuresKey = "features";
 
         public static OrvosiDbContext db
         {
@@ -68,6 +41,41 @@ namespace WebApp.Library
                     HttpContext.Current.Items[dbKey] = service;
                 }
                 return service;
+            }
+        }
+
+        public static ViewDataService ViewDataService
+        {
+            get
+            {
+                var service = HttpContext.Current.Items[viewDataServiceKey] as ViewDataService;
+                if (service == null)
+                {
+                    service = new ViewDataService(HttpContext.Current.User.Identity);
+                    HttpContext.Current.Items[viewDataServiceKey] = service;
+                }
+                return service;
+            }
+        }
+
+        public static short[] AuthorizedFeatures
+        {
+            get
+            {
+                short[] roleFeatures = HttpContext.Current.Items[featuresKey] as short[];
+                var identity = HttpContext.Current.User.Identity;
+                if (identity.IsAuthenticated && roleFeatures == null)
+                {
+                    var roleId = HttpContext.Current.User.Identity.GetRoleId();
+                    if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
+                        roleFeatures = db.Features.Select(srf => srf.Id).ToArray();
+                    else
+                        roleFeatures = db.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
+
+                    HttpContext.Current.Items[featuresKey] = roleFeatures;
+
+                }
+                return roleFeatures;
             }
         }
     }

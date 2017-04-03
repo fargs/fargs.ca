@@ -20,9 +20,9 @@ namespace WebApp.Library
         IIdentity identity;
         Guid userId;
 
-        public ViewDataService(IIdentity identity, IOrvosiDbContext dbContext)
+        public ViewDataService(IIdentity identity)
         {
-            this.dbContext = dbContext;
+            this.dbContext = ContextPerRequest.db;
             this.identity = identity;
             this.userId = identity.GetGuidUserId();
         }
@@ -269,6 +269,28 @@ namespace WebApp.Library
                     //Group = new SelectListGroup { Name = d.Role.Name }
                 })
                 .ToList();
+        }
+
+        public const string taskIdKey = "taskIds";
+        public IEnumerable<SelectListItem> GetTaskIds(Guid userId)
+        {
+            var item = HttpContext.Current.Items[taskIdKey] as IEnumerable<SelectListItem>;
+            if (item == null)
+            {
+                var dto = dbContext.ServiceRequestTasks
+                    .Where(srt => srt.AssignedTo == userId)
+                    .Select(srt => srt.OTask)
+                    .Distinct()
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Id.ToString(),
+                        Text = t.Name
+                    })
+                    .ToList();
+
+                HttpContext.Current.Items[taskIdKey] = item = dto;
+            }
+            return item;
         }
 
     }

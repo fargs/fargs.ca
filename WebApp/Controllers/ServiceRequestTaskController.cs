@@ -22,12 +22,14 @@ using System.ComponentModel.DataAnnotations;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using NinjaNye.SearchExtensions;
+using WebApp.Components.Grid;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class ServiceRequestTaskController : BaseController
     {
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public ActionResult TaskGrid(TaskListArgs args)
         {
             var dto = db.ServiceRequestTasks
@@ -55,12 +57,12 @@ namespace WebApp.Controllers
             {
                 switch (args.sort)
                 {
-                    case "dueDate":
+                    case "duedate":
                         query = args.sortDir.ToLower() == "desc" ?
                             query.OrderBy(i => i.DueDate) :
                             query.OrderByDescending(i => i.DueDate);
                         break;
-                    case "claimantName":
+                    case "claimantname":
                         query = args.sortDir.ToLower() == "desc" ?
                             query.OrderBy(i => i.ServiceRequest.ClaimantName) :
                             query.OrderByDescending(i => i.ServiceRequest.ClaimantName);
@@ -70,10 +72,10 @@ namespace WebApp.Controllers
                             query.OrderBy(i => i.ServiceRequest.Physician.DisplayName) :
                             query.OrderByDescending(i => i.ServiceRequest.Physician.DisplayName);
                         break;
-                    case "appointmentDate":
+                    case "appointmentdateandstarttime":
                         query = args.sortDir.ToLower() == "desc" ?
-                            query.OrderBy(i => i.ServiceRequest.AppointmentDate) :
-                            query.OrderByDescending(i => i.ServiceRequest.AppointmentDate);
+                            query.OrderBy(i => i.ServiceRequest.AppointmentDateAndStartTime) :
+                            query.OrderByDescending(i => i.ServiceRequest.AppointmentDateAndStartTime);
                         break;
                     default:
                         break;
@@ -88,8 +90,8 @@ namespace WebApp.Controllers
             var total = query.Count();
             var pageCount = total / args.take;
 
-
-            var taskViewModels = query
+            var taskViewModels = data
+                .AsQueryable()
                 .Select(TaskWithCaseViewModel.FromTaskDto.Expand())
                 .ToList();
 
@@ -105,6 +107,22 @@ namespace WebApp.Controllers
                     NextPage = args.skip >= pageCount ? pageCount : args.skip + 1,
                     PreviousPage = args.skip <= 0 ? 0 : args.skip - 1
                 }
+            };
+
+            viewModel.Columns = new List<GridColumn>
+            {
+                new GridColumn { Name = "Actions" },
+                new GridColumn { Name = "StatusToggle" },
+                new GridColumn { Name = "AssignedTo" },
+                new GridColumn { DisplayName = "Status", Name = "TaskStatusName" },
+                new GridColumn { DisplayName = "Due", Name = "DueDate", IsSortable = true  },
+                new GridColumn { DisplayName = "Task", Name = "ShortName" },
+                new GridColumn { DisplayName = "Claimant", Name = "ClaimaintName" },
+                new GridColumn { DisplayName = "Exam Date", Name = "AppointmentDateAndStartTime" },
+                new GridColumn { DisplayName = "File Type", Name = "ServiceName" },
+                new GridColumn { DisplayName = "Company", Name = "Company" },
+                new GridColumn { DisplayName = "City", Name = "CityCode" },
+                new GridColumn { DisplayName = "Physician", Name = "PhysicianName" }
             };
             
             return PartialView("TaskGrid", viewModel);

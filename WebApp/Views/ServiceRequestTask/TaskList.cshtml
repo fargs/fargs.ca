@@ -6,7 +6,7 @@
 @{ 
     var identity = User.Identity.GetClaimsIdentity();
     var features = identity.GetFeatures();
-    var viewDataService = new ViewDataService(identity, new OrvosiDbContext());
+    var viewDataService = new ViewDataService(identity);
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.Physician.Id);
     teamMemberSelectList.Add(new SelectListItem
     {

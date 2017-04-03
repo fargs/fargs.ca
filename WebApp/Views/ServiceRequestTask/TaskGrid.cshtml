@@ -1,6 +1,7 @@
 ﻿@using WebApp.Library
 @using Orvosi.Data
 @using Features = Orvosi.Shared.Enums.Features
+@using WebApp.Components.Grid
 @model TaskGridViewModel
 
 @{ 
@@ -60,29 +61,47 @@
     <div>No tasks are assigned to you.</div>
 }
 <div class="panel @(ViewBag.ViewOptions == ViewTarget.Details ? "panel-default" : null)">
-    
+
     <div class="panel-body">
         <table class="table table-condensed table-hover">
             <thead>
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>Status</th>
-                    <th>Due</th>
-                    <th>Task</th>
-                    <th>Claimant</th>
-                    <th>Exam Date</th>
-                    <th>File Type</th>
-                    <th>Company</th>
-                    <th>City</th>
-                    <th>Physician</th>
+                    @foreach (var col in Model.Columns)
+                    {
+                        <th>@Html.GridColumnHeader(col, Model.Args)</th>
+                    }
                 </tr>
             </thead>
-            @foreach (var task in Model.Data)
-            {
-                @Html.Partial("Task", task)
-            }
+            <tbody>
+                @foreach (var task in Model.Data)
+                {
+                    @Html.Partial("Task", task)
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="12">
+                        <span>
+                            <strong>@Model.Total </strong>records
+                        </span>
+                        <span class="pull-right">
+                            Showing page
+                            <strong>@Model.Pager.CurrentPage </strong>
+                            of
+                            <strong>@Model.Pager.PageCount </strong>
+                            &nbsp;&nbsp; Page Size
+                            <select onchange="taskgridArgsChanged(this.value)">
+                                <option></option>
+                                <option value="@Request.Url.AddQuery("take", "10")">10</option>
+                                <option value="@Request.Url.AddQuery("take", "20")">20</option>
+                                <option value="@Request.Url.AddQuery("take", "40")">40</option>
+                                <option value="@Request.Url.AddQuery("take", "60")">60</option>
+                                <option value="@Request.Url.AddQuery("take", "100")">100</option>
+                            </select>
+                        </span>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

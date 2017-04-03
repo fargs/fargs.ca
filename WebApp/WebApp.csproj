@@ -232,6 +232,10 @@
       <HintPath>..\packages\morelinq.2.0.0-beta03\lib\net35\MoreLinq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MVCGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCGrid.Net.1.0.0.61\lib\net40\MVCGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -339,6 +343,10 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -407,6 +415,7 @@
     <Compile Include="App_Start\EmailConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\MVCGridConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SmsConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
@@ -470,6 +479,7 @@
     <Compile Include="Library\Filters\ChildActionOnlyOrAjaxAttribute.cs" />
     <Compile Include="Library\Google\GoogleServices.cs" />
     <Compile Include="Library\Helpers.cs" />
+    <Compile Include="Components\Grid\HtmlHelpers.cs" />
     <Compile Include="Library\IEmailService.cs" />
     <Compile Include="Library\IIdentityExtensions.cs" />
     <Compile Include="Library\ImpersonatingSecurityStampValidator.cs" />
@@ -533,6 +543,7 @@
     <Compile Include="ViewModels\CaseViewModel.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
+    <Compile Include="Components\Grid\GridColumn.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDateViewModel.cs" />
@@ -550,6 +561,7 @@
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskGridRow.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskGridViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskListViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskWithCaseViewModel.cs" />
@@ -1251,6 +1263,8 @@
     <Content Include="Views\ServiceRequestTask\Task.cshtml" />
     <Content Include="Views\ServiceRequestTask\TaskGrid.cshtml" />
     <Content Include="Views\ServiceRequestTask\Components\TaskListFilter.cshtml" />
+    <Content Include="Views\MVCGrid\_TaskGrid.cshtml" />
+    <Content Include="Views\ServiceRequestTask\Components\TaskActionMenu.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

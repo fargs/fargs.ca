@@ -186,7 +186,7 @@
     <div class="container-fluid body-content">
         @if (features.Contains(Features.AppContext.ChangeUserContext))
         {
-            var viewDataService = new ViewDataService(User.Identity, context); // This should eventually be injected from the DI container
+            var viewDataService = new ViewDataService(User.Identity); // This should eventually be injected from the DI container
             var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
             <div class="text-danger">@TempData["UserContextMessage"]</div>
@@ -237,6 +237,8 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/signalr")
+
+    <script src="~/MVCGridHandler.axd/script.js"></script>
 
     <script type="text/javascript">
 

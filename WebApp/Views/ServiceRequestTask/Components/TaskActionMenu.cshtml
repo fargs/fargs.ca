@@ -1,0 +1,71 @@
+﻿@using WebApp.Library
+@using Features = Orvosi.Shared.Enums.Features
+@model TaskGridRow
+
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var features = ContextPerRequest.AuthorizedFeatures;
+    var viewDataService = ContextPerRequest.ViewDataService;
+    var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.Physician.Id);
+    teamMemberSelectList.Add(new SelectListItem
+    {
+        Text = Model.Physician.Name,
+        Value = Model.Physician.Id.ToString()
+    });
+}
+
+    <div class="dropdown">
+        <button class="btn btn-sm btn-link" data-toggle="dropdown">
+            <i class="fa fa-ellipsis-h fa-lg"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabel">
+            @if (features.Contains(Features.ServiceRequest.PickupTask))
+            {
+                <li><a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a></li>
+            }
+            @if (features.Contains(Features.ServiceRequest.AssignTask))
+            {
+                <li class="dropdown-submenu">
+                    <a tabindex="-1" class="assign-to" onclick="menuDropdownClick(event, this)">
+                        Assign To
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
+                        {
+                            <li>
+                                <a tabindex="-1" onclick="assignTask(@Model.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+            @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
+            {
+                <li class="divider"></li>
+                        <li>
+                            <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)">
+                                On Hold
+                                @if (Model.TaskStatusId == TaskStatuses.OnHold)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)">
+                                Cancel
+                                @if (Model.TaskStatusId == TaskStatuses.Obsolete)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </a>
+                        </li>
+            }
+            @if (features.Contains(Features.ServiceRequest.DeleteTask))
+            {
+                <li class="divider"></li>
+                        <li><a tabindex="-1" onclick="deleteTask(@Model.Id)">Delete</a></li>
+            }
+        </ul>
+    </div>

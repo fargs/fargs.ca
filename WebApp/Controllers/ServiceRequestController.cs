@@ -968,7 +968,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCompanyDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, db);
+            var viewDataService = new ViewDataService(User.Identity);
             var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
             return PartialView("_CreateAddOnCompanyDropDown", companySelectList);
         }
@@ -976,7 +976,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshServiceDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, db);
+            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianServiceSelectList(physicianId);
             return PartialView("_CreateAddOnServiceDropDown", selectList);
         }
@@ -984,7 +984,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCaseCoordinatorDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, db);
+            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physicianId);
             return PartialView("_CreateAddOnCaseCoordinatorDropDown", selectList);
         }
@@ -992,7 +992,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshProcessTemplateDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity, db);
+            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
             return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
         }

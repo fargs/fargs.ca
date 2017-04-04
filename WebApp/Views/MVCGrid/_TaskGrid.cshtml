@@ -126,7 +126,7 @@ if (pageToStart < pagingModel.CurrentPage)
         @foreach (var row in Model.Rows)
         {
             var trClassAttr = !String.IsNullOrWhiteSpace(RowClass(row)) ? String.Format(" class='{0}'", RowClass(row)) : "";
-            <tr@(Html.Raw(trClassAttr))>
+            <tr@(Html.Raw(trClassAttr)) id="taskgridrow-@row.Cells["Id"].PlainText">
                 @foreach (var col in Model.Columns)
                 {
                     var cell = row.Cells[col.Name];

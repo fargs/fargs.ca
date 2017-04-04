@@ -107,12 +107,21 @@ namespace WebApp
                     // Return QueryResult object containing IEnumerable<YouModelItem>
                     var db = ContextPerRequest.db;
                     var identity = context.CurrentHttpContext.User.Identity;
+                    var physicianContext = context.CurrentHttpContext.User.Identity.GetPhysicianContext();
                     var userId = identity.GetGuidUserId();
 
-                    var dto = db.ServiceRequestTasks
+                    var entityQuery = db.ServiceRequestTasks
                         .AreAssignedToUser(userId)
                         .AreActive()
-                        .Where(srt => srt.DueDate.HasValue)
+                        .Where(srt => srt.DueDate.HasValue);
+
+                    if (physicianContext != null)
+                    {
+                        entityQuery = entityQuery
+                            .Where(srt => srt.ServiceRequest.PhysicianId == physicianContext.Id);
+                    }
+
+                    var dto = entityQuery
                         .OrderByDescending(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence)
                         .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())
                         .ToList();
@@ -136,6 +145,9 @@ namespace WebApp
                                 break;
                             case "task":
                                 query = query.Where(sr => sr.TaskId == short.Parse(filter.Value));
+                                break;
+                            case "city":
+                                query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == short.Parse(filter.Value));
                                 break;
                             default:
                                 break;

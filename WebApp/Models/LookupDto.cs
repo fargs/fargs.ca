@@ -46,6 +46,14 @@ namespace WebApp.Models
             ColorCode = ""
         };
 
+        public static Expression<Func<City, LookupDto<short>>> FromCityEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = ""
+        };
+
         public static Expression<Func<AspNetRole, LookupDto<Guid>>> FromAspNetRoleEntity = e => e == null ? null : new LookupDto<Guid>
         {
             Id = e.Id,

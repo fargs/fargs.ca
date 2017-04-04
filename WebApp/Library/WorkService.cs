@@ -11,6 +11,7 @@ using MoreLinq;
 using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using WebApp.ViewModels;
+using Orvosi.Data.Filters;
 
 namespace WebApp.Library
 {
@@ -296,6 +297,29 @@ namespace WebApp.Library
             await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
 
+        public async Task ArchiveTask(int serviceRequestTaskId)
+        {
+            var srt = await db.ServiceRequestTasks
+                .WithId(serviceRequestTaskId)
+                .SingleAsync();
+
+            ChangeTaskStatus(srt, TaskStatuses.Archive);
+
+            await db.SaveChangesAsync();
+        }
+        public async Task ArchiveCompletedTasksForCurrentUser()
+        {
+            var tasks = db.ServiceRequestTasks
+                .AreAssignedToUser(userId)
+                .WithTaskStatus(TaskStatuses.Done);
+
+            foreach (var srt in tasks)
+            {
+                ChangeTaskStatus(srt, TaskStatuses.Archive);
+            }
+
+            await db.SaveChangesAsync();
+        }
 
         public async Task UpdateAssessmentDayTaskStatus(int serviceRequestId)
         {
@@ -333,6 +357,15 @@ namespace WebApp.Library
         }
 
 
+        private ServiceRequestTask ChangeTaskStatus(ServiceRequestTask srt, short newTaskStatusId)
+        {
+            srt.TaskStatusId = newTaskStatusId;
+            srt.TaskStatusChangedBy = identity.GetGuidUserId();
+            srt.TaskStatusChangedDate = now;
+            srt.ModifiedDate = now;
+            srt.ModifiedUser = identity.GetGuidUserId().ToString();
+            return srt;
+        }
         private async Task SaveTaskStatusChange(ServiceRequestTask srt, short newTaskStatusId)
         {
             srt.TaskStatusId = newTaskStatusId;
@@ -369,6 +402,7 @@ namespace WebApp.Library
 
             await db.SaveChangesAsync();
         }
+
         private short CalculateNewServiceRequestStatus(IEnumerable<ServiceRequestTask> tasks, short currentStatus)
         {
             //TODO: insert to a log table

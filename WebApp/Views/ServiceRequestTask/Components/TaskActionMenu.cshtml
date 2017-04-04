@@ -14,6 +14,12 @@
     });
 }
 
+@if (Model.TaskStatusId == TaskStatuses.Done)
+{
+    <button onclick="archiveTask(@Model.Id)"><i class="fa fa-archive"></i></button>
+}
+else
+{
     <div class="dropdown">
         <button class="btn btn-sm btn-link" data-toggle="dropdown">
             <i class="fa fa-ellipsis-h fa-lg"></i>
@@ -69,3 +75,4 @@
             }
         </ul>
     </div>
+}

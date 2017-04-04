@@ -60,6 +60,20 @@
         });
     }
 
+    function archiveTask(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ArchiveTask")';
+        $.post(url,
+            {
+                serviceRequestTaskId: serviceRequestTaskId
+            }
+        ).done(function (data) {
+            taskChanged(data.id, data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+            serviceRequestStatusChanged(data.serviceRequestId);
+            showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
+        });
+    }
+
     function pickupTask(serviceRequestTaskId) {
         let url = '@Url.Content("~/ServiceRequestTask/PickUp")';
         $.post(

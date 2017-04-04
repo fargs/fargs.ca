@@ -23,7 +23,7 @@ namespace Orvosi.Data.Filters
         public static IQueryable<ServiceRequestTask> AreActive(this IQueryable<ServiceRequestTask> serviceRequestTasks)
         {
             return serviceRequestTasks
-                .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold);
+                .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold || srt.TaskStatusId == TaskStatuses.Done);
         }
         public static IQueryable<ServiceRequestTask> AreAssignedToUser(this IQueryable<ServiceRequestTask> serviceRequestTasks, Guid userId)
         {

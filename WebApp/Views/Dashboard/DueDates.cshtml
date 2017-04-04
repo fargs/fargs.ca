@@ -12,6 +12,7 @@
 
     var viewDataService = ContextPerRequest.ViewDataService;
     var taskIdSelectListItems = viewDataService.GetTaskIds(userId);
+    var cities = viewDataService.GetCities(userId);
 }
 
 @functions {
@@ -30,6 +31,14 @@
             <option value="@taskId.Value" @IsSelected(short.Parse(taskId.Value), Model.TaskIds)>@taskId.Text</option>
         }
     </select>
+    <select data-mvcgrid-type="filter" data-mvcgrid-option="City" data-mvcgrid-apply-filter="change" class="form-control">
+        <option value="">-- City Filter --</option>
+        @foreach (var city in cities)
+        {
+            <option value="@city.Id" @IsSelected(city.Id, Model.Cities)>@city.Name</option>
+        }
+    </select>
+    <button onclick="archiveCompletedTasks()"><i class="fa fa-archive"></i> Archive Completed</button>
 </div>
 
 @Html.MVCGrid("TaskGrid")
@@ -261,8 +270,22 @@
 
         }
 
+        function archiveCompletedTasks() {
+            let url = '@Url.Content("~/ServiceRequestTask/ArchiveCompleted")';
+            $.post(url)
+                .done(function() {
+                    MVCGrid.reloadGrid('TaskGrid');
+                });
+        }
+
         function taskChanged(id, serviceRequestId) {
-            toastr.success("The task has been updated. To undo, click <a onclick='showCaseDetails(" + serviceRequestId + ")>here</a>");
+            toastr.success("The task has been updated. <button class='btn btn-default'>UNDO</button>",
+                {
+                    escapeHtml: true,
+                    onclick: function () {
+                        showCaseDetails(serviceRequestId);
+                    }
+                });
             MVCGrid.reloadGrid('TaskGrid');
         }
 

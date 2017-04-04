@@ -52,6 +52,16 @@ namespace WebApp.Library.Extensions
             return obj.GetApplicationUser().Physicians;
         }
 
+        public static UserContextViewModel GetPhysicianContext(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");
+            if (claim != null)
+            {
+                return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
+            }
+            return null;
+        }
+
         public static UserContextViewModel GetUserContext(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");

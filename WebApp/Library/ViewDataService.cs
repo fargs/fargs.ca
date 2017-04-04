@@ -292,6 +292,31 @@ namespace WebApp.Library
             }
             return item;
         }
+        public const string citiesKey = "cities";
+        public IEnumerable<LookupViewModel<short>> GetCities(Guid userId)
+        {
+            var item = HttpContext.Current.Items[citiesKey] as IEnumerable<LookupViewModel<short>>;
+            if (item == null)
+            {
+                var dto = dbContext.ServiceRequestTasks
+                    .Where(srt => srt.AssignedTo == userId)
+                    .Where(srt => srt.ServiceRequest.Address != null)
+                    .Select(srt => srt.ServiceRequest.Address.City_CityId)
+                    .Distinct()
+                    .Where(c => c != null)
+                    .OrderBy(c => c.Name)
+                    .Select(LookupDto<short>.FromCityEntity.Expand())
+                    .ToList();
+
+                var viewModel = dto
+                    .AsQueryable()
+                    .Select(LookupViewModel<short>.FromLookupDto.Expand())
+                    .ToList();
+
+                HttpContext.Current.Items[citiesKey] = item = viewModel;
+            }
+            return item;
+        }
 
     }
 }

@@ -13,6 +13,7 @@ namespace WebApp.Models
         public string Name { get; set; }
         public string Address1 { get; set; }
         public string PostalCode { get; set; }
+        public short? CityId { get; set; }
         public string City { get; set; }
         public string CityCode { get; set; }
         public string ProvinceCode { get; set; }
@@ -29,6 +30,7 @@ namespace WebApp.Models
         {
             Id = e.Id,
             Name = e.Name,
+            CityId = e.City_CityId.Id,
             City = e.City_CityId.Name,
             CityCode = e.City_CityId.Code,
             PostalCode = e.PostalCode,

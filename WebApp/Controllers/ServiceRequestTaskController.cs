@@ -339,6 +339,24 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> ArchiveCompleted()
+        {
+            await service.ArchiveCompletedTasksForCurrentUser();
+            
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> ArchiveTask(int serviceRequestTaskId)
+        {
+            await service.ArchiveTask(serviceRequestTaskId);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> ToggleTaskStatus(int serviceRequestTaskId, short taskStatusId)
         {
             await service.ToggleTaskStatus(serviceRequestTaskId, taskStatusId);

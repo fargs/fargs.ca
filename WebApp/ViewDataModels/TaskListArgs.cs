@@ -13,6 +13,7 @@ namespace WebApp.ViewDataModels
         {
         }
         public int ServiceRequestId { get; set; }
+        public short[] Cities { get; set; }
         public short[] TaskIds { get; set; }
         public short[] TaskStatusIds { get; set; }
         public Guid[] AssignedTo { get; set; }

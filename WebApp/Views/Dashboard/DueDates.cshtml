@@ -279,13 +279,7 @@
         }
 
         function taskChanged(id, serviceRequestId) {
-            toastr.success("The task has been updated. <button class='btn btn-default'>UNDO</button>",
-                {
-                    escapeHtml: true,
-                    onclick: function () {
-                        showCaseDetails(serviceRequestId);
-                    }
-                });
+            toastr.success("The task has been updated");
             MVCGrid.reloadGrid('TaskGrid');
         }
 

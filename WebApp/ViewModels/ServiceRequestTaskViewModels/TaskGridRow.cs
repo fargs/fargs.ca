@@ -30,11 +30,13 @@ namespace WebApp.ViewModels
         public string Service { get; set; }
         public string City { get; set; }
         public bool HasNotes { get; set; }
+        public bool? IsOverdue { get; set; }
+        public bool? IsDueToday { get; set; }
 
         public static Expression<Func<TaskDto, TaskGridRow>> FromTaskDto = dto => dto == null ? null : new TaskGridRow
         {
             Id = dto.Id,
-            AssignedTo =  LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
+            AssignedTo = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
             TaskId = dto.TaskId,
             TaskShortName = dto.ShortName,
             TaskName = dto.Name,
@@ -52,6 +54,8 @@ namespace WebApp.ViewModels
             City = dto.ServiceRequest.Address != null ? dto.ServiceRequest.Address.CityCode : "",
             Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.ServiceRequest.Physician),
             PhysicianSortColumn = dto.ServiceRequest.Physician.LastName,
+            IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, DateTime.Now),
+            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, DateTime.Now)
         };
     }
 }

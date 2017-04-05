@@ -10,6 +10,7 @@ namespace WebApp.Models
 {
     public class TaskDto
     {
+
         public int Id { get; set; }
         public short TaskId { get; set; }
         public string Name { get; set; }
@@ -20,7 +21,6 @@ namespace WebApp.Models
         public IEnumerable<TaskDependentDto> Dependencies { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? AppointmentDate { get; set; } // This is set from the parent service request to determine the status of the Assessment Day task
-        public DateTime Now { get; set; }
         public short Sequence { get; set; }
         public Guid? AssignedToId { get; set; }
         public PersonDto AssignedTo { get; set; }
@@ -31,6 +31,12 @@ namespace WebApp.Models
         public DateTime? EffectiveDate { get; set; }
         public bool IsCriticalPath { get; set; }
         public ServiceRequestDto ServiceRequest { get; set; }
+
+
+        public static Expression<Func<DateTime?, DateTime, bool?>> IsOverdueExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date < now.Date : (bool?)null;
+
+        public static Expression<Func<DateTime?, DateTime, bool?>> IsDueTodayExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date == now.Date : (bool?)null;
+
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntity = srt => srt == null ? null : new TaskDto()
         {

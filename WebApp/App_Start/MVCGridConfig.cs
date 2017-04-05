@@ -37,6 +37,14 @@ namespace WebApp
                 .WithAuthorizationType(AuthorizationType.Authorized)
                 .WithRenderingMode(RenderingMode.Controller)
                 .WithViewPath("~/Views/MVCGrid/_TaskGrid.cshtml")
+                .WithRowCssClassExpression(c =>
+                {
+                    if (c.IsOverdue.HasValue && c.IsDueToday.HasValue)
+                    {
+                        return c.IsOverdue.Value ? "bg-danger" : c.IsDueToday.Value ? "bg-success" : "";
+                    }
+                    return "";
+                })
                 .AddColumns(cols =>
                 {
                     cols.Add().WithColumnName("Id")

@@ -1,5 +1,6 @@
 ﻿using LinqKit;
 using Orvosi.Data;
+using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
@@ -278,7 +279,8 @@ namespace WebApp.Library
             if (item == null)
             {
                 var dto = dbContext.ServiceRequestTasks
-                    .Where(srt => srt.AssignedTo == userId)
+                    .AreActive()
+                    .AreAssignedToUser(userId)
                     .Select(srt => srt.OTask)
                     .Distinct()
                     .Select(t => new SelectListItem

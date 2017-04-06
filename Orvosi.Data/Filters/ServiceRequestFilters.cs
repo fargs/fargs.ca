@@ -17,7 +17,11 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> query, Guid userId, Guid? physicianId, Guid roleId)
         {
-            if (roleId == AspNetRoles.Physician) // physicians should see all there cases
+            if (roleId == AspNetRoles.SuperAdmin)
+            {
+                return query;
+            }
+            else if (roleId == AspNetRoles.Physician) // physicians should see all there cases
             {
                 query = query.ForPhysician(userId);
             }
@@ -36,6 +40,11 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests
                     .Where(d => d.AppointmentDate.HasValue);
+        }
+        public static IQueryable<ServiceRequest> HaveNoAppointment(this IQueryable<ServiceRequest> serviceRequests)
+        {
+            return serviceRequests
+                    .Where(d => !d.AppointmentDate.HasValue);
         }
         public static IQueryable<ServiceRequest> AreScheduledThisDay(this IQueryable<ServiceRequest> serviceRequests, DateTime day)
         {

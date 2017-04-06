@@ -279,19 +279,31 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ActionResult Additionals(TaskListArgs args)
         {
-            var dto = db.ServiceRequestTasks
-                .AreAssignedToUser(userId)
-                .WithTaskIds(args.TaskIds)
-                .AreActive()
-                .Where(srt => !srt.ServiceRequest.AppointmentDate.HasValue)
-                .GroupBy(srt => srt.ServiceRequest)
-                .Select(grp => grp.Key)
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+            var dto = db.ServiceRequests
+                .AsExpandable()
+                .CanAccess(userId, physicianId, roleId)
+                .AreNotClosed()
+                .HaveNoAppointment()
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(userId))
                 .ToList();
 
             var viewModel = dto
                 .AsQueryable()
-                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+                .Select(CaseLinkViewModel.FromServiceRequestDto.Expand());
+
+            //var dto = db.ServiceRequestTasks
+            //    .AreAssignedToUser(userId)
+            //    .WithTaskIds(args.TaskIds)
+            //    .AreActive()
+            //    .Where(srt => !srt.ServiceRequest.AppointmentDate.HasValue)
+            //    .GroupBy(srt => srt.ServiceRequest)
+            //    .Select(grp => grp.Key)
+            //    .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+            //    .ToList();
+
+            //var viewModel = dto
+            //    .AsQueryable()
+            //    .Select(CaseLinkViewModel.FromServiceRequestDto.Expand());
 
             return PartialView(viewModel);
         }

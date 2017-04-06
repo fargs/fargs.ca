@@ -68,37 +68,41 @@
             let url = '@Url.Content("~/ServiceRequest/ScheduleDateRange")';
 
             var container = $(document.getElementById(targetId));
-            if (!container.hasClass('in') || expand) {
-                $.post(url, {
-                    DateRange: {
-                        StartDate: day,
-                        FilterType: 'Week'
-                    },
-                    ViewOptions: "Dashboard",
-                    Options: "MyActiveTasks"
-                })
-                .done(function (result) {
-                    document.getElementById(targetId).innerHTML = result;
-                    container.collapse('show');
-                    //joinRoom(serviceRequestId);
-                    //refreshValidationResults(serviceRequestId);
-                });
-            }
-            else {
-                container.collapse('hide');
+            if (container){
+                if (!container.hasClass('in') || expand) {
+                    $.post(url, {
+                        DateRange: {
+                            StartDate: day,
+                            FilterType: 'Week'
+                        },
+                        ViewOptions: "Dashboard",
+                        Options: "MyActiveTasks"
+                    })
+                    .done(function (result) {
+                        document.getElementById(targetId).innerHTML = result;
+                        container.collapse('show');
+                        //joinRoom(serviceRequestId);
+                        //refreshValidationResults(serviceRequestId);
+                    });
+                }
+                else {
+                    container.collapse('hide');
+                }
             }
         }
 
         function getWeekSummary(day, firstDayOfWeekTicks) { // ticks are used to uniquely identify the element to update
             let url = '@Url.Content("~/Dashboard/WeekSummary")';
 
-            $.get(url, { 
-                startDate: day
-            })
-            .done(function (result) {
-                targetId = 'header-weekfolder-' + firstDayOfWeekTicks;
-                document.getElementById(targetId).innerHTML = result;
-            });
+            var target = document.getElementById('header-weekfolder-' + firstDayOfWeekTicks)
+            if (target) {
+                $.get(url, {
+                    startDate: day
+                })
+                .done(function (result) {
+                    target.innerHTML = result;
+                });
+            }
         }
 
         function onToggleNoShow(checkbox, serviceRequestId) {

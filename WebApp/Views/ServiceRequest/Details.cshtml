@@ -97,6 +97,13 @@
 
     @section Scripts {
 
+        <script src="@Url.Content("~/signalr/hubs")"></script>
+        @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
+        @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+        @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+        @Html.Partial("~/Views/Box/BoxJS.cshtml")
+
         <script type="text/javascript">
 
             $(document).ready(function(){
@@ -243,12 +250,5 @@
             }
 
         </script>
-
-        <script src="@Url.Content("~/signalr/hubs")"></script>
-        @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
-        @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-        @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
-        @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
-        @Html.Partial("~/Views/Box/BoxJS.cshtml")
 
     }

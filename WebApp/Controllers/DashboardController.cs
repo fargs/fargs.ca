@@ -166,14 +166,11 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
-        public ActionResult RefreshDueDateSummaryCount(Guid? serviceProviderId)
+        public ActionResult RefreshDueDateSummaryCount()
         {
-            var now = SystemTime.UtcNow().ToLocalTimeZone(TimeZones.EasternStandardTime);
-            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
+            var result = db.ServiceRequestTasks;
 
-            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.DueDatesCount(serviceProviderIdOrDefault, now);
-
-            return PartialView("_SummaryCount", count);
+            return PartialView("_SummaryCount", result);
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]

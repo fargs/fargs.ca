@@ -4,11 +4,17 @@
     Layout = "~/Views/Dashboard/_Layout.cshtml";
 }
 
-@Html.Action("Additionals", "ServiceRequest")
+<div id="additionals-container">
+    @Html.Action("Additionals", "ServiceRequest")
+</div>
 
 @Html.Partial("ModalContainer")
 
 @section Scripts {
+
+
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
 
     <script>
 
@@ -21,15 +27,33 @@
                 options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
             .done(function (result) {
-                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                document.getElementById('tasklist-container').innerHTML = result;
             })
             .always(function () {
                 //loader.hide();
             });
         }
 
+        function serviceRequestStatusChanged(serviceRequestId) {
+
+            // refresh the modal
+            $.get('@Url.Content("~/ServiceRequest/Case")', {
+                serviceRequestId: serviceRequestId,
+                viewOptions: '@ViewTarget.Modal'
+            })
+            .done(function (result) {
+                document.getElementById('case-container').innerHTML = result;
+            });
+
+            // refresh the grid
+            $.get('@Url.Content("~/ServiceRequest/Additionals")')
+            .done(function (result) {
+                document.getElementById('additionals-container').innerHTML = result;
+            });
+
+            // refresh the week counts
+        }
+
     </script>
 
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
 }

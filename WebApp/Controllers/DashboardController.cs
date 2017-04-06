@@ -68,9 +68,9 @@ namespace WebApp.Controllers
                     TaskStatusSummary = new dvm.TaskStatusSummaryViewModel
                     {
                         Count = c.Count(),
-                        ToDoCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.ToDo),
-                        WaitingCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.Waiting),
-                        DoneCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.Done)
+                        ToDoCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.ToDo),
+                        WaitingCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.Waiting),
+                        DoneCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.Done)
                     }
                 })
                 .ToList();

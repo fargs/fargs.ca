@@ -45,6 +45,7 @@ namespace WebApp.Models
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
         public LookupDto<short> ServiceRequestStatus { get; set; }
+        public LookupDto<short> NextTaskStatusForUser { get; set; }
         public AddressDto Address { get; set; }
 
         public PersonDto Physician { get; set; }
@@ -125,6 +126,48 @@ namespace WebApp.Models
             Messages = sr.ServiceRequestMessages.AsQueryable().OrderBy(m => m.PostedDate).Select(MessageDto.FromServiceRequestMessageEntity.Expand())
         };
 
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCaseLinks(Guid userId)
+        {
+            return sr => new ServiceRequestDto
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                DueDate = sr.DueDate,
+                CancelledDate = sr.CancelledDate,
+                IsNoShow = sr.IsNoShow,
+                IsLateCancellation = sr.IsLateCancellation,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                HasErrors = sr.HasErrors,
+                HasWarnings = sr.HasWarnings,
+                Notes = sr.Notes,
+
+                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
+                DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
+                IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant),
+
+                NextTaskStatusForUser = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .Where(srt => srt.AssignedTo == userId)
+                    .GroupBy(srt => srt.ServiceRequestId)
+                    .Select(srt => srt.OrderBy(grp => grp.TaskStatu.ServiceRequestPrecedence).FirstOrDefault().TaskStatu)
+                    .Select(ts => new LookupDto<short>
+                    {
+                        Id = ts.Id,
+                        Name = ts.Name,
+                        Code = "",
+                        ColorCode = ts.ColorCode
+                    })
+                    .FirstOrDefault()
+            };
+        }
+
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForSchedule(Guid userId)
         {
             return sr => new ServiceRequestDto
@@ -141,7 +184,7 @@ namespace WebApp.Models
                 HasErrors = sr.HasErrors,
                 HasWarnings = sr.HasWarnings,
 
-                ServiceRequestStatus = sr.ServiceRequestTasks
+                NextTaskStatusForUser = sr.ServiceRequestTasks
                     .AsQueryable()
                     .Where(srt => srt.AssignedTo == userId)
                     .GroupBy(srt => srt.ServiceRequestId)

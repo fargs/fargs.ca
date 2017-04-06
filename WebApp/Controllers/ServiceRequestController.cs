@@ -242,24 +242,14 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ActionResult ScheduleDateRange(TaskListArgs args)
         {
-            var ids = db.ServiceRequestTasks
-                .AreScheduledBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
-                .AreAssignedToUser(userId)
-                .WithTaskIds(args.TaskIds)
-                .AreActive()
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
-                .GroupBy(srt => srt.ServiceRequestId)
-                .Select(grp => new
-                {
-                    ServiceRequestId = grp.Key,
-                    NextTaskStatusId = grp.Min(srt => srt.TaskStatusId)
-                });
-
             var dto = db.ServiceRequests
+                .AsExpandable()
+                .AreScheduledBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
+                .CanAccess(userId, physicianId, roleId)
+                .AreNotClosed()
+                .HaveAppointment()
                 .AreNotCancellations()
-                .Where(sr => sr.AppointmentDate.HasValue)
-                .Where(sr => ids.Select(s => s.ServiceRequestId).Contains(sr.Id))
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(userId))
                 .ToList();
 
             var viewModel = dto

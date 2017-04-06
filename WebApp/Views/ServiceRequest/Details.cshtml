@@ -23,9 +23,9 @@
                 @Html.Partial("Case", Model, viewData)
             </div>
             <hr />
-            <div id="box-integration"></div>
+            <div id="box-container"></div>
             <hr />
-            <div id="google-calendar-integration"></div>
+            <div id="google-calendar-container"></div>
         </div>
         <div class="col-md-4">
             <h4>Tasks</h4>
@@ -108,6 +108,7 @@
                 @if (Model.AppointmentDate.HasValue)
             {
                 @:refreshGoogleCalendarIntegration();
+                @:boxInfoChanged();
                             }
             });
 
@@ -207,13 +208,23 @@
                     url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequestId)',
                     contentType: "text/html",
                     success: function (result) {
-                        $('#google-calendar-integration').html(result);
+                        $('#google-calendar-container').html(result);
                     },
                     error: function (err) {
                         // undo the UI change made before the ajax call
                         toastr.error(err);
                     }
                 });
+            }
+
+            function boxInfoChanged() {
+                $.get('@Url.Content("~/ServiceRequest/BoxManager")',
+                    {
+                        serviceRequestId: serviceRequestId
+                    })
+                    .done(function (result) {
+                        document.getElementById('box-container').innerHTML = result;
+                    });
             }
 
             function addGoogleCalendarEvent(eventId) {
@@ -238,5 +249,6 @@
         @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
         @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
         @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+        @Html.Partial("~/Views/Box/BoxJS.cshtml")
 
     }

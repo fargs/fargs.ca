@@ -46,54 +46,31 @@ namespace WebApp.Controllers
             args.ViewTarget = ViewTarget.DueDates;
             args.ViewFilter = TaskListViewModelFilter.MyActiveTasks;
             
-            if (true)//args.UseGridView)
-            {
-                return View(args);
-            }
-            else
-            {
-                var viewModel = db.ServiceRequestTasks
-                .AreAssignedToUser(userId)
-                .WithTaskIds(args.TaskIds)
-                .AreActive()
-                .Where(srt => srt.DueDate.HasValue)
-                .GroupBy(srt => srt.DueDate.Value)
-                .Select(c => new DayViewModel
-                {
-                    Day = c.Key,
-                    TaskStatusSummary = new dvm.TaskStatusSummaryViewModel
-                    {
-                        Count = c.Count(),
-                        ToDoCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.ToDo),
-                        WaitingCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Waiting),
-                        DoneCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Done)
-                    }
-                })
-                .ToList();
-
-                return View(viewModel);
-            }
+            return View(args);
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
         public async Task<ActionResult> Schedule(TaskListArgs args)
         {
-            var dayViewModels = db.ServiceRequestTasks
-                .AreAssignedToUser(userId)
-                .WithTaskIds(args.TaskIds)
-                .AreActive()
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
-                .Where(srt => !srt.ServiceRequest.IsLateCancellation && !srt.ServiceRequest.CancelledDate.HasValue)
-                .GroupBy(srt => srt.ServiceRequest.AppointmentDate.Value)
+            var data = db.ServiceRequests
+                .CanAccess(userId, physicianId, roleId)
+                .AreNotClosed()
+                .HaveAppointment()
+                .AreNotCancellations()
+                .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
+                .ToList();
+
+            var dayViewModels = data
+                .GroupBy(srt => srt.AppointmentDate.Value)
                 .Select(c => new DayViewModel
                 {
                     Day = c.Key,
                     TaskStatusSummary = new dvm.TaskStatusSummaryViewModel
                     {
                         Count = c.Count(),
-                        ToDoCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.ToDo),
-                        WaitingCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Waiting),
-                        DoneCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Done)
+                        ToDoCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.ToDo),
+                        WaitingCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.Waiting),
+                        DoneCount = c.Count(sr => sr.ServiceRequestStatus == null ? false : sr.ServiceRequestStatus.Id == TaskStatuses.Done)
                     }
                 })
                 .ToList();
@@ -108,7 +85,7 @@ namespace WebApp.Controllers
                     Day = weekGrp.Key,
                     TaskStatusSummary = new dvm.TaskStatusSummaryViewModel
                     {
-                        Count = weekGrp.Count(),
+                        Count = weekGrp.Sum(sr => sr.day.TaskStatusSummary.Count),
                         ToDoCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.ToDoCount),
                         WaitingCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.WaitingCount),
                         DoneCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.OnHoldCount)

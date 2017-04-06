@@ -124,7 +124,40 @@ namespace WebApp.Models
             ClaimantName = sr.ClaimantName,
             Messages = sr.ServiceRequestMessages.AsQueryable().OrderBy(m => m.PostedDate).Select(MessageDto.FromServiceRequestMessageEntity.Expand())
         };
-        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForSummary = sr => new ServiceRequestDto
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForSchedule(Guid userId)
+        {
+            return sr => new ServiceRequestDto
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                DueDate = sr.DueDate,
+                CancelledDate = sr.CancelledDate,
+                IsNoShow = sr.IsNoShow,
+                IsLateCancellation = sr.IsLateCancellation,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                HasErrors = sr.HasErrors,
+                HasWarnings = sr.HasWarnings,
+
+                ServiceRequestStatus = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .Where(srt => srt.AssignedTo == userId)
+                    .GroupBy(srt => srt.ServiceRequestId)
+                    .Select(srt => srt.OrderBy(grp => grp.TaskStatu.ServiceRequestPrecedence).FirstOrDefault().TaskStatu)
+                    .Select(ts => new LookupDto<short>
+                    {
+                        Id = ts.Id,
+                        Name = ts.Name,
+                        Code = "",
+                        ColorCode = ts.ColorCode
+                    })
+                    .FirstOrDefault()
+            };
+        }
+
+        public static Expression<Func<ServiceRequest, Guid, ServiceRequestDto>> FromServiceRequestEntityForSummary = (sr, userId) => new ServiceRequestDto
         {
             Id = sr.Id,
             ClaimantName = sr.ClaimantName,
@@ -138,8 +171,14 @@ namespace WebApp.Models
             HasErrors = sr.HasErrors,
             HasWarnings = sr.HasWarnings,
 
-            Tasks = sr.ServiceRequestTasks.AsQueryable()
-                    .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
+            Tasks = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .AreAssignedToUser(userId)
+                    .Select(srt => new TaskDto
+                    {
+                        Id = srt.Id,
+                        TaskStatusId = srt.TaskStatusId.Value
+                    })
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntitySummary = sr => new ServiceRequestDto

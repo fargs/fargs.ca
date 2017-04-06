@@ -1312,6 +1312,9 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> BoxManager(int serviceRequestId)
         {
+            var vm = new BoxManagerViewModel();
+            vm.ServiceRequestId = serviceRequestId;
+
             // Get the box folder id for the case
             var serviceRequest = db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -1320,8 +1323,7 @@ namespace WebApp.Controllers
 
             if (string.IsNullOrEmpty(serviceRequest.BoxCaseFolderId))
             {
-                ModelState.AddModelError("", "BoxCaseFolderId is set to null.");
-                return new HttpNotFoundResult();
+                return PartialView("~/Views/Box/BoxManager.cshtml", vm);
             }
 
             var orvosiBoxFolderCollaborations = db.ServiceRequestBoxCollaborations
@@ -1365,14 +1367,13 @@ namespace WebApp.Controllers
                 resources.Add(boxResource);
             }
 
-            var vm = new BoxManagerViewModel();
             vm.ServiceRequestId = serviceRequestId;
             vm.Reconciliations = result;
             vm.Resources = resources;
             vm.BoxFolderCollaborations = boxFolderCollaborations;
             vm.BoxFolder = boxFolder;
             vm.ExpectedFolderName = serviceRequest.CaseFolderName;
-            return View(vm);
+            return PartialView("~/Views/Box/BoxManager.cshtml", vm);
         }
 
         [HttpPost]

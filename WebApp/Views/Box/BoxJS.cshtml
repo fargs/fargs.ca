@@ -1,0 +1,19 @@
+﻿<script type="text/javascript">
+
+    function createBoxCaseFolder(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/CreateBoxCaseFolder")';
+        boxExecute(url, {
+            serviceRequestId: serviceRequestId
+        });
+    }
+    function shareBoxFolder(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/ShareBoxFolder")';
+        boxExecute(url, form.serialize());
+    }
+    function boxExecute(url, params) {
+        $.post(url, params)
+            .done(function (data) {
+                boxInfoChanged(serviceRequestId);
+            });
+    }
+</script>

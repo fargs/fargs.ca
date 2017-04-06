@@ -10,18 +10,17 @@
     </div>
     <div class="modal-body">
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#case" aria-controls="case" role="tab" data-toggle="tab">Case</a></li>
-            <li role="presentation"><a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tasks</a></li>
+            <li role="presentation"><a href="#case" aria-controls="case" role="tab" data-toggle="tab">Case</a></li>
+            <li role="presentation" class="active"><a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tasks</a></li>
             <li role="presentation"><a href="#livechat" aria-controls="livechat" role="tab" data-toggle="tab">Live Chat</a></li>
-            <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
         </ul>
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="case">
+            <div role="tabpanel" class="tab-pane" id="case">
                 <div id="case-container" class="panel-body">
                     @Html.Partial("Case", Model, viewData)
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="tasks">
+            <div role="tabpanel" class="tab-pane active" id="tasks">
                 <div id="tasklist-container">
                     @Html.Action("TaskList", "ServiceRequestTask", new { serviceRequestId = Model.ServiceRequestId })
                 </div>
@@ -31,7 +30,6 @@
                 @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
             </div>
-            <div role="tabpanel" class="tab-pane" id="notes">...</div>
         </div>
     </div>
     <div class="modal-footer">

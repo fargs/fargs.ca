@@ -34,6 +34,24 @@ namespace Orvosi.Data.Filters
         {
             return srt => srt.AssignedTo == userId;
         }
+        public static IQueryable<ServiceRequestTask> AreAssignedToUsers(this IQueryable<ServiceRequestTask> serviceRequestTasks, Guid[] userIds)
+        {
+            return serviceRequestTasks
+                .Where(AreAssignedToUsers(userIds));
+        }
+        public static Expression<Func<ServiceRequestTask, bool>> AreAssignedToUsers(Guid[] userIds)
+        {
+            var predicate = PredicateBuilder.New<ServiceRequestTask>();
+            if (userIds == null)
+            {
+                throw new Exception("At least one user id is required.");
+            }
+            foreach (var id in userIds)
+            {
+                predicate = predicate.Or(srt => srt.AssignedTo == id);
+            }
+            return predicate;
+        }
         public static IQueryable<ServiceRequestTask> WithTaskId(this IQueryable<ServiceRequestTask> serviceRequestTasks, short taskId)
         {
             return serviceRequestTasks

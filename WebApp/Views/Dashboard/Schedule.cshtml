@@ -30,22 +30,23 @@
 }
 
 @*<form action="~/Dashboard/Schedule" method="get">
-    <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
-    <ul class="list-unstyled list-inline">
-        @foreach (var item in Model.TaskFilterViewModel.Tasks)
-        {
-            <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
-        }
-        <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
-    </ul>
-</form>*@
+        <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
+        <ul class="list-unstyled list-inline">
+            @foreach (var item in Model.TaskFilterViewModel.Tasks)
+            {
+                <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
+            }
+            <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
+        </ul>
+    </form>*@
 
 <div id="week-folders" class="panel-group">
 
     <div class="panel">
         <div class="panel-heading">
             <div class="row">
-                <div class="col-xs-12 col-sm-9"><strong>Week</strong></div>
+                <div class="col-xs-12 col-sm-8"><strong>Week</strong></div>
+                <div class="col-xs-12 col-sm-1 text-center"><strong>Count</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>To Do</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>Waiting On</strong></div>
                 <div class="col-xs-12 col-sm-1 text-center"><strong>On Hold</strong></div>
@@ -59,8 +60,11 @@
                 <a role="button" onclick="getWeek('@weekFolder.Day.ToOrvosiDateFormat()', 'week-@weekFolder.Day.Ticks')">
                     <div class="panel-title">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-9">
+                            <div class="col-xs-12 col-sm-8">
                                 <span>@weekFolder.Day.ToOrvosiDateFormat()</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-1 text-center">
+                                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.Count > 0 ? "label-default" : "bg-default")"><strong id="count-total">@weekFolder.TaskStatusSummary.Count</strong></span>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
                                 <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.ToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.TaskStatusSummary.ToDoCount</strong></span>

@@ -299,7 +299,7 @@ namespace WebApp.Models.ServiceRequestModels2
                 var source = context
                     .ServiceRequests
                         .AreAssignedToUser(serviceProviderId)
-                        .AreOpen()
+                        .AreNotClosed()
                         .Select(sr => new ServiceRequest
                         {
                             Id = sr.Id,
@@ -345,7 +345,7 @@ namespace WebApp.Models.ServiceRequestModels2
                     .ServiceRequests
                         .AreAddOns()
                         .AreAssignedToUser(serviceProviderIdOrDefault)
-                        .AreOpen()
+                        .AreNotClosed()
                         .Count();
             }
         }

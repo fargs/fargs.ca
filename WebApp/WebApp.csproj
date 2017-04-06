@@ -1265,6 +1265,7 @@
     <Content Include="Views\ServiceRequestTask\Components\TaskListFilter.cshtml" />
     <Content Include="Views\MVCGrid\_TaskGrid.cshtml" />
     <Content Include="Views\ServiceRequestTask\Components\TaskActionMenu.cshtml" />
+    <Content Include="Views\Box\BoxJS.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1346,7 +1347,7 @@
     <Content Include="Views\ServiceRequest\ResourceAssignment.cshtml" />
     <Content Include="Views\Shared\_TaskListActionMenu.cshtml" />
     <Content Include="Views\Shared\_TaskButton.cshtml" />
-    <Content Include="Views\ServiceRequest\BoxManager.cshtml" />
+    <Content Include="Views\Box\BoxManager.cshtml" />
     <Content Include="Views\Shared\_TaskActionMenu.cshtml" />
     <Content Include="Views\Dashboard\_Task.cshtml" />
     <Content Include="Views\Dashboard\_TaskButton.cshtml" />

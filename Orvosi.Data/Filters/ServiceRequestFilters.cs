@@ -15,15 +15,15 @@ namespace Orvosi.Data.Filters
         {
             return serviceRequests.Where(sr => sr.Id == id);
         }
-        public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> query, Guid userId, Guid physicianId, Guid roleId)
+        public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> query, Guid userId, Guid? physicianId, Guid roleId)
         {
             if (roleId == AspNetRoles.Physician) // physicians should see all there cases
             {
                 query = query.ForPhysician(userId);
             }
-            else if (userId != physicianId) // users that have selected a physician context see all the physician cases
+            else if (physicianId.HasValue) // users that have selected a physician context see all the physician cases
             {
-                query = query.ForPhysician(physicianId);
+                query = query.ForPhysician(physicianId.Value);
             }
             else // non physician users see cases where tasks are assigned to them
             {
@@ -31,6 +31,11 @@ namespace Orvosi.Data.Filters
             }
 
             return query;
+        }
+        public static IQueryable<ServiceRequest> HaveAppointment(this IQueryable<ServiceRequest> serviceRequests)
+        {
+            return serviceRequests
+                    .Where(d => d.AppointmentDate.HasValue);
         }
         public static IQueryable<ServiceRequest> AreScheduledThisDay(this IQueryable<ServiceRequest> serviceRequests, DateTime day)
         {
@@ -68,9 +73,9 @@ namespace Orvosi.Data.Filters
         {
             return sr => sr.ServiceRequestTasks.Any(srt => srt.AssignedTo == userId);
         }
-        public static IQueryable<ServiceRequest> AreOpen(this IQueryable<ServiceRequest> serviceRequests)
+        public static IQueryable<ServiceRequest> AreNotClosed(this IQueryable<ServiceRequest> serviceRequests)
         {
-            return serviceRequests.Where(sr => !sr.IsClosed);
+            return serviceRequests.Where(sr => sr.ServiceRequestStatusId != ServiceRequestStatuses.Closed);
         }
         public static IQueryable<ServiceRequest> AreAddOns(this IQueryable<ServiceRequest> serviceRequests)
         {

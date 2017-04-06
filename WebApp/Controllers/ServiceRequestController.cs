@@ -178,10 +178,11 @@ namespace WebApp.Controllers
         {
             // Set date range variables used in where conditions
             var dto = db.ServiceRequests
+                .AsExpandable()
                 .AreScheduledThisDay(selectedDate)
                 .AreNotCancellations()
                 .CanAccess(userId, physicianId, roleId)
-                .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase)
                 .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
                 .ToList();
 
@@ -191,7 +192,7 @@ namespace WebApp.Controllers
             var dayViewModel = caseViewModels
                 .GroupBy(c => c.AppointmentDate.Value)
                 .AsQueryable()
-                .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand())
+                .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCases.Expand())
                 .SingleOrDefault();
 
             return PartialView(dayViewModel);
@@ -248,18 +249,17 @@ namespace WebApp.Controllers
                 .CanAccess(userId, physicianId, roleId)
                 .AreNotClosed()
                 .HaveAppointment()
-                .AreNotCancellations()
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(userId))
                 .ToList();
 
             var viewModel = dto
                 .AsQueryable()
-                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+                .Select(CaseLinkViewModel.FromServiceRequestDto.Expand());
 
             var dayViewModel = viewModel
                 .GroupBy(c => c.AppointmentDate.Value)
                 .AsQueryable()
-                .Select(DayViewModel.FromServiceRequestDtoGroupingDto.Expand());
+                .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCaseLinks.Expand());
 
             //var viewModel = dto.Select(sr => new TaskListArgs
             //{

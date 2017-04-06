@@ -62,6 +62,14 @@ namespace WebApp.ViewModels
             ColorCode = e.ColorCode
         };
 
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromNextTaskStatusForUserDto = e => e == null ? null : new LookupViewModel<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromTaskStatusDto = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,

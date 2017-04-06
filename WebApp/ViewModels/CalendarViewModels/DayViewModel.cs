@@ -17,6 +17,7 @@ namespace WebApp.ViewModels.CalendarViewModels
         public string DayName { get; set; }
         public IEnumerable<string> Addresses { get; set; }
         public IEnumerable<string> Companies { get; set; }
+        public IEnumerable<CaseLinkViewModel> CaseLinks { get; set; }
         public IEnumerable<CaseViewModel> Cases { get; set; }
         public TaskStatusSummaryViewModel TaskStatusSummary { get; set; }
 
@@ -26,7 +27,7 @@ namespace WebApp.ViewModels.CalendarViewModels
             TaskStatusSummary = TaskStatusSummaryViewModel.FromServiceRequestTaskEntityGrouping.Invoke(dto)
         };
 
-        public static Expression<Func<IGrouping<DateTime, CaseViewModel>, DayViewModel>> FromServiceRequestDtoGroupingDto = dto => dto == null ? null : new DayViewModel
+        public static Expression<Func<IGrouping<DateTime, CaseViewModel>, DayViewModel>> FromServiceRequestDtoGroupingDtoForCases = dto => dto == null ? null : new DayViewModel
         {
             Day = dto.Key,
             DayName = dto.Key.ToOrvosiLongDateFormat(),
@@ -34,14 +35,14 @@ namespace WebApp.ViewModels.CalendarViewModels
             Addresses = dto.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
             Cases = dto
         };
-        //public static Expression<Func<IGrouping<DateTime, CaseViewModel>, DayViewModel>> FromServiceRequestGroupingDtoWithSummary = dto => dto == null ? null : new DayViewModel
-        //{
-        //    Day = dto.Key,
-        //    DayName = dto.Key.ToOrvosiLongDateFormat(),
-        //    Companies = dto.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct(),
-        //    Addresses = dto.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
-        //    Cases = dto,
-        //    TaskStatusSummary = TaskStatusSummaryViewModel.FromCaseViewModelGrouping.Invoke(dto)
-        //};
+
+        public static Expression<Func<IGrouping<DateTime, CaseLinkViewModel>, DayViewModel>> FromServiceRequestDtoGroupingDtoForCaseLinks = dto => dto == null ? null : new DayViewModel
+        {
+            Day = dto.Key,
+            DayName = dto.Key.ToOrvosiLongDateFormat(),
+            Companies = dto.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct(),
+            Addresses = dto.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
+            CaseLinks = dto
+        };
     }
 }

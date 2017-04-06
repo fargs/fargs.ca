@@ -29,16 +29,6 @@
     }
 }
 
-@*<form action="~/Dashboard/Schedule" method="get">
-        <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
-        <ul class="list-unstyled list-inline">
-            @foreach (var item in Model.TaskFilterViewModel.Tasks)
-            {
-                <li><input type="checkbox" name="selectedTaskTypes" value="@item.Id" @(Model.TaskFilterViewModel.SelectedTaskTypes.Any(taskId => taskId == item.Id) ? "checked" : string.Empty) /> @item.Name</li>
-            }
-            <li><button type="submit" class="btn btn-small">Apply Filter</button></li>
-        </ul>
-    </form>*@
 
 <div id="week-folders" class="panel-group">
 
@@ -57,27 +47,7 @@
     {
         <div class="panel @WeekStyle(weekFolder.Day)">
             <div id="header-weekfolder-@weekFolder.Day.Ticks" class="panel-heading" role="tab">
-                <a role="button" onclick="getWeek('@weekFolder.Day.ToOrvosiDateFormat()', 'week-@weekFolder.Day.Ticks')">
-                    <div class="panel-title">
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-8">
-                                <span>@weekFolder.Day.ToOrvosiDateFormat()</span>
-                            </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.Count > 0 ? "label-default" : "bg-default")"><strong id="count-total">@weekFolder.TaskStatusSummary.Count</strong></span>
-                            </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.ToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.TaskStatusSummary.ToDoCount</strong></span>
-                            </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="waiting-total-label" class="small label @(weekFolder.TaskStatusSummary.WaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.TaskStatusSummary.WaitingCount</strong></span>
-                            </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <span id="onhold-total-label" class="small label @(weekFolder.TaskStatusSummary.OnHoldCount > 0 ? "label-info" : "bg-info")"><strong id="onhold-total">@weekFolder.TaskStatusSummary.OnHoldCount</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                @Html.Partial("~/Views/Dashboard/_WeekSummary.cshtml", weekFolder)
             </div>
             <section id="week-@weekFolder.Day.Ticks" class="panel-collapse collapse"></section>
         </div>
@@ -87,13 +57,18 @@
 @Html.Partial("ModalContainer")
 
 @section Scripts{
+
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+
     <script>
 
-        function getWeek(day, targetId) {
+        function getWeek(day, targetId, expand) {
             let url = '@Url.Content("~/ServiceRequest/ScheduleDateRange")';
 
             var container = $(document.getElementById(targetId));
-            if (!container.hasClass('in')) {
+            if (!container.hasClass('in') || expand) {
                 $.post(url, {
                     DateRange: {
                         StartDate: day,
@@ -104,14 +79,26 @@
                 })
                 .done(function (result) {
                     document.getElementById(targetId).innerHTML = result;
-                    container.collapse('toggle');
+                    container.collapse('show');
                     //joinRoom(serviceRequestId);
                     //refreshValidationResults(serviceRequestId);
                 });
             }
             else {
-                container.collapse('toggle');
+                container.collapse('hide');
             }
+        }
+
+        function getWeekSummary(day, firstDayOfWeekTicks) { // ticks are used to uniquely identify the element to update
+            let url = '@Url.Content("~/Dashboard/WeekSummary")';
+
+            $.get(url, { 
+                startDate: day
+            })
+            .done(function (result) {
+                targetId = 'header-weekfolder-' + firstDayOfWeekTicks;
+                document.getElementById(targetId).innerHTML = result;
+            });
         }
 
         function onToggleNoShow(checkbox, serviceRequestId) {
@@ -154,16 +141,24 @@
         function serviceRequestStatusChanged(serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequest/Case")';
 
+            // refresh the modal
             $.get(url, {
                 serviceRequestId: serviceRequestId,
                 viewOptions: '@ViewTarget.Modal'
             })
             .done(function (result) {
                 document.getElementById('case-container').innerHTML = result;
-            })
-            .always(function () {
-                //loader.hide();
             });
+
+            // get the case details to figure out which week to refresh
+            $.get('@Url.Content("~/api/servicerequest/appointmentdate/")' + serviceRequestId)
+            .done(function (data) {
+                // refresh the case links
+                getWeek(data.FirstDayOfWeek, 'week-' + data.FirstDayOfWeekTicks, true)
+                getWeekSummary(data.FirstDayOfWeek, data.FirstDayOfWeekTicks)
+            });
+
+            // refresh the week counts
         }
 
         function refreshServiceStatus(serviceRequestId) {
@@ -300,8 +295,4 @@
         }
 
     </script>
-
-    <script src="@Url.Content("~/signalr/hubs")"></script>
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 }

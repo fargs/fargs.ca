@@ -411,6 +411,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\AvailableSlotController.cs" />
+    <Compile Include="API\ServiceRequestController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\EmailConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -471,7 +472,6 @@
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\DataHelper.cs" />
-    <Compile Include="Library\DateFilter.cs" />
     <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\EnumExtensions.cs" />
     <Compile Include="Library\Enums.cs" />
@@ -540,6 +540,7 @@
     <Compile Include="ViewModels\CalendarViewModels\DayViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewOptions.cs" />
     <Compile Include="ViewModels\CancellationViewModel.cs" />
+    <Compile Include="ViewModels\CaseLinkViewModel.cs" />
     <Compile Include="ViewModels\CaseViewModel.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
@@ -1266,6 +1267,7 @@
     <Content Include="Views\MVCGrid\_TaskGrid.cshtml" />
     <Content Include="Views\ServiceRequestTask\Components\TaskActionMenu.cshtml" />
     <Content Include="Views\Box\BoxJS.cshtml" />
+    <Content Include="Views\Dashboard\_WeekSummary.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -21,10 +21,10 @@ namespace WebApp.Models
             return tasks
                 .Where(srt => srt.AssignedToId == userId);
         }
-        public static IEnumerable<TaskDto> AreEffectiveBetween(this IEnumerable<TaskDto> tasks, DateFilter range)
+        public static IEnumerable<TaskDto> AreEffectiveBetween(this IEnumerable<TaskDto> tasks, DateFilterArgs range)
         {
             var startDate = range.StartDate.Date;
-            var endDate = range.EndDate.Date.AddDays(1);
+            var endDate = range.EndDate.Value.AddDays(1);
             return tasks.Where(s => s.EffectiveDate.HasValue && s.EffectiveDate.Value >= startDate && s.EffectiveDate.Value < endDate);
         }
         public static IEnumerable<TaskDto> AreDueBetween(this IEnumerable<TaskDto> tasks, DateFilterArgs range)

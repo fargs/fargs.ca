@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <table class="table table-condensed">
-                    @foreach (var item in day.Cases)
+                    @foreach (var item in day.CaseLinks)
                     {
                         <tr>
                             @Html.Partial("CaseLink", item, viewData)   

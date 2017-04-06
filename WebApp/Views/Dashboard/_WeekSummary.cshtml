@@ -1,0 +1,27 @@
+﻿@using WebApp.ViewModels.CalendarViewModels
+@model DayViewModel
+
+@{ 
+    var weekFolder = Model;
+}
+<a role="button" onclick="getWeek('@weekFolder.Day.ToOrvosiDateFormat()', 'week-@weekFolder.Day.Ticks')">
+    <div class="panel-title">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                <span>@weekFolder.Day.ToOrvosiDateFormat()</span>
+            </div>
+            <div class="col-xs-12 col-sm-1 text-center">
+                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.Count > 0 ? "label-default" : "bg-default")"><strong id="count-total">@weekFolder.TaskStatusSummary.Count</strong></span>
+            </div>
+            <div class="col-xs-12 col-sm-1 text-center">
+                <span id="todo-total-label" class="small label @(weekFolder.TaskStatusSummary.ToDoCount > 0 ? "label-danger" : "bg-danger")"><strong id="todo-total">@weekFolder.TaskStatusSummary.ToDoCount</strong></span>
+            </div>
+            <div class="col-xs-12 col-sm-1 text-center">
+                <span id="waiting-total-label" class="small label @(weekFolder.TaskStatusSummary.WaitingCount > 0 ? "label-warning" : "bg-warning")"><strong id="waiting-total">@weekFolder.TaskStatusSummary.WaitingCount</strong></span>
+            </div>
+            <div class="col-xs-12 col-sm-1 text-center">
+                <span id="onhold-total-label" class="small label @(weekFolder.TaskStatusSummary.OnHoldCount > 0 ? "label-info" : "bg-info")"><strong id="onhold-total">@weekFolder.TaskStatusSummary.OnHoldCount</strong></span>
+            </div>
+        </div>
+    </div>
+</a>

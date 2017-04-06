@@ -22,6 +22,7 @@ using WebApp.ViewModels.CalendarViewModels;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using FluentDateTime;
+using System.Collections.Generic;
 
 namespace WebApp.Controllers
 {
@@ -53,13 +54,48 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Schedule(TaskListArgs args)
         {
             var data = db.ServiceRequests
-                .CanAccess(userId, physicianId, roleId)
-                .AreNotClosed()
-                .HaveAppointment()
-                .AreNotCancellations()
-                .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
-                .ToList();
+                            .CanAccess(userId, physicianId, roleId)
+                            .AreNotClosed()
+                            .HaveAppointment()
+                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
+                            .ToList();
 
+            IEnumerable<DayViewModel> viewModel = BuildScheduleViewModel(data);
+
+            ViewData.TaskListArgs_Set(args);
+
+            // otherwise create a view model and load the due dates page.
+            var vm = new ViewModels.DashboardViewModels.ScheduleViewModel();
+            vm.WeekFolders = viewModel;
+
+            // return the Due Dates view
+            return PartialView("Schedule", vm);
+        }
+
+        [AuthorizeRole(Feature = Features.Work.Schedule)]
+        public async Task<ActionResult> WeekSummary(DateTime startDate)
+        {
+            var dateRange = new DateFilterArgs
+            {
+                StartDate = startDate,
+                FilterType = DateFilterType.Week
+            }; 
+
+            var data = db.ServiceRequests
+                            .AreScheduledBetween(dateRange.StartDate, dateRange.EndDate.Value)
+                            .CanAccess(userId, physicianId, roleId)
+                            .AreNotClosed()
+                            .HaveAppointment()
+                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
+                            .ToList();
+
+            IEnumerable<DayViewModel> viewModel = BuildScheduleViewModel(data);
+
+            return PartialView("_WeekSummary", viewModel.FirstOrDefault());
+        }
+
+        private IEnumerable<DayViewModel> BuildScheduleViewModel(List<ServiceRequestDto> data)
+        {
             var dayViewModels = data
                 .GroupBy(srt => srt.AppointmentDate.Value)
                 .Select(c => new DayViewModel
@@ -91,15 +127,7 @@ namespace WebApp.Controllers
                         DoneCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.OnHoldCount)
                     }
                 };
-
-            ViewData.TaskListArgs_Set(args);
-
-            // otherwise create a view model and load the due dates page.
-            var vm = new ViewModels.DashboardViewModels.ScheduleViewModel();
-            vm.WeekFolders = viewModel;
-
-            // return the Due Dates view
-            return PartialView("Schedule", vm);
+            return viewModel;
         }
 
         [AuthorizeRole(Feature = Features.Work.Additionals)]

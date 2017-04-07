@@ -10,9 +10,12 @@ using Orvosi.Data;
 using System.Configuration;
 using WebApp.Library;
 using System.Linq;
+using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Library.Filters;
 
 namespace WebApp.Controllers
 {
+    [AuthorizeRole(Feature = Features.ServiceRequest_Box.ManageBoxFolder)]
     public class BoxTokenManagerController : Controller
     {
         private string clientId;

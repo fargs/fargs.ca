@@ -27,8 +27,8 @@
                     if (Model.BoxFolder.Name != Model.ExpectedFolderName)
                     {
                         <div class="text-danger">Expected folder name: @Model.ExpectedFolderName</div>
-                        <form action="~/ServiceRequest/UpdateBoxCaseFolderName?serviceRequestId=@Model.ServiceRequestId" method="post">
-                            <button type="submit" class="btn btn-danger">Update Case Folder Name</button>
+                        <form onclick="updateBoxCaseFolderName(@Model.ServiceRequestId)">
+                            <button type="button" class="btn btn-danger">Update Case Folder Name</button>
                         </form>
                     }
                 }
@@ -37,8 +37,8 @@
                     if (features.Contains(Features.ServiceRequest_Box.CreateFolder))
                     {
                         <div>
-                            <form action="~/ServiceRequest/CreateBoxCaseFolder?ServiceRequestId=@Model.ServiceRequestId" method="post">
-                                <button type="submit" class="btn btn-primary">Create Case Folder</button>
+                            <form onclick="createBoxCaseFolder(@Model.ServiceRequestId)">
+                                <button type="button" class="btn btn-primary">Create Case Folder</button>
                             </form>
                         </div>
                     }
@@ -60,12 +60,12 @@
                             }
                             else if (item.BoxFolder == null)
                             {
-                            <form action="~/ServiceRequest/ShareBoxFolder" method="post">
+                            <form onclick="shareBoxFolder(this)">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
                                 @Html.Hidden("UserId", item.Resource.Id)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary">Share</button>
+                                <button type="button" class="btn btn-sm btn-primary">Share</button>
                             </form>
                             }
                             else if (item.BoxFolder != null && item.Resource.ServiceRequestBoxCollaborations.FirstOrDefault(b => b.ServiceRequestId == Model.ServiceRequestId) != null)
@@ -76,30 +76,30 @@
                                     var collaboration = Model.BoxFolderCollaborations.SingleOrDefault(c => c.Id == boxCollaboration.BoxCollaborationId);
                                     if (collaboration != null)
                                     {
-                            <form action="~/ServiceRequest/UnshareBoxFolder" method="post" class="pull-left">
+                            <form onclick="unshareBoxFolder(this)" class="pull-left">
                                 @Html.Hidden("CollaborationId", boxCollaboration.BoxCollaborationId)
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="@string.Format("Box Collaboration Id: {0}", collaboration.Id)">Unshare</button>
                             </form>
                                         if (item.BoxFolder.SyncState == "synced")
                                         {
-                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
+                            <form onclick="unsyncBoxFolder(this)" class="pull-left">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
                                 @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
                             </form>
                                         }
                                         else
                                         {
-                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
+                            <form onclick="syncBoxFolder(this)" class="pull-left">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
                                 @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
                             </form>
                                         }
                                     }
@@ -114,22 +114,22 @@
                             <span class="small">&nbsp;Already has higher level access.</span>
                                 if (item.BoxFolder.SyncState == "synced")
                                 {
-                            <form action="~/ServiceRequest/UnsyncBoxFolder" method="post" class="pull-left">
+                            <form onclick="unsyncBoxFolder(this)" class="pull-left">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
                                 @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="This removes the folder from the users BoxSync folder but it is still accessible from the box website.">Unsync</button>
                             </form>
                                 }
                                 else
                                 {
-                            <form action="~/ServiceRequest/SyncBoxFolder" method="post" class="pull-left">
+                            <form onclick="syncBoxFolder(this)" class="pull-left">
                                 @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
                                 @Html.Hidden("FolderId", Model.BoxFolder.Id)
                                 @Html.Hidden("BoxUserId", item.Resource.BoxUserId)
                                 &nbsp;
-                                <button type="submit" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
+                                <button type="button" class="btn btn-sm btn-primary" title="This syncs the folder to the users computer using BoxSync">Sync</button>
                             </form>
                                 }
                             }

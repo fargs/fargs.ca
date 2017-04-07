@@ -119,7 +119,7 @@ namespace WebApp.Library
             }
             catch (BoxException e)
             {
-                if (e.Error.Code == "not_found")
+                if (e.Error.Code == "not_found" || e.Error.Name == "invalid_grant")
                 {
                     return null;
                 }

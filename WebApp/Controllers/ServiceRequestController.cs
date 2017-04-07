@@ -1364,6 +1364,7 @@ namespace WebApp.Controllers
                 }
                 else
                 {
+                    // this should catch errors from box and handle user accounts that have been removed from box.
                     boxResource.BoxFolder = await box.GetFolder(serviceRequest.BoxCaseFolderId, resource.BoxUserId);
                 }
                 resources.Add(boxResource);
@@ -1392,16 +1393,16 @@ namespace WebApp.Controllers
             var caseFolder = box.RenameCaseFolder(serviceRequest.BoxCaseFolderId, serviceRequest.CaseFolderName);
             
             // Redirect to display the Box Folder
-            return RedirectToAction("Details", new { serviceRequestId = serviceRequestId });
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.CreateFolder)]
-        public ActionResult CreateBoxCaseFolder(int ServiceRequestId)
+        public ActionResult CreateBoxCaseFolder(int serviceRequestId)
         {
             // Get the request
             var serviceRequest = db.ServiceRequests
-                .WithId(ServiceRequestId)
+                .WithId(serviceRequestId)
                 .Select(ServiceRequestProjections.ForBoxManager())
                 .Single();
 
@@ -1432,12 +1433,12 @@ namespace WebApp.Controllers
             }
 
             // Persist the new case folder Id to the database.
-            var sr = db.ServiceRequests.Find(ServiceRequestId);
+            var sr = db.ServiceRequests.Find(serviceRequestId);
             sr.BoxCaseFolderId = caseFolder.Id;
             db.SaveChanges();
 
             // Redirect to display the Box Folder
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
         [HttpPost]
@@ -1468,7 +1469,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.RemoveCollaborator)]
-        public ActionResult UnshareBoxFolder(int ServiceRequestId, string CollaborationId)
+        public ActionResult UnshareBoxFolder(int serviceRequestId, string CollaborationId)
         {
 
             var box = new BoxManager();
@@ -1480,11 +1481,10 @@ namespace WebApp.Controllers
                 db.ServiceRequestBoxCollaborations.Remove(collaboration);
                 db.SaveChanges();
             }
-            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
-
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
-        public ActionResult AcceptBoxFolder(int ServiceRequestId, Guid UserId, string CollaborationId)
+        public ActionResult AcceptBoxFolder(int serviceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
 
@@ -1492,25 +1492,25 @@ namespace WebApp.Controllers
             boxUserId = user.BoxUserId;
             var box = new BoxManager();
             var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
-            return RedirectToAction("Details", new { id = ServiceRequestId });
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
-        public ActionResult UnsyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
+        public ActionResult UnsyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
-            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
-        public ActionResult SyncBoxFolder(int ServiceRequestId, string FolderId, string BoxUserId)
+        public ActionResult SyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
-            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
+            return Json(new { serviceRequestId = serviceRequestId });
         }
 
         #endregion

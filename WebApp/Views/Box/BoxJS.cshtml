@@ -6,8 +6,26 @@
             serviceRequestId: serviceRequestId
         });
     }
+    function updateBoxCaseFolderName(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/UpdateBoxCaseFolderName")';
+        boxExecute(url, {
+            serviceRequestId: serviceRequestId
+        });
+    }
     function shareBoxFolder(serviceRequestId) {
         let url = '@Url.Content("~/ServiceRequest/ShareBoxFolder")';
+        boxExecute(url, form.serialize());
+    }
+    function unshareBoxFolder(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/UnshareBoxFolder")';
+        boxExecute(url, form.serialize());
+    }
+    function syncBoxFolder(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/SyncBoxFolder")';
+        boxExecute(url, form.serialize());
+    }
+    function unsyncBoxFolder(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/UnsyncBoxFolder")';
         boxExecute(url, form.serialize());
     }
     function boxExecute(url, params) {

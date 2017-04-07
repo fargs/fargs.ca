@@ -54,10 +54,8 @@
         <input type="date" required value="@Model.SelectedDate.ToOrvosiDateFormat()" onchange="window.location.href='@Url.Content("~/Dashboard/Agenda?selectedDate=")' + this.value" />
         <a href="@Model.Links["Now"]">@ViewText(view)</a>
     </div>
-    <div style="flex:1 1 auto;">
-        <h4>@Model.SelectedDate.ToString(ViewDateFormat(view))</h4>
-    </div>
-    <div>
+    <h4 style="align-self: flex-end;">@Model.SelectedDate.ToString(ViewDateFormat(view))</h4>
+    <div style="display:none;">
         <div class="btn-group">
             <a href="@Model.Links["Year"]" class="btn btn-default @IsActive(CalendarViewOptions.Year, view)">Year</a>
             <a href="@Model.Links["Month"]" class="btn btn-default @IsActive(CalendarViewOptions.Month, view)">Month</a>

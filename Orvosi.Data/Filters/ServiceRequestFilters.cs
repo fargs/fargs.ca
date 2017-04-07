@@ -17,11 +17,7 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<ServiceRequest> CanAccess(this IQueryable<ServiceRequest> query, Guid userId, Guid? physicianId, Guid roleId)
         {
-            if (roleId == AspNetRoles.SuperAdmin)
-            {
-                return query;
-            }
-            else if (roleId == AspNetRoles.Physician) // physicians should see all there cases
+            if (roleId == AspNetRoles.Physician) // physicians should see all there cases
             {
                 query = query.ForPhysician(userId);
             }
@@ -29,7 +25,11 @@ namespace Orvosi.Data.Filters
             {
                 query = query.ForPhysician(physicianId.Value);
             }
-            else // non physician users see cases where tasks are assigned to them
+            else if (roleId == AspNetRoles.SuperAdmin)
+            {
+                return query;
+            }
+            else// non physician users see cases where tasks are assigned to them
             {
                 query = query.AreAssignedToUser(userId);
             }
@@ -58,7 +58,6 @@ namespace Orvosi.Data.Filters
             now = now.Date.AddDays(1);
             return serviceRequests.Where(s => (s.AppointmentDate.HasValue ? s.AppointmentDate.Value : new DateTime(1900,01,01)) <= now); // this filters out the days
         }
-
         public static IQueryable<ServiceRequest> AreScheduledBetween(this IQueryable<ServiceRequest> serviceRequests, DateTime startDate, DateTime endDate)
         {
             return serviceRequests

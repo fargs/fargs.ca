@@ -31,7 +31,7 @@ namespace WebApp.Controllers
     {
         public ActionResult Index()
         {
-            return RedirectToAction("Agenda");
+            return RedirectToAction("DueDates");
         }
 
         [AuthorizeRole(Feature = Features.Work.Agenda)]

@@ -16,7 +16,7 @@
     }
     @if (features.Contains(Features.Work.DueDates))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Tasks <strong id="urgenttaskcount-container" class="label label-danger"></strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a id="urgenttaskcount-container" href="~/Dashboard/DueDates?@(Request.QueryString)">Tasks <i id="urgenttaskcount-container-icon"></i></a></li>
     }
     @if (features.Contains(Features.Work.Schedule))
     {
@@ -24,7 +24,7 @@
     }
     @if (features.Contains(Features.Work.Additionals))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong id="additionalcount-container" class="label label-info"></strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a id="additionalcount-container" href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <i id="additionalcount-container-icon"></i></a></li>
     }
 </ul>
 <section class="tab-content">
@@ -58,13 +58,19 @@
         $.get('@Url.Content("~/api/servicerequesttask/urgenttaskcount")')
             .done(function (data) {
                 if (data > 0)
-                    document.getElementById('urgenttaskcount-container').innerHTML = '!';
+                {
+                    document.getElementById('urgenttaskcount-container').className += 'text-danger';
+                    document.getElementById('urgenttaskcount-container-icon').className += 'fa fa-exclamation text-danger';
+                }
             });
 
         $.get('@Url.Content("~/api/servicerequest/additionalcount")')
             .done(function (data) {
                 if (data > 0)
-                    document.getElementById('additionalcount-container').innerHTML = '!';
+                {
+                    document.getElementById('additionalcount-container').className += 'text-danger';
+                    document.getElementById('additionalcount-container-icon').className += 'fa fa-exclamation text-danger';
+                }
             });
     </script>
 

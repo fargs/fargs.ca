@@ -1422,6 +1422,7 @@
     <Content Include="Views\Shared\_Initials2.cshtml" />
     <Content Include="Views\Shared\_TaskStatusLabel2.cshtml" />
     <Content Include="Views\Shared\_ServiceStatusLabel2.cshtml" />
+    <Content Include="Views\Shared\_Loader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

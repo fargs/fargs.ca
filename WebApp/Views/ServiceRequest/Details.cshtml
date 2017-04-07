@@ -23,7 +23,9 @@
                 @Html.Partial("Case", Model, viewData)
             </div>
             <hr />
-            <div id="box-container"></div>
+            @Html.Partial("_loader", "box-loader")
+            <div id="box-container">
+            </div>
             <hr />
             <div id="google-calendar-container"></div>
         </div>
@@ -225,12 +227,17 @@
             }
 
             function boxInfoChanged() {
+                var loader = $('#box-loader');
+                loader.show();
                 $.get('@Url.Content("~/ServiceRequest/BoxManager")',
                     {
                         serviceRequestId: serviceRequestId
                     })
                     .done(function (result) {
                         document.getElementById('box-container').innerHTML = result;
+                    })
+                    .always(function() {
+                        loader.hide();
                     });
             }
 

@@ -12,26 +12,32 @@
             serviceRequestId: serviceRequestId
         });
     }
-    function shareBoxFolder(serviceRequestId) {
+    function shareBoxFolder(form) {
         let url = '@Url.Content("~/ServiceRequest/ShareBoxFolder")';
-        boxExecute(url, form.serialize());
+        boxExecute(url, $(form).serialize());
     }
-    function unshareBoxFolder(serviceRequestId) {
+    function unshareBoxFolder(form) {
         let url = '@Url.Content("~/ServiceRequest/UnshareBoxFolder")';
-        boxExecute(url, form.serialize());
+        boxExecute(url, $(form).serialize());
     }
-    function syncBoxFolder(serviceRequestId) {
+    function syncBoxFolder(form) {
         let url = '@Url.Content("~/ServiceRequest/SyncBoxFolder")';
-        boxExecute(url, form.serialize());
+        boxExecute(url, $(form).serialize());
     }
-    function unsyncBoxFolder(serviceRequestId) {
+    function unsyncBoxFolder(form) {
         let url = '@Url.Content("~/ServiceRequest/UnsyncBoxFolder")';
-        boxExecute(url, form.serialize());
+        boxExecute(url, $(form).serialize());
     }
     function boxExecute(url, params) {
+
+        var loader = $('#box-loader');
+        loader.show();
         $.post(url, params)
             .done(function (data) {
                 boxInfoChanged(serviceRequestId);
+            })
+            .always(function (data) {
+                loader.hide();
             });
     }
 </script>

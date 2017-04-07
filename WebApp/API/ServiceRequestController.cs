@@ -15,14 +15,8 @@ using FluentDateTime;
 
 namespace WebApp.API
 {
-    public class ServiceRequestController: ApiController
+    public class ServiceRequestController: BaseController
     {
-        private OrvosiDbContext db;
-
-        public ServiceRequestController()
-        {
-            db = ContextPerRequest.db;
-        }
 
         /// <summary>
         /// View References:
@@ -49,6 +43,18 @@ namespace WebApp.API
                 FirstDayOfWeek = result.AppointmentDate.Value.FirstDayOfWeek(),
                 FirstDayOfWeekTicks = result.AppointmentDate.Value.FirstDayOfWeek().Ticks
             });
+        }
+
+        [HttpGet]
+        public IHttpActionResult AdditionalCount()
+        {
+            var count = db.ServiceRequests
+                .CanAccess(userId, physicianId, roleId)
+                .AreNotClosed()
+                .HaveNoAppointment()
+                .Count();
+
+            return Ok(count);
         }
 
     }

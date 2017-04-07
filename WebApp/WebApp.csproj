@@ -411,7 +411,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\AvailableSlotController.cs" />
+    <Compile Include="API\BaseController.cs" />
     <Compile Include="API\ServiceRequestController.cs" />
+    <Compile Include="API\ServiceRequestTaskController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\EmailConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -1427,6 +1429,7 @@
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\Home\" />
     <Folder Include="Views\ServiceRequestHub\" />
   </ItemGroup>

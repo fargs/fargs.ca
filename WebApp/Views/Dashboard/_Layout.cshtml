@@ -12,19 +12,19 @@
 <ul class="nav nav-tabs">
     @if (features.Contains(Features.Work.Agenda))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda <strong>(@Html.Action("RefreshAgendaSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"], day = Request.QueryString["day"] }))</strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda</a></li>
     }
     @if (features.Contains(Features.Work.DueDates))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Tasks <strong>(@Html.Action("RefreshDueDateSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "DueDates")"><a href="~/Dashboard/DueDates?@(Request.QueryString)">Tasks <strong id="urgenttaskcount-container" class="label label-danger"></strong></a></li>
     }
     @if (features.Contains(Features.Work.Schedule))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule <strong>(@Html.Action("RefreshScheduleSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Schedule")"><a href="~/Dashboard/Schedule?@(Request.QueryString)">Schedule</a></li>
     }
     @if (features.Contains(Features.Work.Additionals))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong>(@Html.Action("RefreshAdditionalsSummaryCount", new { serviceProviderId = Request.QueryString["serviceProviderId"] }))</strong></a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Additionals")"><a href="~/Dashboard/Additionals?@(Request.QueryString)">Additionals <strong id="additionalcount-container" class="label label-info"></strong></a></li>
     }
 </ul>
 <section class="tab-content">
@@ -54,8 +54,20 @@
                 }
             }, this);
         }
+
+        $.get('@Url.Content("~/api/servicerequesttask/urgenttaskcount")')
+            .done(function (data) {
+                if (data > 0)
+                    document.getElementById('urgenttaskcount-container').innerHTML = '!';
+            });
+
+        $.get('@Url.Content("~/api/servicerequest/additionalcount")')
+            .done(function (data) {
+                if (data > 0)
+                    document.getElementById('additionalcount-container').innerHTML = '!';
+            });
     </script>
 
 @RenderSection("scripts", required: false)
-    <script src="@Url.Content("~/signalr/hubs")"></script>
+
 }

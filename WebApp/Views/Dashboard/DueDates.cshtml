@@ -286,35 +286,35 @@
         function tasklistChanged(serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
-            $.get(url, {
-                serviceRequestId: serviceRequestId,
-                viewOptions: '@ViewTarget.Modal',
-                options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
-            })
-            .done(function (result) {
-                document.getElementById('tasklist-container').innerHTML = result;
-            })
-            .always(function () {
-                //loader.hide();
-            });
-
+            let container = document.getElementById('tasklist-container');
+            if (container) {
+                $.get(url, {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@ViewTarget.Modal',
+                    options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container').innerHTML = result;
+                })
+            }
             MVCGrid.reloadGrid('TaskGrid');
         }
 
         function serviceRequestStatusChanged(serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequest/Case")';
 
-            $.get(url, {
-                serviceRequestId: serviceRequestId,
-                viewOptions: '@ViewTarget.Modal'
-            })
-            .done(function (result) {
-                document.getElementById('case-container').innerHTML = result;
-            })
-            .always(function () {
-                //loader.hide();
-            });
+            let container = document.getElementById('case-container');
+            if (container)
+            {
+                $.get(url, {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@ViewTarget.Modal'
+                })
+                .done(function (result) {
 
+                    document.getElementById('case-container').innerHTML = result;
+                })
+            }
             MVCGrid.reloadGrid('TaskGrid');
         }
 

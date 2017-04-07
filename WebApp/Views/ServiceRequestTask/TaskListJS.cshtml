@@ -69,8 +69,6 @@
         ).done(function (data) {
             taskChanged(data.id, data.serviceRequestId);
             tasklistChanged(data.serviceRequestId);
-            serviceRequestStatusChanged(data.serviceRequestId);
-            showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
         });
     }
 

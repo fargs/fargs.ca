@@ -165,9 +165,9 @@
                                     <label>
                                         <input id="task-checkbox-@task.Id" type="checkbox"
                                                name="isChecked"
-                                               value="@(task.StatusId == TaskStatuses.Done)"
-                                               @(task.StatusId == TaskStatuses.Done ? "checked" : "")
-                                               @(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")
+                                               value="@(task.StatusId == TaskStatuses.Done || task.StatusId == TaskStatuses.Archive)"
+                                               @(task.StatusId == TaskStatuses.Done || task.StatusId == TaskStatuses.Archive ? "checked" : "")
+                                               @*@(task.StatusId == TaskStatuses.Waiting || task.StatusId == TaskStatuses.Obsolete ? "disabled" : "")*@
                                                onclick="toggleCompleted(this)">
                                     </label>
                                 </span>

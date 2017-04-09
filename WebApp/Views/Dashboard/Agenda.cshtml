@@ -1,17 +1,36 @@
-﻿@{
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewModels.CalendarViewModels
+@model DayViewModel
+@{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
 }
-
-
 
 @Html.Action("CalendarNavigation")
 
-@Html.Action("Agenda", "ServiceRequest", new { selectedDate = ViewData["selectedDate"] })
+@Html.Partial("~/Views/ServiceRequest/Agenda.cshtml", Model)
 
-
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
 
 @section Scripts {
+
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+
+    @if (Model != null)
+    {
+        var ids = Model.Cases.Any() ? Model.Cases.Select(c => c.ServiceRequestId).ToArray() : new int[0];
+        <span>
+            @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = ids })
+        </span>
+    }
 
     <script>
 
@@ -125,10 +144,4 @@
         }
 
     </script>
-
-    <script src="@Url.Content("~/signalr/hubs")"></script>
-    
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 }

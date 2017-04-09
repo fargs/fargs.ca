@@ -13,6 +13,10 @@ namespace WebApp.ViewModels.CalendarViewModels
 {
     public class DayViewModel
     {
+        public DayViewModel()
+        {
+            Cases = new List<CaseViewModel>();
+        }
         public DateTime Day { get; set; }
         public string DayName { get; set; }
         public IEnumerable<string> Addresses { get; set; }

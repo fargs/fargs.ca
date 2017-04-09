@@ -37,8 +37,27 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Work.Agenda)]
         public ActionResult Agenda(DateTime? selectedDate)
         {
-            ViewData["selectedDate"] = selectedDate.GetValueOrDefault(SystemTime.Now()).ToOrvosiDateFormat();
-            return View();
+            var date = selectedDate.GetValueOrDefault(SystemTime.Now()).Date;
+            // Set date range variables used in where conditions
+            var dto = db.ServiceRequests
+                .AsExpandable()
+                .AreScheduledThisDay(date)
+                .AreNotCancellations()
+                .CanAccess(userId, physicianId, roleId)
+                .Select(ServiceRequestDto.FromServiceRequestEntityForCase)
+                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
+                .ToList();
+            
+            var caseViewModels = dto.AsQueryable()
+                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+
+            var dayViewModel = caseViewModels
+                .GroupBy(c => c.AppointmentDate.Value)
+                .AsQueryable()
+                .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCases.Expand())
+                .SingleOrDefault();
+
+            return View(dayViewModel);
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
@@ -202,9 +221,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
         public async Task<ActionResult> RefreshNote(int serviceRequestId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var note = await context.ServiceRequests.FindAsync(serviceRequestId);
-            return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
+            var note = await db.ServiceRequests.FindAsync(serviceRequestId);
+            return PartialView("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
         }
 
 

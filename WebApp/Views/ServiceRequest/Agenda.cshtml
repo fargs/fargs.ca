@@ -70,7 +70,7 @@
             </div>
             <div class="col-md-2 o-dashboard-td">
                 <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                @Html.Partial("_Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
+                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
             </div>
             <div class="col-md-5 o-dashboard-td">
                 @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
@@ -84,7 +84,4 @@ else
     <p></p>
     <p><strong> No assessments today</strong></p>
 }
-
-@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
-
 

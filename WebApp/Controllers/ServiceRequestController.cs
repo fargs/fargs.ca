@@ -1667,11 +1667,39 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> UpdateAssessmentDayTaskStatuses(int serviceRequestId)
+        {
+            var service = new WorkService(db, User.Identity);
+
+            await service.UpdateAssessmentDayTaskStatus(serviceRequestId);
+
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)
         {
             var service = new WorkService(db, User.Identity);
 
             await service.UpdateDependentTaskStatuses(serviceRequestId);
+
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> UpdateServiceRequestStatuses(int serviceRequestId)
+        {
+            var service = new WorkService(db, User.Identity);
+
+            await service.UpdateServiceRequestStatus(serviceRequestId);
 
             return Json(new
             {

@@ -173,7 +173,9 @@
                                     <li>@Html.ActionLink("AspNetRoles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
                                     <li class="divider"></li>
                                     <li><a href="http://orvosi-hangfire.azurewebsites.net/522b64d4-53c7-450f-85b1-a82191a33704">Hangfire</a></li>
-                                    <li><a onclick="updateAllWorkStatuses()">Update All Task Statuses</a></li>
+                                    <li><a onclick="updateAssessmentDayTaskStatuses()">Update Assessment Day Task Statuses</a></li>
+                                    <li><a onclick="updateTaskStatuses()">Update Task Statuses</a></li>
+                                    <li><a onclick="updateServiceRequestStatuses()">Update Service Request Statuses</a></li>
                                 </ul>
                             </li>
                         }
@@ -301,10 +303,67 @@
     </script>
 
     <script type="text/javascript">
-        function updateAllWorkStatuses() {
+
+        function updateAssessmentDayTaskStatuses() {
+            let urlIds = '@Url.Content("~/ServiceRequest/GetAllServiceRequestIds")';
+            let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateAssessmentDayTaskStatuses")';
+
+            let adminMessages = document.getElementById('admin-tasks-messages');
+            $.get(urlIds)
+                .done(function (data) {
+                    for (var i = 0; i < data.length - 1; i++) {
+                        $.post(urlUpdate, { serviceRequestId: data[i] })
+                            .done(function (data) {
+                                $(adminMessages).append('<div class="text-success">Assessment day task status success ' + data.serviceRequestId + '</div>');
+                            })
+                            .error(function () {
+                                $(adminMessages).append('<div class="alert alert-danger">Assessment day task status error</div>');
+                            });
+                    }
+                });
+        }
+
+        function updateTaskStatuses() {
             let urlIds = '@Url.Content("~/ServiceRequest/GetAllServiceRequestIds")';
             let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateDependentTaskStatuses")';
-            let urlRequestUpdate = '@Url.Content("~/ServiceRequest/UpdateServiceRequestStatus")';
+
+            let adminMessages = document.getElementById('admin-tasks-messages');
+            $.get(urlIds)
+                .done(function (data) {
+                    for (var i = 0; i < data.length - 1; i++) {
+                        $.post(urlUpdate, { serviceRequestId: data[i] })
+                            .done(function (data) {
+                                $(adminMessages).append('<div class="text-success">Task status success ' + data.serviceRequestId + '</div>');
+                            })
+                            .error(function () {
+                                $(adminMessages).append('<div class="alert alert-danger">Task status error</div>');
+                            });
+                    }
+                });
+        }
+
+        function updateServiceRequestStatuses() {
+            let urlIds = '@Url.Content("~/ServiceRequest/GetAllServiceRequestIds")';
+            let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateServiceRequestStatuses")';
+
+            let adminMessages = document.getElementById('admin-tasks-messages');
+            $.get(urlIds)
+                .done(function (data) {
+                    for (var i = 0; i < data.length - 1; i++) {
+                        $.post(urlUpdate, { serviceRequestId: data[i] })
+                            .done(function (data) {
+                                $(adminMessages).append('<div class="text-success">Service request status success ' + data.serviceRequestId + '</div>');
+                            })
+                            .error(function () {
+                                $(adminMessages).append('<div class="alert alert-danger">Service request status error</div>');
+                            });
+                    }
+                });
+        }
+
+        function updateAllWorkStatuses() {
+
+
             let adminMessages = document.getElementById('admin-tasks-messages');
             $.get(urlIds)
                 .done(function (data) {
@@ -312,13 +371,13 @@
                         $.post(urlUpdate, { serviceRequestId: data[i] })
                             .done(function (data) {
                                 $(adminMessages).append('<div class="text-success">tasks success ' + data.serviceRequestId + '</div>');
-                                //$.post(urlRequestUpdate, { serviceRequestId: data.serviceRequestId })
-                                //    .done(function (data) {
-                                //        $(adminMessages).append('<div class="text-success">request success ' + data.serviceRequestId + '</div>');
-                                //    })
-                                //    .error(function () {
-                                //        $(adminMessages).append('<div class="alert alert-danger">request error</div>');
-                                //    });
+                                $.post(urlRequestUpdate, { serviceRequestId: data.serviceRequestId })
+                                    .done(function (data) {
+                                        $(adminMessages).append('<div class="text-success">request success ' + data.serviceRequestId + '</div>');
+                                    })
+                                    .error(function () {
+                                        $(adminMessages).append('<div class="alert alert-danger">request error</div>');
+                                    });
                             })
                             .error(function () {
                                 $(adminMessages).append('<div class="alert alert-danger">tasks error</div>');

@@ -220,7 +220,7 @@ namespace WebApp.Models
                     .Select(srt => new TaskDto
                     {
                         Id = srt.Id,
-                        TaskStatusId = srt.TaskStatusId.Value
+                        TaskStatusId = srt.TaskStatusId
                     })
         };
 

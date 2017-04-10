@@ -81,7 +81,6 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
-        System.Data.Entity.DbSet<Sysdiagram> Sysdiagrams { get; set; } // sysdiagrams
         System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time

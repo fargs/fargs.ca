@@ -76,6 +76,7 @@ namespace Orvosi.Data
             HasOptional(a => a.OTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_Task
             HasOptional(a => a.ServiceRequestTemplateTask).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestTemplateTaskId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_ServiceRequestTemplateTask
             HasRequired(a => a.ServiceRequest).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.ServiceRequestId); // FK_ServiceRequestTask_ServiceRequest
+            HasRequired(a => a.TaskStatu).WithMany(b => b.ServiceRequestTasks).HasForeignKey(c => c.TaskStatusId).WillCascadeOnDelete(false); // FK_ServiceRequestTask_TaskStatus
             HasMany(t => t.Parent).WithMany(t => t.Child).Map(m =>
             {
                 m.ToTable("ServiceRequestTaskDependent", "dbo");

@@ -50,7 +50,7 @@ namespace WebApp.Models
             Sequence = srt.Sequence.Value,
             AssignedToId = srt.AssignedTo,
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
-            TaskStatusId = srt.TaskStatusId.Value,
+            TaskStatusId = srt.TaskStatusId,
             ResponsibleRoleId = srt.ResponsibleRoleId,
             ResponsibleRoleName = srt.ResponsibleRoleName,
             IsCriticalPath = srt.IsCriticalPath,
@@ -70,7 +70,7 @@ namespace WebApp.Models
             Sequence = srt.Sequence.Value,
             AssignedToId = srt.AssignedTo,
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
-            TaskStatusId = srt.TaskStatusId.Value,
+            TaskStatusId = srt.TaskStatusId,
             ResponsibleRoleId = srt.ResponsibleRoleId,
             ResponsibleRoleName = srt.ResponsibleRoleName,
             IsCriticalPath = srt.IsCriticalPath,
@@ -85,7 +85,7 @@ namespace WebApp.Models
             TaskId = srt.TaskId.Value,
             Name = srt.OTask.Name,
             ShortName = srt.OTask.ShortName,
-            TaskStatusId = srt.TaskStatusId.Value,
+            TaskStatusId = srt.TaskStatusId,
             DueDate = srt.DueDate
         };
     }

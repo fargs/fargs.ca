@@ -70,6 +70,7 @@ namespace Orvosi.Data
         public virtual OTask OTask { get; set; } // FK_ServiceRequestTask_Task
         public virtual ServiceRequest ServiceRequest { get; set; } // FK_ServiceRequestTask_ServiceRequest
         public virtual ServiceRequestTemplateTask ServiceRequestTemplateTask { get; set; } // FK_ServiceRequestTask_ServiceRequestTemplateTask
+        public virtual TaskStatu TaskStatu { get; set; } // FK_ServiceRequestTask_TaskStatus
 
         public ServiceRequestTask()
         {

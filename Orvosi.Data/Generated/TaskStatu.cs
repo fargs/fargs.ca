@@ -23,8 +23,12 @@ namespace Orvosi.Data
         public byte ServiceRequestPrecedence { get; set; } // ServiceRequestPrecedence
         public string ColorCode { get; set; } // ColorCode (length: 10)
 
+        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_TaskStatus
+
         public TaskStatu()
         {
+            ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             InitializePartial();
         }
 

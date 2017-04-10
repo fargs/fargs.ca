@@ -43,6 +43,15 @@ namespace WebApp.ViewDataModels
         {
             viewData.Add("args", value);
         }
+
+        public static TaskListViewModelFilter ViewFilter_Get(this ViewDataDictionary viewData)
+        {
+            return (TaskListViewModelFilter)viewData["args"];
+        }
+        public static void ViewFilter_Set(this ViewDataDictionary viewData, TaskListViewModelFilter value)
+        {
+            viewData.Add("args", value);
+        }
     }
 
     public enum TaskListViewModelFilter

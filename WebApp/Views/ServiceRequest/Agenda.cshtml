@@ -6,6 +6,9 @@
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
+    var viewData = new ViewDataDictionary();
+    viewData.ViewTarget_Set(ViewTarget.Agenda);
+    viewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
 }
 @if (Model != null)
 {
@@ -28,7 +31,7 @@
         <div class="row o-dashboard-tr">
             <div class="col-md-2">
                 <div id="case-container-@serviceRequest.ServiceRequestId">
-                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, new ViewDataDictionary { { "ViewTarget", ViewTarget.Agenda } })
+                    @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, viewData)
                 </div>
             </div>
             @*<div class="col-md-1 o-dashboard-td">
@@ -60,11 +63,11 @@
                 </div>*@
             <div class="col-md-3 o-dashboard-td">
                 <div id="tasklist-container-@serviceRequest.ServiceRequestId">
-                    @Html.Action("TaskList", "ServiceRequestTask", new
+                    @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
                {
-                   serviceRequestId = serviceRequest.ServiceRequestId,
-                   viewOptions = ViewTarget.Agenda,
-                   options = TaskListViewModelFilter.CriticalPathOrAssignedToUser
+                   ServiceRequestId = serviceRequest.ServiceRequestId,
+                   ViewTarget = ViewTarget.Agenda,
+                   ViewFilter = TaskListViewModelFilter.CriticalPathOrAssignedToUser
                })
                 </div>
             </div>

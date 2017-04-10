@@ -13,7 +13,7 @@
     var userId = User.Identity.GetGuidUserId();
     var roleId = User.Identity.GetRoleId();
 
-    var context = new OrvosiDbContext();
+    var context = ContextPerRequest.db;
 
     IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
     if (features.Contains(Features.ServiceRequest.Search))
@@ -186,7 +186,7 @@
     <div class="container-fluid body-content">
         @if (features.Contains(Features.AppContext.ChangeUserContext))
         {
-            var viewDataService = new ViewDataService(User.Identity); // This should eventually be injected from the DI container
+            var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
             var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
             <div class="text-danger">@TempData["UserContextMessage"]</div>

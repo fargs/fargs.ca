@@ -6,7 +6,7 @@
 @{
     ViewBag.Title = "Edit";
     var userContext = User.Identity.GetUserContext();
-    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
     var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
 }

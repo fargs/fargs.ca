@@ -4,7 +4,7 @@
 @model ServiceRequest
 
 @{
-    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext());
+    var viewDataService = ContextPerRequest.ViewDataService;
     var addressSelectList = viewDataService.GetPhysicianAddressSelectList(Model.PhysicianId);
 }
 

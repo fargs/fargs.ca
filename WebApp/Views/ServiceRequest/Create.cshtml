@@ -6,7 +6,7 @@
 @{
     ViewBag.Title = "Book an Assessment - Details";
     var physicianDisplayName = Model.SelectedPhysician.AspNetUser.GetDisplayName();
-    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext()); // This should eventually be injected from the DI container
+    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
     var companySelectList = viewDataService.GetPhysicianCompanySelectList(Model.SelectedPhysician.Id);
     var serviceSelectList = viewDataService.GetPhysicianServiceSelectList(Model.SelectedPhysician.Id);
     var addressSelectList = viewDataService.GetPhysicianAddressSelectList(Model.SelectedPhysician.Id);

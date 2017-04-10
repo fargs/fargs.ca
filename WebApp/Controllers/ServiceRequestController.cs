@@ -752,6 +752,10 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var slot = await db.AvailableSlots.FindAsync(sr.AvailableSlotId);
+                sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
+                sr.ServiceRequestStatusChangedBy = userId;
+                sr.ServiceRequestStatusChangedDate = now;
+                sr.RequestedDate = now;
                 sr.ServiceId = sr.ServiceId;
                 sr.PhysicianId = selectedPhysicianId;
                 sr.CompanyId = company.Id;
@@ -790,6 +794,9 @@ namespace WebApp.Controllers
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
                     st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
+                    st.TaskStatusId = TaskStatuses.ToDo;
+                    st.TaskStatusChangedBy = userId;
+                    st.TaskStatusChangedDate = now;
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -812,6 +819,10 @@ namespace WebApp.Controllers
                 }
 
                 await db.SaveChangesAsync();
+
+                var service = new WorkService(ContextPerRequest.db, identity);
+                await service.UpdateDependentTaskStatuses(sr.Id);
+                await service.UpdateServiceRequestStatus(sr.Id);
 
                 return RedirectToAction("Details", new { id = sr.Id });
             }
@@ -899,9 +910,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
+                sr.ServiceRequestStatusChangedBy = userId;
+                sr.ServiceRequestStatusChangedDate = now;
                 sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.DueDate = sr.DueDate;
                 sr.CaseCoordinatorId = sr.CaseCoordinatorId;
+                sr.RequestedDate = now;
                 sr.ClaimantName = sr.ClaimantName;
                 sr.CompanyReferenceId = sr.CompanyReferenceId;
                 sr.RequestedDate = sr.RequestedDate;
@@ -960,6 +975,11 @@ namespace WebApp.Controllers
                 }
 
                 await db.SaveChangesAsync();
+
+                var service = new WorkService(ContextPerRequest.db, identity);
+                await service.UpdateDependentTaskStatuses(sr.Id);
+                await service.UpdateServiceRequestStatus(sr.Id);
+
 
                 return RedirectToAction("Details", new { id = sr.Id });
             }

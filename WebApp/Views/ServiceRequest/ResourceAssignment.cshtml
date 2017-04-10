@@ -5,7 +5,7 @@
 @model ResourceAssignmentViewModel
 
 @{ 
-    var viewDataService = new ViewDataService(User.Identity, new OrvosiDbContext());
+    var viewDataService = ContextPerRequest.ViewDataService;
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.PhysicianId);
 }
 

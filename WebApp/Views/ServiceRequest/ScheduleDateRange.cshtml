@@ -14,7 +14,7 @@
 {
 
     <div style="display:flex; flex-direction: row; flex-wrap: wrap;">
-        @foreach (var day in Model)
+        @foreach (var day in Model.OrderBy(c => c.Day))
         {
             <div style="padding:10px; min-width: 400px;">
                 <div style="padding-top:10px;">
@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <table class="table table-condensed">
-                    @foreach (var item in day.CaseLinks)
+                    @foreach (var item in day.CaseLinks.OrderBy(c => c.AppointmentDate).ThenBy(c => c.StartTime))
                     {
                         <tr>
                             @Html.Partial("CaseLink", item, viewData)   

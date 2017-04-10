@@ -43,7 +43,7 @@
     [IsDeleted]                          BIT              CONSTRAINT [DF_ServiceRequest_IsDeleted] DEFAULT ((0)) NOT NULL,
     [CreatedDate]                        DATETIME         NOT NULL,
     [CreatedUser]                        NVARCHAR (128)   NOT NULL,
-    [ServiceRequestStatusId]             SMALLINT         CONSTRAINT [DF_ServiceRequest_ServiceRequestStatusId] DEFAULT ((2)) NOT NULL,
+    [ServiceRequestStatusId]             SMALLINT         CONSTRAINT [DF_ServiceRequest_ServiceRequestStatusId] DEFAULT ((1)) NOT NULL,
     [ServiceRequestStatusChangedBy]      UNIQUEIDENTIFIER NULL,
     [ServiceRequestStatusChangedDate]    DATETIME         NULL,
     [HasErrors]                          BIT              CONSTRAINT [DF_ServiceRequest_HasErrors] DEFAULT ((0)) NOT NULL,
@@ -61,6 +61,12 @@
     CONSTRAINT [FK_ServiceRequest_ServiceRequestStatus] FOREIGN KEY ([ServiceRequestStatusId]) REFERENCES [dbo].[ServiceRequestStatus] ([Id]),
     CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate] FOREIGN KEY ([ServiceRequestTemplateId]) REFERENCES [dbo].[ServiceRequestTemplate] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate];
+
+
 
 
 GO

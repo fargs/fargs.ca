@@ -84,6 +84,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         public System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
+        public System.Data.Entity.DbSet<Sysdiagram> Sysdiagrams { get; set; } // sysdiagrams
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
@@ -209,6 +210,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration());
+            modelBuilder.Configurations.Add(new SysdiagramConfiguration());
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration());
             modelBuilder.Configurations.Add(new TaskStatuConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
@@ -286,6 +288,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration(schema));
+            modelBuilder.Configurations.Add(new SysdiagramConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));

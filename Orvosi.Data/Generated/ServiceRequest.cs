@@ -97,7 +97,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsClosed = false;
             IsDeleted = false;
-            ServiceRequestStatusId = 2;
+            ServiceRequestStatusId = 1;
             HasErrors = false;
             HasWarnings = false;
             IsOnHold = false;

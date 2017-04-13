@@ -298,5 +298,31 @@
             }, this);
         }
 
+        function showCaseDetails(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequest/Details2")';
+            $.get(url, {
+                serviceRequestId: serviceRequestId
+            }).done(function (result) {
+                $('#modal-content').html(result);
+                $('#modal-container').modal('toggle');
+                boxInfoChanged(serviceRequestId);
+            });
+        }
+
+        function boxInfoChanged(serviceRequestId) {
+            var loader = $('#box-loader');
+            loader.show();
+            $.get('@Url.Content("~/ServiceRequest/BoxManager")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('box-container').innerHTML = result;
+                })
+                .always(function () {
+                    loader.hide();
+                });
+        }
+
     </script>
 }

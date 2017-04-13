@@ -34,16 +34,22 @@
         <div class="col-md-4">
             <h4>Tasks</h4>
             <hr />
+            <div id="notes">
+                @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
+            </div>
             <div id="tasklist-container">
                 @Html.Action("TaskList", "ServiceRequestTask", args)
             </div>
         </div>
         <div class="col-md-5">
+            <h4>
+                Case Folder
+            </h4>
+            <hr />
+            <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
+            <hr />
             <h4>Messages</h4>
             <hr />
-            <div id="notes">
-                @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
-            </div>
             <div id="livechat-container">
                 @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
@@ -111,14 +117,15 @@
                 //    e.stopPropagation();
                 //    e.preventDefault();
                 //});
+                let = serviceRequestId = @(Model.ServiceRequestId); 
+                boxInfoChanged(serviceRequestId);
                 @if (Model.AppointmentDate.HasValue)
-            {
-                @:refreshGoogleCalendarIntegration();
-                @:boxInfoChanged();
-                            }
+                {
+                    <text>
+                        refreshGoogleCalendarIntegration(serviceRequestId);
+                    </text>
+                }
             });
-
-            let serviceRequestId = @Model.ServiceRequestId;
 
             function onEdit(serviceRequestId) {
 
@@ -208,10 +215,10 @@
                     });
             }
 
-            function refreshGoogleCalendarIntegration() {
+            function refreshGoogleCalendarIntegration(serviceRequestId) {
                 $.ajax({
                     type: "GET",
-                    url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Get"), Model.ServiceRequestId)',
+                    url: '@string.Format("{0}?serviceRequestId=", Url.Content("~/Google/Calendar/Get"))' + serviceRequestId,
                     contentType: "text/html",
                     success: function (result) {
                         $('#google-calendar-container').html(result);
@@ -223,7 +230,7 @@
                 });
             }
 
-            function boxInfoChanged() {
+            function boxInfoChanged(serviceRequestId) {
                 var loader = $('#box-loader');
                 loader.show();
                 $.get('@Url.Content("~/ServiceRequest/BoxManager")',

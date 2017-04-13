@@ -22,7 +22,12 @@
             </div>
             <div role="tabpanel" class="tab-pane active" id="tasks">
                 <div id="tasklist-container">
-                    @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs { ServiceRequestId = Model.ServiceRequestId, ViewFilter = TaskListViewModelFilter.CriticalPathOrAssignedToUser, ViewTarget = ViewTarget.Modal  })
+                    @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
+                    {
+                        ServiceRequestId = Model.ServiceRequestId,
+                        ViewFilter = TaskListViewModelFilter.CriticalPathOrAssignedToUser,
+                        ViewTarget = ViewTarget.Modal
+                    })
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="livechat">

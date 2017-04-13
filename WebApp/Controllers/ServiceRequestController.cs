@@ -162,12 +162,22 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
-            ViewData.TaskListArgs_Set(new TaskListArgs
+            var args = new TaskListArgs
             {
                 ServiceRequestId = id,
                 ViewTarget = ViewTarget.Details,
                 ViewFilter = TaskListViewModelFilter.AllTasks
-            });
+            };
+
+            if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician || roleId == AspNetRoles.CaseCoordinator)
+            {
+                args.ViewFilter = TaskListViewModelFilter.AllTasks;
+            }
+            else
+            {
+                args.ViewFilter = TaskListViewModelFilter.CriticalPathOrAssignedToUser;
+            }
+            ViewData.TaskListArgs_Set(args);
 
             return View(viewModel);
         }

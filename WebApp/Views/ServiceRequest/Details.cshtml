@@ -7,12 +7,14 @@
         var identity = User.Identity.GetClaimsIdentity();
         var roleId = identity.GetRoleId();
         var features = identity.GetFeatures();
+        var args = ViewData.TaskListArgs_Get();
         var viewData = new ViewDataDictionary();
-        viewData.ViewTarget_Set(ViewTarget.Details);
+        viewData.ViewFilter_Set(args.ViewFilter);
+        viewData.ViewTarget_Set(args.ViewTarget);
     }
 
     <div id="actionmenu-container" class="col-md-12">
-        @Html.Partial("ActionMenu", Model)
+        @Html.Partial("ActionMenu", Model, viewData)
     </div>
 
     <div class="row">
@@ -33,12 +35,7 @@
             <h4>Tasks</h4>
             <hr />
             <div id="tasklist-container">
-                @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
-                {
-                    ServiceRequestId = Model.ServiceRequestId,
-                    ViewTarget = ViewTarget.Details,
-                    ViewFilter = TaskListViewModelFilter.AllTasks
-                })
+                @Html.Action("TaskList", "ServiceRequestTask", args)
             </div>
         </div>
         <div class="col-md-5">
@@ -184,9 +181,9 @@
                 let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
                 $.get(url,
                     {
-                        serviceRequestId: serviceRequestId,
-                        viewOptions: '@ViewTarget.Details',
-                        options: '@TaskListViewModelFilter.AllTasks'
+                        ServiceRequestId: @args.ServiceRequestId,
+                        ViewTarget: '@args.ViewTarget',
+                        ViewFilter: '@args.ViewFilter'
                     })
                     .done(function (result) {
                         document.getElementById('tasklist-container').innerHTML = result;

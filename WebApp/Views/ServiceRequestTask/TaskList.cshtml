@@ -13,6 +13,7 @@
         Text = Model.Physician.Name,
         Value = Model.Physician.Id.ToString()
     });
+    var args = ViewData.TaskListArgs_Get();
 }
 
 @helper ShowTree(IEnumerable<Orvosi.Data.ServiceRequestTask> tasks, byte level)
@@ -67,7 +68,7 @@
     <div>No tasks are assigned to you.</div>
 }
 <div class="panel @(ViewBag.ViewOptions == ViewTarget.Details ? "panel-default" : null)">
-    @if (ViewBag.ViewOptions == ViewTarget.Details)
+    @if (args.ViewTarget == ViewTarget.Details)
     {
     <div class="panel-heading">
         <strong>Tasks</strong>

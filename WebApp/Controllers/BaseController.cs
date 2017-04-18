@@ -20,6 +20,7 @@ namespace WebApp.Controllers
         protected UserContextViewModel userContext;
         protected Guid userId;
         protected Guid? physicianId;
+        protected Guid currentContextId;
         protected Guid roleId;
         protected DateTime now;
 
@@ -38,6 +39,7 @@ namespace WebApp.Controllers
             userId = User.Identity.GetGuidUserId();
             userContext = User.Identity.GetPhysicianContext();
             physicianId = userContext == null ? (Guid?)null : userContext.Id;
+            currentContextId = physicianId.GetValueOrDefault(userId);
             roleId = User.Identity.GetRoleId();
             service = new WorkService(this.db, this.identity);
             ViewData["Now"] = now;

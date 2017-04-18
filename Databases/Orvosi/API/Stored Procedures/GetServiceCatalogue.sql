@@ -1,5 +1,4 @@
 ﻿
-
 CREATE PROC [API].[GetServiceCatalogue]
 	@PhysicianId uniqueidentifier
 AS
@@ -10,11 +9,11 @@ AS (
 		 ServiceId = s.Id
 		,ServiceName = s.Name
 		,ServiceCategoryId = s.ServiceCategoryId
-		,LocationId = l.ItemId
-		,LocationName = l.ItemText
+		,LocationId = l.Id
+		,LocationName = l.Name
 		,ServicePrice = s.Price
 	FROM dbo.[Service] s
-	CROSS JOIN (SELECT * FROM API.LocationArea UNION ALL SELECT 4, 'Locations', 0, NULL, NULL) l
+	CROSS JOIN (SELECT Id, [Name] FROM dbo.City UNION ALL SELECT 0, 'Cities') l
 	WHERE s.ServicePortfolioId = 2 /* Physician */ 
 )
 , ServiceCatalogue

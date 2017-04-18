@@ -1,0 +1,56 @@
+﻿@using Orvosi.Data
+@using WebApp.Models
+@using Orvosi.Shared.Enums
+@using WebApp.Library.Extensions
+@using WebApp.Library
+@using LinqKit
+@model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
+
+@{
+
+    var userId = User.Identity.GetGuidUserId();
+    var userContext = User.Identity.GetPhysicianContext();
+    var physicianId = userContext == null ? (Guid?)null : userContext.Id;
+    var currentContextId = physicianId.GetValueOrDefault(userId);
+    var roleId = User.Identity.GetRoleId();
+
+    var db = ContextPerRequest.db;
+
+    var addOnServices = db.Services
+        .Where(c => !c.IsLocationRequired)
+        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
+        .OrderBy(c => c.Name)
+        .ToList();
+}
+
+<table class="table table-bordered" id="addons-table">
+    <thead>
+        <tr>
+            <th>
+                Add On
+            </th>
+            <th>
+                Price
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var addOn in addOnServices.OrderBy(c => c.Name))
+        {
+            var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == addOn.Id && c.LocationId == 0);
+            <tr>
+                <td>
+                    <div>@addOn.Name</div>
+                </td>
+                <td onclick='showServiceCatalogueEditForm(@Html.Raw(new { UserId = currentContextId, CompanyId = Model.FilterArgs.CompanyId, ServiceId = addOn.Id }.ToJson()))'>
+                    @if (serviceCatalogueItem.Price.HasValue)
+                    {
+                        <span>@serviceCatalogueItem.Price.GetValueOrDefault(0).ToString("C2")</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

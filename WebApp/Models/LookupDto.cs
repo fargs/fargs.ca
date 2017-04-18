@@ -61,5 +61,13 @@ namespace WebApp.Models
             Code = e.Name.Substring(0, 2),
             ColorCode = ""
         };
+
+        public static Expression<Func<Province, LookupDto<short>>> FromProvinceEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.ProvinceName,
+            Code = e.ProvinceCode,
+            ColorCode = ""
+        };
     }
 }

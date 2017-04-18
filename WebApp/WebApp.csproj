@@ -470,6 +470,7 @@
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="FormModels\CancellationForm.cs" />
     <Compile Include="FormModels\NoShowForm.cs" />
+    <Compile Include="FormModels\ServiceCatalogueForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\Box.cs" />
@@ -505,6 +506,9 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddressDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
+    <Compile Include="Models\ServiceCategoryDto.cs" />
+    <Compile Include="Models\ProvinceDto.cs" />
+    <Compile Include="Models\CityDto.cs" />
     <Compile Include="Models\ContactDto.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LookupDto.cs" />
@@ -1270,6 +1274,9 @@
     <Content Include="Views\ServiceRequestTask\Components\TaskActionMenu.cshtml" />
     <Content Include="Views\Box\BoxJS.cshtml" />
     <Content Include="Views\Dashboard\_WeekSummary.cshtml" />
+    <Content Include="Views\ServiceCatalogue\ServiceCatalogueJS.cshtml" />
+    <Content Include="Views\ServiceCatalogue\_Exams.cshtml" />
+    <Content Include="Views\ServiceCatalogue\_AddOns.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

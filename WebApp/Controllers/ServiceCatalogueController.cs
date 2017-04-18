@@ -13,65 +13,93 @@ using WebApp.Library;
 using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Library.Filters;
 using WebApp.Library.Extensions;
+using WebApp.FormModels;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.Services.Manage)]
-    public class ServiceCatalogueController : Controller
+    public class ServiceCatalogueController : BaseController
     {
-        OrvosiDbContext db = new OrvosiDbContext();
 
-        // GET: Admin/ServiceCatalogue
         public async Task<ActionResult> Index(FilterArgs args)
         {
             var vm = new IndexViewModel();
-
             vm.FilterArgs = args;
-
-            var userContext = User.Identity.GetUserContext();
+            
             vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
             if (vm.SelectedCompany != null)
             {
-                vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(userContext.Id, args.CompanyId).OrderBy(c => c.LocationName).ToList();
+                vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(currentContextId, args.CompanyId).OrderBy(c => c.LocationName).ToList();
             }
             else
             {
-                vm.ServiceCatalogues = db.GetServiceCatalogue(userContext.Id).OrderBy(c => c.LocationName).ToList();
+                vm.ServiceCatalogues = db.GetServiceCatalogue(currentContextId).OrderBy(c => c.LocationName).ToList();
             }
-            var inheritedValues = db.GetServiceCatalogueRate(userContext.Id, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
+            var inheritedValues = db.GetServiceCatalogueRate(currentContextId, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
             vm.ServiceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
             vm.ServiceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
             return View(vm);
         }
 
+        public async Task<ActionResult> _Details(FilterArgs args)
+        {
+            var vm = new IndexViewModel();
+            vm.FilterArgs = args;
+
+            vm.SelectedCompany = await db.Companies.SingleOrDefaultAsync(c => c.Id == args.CompanyId);
+            if (vm.SelectedCompany != null)
+            {
+                vm.ServiceCatalogues = db.GetServiceCatalogueForCompany(currentContextId, args.CompanyId).OrderBy(c => c.LocationName).ToList();
+            }
+            else
+            {
+                vm.ServiceCatalogues = db.GetServiceCatalogue(currentContextId).OrderBy(c => c.LocationName).ToList();
+            }
+
+            var service = db.Services.Single(s => s.Id == args.ServiceId);
+            var view = "_Exams";
+            if (!service.IsLocationRequired)
+            {
+                view = "_AddOns";
+            }
+            return PartialView(view, vm);
+        }
+
         public async Task<ActionResult> Edit(FilterArgs args)
         {
-            ServiceCatalogue sc = null;
-            sc = await db.ServiceCatalogues
-                .SingleOrDefaultAsync(c => c.PhysicianId == args.UserId && c.CompanyId == args.CompanyId && c.LocationId == args.LocationId && c.ServiceId == args.ServiceId);
-            if (sc == null)
+            var entity = await db.ServiceCatalogues
+                .SingleOrDefaultAsync(c => c.PhysicianId == currentContextId && c.CompanyId == args.CompanyId && c.LocationId == args.LocationId && c.ServiceId == args.ServiceId);
+
+            var sc = new ServiceCatalogueForm()
             {
-                sc = new ServiceCatalogue()
-                {
-                    CompanyId = args.CompanyId,
-                    PhysicianId = args.UserId,
-                    LocationId = args.LocationId,
-                    ServiceId = args.ServiceId
-                };
+                CompanyId = args.CompanyId,
+                LocationId = args.LocationId,
+                ServiceId = args.ServiceId
+            };
+
+            if (entity == null)
+            {
+                return PartialView(sc);
             }
-            return View(sc);
+
+            sc.CompanyId = entity.CompanyId;
+            sc.ServiceId = entity.ServiceId;
+            sc.LocationId = entity.LocationId;
+            sc.Price = entity.Price;
+
+            return PartialView(sc);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(ServiceCatalogue form)
+        public async Task<ActionResult> Edit(ServiceCatalogueForm form)
         {
-            var exists = await db.ServiceCatalogues.AnyAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
+            var exists = await db.ServiceCatalogues.AnyAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == currentContextId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
             if (!exists)
             {
                 var sc = new ServiceCatalogue()
                 {
                     CompanyId = form.CompanyId,
-                    PhysicianId = form.PhysicianId,
+                    PhysicianId = currentContextId,
                     LocationId = form.LocationId,
                     ServiceId = form.ServiceId,
                     Price = form.Price,
@@ -81,7 +109,7 @@ namespace WebApp.Controllers
             }
             else
             {
-                var sc = await db.ServiceCatalogues.SingleAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == form.PhysicianId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
+                var sc = await db.ServiceCatalogues.SingleAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == currentContextId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
                 if (form.Price.HasValue)
                 {
                     sc.Price = form.Price;
@@ -93,44 +121,42 @@ namespace WebApp.Controllers
             }
             await db.SaveChangesAsync();
 
-            return RedirectToAction("Index", new FilterArgs() { CompanyId = form.CompanyId, UserId = form.PhysicianId });
+            return Json(form);
         }
 
-        public async Task<ActionResult> EditRates(Guid ServiceProviderGuid, Guid? CustomerGuid)
+        public async Task<ActionResult> EditRates(Guid? CustomerGuid)
         {
             var serviceCatalogueRate = new ServiceCatalogueRate();
 
-            var serviceProvider = await db.AspNetUsers.SingleOrDefaultAsync(u => u.Id == ServiceProviderGuid);
+            var serviceProvider = await db.AspNetUsers.SingleOrDefaultAsync(u => u.Id == currentContextId);
             if (serviceProvider != null)
             {
-                var serviceProviderGuid = serviceProvider.Id;
-
                 var customer = await db.Companies.SingleOrDefaultAsync(c => c.ObjectGuid == CustomerGuid);
                 if (customer != null)
                 {
-                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == serviceProviderGuid && c.CustomerGuid == customer.ObjectGuid);
+                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == currentContextId && c.CustomerGuid == customer.ObjectGuid);
                     if (serviceCatalogueRate == null)
                     {
                         serviceCatalogueRate = new ServiceCatalogueRate()
                         {
-                            ServiceProviderGuid = serviceProviderGuid,
+                            ServiceProviderGuid = currentContextId,
                             CustomerGuid = CustomerGuid
                         };
                     }
                 }
                 else
                 {
-                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == serviceProviderGuid && !c.CustomerGuid.HasValue);
+                    serviceCatalogueRate = await db.ServiceCatalogueRates.SingleOrDefaultAsync(c => c.ServiceProviderGuid == currentContextId && !c.CustomerGuid.HasValue);
                     if (serviceCatalogueRate == null)
                     {
                         serviceCatalogueRate = new ServiceCatalogueRate()
                         {
-                            ServiceProviderGuid = serviceProviderGuid,
+                            ServiceProviderGuid = currentContextId,
                             CustomerGuid = CustomerGuid
                         };
                     }
                 }
-                var inheritedValues = db.GetServiceCatalogueRate(serviceProviderGuid, CustomerGuid).First();
+                var inheritedValues = db.GetServiceCatalogueRate(currentContextId, CustomerGuid).First();
                 serviceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
                 serviceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
             }
@@ -144,12 +170,12 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> EditRates(ServiceCatalogueRate form)
         {
-            var exists = await db.ServiceCatalogueRates.AnyAsync(c => c.ServiceProviderGuid == form.ServiceProviderGuid && c.CustomerGuid == form.CustomerGuid);
+            var exists = await db.ServiceCatalogueRates.AnyAsync(c => c.ServiceProviderGuid == currentContextId && c.CustomerGuid == form.CustomerGuid);
             if (!exists)
             {
                 var rate = new ServiceCatalogueRate()
                 {
-                    ServiceProviderGuid = form.ServiceProviderGuid,
+                    ServiceProviderGuid = currentContextId,
                     CustomerGuid = form.CustomerGuid,
                     NoShowRate = form.NoShowRate,
                     LateCancellationRate = form.LateCancellationRate,
@@ -160,7 +186,7 @@ namespace WebApp.Controllers
             }
             else
             {
-                var rate = await db.ServiceCatalogueRates.SingleAsync(c => c.ServiceProviderGuid == form.ServiceProviderGuid && c.CustomerGuid == form.CustomerGuid);
+                var rate = await db.ServiceCatalogueRates.SingleAsync(c => c.ServiceProviderGuid == currentContextId && c.CustomerGuid == form.CustomerGuid);
                 rate.NoShowRate = form.NoShowRate.GetValueOrDefault(0);
                 rate.LateCancellationRate = form.LateCancellationRate.GetValueOrDefault(0);
                 rate.ModifiedDate = SystemTime.Now();
@@ -168,7 +194,7 @@ namespace WebApp.Controllers
             }
             await db.SaveChangesAsync();
 
-            return RedirectToAction("Index", new { ServiceProviderGuid = form.ServiceProviderGuid, CustomerGuid = form.CustomerGuid });
+            return RedirectToAction("Index", new { ServiceProviderGuid = currentContextId, CustomerGuid = form.CustomerGuid });
         }
 
         protected override void Dispose(bool disposing)

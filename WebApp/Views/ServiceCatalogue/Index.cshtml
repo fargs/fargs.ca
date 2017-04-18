@@ -1,38 +1,23 @@
 ﻿@using Orvosi.Data
+@using WebApp.Models
 @using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
+@using WebApp.Library
+@using LinqKit
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
     ViewBag.Title = "Service Catalogue";
 
-    var db = new OrvosiDbContext();
+    var db = ContextPerRequest.db;
 
-    ViewBag.Companies = db.Companies
+    var companies = db.Companies
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
             Value = c.Id.ToString(),
             Group = new SelectListGroup() { Name = c.Parent.Name }
         }).ToList();
-
-    var services = db.Services
-        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
-        .OrderBy(c => c.Name)
-        .ToList();
-
-    ViewBag.LocationAreas = db.LocationAreas
-        .OrderBy(c => c.ItemText)
-        .ToList();
-
-    ViewBag.LocationAreas.Add(new LocationArea()
-    {
-        LookupId = 4,
-        LookupName = "Locations",
-        ItemId = 0,
-        ItemText = null,
-        ItemValue = null
-    });
 
     var userContext = User.Identity.GetUserContext();
 }
@@ -42,7 +27,7 @@
     <div class="col-md-12">
         <form action="~/ServiceCatalogue/Index/" method="get" class="form-inline">
             <div class="form-group">
-                @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), "-- Select a client --", new { @class = "form-control", onchange = "this.form.submit();" })
+                @Html.DropDownList("CompanyId", new SelectList(companies, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), "-- All Companies --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
         </form>
     </div>
@@ -65,70 +50,57 @@
 }
 else
 {
-    <div>
-        <form>
-            <div class="form-group">
-                <label class="control-label">No Show Rate</label>
-                @{ var noShowFormat = Model.ServiceCatalogueRate.NoShowRate.HasValue && Model.ServiceCatalogueRate.NoShowRate > 1 ? "C2" : "0%"; }
-                <input type="text" class="form-control" name="NoShowRate" value="@Model.ServiceCatalogueRate.NoShowRate.GetValueOrDefault(0).ToString(noShowFormat)" readonly />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Late Cancellation Rate</label>
-                @{ var lateCancellationFormat = Model.ServiceCatalogueRate.LateCancellationRate.HasValue && Model.ServiceCatalogueRate.LateCancellationRate > 1 ? "C2" : "0%"; }
-                <input type="text" class="form-control" name="NoShowRate" value="@Model.ServiceCatalogueRate.LateCancellationRate.GetValueOrDefault(0).ToString(lateCancellationFormat)" readonly />
-            </div>
-        </form>
-    </div>
-}
-<a class="btn btn-primary" style="margin-bottom:20px;" href="~/@(string.Format("ServiceCatalogue/EditRates?ServiceProviderGuid={0}&CustomerGuid={1}", userContext.Id, Model.SelectedCompany != null ? Model.SelectedCompany.ObjectGuid.ToString() : string.Empty))">Set Rates</a>
+    <dl class="dl-horizontal">
+        <dt>No Show Rate</dt>
+        <dd>
+            @{ var noShowFormat = Model.ServiceCatalogueRate.NoShowRate.HasValue && Model.ServiceCatalogueRate.NoShowRate > 1 ? "C2" : "0%"; }
+            @Model.ServiceCatalogueRate.NoShowRate.GetValueOrDefault(0).ToString(noShowFormat)
+        </dd>
+        <dt>Late Cancel Rate</dt>
+        <dd>
+            @{ var lateCancellationFormat = Model.ServiceCatalogueRate.LateCancellationRate.HasValue && Model.ServiceCatalogueRate.LateCancellationRate > 1 ? "C2" : "0%"; }
+            @Model.ServiceCatalogueRate.LateCancellationRate.GetValueOrDefault(0).ToString(lateCancellationFormat)
+        </dd>
+    </dl>
+                }
+<a class="btn btn-sm btn-primary" style="margin-bottom:20px;" href="~/@(string.Format("ServiceCatalogue/EditRates?ServiceProviderGuid={0}&CustomerGuid={1}", userContext.Id, Model.SelectedCompany != null ? Model.SelectedCompany.ObjectGuid.ToString() : string.Empty))">Set Rates</a>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>
-                Service
-            </th>
-            @foreach (var item in ViewBag.LocationAreas)
-            {
-                <th>
-                    @item.ItemText
-                </th>
+
+
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#exams-tab" aria-controls="exams" role="tab" data-toggle="tab">Exams</a></li>
+    <li role="presentation"><a href="#addons-tab" aria-controls="addons" role="tab" data-toggle="tab">Add Ons</a></li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="exams-tab">
+        <div id="exams-container" class="panel-body">
+            @Html.Partial("_Exams", Model)
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="addons-tab">
+        <div id="addons-container" class="panel-body">
+            @Html.Partial("_AddOns", Model)
+        </div>
+    </div>
+</div>
+
+@Html.Partial("ModalContainer")
+
+@section Scripts{
+
+    @Html.Partial("~/Views/ServiceCatalogue/ServiceCatalogueJS.cshtml")
+
+    <script type="text/javascript">
+
+        function serviceCataloguePartialViewLoaded(html) {
+            var id = $(html)[0].id;
+            if (id == 'exams-table') {
+                document.getElementById('exams-container').innerHTML = html;
             }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var service in services.OrderBy(c => c.ServiceCategoryId).ThenBy(c => c.Name))
-        {
-            <tr>
-                <td>
-                    <div>@service.Name</div>
-                </td>
-                @foreach (var location in ViewBag.LocationAreas)
-                {
-                    <td>
-                        @{
-                            var serviceCatalogueItem = Model.ServiceCatalogues.SingleOrDefault(c => c.ServiceId == service.Id && c.LocationId == location.ItemId);
-                        }
-                        @if ((serviceCatalogueItem.ServiceCategoryId == ServiceCategories.AddOn) && (serviceCatalogueItem.LocationId ?? 0) != 0)
-                        {
-                            <span>N/A</span>
-                        }
-                        else
-                        {
-                            <a href="~/@(string.Format("ServiceCatalogue/Edit?UserId={0}&CompanyId={1}&LocationId={2}&ServiceId={3}", Model.FilterArgs.UserId, Model.FilterArgs.CompanyId, (location.ItemId == 0 ? null : location.ItemId), service.Id))">
-                                @if (serviceCatalogueItem.Price.HasValue)
-                                {
-                                    <span>@serviceCatalogueItem.Price</span>
-                                }
-                                else
-                                {
-                                    <span>Edit</span>
-                                }
-                            </a>
-                        }
-                    </td>
-                            }
-            </tr>
-                            }
-    </tbody>
-</table>
+            else if (id == 'addons-table') {
+                document.getElementById('addons-container').innerHTML = html;
+            }
+        }
+
+    </script>
+}

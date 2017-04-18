@@ -1,9 +1,17 @@
 ﻿@model Orvosi.Data.ServiceCatalogueRate
 
+@{ 
+
+    var userId = User.Identity.GetGuidUserId();
+    var userContext = User.Identity.GetPhysicianContext();
+    var physicianId = userContext == null ? (Guid?)null : userContext.Id;
+    var currentContextId = physicianId.GetValueOrDefault(userId);
+    var roleId = User.Identity.GetRoleId();
+}
 <div class="row">
     <div class="col-md-12">
         <form action="~/ServiceCatalogue/EditRates" method="post">
-            @Html.Hidden("ServiceProviderGuid", Model.ServiceProviderGuid)
+            @Html.Hidden("ServiceProviderGuid", currentContextId)
             @Html.Hidden("CustomerGuid", Model.CustomerGuid)
             <div class="form-group">
                 <label class="control-label">No Show Rate</label>

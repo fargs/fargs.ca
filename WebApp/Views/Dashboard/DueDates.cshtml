@@ -289,9 +289,9 @@
             let container = document.getElementById('tasklist-container');
             if (container) {
                 $.get(url, {
-                    serviceRequestId: serviceRequestId,
-                    viewOptions: '@ViewTarget.Modal',
-                    options: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewTarget.Modal',
+                    ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
                 })
                 .done(function (result) {
                     document.getElementById('tasklist-container').innerHTML = result;

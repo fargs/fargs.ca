@@ -132,7 +132,7 @@
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
             $.get(url, {
-                serviceRequestId: serviceRequestId
+                ServiceRequestId: serviceRequestId
             })
             .done(function (result) {
                 document.getElementById('tasklist-container').innerHTML = result;

@@ -37,7 +37,7 @@ namespace WebApp.Controllers
                 var serviceRequests = context.ServiceRequests
                     .ForPhysician(userId)
                     .AreNotCancellations()
-                    .HaveNotCompletedSubmitInvoiceTask()
+                    .WhereSubmitInvoiceTaskIsToDo()
                     .AreForCompany(filterArgs.CustomerId)
                     .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
                     .Select(ServiceRequestProjections.BasicInfo(userId, now))

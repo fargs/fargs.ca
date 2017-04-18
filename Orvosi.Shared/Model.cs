@@ -227,6 +227,7 @@ namespace Orvosi.Shared.Model
         public string City { get; set; }
         public Guid PhysicianId { get; set; }
         public string CalendarEventId { get; set; }
+        public short ServiceRequestStatusId { get; set; }
 
         // references
         public Service Service { get; set; }
@@ -240,22 +241,22 @@ namespace Orvosi.Shared.Model
 
         // computeds
         public int CommentCount { get; set; } = 0;
-        public byte ServiceRequestStatusId(Guid userId)
-        {
-            var query = ServiceRequestTasks
-                .AreAssignedToUser(userId)
-                .AreActive();
+        //public byte ServiceRequestStatusId(Guid userId)
+        //{
+        //    var query = ServiceRequestTasks
+        //        .AreAssignedToUser(userId)
+        //        .AreActive();
 
-            if (query.Any(srt => srt.Status.Id == TaskStatuses.ToDo)) return TaskStatuses.ToDo;
+        //    if (query.Any(srt => srt.Status.Id == TaskStatuses.ToDo)) return TaskStatuses.ToDo;
 
-            if (query.Any(srt => srt.Status.Id == TaskStatuses.Waiting)) return TaskStatuses.Waiting;
+        //    if (query.Any(srt => srt.Status.Id == TaskStatuses.Waiting)) return TaskStatuses.Waiting;
 
-            if (IsNoShow) return TaskStatuses.Obsolete;
+        //    if (IsNoShow) return TaskStatuses.Obsolete;
 
-            return TaskStatuses.Done;
+        //    return TaskStatuses.Done;
 
 
-        }
+        //}
         public byte? ServiceStatusId
         {
             get

@@ -46,6 +46,7 @@ namespace WebApp.Library.Projections
                 LateCancellationRate = sr.LateCancellationRate,
                 Notes = sr.Notes,
                 PhysicianId = sr.PhysicianId,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
                 ServiceRequestTasks = sr.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.SubmitInvoice).Select(srt => new Orvosi.Shared.Model.ServiceRequestTask
                 {
                     Id = srt.Id,

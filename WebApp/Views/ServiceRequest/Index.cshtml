@@ -156,7 +156,10 @@
                             <div class="text-muted">
                                 <strong>Closed</strong>
                                 @item.Title
-                                @Html.Partial("_ServiceStatusLabel", item.ServiceStatusId)
+                                @if (item.ServiceStatusId.HasValue)
+                                {
+                                    Html.Partial("_ServiceStatusLabel", item.ServiceStatusId);
+                                }
                             </div>
                         </td>
                     }

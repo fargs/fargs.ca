@@ -13,18 +13,21 @@
     </div>
     <div class="modal-body">
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation"><a href="#case" aria-controls="case" role="tab" data-toggle="tab">Case</a></li>
-            <li role="presentation" class="active"><a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tasks</a></li>
+            <li role="presentation" class="active"><a href="#case" aria-controls="case" role="tab" data-toggle="tab">Case</a></li>
+            <li role="presentation"><a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tasks</a></li>
             <li role="presentation"><a href="#livechat" aria-controls="livechat" role="tab" data-toggle="tab">Live Chat</a></li>
-            <li role="presentation"><a href="#documents" aria-controls="documents" role="tab" data-toggle="tab">Box Folder</a></li>
+            @if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
+            {
+                <li role="presentation"><a href="#documents" aria-controls="documents" role="tab" data-toggle="tab">Box Folder</a></li>
+            }
         </ul>
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane" id="case">
+            <div role="tabpanel" class="tab-pane active" id="case">
                 <div id="case-container" class="panel-body">
                     @Html.Partial("Case", Model, viewData)
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane active" id="tasks">
+            <div role="tabpanel" class="tab-pane" id="tasks">
                 <div id="tasklist-container">
                     @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
                {
@@ -40,19 +43,16 @@
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
             </div>
 
-            <div role="tabpanel" class="tab-pane" id="documents">
-                <div style="padding-top: 10px;">
-                    <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                </div>
-                <div style="padding-top: 10px;">
-                    @if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
-                    {
+            @if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
+            {
+                <div role="tabpanel" class="tab-pane" id="documents">
+                    <div style="padding-top: 10px;">
                         @Html.Partial("_loader", "box-loader")
                         <div id="box-container">
                         </div>
-                    }
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
     <div class="modal-footer">

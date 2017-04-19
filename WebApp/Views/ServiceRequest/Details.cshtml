@@ -1,265 +1,270 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewDataModels
-    @model CaseViewModel
+@model CaseViewModel
 
-    @{
-        var identity = User.Identity.GetClaimsIdentity();
-        var roleId = identity.GetRoleId();
-        var features = identity.GetFeatures();
-        var args = ViewData.TaskListArgs_Get();
-        var viewData = new ViewDataDictionary();
-        viewData.ViewFilter_Set(args.ViewFilter);
-        viewData.ViewTarget_Set(args.ViewTarget);
-    }
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+    var args = ViewData.TaskListArgs_Get();
+    var viewData = new ViewDataDictionary();
+    viewData.ViewFilter_Set(args.ViewFilter);
+    viewData.ViewTarget_Set(args.ViewTarget);
+}
 
-    <div id="actionmenu-container" class="col-md-12">
-        @Html.Partial("ActionMenu", Model, viewData)
+<div id="actionmenu-container" class="col-md-12">
+    @Html.Partial("ActionMenu", Model, viewData)
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("PhysicianLabel", Model.Physician, viewData)
+        <hr />
+        <div id="case-container">
+            @Html.Partial("Case", Model, viewData)
+        </div>
     </div>
-
-    <div class="row">
+    <div class="col-md-9">
+        <h4>Tasks</h4>
+        <hr />
+        <div id="notes">
+            @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
+        </div>
+        <div id="tasklist-container">
+            @Html.Action("TaskList", "ServiceRequestTask", args)
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <h4>Live Chat</h4>
+        <div id="livechat-container">
+            @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
+            @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
+        </div>
+    </div>
+    @if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
+    {
         <div class="col-md-3">
-            @Html.Partial("PhysicianLabel", Model.Physician, viewData)
-            <hr />
-            <div id="case-container">
-                @Html.Partial("Case", Model, viewData)
-            </div>
-            <hr />
+            <h4>Box Integration</h4>
             @Html.Partial("_loader", "box-loader")
-            <div id="box-container">
-            </div>
-            <hr />
+            <div id="box-container"></div>
+        </div>
+    }
+    @if (features.Contains(Features.ServiceRequest_Google.CreateEvent))
+    {
+        <div class="col-md-3">
+            <h4>Calendar Integration</h4>
             <div id="google-calendar-container"></div>
         </div>
-        <div class="col-md-4">
-            <h4>Tasks</h4>
-            <hr />
-            <div id="notes">
-                @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
-            </div>
-            <div id="tasklist-container">
-                @Html.Action("TaskList", "ServiceRequestTask", args)
-            </div>
-        </div>
-        <div class="col-md-5">
-            <h4>
-                Case Folder
-            </h4>
-            <hr />
-            <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-            <hr />
-            <h4>Messages</h4>
-            <hr />
-            <div id="livechat-container">
-                @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
-                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
-            </div>
-        </div>
-    </div>
+    }
+</div>
 
 
 
-    @*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-            {
-            <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-            <hr />
-            if (roleId == AspNetRoles.SuperAdmin)
-            {
-                <form action="~/Invoice/Create" method="post">
-                    @Html.Hidden("Id", Model.Id)
-                    <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
-                </form>
-            }
-            else if (Model.InvoiceDetails.Count() == 0)
-            {
-                <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
-            }
+@*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
+        {
+        <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
+        <hr />
+        if (roleId == AspNetRoles.SuperAdmin)
+        {
+            <form action="~/Invoice/Create" method="post">
+                @Html.Hidden("Id", Model.Id)
+                <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
+            </form>
+        }
+        else if (Model.InvoiceDetails.Count() == 0)
+        {
+            <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
+        }
 
-            foreach (var invoiceDetail in Model.InvoiceDetails)
-            {
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Invoice @invoiceDetail.Invoice.InvoiceNumber
-                        @if (roleId == AspNetRoles.SuperAdmin)
-                        {
-                            <div class="pull-right">
-                                @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
-                            </div>
-                        }
-                    </div>
-                    <div class="panel-body">
-                        @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
-                    </div>
+        foreach (var invoiceDetail in Model.InvoiceDetails)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Invoice @invoiceDetail.Invoice.InvoiceNumber
+                    @if (roleId == AspNetRoles.SuperAdmin)
+                    {
+                        <div class="pull-right">
+                            @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
+                        </div>
+                    }
                 </div>
-            }
-        }*@
+                <div class="panel-body">
+                    @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
+                </div>
+            </div>
+        }
+    }*@
 
 
 
-    @Html.Partial("ModalContainer")
+@Html.Partial("ModalContainer")
 
-    @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
-    @section Scripts {
+@section Scripts {
 
-        <script src="@Url.Content("~/signalr/hubs")"></script>
-        @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
-        @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-        @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
-        @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
-        @Html.Partial("~/Views/Box/BoxJS.cshtml")
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
+    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+    @Html.Partial("~/Views/Box/BoxJS.cshtml")
 
-        <script type="text/javascript">
+    <script type="text/javascript">
 
-            $(document).ready(function(){
-                //$('.dropdown-submenu a.assign-to').on("click", function(e){
-                //    $(this).next('ul').toggle();
-                //    e.stopPropagation();
-                //    e.preventDefault();
-                //});
-                let = serviceRequestId = @(Model.ServiceRequestId); 
-                boxInfoChanged(serviceRequestId);
-                @if (Model.AppointmentDate.HasValue)
+        $(document).ready(function(){
+            //$('.dropdown-submenu a.assign-to').on("click", function(e){
+            //    $(this).next('ul').toggle();
+            //    e.stopPropagation();
+            //    e.preventDefault();
+            //});
+            let = serviceRequestId = @(Model.ServiceRequestId);
+            boxInfoChanged(serviceRequestId);
+            @if (Model.AppointmentDate.HasValue)
                 {
                     <text>
-                        refreshGoogleCalendarIntegration(serviceRequestId);
-                    </text>
+            refreshGoogleCalendarIntegration(serviceRequestId);
+            </text>
+                }
+        });
+
+        function onEdit(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-note-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#Notes').html(result.Notes);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-note-form").submit(function (e) {
+
+            var url = '@Url.Content("~/Note/UpdateNote")';
+
+            var form = $("#edit-note-form");
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-note-modal").modal('toggle');
+                    toastr.success("The note was updated successfully.");
+                    refreshNote(serviceRequestId);
                 }
             });
+            e.preventDefault();
+        });
 
-            function onEdit(serviceRequestId) {
+        function refreshNote(serviceRequestId) {
 
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
-                    contentType: "application/json; charset=utf-8",
-                    success: function (result) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#notes').replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+        }
 
-                        var modalDiv = $("#edit-note-modal");
-                        modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                        modalDiv.find('#Notes').html(result.Notes);
-                        modalDiv.find('#ClaimantName').html(result.ClaimantName);
-
-                        modalDiv.modal('toggle');
-                    },
-                    error: function (err) {
-                        alert(err.status + " - " + err.statusText);
-                    }
-                }, this);
-            }
-
-            $("#edit-note-form").submit(function (e) {
-
-                var url = '@Url.Content("~/Note/UpdateNote")';
-
-                var form = $("#edit-note-form");
-                var serviceRequestId = form.find('#ServiceRequestId').val();
-
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: form.serialize(), // serializes the form's elements.
-                    success: function () {
-                        $("#edit-note-modal").modal('toggle');
-                        toastr.success("The note was updated successfully.");
-                        refreshNote(serviceRequestId);
-                    }
+        function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: @args.ServiceRequestId,
+                    ViewTarget: '@args.ViewTarget',
+                    ViewFilter: '@args.ViewFilter'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container').innerHTML = result;
                 });
-                e.preventDefault();
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('case-container').innerHTML = result;
+                });
+
+            $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('actionmenu-container').innerHTML = result;
+                });
+        }
+
+        function refreshGoogleCalendarIntegration(serviceRequestId) {
+            $.ajax({
+                type: "GET",
+                url: '@string.Format("{0}?serviceRequestId=", Url.Content("~/Google/Calendar/Get"))' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#google-calendar-container').html(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
             });
+        }
 
-            function refreshNote(serviceRequestId) {
-
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
-                    contentType: "text/html",
-                    success: function (result) {
-                        $('#notes').replaceWith(result);
-                    },
-                    error: function (err) {
-                        // undo the UI change made before the ajax call
-                        window.location.reload();
-                    }
-                }, this);
-            }
-
-            function tasklistChanged(serviceRequestId) {
-                let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
-                $.get(url,
-                    {
-                        ServiceRequestId: @args.ServiceRequestId,
-                        ViewTarget: '@args.ViewTarget',
-                        ViewFilter: '@args.ViewFilter'
-                    })
-                    .done(function (result) {
-                        document.getElementById('tasklist-container').innerHTML = result;
-                    });
-            }
-
-            function serviceRequestStatusChanged(serviceRequestId) {
-                $.get('@Url.Content("~/ServiceRequest/Case")',
-                    {
-                        serviceRequestId: serviceRequestId
-                    })
-                    .done(function (result) {
-                        document.getElementById('case-container').innerHTML = result;
-                    });
-
-                $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
-                    {
-                        serviceRequestId: serviceRequestId
-                    })
-                    .done(function (result) {
-                        document.getElementById('actionmenu-container').innerHTML = result;
-                    });
-            }
-
-            function refreshGoogleCalendarIntegration(serviceRequestId) {
-                $.ajax({
-                    type: "GET",
-                    url: '@string.Format("{0}?serviceRequestId=", Url.Content("~/Google/Calendar/Get"))' + serviceRequestId,
-                    contentType: "text/html",
-                    success: function (result) {
-                        $('#google-calendar-container').html(result);
-                    },
-                    error: function (err) {
-                        // undo the UI change made before the ajax call
-                        toastr.error(err);
-                    }
+        function boxInfoChanged(serviceRequestId) {
+            var loader = $('#box-loader');
+            loader.show();
+            $.get('@Url.Content("~/ServiceRequest/BoxManager")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('box-container').innerHTML = result;
+                })
+                .always(function() {
+                    loader.hide();
                 });
-            }
+        }
 
-            function boxInfoChanged(serviceRequestId) {
-                var loader = $('#box-loader');
-                loader.show();
-                $.get('@Url.Content("~/ServiceRequest/BoxManager")',
-                    {
-                        serviceRequestId: serviceRequestId
-                    })
-                    .done(function (result) {
-                        document.getElementById('box-container').innerHTML = result;
-                    })
-                    .always(function() {
-                        loader.hide();
-                    });
-            }
+        function addGoogleCalendarEvent(eventId) {
+            $.ajax({
+                type: "POST",
+                url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequestId)',
+                contentType: "text/html",
+                success: function (result) {
+                    refreshGoogleCalendarIntegration();
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
+            });
+        }
 
-            function addGoogleCalendarEvent(eventId) {
-                $.ajax({
-                    type: "POST",
-                    url: '@string.Format("{0}?serviceRequestId={1}", Url.Content("~/Google/Calendar/Add"), Model.ServiceRequestId)',
-                    contentType: "text/html",
-                    success: function (result) {
-                        refreshGoogleCalendarIntegration();
-                    },
-                    error: function (err) {
-                        // undo the UI change made before the ajax call
-                        toastr.error(err);
-                    }
-                });
-            }
+    </script>
 
-        </script>
-
-    }
+}

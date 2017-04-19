@@ -87,6 +87,7 @@ namespace Orvosi.Shared.Enums.Features
         public const short MoveFolder = 250;
         public const short ManageBoxFolder = 252;
         public const short ViewBoxFolder = 254;
+        public const short Reconcile = 255;
     }
 
     public class ServiceRequest_Google

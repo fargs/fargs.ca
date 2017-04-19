@@ -15,7 +15,6 @@
 
 
 <div>
-    <h4>Box Integration</h4>
     <div class="row">
         <div class="col-sm-12">
             @if (Model.BoxFolder != null)
@@ -136,7 +135,7 @@
         }
     }
 </div>
-@if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
+@if (features.Contains(Features.ServiceRequest_Box.Reconcile))
 {
     if (Model.BoxFolder != null)
     {

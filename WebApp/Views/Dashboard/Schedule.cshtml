@@ -132,7 +132,9 @@
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
             $.get(url, {
-                ServiceRequestId: serviceRequestId
+                ServiceRequestId: serviceRequestId,
+                ViewTarget: '@ViewTarget.Modal',
+                ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
             .done(function (result) {
                 document.getElementById('tasklist-container').innerHTML = result;

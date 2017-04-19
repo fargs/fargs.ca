@@ -34,34 +34,7 @@
                     @Html.Partial("~/Views/ServiceRequest/Case.cshtml", serviceRequest, viewData)
                 </div>
             </div>
-            @*<div class="col-md-1 o-dashboard-td">
-                    <strong>@serviceRequest.StartTime.ToShortTimeSafe()</strong>
-                    @if (serviceRequest.CanBeNoShow)
-                        {
-                        <form>
-                            <div class="checkbox">
-                                <label>
-                                    <input id="task-checkbox-@serviceRequest.Id" type="checkbox"
-                                           value="@serviceRequest.IsNoShow"
-                                           checked="@serviceRequest.IsNoShow"
-                                           @(serviceRequest.IsNoShow ? "checked" : "")
-                                           onclick="onToggleNoShow(this, @serviceRequest.Id, @Model.DayFolder.DayTicks);">
-                                    No Show
-                                </label>
-                            </div>
-                        </form>
-                    }
-                    <div class="o-dashboard-td">
-                        @Html.Partial("_ServiceStatus", serviceRequest)
-                    </div>
-                </div>
-                <div class="col-md-2 o-dashboard-td">
-                    <div><a target="_blank" class="" href="~/ServiceRequest/Details/@serviceRequest.Id">@serviceRequest.ClaimantName (@serviceRequest.Id)</a></div>
-                    <strong style="color: @serviceRequest.Service.ColorCode;">@serviceRequest.Service.Code</strong>
-                    -
-                    <span>@serviceRequest.Company.Name</span>
-                </div>*@
-            <div class="col-md-3 o-dashboard-td">
+            <div class="col-md-5 o-dashboard-td">
                 <div id="tasklist-container-@serviceRequest.ServiceRequestId">
                     @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
                {
@@ -71,11 +44,8 @@
                })
                 </div>
             </div>
-            <div class="col-md-2 o-dashboard-td">
-                <a class="btn btn-default" target="_blank" href="@serviceRequest.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
-                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
-            </div>
             <div class="col-md-5 o-dashboard-td">
+                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
                 @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
             </div>

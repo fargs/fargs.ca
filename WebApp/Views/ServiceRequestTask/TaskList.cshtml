@@ -70,18 +70,15 @@
 <div class="panel @(ViewBag.ViewOptions == ViewTarget.Details ? "panel-default" : null)">
     @if (args.ViewTarget == ViewTarget.Details)
     {
-    <div class="panel-heading">
-        <strong>Tasks</strong>
-        @if (features.Contains(Features.ServiceRequest.ManageTasks))
-        { 
-        <div class="pull-right">
-            @Html.Partial("_TaskListActionMenu", Model.ServiceRequestId)
+        if (features.Contains(Features.ServiceRequest.ManageTasks))
+        {
+        <div class="panel-heading">
+                @Html.Partial("_TaskListActionMenu", Model.ServiceRequestId)        
         </div>
         }
-    </div>
     }
     <div class="panel-body">
-        <table class="">
+        <table>
             @foreach (var task in Model.Tasks)
             {
                 <tr>

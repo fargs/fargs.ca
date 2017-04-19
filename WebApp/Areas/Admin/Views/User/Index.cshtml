@@ -43,7 +43,7 @@
                             }
                             <li role="separator" class="divider"></li>
                             <li role="presentation">@Html.ActionLink("Account", "Account", "User", new { area = "Admin", id = item.Id }, new { })</li>
-                            <li role="presentation"><a id="SendActivationEmailButton" data-userid="@item.Id" role="button">Send Activation Email</a></li>
+                            <li role="presentation">@Html.ActionLink("Send Activation Email", "SendActivationEmail", "User", new { area = "Admin", userId = item.Id }, new { })</li>
                             <li role="presentation">@Html.ActionLink("Reset Password", "ResetPassword", "User", new { area = "Admin", userId = item.Id }, new { })</li>
                             <li role="presentation">@Html.ActionLink("Change Password", "ChangePassword", "User", new { area = "Admin", id = item.Id }, new { })</li>
                             @*<li role="presentation"><a id="DeleteButton" data-userid="@item.Id" role="button">Remove</a></li>*@

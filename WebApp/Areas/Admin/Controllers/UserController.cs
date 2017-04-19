@@ -392,7 +392,8 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
             await messenger.SendActivationEmail(user.Email, user.UserName, callbackUrl, AspNetRoles.Company);
 
-            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+            var userRoleId = user.Roles.First().RoleId;
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRoleId).RoleCategoryId;
             return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 
@@ -406,7 +407,8 @@ namespace WebApp.Areas.Admin.Controllers
             var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.DnsSafeHost);
             await messenger.SendResetPasswordEmail(user.Email, user.UserName, callbackUrl);
 
-            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+            var userRoleId = user.Roles.First().RoleId;
+            var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRoleId).RoleCategoryId;
             return RedirectToAction("Index", new { parentId = roleCategoryId });
         }
 
@@ -430,10 +432,6 @@ namespace WebApp.Areas.Admin.Controllers
             if (result.Succeeded)
             {
                 var user = await UserManager.FindByIdAsync(model.UserId);
-                if (user != null)
-                {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                }
                 var userRoleId = user.Roles.First().RoleId;
                 var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRoleId).RoleCategoryId;
                 return RedirectToAction("Index", new { parentId = roleCategoryId });

@@ -31,13 +31,9 @@ namespace WebApp
         private static IEmailService CreateService()
         {
             var mailSystem = ConfigurationManager.AppSettings["MailSystem"];
-            if (mailSystem == "SendGrid")
+            if (mailSystem == "Gmail")
             {
-                return new SendGridEmailService();
-            }
-            else if (mailSystem == "Gmail")
-            {
-                return new GmailEmailService();
+                return new GoogleServices();
             }
             return new LocalEmailService();
 

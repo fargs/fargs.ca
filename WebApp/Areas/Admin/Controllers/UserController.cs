@@ -434,7 +434,8 @@ namespace WebApp.Areas.Admin.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == user.Roles.First().RoleId).RoleCategoryId;
+                var userRoleId = user.Roles.First().RoleId;
+                var roleCategoryId = db.AspNetRoles.FirstOrDefault(r => r.Id == userRoleId).RoleCategoryId;
                 return RedirectToAction("Index", new { parentId = roleCategoryId });
             }
             AddErrors(result);

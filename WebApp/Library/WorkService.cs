@@ -166,6 +166,8 @@ namespace WebApp.Library
             task.TaskStatusId = TaskStatuses.ToDo;
             task.TaskStatusChangedBy = identity.GetGuidUserId();
             task.TaskStatusChangedDate = now;
+            task.CreatedDate = now;
+            task.CreatedUser = userId.ToString();
 
             // this is currently hard coded but should be made editable by the user adding the task
             if (taskId == Tasks.AdditionalEdits)
@@ -360,20 +362,21 @@ namespace WebApp.Library
         private ServiceRequestTask ChangeTaskStatus(ServiceRequestTask srt, short newTaskStatusId)
         {
             srt.TaskStatusId = newTaskStatusId;
-            srt.TaskStatusChangedBy = identity.GetGuidUserId();
+            srt.TaskStatusChangedBy = userId;
             srt.TaskStatusChangedDate = now;
             srt.ModifiedDate = now;
-            srt.ModifiedUser = identity.GetGuidUserId().ToString();
+            srt.ModifiedUser = userId.ToString();
+
+            if (srt.TaskStatusId == TaskStatuses.Done)
+            {
+                srt.CompletedBy = userId;
+                srt.CompletedDate = now;
+            }
             return srt;
         }
         private async Task SaveTaskStatusChange(ServiceRequestTask srt, short newTaskStatusId)
         {
-            srt.TaskStatusId = newTaskStatusId;
-            srt.TaskStatusChangedBy = identity.GetGuidUserId();
-            srt.TaskStatusChangedDate = now;
-            srt.ModifiedDate = now;
-            srt.ModifiedUser = identity.GetGuidUserId().ToString();
-
+            var task = ChangeTaskStatus(srt, newTaskStatusId);
             await db.SaveChangesAsync();
         }
         private async Task SaveDependentTaskStatusChanges(ServiceRequest serviceRequest)

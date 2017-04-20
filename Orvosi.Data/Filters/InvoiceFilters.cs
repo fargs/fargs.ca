@@ -28,10 +28,10 @@ namespace Orvosi.Data.Filters
         }
         public static IQueryable<Invoice> AreSent(this IQueryable<Invoice> invoices)
         {
-            // this where clause could be refactored into an expression because it is duped in the Shared.Model Invoice IsSent property.
+            // this where clause could be refactored into an expression because it is duped in the Shared.Model Invoice IsSent property and InvoiceDto.
             return invoices
                 .Where(i => i.SentDate.HasValue
-                || i.InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.CompletedDate.HasValue)));
+                || i.InvoiceDetails.Any(id => id.ServiceRequest == null ? false : id.ServiceRequest.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && (srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Archive))));
         }
         public static IQueryable<Invoice> AreNotSent(this IQueryable<Invoice> invoices)
         {

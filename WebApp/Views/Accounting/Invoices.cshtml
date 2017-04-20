@@ -2,7 +2,7 @@
 @using Orvosi.Shared.Enums
 @using Orvosi.Data
 @using Orvosi.Shared.Enums.Features
-@model WebApp.ViewModels.InvoiceViewModels.IndexViewModel
+@model WebApp.ViewModels.InvoiceViewModels.InvoiceListViewModel
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
 
@@ -75,7 +75,7 @@ else
     <div class="row o-th" style="background-color: aliceblue">
         <div class="col-md-12">
             <div class="h3">
-                @dayFolder.DayFormatted_MMMdd<span class="small"> @dayFolder.DayFormatted_dddd</span>
+                @dayFolder.Day.ToString("MMM dd dddd")
             </div>
         </div>
     </div>
@@ -100,24 +100,24 @@ else
                     <div>No related service request</div>
                 }
             </div>
-            <div class="col-md-8 o-dashboard-td" id="service-request-invoice-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.Id.ToString())">
+            <div class="col-md-8 o-dashboard-td" id="service-request-invoice-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.ServiceRequestId.ToString())">
                 @if (unsentInvoice.Invoice != null)
                 {
                     @Html.Partial("_Invoice", unsentInvoice.Invoice)
                 }
                 else
                 {
-                    <div>No invoice</div>
+                    <div class="text-muted">Create invoice</div>
                 }
             </div>
-            <div class="col-md-2 o-dashboard-td" id="invoice-menu-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.Id.ToString())">
+            <div class="col-md-2 o-dashboard-td" id="invoice-menu-@(unsentInvoice.ServiceRequest == null ? "null" : unsentInvoice.ServiceRequest.ServiceRequestId.ToString())">
                 @if (unsentInvoice.Invoice == null)
                 {
                     if (features.Contains(Accounting.CreateInvoice))
                     {
-                        <div id="service-request-invoice-menu-@unsentInvoice.ServiceRequest.Id">
+                        <div id="service-request-invoice-menu-@unsentInvoice.ServiceRequest.ServiceRequestId">
                             <div class="pull-right">
-                                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@unsentInvoice.ServiceRequest.Id)"><i class="fa fa-lg fa-plus"></i></button>
+                                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@unsentInvoice.ServiceRequest.ServiceRequestId)"><i class="fa fa-lg fa-plus"></i></button>
                             </div>
                         </div>
                     }

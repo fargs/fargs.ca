@@ -506,6 +506,10 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddressDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
+    <Compile Include="Models\CustomerDto.cs" />
+    <Compile Include="Models\InvoiceDetailDto.cs" />
+    <Compile Include="Models\InvoiceDto.cs" />
+    <Compile Include="Models\ReceiptDto.cs" />
     <Compile Include="Models\ServiceCategoryDto.cs" />
     <Compile Include="Models\ProvinceDto.cs" />
     <Compile Include="Models\CityDto.cs" />
@@ -516,6 +520,7 @@
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="Models\MessageDto.cs" />
     <Compile Include="Library\ContextPerRequest.cs" />
+    <Compile Include="Models\ServiceProviderDto.cs" />
     <Compile Include="Models\ServiceRequestDtoFilters.cs">
       <DependentUpon>ServiceRequestDto.cs</DependentUpon>
     </Compile>

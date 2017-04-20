@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Printable - Orvosi Medical</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @RenderSection("head", required: false)
@@ -12,5 +11,11 @@
     <div>
         @RenderBody()
     </div>
+    <button onclick="printInvoice()">Print this page</button>
+    <script>
+        function printInvoice() {
+            window.print();
+        }
+    </script>
 </body>
 </html>

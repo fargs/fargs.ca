@@ -37,8 +37,7 @@
 <div class="modal-footer">
     <input class="btn btn-success"
            type="submit"
-           onclick="editAndSendInvoiceSaveChanges(@Model.InvoiceId
-           @if (Model.ServiceRequestId.HasValue) { Html.Raw(", " + Model.ServiceRequestId); })"
+           onclick="editAndSendInvoiceSaveChanges(@Model.InvoiceId @(Model.ServiceRequestId.HasValue ? ", " + Model.ServiceRequestId.ToString() : ""))"
            value="Send" />
 
 

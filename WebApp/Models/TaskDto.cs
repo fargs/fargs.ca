@@ -88,5 +88,13 @@ namespace WebApp.Models
             TaskStatusId = srt.TaskStatusId,
             DueDate = srt.DueDate
         };
+
+        public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntityForInvoiceDetail = srt => new TaskDto
+        {
+            Id = srt.Id,
+            TaskId = srt.TaskId.Value,
+            TaskStatusId = srt.TaskStatusId,
+            TaskStatusChangedDate = srt.TaskStatusChangedDate
+        };
     }
 }

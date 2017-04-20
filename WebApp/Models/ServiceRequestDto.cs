@@ -41,6 +41,13 @@ namespace WebApp.Models
                 return AppointmentDate.HasValue && StartTime.HasValue ? AppointmentDate.Value.AddTicks(StartTime.HasValue ? StartTime.Value.Ticks : 0) : (DateTime?)null;
             }
         }
+        public DateTime? EffectiveDate
+        {
+            get
+            {
+                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.HasValue ? DueDate.Value : (DateTime?)null;
+            }
+        }
 
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
@@ -244,23 +251,28 @@ namespace WebApp.Models
             Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
 
-        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForLookAhead(short taskId)
-        {
-            return sr => new ServiceRequestDto
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForInvoice = sr => new ServiceRequestDto
             {
                 Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
                 AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
                 DueDate = sr.DueDate,
-                ServiceRequestStatusId = sr.ServiceRequestStatusId,
                 CancelledDate = sr.CancelledDate,
                 IsNoShow = sr.IsNoShow,
                 IsLateCancellation = sr.IsLateCancellation,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                Notes = sr.Notes,
+
+                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
 
                 Tasks = sr.ServiceRequestTasks.AsQueryable()
-                    .Where(srt => srt.TaskId == taskId)
-                    .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
+                    .Where(srt => srt.TaskId == Orvosi.Shared.Enums.Tasks.SubmitInvoice)
+                    .Select(TaskDto.FromServiceRequestTaskEntityForInvoiceDetail.Expand())
             };
-        }
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTaskStatusSummary(Guid userId, short[] taskIds)
         {
@@ -276,5 +288,13 @@ namespace WebApp.Models
                     .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
             };
         }
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForInvoiceDetail = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            Tasks = sr.ServiceRequestTasks.AsQueryable()
+                .Where(srt => srt.TaskId == Orvosi.Shared.Enums.Tasks.SubmitInvoice)
+                .Select(TaskDto.FromServiceRequestTaskEntityForInvoiceDetail.Expand())
+        };
     }
 }

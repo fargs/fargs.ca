@@ -22,6 +22,7 @@ namespace WebApp.ViewModels
         public TimeSpan? StartTime { get; set; }
         public DateTime? AppointmentDateAndStartTime { get; set; }
         public DateTime? DueDate { get; set; }
+        public DateTime? EffectiveDate { get; set; }
         public string Notes { get; set; }
         public string BoxCaseFolderId { get; set; }
         public string BoxCaseFolderURL { get; set; }
@@ -48,6 +49,7 @@ namespace WebApp.ViewModels
         public LookupViewModel<Guid> CaseCoordinator { get; set; }
         public LookupViewModel<Guid> DocumentReviewer { get; set; }
         public LookupViewModel<Guid> IntakeAssistant { get; set; }
+        public bool IsSubmitInvoiceTaskDone { get; set; } = false;
 
         public static Expression<Func<ServiceRequestDto, CaseViewModel>> FromServiceRequestDto = dto => new CaseViewModel
         {
@@ -57,6 +59,7 @@ namespace WebApp.ViewModels
             StartTime = dto.StartTime,
             AppointmentDateAndStartTime = dto.AppointmentDateAndStartTime,
             DueDate = dto.DueDate,
+            EffectiveDate = dto.EffectiveDate,
             Notes = dto.Notes,
             BoxCaseFolderId = dto.BoxCaseFolderId,
             BoxCaseFolderURL = dto.BoxCaseFolderURL,
@@ -68,6 +71,7 @@ namespace WebApp.ViewModels
             CanBeCancelled = dto.CanBeCancelled(dto.IsNoShow, dto.IsLateCancellation, dto.CancelledDate),
             CanBeUncancelled = dto.CanBeUncancelled(dto.IsLateCancellation, dto.CancelledDate),
             CanBeNoShow = dto.CanBeNoShow(dto.AppointmentDate),
+            IsSubmitInvoiceTaskDone = dto.IsSubmitInvoiceTaskDone,
 
             ServiceRequestStatus = LookupViewModel<short>.FromServiceRequestStatusDto.Invoke(dto.ServiceRequestStatus),
             CancellationViewModel = CancellationViewModel.FromServiceRequestDto.Invoke(dto),

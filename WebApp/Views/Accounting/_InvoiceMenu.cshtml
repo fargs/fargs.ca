@@ -1,7 +1,6 @@
 ﻿@using WebApp.Library.Extensions
-@using Orvosi.Shared.Enums
 @using Orvosi.Shared.Enums.Features
-@model Orvosi.Shared.Model.UnsentInvoice
+@model WebApp.ViewModels.InvoiceViewModels.UnsentInvoiceViewModel
 
 @{
     var features = User.Identity.GetFeatures();
@@ -15,18 +14,18 @@
             {
                 <button type="button" class="btn btn-success" disabled><i class="fa fa-check fa-lg"></i></button>
             }
-            else if (Model.Invoice.IsSent)
+            else if (Model.Invoice.IsSent || (Model.ServiceRequest != null && Model.ServiceRequest.IsSubmitInvoiceTaskDone))
             {
                 if (features.Contains(Accounting.ManageReceipts))
                 {
-                    <button type="button" class="btn btn-warning" onclick="onPaid(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.Id.ToString() : string.Empty))"><i class="fa fa-usd fa-lg"></i></button>
+                    <button type="button" class="btn btn-warning" onclick="onPaid(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-usd fa-lg"></i></button>
                 }
             }
             else
             {
                 if (features.Contains(Accounting.SendInvoice))
                 {
-                    <button type="button" class="btn btn-primary" onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.Id.ToString() : string.Empty))"><i class="fa fa-send"></i></button>
+                    <button type="button" class="btn btn-primary" onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-send"></i></button>
                 }
             }
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -53,7 +52,7 @@
                 @if (features.Contains(Accounting.SendInvoice))
                 {
                     <li>
-                        <a onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.Id.ToString() : string.Empty))" style="cursor:pointer;">
+                        <a onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
                             <i class="fa fa-send"></i> &nbsp;Send
                         </a>
                     </li>
@@ -76,7 +75,7 @@
                 {
                     <li class="divider"></li>
                     <li>
-                        <a onclick="onDeleteInvoice(@Model.Invoice.Id @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.Id.ToString() : string.Empty))" style="cursor:pointer;">
+                        <a onclick="onDeleteInvoice(@Model.Invoice.Id @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
                             <i class="fa fa-remove"></i> &nbsp;Delete Invoice
                         </a>
                     </li>
@@ -95,9 +94,9 @@ else
 {
     if (features.Contains(Accounting.CreateInvoice))
     {
-        <div id="service-request-invoice-menu-@Model.ServiceRequest.Id">
+        <div id="service-request-invoice-menu-@Model.ServiceRequest.ServiceRequestId">
             <div class="pull-right">
-                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@Model.ServiceRequest.Id)"><i class="fa fa-lg fa-plus"></i></button>
+                <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@Model.ServiceRequest.ServiceRequestId)"><i class="fa fa-lg fa-plus"></i></button>
             </div>
         </div>
     }

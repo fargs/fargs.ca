@@ -3,6 +3,7 @@
 @using Orvosi.Shared.Enums
 @using Orvosi.Shared.Enums.Features
 @using Orvosi.Data
+@using WebApp.Library
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -11,7 +12,7 @@
 
     var features = User.Identity.GetFeatures();
 
-    var context = new OrvosiDbContext();
+    var context = ContextPerRequest.db;
 
     Guid userId = User.Identity.GetGuidUserId();
 

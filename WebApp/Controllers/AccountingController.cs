@@ -21,147 +21,137 @@ using MoreLinq;
 using WebApp.Library.Filters;
 using Orvosi.Shared.Enums.Features;
 using System.Text;
+using WebApp.Models;
+using LinqKit;
+using WebApp.ViewModels.CalendarViewModels;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
-    public class AccountingController : Controller
+    public class AccountingController : BaseController
     {
         [AuthorizeRole(Feature = Accounting.ViewUnsentInvoices)]
         public ActionResult UnsentInvoices(FilterArgs filterArgs)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                Guid userId = User.Identity.GetUserContext().Id;
-                var now = SystemTime.Now();
-
-                var serviceRequests = context.ServiceRequests
-                    .ForPhysician(userId)
+                var serviceRequests = db.ServiceRequests
+                    .ForPhysician(currentContextId)
                     .AreNotCancellations()
                     .WhereSubmitInvoiceTaskIsToDo()
                     .AreForCompany(filterArgs.CustomerId)
                     .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
-                    .Select(ServiceRequestProjections.BasicInfo(userId, now))
+                    .Select(ServiceRequestDto.FromServiceRequestEntityForInvoice.Expand())
                     .ToList();
 
-                var invoices = context.Invoices
-                    .AreOwnedBy(userId)
+                var invoices = db.Invoices
+                    .AreOwnedBy(currentContextId)
                     .AreNotDeleted()
                     .AreNotSent()
                     .AreForCustomer(filterArgs.CustomerId)
                     .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
-                    .Select(InvoiceProjections.Header())
+                    .Select(InvoiceDto.FromInvoiceEntity.Expand())
                     .ToList();
 
                 // Full outer join on these 2 lists.
                 var leftSide = from sr in serviceRequests
                                join i in invoices on sr.Id equals i.ServiceRequestId into g
                                from sub in g.DefaultIfEmpty()
-                               select new Orvosi.Shared.Model.UnsentInvoice
+                               select new UnsentInvoiceViewModel
                                {
-                                   ServiceRequest = sr,
-                                   Invoice = sub
+                                   ServiceRequest = CaseViewModel.FromServiceRequestDto.Invoke(sr),
+                                   Invoice = sub != null ? InvoiceViewModel.FromInvoiceDto.Invoke(sub) : null
                                };
 
                 var rightSide = from i in invoices
                                 where !i.ServiceRequestId.HasValue
-                                select new Orvosi.Shared.Model.UnsentInvoice
+                                select new UnsentInvoiceViewModel
                                 {
-                                    Invoice = i
+                                    Invoice = InvoiceViewModel.FromInvoiceDto.Invoke(i)
                                 };
 
                 var result = leftSide.Concat(rightSide).ToList();
 
                 var model = result
                     .GroupBy(d => new { Day = d.Day })
-                    .Select(d => new Orvosi.Shared.Model.UnsentInvoiceDayFolder
+                    .Select(d => new DayViewModel
                     {
-                        DayAndTime = d.Key.Day,
+                        Day = d.Key.Day,
                         UnsentInvoices = d
                             .OrderBy(sr => d.Key.Day)
                             .ThenBy(sr => sr.ServiceRequest != null && sr.ServiceRequest.StartTime.HasValue ? sr.ServiceRequest.StartTime.Value.Ticks : d.Key.Day.Ticks)
                     }).OrderBy(df => df.Day);
 
-                var viewModel = new IndexViewModel
+                var viewModel = new InvoiceListViewModel
                 {
                     FilterArgs = filterArgs,
                     UnsentInvoices = model
                 };
 
                 return View("Invoices", viewModel);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ViewUnpaidInvoices)]
         public ActionResult UnpaidInvoices(FilterArgs filterArgs)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                Guid userId = User.Identity.GetUserContext().Id;
-                var now = SystemTime.Now();
 
-                var serviceRequests = context.ServiceRequests
-                    .ForPhysician(userId)
+
+                var serviceRequests = db.ServiceRequests
+                    .ForPhysician(currentContextId)
                     //.HaveCompletedSubmitInvoiceTask()
                     //.AreForCompany(filterArgs.CustomerId)
                     //.AreWithinDateRange(filterArgs.Year, filterArgs.Month)
-                    .Select(ServiceRequestProjections.BasicInfo(userId, now))
+                    .Select(ServiceRequestDto.FromServiceRequestEntityForInvoice.Expand())
                     .ToList();
 
-                var invoices = context.Invoices
-                    .AreOwnedBy(userId)
+                var invoices = db.Invoices
+                    .AreOwnedBy(currentContextId)
                     .AreSent()
                     .AreUnpaid()
                     .AreForCustomer(filterArgs.CustomerId)
                     .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
-                    .Select(InvoiceProjections.Header())
+                    .Select(InvoiceDto.FromInvoiceEntity.Expand())
                     .ToList();
 
                 // Full outer join on these 2 lists.
                 var leftSide = from i in invoices
                                join sr in serviceRequests on i.ServiceRequestId equals sr.Id into g
                                from sub in g.DefaultIfEmpty()
-                               select new Orvosi.Shared.Model.UnsentInvoice
+                               select new UnsentInvoiceViewModel
                                {
-                                   ServiceRequest = sub,
-                                   Invoice = i
+                                   ServiceRequest = sub != null ? CaseViewModel.FromServiceRequestDto.Invoke(sub) : null,
+                                   Invoice = InvoiceViewModel.FromInvoiceDto.Invoke(i)
                                };
 
                 var model = leftSide
                     .GroupBy(d => new { Day = d.Invoice.InvoiceDate }) // NOTE: Grouped by Invoice Date
-                    .Select(d => new Orvosi.Shared.Model.UnsentInvoiceDayFolder
+                    .Select(d => new DayViewModel
                     {
-                        DayAndTime = d.Key.Day,
+                        Day = d.Key.Day,
                         UnsentInvoices = d
                             .OrderBy(sr => d.Key.Day)
                             .ThenBy(sr => sr.ServiceRequest != null && sr.ServiceRequest.StartTime.HasValue ? sr.ServiceRequest.StartTime.Value.Ticks : d.Key.Day.Ticks)
                     }).OrderBy(df => df.Day);
 
-                var viewModel = new IndexViewModel
+                var viewModel = new InvoiceListViewModel
                 {
                     FilterArgs = filterArgs,
                     UnsentInvoices = model
                 };
 
                 return View("Invoices", viewModel);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.SearchInvoices)]
         public ActionResult AllInvoices(FilterArgs filterArgs)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                Guid userId = User.Identity.GetUserContext().Id;
-                var now = SystemTime.Now();
 
-                var serviceRequests = context.ServiceRequests
-                    .ForPhysician(userId)
-                    .Select(ServiceRequestProjections.BasicInfo(userId, now))
+                var serviceRequests = db.ServiceRequests
+                    .ForPhysician(currentContextId)
+                    .Select(ServiceRequestDto.FromServiceRequestEntityForInvoice.Expand())
                     .ToList();
 
                 // if the users searches for a specific invoice, only show that invoice.
-                var query = context.Invoices
-                    .AreOwnedBy(userId);
+                var query = db.Invoices
+                    .AreOwnedBy(currentContextId);
 
                 if (filterArgs.InvoiceId.HasValue)
                 {
@@ -171,55 +161,50 @@ namespace WebApp.Controllers
                 else
                 {
                     query = query
-                        .AreOwnedBy(userId)
+                        .AreOwnedBy(currentContextId)
                         .AreNotDeleted()
                         .AreForCustomer(filterArgs.CustomerId)
-                        .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month);
+                        .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month);
                 }
 
                 var invoices = query
-                    .Select(InvoiceProjections.Header())
+                    .Select(InvoiceDto.FromInvoiceEntity.Expand())
                     .ToList();
 
                 // Full outer join on these 2 lists.
                 var leftSide = from i in invoices
                                join sr in serviceRequests on i.ServiceRequestId equals sr.Id into g
                                from sub in g.DefaultIfEmpty()
-                               select new Orvosi.Shared.Model.UnsentInvoice
+                               select new UnsentInvoiceViewModel
                                {
-                                   ServiceRequest = sub,
-                                   Invoice = i
+                                   ServiceRequest = sub != null ? CaseViewModel.FromServiceRequestDto.Invoke(sub) : null,
+                                   Invoice = InvoiceViewModel.FromInvoiceDto.Invoke(i)
                                };
 
                 var model = leftSide
                     .GroupBy(d => new { Day = d.Invoice.InvoiceDate }) // NOTE: Grouped by Invoice Date
-                    .Select(d => new Orvosi.Shared.Model.UnsentInvoiceDayFolder
+                    .Select(d => new DayViewModel
                     {
-                        DayAndTime = d.Key.Day,
+                        Day = d.Key.Day,
                         UnsentInvoices = d
                             .OrderBy(sr => d.Key.Day)
                             .ThenBy(sr => sr.ServiceRequest != null && sr.ServiceRequest.StartTime.HasValue ? sr.ServiceRequest.StartTime.Value.Ticks : d.Key.Day.Ticks)
                     }).OrderBy(df => df.Day);
 
-                var viewModel = new IndexViewModel
+                var viewModel = new InvoiceListViewModel
                 {
                     FilterArgs = filterArgs,
                     UnsentInvoices = model
                 };
 
                 return View("Invoices", viewModel);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.Analytics)]
         public ActionResult Analytics(FilterArgs filterArgs)
         {
-            Guid userId = User.Identity.GetUserContext().Id;
-            var now = SystemTime.Now();
-            using (var context = new OrvosiDbContext())
-            {
-                var invoices = context.Invoices
-                    .AreOwnedBy(userId)
+                var invoices = db.Invoices
+                    .AreOwnedBy(currentContextId)
                     .AreNotDeleted()
                     .AreSent()
                     .AreForCustomer(filterArgs.CustomerId)
@@ -263,7 +248,7 @@ namespace WebApp.Controllers
                         SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
                         Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
                     });
-                var billableEntities = context.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
+                var billableEntities = db.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
                 var netIncomeByCompany = invoiceTotals
                     .Join(billableEntities,
                         i => i.CustomerId,
@@ -298,82 +283,70 @@ namespace WebApp.Controllers
                 vm.FilterArgs = filterArgs;
 
                 return View("~/Views/Invoice/Dashboard.cshtml", vm);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                Guid userId = User.Identity.GetUserContext().Id;
-                var now = SystemTime.Now();
-
-                var serviceRequests = context
-                    .ServiceRequests
+                var serviceRequests = db.ServiceRequests
                         .Where(s => s.Id == serviceRequestId)
-                        .Select(ServiceRequestProjections.DetailsWithInvoices(userId, now))
+                        .Select(ServiceRequestProjections.DetailsWithInvoices(currentContextId, now))
                         .ToList();
                 if (serviceRequests.Count() != 1)
                     return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
                 return PartialView("_ServiceRequest", serviceRequests.First());
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult Invoice(int invoiceId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var record = context.Invoices
+                var dto = db.Invoices
                     .WithId(invoiceId)
-                    .Select(InvoiceProjections.Header())
+                    .Select(InvoiceDto.FromInvoiceEntity.Expand())
                     .SingleOrDefault();
 
-                return PartialView("_Invoice", record);
-            }
+                var viewModel = dto == null ? null : InvoiceViewModel.FromInvoiceDto.Invoke(dto);
+
+                return PartialView("_Invoice", viewModel);
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public ActionResult InvoiceMenu(int invoiceId, int? serviceRequestId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                Orvosi.Shared.Model.ServiceRequest serviceRequest = null;
+
+                CaseViewModel caseViewModel = null;
                 if (serviceRequestId.HasValue)
                 {
-                    serviceRequest = context.ServiceRequests
+                    var dto = db.ServiceRequests
                     .WithId(serviceRequestId.Value)
-                    .Select(ServiceRequestProjections.MinimalInfo())
-                    .FirstOrDefault();
+                    .Select(ServiceRequestDto.FromServiceRequestEntityForInvoiceDetail.Expand())
+                    .SingleOrDefault();
+
+                    caseViewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
                 }
 
-                var invoice = context.Invoices
+                var invoice = db.Invoices
                     .Where(i => i.Id == invoiceId)
-                    .Select(InvoiceProjections.MinimalInfoWithStatus())
-                    .FirstOrDefault();
+                    .Select(InvoiceDto.FromInvoiceEntityForInvoiceMenu.Expand())
+                    .SingleOrDefault();
 
-                var unsentInvoice = new Orvosi.Shared.Model.UnsentInvoice
+                var invoiceViewModel = invoice == null ? null : InvoiceViewModel.FromInvoiceDtoForInvoiceMenu.Invoke(invoice);
+
+                var unsentInvoice = new UnsentInvoiceViewModel
                 {
-                    ServiceRequest = serviceRequest,
-                    Invoice = invoice
+                    ServiceRequest = caseViewModel,
+                    Invoice = invoiceViewModel
                 };
 
                 return PartialView("_InvoiceMenu", unsentInvoice);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.SearchInvoices)]
         public ActionResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
         {
-            Guid userId = User.Identity.GetUserContext().Id;
-            var now = SystemTime.Now();
-
-            using (var context = new OrvosiDbContext())
-            {
-                var data = context.Invoices
-                    .AreOwnedBy(userId)
+                var data = db.Invoices
+                    .AreOwnedBy(currentContextId)
                     .Where(i => i.InvoiceNumber.Contains(searchTerm)
                         || i.InvoiceDetails.Any(id => id.Description.ToLower().Contains(searchTerm.ToLower())))
                     .Select(i => new
@@ -397,7 +370,6 @@ namespace WebApp.Controllers
                     total_count = data.Count(),
                     items = data
                 }, JsonRequestBehavior.AllowGet);
-            }
         }
 
         #region InvoiceAPI
@@ -406,29 +378,27 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult Create(int serviceRequestId)
         {
-            using (var context = new OrvosiDbContext())
-            {
                 var serviceRequest =
-                    context.ServiceRequests
+                    db.ServiceRequests
                         .Find(serviceRequestId);
 
                 // check if the no show rates are set in the request. Migrate old records to use invoices.
                 if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
                 {
-                    var rates = context.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
+                    var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
                     serviceRequest.NoShowRate = rates.NoShowRate;
                     serviceRequest.LateCancellationRate = rates.LateCancellationRate;
                 }
 
-                var serviceProvider = context.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
-                var customer = context.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
+                var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
+                var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
 
                 // REFACTOR: this is dupped in CreateInvoice
                 // Gets new invoice number specific to the service provider except for Shariff, Zeeshan and Rajiv.
-                var invoiceNumber = context.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
+                var invoiceNumber = db.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
                 if (serviceProvider.EntityId == "8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c" || serviceProvider.EntityId == "8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9" || serviceProvider.EntityId == "48f9d9fd-deb5-471f-9454-066430a510f1") // Shariff, Zeeshan, Rajiv will use old invoice number approach
                 {
-                    var invoiceNumberStr = context.GetNextInvoiceNumber().First().NextInvoiceNumber;
+                    var invoiceNumberStr = db.GetNextInvoiceNumber().First().NextInvoiceNumber;
                     invoiceNumber = long.Parse(invoiceNumberStr);
                 }
 
@@ -447,30 +417,26 @@ namespace WebApp.Controllers
 
                 invoice.CalculateTotal();
 
-                context.Invoices.Add(invoice);
+                db.Invoices.Add(invoice);
 
-                context.SaveChanges();
+                db.SaveChanges();
 
                 return Json(new
                 {
                     id = invoice.Id
                 });
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult CreateInvoice(Guid? serviceProviderId)
         {
-            using (var context = new OrvosiDbContext())
-            {
                 // TODO: Need to filter this list to show customers specific to the service provider.
-                ViewBag.CustomerSelectList = GetCustomerList(context);
-            }
+                ViewBag.CustomerSelectList = GetCustomerList();
 
             var invoice = new Orvosi.Data.Invoice()
             {
-                ServiceProviderGuid = User.Identity.GetUserContext().Id,
-                InvoiceDate = SystemTime.Now()
+                ServiceProviderGuid = currentContextId,
+                InvoiceDate = now
             };
             return View(invoice);
         }
@@ -479,18 +445,16 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
         public ActionResult CreateInvoice(CreateInvoiceForm form)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var serviceProvider = context.BillableEntities.First(c => c.EntityGuid == form.ServiceProviderGuid);
-                var customer = context.BillableEntities.First(c => c.EntityGuid == form.CustomerGuid);
+                var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == form.ServiceProviderGuid);
+                var customer = db.BillableEntities.First(c => c.EntityGuid == form.CustomerGuid);
 
                 // REFACTOR: this is dupped in Create
                 // Gets new invoice number specific to the service provider except for Shariff, Zeeshan and Rajiv.
-                var invoiceNumber = context.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
+                var invoiceNumber = db.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
                 if (serviceProvider.EntityId == "8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c" || serviceProvider.EntityId == "8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9" || serviceProvider.EntityId == "48f9d9fd-deb5-471f-9454-066430a510f1") // Shariff, Zeeshan, Rajiv will use old invoice number approach
                 {
                     // this is the old stored procedure approach. This same code is in the Mapper class if ever refactored.
-                    var invoiceNumberStr = context.GetNextInvoiceNumber().First().NextInvoiceNumber;
+                    var invoiceNumberStr = db.GetNextInvoiceNumber().First().NextInvoiceNumber;
                     invoiceNumber = long.Parse(invoiceNumberStr);
                 }
 
@@ -499,27 +463,22 @@ namespace WebApp.Controllers
                 var invoice = new Orvosi.Data.Invoice();
                 invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
-                context.Invoices.Add(invoice);
-                context.SaveChanges();
+                db.Invoices.Add(invoice);
+                db.SaveChanges();
                 return RedirectToAction("AllInvoices", new FilterArgs() { ServiceProviderId = form.ServiceProviderGuid, InvoiceId = invoice.Id });
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public async Task<ActionResult> PreviewInvoice(Guid id)
         {
-            using (var context = new Orvosi.Data.OrvosiDbContext())
-            {
-                var invoice = await context.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
+                var invoice = await db.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
                 return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
         public async Task<ActionResult> EditAndSendInvoice(int invoiceId, int? serviceRequestId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
+            var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
 
             var message = BuildSendInvoiceMailMessage(invoice, Request.GetBaseUrl());
             var viewModel = new WebApp.ViewModels.MailMessageViewModel
@@ -551,22 +510,44 @@ namespace WebApp.Controllers
             var attachment = new Attachment(Request.Files["Attachment1"].InputStream, Request.Files["Attachment1"].FileName);
             message.Attachments.Add(attachment);
 
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
-            return await SendMessageUsingGoogle(context, invoice, message);
+            // send the email
+            var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
+            invoice = await SendMessageUsingGoogle(invoice, message);
+
+            // set the submit invoice task to done
+            foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
+            {
+                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
+                await service.ChangeTaskStatus(task.Id, TaskStatuses.Done);
+            }
+
+            await db.SaveChangesAsync();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
         public async Task<ActionResult> SendInvoice(int invoiceId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var invoice = await context.Invoices.FirstAsync(c => c.Id == invoiceId);
+            var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
 
+            // send the email
             var message = BuildSendInvoiceMailMessage(invoice, Request.GetBaseUrl());
-            return await SendMessageUsingGoogle(context, invoice, message);
+            invoice = await SendMessageUsingGoogle(invoice, message);
+
+            // set the submit invoice task to done
+            foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
+            {
+                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
+                await service.ChangeTaskStatus(task.Id, TaskStatuses.Done);
+            }
+
+            await db.SaveChangesAsync();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        private async Task<ActionResult> SendMessageUsingGoogle(OrvosiDbContext context, Invoice invoice, MailMessage message)
+        private async Task<Invoice> SendMessageUsingGoogle(Invoice invoice, MailMessage message)
         {
             // this should get created using a DI container and configured in the Startup.
             await new GoogleServices()
@@ -585,21 +566,13 @@ namespace WebApp.Controllers
                 ModifiedUser = User.Identity.Name
             });
 
-            foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
-            {
-                var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
-                task.CompletedDate = SystemTime.Now();
-            }
-
-            await context.SaveChangesAsync();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            return invoice;
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceHeader(int invoiceId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var model = context.Invoices
+            var model = db.Invoices
                     .WithId(invoiceId)
                     .Select(InvoiceProjections.Header())
                     .First();
@@ -614,26 +587,23 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var record = context.Invoices.Find(invoice.Id);
+                var record = db.Invoices.Find(invoice.Id);
                 record.InvoiceDate = invoice.InvoiceDate;
                 record.Terms = invoice.Terms;
                 record.TaxRateHst = invoice.TaxRateHst;
                 record.CustomerEmail = invoice.Customer.BillingEmail;
-                record.ModifiedDate = SystemTime.UtcNow();
-                record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                record.ModifiedDate = now;
+                record.ModifiedUser = userId.ToString();
                 record.CalculateTotal();
-                context.SaveChanges();
+                db.SaveChanges();
+
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceItem(int invoiceDetailId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var editForm = context.InvoiceDetails
+            var editForm = db.InvoiceDetails
                     .Where(id => id.Id == invoiceDetailId)
                     .Select(InvoiceProjections.EditItemForm())
                     .Single();
@@ -645,15 +615,13 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var record = context.InvoiceDetails.Find(invoiceDetail.Id);
+                var record = db.InvoiceDetails.Find(invoiceDetail.Id);
                 record.Description = invoiceDetail.Description;
                 record.AdditionalNotes = invoiceDetail.AdditionalNotes;
                 record.Amount = invoiceDetail.Amount;
                 record.Rate = invoiceDetail.Rate;
-                record.ModifiedDate = SystemTime.UtcNow();
-                record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                record.ModifiedDate = now;
+                record.ModifiedUser = userId.ToString();
 
                 // invoice detail passed in will not have the service request information
                 if (record.ServiceRequestId.HasValue && invoiceDetail.Rate != 1)
@@ -667,22 +635,20 @@ namespace WebApp.Controllers
                 }
 
                 record.CalculateTotal();
-                context.SaveChanges();
+                db.SaveChanges();
 
-                var invoice = context.Invoices.Find(invoiceDetail.Invoice.Id);
+                var invoice = db.Invoices.Find(invoiceDetail.Invoice.Id);
                 invoice.CalculateTotal();
 
-                context.SaveChanges();
+                db.SaveChanges();
 
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult AddInvoiceItem(int invoiceId)
         {
-            using (var context = new OrvosiDbContext())
-            {
+
                 var newItem = new Orvosi.Data.InvoiceDetail()
                 {
                     Description = "New Item",
@@ -691,15 +657,14 @@ namespace WebApp.Controllers
                     Rate = 1
                 };
                 newItem.CalculateTotal();
-                context.InvoiceDetails.Add(newItem);
-                context.SaveChanges();
-                context.Entry(newItem).Reload();
+                db.InvoiceDetails.Add(newItem);
+                db.SaveChanges();
+                db.Entry(newItem).Reload();
 
                 return Json(new
                 {
                     data = newItem
                 });
-            }
             // var editForm = new Models.AccountingModel.Mapper(context).MapToEditForm(invoiceDetailId);
 
             //return Json(editForm, JsonRequestBehavior.AllowGet);
@@ -708,32 +673,26 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
         public ActionResult DeleteInvoiceItem(int invoiceDetailId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var item = context.InvoiceDetails.Find(invoiceDetailId);
-                context.InvoiceDetails.Remove(item);
+                var item = db.InvoiceDetails.Find(invoiceDetailId);
+                db.InvoiceDetails.Remove(item);
                 item.CalculateTotal();
-                context.SaveChanges();
+                db.SaveChanges();
 
-                var invoice = context.Invoices.Find(item.InvoiceId);
+                var invoice = db.Invoices.Find(item.InvoiceId);
                 invoice.CalculateTotal();
-                context.SaveChanges();
+                db.SaveChanges();
 
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
         public ActionResult DeleteInvoice(int invoiceId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var item = context.Invoices.Find(invoiceId);
-                context.Invoices.Remove(item);
-                context.SaveChanges();
+                var item = db.Invoices.Find(invoiceId);
+                db.Invoices.Remove(item);
+                db.SaveChanges();
 
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)
@@ -760,10 +719,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult CreateReceipt(int invoiceId, decimal? amount)
         {
-            var userId = User.Identity.GetGuidUserId();
-            using (var context = new OrvosiDbContext())
-            {
-                var invoice = context.Invoices.WithId(invoiceId).First();
+                var invoice = db.Invoices.WithId(invoiceId).First();
                 var id = Guid.NewGuid();
                 var receipt = new Receipt()
                 {
@@ -772,56 +728,49 @@ namespace WebApp.Controllers
                     ReceivedDate = SystemTime.UtcNow(),
                     // when the amount is null the invoice is paid in full (it is ignored either way)
                     Amount = !amount.HasValue ? invoice.Total.Value : amount.Value,
-                    CreatedDate = SystemTime.UtcNow(),
+                    CreatedDate = now,
                     CreatedUser = userId.ToString(),
-                    ModifiedDate = SystemTime.UtcNow(),
+                    ModifiedDate =now,
                     ModifiedUser = userId.ToString()
                 };
-                context.Receipts.Add(receipt);
-                context.SaveChanges();
+                db.Receipts.Add(receipt);
+                db.SaveChanges();
 
                 return Json(new
                 {
                     id = receipt.Id
                 });
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult DeleteReceipt(Guid receiptId)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var receipt = context.Receipts.WithId(receiptId).First();
-                context.Receipts.Remove(receipt);
-                context.SaveChanges();
+                var receipt = db.Receipts.WithId(receiptId).First();
+                db.Receipts.Remove(receipt);
+                db.SaveChanges();
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
         public ActionResult EditReceipt(Receipt receipt)
         {
-            using (var context = new OrvosiDbContext())
-            {
-                var record = context.Receipts.WithId(receipt.Id).First();
+                var record = db.Receipts.WithId(receipt.Id).First();
                 record.ReceivedDate = receipt.ReceivedDate;
                 record.InvoiceId = receipt.InvoiceId;
                 if (receipt.IsPaidInFull)
                 {
-                    var invoice = context.Invoices.WithId(receipt.InvoiceId).First();
+                    var invoice = db.Invoices.WithId(receipt.InvoiceId).First();
                     record.Amount = record.IsPaidInFull ? invoice.Total.Value : receipt.Amount;
                 }
-                context.SaveChanges();
+                db.SaveChanges();
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
         }
 
         #endregion
 
-        private List<SelectListItem> GetCustomerList(OrvosiDbContext context)
+        private List<SelectListItem> GetCustomerList()
         {
-            return context.Companies
+            return db.Companies
                 .Select(c => new SelectListItem()
                 {
                     Text = c.Name,

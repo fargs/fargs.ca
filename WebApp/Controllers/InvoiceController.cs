@@ -195,7 +195,7 @@ namespace WebApp.Controllers
             //args.Month = thisMonth.Month;
             //args.FilterDate = thisMonth;
 
-            var vm = new IndexViewModel();
+            var vm = new InvoiceListViewModel();
 
             vm.FilterArgs = args;
 

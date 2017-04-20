@@ -101,24 +101,24 @@ namespace Orvosi.Data.Filters
         public static IQueryable<ServiceRequest> HaveCompletedSubmitInvoiceTask(this IQueryable<ServiceRequest> serviceRequests)
         {
             return serviceRequests
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.TaskStatusId == TaskStatuses.Done));
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && (srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Archive)));
         }
         public static IQueryable<ServiceRequest> HaveNotCompletedSubmitInvoiceTask(this IQueryable<ServiceRequest> serviceRequests)
         {
             // where there is no invoice yet and the 
             return serviceRequests
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && (srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Waiting)));
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && (srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting)));
         }
         public static IQueryable<ServiceRequest> HaveCompletedAssessmentDayTask(this IQueryable<ServiceRequest> serviceRequests)
         {
             return serviceRequests
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.AssessmentDay && srt.TaskStatusId == TaskStatuses.Done));
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.AssessmentDay && (srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Archive)));
         }
         public static IQueryable<ServiceRequest> HaveNotCompletedAssessmentDayTask(this IQueryable<ServiceRequest> serviceRequests)
         {
             // where there is no invoice yet and the 
             return serviceRequests
-                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.AssessmentDay && (srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Waiting)));
+                .Where(sr => sr.ServiceRequestTasks.Any(srt => srt.TaskId == Tasks.AssessmentDay && (srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting)));
         }
         public static IQueryable<ServiceRequest> AreNotCancellations(this IQueryable<ServiceRequest> serviceRequest)
         {

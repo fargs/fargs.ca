@@ -115,6 +115,23 @@ namespace WebApp.Models
             .Distinct()
             .ToList();
         }
+
+        public bool IsSubmitInvoiceTaskDone
+        {
+            get
+            {
+                if (Tasks == null)
+                {
+                    throw new Exception("Tasks have not been populated from the entities.");
+                }
+                var task = Tasks.FirstOrDefault(srt => srt.TaskId == Orvosi.Shared.Enums.Tasks.SubmitInvoice);
+                if (task == null)
+                {
+                    return false;
+                }
+                return task.TaskStatusId == TaskStatuses.Done || task.TaskStatusId == TaskStatuses.Archive;
+            }
+        }
     }
 
     public enum AppointmentStatuses

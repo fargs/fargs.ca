@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using WebApp.Library.Extensions;
 using WebApp.Models;
 using WebApp.ViewModels.DashboardViewModels;
+using WebApp.ViewModels.InvoiceViewModels;
 
 namespace WebApp.ViewModels.CalendarViewModels
 {
@@ -23,6 +24,7 @@ namespace WebApp.ViewModels.CalendarViewModels
         public IEnumerable<string> Companies { get; set; }
         public IEnumerable<CaseLinkViewModel> CaseLinks { get; set; }
         public IEnumerable<CaseViewModel> Cases { get; set; }
+        public IOrderedEnumerable<UnsentInvoiceViewModel> UnsentInvoices { get; set; }
         public TaskStatusSummaryViewModel TaskStatusSummary { get; set; }
 
         public static Expression<Func<IGrouping<DateTime, ServiceRequestTask>, DayViewModel>> FromServiceRequestTaskEntityGrouping= dto => dto == null ? null : new DayViewModel

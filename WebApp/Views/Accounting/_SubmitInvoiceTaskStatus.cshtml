@@ -1,11 +1,11 @@
 ﻿@using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
-@model Orvosi.Shared.Model.ServiceRequest
+@model CaseViewModel
 
-@if (Model != null && Model.ServiceRequestTasks.Any(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice && srt.CompletedDate.HasValue))
+@if (Model != null && Model.Tasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && srt.StatusId == TaskStatuses.Done))
 {
     <small class="help-block">
-        <span>Submit Invoice task checked on </span> @Model.ServiceRequestTasks.Single(srt => srt.ProcessTask.Id == Tasks.SubmitInvoice).CompletedDate.ToOrvosiDateTimeFormat()
+        <span>Submit Invoice task checked on </span> @Model.Tasks.Single(srt => srt.TaskId == Tasks.SubmitInvoice).TaskStatusChangedDate.ToOrvosiDateTimeFormat()
     </small>
 }
 

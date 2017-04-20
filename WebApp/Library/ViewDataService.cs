@@ -48,6 +48,7 @@ namespace WebApp.Library
                     Text = d.DisplayName,
                     Value = d.Id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -70,6 +71,7 @@ namespace WebApp.Library
                     Text = d.Name,
                     Value = d.id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -83,6 +85,7 @@ namespace WebApp.Library
                     Text = d.Name,
                     Value = d.ObjectGuid.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -105,6 +108,7 @@ namespace WebApp.Library
                     Text = d.Name,
                     Value = d.id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -128,6 +132,7 @@ namespace WebApp.Library
                     Text = d.DisplayName,
                     Value = d.Id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -149,6 +154,7 @@ namespace WebApp.Library
                     Text = d.Name,
                     Value = d.Id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -170,6 +176,7 @@ namespace WebApp.Library
                     Text = d.Name,
                     Value = d.Id.ToString()
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 
@@ -228,6 +235,7 @@ namespace WebApp.Library
                     Value = d.Address.Id.ToString(),
                     Group = new SelectListGroup { Name = d.Owner == null ? string.Empty : d.Owner.Name }
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
         
@@ -269,6 +277,7 @@ namespace WebApp.Library
                     Value = d.Id.ToString()
                     //Group = new SelectListGroup { Name = d.Role.Name }
                 })
+                .OrderBy(d => d.Text)
                 .ToList();
         }
 

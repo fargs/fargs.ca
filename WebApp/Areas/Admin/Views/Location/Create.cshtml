@@ -14,6 +14,7 @@
             Text = c.Name,
             Value = c.ObjectGuid.ToString()
         })
+        .OrderBy(c => c.Text)
         .Union(
             db.Physicians
             .AsEnumerable()
@@ -23,6 +24,7 @@
                 Value = c.Id.ToString()
             })
         )
+        .OrderBy(c => c.Text)
         .ToList();
 
     ViewBag.Locations = db.LookupItems
@@ -31,7 +33,9 @@
         {
             Text = c.Text,
             Value = c.Id.ToString()
-        }).ToList();
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
 
     ViewBag.Provinces = db.Provinces
         .Where(c => c.CountryId == 124) // Canada
@@ -39,28 +43,37 @@
         {
             Text = c.ProvinceName,
             Value = c.Id.ToString()
-        }).ToList();
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
 
     ViewBag.Cities = db.Cities
         .Select(c => new SelectListItem()
         {
             Text = c.Name + " - " + c.Province.ProvinceName,
             Value = c.Id.ToString()
-        }).ToList();
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
+
 
     ViewBag.AddressTypes = db.AddressTypes
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
             Value = c.Id.ToString()
-        }).ToList();
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
 
     ViewBag.TimeZones = db.TimeZones
         .Select(c => new SelectListItem()
         {
             Text = c.Name,
             Value = c.Id.ToString()
-        }).ToList();
+        })
+        .OrderBy(c => c.Text)
+        .ToList();
 }
 
 <h2>Create</h2>

@@ -21,10 +21,10 @@
 
     ViewBag.UserSelectList = db.AspNetUsers
         .Where(u => u.Id != userId)
-        .OrderBy(u => u.LastName)
+        .OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
         .Select(r => new SelectListItem
         {
-            Text = r.Email,
+            Text = r.FirstName + " " + r.LastName,
             Value = r.Id.ToString()
         })
         .ToList();

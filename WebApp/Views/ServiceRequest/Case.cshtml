@@ -51,11 +51,11 @@
     </div>
         <p></p>
         @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
+        <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
         <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
     if (viewTarget == ViewTarget.Details)
     {
         <p>
-            <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
             <small class="text-muted">@Model.Address.Name</small><br />
             <small>@Model.Address.Address1</small><br />
             <strong>@Model.Address.City</strong>

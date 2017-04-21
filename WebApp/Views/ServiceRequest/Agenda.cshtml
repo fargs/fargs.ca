@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="col-md-5 o-dashboard-td">
-                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes })
+                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes, AllowEdit = true })
                 @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
                 @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
             </div>

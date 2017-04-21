@@ -9,8 +9,15 @@
 
 @if (features.Contains(Features.ServiceRequest.ViewInvoiceNote))
 {
-    <div id="notes-@Model.ServiceRequestId">
-        <h4 class="text-info"><i class="fa fa-sticky-note" style="color: darkgoldenrod;"></i> My Note <button class="btn btn-link" onclick="onEditNote(@Model.ServiceRequestId)"><i class="fa fa-pencil fa-fw"></i></button></h4>
+    <div id="note-@Model.ServiceRequestId">
+        <h4 class="text-info">
+            <i class="fa fa-sticky-note" style="color: darkgoldenrod;"></i>
+            Invoice Note
+            @if (features.Contains(Features.ServiceRequest.ManageInvoiceNote) && Model.AllowEdit)
+            {
+                <button class="btn btn-link" onclick="onEditNote(@Model.ServiceRequestId)"><i class="fa fa-pencil fa-fw"></i></button>
+            }
+        </h4>
         @Html.Raw(Model.Note)
     </div>
 }

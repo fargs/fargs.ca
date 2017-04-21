@@ -212,63 +212,6 @@
         }
 
 
-        function onEditNote(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-
-                    var modalDiv = $("#edit-note-modal");
-                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
-                    modalDiv.find('#Notes').val(result.Notes);
-                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
-
-                    modalDiv.modal('toggle');
-                },
-                error: function (err) {
-                    alert(err.status + " - " + err.statusText);
-                }
-            }, this);
-        }
-
-        $("#edit-note-form").submit(function (e) {
-
-            var url = '@Url.Content("~/Note/UpdateNote")';
-
-            var form = $("#edit-note-form");
-            var serviceRequestId = form.find('#ServiceRequestId').val();
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // serializes the form's elements.
-                success: function () {
-                    $("#edit-note-modal").modal('toggle');
-                    toastr.success("The note was updated successfully.");
-                    refreshNote(serviceRequestId);
-                }
-            });
-            e.preventDefault();
-        });
-
-        function refreshNote(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/RefreshNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    $('#notes-' + serviceRequestId).replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
-
-        }
 
         function archiveCompletedTasks() {
             let url = '@Url.Content("~/ServiceRequestTask/ArchiveCompleted")';

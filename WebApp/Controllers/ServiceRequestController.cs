@@ -1333,11 +1333,11 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
-        public async Task<ActionResult> RefreshNote(int serviceRequestId)
+        public async Task<ActionResult> RefreshNote(int serviceRequestId, bool allowEdit = false)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var note = await context.ServiceRequests.FindAsync(serviceRequestId);
-            return PartialView("_Note", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
+            return PartialView("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes, AllowEdit = allowEdit });
         }
 
         #region Box

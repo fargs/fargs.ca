@@ -15,7 +15,7 @@
             @Html.Raw(Model.Note)
             <span>
                 &nbsp;&nbsp;
-                <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><i class="fa fa-pencil"></i></a>
+                <a href="#" onclick="onNoteEdit(@Model.ServiceRequestId)"><i class="fa fa-pencil"></i></a>
             </span>
         }
     }
@@ -25,7 +25,7 @@
         {
             <div>
                 <i class="fa fa-sticky-note-o"></i>
-                <a href="#" onclick="onEdit(@Model.ServiceRequestId)"><small>Add Note</small></a>
+                <a href="#" onclick="onNoteEdit(@Model.ServiceRequestId)"><small>Add Note</small></a>
             </div>
         }
     }

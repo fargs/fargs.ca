@@ -1,4 +1,5 @@
 ﻿@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.ViewModels.ServiceRequestViewModels
 
 @model CaseViewModel
 @{
@@ -23,8 +24,13 @@
         </ul>
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="case">
-                <div id="case-container" class="panel-body">
-                    @Html.Partial("Case", Model, viewData)
+                <div class="row panel-body">
+                    <div id="case-container" class="col-md-6">
+                        @Html.Partial("Case", Model, viewData)
+                    </div>
+                    <div class="col-md-6">
+                        @Html.Partial("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes, AllowEdit = false })
+                    </div>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="tasks">

@@ -99,18 +99,13 @@
 
         function refreshNote(serviceRequestId) {
 
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/Dashboard/RefreshNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    $('#notes-' + serviceRequestId).replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
+            var url = '@Url.Content("~/ServiceRequest/RefreshNote")';
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                allowEdit: true
+            }).done(function (result) {
+                $('#note-' + serviceRequestId).replaceWith(result);
+            });
 
         }
 

@@ -1,6 +1,7 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewDataModels
+@using WebApp.ViewModels.ServiceRequestViewModels
 @model CaseViewModel
 
 @{
@@ -29,7 +30,7 @@
         <h4>Tasks</h4>
         <hr />
         <div id="notes">
-            @Html.Partial("Note", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes })
+            @Html.Partial("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes, AllowEdit = true })
         </div>
         <div id="tasklist-container">
             @Html.Action("TaskList", "ServiceRequestTask", args)
@@ -132,7 +133,7 @@
                 }
         });
 
-        function onEdit(serviceRequestId) {
+        function onEditNote(serviceRequestId) {
 
             $.ajax({
                 type: "GET",
@@ -174,19 +175,13 @@
         });
 
         function refreshNote(serviceRequestId) {
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Content("~/ServiceRequest/RefreshNote?serviceRequestId=")' + serviceRequestId,
-                contentType: "text/html",
-                success: function (result) {
-                    $('#notes').replaceWith(result);
-                },
-                error: function (err) {
-                    // undo the UI change made before the ajax call
-                    window.location.reload();
-                }
-            }, this);
+            var url = '@Url.Content("~/ServiceRequest/RefreshNote")';
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                allowEdit: true
+            }).done(function (result) {
+                $('#note-' + serviceRequestId).replaceWith(result);
+            });
         }
 
         function tasklistChanged(serviceRequestId) {

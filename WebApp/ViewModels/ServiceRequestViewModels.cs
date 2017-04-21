@@ -185,6 +185,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
     {
         public int ServiceRequestId { get; set; }
         public string Note { get; set; }
+        public bool AllowEdit { get; set; } = false;
     }
 
 }

@@ -12,7 +12,7 @@
 <ul class="nav nav-tabs">
     @if (features.Contains(Features.Work.Agenda))
     {
-        <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Agenda</a></li>
+        <li role="presentation" class="@Html.IsActive("Dashboard", "Agenda")"><a href="~/Dashboard/Agenda?@(Request.QueryString)">Day Sheet</a></li>
     }
     @if (features.Contains(Features.Work.DueDates))
     {

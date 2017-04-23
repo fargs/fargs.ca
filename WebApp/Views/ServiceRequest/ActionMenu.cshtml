@@ -43,7 +43,7 @@
                         {
                             <li roleId="separator" class="divider"></li>
                                 <li><a onclick="undoCancellation(@Model.ServiceRequestId)">Undo Cancel</a></li>
-                                    <li><a onclick="deleteRequest(@Model.ServiceRequestId)">Delete</a></li>
+                                    <li><a onclick="showDeleteRequest(@Model.ServiceRequestId)">Delete</a></li>
                         }
                         else if (Model.CanBeCancelled)
                         {

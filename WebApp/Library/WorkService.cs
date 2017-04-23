@@ -99,6 +99,13 @@ namespace WebApp.Library
             var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
             await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
+        public async Task DeleteRequest(ServiceRequest sr)
+        {
+            sr.IsDeleted = true;
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = userId.ToString();
+            await db.SaveChangesAsync();
+        }
         public async Task NoShow(NoShowForm form)
         {
             var sr = await db.ServiceRequests.FindAsync(form.ServiceRequestId);

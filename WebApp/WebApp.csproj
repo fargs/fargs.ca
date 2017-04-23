@@ -1330,7 +1330,6 @@
     <Content Include="Views\ServiceRequest\Create.cshtml" />
     <Content Include="Views\ServiceRequest\Availability.cshtml" />
     <Content Include="Views\ServiceRequest\CreateSuccess.cshtml" />
-    <Content Include="Views\ServiceRequest\Cancel.cshtml" />
     <Content Include="Views\Diagnostics\DropboxViewer.cshtml" />
     <Content Include="Views\Diagnostics\DropboxFolderDetails.cshtml" />
     <Content Include="Views\Availability\AddDay.cshtml" />

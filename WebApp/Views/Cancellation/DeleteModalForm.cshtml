@@ -1,5 +1,5 @@
 ﻿@using WebApp.FormModels
-@model CancellationForm
+@model CaseViewModel
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -10,8 +10,9 @@
 <div class="modal-body">
     <form id="delete-request-form">
         @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+        <div class="alert alert-danger">You are about to permanentely delete this case for <strong>@Model.ClaimantName</strong>. Would you like to continue?</div>
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-success" onclick="deleteRequest($('#delete-request-form'))">Save</button>
+    <button class="btn btn-success" onclick="deleteRequest($('#delete-request-form'))">Yes</button>
 </div>

@@ -34,13 +34,22 @@
         });
     }
 
+    function showDeleteRequest(serviceRequestId) {
+        let url = '@Url.Content("~/Cancellation/ShowDeleteRequest")';
+        $.get(url,
+            {serviceRequestId: serviceRequestId}
+        ).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
     function deleteRequest(form) {
-        let url = '@Url.Content("~/Cancellation/Delete")';
+        let url = '@Url.Content("~/Cancellation/DeleteRequest")';
         $.post(url,
             form.serialize()
         ).done(function (data) {
-            serviceRequestStatusChanged(data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
+            window.location = '@Url.Content("~/Dashboard/Agenda")';
         });
     }
 

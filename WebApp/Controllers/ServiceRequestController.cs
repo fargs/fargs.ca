@@ -1189,75 +1189,7 @@ namespace WebApp.Controllers
             //TODO: Unshare and delete folders from dropbox
             return RedirectToAction("Index");
         }
-
-        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
-        public async Task<ActionResult> Cancel(int serviceRequestId)
-        {
-            ServiceRequest serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
-
-            if (serviceRequest == null)
-            {
-                return HttpNotFound();
-            }
-            // TODO: Update the calendar and dropbox folder if appropriate.
-
-            return View(serviceRequest);
-        }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
-        //public async Task<ActionResult> Cancel(CancellationForm form)
-        //{
-        //    var serviceRequest = await db.ServiceRequests.FindAsync(form.ServiceRequestId);
-        //    if (serviceRequest == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        serviceRequest.CancelledDate = form.CancelledDate;
-        //        serviceRequest.IsLateCancellation = form.IsLate == "on" ? true : false;
-        //        serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', form.Notes);
-
-        //        serviceRequest.UpdateToDoTasksToObsolete();
-
-        //        serviceRequest.UpdateIsClosed();
-
-        //        serviceRequest.UpdateInvoice(db);
-
-        //        await db.SaveChangesAsync();
-
-        //        return RedirectToAction("Details", new { id = serviceRequest.Id });
-        //    }
-        //    return View(serviceRequest);
-        //}
-
-        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
-        public async Task<ActionResult> UndoCancel(int serviceRequestId)
-        {
-            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
-            if (serviceRequest == null)
-            {
-                return HttpNotFound();
-            }
-
-            serviceRequest.CancelledDate = null;
-            serviceRequest.IsLateCancellation = false;
-            serviceRequest.Notes = string.Concat(serviceRequest.Notes, '\n', "Cancellation Undone");
-
-            serviceRequest.UpdateObsoleteTasksToToDo();
-
-            serviceRequest.UpdateIsClosed();
-
-            serviceRequest.UpdateInvoice(db);
-
-            await db.SaveChangesAsync();
-
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
+        
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
         public async Task<ActionResult> ToggleNoShow(NoShowForm form)
@@ -1280,56 +1212,6 @@ namespace WebApp.Controllers
             {
                 serviceRequestId = form.ServiceRequestId
             });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
-        public async Task<ActionResult> NoShow()
-        {
-            var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
-            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
-            if (serviceRequest == null)
-            {
-                return HttpNotFound();
-            }
-
-            serviceRequest.IsNoShow = true;
-
-            serviceRequest.UpdateToDoTasksToObsolete();
-
-            serviceRequest.UpdateIsClosed();
-
-            serviceRequest.UpdateInvoice(db);
-
-            await db.SaveChangesAsync();
-
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
-        public async Task<ActionResult> UndoNoShow()
-        {
-            var serviceRequestId = int.Parse(Request.Form.Get("ServiceRequestId"));
-            var serviceRequest = await db.ServiceRequests.FindAsync(serviceRequestId);
-            if (serviceRequest == null)
-            {
-                return HttpNotFound();
-            }
-
-            serviceRequest.IsNoShow = false;
-
-            serviceRequest.UpdateObsoleteTasksToToDo();
-
-            serviceRequest.UpdateIsClosed();
-
-            serviceRequest.UpdateInvoice(db);
-
-            await db.SaveChangesAsync();
-
-            return Redirect(Request.UrlReferrer.ToString());
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]

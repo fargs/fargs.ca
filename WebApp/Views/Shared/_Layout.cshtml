@@ -186,20 +186,28 @@
         </div>
     </div>
     <div class="container-fluid body-content">
-        @if (features.Contains(Features.AppContext.ChangeUserContext))
-        {
-            var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
-            var physicianSelectList = viewDataService.GetPhysicianSelectList();
+        <div class="row">
+            <div class="col-md-6">
+                @if (features.Contains(Features.AppContext.ChangeUserContext))
+                {
+                    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
+                    var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
-            <div class="text-danger">@TempData["UserContextMessage"]</div>
-            <form action="~/Account/ChangeUserContext/" method="get" class="form-inline">
-                <div>
-                    <label for="userId" class="">Current Context: </label>
-                    @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- Service Provider --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
-                </div>
-            </form>
-            <hr />
-        }
+                    <div class="text-danger">@TempData["UserContextMessage"]</div>
+                    <form action="~/Account/ChangeUserContext/" method="get" class="form-inline">
+                        <div>
+                            <label for="userId" class="">Current Context: </label>
+                            @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- Service Provider --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
+                        </div>
+                    </form>
+                }
+            </div>
+            <div class="col-md-6">
+                    <a href="https://www.securedocs.ca/Login.aspx" class="pull-right">Secure Docs</a>
+            </div>
+        </div>
+        <hr />
+
         @RenderBody()
 
         <div id="admin-tasks-messages"></div>

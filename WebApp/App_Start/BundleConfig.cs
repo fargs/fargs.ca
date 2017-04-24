@@ -29,7 +29,7 @@ namespace WebApp
             bundles.Add(new ScriptBundle("~/bundles/markdown").Include(
                         "~/Scripts/MarkdownDeepLib.min.js"));
 
-            bundles.Add(new StyleBundle("~/Content/markdown").Include(
+            bundles.Add(new StyleBundle("~/Bundles/Content/markdown").Include(
                       "~/Scripts/mdd_styles.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
@@ -59,12 +59,10 @@ namespace WebApp
                       "~/Scripts/moment.min.js",
                       "~/Scripts/fullcalendar.min.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap/bootstrap.css",
+            bundles.Add(new StyleBundle("~/Bundles/Content/css").Include(
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
-                      "~/Content/font-awesome-4.6.3/css/font-awesome.min.css",
                       "~/Content/css/select2.min.css",
                       "~/Content/site.css"));
 

@@ -44,8 +44,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Orvosi Medical</title>
-    @Styles.Render("~/Content/css")
-
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script src="https://use.fontawesome.com/3877822095.js"></script>
+    @Styles.Render("~/Bundles/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     <div class="navbar navbar-default">
@@ -203,7 +205,7 @@
                 }
             </div>
             <div class="col-md-6">
-                    <a href="https://www.securedocs.ca/Login.aspx" class="pull-right">Secure Docs</a>
+                    <a href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right">Secure Docs</a>
             </div>
         </div>
         <hr />

@@ -66,6 +66,21 @@ namespace WebApp.Models
             }
         }
 
+        public DateTime? AppointmentDateAndStartTime
+        {
+            get
+            {
+                return AppointmentDate.HasValue && StartTime.HasValue ? AppointmentDate.Value.AddTicks(StartTime.HasValue ? StartTime.Value.Ticks : 0) : (DateTime?)null;
+            }
+        }
+        public DateTime? EffectiveDate
+        {
+            get
+            {
+                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.HasValue ? DueDate.Value : (DateTime?)null;
+            }
+        }
+
         public string BoxCaseFolderURL
         {
             get

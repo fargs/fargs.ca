@@ -1,26 +1,31 @@
-﻿@{
-    Layout = null;
-}
+﻿<div class="page-header">
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
-</head>
-<body>
-    <hgroup>
-        <h1>Error.</h1>
-        @{
-            if (String.IsNullOrEmpty(ViewBag.errorMessage))
-            {
-                <h2 class="text-danger">An error occurred while processing your request.</h2>
-            }
-            else
-            {
-                <h2 class="text-danger">@ViewBag.errorMessage</h2>
-            }
-        }
-    </hgroup>
-</body>
-</html>
+    <div class="row">
+        <!-- Page header, center on small screens -->
+        <h2 class="col-md-12">
+            <i class="fa fa-exclamation-circle text-danger"></i> Something unexpected occurred
+        </h2>
+
+    </div>
+</div> <!-- / .page-header -->
+<section>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <span>We're Sorry!</span>
+            </div>
+            <div class="panel-body">
+                    @{
+                        if (String.IsNullOrEmpty(ViewBag.errorMessage))
+                        {
+                            <h3 class="text-danger">An error occurred while processing your request.</h3>
+                            <h4>Our development team has been alerted.</h4>
+                        }
+                        else
+                        {
+                            <h2 class="text-danger">@ViewBag.errorMessage</h2>
+                        }
+                    }
+            </div>
+        </div>
+</section>
+        

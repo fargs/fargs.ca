@@ -101,7 +101,7 @@
                         }
                         if (features.Contains(Features.Services.Manage))
                         {
-                            <li>@Html.ActionLink("Services", "Index", "ServiceCatalogue", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("MyOrvo", "Index", "ServiceCatalogue", new { area = "" }, null)</li>
                         }
                         if (features.Contains(Features.Admin.Section))
                         {
@@ -134,7 +134,7 @@
                                 <ul class="dropdown-menu">
                                     @if (features.Contains(Features.SysAdmin.ViewProcessTemplates))
                                     {
-                                        <li>@Html.ActionLink("Process Template Master List", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
+                                        <li>@Html.ActionLink("Workflow Master List", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
                                     }
                                     @if (features.Contains(Features.SysAdmin.ViewCompanies))
                                     {
@@ -154,7 +154,7 @@
                                     }
                                     @if (features.Contains(Features.ServiceRequest.View))
                                     {
-                                        <li>@Html.ActionLink("Service Request Master List", "Index", "ServiceRequest", new { area = "" }, null)</li>
+                                        <li>@Html.ActionLink("Case Master List", "Index", "ServiceRequest", new { area = "" }, null)</li>
                                     }
                                 </ul>
                             </li>
@@ -198,14 +198,14 @@
                     <div class="text-danger">@TempData["UserContextMessage"]</div>
                     <form action="~/Account/ChangeUserContext/" method="get" class="form-inline">
                         <div>
-                            <label for="userId" class="">Current Context: </label>
+                            <label for="userId" class="">My Physician: </label>
                             @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- Service Provider --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
                         </div>
                     </form>
                 }
             </div>
             <div class="col-md-6">
-                    <a href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right">Secure Docs</a>
+                    <a title="Secure Docs" href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right"><img alt="Secure Docs" src="~/Content/images/SendDocumentsSecurely.jpg" /></a>
             </div>
         </div>
         <hr />

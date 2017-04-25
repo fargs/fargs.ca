@@ -16,7 +16,10 @@
             Text = c.EntityName,
             Value = c.EntityGuid.ToString(),
             Group = new SelectListGroup() { Name = c.EntityType }
-        }).ToList();
+        })
+        .OrderBy(c => c.Group)
+        .ThenBy(c => c.Text)
+        .ToList();
 
     ViewBag.Years = DateRanges.GetYears()
         .Where(y => y.Key <= SystemTime.Now().Year)

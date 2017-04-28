@@ -25,10 +25,12 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public string DueDateType { get; set; } // DueDateType (length: 10)
         public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
-        public byte? DueDateBase { get; set; } // DueDateBase
-        public short? DueDateDiff { get; set; } // DueDateDiff
-        public byte? EffectiveDateBase { get; set; } // EffectiveDateBase
-        public short? EffectiveDateDiff { get; set; } // EffectiveDateDiff
+        public bool IsBaselineDate { get; set; } // IsBaselineDate
+        public short? DueDateDurationFromBaseline { get; set; } // DueDateDurationFromBaseline
+        public short? EffectiveDateDurationFromBaseline { get; set; } // EffectiveDateDurationFromBaseline
+        public bool IsCriticalPath { get; set; } // IsCriticalPath
+        public bool IsBillable { get; set; } // IsBillable
+        public bool IsDeleted { get; set; } // IsDeleted
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequestTemplateTask
@@ -44,6 +46,10 @@ namespace Orvosi.Data
         {
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
+            IsBaselineDate = false;
+            IsCriticalPath = false;
+            IsBillable = false;
+            IsDeleted = false;
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
             Child = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             Parent = new System.Collections.Generic.List<ServiceRequestTemplateTask>();

@@ -11,6 +11,7 @@ using Orvosi.Data;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
+using Orvosi.Data.Filters;
 
 namespace WebApp.Controllers
 {
@@ -62,7 +63,7 @@ namespace WebApp.Controllers
                 await db.Entry(serviceRequestTemplate).ReloadAsync();
 
                 // get the task from the default template
-                var tasks = db.ServiceRequestTemplateTasks.Where(t => t.ServiceRequestTemplateId == processTemplateId);
+                var tasks = db.ServiceRequestTemplateTasks.AreNotDeleted().Where(t => t.ServiceRequestTemplateId == processTemplateId);
                 foreach (var template in tasks)
                 {
                     var st = new Orvosi.Data.ServiceRequestTemplateTask();
@@ -80,9 +81,9 @@ namespace WebApp.Controllers
                 await db.SaveChangesAsync();
 
                 // Clone the related tasks
-                foreach (var taskTemplate in tasks)
+                foreach (var taskTemplate in tasks.AreNotDeleted())
                 {
-                    foreach (var dependentTemplate in taskTemplate.Child)
+                    foreach (var dependentTemplate in taskTemplate.Child.AsQueryable().AreNotDeleted())
                     {
                         var task = serviceRequestTemplate.ServiceRequestTemplateTasks.First(srt => srt.TaskId == taskTemplate.TaskId);
                         var dependent = serviceRequestTemplate.ServiceRequestTemplateTasks.First(srt => srt.TaskId == dependentTemplate.TaskId);

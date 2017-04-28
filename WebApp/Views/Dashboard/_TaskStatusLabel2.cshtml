@@ -9,7 +9,7 @@ else if (Model.Status.Id == TaskStatuses.Waiting)
 {
     <span id='task-statuslabel-@Model.Id' class='label label-warning' onclick="onShowTaskHierarchy(@Model.ServiceRequestId, @Model.Id)">Waiting</span>
 }
-else if (Model.Status.Id == TaskStatuses.Done)
+else if (Model.Status.Id == TaskStatuses.Done || Model.Status.Id == TaskStatuses.Archive)
 {
     <span id='task-statuslabel-@Model.Id' class='label label-success'>Done</span>
 }

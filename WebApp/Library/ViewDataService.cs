@@ -288,7 +288,7 @@ namespace WebApp.Library
             if (item == null)
             {
                 var dto = dbContext.ServiceRequestTasks
-                    .AreActive()
+                    .AreActiveOrDone()
                     .AreAssignedToUser(userId)
                     .Select(srt => srt.OTask)
                     .Distinct()

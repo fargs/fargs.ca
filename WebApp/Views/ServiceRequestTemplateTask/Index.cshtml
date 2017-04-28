@@ -1,4 +1,5 @@
-﻿@model Orvosi.Data.ServiceRequestTemplate
+﻿@using Orvosi.Data.Filters
+@model Orvosi.Data.ServiceRequestTemplate
 
 @{
     ViewBag.Title = "Index";
@@ -22,7 +23,16 @@
             Sequence
         </th>
         <th>
-            Due Date Type (A or R)
+            Is Critical Path
+        </th>
+        <th>
+            Is Baseline
+        </th>
+        <th>
+            Due Date
+        </th>
+        <th>
+            Effective Date
         </th>
         <th>
             Depends On
@@ -30,7 +40,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model.ServiceRequestTemplateTasks.OrderBy(srt => srt.Sequence)) {
+@foreach (var item in Model.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().OrderBy(srt => srt.Sequence)) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.OTask.Name)
@@ -42,7 +52,16 @@
             @Html.DisplayFor(modelItem => item.Sequence)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.DueDateType)
+            @Html.DisplayFor(modelItem => item.IsCriticalPath)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsBaselineDate)
+        </td>
+        <td>
+            @(!item.IsBaselineDate ? item.DueDateDurationFromBaseline.HasValue ? Html.DisplayFor(modelItem => item.DueDateDurationFromBaseline) : Html.Raw("<span class='text-muted'>ASAP</span>") : Html.Raw("<span class='text-muted'> (BASELINE)</span>"))
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EffectiveDateDurationFromBaseline)
         </td>
         <td>
              @item.Child.Count

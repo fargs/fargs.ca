@@ -149,6 +149,12 @@
 				return true;
             }
         }
+
+		if(t.Name.Equals("sysdiagrams", StringComparison.InvariantCultureIgnoreCase)) 
+        {
+			return false;
+        }
+
         // Example: Exclude any table in dbo schema with "order" in its name.
         if(t.Schema.Equals("API", StringComparison.InvariantCultureIgnoreCase))// && t.NameHumanCase.ToLowerInvariant().Contains("order"))
             return false;

@@ -37,7 +37,7 @@
                             </td>
                             <td>@task.Name</td>
                             <td>
-                                @if (task.StatusId == TaskStatuses.Done)
+                                @if (task.StatusId == TaskStatuses.Done || task.TaskStatusId == TaskStatuses.Archive)
                                 {
                                     <div class="small text-muted">@task.CompletedDate.Value.ToString("ddd, MMM dd") at @task.CompletedDate.Value.ToShortTimeString()</div>
                                 }

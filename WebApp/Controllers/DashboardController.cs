@@ -199,7 +199,7 @@ namespace WebApp.Controllers
 
             var count = db.ServiceRequestTasks
                                 .AreAssignedToUser(userId)
-                                .AreActive()
+                                .AreActiveOrDone()
                                 .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue)
                                 .Select(srt => srt.ServiceRequestId)
                                 .Distinct()

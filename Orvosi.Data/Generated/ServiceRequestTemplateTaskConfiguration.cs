@@ -35,10 +35,12 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.DueDateType).HasColumnName(@"DueDateType").IsOptional().IsFixedLength().HasColumnType("nchar").HasMaxLength(10);
             Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").IsOptional().HasColumnType("uniqueidentifier");
-            Property(x => x.DueDateBase).HasColumnName(@"DueDateBase").IsOptional().HasColumnType("tinyint");
-            Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
-            Property(x => x.EffectiveDateBase).HasColumnName(@"EffectiveDateBase").IsOptional().HasColumnType("tinyint");
-            Property(x => x.EffectiveDateDiff).HasColumnName(@"EffectiveDateDiff").IsOptional().HasColumnType("smallint");
+            Property(x => x.IsBaselineDate).HasColumnName(@"IsBaselineDate").IsRequired().HasColumnType("bit");
+            Property(x => x.DueDateDurationFromBaseline).HasColumnName(@"DueDateDurationFromBaseline").IsOptional().HasColumnType("smallint");
+            Property(x => x.EffectiveDateDurationFromBaseline).HasColumnName(@"EffectiveDateDurationFromBaseline").IsOptional().HasColumnType("smallint");
+            Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
+            Property(x => x.IsBillable).HasColumnName(@"IsBillable").IsRequired().HasColumnType("bit");
+            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.AspNetRole).WithMany(b => b.ServiceRequestTemplateTasks).HasForeignKey(c => c.ResponsibleRoleId).WillCascadeOnDelete(false); // FK_ServiceRequestTemplateTask_AspNetRoles

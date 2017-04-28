@@ -158,7 +158,6 @@
     <Build Include="API\Views\LookupItem.sql" />
     <Build Include="API\Views\Location.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_Update.sql" />
-    <Build Include="API\Stored Procedures\ServiceRequest_Insert.sql" />
     <Build Include="API\Stored Procedures\ServiceRequest_Delete.sql" />
     <Build Include="dbo\Tables\PhysicianLocation.sql" />
     <Build Include="dbo\Tables\PhysicianLicense.sql" />
@@ -191,9 +190,6 @@
     <Build Include="API\Stored Procedures\GetServiceCatalogueForCompany.sql" />
     <Build Include="dbo\Functions\FormatDateTime.sql" />
     <Build Include="dbo\Tables\ServiceRequestTask.sql" />
-    <Build Include="API\Views\ServiceRequestTask.sql" />
-    <Build Include="API\Stored Procedures\ServiceRequestTask_Update.sql" />
-    <Build Include="API\Stored Procedures\ServiceRequestTask_Insert.sql" />
     <Build Include="API\Stored Procedures\ServiceRequestTask_Delete.sql" />
     <Build Include="API\Views\Specialty.sql" />
     <Build Include="dbo\Functions\RoleId_Physician.sql" />
@@ -202,10 +198,8 @@
     <Build Include="dbo\Functions\RoleId_CaseCoordinator.sql" />
     <Build Include="dbo\Functions\LookupId_Specialty.sql" />
     <Build Include="API\Views\ServiceRequestTemplateTask.sql" />
-    <Build Include="API\Views\Task.sql" />
     <Build Include="dbo\Functions\GetServiceStatusId.sql" />
     <Build Include="dbo\Functions\GetServiceRequestStatusId.sql" />
-    <Build Include="API\Views\DashboardTaskSummary.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableDay_Insert.sql" />
     <Build Include="API\Stored Procedures\AvailableSlot_Delete.sql" />
@@ -299,6 +293,7 @@
     <Build Include="Migrate\Stored Procedures\UpdateTaskDueDates.sql" />
     <Build Include="Migrate\Stored Procedures\TaskIsCriticalPath.sql" />
     <Build Include="Security\Migrate.sql" />
+    <Build Include="Migrate\Stored Procedures\LocationsToCities.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

@@ -1,8 +1,8 @@
-﻿@using Orvosi.Data
+﻿@using WebApp.Library
 @model WebApp.ViewModels.ServiceRequestViewModels.ChangeProcessTemplateViewModel
 
 @{ 
-    var ctx = new OrvosiDbContext();
+    var ctx = ContextPerRequest.db;
     var processTemplateSelectList = ctx.PhysicianServiceRequestTemplates
                 .Where(p => p.PhysicianId == Model.PhysicianId)
                 .Select(t => new SelectListItem
@@ -10,8 +10,9 @@
                     Text = t.ServiceRequestTemplate.Name,
                     Value = t.ServiceRequestTemplate.Id.ToString()
                 }).ToList();
+
     processTemplateSelectList = ctx.ServiceRequestTemplates
-        .Where(srt => srt.IsDefault == true)
+        .Where(srt => srt.PhysicianId == Model.PhysicianId)
         .Select(t => new SelectListItem
         {
             Text = t.Name,

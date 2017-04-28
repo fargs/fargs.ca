@@ -33,8 +33,6 @@ namespace Orvosi.Data
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public string DependsOn { get; set; } // DependsOn (length: 50)
-        public byte? DueDateBase { get; set; } // DueDateBase
-        public short? DueDateDiff { get; set; } // DueDateDiff
         public string ShortName { get; set; } // ShortName (length: 50)
         public bool IsCriticalPath { get; set; } // IsCriticalPath
         public string TaskType { get; set; } // TaskType (length: 50)

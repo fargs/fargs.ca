@@ -9,7 +9,7 @@ else if (Model.Status.Id == TaskStatuses.Waiting)
 {
     <span id='task-statuslabel-@Model.Id' class='label label-warning'>Waiting</span>
 }
-else if (Model.Status.Id == TaskStatuses.Done)
+else if (Model.Status.Id == TaskStatuses.Done || Model.Status.Id == TaskStatuses.Archive)
 {
     <i id='task-statuslabel-@Model.Id' class='fa fa-check fa-lg' style="color: green;"></i>
 }

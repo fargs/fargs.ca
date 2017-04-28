@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using LinqKit;
+using Orvosi.Shared.Enums;
 
 namespace WebApp.Models
 {
@@ -15,7 +16,7 @@ namespace WebApp.Models
         public short TaskId { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
-        public bool IsObsolete { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public DateTime? TaskStatusChangedDate { get; set; }
         public PersonDto TaskStatusChangedBy { get; set; }
         public IEnumerable<TaskDependentDto> Dependencies { get; set; }
@@ -30,21 +31,30 @@ namespace WebApp.Models
         public string ResponsibleRoleName { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public bool IsCriticalPath { get; set; }
+        public int ServiceRequestId { get; set; }
         public ServiceRequestDto ServiceRequest { get; set; }
 
+        public bool IsActive
+        {
+            get
+            {
+                return TaskStatusId == TaskStatuses.ToDo || TaskStatusId == TaskStatuses.Waiting || TaskStatusId == TaskStatuses.OnHold;
+            }
+        }
 
-        public static Expression<Func<DateTime?, DateTime, bool?>> IsOverdueExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date < now.Date : (bool?)null;
+        public static Expression<Func<DateTime?, DateTime, bool>> IsOverdueExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date < now.Date : false;
 
-        public static Expression<Func<DateTime?, DateTime, bool?>> IsDueTodayExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date == now.Date : (bool?)null;
+        public static Expression<Func<DateTime?, DateTime, bool>> IsDueTodayExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date == now.Date : false;
 
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntity = srt => srt == null ? null : new TaskDto()
         {
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
+            ServiceRequestId = srt.ServiceRequestId,
             Name = srt.OTask.Name,
             ShortName = srt.OTask.ShortName,
-            IsObsolete = srt.IsObsolete,
+            CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
             Sequence = srt.Sequence.Value,
@@ -64,7 +74,7 @@ namespace WebApp.Models
             TaskId = srt.TaskId.Value,
             Name = srt.OTask.Name,
             ShortName = srt.OTask.ShortName,
-            IsObsolete = srt.IsObsolete,
+            CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
             Sequence = srt.Sequence.Value,

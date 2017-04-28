@@ -120,7 +120,7 @@ namespace WebApp
 
                     var entityQuery = db.ServiceRequestTasks
                         .AreAssignedToUser(userId)
-                        .AreActive()
+                        .AreActiveOrDone()
                         .Where(srt => srt.DueDate.HasValue);
 
                     if (physicianContext != null)

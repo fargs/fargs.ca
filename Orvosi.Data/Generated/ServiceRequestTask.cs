@@ -40,8 +40,7 @@ namespace Orvosi.Data
         public string Guidance { get; set; } // Guidance (length: 1000)
         public bool IsObsolete { get; set; } // IsObsolete
         public string DependsOn { get; set; } // DependsOn (length: 50)
-        public byte? DueDateBase { get; set; } // DueDateBase
-        public short? DueDateDiff { get; set; } // DueDateDiff
+        public short? DueDateDurationFromBaseline { get; set; } // DueDateDurationFromBaseline
         public string ShortName { get; set; } // ShortName (length: 50)
         public bool IsCriticalPath { get; set; } // IsCriticalPath
         public bool? IsDependentOnExamDate { get; private set; } // IsDependentOnExamDate
@@ -56,8 +55,7 @@ namespace Orvosi.Data
         public System.DateTime? CreatedDate { get; set; } // CreatedDate
         public string CreatedUser { get; set; } // CreatedUser (length: 100)
         public System.DateTime? EffectiveDate { get; set; } // EffectiveDate
-        public byte? EffectiveDateBase { get; set; } // EffectiveDateBase
-        public short? EffectiveDateDiff { get; set; } // EffectiveDateDiff
+        public short? EffectiveDateDurationFromBaseline { get; set; } // EffectiveDateDurationFromBaseline
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> Child { get; set; } // Many to many mapping

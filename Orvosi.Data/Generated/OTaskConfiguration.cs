@@ -43,8 +43,6 @@ namespace Orvosi.Data
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.DependsOn).HasColumnName(@"DependsOn").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
-            Property(x => x.DueDateBase).HasColumnName(@"DueDateBase").IsOptional().HasColumnType("tinyint");
-            Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
             Property(x => x.ShortName).HasColumnName(@"ShortName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
             Property(x => x.TaskType).HasColumnName(@"TaskType").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(50);

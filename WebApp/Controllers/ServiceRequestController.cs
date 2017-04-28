@@ -1,38 +1,30 @@
-﻿using System;
+﻿using Box.V2.Models;
+using LinqKit;
+using MoreLinq;
+using Orvosi.Data;
+using Orvosi.Data.Filters;
+using Orvosi.Shared.Enums;
+using Orvosi.Shared.Filters;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using Orvosi.Data;
-using Orvosi.Shared.Enums;
-using WebApp.ViewModels.ServiceRequestViewModels;
-using System.Security.Claims;
-using WebApp.Library;
-using Dropbox.Api;
-using Dropbox.Api.Files;
-using Dropbox.Api.Sharing;
-using Dropbox.Api.Team;
-using Box.V2.Models;
-using e = Orvosi.Shared.Enums;
-using WebApp.Library.Extensions;
-using MoreLinq;
-using WebApp.ViewModels;
-using WebApp.Library.Projections;
-using Orvosi.Data.Filters;
-using Orvosi.Shared.Filters;
-using Features = Orvosi.Shared.Enums.Features;
-using WebApp.Library.Filters;
-using WebApp.ViewModels.UIElements;
-using LinqKit;
-using m = WebApp.Models;
 using WebApp.FormModels;
-using WebApp.ViewModels.CalendarViewModels;
+using WebApp.Library;
+using WebApp.Library.Extensions;
+using WebApp.Library.Filters;
+using WebApp.Library.Projections;
 using WebApp.ViewDataModels;
-using WebApp.ViewModels.ServiceRequestTaskViewModels;
+using WebApp.ViewModels;
+using WebApp.ViewModels.CalendarViewModels;
+using WebApp.ViewModels.ServiceRequestViewModels;
+using e = Orvosi.Shared.Enums;
+using Features = Orvosi.Shared.Enums.Features;
+using m = WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -217,7 +209,7 @@ namespace WebApp.Controllers
                 .AreDueBetween(args.TaskListArgs.DateRange.StartDate, args.TaskListArgs.DateRange.EndDate.Value)
                 .AreAssignedToUser(userId)
                 .WithTaskIds(args.TaskListArgs.TaskIds)
-                .AreActive()
+                .AreActiveOrDone()
                 .Where(srt => srt.DueDate.HasValue)
                 .Select(srt => srt.ServiceRequestId)
                 .Distinct()
@@ -494,7 +486,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
-        public ActionResult ChangeProcessTemplate(ChangeProcessTemplateViewModel model)
+        public async Task<ActionResult> ChangeProcessTemplate(ChangeProcessTemplateViewModel model)
         {
             var serviceRequest = db.ServiceRequests.Single(sr => sr.Id == model.ServiceRequestId);
             if (serviceRequest.ServiceRequestTemplateId == model.NewServiceRequestTemplateId)
@@ -529,11 +521,9 @@ namespace WebApp.Controllers
 
             var requestTemplate = db.ServiceRequestTemplates.Find(serviceRequest.ServiceRequestTemplateId);
 
-            foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
+            foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
             {
                 var st = new Orvosi.Data.ServiceRequestTask();
-                st.DueDateBase = template.OTask.DueDateBase;
-                st.DueDateDiff = template.OTask.DueDateDiff;
                 st.Guidance = template.OTask.Guidance;
                 st.ObjectGuid = Guid.NewGuid();
                 st.ResponsibleRoleId = template.ResponsibleRoleId;
@@ -541,12 +531,21 @@ namespace WebApp.Controllers
                 st.ShortName = template.OTask.ShortName;
                 st.TaskId = template.OTask.Id;
                 st.TaskName = template.OTask.Name;
-                st.ModifiedDate = SystemTime.Now();
-                st.ModifiedUser = User.Identity.Name;
+                st.ModifiedDate = now;
+                st.ModifiedUser = userId.ToString();
+                st.CreatedDate = now;
+                st.CreatedUser = userId.ToString();
                 st.ServiceRequestTemplateTaskId = template.Id;
                 st.TaskType = template.OTask.TaskType;
                 st.Workload = template.OTask.Workload;
-                st.DueDate = GetTaskDueDate(template.DueDateType, serviceRequest.AppointmentDate, serviceRequest.DueDate);
+                st.DueDate = GetTaskDueDate(serviceRequest.AppointmentDate.HasValue ? serviceRequest.AppointmentDate : serviceRequest.DueDate, template);
+                st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
+                st.TaskStatusId = TaskStatuses.ToDo;
+                st.TaskStatusChangedBy = userId;
+                st.TaskStatusChangedDate = now;
+                st.IsCriticalPath = template.IsCriticalPath;
+                st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
+                st.EffectiveDate = GetEffectiveDate(serviceRequest.AppointmentDate.HasValue ? serviceRequest.AppointmentDate : serviceRequest.DueDate, template);
                 // Assign tasks to physician and case coordinator to start
                 st.AssignedTo = GetTaskAssignment(
                     template.ResponsibleRoleId,
@@ -558,14 +557,12 @@ namespace WebApp.Controllers
                 serviceRequest.ServiceRequestTasks.Add(st);
             }
 
-            serviceRequest.UpdateIsClosed();
-
             db.SaveChanges();
 
             // Clone the related tasks
-            foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+            foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
             {
-                foreach (var dependentTemplate in taskTemplate.Child)
+                foreach (var dependentTemplate in taskTemplate.Child.AsQueryable().AreNotDeleted())
                 {
                     var task = serviceRequest.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
                     var dependent = serviceRequest.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
@@ -574,6 +571,8 @@ namespace WebApp.Controllers
             }
 
             db.SaveChanges();
+
+            await service.UpdateDependentTaskStatuses(serviceRequest.Id);
 
             return RedirectToAction("Details", new { id = serviceRequest.Id });
         }
@@ -598,6 +597,13 @@ namespace WebApp.Controllers
             sr.AddressId = serviceRequest.AddressId;
             sr.ModifiedDate = SystemTime.Now();
             sr.ModifiedUser = User.Identity.Name;
+
+            foreach (var t in sr.ServiceRequestTasks.AsQueryable().AreActive().Where(srt => srt.ServiceRequestTemplateTaskId.HasValue))
+            {
+                t.DueDate = GetTaskDueDate(sr.AppointmentDate, t.ServiceRequestTemplateTask);
+                t.EffectiveDate = GetEffectiveDate(sr.AppointmentDate, t.ServiceRequestTemplateTask);
+            }
+
             await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = sr.Id });
         }
@@ -783,12 +789,11 @@ namespace WebApp.Controllers
                 sr.CreatedDate = SystemTime.Now();
 
                 var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
+                var baselineTask = requestTemplate.ServiceRequestTemplateTasks.FirstOrDefault(rt => rt.IsBaselineDate);
 
-                foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
+                foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
-                    st.DueDateBase = template.OTask.DueDateBase;
-                    st.DueDateDiff = template.OTask.DueDateDiff;
                     st.Guidance = template.OTask.Guidance;
                     st.ObjectGuid = Guid.NewGuid();
                     st.ResponsibleRoleId = template.ResponsibleRoleId;
@@ -796,17 +801,23 @@ namespace WebApp.Controllers
                     st.ShortName = template.OTask.ShortName;
                     st.TaskId = template.OTask.Id;
                     st.TaskName = template.OTask.Name;
-                    st.ModifiedDate = SystemTime.Now();
-                    st.ModifiedUser = User.Identity.Name;
+                    st.ModifiedDate = now;
+                    st.ModifiedUser = userId.ToString();
+                    st.CreatedDate = now;
+                    st.CreatedUser = userId.ToString();
                     // Assign tasks to physician and case coordinator to start
                     st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
-                    st.DueDate = GetTaskDueDate(template.DueDateType, sr.AppointmentDate, sr.DueDate);
+                    st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
+                    st.DueDate = GetTaskDueDate(sr.AppointmentDate, template);
                     st.TaskStatusId = TaskStatuses.ToDo;
                     st.TaskStatusChangedBy = userId;
                     st.TaskStatusChangedDate = now;
+                    st.IsCriticalPath = template.IsCriticalPath;
+                    st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
+                    st.EffectiveDate = GetEffectiveDate(sr.AppointmentDate, template);
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -818,7 +829,7 @@ namespace WebApp.Controllers
                 await db.SaveChangesAsync();
 
                 // Clone the related tasks
-                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     foreach (var dependentTemplate in taskTemplate.Child)
                     {
@@ -944,11 +955,9 @@ namespace WebApp.Controllers
 
                 var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
 
-                foreach (var template in requestTemplate.ServiceRequestTemplateTasks)
+                foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
-                    st.DueDateBase = template.OTask.DueDateBase;
-                    st.DueDateDiff = template.OTask.DueDateDiff;
                     st.Guidance = template.OTask.Guidance;
                     st.ObjectGuid = Guid.NewGuid();
                     st.ResponsibleRoleId = template.ResponsibleRoleId;
@@ -956,13 +965,23 @@ namespace WebApp.Controllers
                     st.ShortName = template.OTask.ShortName;
                     st.TaskId = template.OTask.Id;
                     st.TaskName = template.OTask.Name;
-                    st.ModifiedDate = SystemTime.Now();
-                    st.ModifiedUser = User.Identity.Name;
+                    st.ModifiedDate = now;
+                    st.ModifiedUser = userId.ToString();
+                    st.CreatedDate = now;
+                    st.CreatedUser = userId.ToString();
                     // Assign tasks to physician and case coordinator to start
                     st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
+                    st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
+                    st.DueDate = GetTaskDueDate(sr.DueDate, template);
+                    st.TaskStatusId = TaskStatuses.ToDo;
+                    st.TaskStatusChangedBy = userId;
+                    st.TaskStatusChangedDate = now;
+                    st.IsCriticalPath = template.IsCriticalPath;
+                    st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
+                    st.EffectiveDate = GetEffectiveDate(sr.DueDate, template);
 
                     sr.ServiceRequestTasks.Add(st);
                 }
@@ -974,7 +993,7 @@ namespace WebApp.Controllers
                 await db.SaveChangesAsync();
 
                 // Clone the related tasks
-                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks)
+                foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     foreach (var dependentTemplate in taskTemplate.Child)
                     {
@@ -1508,16 +1527,45 @@ namespace WebApp.Controllers
                 });
         }
 
-        private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
+        private DateTime GetTaskDueDate(DateTime? baselineDate, ServiceRequestTemplateTask taskTemplate)
         {
-            switch (dueDateType)
+            if (!baselineDate.HasValue)
             {
-                case DueDateTypes.AppointmentDate:
-                    return appointmentDate;
-                case DueDateTypes.ReportDueDate:
-                    return dueDate;
-                default:
-                    return null;
+                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+            }
+
+            if (taskTemplate.IsBaselineDate) // BASELINE
+            {
+                return baselineDate.Value;
+            }
+            else if (taskTemplate.DueDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
+            {
+                return baselineDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+            }
+            else // ASAP
+            {
+                return now;
+            }
+        }
+
+        private DateTime GetEffectiveDate(DateTime? baselineDate, ServiceRequestTemplateTask taskTemplate)
+        {
+            if (!baselineDate.HasValue)
+            {
+                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+            }
+
+            if (taskTemplate.IsBaselineDate) // BASELINE
+            {
+                return baselineDate.Value;
+            }
+            else if (taskTemplate.EffectiveDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
+            {
+                return baselineDate.Value.AddDays(taskTemplate.EffectiveDateDurationFromBaseline.Value);
+            }
+            else // ASAP
+            {
+                return now;
             }
         }
 
@@ -1551,10 +1599,29 @@ namespace WebApp.Controllers
 
         [HttpGet]
         //[AuthorizeRole(Feature = Features.SysAdmin.ManageTasks)]
-        public async Task<ActionResult> GetAllServiceRequestIds()
+        public ActionResult GetAllServiceRequestIds()
         {
             var ids = db.ServiceRequests.Select(sr => sr.Id).OrderBy(sr => sr).ToList();
             return Json(ids, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetAssessmentDayTasks()
+        {
+            var shouldBeDone = db.ServiceRequestTasks
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now)
+                .WithTaskId(Tasks.AssessmentDay)
+                .AreActive()
+                .Select(srt => srt.ServiceRequestId);
+
+            var shouldBeWaiting = db.ServiceRequestTasks
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate > now)
+                .WithTaskId(Tasks.AssessmentDay)
+                .Where(t => t.TaskStatusId == TaskStatuses.ToDo || t.TaskStatusId == TaskStatuses.Done || t.TaskStatusId == TaskStatuses.Archive)
+                .Select(srt => srt.ServiceRequestId);
+
+            var result = shouldBeDone.Concat(shouldBeWaiting).OrderBy(id => id);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

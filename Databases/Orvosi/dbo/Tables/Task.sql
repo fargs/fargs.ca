@@ -16,8 +16,6 @@
     [ModifiedDate]      DATETIME            CONSTRAINT [DF_Task_ModifiedDate] DEFAULT (getdate()) NOT NULL,
     [ModifiedUser]      NVARCHAR (100)      CONSTRAINT [DF_Task_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
     [DependsOn]         NVARCHAR (50)       NULL,
-    [DueDateBase]       TINYINT             NULL,
-    [DueDateDiff]       SMALLINT            NULL,
     [ShortName]         NVARCHAR (50)       NULL,
     [IsCriticalPath]    BIT                 CONSTRAINT [DF_Task_IsCriticalPath] DEFAULT ((0)) NOT NULL,
     [TaskType]          VARCHAR (50)        NULL,
@@ -26,6 +24,8 @@
     CONSTRAINT [FK_Task_AspNetRoles] FOREIGN KEY ([ResponsibleRoleId]) REFERENCES [dbo].[AspNetRoles] ([Id]),
     CONSTRAINT [FK_Task_TaskPhase] FOREIGN KEY ([TaskPhaseId]) REFERENCES [dbo].[TaskPhase] ([Id])
 );
+
+
 
 
 

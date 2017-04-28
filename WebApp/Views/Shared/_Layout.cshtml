@@ -315,13 +315,13 @@
     <script type="text/javascript">
 
         function updateAssessmentDayTaskStatuses() {
-            let urlIds = '@Url.Content("~/ServiceRequest/GetAllServiceRequestIds")';
+            let urlIds = '@Url.Content("~/ServiceRequest/GetAssessmentDayTasks")';
             let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateAssessmentDayTaskStatuses")';
 
             let adminMessages = document.getElementById('admin-tasks-messages');
             $.get(urlIds)
                 .done(function (data) {
-                    for (var i = 0; i < data.length - 1; i++) {
+                    for (var i = 0; i < data.length; i++) {
                         $.post(urlUpdate, { serviceRequestId: data[i] })
                             .done(function (data) {
                                 $(adminMessages).append('<div class="text-success">Assessment day task status success ' + data.serviceRequestId + '</div>');

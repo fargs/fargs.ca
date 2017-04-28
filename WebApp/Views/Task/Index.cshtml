@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Orvosi.Data.OTask>
+﻿@using Orvosi.Data.Filters
+@model IEnumerable<Orvosi.Data.OTask>
 
 @{
     ViewBag.Title = "Index";
@@ -22,21 +23,21 @@
             Task
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Guidance)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Sequence)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.ShortName)
         </th>
         <th>
-            Included On Template Count
+            Duration From Baseline
+        </th>
+        <th>
+            Critical Path
+        </th>
+        <th>
+            Reference Count
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.OrderBy(m => m.ResponsibleRoleId).ThenBy(m => m.TaskPhaseId).ThenBy(m => m.Sequence)) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.AspNetRole.Name)
@@ -47,17 +48,18 @@
         <td>
             @Html.DisplayFor(modelItem => item.Name)
         </td>
-        <td class="wordwrap-off">
-            @Html.DisplayFor(modelItem => item.Guidance)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Sequence)
-        </td>
         <td>
             @Html.DisplayFor(modelItem => item.ShortName)
         </td>
         <td>
-            @item.ServiceRequestTemplateTasks.Count()
+            @Html.DisplayFor(modelItem => item.DueDateDiff)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsCriticalPath)
+        </td>
+        <td>
+            Templates: @item.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().Count() <br />
+            Requests:  @item.ServiceRequestTasks.Count()
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

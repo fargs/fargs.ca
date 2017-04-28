@@ -148,7 +148,7 @@ namespace WebApp.Models.ServiceRequestModels2
                 // read all the data in from the database.
                 var source = context.ServiceRequestTasks
                     .Where(srt => srt.AssignedTo == userId)
-                    .AreActive()
+                    .AreActiveOrDone()
                     .Select(srt => new DayIndex
                     {
                         DueDate = srt.DueDate,

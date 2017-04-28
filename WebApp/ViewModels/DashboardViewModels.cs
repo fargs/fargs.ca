@@ -38,7 +38,7 @@ namespace WebApp.ViewModels.DashboardViewModels
                 AssignedToColorCode = o.AssignedToColorCode,
                 AssignedToDisplayName = o.AssignedToDisplayName,
                 AssignedToInitials = o.AssignedToInitials,
-                IsComplete = o.TaskStatusId == TaskStatuses.Done,
+                IsComplete = o.TaskStatusId == TaskStatuses.Done || o.TaskStatusId == TaskStatuses.Archive,
                 CompletedDate = o.CompletedDate,
                 Sequence = (byte)o.TaskSequence.Value,
                 Parent = null,

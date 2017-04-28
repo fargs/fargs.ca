@@ -16,7 +16,7 @@ namespace WebApp.API
             var count = db.ServiceRequestTasks
                 .AreAssignedToUser(userId)
                 .AreDueBetween(DateTime.MinValue, now)
-                .AreActive()
+                .AreActiveOrDone()
                 .Count();
 
             return Ok(count);

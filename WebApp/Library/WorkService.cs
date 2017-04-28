@@ -61,7 +61,8 @@ namespace WebApp.Library
             sr.IsLateCancellation = form.IsLate == "on" ? true : false;
 
             var query = sr.ServiceRequestTasks
-                .Where(srt => srt.TaskStatusId != TaskStatuses.Done);
+                .AsQueryable()
+                .AreActive();
 
             if (sr.IsLateCancellation)
             {
@@ -84,7 +85,8 @@ namespace WebApp.Library
             sr.IsLateCancellation = false;
 
             var query = sr.ServiceRequestTasks
-                .Where(srt => srt.TaskStatusId != TaskStatuses.Done);
+                .AsQueryable()
+                .AreCancelled();
 
             if (sr.IsLateCancellation)
             {
@@ -114,9 +116,22 @@ namespace WebApp.Library
 
             byte newTaskStatus = form.IsNoShow ? TaskStatuses.Obsolete : TaskStatuses.ToDo;
 
-            foreach (var task in sr.ServiceRequestTasks
-                .Where(srt => srt.TaskStatusId != TaskStatuses.Done)
-                .Where(srt => srt.TaskId != Tasks.SubmitInvoice))
+            IEnumerable<ServiceRequestTask> tasks = null;
+            if (form.IsNoShow)
+            {
+                tasks = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .AreActive()
+                    .Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+            }
+            else
+            {
+                tasks = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .AreCancelled();
+            }
+
+            foreach (var task in tasks)
             {
                 await SaveTaskStatusChange(task, newTaskStatus);
             }
@@ -133,7 +148,22 @@ namespace WebApp.Library
 
             byte newTaskStatus = form.IsOnHold ? TaskStatuses.OnHold : TaskStatuses.ToDo;
 
-            foreach (var task in sr.ServiceRequestTasks.Where(srt => srt.TaskStatusId != TaskStatuses.Done))
+            IEnumerable<ServiceRequestTask> tasks = null;
+            if (form.IsOnHold)
+            {
+                tasks = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .AreActive()
+                    .Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+            }
+            else
+            {
+                tasks = sr.ServiceRequestTasks
+                    .AsQueryable()
+                    .AreOnHold();
+            }
+
+            foreach (var task in sr.ServiceRequestTasks.AsQueryable().AreActive())
             {
                 await SaveTaskStatusChange(task, newTaskStatus);
             }
@@ -164,8 +194,6 @@ namespace WebApp.Library
             task.HourlyRate = st.HourlyRate;
             task.EstimatedHours = st.EstimatedHours;
             task.DependsOn = st.DependsOn;
-            task.DueDateBase = st.DueDateBase;
-            task.DueDateDiff = st.DueDateDiff;
             task.Guidance = st.Guidance;
             task.IsCriticalPath = true;
             task.ModifiedDate = SystemTime.Now();
@@ -184,8 +212,8 @@ namespace WebApp.Library
                 {
                     approveReport.CompletedDate = null;
                     approveReport.CompletedBy = null;
-                    approveReport.ModifiedDate = SystemTime.UtcNow();
-                    approveReport.ModifiedUser = identity.GetGuidUserId().ToString();
+                    approveReport.ModifiedDate = now;
+                    approveReport.ModifiedUser = userId.ToString();
 
                     // make this task dependent on additional edits
                     task.Parent.Add(approveReport);
@@ -215,8 +243,8 @@ namespace WebApp.Library
                 {
                     closeCase.CompletedDate = null;
                     closeCase.CompletedBy = null;
-                    closeCase.ModifiedDate = SystemTime.UtcNow();
-                    closeCase.ModifiedUser = identity.GetGuidUserId().ToString();
+                    closeCase.ModifiedDate = now;
+                    closeCase.ModifiedUser = userId.ToString();
 
                     task.Parent.Add(closeCase);
                     task.Sequence = (short)(closeCase.Sequence.Value - 2);
@@ -270,7 +298,7 @@ namespace WebApp.Library
         {
             var srt = db.ServiceRequestTasks.Single(t => t.Id == serviceRequestTaskId);
 
-            foreach (var item in srt.Child.ToList())
+            foreach (var item in srt.Child.AsQueryable().ToList())
             {
                 srt.Child.Remove(item);
             }
@@ -337,21 +365,7 @@ namespace WebApp.Library
             {
                 throw new ArgumentNullException($"Service request with Id {serviceRequestId} not found.");
             }
-
-            var appointmentDate = serviceRequest.AppointmentDate;
-            var now = SystemTime.Now();
-            var tasks = serviceRequest.ServiceRequestTasks.Where(srt => srt.TaskId == Tasks.AssessmentDay);
-            foreach (var task in tasks)
-            {
-                if (appointmentDate >= now)
-                {
-                    await ChangeTaskStatus(task.Id, TaskStatuses.Waiting);
-                }
-                else
-                {
-                    await ChangeTaskStatus(task.Id, TaskStatuses.Done);
-                }
-            }
+            await SaveDependentTaskStatusChanges(serviceRequest);
         }
         public async Task UpdateDependentTaskStatuses(int serviceRequestId)
         {
@@ -392,11 +406,23 @@ namespace WebApp.Library
             {
                 if (srt.TaskId != Tasks.AssessmentDay)
                 {
-                    var isWaiting = srt.Child.Any(d => d.TaskStatusId == TaskStatuses.ToDo || d.TaskStatusId == TaskStatuses.Waiting || d.TaskStatusId == TaskStatuses.OnHold);
+                    var isWaiting = srt.Child.AsQueryable().AreActive().Any();
 
                     if (srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting)
                     {
                         srt.TaskStatusId = isWaiting ? TaskStatuses.Waiting : TaskStatuses.ToDo;
+                    }
+                }
+                else if (srt.TaskId == Tasks.AssessmentDay && serviceRequest.AppointmentDate.HasValue && (srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting))
+                {
+                    var appointmentDate = serviceRequest.AppointmentDate.Value;
+                    if (appointmentDate >= now)
+                    {
+                        srt.TaskStatusId = TaskStatuses.Waiting;
+                    }
+                    else
+                    {
+                        srt.TaskStatusId = TaskStatuses.Done;
                     }
                 }
             }
@@ -416,7 +442,7 @@ namespace WebApp.Library
         private short CalculateNewServiceRequestStatus(IEnumerable<ServiceRequestTask> tasks, short currentStatus)
         {
             //TODO: insert to a log table
-            if (tasks.Any(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold))
+            if (tasks.AsQueryable().AreActive().Any())
             {
                 // return on hold if it was explicitely set, otherwise return active
                 return currentStatus == ServiceRequestStatuses.OnHold ? ServiceRequestStatuses.OnHold : ServiceRequestStatuses.Active;

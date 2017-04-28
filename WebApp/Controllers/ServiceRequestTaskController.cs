@@ -34,7 +34,7 @@ namespace WebApp.Controllers
         {
             var dto = db.ServiceRequestTasks
                 .AreAssignedToUser(userId)
-                .AreActive()
+                .AreActiveOrDone()
                 .Where(srt => srt.DueDate.HasValue)
                 .OrderBy(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence)
                 .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())

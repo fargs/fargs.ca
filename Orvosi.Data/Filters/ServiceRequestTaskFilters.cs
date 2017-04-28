@@ -20,10 +20,30 @@ namespace Orvosi.Data.Filters
         {
             return s => s.Id == id;
         }
-        public static IQueryable<ServiceRequestTask> AreActive(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        public static IQueryable<ServiceRequestTask> AreClosed(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        {
+            return serviceRequestTasks
+                .Where(srt => srt.TaskStatusId == TaskStatuses.Done || srt.TaskStatusId == TaskStatuses.Archive || srt.TaskStatusId == TaskStatuses.Obsolete);
+        }
+        public static IQueryable<ServiceRequestTask> AreActiveOrDone(this IQueryable<ServiceRequestTask> serviceRequestTasks)
         {
             return serviceRequestTasks
                 .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold || srt.TaskStatusId == TaskStatuses.Done);
+        }
+        public static IQueryable<ServiceRequestTask> AreActive(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        {
+            return serviceRequestTasks
+                .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo || srt.TaskStatusId == TaskStatuses.Waiting || srt.TaskStatusId == TaskStatuses.OnHold);
+        }
+        public static IQueryable<ServiceRequestTask> AreCancelled(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        {
+            return serviceRequestTasks
+                .Where(srt => srt.TaskStatusId == TaskStatuses.Obsolete);
+        }
+        public static IQueryable<ServiceRequestTask> AreOnHold(this IQueryable<ServiceRequestTask> serviceRequestTasks)
+        {
+            return serviceRequestTasks
+                .Where(srt => srt.TaskStatusId == TaskStatuses.OnHold);
         }
         public static IQueryable<ServiceRequestTask> AreAssignedToUser(this IQueryable<ServiceRequestTask> serviceRequestTasks, Guid userId)
         {

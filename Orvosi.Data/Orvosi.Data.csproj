@@ -64,6 +64,7 @@
     <Compile Include="AvailableSlot.cs" />
     <Compile Include="Extensions\ServiceRequestExtensions.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
+    <Compile Include="Filters\ServiceRequestTemplateTaskFilters.cs" />
     <Compile Include="Filters\ReceiptFilters.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />
     <Compile Include="Filters\ServiceRequestTaskFilters.cs" />

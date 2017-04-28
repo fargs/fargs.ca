@@ -32,7 +32,7 @@ namespace WebApp.ViewModels.DashboardViewModels
             Count = c.Count(),
             ToDoCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.ToDo),
             WaitingCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Waiting),
-            DoneCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Done),
+            DoneCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Done || sr.TaskStatusId == TaskStatuses.Archive),
             ObsoleteCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.Obsolete),
             OnHoldCount = c.Count(sr => sr.TaskStatusId == TaskStatuses.OnHold)
         };

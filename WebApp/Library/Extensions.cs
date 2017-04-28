@@ -20,6 +20,7 @@ using System.Collections.Specialized;
 using System.Runtime.Serialization.Formatters.Binary;
 using WebApp.ViewModels;
 using System.Web.Mvc;
+using Humanizer;
 
 namespace WebApp.Library.Extensions
 {
@@ -133,6 +134,10 @@ namespace WebApp.Library.Extensions
         public static string ToOrvosiDateFormat(this DateTime? value)
         {
             return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
+        }
+        public static string ToHumanizedDate(this DateTime? value)
+        {
+            return value.HasValue ? value.Value.Humanize() : "ASAP";
         }
         public static string ToOrvosiDateShortFormat(this DateTime value)
         {

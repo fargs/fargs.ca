@@ -60,11 +60,12 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Create([Bind(Include = "Id,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,ShortName")] OTask task)
+        public async threading.Task<ActionResult> Create([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {
                 task.ObjectGuid = Guid.NewGuid();
+                task.ModifiedDate = SystemTime.Now();
                 task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.OTasks.Add(task);
                 await db.SaveChangesAsync();
@@ -98,10 +99,11 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,TaskPhaseId,ResponsibleRoleId,IsBillable,HourlyRate,EstimatedHours,Sequence,ShortName")] OTask task)
+        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {
+                task.ModifiedDate = SystemTime.Now();
                 task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.Entry(task).State = EntityState.Modified;
                 await db.SaveChangesAsync();

@@ -50,8 +50,7 @@ namespace Orvosi.Data
             Property(x => x.Guidance).HasColumnName(@"Guidance").IsOptional().HasColumnType("nvarchar").HasMaxLength(1000);
             Property(x => x.IsObsolete).HasColumnName(@"IsObsolete").IsRequired().HasColumnType("bit");
             Property(x => x.DependsOn).HasColumnName(@"DependsOn").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
-            Property(x => x.DueDateBase).HasColumnName(@"DueDateBase").IsOptional().HasColumnType("tinyint");
-            Property(x => x.DueDateDiff).HasColumnName(@"DueDateDiff").IsOptional().HasColumnType("smallint");
+            Property(x => x.DueDateDurationFromBaseline).HasColumnName(@"DueDateDurationFromBaseline").IsOptional().HasColumnType("smallint");
             Property(x => x.ShortName).HasColumnName(@"ShortName").IsOptional().HasColumnType("nvarchar").HasMaxLength(50);
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").IsRequired().HasColumnType("bit");
             Property(x => x.IsDependentOnExamDate).HasColumnName(@"IsDependentOnExamDate").IsOptional().HasColumnType("bit").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed);
@@ -66,8 +65,7 @@ namespace Orvosi.Data
             Property(x => x.CreatedDate).HasColumnName(@"CreatedDate").IsOptional().HasColumnType("datetime");
             Property(x => x.CreatedUser).HasColumnName(@"CreatedUser").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.EffectiveDate).HasColumnName(@"EffectiveDate").IsOptional().HasColumnType("datetime");
-            Property(x => x.EffectiveDateBase).HasColumnName(@"EffectiveDateBase").IsOptional().HasColumnType("tinyint");
-            Property(x => x.EffectiveDateDiff).HasColumnName(@"EffectiveDateDiff").IsOptional().HasColumnType("smallint");
+            Property(x => x.EffectiveDateDurationFromBaseline).HasColumnName(@"EffectiveDateDurationFromBaseline").IsOptional().HasColumnType("smallint");
 
             // Foreign keys
             HasOptional(a => a.AspNetUser_AssignedTo).WithMany(b => b.AssignedTo).HasForeignKey(c => c.AssignedTo).WillCascadeOnDelete(false); // FK_ServiceRequestTask_AspNetUsers

@@ -99,10 +99,6 @@ namespace Orvosi.Shared.Enums.Features
         public const short OpenInGoogle = 268;
     }
 
-    public class ServiceRequestTask
-    {
-    }
-
     public class Accounting
     {
         public const short AccountingSection = 99;

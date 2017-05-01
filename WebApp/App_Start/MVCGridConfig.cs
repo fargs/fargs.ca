@@ -17,6 +17,7 @@ namespace WebApp
     using Models;
     using LinqKit;
     using ViewDataModels;
+    using System.ArrayExtensions;
 
     public static class MVCGridConfig 
     {
@@ -134,7 +135,7 @@ namespace WebApp
                         .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())
                         .ToList();
 
-                    var query = dto.AsEnumerable();
+                    var query = dto.AsQueryable();
 
                     var options = context.QueryOptions;
                     var result = new QueryResult<TaskGridRow>();
@@ -152,10 +153,18 @@ namespace WebApp
                                 query = query.Where(sr => sr.ServiceRequest.ClaimantName.Contains(filter.Value));
                                 break;
                             case "task":
-                                query = query.Where(sr => sr.TaskId == short.Parse(filter.Value));
+                                var selectedTaskIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse);
+                                query = query.Where(sr => selectedTaskIds.Any() ? selectedTaskIds.Contains(sr.TaskId) : true);
                                 break;
                             case "city":
-                                query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == short.Parse(filter.Value));
+
+                                short cityId;
+                                short.TryParse(filter.Value, out cityId);
+                                query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == cityId);
+                                break;
+                            case "taskstatusid":
+                                var selectedTaskStatusIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse); // filters out any items that are not valid shorts.
+                                query = query.Where(sr => selectedTaskStatusIds.Any() ? selectedTaskStatusIds.Contains(sr.TaskStatusId) : true);
                                 break;
                             default:
                                 break;

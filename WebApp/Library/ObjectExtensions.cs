@@ -103,6 +103,18 @@ namespace System
                 do action(array, walker.Position);
                 while (walker.Step());
             }
+
+            public delegate bool TryFunc<in TSource, TResult>(TSource arg, out TResult result);
+
+            public static IEnumerable<TResult> SelectTry<TSource, TValue, TResult>(this IEnumerable<TSource> source, Func<TSource, TValue> selector, TryFunc<TValue, TResult> executor)
+            {
+                foreach (TSource s in source)
+                {
+                    TResult r;
+                    if (executor(selector(s), out r))
+                        yield return r;
+                }
+            }
         }
 
         internal class ArrayTraverse

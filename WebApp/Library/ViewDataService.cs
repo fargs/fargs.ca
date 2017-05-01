@@ -329,5 +329,36 @@ namespace WebApp.Library
             return item;
         }
 
+        public const string taskStatusIdsKey = "task-status-ids-key";
+        public IEnumerable<LookupViewModel<short>> GetTaskStatuses()
+        {
+            var item = HttpContext.Current.Items[taskStatusIdsKey] as IEnumerable<LookupViewModel<short>>;
+            if (item == null)
+            {
+                var dto = dbContext.TaskStatus
+                    .OrderBy(c => c.Name)
+                    .Select(LookupDto<short>.FromTaskStatusEntity.Expand())
+                    .ToList();
+
+                var viewModel = dto
+                    .AsQueryable()
+                    .Select(LookupViewModel<short>.FromLookupDto.Expand())
+                    .ToList();
+
+                HttpContext.Current.Items[taskStatusIdsKey] = item = viewModel;
+            }
+            return item;
+        }
+
+        public IEnumerable<SelectListItem> GetTaskStatusSelectList()
+        {
+            var statuses = GetTaskStatuses();
+            return statuses.Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value = s.Id.ToString()
+            });
+        }
+
     }
 }

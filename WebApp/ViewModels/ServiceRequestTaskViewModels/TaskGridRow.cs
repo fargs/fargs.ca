@@ -20,7 +20,7 @@ namespace WebApp.ViewModels
         public DateTime? TaskStatusChangedDate { get; set; }
         public LookupViewModel<Guid> TaskStatusChangedBy { get; set; }
         public bool IsDone { get; set; } = false;
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public int ServiceRequestId { get; set; }
         public DateTime? AppointmentDateAndStartTime { get; set; }
         public string ClaimantName { get; set; }
@@ -42,7 +42,7 @@ namespace WebApp.ViewModels
             TaskName = dto.Name,
             TaskStatusId = dto.TaskStatusId,
             IsDone = dto.TaskStatusId == TaskStatuses.Done,
-            DueDate = dto.DueDate.Value,
+            DueDate = dto.DueDate,
             TaskStatusChangedDate = dto.TaskStatusChangedDate,
             TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.TaskStatusChangedBy),
             ServiceRequestId = dto.ServiceRequest.Id,

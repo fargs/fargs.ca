@@ -68,7 +68,7 @@ namespace WebApp
                         .WithHeaderText("Due")
                         .WithSorting(true)
                         .WithFiltering(true)
-                        .WithValueExpression(i => i.DueDate.ToOrvosiDateShortFormat());
+                        .WithValueExpression(i => i.DueDate.HasValue ? i.DueDate.Value.ToOrvosiDateShortFormat() : "ASAP");
                     cols.Add().WithColumnName("Task")
                         .WithHeaderText("Task")
                         .WithSorting(true)
@@ -120,8 +120,8 @@ namespace WebApp
 
                     var entityQuery = db.ServiceRequestTasks
                         .AreAssignedToUser(userId)
-                        .AreActiveOrDone()
-                        .Where(srt => srt.DueDate.HasValue);
+                        .AreActiveOrDone();
+                        //.Where(srt => srt.DueDate.HasValue);
 
                     if (physicianContext != null)
                     {
@@ -144,10 +144,10 @@ namespace WebApp
                     {
                         switch (filter.Key.ToLower())
                         {
-                            case "duedate":
-                                var range = new DateFilterArgs() { StartDate = DateTime.Parse(filter.Value), FilterType = ViewDataModels.DateFilterType.On };
-                                query = query.AreDueBetween(range);
-                                break;
+                            //case "duedate":
+                            //    var range = new DateFilterArgs() { StartDate = DateTime.Parse(filter.Value), FilterType = ViewDataModels.DateFilterType.On };
+                            //    query = query.AreDueBetween(range);
+                            //    break;
                             case "claimantname":
                                 query = query.Where(sr => sr.ServiceRequest.ClaimantName.Contains(filter.Value));
                                 break;

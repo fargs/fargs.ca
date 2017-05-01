@@ -182,7 +182,7 @@ if (pageToStart < pagingModel.CurrentPage)
                     else if (col.Name == "TaskStatusId")
                     {
                         var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
-                        <td@(Html.Raw(tdClassAttr)) width="100px" title="@("Due on " + task.DueDate.ToOrvosiDateFormat() + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
+                        <td@(Html.Raw(tdClassAttr)) width="100px" title="@("Due on " + (task.DueDate.HasValue ? task.DueDate.Value.ToOrvosiDateFormat() : "ASAP") + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
                             @Html.Partial("~/Views/Shared/_TaskStatusLabel2.cshtml", task.TaskStatusId)
                             </td>
                     }

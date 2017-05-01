@@ -780,6 +780,7 @@ namespace WebApp.Controllers
                 sr.AvailableSlotId = sr.AvailableSlotId;
                 sr.StartTime = slot.StartTime;
                 sr.EndTime = slot.EndTime;
+                sr.DueDate = sr.DueDate;
                 sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
                 sr.NoShowRate = rates.NoShowRate;
                 sr.LateCancellationRate = rates.LateCancellationRate;

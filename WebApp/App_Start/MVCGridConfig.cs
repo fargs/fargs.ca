@@ -159,8 +159,10 @@ namespace WebApp
                             case "city":
 
                                 short cityId;
-                                short.TryParse(filter.Value, out cityId);
-                                query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == cityId);
+                                if (short.TryParse(filter.Value, out cityId))
+                                { 
+                                    query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == cityId);
+                                }
                                 break;
                             case "taskstatusid":
                                 var selectedTaskStatusIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse); // filters out any items that are not valid shorts.

@@ -146,12 +146,12 @@
                         @Html.Partial("_TaskStatusLabel2", task.StatusId)
                     </td>
                     <td title="@task.Status.Name">@task.Name</td>
-                    <td>
+                    @*<td>
                         @if (task.IsActive)
                         {
                             <small class="text-muted pull-right @IsOverdue(task)" style="padding-left:30px;">@(task.DueDate.ToHumanizedDate())</small>
                         }
-                    </td>
+                    </td>*@
                 </tr>
             }
         </table>

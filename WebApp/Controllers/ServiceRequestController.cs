@@ -423,31 +423,6 @@ namespace WebApp.Controllers
                 .Where(sr => sr.Id == form.ServiceRequestId)
                 .Single();
 
-            // Get the service catalogue
-            var address = await db.Addresses.FirstOrDefaultAsync(c => c.Id == record.AddressId);
-            var serviceCatalogues = db.GetServiceCatalogueForCompany(record.PhysicianId, record.CompanyId).ToList();
-            var serviceCatalogueInMemoryQuery = serviceCatalogues.Where(c => c.ServiceId == record.ServiceId);
-            if (address != null)
-                serviceCatalogueInMemoryQuery.Where(sr => sr.LocationId == address.LocationId);
-            var serviceCatalogue = serviceCatalogueInMemoryQuery.FirstOrDefault();
-            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
-            {
-                this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
-            }
-
-            // Get the no show and late cancellation rates for this company
-            var company = db.Companies.FirstOrDefault(c => c.Id == record.CompanyId);
-            var rates = db.GetServiceCatalogueRate(record.PhysicianId, company?.ObjectGuid).First();
-            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
-            {
-                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
-            }
-
-            if (record.InvoiceDetails.Any())
-            {
-                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
-            }
-
             if (!ModelState.IsValid)
             {
                 return View("ChangeCompany", form);
@@ -456,10 +431,8 @@ namespace WebApp.Controllers
             // update the company
             record.CompanyId = form.CompanyId;
             record.ServiceId = form.ServiceId;
-            record.ServiceCatalogueId = serviceCatalogue.ServiceCatalogueId;
-            record.ServiceCataloguePrice = serviceCatalogue.Price;
-            record.ModifiedDate = SystemTime.UtcNow();
-            record.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            record.ModifiedDate = now;
+            record.ModifiedUser = userId.ToString();
 
             await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = record.Id });

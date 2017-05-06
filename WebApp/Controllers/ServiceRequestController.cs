@@ -734,36 +734,36 @@ namespace WebApp.Controllers
             // These are the original parameters required by the Get method. AvailableDayId is not a property on ServiceRequest so it was added as a hidden field on the form. PhysicianId was added to be consistent.
             var selectedAvailableDayId = int.Parse(Request.Form.Get("SelectedAvailableDayId"));
             var selectedPhysicianId = new Guid(Request.Form.Get("SelectedPhysicianId"));
-            bool overrideServiceCatalogueMissingError = false;
-            if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
-            {
-                overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
-            }
+            //bool overrideServiceCatalogueMissingError = false;
+            //if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
+            //{
+            //    overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
+            //}
 
             // Get the service catalogue
             var address = await db.Addresses.FirstOrDefaultAsync(c => c.Id == sr.AddressId);
-            var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
-            var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == sr.ServiceId);
-            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
-            {
-                if (!overrideServiceCatalogueMissingError)
-                {
-                    this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
-                    ViewBag.ServiceIdHasErrors = true;
-                }
-            }
+            //var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            //var serviceCatalogue = serviceCatalogues.FirstOrDefault(c => c.LocationId == address.LocationId && c.ServiceId == sr.ServiceId);
+            //if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
+            //{
+            //    if (!overrideServiceCatalogueMissingError)
+            //    {
+            //        this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+            //        ViewBag.ServiceIdHasErrors = true;
+            //    }
+            //}
 
             // Get the no show and late cancellation rates for this company
             var company = db.Companies.FirstOrDefault(c => c.Id == sr.CompanyId);
-            var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
-            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
-            {
-                if (!overrideServiceCatalogueMissingError)
-                {
-                    this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
-                    ViewBag.ServiceIdHasErrors = true;
-                }
-            }
+            //var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
+            //if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            //{
+            //    if (!overrideServiceCatalogueMissingError)
+            //    {
+            //        this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            //        ViewBag.ServiceIdHasErrors = true;
+            //    }
+            //}
 
             if (ModelState.IsValid)
             {
@@ -776,22 +776,21 @@ namespace WebApp.Controllers
                 sr.PhysicianId = selectedPhysicianId;
                 sr.CompanyId = company.Id;
                 sr.AddressId = address.Id;
-                sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
+                //sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.AvailableSlotId = sr.AvailableSlotId;
                 sr.StartTime = slot.StartTime;
                 sr.EndTime = slot.EndTime;
                 sr.DueDate = sr.DueDate;
-                sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
-                sr.NoShowRate = rates.NoShowRate;
-                sr.LateCancellationRate = rates.LateCancellationRate;
-                sr.ModifiedUser = User.Identity.Name;
-                sr.ModifiedDate = SystemTime.Now();
-                sr.CreatedUser = User.Identity.Name;
-                sr.CreatedDate = SystemTime.Now();
+                //sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
+                //sr.NoShowRate = rates.NoShowRate;
+                //sr.LateCancellationRate = rates.LateCancellationRate;
+                sr.ModifiedUser = userId.ToString();
+                sr.ModifiedDate = now;
+                sr.CreatedUser = userId.ToString();
+                sr.CreatedDate = now;
 
+                // clone the workflow template tasks
                 var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
-                var baselineTask = requestTemplate.ServiceRequestTemplateTasks.FirstOrDefault(rt => rt.IsBaselineDate);
-
                 foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     var st = new Orvosi.Data.ServiceRequestTask();
@@ -829,7 +828,7 @@ namespace WebApp.Controllers
 
                 await db.SaveChangesAsync();
 
-                // Clone the related tasks
+                // Clone the task dependencies
                 foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
                 {
                     foreach (var dependentTemplate in taskTemplate.Child)
@@ -904,38 +903,38 @@ namespace WebApp.Controllers
                 this.ModelState.AddModelError("ServiceId", "Service must be an AddOn.");
             }
            
-            bool overrideServiceCatalogueMissingError = false;
-            if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
-            {
-                overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
-            }
+            //bool overrideServiceCatalogueMissingError = false;
+            //if (!string.IsNullOrEmpty(Request.Form.Get("OverrideServiceCatalogueMissingError")))
+            //{
+            //    overrideServiceCatalogueMissingError = Request.Form.Get("OverrideServiceCatalogueMissingError").Contains("true");
+            //}
 
             var company = await db.Companies.FirstOrDefaultAsync(c => c.Id == sr.CompanyId);
 
-            var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
+            //var serviceCatalogues = db.GetServiceCatalogueForCompany(sr.PhysicianId, sr.CompanyId).ToList();
 
-            var serviceCatalogue = serviceCatalogues.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
-            if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
-            {
-                if (!overrideServiceCatalogueMissingError)
-                {
-                    this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
-                    ViewBag.ServiceIdHasErrors = true;
-                }
-            }
+            //var serviceCatalogue = serviceCatalogues.SingleOrDefault(c => c.ServiceId == sr.ServiceId && c.LocationId == 0);
+            //if (serviceCatalogue == null || !serviceCatalogue.Price.HasValue)
+            //{
+            //    if (!overrideServiceCatalogueMissingError)
+            //    {
+            //        this.ModelState.AddModelError("ServiceId", "This service has not been offered to this company at this location.");
+            //        ViewBag.ServiceIdHasErrors = true;
+            //    }
+            //}
 
-            var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
-            if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
-            {
-                this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
-            }
+            //var rates = db.GetServiceCatalogueRate(sr.PhysicianId, company?.ObjectGuid).First();
+            //if (rates == null || !rates.NoShowRate.HasValue || !rates.LateCancellationRate.HasValue)
+            //{
+            //    this.ModelState.AddModelError("ServiceId", "No Show Rates or Late Cancellation Rates have not been set for this company.");
+            //}
 
             if (ModelState.IsValid)
             {
                 sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
                 sr.ServiceRequestStatusChangedBy = userId;
                 sr.ServiceRequestStatusChangedDate = now;
-                sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
+                //sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.DueDate = sr.DueDate;
                 sr.CaseCoordinatorId = sr.CaseCoordinatorId;
                 sr.RequestedDate = now;
@@ -945,9 +944,9 @@ namespace WebApp.Controllers
                 sr.CompanyId = sr.CompanyId;
                 sr.PhysicianId = sr.PhysicianId;
                 sr.ServiceId = sr.ServiceId;
-                sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
-                sr.NoShowRate = rates.NoShowRate;
-                sr.LateCancellationRate = rates.LateCancellationRate;
+                //sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
+                //sr.NoShowRate = rates.NoShowRate;
+                //sr.LateCancellationRate = rates.LateCancellationRate;
                 sr.ServiceRequestTemplateId = sr.ServiceRequestTemplateId;
                 sr.ModifiedUser = User.Identity.Name;
                 sr.ModifiedDate = SystemTime.Now();

@@ -34,6 +34,7 @@ namespace WebApp.Models
         public string Notes { get; set; }
         public bool HasErrors { get; set; }
         public bool HasWarnings { get; set; }
+        public Guid? CompanyGuid { get; set; } // used to get the service catalogue in the accounting controller.
 
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
@@ -238,27 +239,29 @@ namespace WebApp.Models
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForInvoice = sr => new ServiceRequestDto
-            {
-                Id = sr.Id,
-                ClaimantName = sr.ClaimantName,
-                AppointmentDate = sr.AppointmentDate,
-                StartTime = sr.StartTime,
-                DueDate = sr.DueDate,
-                CancelledDate = sr.CancelledDate,
-                IsNoShow = sr.IsNoShow,
-                IsLateCancellation = sr.IsLateCancellation,
-                ServiceRequestStatusId = sr.ServiceRequestStatusId,
-                Notes = sr.Notes,
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            AppointmentDate = sr.AppointmentDate,
+            StartTime = sr.StartTime,
+            DueDate = sr.DueDate,
+            CancelledDate = sr.CancelledDate,
+            IsNoShow = sr.IsNoShow,
+            IsLateCancellation = sr.IsLateCancellation,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            Notes = sr.Notes,
+            CompanyGuid = sr.Company.ObjectGuid,
 
-                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
-                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
-                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
-                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+            Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+            Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
 
-                Tasks = sr.ServiceRequestTasks.AsQueryable()
+            Tasks = sr.ServiceRequestTasks.AsQueryable()
                     .Where(srt => srt.TaskId == Orvosi.Shared.Enums.Tasks.SubmitInvoice)
                     .Select(TaskDto.FromServiceRequestTaskEntityForInvoiceDetail.Expand())
-            };
+        };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTaskStatusSummary(Guid userId, short[] taskIds)
         {

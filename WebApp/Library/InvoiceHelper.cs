@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 using System.Web;
 using WebApp.Library;
 using WebApp.Library.Extensions;
+using WebApp.Models;
 
 namespace WebApp.Library
 {
     public static class InvoiceHelper
     {
-        public const byte PaymentDueInDays = 60;
 
         public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string terms, string userName)
         {
             var TaxRateHst = GetTaxRate(customer.ProvinceName);
-            var paymentTerms = string.IsNullOrEmpty(terms) ? "90" : terms;
+            var paymentTerms = string.IsNullOrEmpty(terms) ? "30" : terms;
             invoice.InvoiceNumber = invoiceNumber.ToString();
             invoice.InvoiceDate = invoiceDate;
             invoice.Terms = paymentTerms;
@@ -54,7 +54,7 @@ namespace WebApp.Library
             invoice.CalculateTotal();
         }
 
-        public static void BuildInvoiceDetailFromServiceRequest(this InvoiceDetail invoiceDetail, ServiceRequest serviceRequest, string userName)
+        public static void BuildInvoiceDetailFromServiceRequest(this InvoiceDetail invoiceDetail, ServiceRequestDto serviceRequest, string userName, decimal price = 0, decimal noShowRate = 1, decimal lateCancellationRate = 1)
         {
             invoiceDetail.ServiceRequestId = serviceRequest.Id;
             invoiceDetail.ModifiedDate = SystemTime.Now();
@@ -63,25 +63,25 @@ namespace WebApp.Library
             var description = new StringBuilder();
             description.AppendLine(serviceRequest.ClaimantName);
             description.AppendLine(serviceRequest.Service.Name);
-            if (serviceRequest.Service.HasAppointment)
+            if (serviceRequest.HasAppointment)
             {
-                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City_CityId.Name);
+                description.AppendFormat("On {0} in {1}", serviceRequest.AppointmentDate.ToOrvosiDateFormat(), serviceRequest.Address.City);
             }
             invoiceDetail.Description = description.ToString();
-            invoiceDetail.Amount = serviceRequest.Price.HasValue ? serviceRequest.Price : serviceRequest.ServiceCataloguePrice.HasValue ? serviceRequest.ServiceCataloguePrice : 0;
+            invoiceDetail.Amount = price;
             invoiceDetail.Rate = 1;
             invoiceDetail.CalculateTotal();
 
             if (serviceRequest.IsNoShow)
             {
-                var rate = serviceRequest.NoShowRate.HasValue ? serviceRequest.NoShowRate : 1;
+                var rate = noShowRate;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.NoShow,
                     rate);
             }
             else if (serviceRequest.IsLateCancellation)
             {
-                var rate = serviceRequest.LateCancellationRate.HasValue ? serviceRequest.LateCancellationRate : 1;
+                var rate = lateCancellationRate;
                 invoiceDetail.ApplyDiscount(
                     DiscountTypes.LateCancellation,
                     rate);

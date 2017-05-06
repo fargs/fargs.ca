@@ -218,81 +218,81 @@ namespace WebApp.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Case Coordinator")]
-        [HttpPost]
-        public async Task<ActionResult> Create()
-        {
-            var serviceRequestId = int.Parse(this.Request.Form.Get("Id"));
-            //var serviceRequest = await db.ServiceRequestViews.FindAsync(serviceRequestId);
+        //[Authorize(Roles = "Super Admin, Case Coordinator")]
+        //[HttpPost]
+        //public async Task<ActionResult> Create()
+        //{
+        //    var serviceRequestId = int.Parse(this.Request.Form.Get("Id"));
+        //    //var serviceRequest = await db.ServiceRequestViews.FindAsync(serviceRequestId);
 
-            var serviceRequest =
-                db.ServiceRequests
-                    //.Include(sr => sr.Company.Parent)
-                    //.Include(sr => sr.Physician.AspNetUser)
-                    //.Include(sr => sr.Service.ServiceCategory)
-                    //.Include(sr => sr.InvoiceDetails)
-                    //.Include(sr => sr.CaseCoordinator)
-                    //.Include(sr => sr.DocumentReviewer)
-                    //.Include(sr => sr.IntakeAssistant)
-                    //.Include(sr => sr.Address.Province)
-                    .Find(serviceRequestId);
+        //    var serviceRequest =
+        //        db.ServiceRequests
+        //            //.Include(sr => sr.Company.Parent)
+        //            //.Include(sr => sr.Physician.AspNetUser)
+        //            //.Include(sr => sr.Service.ServiceCategory)
+        //            //.Include(sr => sr.InvoiceDetails)
+        //            //.Include(sr => sr.CaseCoordinator)
+        //            //.Include(sr => sr.DocumentReviewer)
+        //            //.Include(sr => sr.IntakeAssistant)
+        //            //.Include(sr => sr.Address.Province)
+        //            .Find(serviceRequestId);
 
-            // check if the no show rates are set in the request. Migrate old records to use invoices.
-            if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
-            {
-                var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
-                serviceRequest.NoShowRate = rates.NoShowRate;
-                serviceRequest.LateCancellationRate = rates.LateCancellationRate;
-            }
+        //    // check if the no show rates are set in the request. Migrate old records to use invoices.
+        //    if (!serviceRequest.NoShowRate.HasValue || !serviceRequest.LateCancellationRate.HasValue)
+        //    {
+        //        var rates = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.Company.ObjectGuid).First();
+        //        serviceRequest.NoShowRate = rates.NoShowRate;
+        //        serviceRequest.LateCancellationRate = rates.LateCancellationRate;
+        //    }
 
-            var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
-            var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
+        //    var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.PhysicianId);
+        //    var customer = db.BillableEntities.First(c => c.EntityGuid == serviceRequest.Company.ObjectGuid);
 
-            var invoiceNumber = db.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
-            if (serviceProvider.EntityId == "8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c" || serviceProvider.EntityId == "8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9" || serviceProvider.EntityId == "48f9d9fd-deb5-471f-9454-066430a510f1") // Shariff, Zeeshan, Rajiv will use old invoice number approach
-            {
-                invoiceNumber = db.GetNextInvoiceNumber().First().NextInvoiceNumber.Cast<long>().First();
-            }
+        //    var invoiceNumber = db.Invoices.GetNextInvoiceNumber(serviceProvider.EntityGuid.Value);
+        //    if (serviceProvider.EntityId == "8dd4e180-6e3a-4968-a00d-eeb6d2cc7f0c" || serviceProvider.EntityId == "8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9" || serviceProvider.EntityId == "48f9d9fd-deb5-471f-9454-066430a510f1") // Shariff, Zeeshan, Rajiv will use old invoice number approach
+        //    {
+        //        invoiceNumber = db.GetNextInvoiceNumber().First().NextInvoiceNumber.Cast<long>().First();
+        //    }
 
-            var invoiceDate = SystemTime.Now();
-            if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
-            {
-                invoiceDate = serviceRequest.AppointmentDate.Value;
-            }
+        //    var invoiceDate = SystemTime.Now();
+        //    if (serviceRequest.Service.ServiceCategoryId == ServiceCategories.IndependentMedicalExam)
+        //    {
+        //        invoiceDate = serviceRequest.AppointmentDate.Value;
+        //    }
 
-            var invoice = new Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
+        //    var invoice = new Invoice();
+        //    invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
 
-            // Create or update the invoice detail for the service request
-            InvoiceDetail invoiceDetail;
+        //    // Create or update the invoice detail for the service request
+        //    InvoiceDetail invoiceDetail;
 
-            //invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
-            //if (invoiceDetail == null)
-            //{
-                invoiceDetail = new InvoiceDetail();
-                invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-                invoice.InvoiceDetails.Add(invoiceDetail);
-            //}
-            //else
-            //{
-            //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
-            //}
-            invoice.CalculateTotal();
-            db.Invoices.Add(invoice);
+        //    //invoiceDetail = db.InvoiceDetails.SingleOrDefault(c => c.ServiceRequestId == serviceRequest.Id);
+        //    //if (invoiceDetail == null)
+        //    //{
+        //        invoiceDetail = new InvoiceDetail();
+        //        invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+        //        invoice.InvoiceDetails.Add(invoiceDetail);
+        //    //}
+        //    //else
+        //    //{
+        //    //    invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, User.Identity.Name);
+        //    //}
+        //    invoice.CalculateTotal();
+        //    db.Invoices.Add(invoice);
 
-            if (db.GetValidationErrors().Count() == 0)
-            {
+        //    if (db.GetValidationErrors().Count() == 0)
+        //    {
 
-                await db.SaveChangesAsync();
-                var invoices = new List<Invoice>();
-                invoices.Add(invoice);
-                return RedirectToAction("Details", "ServiceRequest", new { id = serviceRequestId });
-            }
-            return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
+        //        await db.SaveChangesAsync();
+        //        var invoices = new List<Invoice>();
+        //        invoices.Add(invoice);
+        //        return RedirectToAction("Details", "ServiceRequest", new { id = serviceRequestId });
+        //    }
+        //    return PartialView("_ValidationErrors", db.GetValidationErrors().First().ValidationErrors);
 
-            //// Confirm the examination was completed.
-            //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Enums.Tasks.IntakeInterview);
-        }
+        //    //// Confirm the examination was completed.
+        //    //var intakeInterviewTask = db.ServiceRequestTasks.SingleOrDefault(c => c.ServiceRequestId == id && c.TaskId == Enums.Tasks.IntakeInterview);
+        //}
 
         [ChildActionOnly]
         public ActionResult ReadOnly(Orvosi.Data.Invoice invoice)

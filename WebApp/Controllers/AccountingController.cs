@@ -33,6 +33,9 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.ViewUnsentInvoices)]
         public ActionResult UnsentInvoices(FilterArgs filterArgs)
         {
+            filterArgs.Year = filterArgs.Year ?? now.Year;
+            filterArgs.Month = filterArgs.Month ?? now.Month;
+
             var serviceRequests = db.ServiceRequests
                 .ForPhysician(currentContextId)
                 .AreNotCancellations()
@@ -92,7 +95,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.ViewUnpaidInvoices)]
         public ActionResult UnpaidInvoices(FilterArgs filterArgs)
         {
-
+            filterArgs.Year = filterArgs.Year ?? now.Year;
+            filterArgs.Month = filterArgs.Month ?? now.Month;
 
             var serviceRequests = db.ServiceRequests
                 .ForPhysician(currentContextId)
@@ -143,6 +147,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.SearchInvoices)]
         public ActionResult AllInvoices(FilterArgs filterArgs)
         {
+            filterArgs.Year = filterArgs.Year ?? now.Year;
+            filterArgs.Month = filterArgs.Month ?? now.Month;
 
             var serviceRequests = db.ServiceRequests
                 .ForPhysician(currentContextId)

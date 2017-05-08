@@ -43,7 +43,6 @@
 <div class="row" style="margin-bottom:20px">
     <div class="col-md-12">
         <form action="~/@this.ViewContext.RouteData.Values["Controller"]/@this.ViewContext.RouteData.Values["Action"]/" method="get" class="form-inline">
-            @Html.Hidden("ServiceProviderId", Model.FilterArgs.ServiceProviderId.HasValue ? Model.FilterArgs.ServiceProviderId.Value : Guid.Empty)
             @if (User.Identity.GetRoleId() == AspNetRoles.SuperAdmin || User.Identity.GetRoleId() == AspNetRoles.CaseCoordinator)
             {
                 <div class="form-group">

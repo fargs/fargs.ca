@@ -389,7 +389,7 @@ namespace WebApp.Controllers
             var query = serviceCatalogues.Where(c => c.ServiceId == serviceRequest.Service.Id);
             if (serviceRequest.HasAppointment)
             {
-                query = query.Where(sc => sc.LocationId == serviceRequest.Address.Id);
+                query = query.Where(sc => sc.LocationId == serviceRequest.Address.CityId);
             }
             else
             {

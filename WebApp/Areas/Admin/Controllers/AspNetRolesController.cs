@@ -53,11 +53,13 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,RoleCategoryId,ModifiedDate,ModifiedUser")] AspNetRole aspNetRole)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,RoleCategoryId")] AspNetRole aspNetRole)
         {
             if (ModelState.IsValid)
             {
                 aspNetRole.Id = Guid.NewGuid();
+                aspNetRole.ModifiedDate = SystemTime.Now();
+                aspNetRole.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.AspNetRoles.Add(aspNetRole);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -89,10 +91,12 @@ namespace WebApp.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,RoleCategoryId,ModifiedDate,ModifiedUser")] AspNetRole aspNetRole)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,RoleCategoryId")] AspNetRole aspNetRole)
         {
             if (ModelState.IsValid)
             {
+                aspNetRole.ModifiedDate = SystemTime.Now();
+                aspNetRole.ModifiedUser = User.Identity.GetGuidUserId().ToString();
                 db.Entry(aspNetRole).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 

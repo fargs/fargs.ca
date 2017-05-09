@@ -99,10 +99,11 @@ namespace WebApp.Areas.Admin.Controllers
             return Json(vm, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> Insert(string name)
+        public async Task<ActionResult> Insert(string name, byte roleCategoryId)
         {
-            var obj = new ApplicationRole() { Name = name };
+            var obj = new ApplicationRole() { Id = Guid.NewGuid(), Name = name };
             var result = await this.RoleManager.CreateAsync(obj);
+            
             var list = GetList();
             var vm = new
             {

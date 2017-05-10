@@ -112,12 +112,65 @@ namespace WebApp.Library
                 .ToList();
         }
 
+        public List<LookupViewModel<short>> GetPhysicianAssessmentServices(Guid? physicianId)
+        {
+            return dbContext.PhysicianServices
+                            .Where(p => p.PhysicianId == physicianId)
+                            .Select(p => p.Service)
+                            .Where(s => s.IsLocationRequired)
+                            .Select(LookupDto<short>.FromServiceEntity.Expand())
+                            .AsQueryable()
+                            .Select(LookupViewModel<short>.FromServiceDto.Expand())
+                            .ToList();
+        }
+
+        public List<SelectListItem> GetPhysicianAssessmentServiceSelectList(Guid? physicianId)
+        {
+            var data = GetPhysicianAssessmentServices(physicianId);
+
+            return data
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                })
+                .OrderBy(d => d.Text)
+                .ToList();
+        }
+
+        public List<LookupViewModel<short>> GetPhysicianAddOnServices(Guid? physicianId)
+        {
+            return dbContext.PhysicianServices
+                            .Where(p => p.PhysicianId == physicianId)
+                            .Select(p => p.Service)
+                            .Where(s => !s.IsLocationRequired)
+                            .Select(LookupDto<short>.FromServiceEntity.Expand())
+                            .AsQueryable()
+                            .Select(LookupViewModel<short>.FromServiceDto.Expand())
+                            .ToList();
+        }
+
+        public List<SelectListItem> GetPhysicianAddOnServiceSelectList(Guid? physicianId)
+        {
+            var data = GetPhysicianAddOnServices(physicianId);
+
+            return data
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                })
+                .OrderBy(d => d.Text)
+                .ToList();
+        }
+
         public List<Orvosi.Shared.Model.Person> GetPhysicianCaseCoordinators(Guid? physicianId)
         {
+            var roles = new Guid[2] { AspNetRoles.CaseCoordinator, AspNetRoles.ExternalAdmin };
             return dbContext.Collaborators
                             .Where(c => c.UserId == physicianId)
                             .Select(c => c.CollaboratorUser)
-                            .Where(c => c.AspNetUserRoles.Select(r => r.RoleId).FirstOrDefault() == Orvosi.Shared.Enums.AspNetRoles.CaseCoordinator)
+                            .Where(c => roles.Contains(c.AspNetUserRoles.Select(r => r.RoleId).FirstOrDefault()))
                             .Select(AspNetUserProjections.Basic())
                             .ToList();
         }

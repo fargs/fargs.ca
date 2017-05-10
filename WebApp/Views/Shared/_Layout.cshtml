@@ -6,10 +6,13 @@
 @using WebApp.ViewModels.ServiceRequestViewModels
 @using WebApp.Library.Projections
 @using WebApp.Library
+@using Orvosi.Data.Filters
 
 @{
     var features = User.Identity.GetFeatures();
     var userContext = User.Identity.GetUserContext();
+    var physicianContext = User.Identity.GetPhysicianContext();
+    var physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
     var userId = User.Identity.GetGuidUserId();
     var roleId = User.Identity.GetRoleId();
 
@@ -18,24 +21,20 @@
     IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
     if (features.Contains(Features.ServiceRequest.Search))
     {
-        var list = context.ServiceRequests.Where(sr => sr.IsDeleted == false).AsQueryable();
-        if (roleId != AspNetRoles.SuperAdmin && roleId != AspNetRoles.CaseCoordinator)
-        {
-            list = list.Where(sr => sr.PhysicianId == userId || sr.CaseCoordinatorId == userId || sr.DocumentReviewerId == userId || sr.IntakeAssistantId == userId);
-        }
+        var list = context.ServiceRequests.Where(sr => sr.IsDeleted == false).CanAccess(userId, physicianId, roleId).AsQueryable();
         caseSearchList = list
-        .Select(sr => new
-        {
-            Id = sr.Id,
-            ClaimantName = sr.ClaimantName
-        })
-        .ToList()
-        .Select(sr => new CaseSearchListItem
-        {
-            Id = sr.Id,
-            Claimant = sr.ClaimantName,
-            Url = Url.Content("~/ServiceRequest/Details/" + sr.Id)
-        });
+            .Select(sr => new
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName
+            })
+            .ToList()
+            .Select(sr => new CaseSearchListItem
+            {
+                Id = sr.Id,
+                Claimant = sr.ClaimantName,
+                Url = Url.Content("~/ServiceRequest/Details/" + sr.Id)
+            });
     }
 }
 <!DOCTYPE html>

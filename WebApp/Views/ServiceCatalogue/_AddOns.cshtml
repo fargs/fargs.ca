@@ -7,6 +7,7 @@
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
+    var viewDataService = ContextPerRequest.ViewDataService;
 
     var userId = User.Identity.GetGuidUserId();
     var userContext = User.Identity.GetPhysicianContext();
@@ -14,13 +15,7 @@
     var currentContextId = physicianId.GetValueOrDefault(userId);
     var roleId = User.Identity.GetRoleId();
 
-    var db = ContextPerRequest.db;
-
-    var addOnServices = db.Services
-        .Where(c => !c.IsLocationRequired)
-        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
-        .OrderBy(c => c.Name)
-        .ToList();
+    var addOnServices = viewDataService.GetPhysicianAddOnServices(physicianId);
 }
 
 <table class="table table-bordered" id="addons-table">

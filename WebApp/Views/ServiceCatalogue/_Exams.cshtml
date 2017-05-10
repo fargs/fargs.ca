@@ -9,6 +9,7 @@
 @{
 
     var db = ContextPerRequest.db;
+    var viewDataService = ContextPerRequest.ViewDataService;
 
     var userId = User.Identity.GetGuidUserId();
     var userContext = User.Identity.GetPhysicianContext();
@@ -16,11 +17,7 @@
     var currentContextId = physicianId.GetValueOrDefault(userId);
     var roleId = User.Identity.GetRoleId();
 
-    var assessmentServices = db.Services
-        .Where(c => c.IsLocationRequired)
-        .Where(c => c.ServicePortfolioId == ServicePortfolios.Physician)
-        .OrderBy(c => c.Name)
-        .ToList();
+    var assessmentServices = viewDataService.GetPhysicianAssessmentServices(physicianId);
 
     var provinces = db.Provinces
         .Where(p => p.Cities.Any())

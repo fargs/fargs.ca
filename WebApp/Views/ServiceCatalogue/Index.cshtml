@@ -7,27 +7,26 @@
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
-    ViewBag.Title = "Service Catalogue";
-
     var db = ContextPerRequest.db;
+    var viewDataService = ContextPerRequest.ViewDataService;
 
-    var companies = db.Companies
-        .Select(c => new SelectListItem()
-        {
-            Text = c.Name,
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.Parent.Name }
-        }).ToList();
-
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
     var userContext = User.Identity.GetUserContext();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+
+    var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(physicianId);
 }
 
+<div class="alert alert-sm alert-info"><i class="fa fa-question-circle"></i> Use the Admin menu to add new companies or services.</div>
 
 <div class="row">
     <div class="col-md-12">
         <form action="~/ServiceCatalogue/Index/" method="get" class="form-inline">
             <div class="form-group">
-                @Html.DropDownList("CompanyId", new SelectList(companies, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), "-- All Companies --", new { @class = "form-control", onchange = "this.form.submit();" })
+                @Html.DropDownList("CompanyId", new SelectList(companySelectList, "Value", "Text", "Group.Name", Model.FilterArgs.CompanyId), "-- All Companies --", new { @class = "form-control", onchange = "this.form.submit();" })
             </div>
         </form>
     </div>
@@ -64,8 +63,6 @@ else
     </dl>
                 }
 <a class="btn btn-sm btn-primary" style="margin-bottom:20px;" href="~/@(string.Format("ServiceCatalogue/EditRates?ServiceProviderGuid={0}&CustomerGuid={1}", userContext.Id, Model.SelectedCompany != null ? Model.SelectedCompany.ObjectGuid.ToString() : string.Empty))">Set Rates</a>
-
-
 
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#exams-tab" aria-controls="exams" role="tab" data-toggle="tab">Exams</a></li>

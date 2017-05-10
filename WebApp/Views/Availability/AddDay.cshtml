@@ -1,36 +1,19 @@
 ﻿@using Orvosi.Data
-@using Orvosi.Shared.Enums
+@using WebApp.Library
 
 @model AvailableDay
 
 @{
-    var db = new OrvosiDbContext();
+    var db = ContextPerRequest.db;
+    var viewDataService = ContextPerRequest.ViewDataService;
 
-    ViewBag.Users = db.AspNetUsers
-        .AsEnumerable()
-        .Select(c => new SelectListItem()
-        {
-            Text = c.GetDisplayName(),
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.GetRole().Name }
-        }).ToList();
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
 
-    ViewBag.Companies = db.Companies
-        .Where(c => c.ParentId == null)
-        .Select(c => new SelectListItem()
-        {
-            Text = c.Name,
-            Value = c.Id.ToString(),
-        }).ToList();
-
-    var addresses = db.Addresses.ToList(); // needed to use the string.format in the Select below
-    ViewBag.Addresses = addresses
-        .Select(c => new SelectListItem()
-        {
-            Text = string.Format("{0} - ({1})", c.Name, c.City),
-            Value = c.Id.ToString(),
-            Group = new SelectListGroup() { Name = c.AddressType.Name }
-        }).ToList();
+    var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(physicianId);
 }
 
 <div class="lead">@ViewBag.PhysicianName</div>
@@ -55,7 +38,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Location</label>
         <div class="col-md-10">
-            @Html.DropDownList("LocationId", new SelectList(ViewBag.Addresses, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("LocationId", new SelectList(addressSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("LocationId", "", new { @class = "text-danger" })
         </div>
     </div>
@@ -63,18 +46,8 @@
     <div class="form-group">
         <label class="control-label col-md-2">Company</label>
         <div class="col-md-10">
-            @Html.DropDownList("CompanyId", new SelectList(ViewBag.Companies, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.DropDownList("CompanyId", new SelectList(companySelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
             @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-2">Is Prebook</label>
-        <div class="col-md-10">
-            <div class="checkbox">
-                @Html.CheckBox("IsPrebook")
-                @Html.ValidationMessage("IsPrebook", "", new { @class = "text-danger" })
-            </div>
         </div>
     </div>
 

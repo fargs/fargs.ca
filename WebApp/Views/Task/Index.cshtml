@@ -26,10 +26,7 @@
             @Html.DisplayNameFor(model => model.ShortName)
         </th>
         <th>
-            Duration From Baseline
-        </th>
-        <th>
-            Critical Path
+            Responsible Role
         </th>
         <th>
             Reference Count
@@ -52,10 +49,7 @@
             @Html.DisplayFor(modelItem => item.ShortName)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.DueDateDiff)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsCriticalPath)
+            @(item.ResponsibleRoleId.HasValue ? item.AspNetRole.Name : string.Empty)
         </td>
         <td>
             Templates: @item.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().Count() <br />

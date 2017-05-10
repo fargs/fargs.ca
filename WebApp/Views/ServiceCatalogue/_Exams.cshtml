@@ -17,7 +17,7 @@
     var currentContextId = physicianId.GetValueOrDefault(userId);
     var roleId = User.Identity.GetRoleId();
 
-    var assessmentServices = viewDataService.GetPhysicianAssessmentServices(physicianId);
+    var assessmentServices = viewDataService.GetPhysicianAssessmentServices(currentContextId);
 
     var provinces = db.Provinces
         .Where(p => p.Cities.Any())

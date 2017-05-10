@@ -15,7 +15,7 @@
     var currentContextId = physicianId.GetValueOrDefault(userId);
     var roleId = User.Identity.GetRoleId();
 
-    var addOnServices = viewDataService.GetPhysicianAddOnServices(physicianId);
+    var addOnServices = viewDataService.GetPhysicianAddOnServices(currentContextId);
 }
 
 <table class="table table-bordered" id="addons-table">

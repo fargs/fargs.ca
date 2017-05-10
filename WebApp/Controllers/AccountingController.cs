@@ -218,6 +218,7 @@ namespace WebApp.Controllers
                 .Select(InvoiceProjections.Header())
                 .ToList();
 
+            filterArgs.Year = filterArgs.Year.GetValueOrDefault(now.Year);
             var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(now.Year, 1, 1);
             var endDate = startDate.AddYears(1);
             var dateRange = startDate.GetDateRangeTo(endDate);
@@ -232,7 +233,7 @@ namespace WebApp.Controllers
                     i.InvoiceDate,
                     i.Total,
                     i.SubTotal,
-                    Hst = i.Total - i.SubTotal
+                    Hst = i.Hst
                 });
 
             var netIncomeByMonth = dateRange
@@ -243,7 +244,7 @@ namespace WebApp.Controllers
                     {
                         Date = r,
                         Hst = t.Sum(c => c.Hst),
-                        SubTotal = t.Sum(c => c.SubTotal),
+                        Total = t.Sum(c => c.Total),
                     })
                 .GroupBy(c => new { c.Date.Month, c.Date.Year })
                 .Select(c => new
@@ -251,8 +252,7 @@ namespace WebApp.Controllers
                     Year = c.Key.Year,
                     Month = c.Key.Month,
                     Hst = c.Sum(s => s.Hst),
-                    SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
-                    Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                    Total = c.Sum(s => s.Total)
                 });
             var billableEntities = db.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
             var netIncomeByCompany = invoiceTotals
@@ -264,26 +264,24 @@ namespace WebApp.Controllers
                         EntityGuid = c.EntityGuid,
                         CompanyName = c.EntityName,
                         Hst = i.Hst,
-                        SubTotal = i.SubTotal
+                        Total = i.Total
                     })
                 .GroupBy(c => new { c.EntityGuid, c.CompanyName })
                 .Select(c => new
                 {
                     CompanyName = c.Key.CompanyName,
                     Hst = c.Sum(i => i.Hst),
-                    SubTotal = c.Sum(s => s.SubTotal - (s.SubTotal * (decimal?)0.35)),
-                    Expenses = c.Sum(s => s.SubTotal * (decimal?)0.35)
+                    Total = c.Sum(s => s.Total)
                 });
 
             var vm = new DashboardViewModel();
 
             vm.Months = new string[12] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
             vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct().ToList();
-            vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.SubTotal).ToList();
-            vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.SubTotal).ToList();
-            vm.NetIncome = netIncomeByMonth.Sum(c => c.SubTotal);
+            vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.Total).ToList();
+            vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.Total).ToList();
+            vm.NetIncome = netIncomeByMonth.Sum(c => c.Total);
             vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
-            vm.Expenses = netIncomeByMonth.Sum(c => c.Expenses);
             vm.InvoiceCount = invoiceTotals.Count();
             vm.Invoices = invoices;
             vm.FilterArgs = filterArgs;

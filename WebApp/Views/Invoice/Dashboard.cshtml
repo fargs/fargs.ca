@@ -68,7 +68,6 @@
             <div class="caption">
                 <div class="h1 text-center">@Model.InvoiceCount.ToString()</div>
                 <div class="text-muted text-center">Invoices</div>
-                <div class="text-muted text-center"><small>&nbsp;</small></div>
             </div>
         </div>
     </div>
@@ -76,8 +75,7 @@
         <div class="thumbnail alert alert-success">
             <div class="caption">
                 <div class="h1 text-center">@Model.NetIncome.Value.ToString("C0")</div>
-                <div class="text-center"><strong>Your Take Home!</strong></div>
-                <div class="text-muted text-center"><small>(Expenses and HST are already deducted)</small></div>
+                <div class="text-center"><strong>Total Revenue</strong></div>
             </div>
         </div>
     </div>
@@ -86,14 +84,13 @@
             <div class="caption">
                 <div class="h1 text-center">@Model.Hst.Value.ToString("C0")</div>
                 <div class="text-muted text-center">HST</div>
-                <div class="text-muted text-center"><small>&nbsp;</small></div>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-xs-12 col-sm-6">
-        <h2>@Model.FilterArgs.Year Take Home By Month</h2>
+        <h2>@Model.FilterArgs.Year Revenue By Month</h2>
         <div id="revenueByMonth" style="width:100%; height:100%;"></div>
     </div>
     <div class="col-xs-12 col-sm-6">

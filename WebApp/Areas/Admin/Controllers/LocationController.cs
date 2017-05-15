@@ -17,7 +17,7 @@ namespace WebApp.Areas.Admin.Controllers
     {
         private OrvosiDbContext db = new OrvosiDbContext();
 
-        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageAddresses, Features.Admin.ViewAddresses })]
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         public async Task<ActionResult> Index()
         {
             // retrieve all the PHYSICIANS from the database
@@ -25,7 +25,7 @@ namespace WebApp.Areas.Admin.Controllers
             return View(result);
         }
 
-        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageAddresses, Features.Admin.ViewAddresses })]
+        [AuthorizeRole(Feature = Features.Admin.ManageAddresses)]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)

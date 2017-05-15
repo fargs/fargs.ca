@@ -7,7 +7,6 @@ using System.Web.Mvc;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Super Admin, Case Coordinator")]
     public class BaseController : Controller
     {
     }

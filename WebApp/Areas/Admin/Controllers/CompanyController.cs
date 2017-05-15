@@ -18,7 +18,7 @@ namespace WebApp.Areas.Admin.Controllers
     {
         OrvosiDbContext db = new OrvosiDbContext();
 
-        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageCompanies, Features.Admin.ViewCompanies })]
+        [AuthorizeRole(Feature = Features.Admin.ManageCompanies)]
         public ActionResult Index(Nullable<byte> parentId)
         {
             var companies = db.Companies.Where(c => c.ParentId == parentId && c.IsParent == false).ToList(); // exclude examworks and scm

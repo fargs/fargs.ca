@@ -19,14 +19,14 @@ namespace WebApp.Areas.Admin.Controllers
         private OrvosiDbContext db = new OrvosiDbContext();
 
 
-        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageServices, Features.Admin.ViewServices })]
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         public ActionResult Index(byte parentId)
         {
             var list = db.Services.Where(s => s.ServicePortfolioId == parentId).OrderBy(c => c.ServiceCategoryId).ToList();
             return View(list);
         }
 
-        [AuthorizeRole(Features = new short[2] { Features.Admin.ManageServices, Features.Admin.ViewServices})]
+        [AuthorizeRole(Feature = Features.Admin.ManageServices)]
         public ActionResult Details(short? id)
         {
             if (id == null)

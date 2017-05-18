@@ -163,6 +163,7 @@ else
     <script type="text/javascript">
 
         function onGenerateEditAndSendInvoice(invoiceId, serviceRequestId) {
+            showLoader('Generating Invoice ...');
             let url = '@Url.Content("~/Accounting/GenerateInvoicePdf")';
             $.post(url, {
                 invoiceId: invoiceId
@@ -170,7 +171,8 @@ else
             .done(function (data) {
                 toastr.success("Invoice was generated and saved to your invoices folder successfully");
                 onEditAndSendInvoice(invoiceId, serviceRequestId);
-            });
+            })
+            .always(hideLoader);
         }
 
         function onEditAndSendInvoice(invoiceId, serviceRequestId) {
@@ -214,18 +216,6 @@ else
             })
             .done(function () {
                 toastr.success("Invoice was generated and saved to your invoices folder successfully");
-            });
-        }
-
-        function onSend(invoiceId, serviceRequestId) {
-            let url = '@Url.Content("~/Accounting/SendInvoice")';
-            $.post(url, {
-                InvoiceId: invoiceId
-            })
-            .done(function () {
-                toastr.success("Invoice sent successfully");
-                refreshInvoice(invoiceId);
-                refreshInvoiceMenu(invoiceId, serviceRequestId);
             });
         }
 

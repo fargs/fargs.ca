@@ -3,6 +3,7 @@ using Orvosi.Data.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -22,6 +23,7 @@ namespace WebApp.Library
         Guid userId;
         Guid physicianId;
         UserContextViewModel userContext;
+        string apiKey;
 
         public AccountingService(IOrvosiDbContext db, IIdentity identity)
         {
@@ -31,12 +33,12 @@ namespace WebApp.Library
             userContext = identity.GetUserContext();
             physicianId = userContext.Id;
             this.now = SystemTime.Now();
+            apiKey = ConfigurationManager.AppSettings["Html2PdfRocketApiKey"];
         }
 
         public async Task<Invoice> GenerateInvoicePdf(Invoice invoice, string content)
         {
             
-            string apiKey = "eedbadc1-0fe7-4712-8573-816115379e62";
             using (var client = new WebClient())
             {
                 NameValueCollection options = new NameValueCollection();

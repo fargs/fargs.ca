@@ -141,7 +141,7 @@ namespace Orvosi.Data.Filters
 
             if (year.HasValue)
             {
-                serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Year : sr.DueDate.HasValue ? sr.DueDate.Value.Year : 0) == year);
+                serviceRequests = serviceRequests.Where(sr => (sr.AppointmentDate.HasValue ? sr.AppointmentDate.Value.Year : sr.DueDate.HasValue ? sr.DueDate.Value.Year : 0) == year.Value);
             }
             // Apply the year and month filters.
             if (month.HasValue)

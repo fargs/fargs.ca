@@ -40,6 +40,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.BoxCaseTemplateFolderId).HasColumnName(@"BoxCaseTemplateFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
             Property(x => x.BoxAddOnTemplateFolderId).HasColumnName(@"BoxAddOnTemplateFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.BoxInvoicesFolderId).HasColumnName(@"BoxInvoicesFolderId").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
 
             // Foreign keys
             HasOptional(a => a.PhysicianSpeciality).WithMany(b => b.Physicians).HasForeignKey(c => c.SpecialtyId).WillCascadeOnDelete(false); // FK_Physician_PhysicianSpeciality

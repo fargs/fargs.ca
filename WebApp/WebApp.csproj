@@ -477,6 +477,7 @@
     <Compile Include="FormModels\ServiceCatalogueForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
+    <Compile Include="Library\AccountingService.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\Dropbox.cs" />

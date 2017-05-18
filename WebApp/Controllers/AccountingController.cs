@@ -25,6 +25,9 @@ using WebApp.Models;
 using LinqKit;
 using WebApp.ViewModels.CalendarViewModels;
 using WebApp.ViewModels;
+using WebApp.Library.Helpers;
+using System.Collections.Specialized;
+using Orvosi.Data.Extensions;
 
 namespace WebApp.Controllers
 {
@@ -74,7 +77,7 @@ namespace WebApp.Controllers
             var result = leftSide.Concat(rightSide).ToList();
 
             var model = result
-                .GroupBy(d => new { Day = d.Day })
+                .GroupBy(d => new { Day = d.Day.Date })
                 .Select(d => new DayViewModel
                 {
                     Day = d.Key.Day,
@@ -126,7 +129,7 @@ namespace WebApp.Controllers
                            };
 
             var model = leftSide
-                .GroupBy(d => new { Day = d.Invoice.InvoiceDate }) // NOTE: Grouped by Invoice Date
+                .GroupBy(d => new { Day = d.Invoice.InvoiceDate.Date }) // NOTE: Grouped by Invoice Date
                 .Select(d => new DayViewModel
                 {
                     Day = d.Key.Day,
@@ -168,7 +171,6 @@ namespace WebApp.Controllers
             {
                 query = query
                     .AreOwnedBy(currentContextId)
-                    .AreNotDeleted()
                     .AreForCustomer(filterArgs.CustomerId)
                     .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month);
             }
@@ -188,7 +190,7 @@ namespace WebApp.Controllers
                            };
 
             var model = leftSide
-                .GroupBy(d => new { Day = d.Invoice.InvoiceDate }) // NOTE: Grouped by Invoice Date
+                .GroupBy(d => new { Day = d.Invoice.InvoiceDate.Date }) // NOTE: Grouped by Invoice Date
                 .Select(d => new DayViewModel
                 {
                     Day = d.Key.Day,
@@ -485,10 +487,44 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public async Task<ActionResult> PreviewInvoice(Guid id)
+        public async Task<ActionResult> PreviewInvoice(int id)
         {
-            var invoice = await db.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.ObjectGuid == id);
+            var invoice = await db.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.Id == id);
             return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+        }
+
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
+        public async Task<ActionResult> DownloadInvoice(int id)
+        {
+            var invoice = await db.Invoices.FindAsync(id);
+            var invoiceFolder = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
+
+            var box = new BoxManager();
+            var boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
+            if (boxFile == null)
+            {
+                var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+                invoice = await accountingService.GenerateInvoicePdf(invoice, content);
+            }
+            boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
+            var fileStream = await box.GetFileStream(invoice.BoxFileId);
+
+            // Make the file a downloadable attachment - comment this out to show it directly inside
+            HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename={0}", boxFile.Name));
+
+            // Return the file as a PDF
+            return new FileStreamResult(fileStream, "application/pdf");
+        }
+
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
+        public async Task<ActionResult> GenerateInvoicePdf(int invoiceId)
+        {
+            var invoice = await db.Invoices.FindAsync(invoiceId);
+            var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+            invoice = await accountingService.GenerateInvoicePdf(invoice, content);
+            
+            // Return the file as a PDF
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
@@ -522,12 +558,18 @@ namespace WebApp.Controllers
             message.Body = Request.Form["Message.Body"];
 
             var invoiceId = int.Parse(Request.Form["InvoiceId"]);
+            var invoice = await db.Invoices.FindAsync(invoiceId);
+            var physician = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
 
+            var box = new BoxManager();
+            var pdf = await box.GetInvoiceFileInfo(invoice.BoxFileId, physician.BoxInvoicesFolderId, invoice.ObjectGuid);
+            var pdfStream = await box.GetFileStream(pdf.Id);
+            var invoiceAttachment = new Attachment(pdfStream, pdf.Name);
+            message.Attachments.Add(invoiceAttachment);
             var attachment = new Attachment(Request.Files["Attachment1"].InputStream, Request.Files["Attachment1"].FileName);
             message.Attachments.Add(attachment);
 
             // send the email
-            var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
             invoice = await SendMessageUsingGoogle(invoice, message);
 
             // set the submit invoice task to done
@@ -632,6 +674,11 @@ namespace WebApp.Controllers
         public ActionResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
         {
             var record = db.InvoiceDetails.Find(invoiceDetail.Id);
+            var invoiceDto = InvoiceDto.FromInvoiceEntity.Invoke(record.Invoice);
+            if (invoiceDto.IsSent)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot change an invoice that has already been sent.");
+            }
             record.Description = invoiceDetail.Description;
             record.AdditionalNotes = invoiceDetail.AdditionalNotes;
             record.Amount = invoiceDetail.Amount;
@@ -690,6 +737,13 @@ namespace WebApp.Controllers
         public ActionResult DeleteInvoiceItem(int invoiceDetailId)
         {
             var item = db.InvoiceDetails.Find(invoiceDetailId);
+
+            var invoiceDto = InvoiceDto.FromInvoiceEntity.Invoke(item.Invoice);
+            if (invoiceDto.IsSent)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot change an invoice that has already been sent.");
+            }
+
             db.InvoiceDetails.Remove(item);
             item.CalculateTotal();
             db.SaveChanges();
@@ -704,13 +758,57 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
         public ActionResult DeleteInvoice(int invoiceId)
         {
-            var item = db.Invoices.Find(invoiceId);
-            db.Invoices.Remove(item);
+            var invoice = db.Invoices.Find(invoiceId);
+
+            var invoiceDto = InvoiceDto.FromInvoiceEntity.Invoke(invoice);
+            if (invoiceDto.IsPaid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot delete an invoice that has already been paid.");
+            }
+
+            invoice.IsDeleted = true;
+            invoice.DeletedBy = userId;
+            invoice.DeletedDate = SystemTime.Now();
+
+            invoice.InvoiceDetails.ForEach(id =>
+            {
+                id.IsDeleted = true;
+                id.DeletedBy = userId;
+                id.DeletedDate = now;
+            });
+
             db.SaveChanges();
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+        [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
+        public ActionResult UndeleteInvoice(int invoiceId)
+        {
+
+            var invoice = db.Invoices.Find(invoiceId);
+
+            var invoiceDto = InvoiceDto.FromInvoiceEntity.Invoke(invoice);
+            if (invoiceDto.IsPaid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot delete an invoice that has already been paid.");
+            }
+
+            invoice.IsDeleted = false;
+            invoice.DeletedBy = null;
+            invoice.DeletedDate = null;
+
+            invoice.InvoiceDetails.ForEach(id =>
+            {
+                id.IsDeleted = false;
+                id.DeletedBy = null;
+                id.DeletedDate = null;
+            });
+
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
         private MailMessage BuildSendInvoiceMailMessage(Orvosi.Data.Invoice invoice, string baseUrl)
         {
             var message = new MailMessage();

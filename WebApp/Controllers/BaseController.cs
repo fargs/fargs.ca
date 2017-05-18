@@ -15,6 +15,7 @@ namespace WebApp.Controllers
     public class BaseController : Controller
     {
         protected WorkService service;
+        protected AccountingService accountingService;
         protected OrvosiDbContext db;
         protected IIdentity identity;
         protected UserContextViewModel userContext;
@@ -42,6 +43,7 @@ namespace WebApp.Controllers
             currentContextId = physicianId.GetValueOrDefault(userId);
             roleId = User.Identity.GetRoleId();
             service = new WorkService(this.db, this.identity);
+            accountingService = new AccountingService(this.db, this.identity);
             ViewData["Now"] = now;
         }
 

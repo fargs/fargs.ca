@@ -112,7 +112,9 @@ namespace Orvosi.Shared.Enums.Features
         public const short Analytics = 109;
         public const short SendInvoice = 110;
         public const short DownloadInvoice = 111;
+        public const short GenerateInvoicePdf = 112;
         public const short ManageReceipts = 113;
+        public const short ManageInvoices = 114;
     }
 
     public class Services

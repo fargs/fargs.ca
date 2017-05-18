@@ -62,7 +62,9 @@
     <Compile Include="AspNetUser.cs" />
     <Compile Include="AspNetUsers.cs" />
     <Compile Include="AvailableSlot.cs" />
+    <Compile Include="Extensions\InvoiceExtensions.cs" />
     <Compile Include="Extensions\ServiceRequestExtensions.cs" />
+    <Compile Include="Filters\InvoiceDetailFilters.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
     <Compile Include="Filters\ServiceRequestTemplateTaskFilters.cs" />
     <Compile Include="Filters\ReceiptFilters.cs" />
@@ -132,6 +134,12 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\AvailableDayConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AvailableDayResource.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\AvailableDayResourceConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Generated\AvailableSlot.cs">

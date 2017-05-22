@@ -3,7 +3,8 @@
 @model RenderingModel
 
 @{ 
-    var features =  ContextPerRequest.AuthorizedFeatures;
+    var session =  DependencyResolver.Current.GetService<SessionService>();
+    var features = session.AuthorizedFeatures;
 }
 
 @helper SortImage(Column col)

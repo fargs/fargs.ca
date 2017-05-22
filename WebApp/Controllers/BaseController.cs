@@ -14,39 +14,31 @@ namespace WebApp.Controllers
 {
     public class BaseController : Controller
     {
-        protected WorkService service;
-        protected AccountingService accountingService;
-        protected OrvosiDbContext db;
         protected IIdentity identity;
-        protected UserContextViewModel userContext;
-        protected Guid userId;
+        protected UserContextViewModel loggedInUserContext;
+        protected UserContextViewModel physicianContext;
+        protected Guid loggedInUserId;
+        protected Guid loggedInRoleId;
         protected Guid? physicianId;
-        protected Guid currentContextId;
-        protected Guid roleId;
+        protected Guid physicianOrLoggedInUserId;
         protected DateTime now;
 
         public BaseController()
         {
-            now = SystemTime.Now();
         }
 
-        string _userName = string.Empty;
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
+        public BaseController(DateTime now, IPrincipal principal)
         {
-            base.Initialize(requestContext);
-
-            db = ContextPerRequest.db;
-            identity = requestContext.HttpContext.User.Identity;
-            userId = User.Identity.GetGuidUserId();
-            userContext = User.Identity.GetPhysicianContext();
-            physicianId = userContext == null ? (Guid?)null : userContext.Id;
-            currentContextId = physicianId.GetValueOrDefault(userId);
-            roleId = User.Identity.GetRoleId();
-            service = new WorkService(this.db, this.identity);
-            accountingService = new AccountingService(this.db, this.identity);
-            ViewData["Now"] = now;
+            this.now = now;
+            identity = principal.Identity;
+            loggedInUserContext = identity.GetLoggedInUserContext();
+            physicianContext = principal.Identity.GetPhysicianContext();
+            loggedInUserId = principal.Identity.GetGuidUserId();
+            physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
+            physicianOrLoggedInUserId = physicianId.GetValueOrDefault(loggedInUserId);
+            loggedInRoleId = identity.GetRoleId();
         }
-
+        
         [ChildActionOnly]
         public ActionResult CalendarNavigation(DateTime? selectedDate, CalendarViewOptions? contentView)
         {

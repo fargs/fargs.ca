@@ -1,12 +1,15 @@
 ﻿using LinqKit;
+using Orvosi.Data;
 using Orvosi.Data.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.FormModels;
+using WebApp.Library;
 using WebApp.Library.Filters;
 using WebApp.Models;
 using WebApp.ViewModels;
@@ -16,6 +19,14 @@ namespace WebApp.Controllers
 {
     public class CancellationController : BaseController
     {
+        private OrvosiDbContext db;
+        private WorkService service;
+
+        public CancellationController(OrvosiDbContext db, WorkService service, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+            this.service = service;
+        }
         [HttpGet]
         public ActionResult ShowCancelRequest(int serviceRequestId)
         {

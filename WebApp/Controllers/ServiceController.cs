@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
@@ -15,11 +16,14 @@ using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
-    public class ServiceController : Controller
+    public class ServiceController : BaseController
     {
-        OrvosiDbContext context = new OrvosiDbContext();
-        DateTime now = SystemTime.Now();
+        private OrvosiDbContext db;
 
+        public ServiceController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
         [AuthorizeRole(Feature = Features.Services.Search)]
         public ActionResult Index()
         {
@@ -29,10 +33,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Services.Search)]
         public ActionResult List()
         {
-            var userId = User.Identity.GetUserContext().Id;
-
-            var model = context.PhysicianServices
-                .Where(pc => pc.PhysicianId == userId)
+            var model = db.PhysicianServices
+                .Where(pc => pc.PhysicianId == physicianId)
                 .Select(pc => pc.Service)
                 .Select(ServiceProjections.Search())
                 .ToList();
@@ -49,16 +51,11 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Services.Search)]
         public ActionResult Search(string searchTerm, int? page)
         {
-            Guid userId = User.Identity.GetUserContext().Id;
-            var now = SystemTime.Now();
-
-            using (var context = new OrvosiDbContext())
-            {
-                var data = context.Services
+                var data = db.Services
                     // WHERE User has a public profile needs to be added in
                     .Where(i => i.Name.Contains(searchTerm))
                     // except services that have already been added.
-                    .Except(context.PhysicianServices.Where(ps => ps.PhysicianId == userId).Select(ps => ps.Service))
+                    .Except(db.PhysicianServices.Where(ps => ps.PhysicianId == physicianId).Select(ps => ps.Service))
                     .Select(ServiceProjections.Search())
                     .ToList();
 
@@ -67,7 +64,6 @@ namespace WebApp.Controllers
                     total_count = data.Count(),
                     items = data
                 }, JsonRequestBehavior.AllowGet);
-            }
         }
         [AuthorizeRole(Feature = Features.Services.Search)]
         public ActionResult Details()
@@ -77,10 +73,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Services.Manage)]
         public ActionResult Create(short serviceId)
         {
-            var now = SystemTime.Now();
-            var userContext = User.Identity.GetUserContext();
-            
-            if (User.Identity.GetRoleId() != AspNetRoles.Physician && userContext.Id == User.Identity.GetGuidUserId())
+            if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {
                 return Json(new
                 {
@@ -91,16 +84,16 @@ namespace WebApp.Controllers
 
             var newRecord = new Orvosi.Data.PhysicianService
             {
-                PhysicianId = userContext.Id,
+                PhysicianId = physicianContext.Id,
                 ServiceId = serviceId,
                 CreatedDate = now,
-                CreatedUser = userContext.Id.ToString(),
+                CreatedUser = physicianContext.Id.ToString(),
                 ModifiedDate = now,
-                ModifiedUser = userContext.Id.ToString()
+                ModifiedUser = physicianContext.Id.ToString()
             };
-            context.PhysicianServices.Add(newRecord);
-            context.SaveChanges();
-            context.Entry(newRecord).Reload();
+            db.PhysicianServices.Add(newRecord);
+            db.SaveChanges();
+            db.Entry(newRecord).Reload();
 
             return Json(new
             {
@@ -113,20 +106,18 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Services.Manage)]
         public ActionResult Remove(short serviceId)
         {
-            var userId = User.Identity.GetUserContext().Id;
-            var entity = context.PhysicianServices.Where(c => c.PhysicianId == userId && c.ServiceId == serviceId);
-            context.PhysicianServices.RemoveRange(entity);
-            context.SaveChanges();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {
-                context.Dispose();
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = "Set the User Context to a physician"
+                });
             }
-            base.Dispose(disposing);
+            var entity = db.PhysicianServices.Where(c => c.PhysicianId == physicianId && c.ServiceId == serviceId);
+            db.PhysicianServices.RemoveRange(entity);
+            db.SaveChanges();
+            return Json(new { success = true });
         }
     }
 }

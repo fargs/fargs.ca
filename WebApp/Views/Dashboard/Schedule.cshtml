@@ -157,7 +157,7 @@
             });
 
             // get the case details to figure out which week to refresh
-            $.get('@Url.Content("~/api/servicerequest/appointmentdate/")' + serviceRequestId)
+            $.get('@Url.Content("~/servicerequest/getappointmentdate/")', { serviceRequestId: serviceRequestId })
             .done(function (data) {
                 // refresh the case links
                 getWeek(data.FirstDayOfWeek, 'week-' + data.FirstDayOfWeekTicks, true)

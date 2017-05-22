@@ -1,11 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
-using Orvosi.Data;
-using WebApp.ViewModels;
-using WebApp.Library;
-using System;
-using Microsoft.AspNet.SignalR;
 
 [assembly: OwinStartupAttribute(typeof(WebApp.Startup))]
 namespace WebApp

@@ -20,6 +20,7 @@ namespace WebApp
         {
             Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = System.Web.Configuration.WebConfigurationManager.AppSettings["iKey"];
             AreaRegistration.RegisterAllAreas();
+            UnityConfig.RegisterComponents();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -35,9 +36,9 @@ namespace WebApp
 
         protected virtual void Application_EndRequest()
         {
-            var entityContext = HttpContext.Current.Items[ContextPerRequest.dbKey] as OrvosiDbContext;
-            if (entityContext != null)
-                entityContext.Dispose();
+            //var entityContext = HttpContext.Current.Items[ContextPerRequest.dbKey] as OrvosiDbContext;
+            //if (entityContext != null)
+            //    entityContext.Dispose();
         }
     }
 }

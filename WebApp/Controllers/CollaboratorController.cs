@@ -13,14 +13,20 @@ using Features = Orvosi.Shared.Enums.Features;
 using Orvosi.Shared.Enums;
 using WebApp.ViewModels.UIElements;
 using WebApp.Library;
+using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace WebApp.Controllers
 {
     
-    public class CollaboratorController : Controller
+    public class CollaboratorController : BaseController
     {
-        OrvosiDbContext context = new OrvosiDbContext();
-        DateTime now = SystemTime.Now();
+        private OrvosiDbContext db;
+
+        public CollaboratorController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
         public ActionResult Index()
@@ -31,10 +37,8 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
         public ActionResult List()
         {
-            var userId = User.Identity.GetUserContext().Id;
-
-            var model = context.Collaborators
-                .Where(ww => ww.UserId == userId)
+            var model = db.Collaborators
+                .Where(ww => ww.UserId == physicianId)
                 .Select(CollaboratorProjections.Basic())
                 .ToList();
 
@@ -61,34 +65,28 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
         public ActionResult Search(string searchTerm, int? page)
         {
-            Guid userId = User.Identity.GetUserContext().Id;
-            var now = SystemTime.Now();
+            var data = db.AspNetUsers
+                // WHERE User has a public profile needs to be added in
+                .Where(i => i.FirstName.Contains(searchTerm)
+                    || i.LastName.Contains(searchTerm)
+                    || i.Title.Contains(searchTerm))
+                .Select(AspNetUserProjections.Basic())
+                .ToList();
 
-            using (var context = new OrvosiDbContext())
+            var result = data.Select(d => new
             {
-                var data = context.AspNetUsers
-                    // WHERE User has a public profile needs to be added in
-                    .Where(i => i.FirstName.Contains(searchTerm)
-                        || i.LastName.Contains(searchTerm)
-                        || i.Title.Contains(searchTerm))
-                    .Select(AspNetUserProjections.Basic())
-                    .ToList();
+                id = d.Id,
+                DisplayName = d.DisplayName,
+                Initials = d.Initials,
+                ColorCode = d.ColorCode,
+                Role = d.Role
+            });
 
-                var result = data.Select(d => new
-                {
-                    id = d.Id,
-                    DisplayName = d.DisplayName,
-                    Initials = d.Initials,
-                    ColorCode = d.ColorCode,
-                    Role = d.Role
-                });
-
-                return Json(new
-                {
-                    total_count = result.Count(),
-                    items = result
-                }, JsonRequestBehavior.AllowGet);
-            }
+            return Json(new
+            {
+                total_count = result.Count(),
+                items = result
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
@@ -100,45 +98,50 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Collaborator.Create)]
         public ActionResult Create(Guid collaboratorUserId)
         {
-            var now = SystemTime.Now();
-            var userContext = User.Identity.GetUserContext();
+            if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = "Set the User Context to a physician"
+                });
+            }
             var newRecord = new Collaborator
             {
-                UserId = userContext.Id,
+                UserId = physicianId.Value,
                 CollaboratorUserId = collaboratorUserId,
                 CreatedDate = now,
-                CreatedUser = userContext.Id.ToString(),
+                CreatedUser = loggedInUserId.ToString(),
                 ModifiedDate = now,
-                ModifiedUser = userContext.Id.ToString()
+                ModifiedUser = loggedInUserId.ToString()
             };
-            context.Collaborators.Add(newRecord);
-            context.SaveChanges();
-            context.Entry(newRecord).Reload();
+            db.Collaborators.Add(newRecord);
+            db.SaveChanges();
+            db.Entry(newRecord).Reload();
 
             return Json(new
             {
+                success = true,
                 data = newRecord
             });
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Collaborator.Create)]
-        public ActionResult Remove(Guid collaboratorUserId)
+        public async Task<ActionResult> Remove(Guid collaboratorUserId)
         {
-            var userId = User.Identity.GetUserContext().Id;
-            var entity = context.Collaborators.Where(c => c.UserId == userId && c.CollaboratorUserId == collaboratorUserId).Single();
-            context.Collaborators.Remove(entity);
-            context.SaveChanges();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {
-                context.Dispose();
+                return Json(new
+                {
+                    success = false,
+                    errorMessage = "Set the User Context to a physician"
+                });
             }
-            base.Dispose(disposing);
+            var entity = await db.Collaborators.Where(c => c.UserId == physicianId && c.CollaboratorUserId == collaboratorUserId).ToListAsync();
+            db.Collaborators.RemoveRange(entity);
+            db.SaveChanges();
+            return Json(new { success = true });
         }
     }
 }

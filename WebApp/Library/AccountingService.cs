@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Library
 {
-    public class AccountingService
+    public class AccountingService : IDisposable
     {
         IOrvosiDbContext db;
         IIdentity identity;
@@ -25,10 +25,10 @@ namespace WebApp.Library
         UserContextViewModel userContext;
         string apiKey;
 
-        public AccountingService(IOrvosiDbContext db, IIdentity identity)
+        public AccountingService(IOrvosiDbContext db, IPrincipal principal)
         {
             this.db = db;
-            this.identity = identity;
+            this.identity = principal.Identity;
             userId = identity.GetGuidUserId();
             userContext = identity.GetUserContext();
             physicianId = userContext.Id;
@@ -67,6 +67,11 @@ namespace WebApp.Library
                 }
                 return invoice;
             }
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

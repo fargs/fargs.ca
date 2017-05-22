@@ -41,8 +41,13 @@
             form.serialize()
         )
         .done(function (result) {
-            toastr.success("Companyadded successfully");
-            refreshCompanyList();
+            if (result.success) {
+                toastr.success("Company added successfully");
+                refreshCompanyList();
+            }
+            else {
+                toastr.error(result.errorMessage);
+            }
         });
     }
 
@@ -51,8 +56,13 @@
 
         $.post(url)
         .done(function (result) {
-            toastr.success("Company removed successfully");
-            refreshCompanyList();
+            if (result.success) {
+                toastr.success("Company removed successfully");
+                refreshCompanyList();
+            }
+            else {
+                toastr.error(result.errorMessage);
+            }
         });
     }
 

@@ -15,7 +15,7 @@ using Orvosi.Data.Filters;
 
 namespace WebApp.Library
 {
-    public class WorkService
+    public class WorkService : IDisposable
     {
         IOrvosiDbContext db;
         IIdentity identity;
@@ -24,10 +24,10 @@ namespace WebApp.Library
         Guid physicianId;
         UserContextViewModel userContext;
 
-        public WorkService(IOrvosiDbContext db, IIdentity identity)
+        public WorkService(IOrvosiDbContext db, IPrincipal principal)
         {
             this.db = db;
-            this.identity = identity;
+            this.identity = principal.Identity;
             userId = identity.GetGuidUserId();
             userContext = identity.GetUserContext();
             physicianId = userContext.Id;
@@ -486,6 +486,11 @@ namespace WebApp.Library
             {
                 return null;
             }
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

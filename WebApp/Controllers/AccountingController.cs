@@ -28,11 +28,23 @@ using WebApp.ViewModels;
 using WebApp.Library.Helpers;
 using System.Collections.Specialized;
 using Orvosi.Data.Extensions;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     public class AccountingController : BaseController
     {
+        private OrvosiDbContext db;
+        private WorkService workService;
+        private AccountingService accountingService;
+
+        public AccountingController(OrvosiDbContext db, WorkService workService, AccountingService accountingService, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+            this.workService = workService;
+            this.accountingService = accountingService;
+        }
+
         [AuthorizeRole(Feature = Accounting.ViewUnsentInvoices)]
         public ActionResult UnsentInvoices(FilterArgs filterArgs)
         {
@@ -40,20 +52,20 @@ namespace WebApp.Controllers
             filterArgs.Month = filterArgs.Month ?? now.Month;
 
             var serviceRequests = db.ServiceRequests
-                .ForPhysician(currentContextId)
+                .ForPhysician(physicianOrLoggedInUserId)
                 .AreNotCancellations()
                 .WhereSubmitInvoiceTaskIsToDo()
                 .AreForCompany(filterArgs.CustomerId)
-                .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
                 .Select(ServiceRequestDto.FromServiceRequestEntityForInvoice.Expand())
                 .ToList();
 
             var invoices = db.Invoices
-                .AreOwnedBy(currentContextId)
+                .AreOwnedBy(physicianOrLoggedInUserId)
                 .AreNotDeleted()
                 .AreNotSent()
                 .AreForCustomer(filterArgs.CustomerId)
-                .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
                 .Select(InvoiceDto.FromInvoiceEntity.Expand())
                 .ToList();
 
@@ -102,7 +114,7 @@ namespace WebApp.Controllers
             filterArgs.Month = filterArgs.Month ?? now.Month;
 
             var serviceRequests = db.ServiceRequests
-                .ForPhysician(currentContextId)
+                .ForPhysician(physicianOrLoggedInUserId)
                 //.HaveCompletedSubmitInvoiceTask()
                 //.AreForCompany(filterArgs.CustomerId)
                 //.AreWithinDateRange(filterArgs.Year, filterArgs.Month)
@@ -110,11 +122,11 @@ namespace WebApp.Controllers
                 .ToList();
 
             var invoices = db.Invoices
-                .AreOwnedBy(currentContextId)
+                .AreOwnedBy(physicianOrLoggedInUserId)
                 .AreSent()
                 .AreUnpaid()
                 .AreForCustomer(filterArgs.CustomerId)
-                .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
                 .Select(InvoiceDto.FromInvoiceEntity.Expand())
                 .ToList();
 
@@ -154,13 +166,13 @@ namespace WebApp.Controllers
             filterArgs.Month = filterArgs.Month ?? now.Month;
 
             var serviceRequests = db.ServiceRequests
-                .ForPhysician(currentContextId)
+                .ForPhysician(physicianOrLoggedInUserId)
                 .Select(ServiceRequestDto.FromServiceRequestEntityForInvoice.Expand())
                 .ToList();
 
             // if the users searches for a specific invoice, only show that invoice.
             var query = db.Invoices
-                .AreOwnedBy(currentContextId);
+                .AreOwnedBy(physicianOrLoggedInUserId);
 
             if (filterArgs.InvoiceId.HasValue)
             {
@@ -170,7 +182,7 @@ namespace WebApp.Controllers
             else
             {
                 query = query
-                    .AreOwnedBy(currentContextId)
+                    .AreOwnedBy(physicianOrLoggedInUserId)
                     .AreForCustomer(filterArgs.CustomerId)
                     .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month);
             }
@@ -212,11 +224,11 @@ namespace WebApp.Controllers
         public ActionResult Analytics(FilterArgs filterArgs)
         {
             var invoices = db.Invoices
-                .AreOwnedBy(currentContextId)
+                .AreOwnedBy(physicianOrLoggedInUserId)
                 .AreNotDeleted()
                 .AreSent()
                 .AreForCustomer(filterArgs.CustomerId)
-                .AreWithinDateRange(SystemTime.Now(), filterArgs.Year, filterArgs.Month)
+                .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
                 .Select(InvoiceProjections.Header())
                 .ToList();
 
@@ -296,7 +308,7 @@ namespace WebApp.Controllers
         {
             var serviceRequests = db.ServiceRequests
                     .Where(s => s.Id == serviceRequestId)
-                    .Select(ServiceRequestProjections.DetailsWithInvoices(currentContextId, now))
+                    .Select(ServiceRequestProjections.DetailsWithInvoices(physicianOrLoggedInUserId, now))
                     .ToList();
             if (serviceRequests.Count() != 1)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -352,7 +364,7 @@ namespace WebApp.Controllers
         public ActionResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
         {
             var data = db.Invoices
-                .AreOwnedBy(currentContextId)
+                .AreOwnedBy(physicianOrLoggedInUserId)
                 .Where(i => i.InvoiceNumber.Contains(searchTerm)
                     || i.InvoiceDetails.Any(id => id.Description.ToLower().Contains(searchTerm.ToLower())))
                 .Select(i => new
@@ -420,17 +432,17 @@ namespace WebApp.Controllers
                 invoiceNumber = long.Parse(invoiceNumberStr);
             }
 
-            var invoiceDate = SystemTime.Now();
+            var invoiceDate = now;
             if (serviceRequest.HasAppointment)
             {
                 invoiceDate = serviceRequest.AppointmentDate.Value;
             }
 
             var invoice = new Orvosi.Data.Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name);
 
             var invoiceDetail = new Orvosi.Data.InvoiceDetail();
-            invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, userId.ToString(), serviceCatalogue.Price.GetValueOrDefault(0), rates.NoShowRate.GetValueOrDefault(1), rates.LateCancellationRate.GetValueOrDefault(1));
+            invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, loggedInUserId.ToString(), serviceCatalogue.Price.GetValueOrDefault(0), rates.NoShowRate.GetValueOrDefault(1), rates.LateCancellationRate.GetValueOrDefault(1));
             invoice.InvoiceDetails.Add(invoiceDetail);
 
             invoice.CalculateTotal();
@@ -453,7 +465,7 @@ namespace WebApp.Controllers
 
             var invoice = new Orvosi.Data.Invoice()
             {
-                ServiceProviderGuid = currentContextId,
+                ServiceProviderGuid = physicianOrLoggedInUserId,
                 InvoiceDate = now
             };
             return View(invoice);
@@ -479,7 +491,7 @@ namespace WebApp.Controllers
             var invoiceDate = form.InvoiceDate;
 
             var invoice = new Orvosi.Data.Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, User.Identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name);
 
             db.Invoices.Add(invoice);
             db.SaveChanges();
@@ -576,7 +588,7 @@ namespace WebApp.Controllers
             foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
             {
                 var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
-                await service.ChangeTaskStatus(task.Id, TaskStatuses.Done);
+                await workService.ChangeTaskStatus(task.Id, TaskStatuses.Done);
             }
 
             await db.SaveChangesAsync();
@@ -597,7 +609,7 @@ namespace WebApp.Controllers
             foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
             {
                 var task = item.ServiceRequest.ServiceRequestTasks.FirstOrDefault(c => c.TaskId == Tasks.SubmitInvoice); // TODO: 37 is submit invoice for add/pr
-                await service.ChangeTaskStatus(task.Id, TaskStatuses.Done);
+                await workService.ChangeTaskStatus(task.Id, TaskStatuses.Done);
             }
 
             await db.SaveChangesAsync();
@@ -611,17 +623,17 @@ namespace WebApp.Controllers
             await new GoogleServices()
                 .SendEmailAsync(message);
 
-            invoice.SentDate = SystemTime.Now();
-            invoice.ModifiedDate = SystemTime.Now();
-            invoice.ModifiedUser = User.Identity.Name;
+            invoice.SentDate = now;
+            invoice.ModifiedDate = now;
+            invoice.ModifiedUser = identity.Name;
 
             invoice.InvoiceSentLogs.Add(new Orvosi.Data.InvoiceSentLog()
             {
                 InvoiceId = invoice.Id,
                 EmailTo = invoice.CustomerEmail,
-                SentDate = SystemTime.Now(),
-                ModifiedDate = SystemTime.Now(),
-                ModifiedUser = User.Identity.Name
+                SentDate = now,
+                ModifiedDate = now,
+                ModifiedUser = identity.Name
             });
 
             return invoice;
@@ -651,7 +663,7 @@ namespace WebApp.Controllers
             record.TaxRateHst = invoice.TaxRateHst;
             record.CustomerEmail = invoice.Customer.BillingEmail;
             record.ModifiedDate = now;
-            record.ModifiedUser = userId.ToString();
+            record.ModifiedUser = loggedInUserId.ToString();
             record.CalculateTotal();
             db.SaveChanges();
 
@@ -684,7 +696,7 @@ namespace WebApp.Controllers
             record.Amount = invoiceDetail.Amount;
             record.Rate = invoiceDetail.Rate;
             record.ModifiedDate = now;
-            record.ModifiedUser = userId.ToString();
+            record.ModifiedUser = loggedInUserId.ToString();
 
             // invoice detail passed in will not have the service request information
             if (record.ServiceRequestId.HasValue && invoiceDetail.Rate != 1)
@@ -767,13 +779,13 @@ namespace WebApp.Controllers
             }
 
             invoice.IsDeleted = true;
-            invoice.DeletedBy = userId;
-            invoice.DeletedDate = SystemTime.Now();
+            invoice.DeletedBy = loggedInUserId;
+            invoice.DeletedDate = now;
 
             invoice.InvoiceDetails.ForEach(id =>
             {
                 id.IsDeleted = true;
-                id.DeletedBy = userId;
+                id.DeletedBy = loggedInUserId;
                 id.DeletedDate = now;
             });
 
@@ -843,9 +855,9 @@ namespace WebApp.Controllers
                 // when the amount is null the invoice is paid in full (it is ignored either way)
                 Amount = !amount.HasValue ? invoice.Total.Value : amount.Value,
                 CreatedDate = now,
-                CreatedUser = userId.ToString(),
+                CreatedUser = loggedInUserId.ToString(),
                 ModifiedDate = now,
-                ModifiedUser = userId.ToString()
+                ModifiedUser = loggedInUserId.ToString()
             };
             db.Receipts.Add(receipt);
             db.SaveChanges();

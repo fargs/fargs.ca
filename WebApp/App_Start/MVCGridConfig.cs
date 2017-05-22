@@ -18,6 +18,7 @@ namespace WebApp
     using LinqKit;
     using ViewDataModels;
     using System.ArrayExtensions;
+    using Orvosi.Data;
 
     public static class MVCGridConfig 
     {
@@ -114,7 +115,7 @@ namespace WebApp
                     // Query your data here. Obey Ordering, paging and filtering parameters given in the context.QueryOptions.
                     // Use Entity Framework, a module from your IoC Container, or any other method.
                     // Return QueryResult object containing IEnumerable<YouModelItem>
-                    var db = ContextPerRequest.db;
+                    var db = new OrvosiDbContext();
                     var identity = context.CurrentHttpContext.User.Identity;
                     var physicianContext = context.CurrentHttpContext.User.Identity.GetPhysicianContext();
                     var userId = identity.GetGuidUserId();

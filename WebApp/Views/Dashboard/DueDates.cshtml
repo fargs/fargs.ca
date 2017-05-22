@@ -11,7 +11,7 @@
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
 
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var taskIdSelectListItems = viewDataService.GetTaskIds(userId);
     var cities = viewDataService.GetCities(userId);
     var taskStatuses = viewDataService.GetTaskStatusSelectList();

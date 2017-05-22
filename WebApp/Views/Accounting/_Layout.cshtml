@@ -12,7 +12,7 @@
 
     var features = User.Identity.GetFeatures();
 
-    var context = ContextPerRequest.db;
+    var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
 
     Guid userId = User.Identity.GetGuidUserId();
 

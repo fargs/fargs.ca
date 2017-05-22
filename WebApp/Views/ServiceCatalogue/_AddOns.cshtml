@@ -7,7 +7,7 @@
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
 
     var userId = User.Identity.GetGuidUserId();
     var userContext = User.Identity.GetPhysicianContext();

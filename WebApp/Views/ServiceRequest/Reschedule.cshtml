@@ -4,7 +4,7 @@
 @model ServiceRequest
 
 @{
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var addressSelectList = viewDataService.GetPhysicianAddressSelectList(Model.PhysicianId);
 }
 
@@ -92,7 +92,9 @@
             })
             .on('changeDate', function(e) {
                 $.get(
-                    '@Url.Content("~/api/physician/" + Model.PhysicianId)/day/' + e.format('yyyy-mm-dd') + '/slots'
+                    '@Url.Content("~/availability/getslotsbyavailableday/")', {
+                        day: e.format('yyyy-mm-dd')
+                    }
                 )
                 .done(function (data) {
                     $('#availableDayMessage').text("");

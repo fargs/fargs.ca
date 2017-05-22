@@ -13,12 +13,23 @@ using WebApp.ViewModels;
 using Orvosi.Data.Filters;
 using WebApp.Models;
 using LinqKit;
+using Orvosi.Data;
+using WebApp.Library;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]
     public class ServiceRequestMessageController : BaseController
     {
+        private OrvosiDbContext db;
+        private WorkService service;
+
+        public ServiceRequestMessageController(OrvosiDbContext db, WorkService service, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+            this.service = service;
+        }
         // GET: ServiceRequestMessage
         public ActionResult Discussion(int serviceRequestId)
         {
@@ -37,7 +48,7 @@ namespace WebApp.Controllers
             {
                 Id = Guid.NewGuid(),
                 Message = message,
-                UserId = userId,
+                UserId = loggedInUserId,
                 PostedDate = now,
                 ServiceRequestId = serviceRequestId
             };

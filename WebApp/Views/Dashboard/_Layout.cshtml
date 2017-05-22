@@ -53,22 +53,14 @@
             }, this);
         }
 
-        $.get('@Url.Content("~/api/servicerequesttask/urgenttaskcount")')
-            .done(function (data) {
-                if (data > 0)
-                {
-                    document.getElementById('urgenttaskcount-container').className += 'text-danger';
-                    document.getElementById('urgenttaskcount-container-icon').className += 'fa fa-exclamation text-danger';
-                }
+        $.get('@Url.Content("~/servicerequesttask/urgenttaskcount")')
+            .done(function (result) {
+                $('#urgenttaskcount-container').html(result);
             });
 
-        $.get('@Url.Content("~/api/servicerequest/additionalcount")')
-            .done(function (data) {
-                if (data > 0)
-                {
-                    document.getElementById('additionalcount-container').className += 'text-danger';
-                    document.getElementById('additionalcount-container-icon').className += 'fa fa-exclamation text-danger';
-                }
+        $.get('@Url.Content("~/servicerequest/additionalcount")')
+            .done(function (result) {
+                $('#additionalcount-container').html(result);
             });
     </script>
 

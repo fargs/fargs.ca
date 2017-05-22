@@ -1,4 +1,5 @@
 ﻿using Box.V2.Models;
+using FluentDateTime;
 using LinqKit;
 using MoreLinq;
 using Orvosi.Data;
@@ -11,6 +12,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebApp.FormModels;
@@ -33,25 +35,21 @@ namespace WebApp.Controllers
     [AuthorizeRole(Feature = Features.ServiceRequest.View)]
     public class ServiceRequestController : BaseController
     {
-        private OrvosiDropbox _dropbox;
+        private OrvosiDbContext db;
+        private WorkService service;
+        private ViewDataService viewDataService;
 
-        public OrvosiDropbox dropbox
+        public ServiceRequestController(OrvosiDbContext db, WorkService service, ViewDataService viewDataService, DateTime now, IPrincipal principal) : base(now, principal)
         {
-            get
-            {
-                if (_dropbox == null)
-                {
-                    _dropbox = new OrvosiDropbox();
-                    return _dropbox;
-                }
-                return _dropbox;
-            }
+            this.db = db;
+            this.service = service;
+            this.viewDataService = viewDataService;
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> Index(WebApp.ViewModels.ServiceRequestViewModels.FilterArgs filterArgs)
+        public async Task<ActionResult> Index(FilterArgs filterArgs)
         {
-            var vm = new WebApp.ViewModels.ServiceRequestViewModels.IndexViewModel();
+            var vm = new IndexViewModel();
             // get the user
             filterArgs.ShowAll = (filterArgs.ShowAll ?? true);
             filterArgs.Sort = (filterArgs.Sort ?? "Oldest");
@@ -73,15 +71,13 @@ namespace WebApp.Controllers
                 sr = sr.Where(c => c.ServiceRequestStatusId == filterArgs.StatusId);
             }
 
-            var userId = User.Identity.GetGuidUserId();
-
             // if the user is an administrator and the option showAll is true, then show all
-            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin && filterArgs.ShowAll == false))
+            if (loggedInRoleId != AspNetRoles.SuperAdmin || (loggedInRoleId != AspNetRoles.SuperAdmin && filterArgs.ShowAll == false))
             {
-                sr = sr.Where(c => c.CaseCoordinatorId == userId || c.IntakeAssistantId == userId || c.DocumentReviewerId == userId || c.PhysicianId == userId);
+                sr = sr.Where(c => c.CaseCoordinatorId == loggedInUserId || c.IntakeAssistantId == loggedInUserId || c.DocumentReviewerId == loggedInUserId || c.PhysicianId == loggedInUserId);
             }
 
-            if (User.Identity.GetRoleId() != AspNetRoles.SuperAdmin || User.Identity.GetRoleId() != AspNetRoles.CaseCoordinator || User.Identity.GetRoleId() != AspNetRoles.DocumentReviewer || User.Identity.GetRoleId() != AspNetRoles.IntakeAssistant)
+            if (loggedInRoleId != AspNetRoles.SuperAdmin || loggedInRoleId != AspNetRoles.CaseCoordinator || loggedInRoleId != AspNetRoles.DocumentReviewer || loggedInRoleId != AspNetRoles.IntakeAssistant)
             {
                 if (filterArgs.PhysicianId.HasValue)
                 {
@@ -116,10 +112,8 @@ namespace WebApp.Controllers
 
         public async Task<ActionResult> Dashboard()
         {
-            var userId = User.Identity.GetGuidUserId();
-
             var list = await db.ServiceRequests
-                .Where(sr => sr.CaseCoordinatorId == userId || sr.IntakeAssistantId == userId || sr.DocumentReviewerId == userId || sr.PhysicianId == userId)
+                .Where(sr => sr.CaseCoordinatorId == loggedInUserId || sr.IntakeAssistantId == loggedInUserId || sr.DocumentReviewerId == loggedInUserId || sr.PhysicianId == loggedInUserId)
                 .ToListAsync();
 
             return View(list);
@@ -143,7 +137,7 @@ namespace WebApp.Controllers
         {
             var dto = db.ServiceRequests
                 .WithId(id)
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
                 .SingleOrDefault();
 
@@ -161,7 +155,7 @@ namespace WebApp.Controllers
                 ViewFilter = TaskListViewModelFilter.AllTasks
             };
 
-            if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician || roleId == AspNetRoles.CaseCoordinator)
+            if (loggedInRoleId == AspNetRoles.SuperAdmin || loggedInRoleId == AspNetRoles.Physician || loggedInRoleId == AspNetRoles.CaseCoordinator)
             {
                 args.ViewFilter = TaskListViewModelFilter.AllTasks;
             }
@@ -183,7 +177,7 @@ namespace WebApp.Controllers
                 .AsExpandable()
                 .AreScheduledThisDay(selectedDate)
                 .AreNotCancellations()
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase)
                 .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
                 .ToList();
@@ -207,7 +201,7 @@ namespace WebApp.Controllers
         {
             var dto = db.ServiceRequestTasks
                 .AreDueBetween(args.TaskListArgs.DateRange.StartDate, args.TaskListArgs.DateRange.EndDate.Value)
-                .AreAssignedToUser(userId)
+                .AreAssignedToUser(loggedInUserId)
                 .WithTaskIds(args.TaskListArgs.TaskIds)
                 .AreActiveOrDone()
                 .Where(srt => srt.DueDate.HasValue)
@@ -248,10 +242,10 @@ namespace WebApp.Controllers
             var dto = db.ServiceRequests
                 .AsExpandable()
                 .AreScheduledBetween(args.DateRange.StartDate, args.DateRange.EndDate.Value)
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .AreNotClosed()
                 .HaveAppointment()
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(userId))
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(loggedInUserId))
                 .ToList();
 
             var viewModel = dto
@@ -283,10 +277,10 @@ namespace WebApp.Controllers
         {
             var dto = db.ServiceRequests
                 .AsExpandable()
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .AreNotClosed()
                 .HaveNoAppointment()
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(userId))
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseLinks(loggedInUserId))
                 .ToList();
 
             var viewModel = dto
@@ -308,6 +302,39 @@ namespace WebApp.Controllers
             //    .Select(CaseLinkViewModel.FromServiceRequestDto.Expand());
 
             return PartialView(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetAppointmentDate(int serviceRequestId)
+        {
+            var result = await db.ServiceRequests
+                .HaveAppointment()
+                .WithId(serviceRequestId)
+                .Select(sr => new
+                {
+                    sr.Id,
+                    sr.AppointmentDate,
+                })
+                .SingleAsync();
+
+            return Json(new
+            {
+                Id = result.Id,
+                AppointmentDate = result.AppointmentDate.ToOrvosiDateFormat(),
+                FirstDayOfWeek = result.AppointmentDate.Value.FirstDayOfWeek().ToOrvosiDateFormat(),
+                FirstDayOfWeekTicks = result.AppointmentDate.Value.FirstDayOfWeek().Ticks
+            }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public async Task<ActionResult> AdditionalCount()
+        {
+            var count = db.ServiceRequests
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
+                .AreNotClosed()
+                .HaveNoAppointment()
+                .Count();
+
+            return PartialView("~/Views/Dashboard/_AdditionalsHeading.cshtml", count);
         }
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
@@ -334,7 +361,7 @@ namespace WebApp.Controllers
         {
             var dto = db.ServiceRequests
                 .WithId(serviceRequestId)
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
                 .SingleOrDefault();
 
@@ -356,7 +383,7 @@ namespace WebApp.Controllers
         {
             var dto = await db.ServiceRequests
                 .WithId(serviceRequestId)
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
                 .SingleOrDefaultAsync();
 
@@ -432,7 +459,7 @@ namespace WebApp.Controllers
             record.CompanyId = form.CompanyId;
             record.ServiceId = form.ServiceId;
             record.ModifiedDate = now;
-            record.ModifiedUser = userId.ToString();
+            record.ModifiedUser = loggedInUserId.ToString();
 
             await db.SaveChangesAsync();
             return RedirectToAction("Details", new { id = record.Id });
@@ -505,16 +532,16 @@ namespace WebApp.Controllers
                 st.TaskId = template.OTask.Id;
                 st.TaskName = template.OTask.Name;
                 st.ModifiedDate = now;
-                st.ModifiedUser = userId.ToString();
+                st.ModifiedUser = loggedInUserId.ToString();
                 st.CreatedDate = now;
-                st.CreatedUser = userId.ToString();
+                st.CreatedUser = loggedInUserId.ToString();
                 st.ServiceRequestTemplateTaskId = template.Id;
                 st.TaskType = template.OTask.TaskType;
                 st.Workload = template.OTask.Workload;
                 st.DueDate = GetTaskDueDate(serviceRequest.AppointmentDate.HasValue ? serviceRequest.AppointmentDate : serviceRequest.DueDate, template);
                 st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
                 st.TaskStatusId = TaskStatuses.ToDo;
-                st.TaskStatusChangedBy = userId;
+                st.TaskStatusChangedBy = loggedInUserId;
                 st.TaskStatusChangedDate = now;
                 st.IsCriticalPath = template.IsCriticalPath;
                 st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
@@ -742,7 +769,7 @@ namespace WebApp.Controllers
             {
                 var slot = await db.AvailableSlots.FindAsync(sr.AvailableSlotId);
                 sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
-                sr.ServiceRequestStatusChangedBy = userId;
+                sr.ServiceRequestStatusChangedBy = loggedInUserId;
                 sr.ServiceRequestStatusChangedDate = now;
                 sr.RequestedDate = now;
                 sr.ServiceId = sr.ServiceId;
@@ -757,9 +784,9 @@ namespace WebApp.Controllers
                 //sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
                 //sr.NoShowRate = rates.NoShowRate;
                 //sr.LateCancellationRate = rates.LateCancellationRate;
-                sr.ModifiedUser = userId.ToString();
+                sr.ModifiedUser = loggedInUserId.ToString();
                 sr.ModifiedDate = now;
-                sr.CreatedUser = userId.ToString();
+                sr.CreatedUser = loggedInUserId.ToString();
                 sr.CreatedDate = now;
 
                 // clone the workflow template tasks
@@ -775,9 +802,9 @@ namespace WebApp.Controllers
                     st.TaskId = template.OTask.Id;
                     st.TaskName = template.OTask.Name;
                     st.ModifiedDate = now;
-                    st.ModifiedUser = userId.ToString();
+                    st.ModifiedUser = loggedInUserId.ToString();
                     st.CreatedDate = now;
-                    st.CreatedUser = userId.ToString();
+                    st.CreatedUser = loggedInUserId.ToString();
                     // Assign tasks to physician and case coordinator to start
                     st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
@@ -786,7 +813,7 @@ namespace WebApp.Controllers
                     st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
                     st.DueDate = GetTaskDueDate(sr.AppointmentDate, template);
                     st.TaskStatusId = TaskStatuses.ToDo;
-                    st.TaskStatusChangedBy = userId;
+                    st.TaskStatusChangedBy = loggedInUserId;
                     st.TaskStatusChangedDate = now;
                     st.IsCriticalPath = template.IsCriticalPath;
                     st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
@@ -814,7 +841,6 @@ namespace WebApp.Controllers
 
                 await db.SaveChangesAsync();
 
-                var service = new WorkService(ContextPerRequest.db, identity);
                 await service.UpdateDependentTaskStatuses(sr.Id);
                 await service.UpdateServiceRequestStatus(sr.Id);
 
@@ -905,7 +931,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
-                sr.ServiceRequestStatusChangedBy = userId;
+                sr.ServiceRequestStatusChangedBy = loggedInUserId;
                 sr.ServiceRequestStatusChangedDate = now;
                 //sr.ServiceCatalogueId = serviceCatalogue == null ? null : serviceCatalogue.ServiceCatalogueId;
                 sr.DueDate = sr.DueDate;
@@ -939,9 +965,9 @@ namespace WebApp.Controllers
                     st.TaskId = template.OTask.Id;
                     st.TaskName = template.OTask.Name;
                     st.ModifiedDate = now;
-                    st.ModifiedUser = userId.ToString();
+                    st.ModifiedUser = loggedInUserId.ToString();
                     st.CreatedDate = now;
-                    st.CreatedUser = userId.ToString();
+                    st.CreatedUser = loggedInUserId.ToString();
                     // Assign tasks to physician and case coordinator to start
                     st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
                     st.ServiceRequestTemplateTaskId = template.Id;
@@ -950,7 +976,7 @@ namespace WebApp.Controllers
                     st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
                     st.DueDate = GetTaskDueDate(sr.DueDate, template);
                     st.TaskStatusId = TaskStatuses.ToDo;
-                    st.TaskStatusChangedBy = userId;
+                    st.TaskStatusChangedBy = loggedInUserId;
                     st.TaskStatusChangedDate = now;
                     st.IsCriticalPath = template.IsCriticalPath;
                     st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
@@ -978,7 +1004,6 @@ namespace WebApp.Controllers
 
                 await db.SaveChangesAsync();
 
-                var service = new WorkService(ContextPerRequest.db, identity);
                 await service.UpdateDependentTaskStatuses(sr.Id);
                 await service.UpdateServiceRequestStatus(sr.Id);
 
@@ -992,7 +1017,6 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCompanyDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity);
             var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
             return PartialView("_CreateAddOnCompanyDropDown", companySelectList);
         }
@@ -1000,7 +1024,6 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshServiceDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianServiceSelectList(physicianId);
             return PartialView("_CreateAddOnServiceDropDown", selectList);
         }
@@ -1008,7 +1031,6 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshCaseCoordinatorDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physicianId);
             return PartialView("_CreateAddOnCaseCoordinatorDropDown", selectList);
         }
@@ -1016,7 +1038,6 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult RefreshProcessTemplateDropDown(Guid physicianId)
         {
-            var viewDataService = new ViewDataService(User.Identity);
             var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
             return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
         }
@@ -1600,8 +1621,7 @@ namespace WebApp.Controllers
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateAssessmentDayTaskStatuses(int serviceRequestId)
-        {
-            var service = new WorkService(db, User.Identity);
+        { 
 
             await service.UpdateAssessmentDayTaskStatus(serviceRequestId);
 
@@ -1615,8 +1635,6 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)
         {
-            var service = new WorkService(db, User.Identity);
-
             await service.UpdateDependentTaskStatuses(serviceRequestId);
 
             return Json(new
@@ -1629,8 +1647,6 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateServiceRequestStatuses(int serviceRequestId)
         {
-            var service = new WorkService(db, User.Identity);
-
             await service.UpdateServiceRequestStatus(serviceRequestId);
 
             return Json(new

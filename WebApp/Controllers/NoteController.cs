@@ -8,17 +8,25 @@ using System.Web;
 using System.Web.Mvc;
 using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Library.Filters;
+using Orvosi.Data;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
-    public class NoteController : Controller
+    public class NoteController : BaseController
     {
+        private OrvosiDbContext db;
+
+        public NoteController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
+
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
         public async Task<ActionResult> EditNote(int serviceRequestId)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-            var editForm = await context.ServiceRequests
+            var editForm = await db.ServiceRequests
                 .Where(sr => sr.Id == serviceRequestId)
                 .Select(sr => new NoteEditForm
                 {
@@ -34,14 +42,12 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
         public async Task<ActionResult> UpdateNote(NoteEditForm form)
         {
-            var context = new Orvosi.Data.OrvosiDbContext();
-
-            var target = context.ServiceRequests.Find(form.ServiceRequestId);
+            var target = db.ServiceRequests.Find(form.ServiceRequestId);
             target.Notes = form.Notes;
-            target.ModifiedUser = User.Identity.Name;
-            target.ModifiedDate = SystemTime.Now();
+            target.ModifiedUser = loggedInUserId.ToString();
+            target.ModifiedDate = now;
 
-            await context.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
     }

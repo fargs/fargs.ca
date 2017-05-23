@@ -1296,6 +1296,7 @@
     <Content Include="Views\ServiceCatalogue\_AddOns.cshtml" />
     <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
     <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
+    <Content Include="Views\Shared\NotificationTemplates\InvoiceDownloadLink.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

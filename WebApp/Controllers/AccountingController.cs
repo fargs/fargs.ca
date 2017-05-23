@@ -528,6 +528,29 @@ namespace WebApp.Controllers
             return new FileStreamResult(fileStream, "application/pdf");
         }
 
+        [AllowAnonymous]
+        public async Task<ActionResult> Download(Guid id)
+        {
+            var invoice = await db.Invoices.FirstOrDefaultAsync(i => i.ObjectGuid == id);
+            var invoiceFolder = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
+
+            var box = new BoxManager();
+            var boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
+            if (boxFile == null)
+            {
+                var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+                invoice = await accountingService.GenerateInvoicePdf(invoice, content);
+            }
+            boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
+            var fileStream = await box.GetFileStream(invoice.BoxFileId);
+
+            // Make the file a downloadable attachment - comment this out to show it directly inside
+            HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename={0}", boxFile.Name));
+
+            // Return the file as a PDF
+            return new FileStreamResult(fileStream, "application/pdf");
+        }
+
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
         public async Task<ActionResult> GenerateInvoicePdf(int invoiceId)
         {
@@ -573,11 +596,20 @@ namespace WebApp.Controllers
             var invoice = await db.Invoices.FindAsync(invoiceId);
             var physician = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
 
-            var box = new BoxManager();
-            var pdf = await box.GetInvoiceFileInfo(invoice.BoxFileId, physician.BoxInvoicesFolderId, invoice.ObjectGuid);
-            var pdfStream = await box.GetFileStream(pdf.Id);
-            var invoiceAttachment = new Attachment(pdfStream, pdf.Name);
-            message.Attachments.Add(invoiceAttachment);
+            if (Request.Form["IncludeAttachment"] == "on")
+            {
+                var box = new BoxManager();
+                var file = await box.GetInvoiceFileInfo(invoice.BoxFileId, physician.BoxInvoicesFolderId, invoice.ObjectGuid);
+                if (file == null)
+                {
+                    var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+                    invoice = await accountingService.GenerateInvoicePdf(invoice, content);
+                    file = await box.GetInvoiceFileInfo(invoice.BoxFileId, physician.BoxInvoicesFolderId, invoice.ObjectGuid);
+                }
+                var fileStream = await box.GetFileStream(file.Id);
+                var invoiceAttachment = new Attachment(fileStream, file.Name);
+                message.Attachments.Add(invoiceAttachment);
+            }
             var attachment = new Attachment(Request.Files["Attachment1"].InputStream, Request.Files["Attachment1"].FileName);
             message.Attachments.Add(attachment);
 
@@ -830,10 +862,8 @@ namespace WebApp.Controllers
             message.IsBodyHtml = true;
             message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
 
-            var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views/Shared/NotificationTemplates/Invoice.html");
-
             ViewData["BaseUrl"] = baseUrl; //This is needed because the full address needs to be included in the email download link
-            message.Body = WebApp.Library.Helpers.HtmlHelpers.RenderPartialViewToString(this, "~/Views/Shared/NotificationTemplates/Invoice.cshtml", invoice);
+            message.Body = HtmlHelpers.RenderPartialViewToString(this, "~/Views/Shared/NotificationTemplates/InvoiceDownloadLink.cshtml", invoice);
 
             return message;
         }

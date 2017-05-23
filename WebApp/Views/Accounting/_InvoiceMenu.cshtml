@@ -32,7 +32,7 @@
             {
                 if (features.Contains(Accounting.SendInvoice))
                 {
-                    <button type="button" class="btn btn-primary" onclick="onGenerateEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-send"></i></button>
+                    <button type="button" class="btn btn-primary" onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-send"></i></button>
                 }
             }
             @if (!Model.Invoice.IsDeleted)
@@ -69,7 +69,7 @@
                     @if (features.Contains(Accounting.SendInvoice))
                     {
                         <li>
-                            <a onclick="onGenerateEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
+                            <a onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
                                 <i class="fa fa-send"></i> &nbsp;Send
                             </a>
                         </li>

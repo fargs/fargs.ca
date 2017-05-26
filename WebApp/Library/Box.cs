@@ -142,16 +142,11 @@ namespace WebApp.Library
                 var results = await client.SearchManager.SearchAsync(invoiceGuid.ToString().Split('-')[0], type: "file", ancestorFolderIds: new List<string> { folderId }, contentTypes: new List<string> { "name" });
 
                 // this potentially could result in multiple results which we would throw an error
-                if (results.TotalCount > 1)
-                {
-                    throw new Exception("There are more than one invoices in the folder for this case, please delete directly from Box.");
-                }
-                // if one file is returned, it was found and upload a new version
-                else if (results.TotalCount == 1)
+                if (results.TotalCount == 1)
                 {
                     file = results.Entries.Single() as BoxFile;
                 }
-                // it was not found so upload a new file
+                // an exact match was not found so upload a new file
                 else
                 {
                     return null;
@@ -182,16 +177,11 @@ namespace WebApp.Library
                 var results = await client.SearchManager.SearchAsync(invoiceGuid.ToString().Split('-')[0], type: "file", ancestorFolderIds: new List<string> { physicianInvoicesFolderId }, contentTypes: new List<string> { "name" });
 
                 // this potentially could result in multiple results which we would throw an error
-                if (results.TotalCount > 1)
-                {
-                    throw new Exception("There are more than one invoices in the folder for this case, please delete directly from Box.");
-                }
-                // if one file is returned, it was found and upload a new version
-                else if (results.TotalCount == 1)
+                if (results.TotalCount == 1)
                 {
                     file = results.Entries.Single() as BoxFile;
                 }
-                // it was not found so upload a new file
+                // an exact match was not found so upload a new file
                 else
                 {
                     var request = new BoxFileRequest

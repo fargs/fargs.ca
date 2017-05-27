@@ -528,6 +528,8 @@ namespace WebApp.Controllers
             return new FileStreamResult(fileStream, "application/pdf");
         }
 
+        [Route("Accounting/Download/{id}")]
+        [Route("Invoice/Download/{id}")]
         [AllowAnonymous]
         public async Task<ActionResult> Download(Guid id)
         {
@@ -610,8 +612,16 @@ namespace WebApp.Controllers
                 var invoiceAttachment = new Attachment(fileStream, file.Name);
                 message.Attachments.Add(invoiceAttachment);
             }
-            var attachment = new Attachment(Request.Files["Attachment1"].InputStream, Request.Files["Attachment1"].FileName);
-            message.Attachments.Add(attachment);
+
+            foreach (string fileName in Request.Files)
+            {
+                HttpPostedFileBase file = Request.Files[fileName];
+                if (file.ContentLength != 0)
+                {
+                    var attachment = new Attachment(file.InputStream, file.FileName);
+                    message.Attachments.Add(attachment);
+                }
+            }
 
             // send the email
             invoice = await SendMessageUsingGoogle(invoice, message);

@@ -29,6 +29,7 @@ using WebApp.Library.Helpers;
 using System.Collections.Specialized;
 using Orvosi.Data.Extensions;
 using System.Security.Principal;
+using System.Configuration;
 
 namespace WebApp.Controllers
 {
@@ -533,24 +534,33 @@ namespace WebApp.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Download(Guid id)
         {
-            var invoice = await db.Invoices.FirstOrDefaultAsync(i => i.ObjectGuid == id);
-            var invoiceFolder = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
+            var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
 
-            var box = new BoxManager();
-            var boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
-            if (boxFile == null)
+            //var header = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentHeader", invoice);
+            //var footer = HtmlHelpers.RenderViewToString(this.ControllerContext, "DocumentFooter", invoice);
+            var body = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
+
+            string apiKey = ConfigurationManager.AppSettings["Html2PdfRocketApiKey"];
+            using (var client = new WebClient())
             {
-                var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
-                invoice = await accountingService.GenerateInvoicePdf(invoice, content);
+                NameValueCollection options = new NameValueCollection();
+                options.Add("apikey", apiKey);
+                options.Add("value", body);
+
+                options.Add("MarginTop", "10");
+                options.Add("MarginBottom", "10");
+                options.Add("MarginLeft", "10");
+                options.Add("MarginRight", "10");
+
+                // Call the API convert to a PDF
+                MemoryStream ms = new MemoryStream(client.UploadValues("http://api.html2pdfrocket.com/pdf", options));
+
+                // Make the file a downloadable attachment - comment this out to show it directly inside
+                HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename={0}.pdf", invoice.ServiceProviderName + "_" + invoice.InvoiceNumber));
+
+                // Return the file as a PDF
+                return new FileStreamResult(ms, "application/pdf");
             }
-            boxFile = await box.GetInvoiceFileInfo(invoice.BoxFileId, invoiceFolder.BoxInvoicesFolderId, invoice.ObjectGuid);
-            var fileStream = await box.GetFileStream(invoice.BoxFileId);
-
-            // Make the file a downloadable attachment - comment this out to show it directly inside
-            HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename={0}", boxFile.Name));
-
-            // Return the file as a PDF
-            return new FileStreamResult(fileStream, "application/pdf");
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]

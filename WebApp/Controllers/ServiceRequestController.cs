@@ -1602,13 +1602,13 @@ namespace WebApp.Controllers
         public ActionResult GetAssessmentDayTasks()
         {
             var shouldBeDone = db.ServiceRequestTasks
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now)
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now.Date)
                 .WithTaskId(Tasks.AssessmentDay)
                 .AreActive()
                 .Select(srt => srt.ServiceRequestId);
 
             var shouldBeWaiting = db.ServiceRequestTasks
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate > now)
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate > now.Date)
                 .WithTaskId(Tasks.AssessmentDay)
                 .Where(t => t.TaskStatusId == TaskStatuses.ToDo || t.TaskStatusId == TaskStatuses.Done || t.TaskStatusId == TaskStatuses.Archive)
                 .Select(srt => srt.ServiceRequestId);

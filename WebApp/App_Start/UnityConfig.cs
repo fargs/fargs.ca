@@ -26,7 +26,7 @@ namespace WebApp
             // e.g. container.RegisterType<ITestService, TestService>();
             container.RegisterTypes(AllClasses.FromAssemblies(), WithMappings.FromMatchingInterface, WithName.Default);
 
-            container.RegisterInstance(typeof(DateTime), DateTime.Now);
+            container.RegisterType<DateTime>(new InjectionFactory(c => DateTime.Now));
 
             container.RegisterType<IPrincipal>(new InjectionFactory(c => HttpContext.Current.User));
 

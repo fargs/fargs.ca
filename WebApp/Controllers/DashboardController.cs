@@ -23,12 +23,20 @@ using WebApp.ViewDataModels;
 using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using FluentDateTime;
 using System.Collections.Generic;
+using Orvosi.Data;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class DashboardController : BaseController
     {
+        private OrvosiDbContext db;
+
+        public DashboardController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
         public ActionResult Index()
         {
             return RedirectToAction("DueDates");
@@ -43,7 +51,7 @@ namespace WebApp.Controllers
                 .AsExpandable()
                 .AreScheduledThisDay(date)
                 .AreNotCancellations()
-                .CanAccess(userId, physicianId, roleId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                 .Select(ServiceRequestDto.FromServiceRequestEntityForCase)
                 .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
                 .ToList();
@@ -73,10 +81,10 @@ namespace WebApp.Controllers
         public async Task<ActionResult> Schedule(TaskListArgs args)
         {
             var data = db.ServiceRequests
-                            .CanAccess(userId, physicianId, roleId)
+                            .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                             .AreNotClosed()
                             .HaveAppointment()
-                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
+                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(loggedInUserId))
                             .ToList();
 
             IEnumerable<DayViewModel> viewModel = BuildScheduleViewModel(data);
@@ -102,10 +110,10 @@ namespace WebApp.Controllers
 
             var data = db.ServiceRequests
                             .AreScheduledBetween(dateRange.StartDate, dateRange.EndDate.Value)
-                            .CanAccess(userId, physicianId, roleId)
+                            .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
                             .AreNotClosed()
                             .HaveAppointment()
-                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(userId))
+                            .Select(ServiceRequestDto.FromServiceRequestEntityForSchedule(loggedInUserId))
                             .ToList();
 
             IEnumerable<DayViewModel> viewModel = BuildScheduleViewModel(data);

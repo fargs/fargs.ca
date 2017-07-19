@@ -62,6 +62,20 @@ namespace WebApp.Library.Extensions
             return null;
         }
 
+        public static UserContextViewModel GetLoggedInUserContext(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");
+            if (claim == null)
+            {
+                return new UserContextViewModel
+                {
+                    Id = obj.GetGuidUserId(),
+                    DisplayName = obj.GetDisplayName()
+                };
+            }
+            return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
+        }
+
         public static UserContextViewModel GetUserContext(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");

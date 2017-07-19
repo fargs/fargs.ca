@@ -8,8 +8,8 @@
 
 @{
 
-    var db = ContextPerRequest.db;
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var db = DependencyResolver.Current.GetService<OrvosiDbContext>();
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
 
     var userId = User.Identity.GetGuidUserId();
     var userContext = User.Identity.GetPhysicianContext();

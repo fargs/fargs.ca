@@ -4,8 +4,8 @@
 
 @{
     var identity = User.Identity.GetClaimsIdentity();
-    var features = ContextPerRequest.AuthorizedFeatures;
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var features = DependencyResolver.Current.GetService<SessionService>().AuthorizedFeatures;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.Physician.Id);
     teamMemberSelectList.Add(new SelectListItem
     {

@@ -30,6 +30,7 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public string BoxCaseTemplateFolderId { get; set; } // BoxCaseTemplateFolderId (length: 128)
         public string BoxAddOnTemplateFolderId { get; set; } // BoxAddOnTemplateFolderId (length: 128)
+        public string BoxInvoicesFolderId { get; set; } // BoxInvoicesFolderId (length: 128)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Physician

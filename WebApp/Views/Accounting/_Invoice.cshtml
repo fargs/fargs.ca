@@ -14,10 +14,15 @@ else
 {
 <div class="row" id="invoice-@Model.Id">
     <div class="col-md-3">
+        <div>@Model.InvoiceNumber</div>
         <div>@Model.InvoiceDate.ToOrvosiDateFormat()</div>
         <div>NET @Model.Terms days</div>
         <strong>@Model.Customer.BillingEmail</strong><br /> 
         @(Model.Customer.City), @Model.Customer.Province
+        @if (Model.IsDeleted)
+        {
+            <div class="label label-danger">Cancelled</div>
+        }
     </div>
     <div class="col-md-6">
 

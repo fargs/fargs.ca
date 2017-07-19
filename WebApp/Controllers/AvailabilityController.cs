@@ -14,13 +14,18 @@ using System.Net;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
-    public class AvailabilityController : Controller
+    public class AvailabilityController : BaseController
     {
-        //OrvosiDbContext db = new OrvosiDbContext();
-        Orvosi.Data.OrvosiDbContext context = new Orvosi.Data.OrvosiDbContext();
+        private OrvosiDbContext db;
+
+        public AvailabilityController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
 
         // GET: Availability
         [AuthorizeRole(Feature = Features.Availability.ViewUnpublished)]
@@ -40,7 +45,7 @@ namespace WebApp.Controllers
 
             var userContext = User.Identity.GetUserContext();
 
-            var availableDays = context.AvailableDays
+            var availableDays = db.AvailableDays
                 .Where(c => c.PhysicianId == userContext.Id);
 
             if (args.Year.HasValue && args.Month.HasValue)
@@ -52,7 +57,7 @@ namespace WebApp.Controllers
             }
             else
             {
-                var thisMonth = new DateTime(SystemTime.Now().Year, SystemTime.Now().Month, 1);
+                var thisMonth = new DateTime(now.Year, now.Month, 1);
                 availableDays = availableDays
                     .Where(c => c.Day >= thisMonth);
             }
@@ -71,7 +76,7 @@ namespace WebApp.Controllers
             {
                 Months = months,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
-                Today = SystemTime.Now(),
+                Today = now,
                 FilterArgs = args
             };
 
@@ -82,9 +87,9 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> AddDay(Guid id)
         {
-            var physician = context.AspNetUsers.Single(c => c.Id == id);
+            var physician = db.AspNetUsers.Single(c => c.Id == id);
 
-            var availableDays = await context.AvailableDays.Where(c => c.PhysicianId == id).ToListAsync();
+            var availableDays = await db.AvailableDays.Where(c => c.PhysicianId == id).ToListAsync();
 
             var arr = availableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray<string>();
             ViewBag.AvailableDaysCSV = MvcHtmlString.Create(string.Join(",", arr));
@@ -92,7 +97,7 @@ namespace WebApp.Controllers
             var model = new AvailableDay()
             {
                 PhysicianId = id,
-                Day = SystemTime.Now()
+                Day = now
             };
             return View(model);
         }
@@ -114,9 +119,9 @@ namespace WebApp.Controllers
                         LocationId = model.LocationId,
                         IsPrebook = model.IsPrebook
                     };
-                    context.AvailableDays.Add(day);
+                    db.AvailableDays.Add(day);
                 }
-                await context.SaveChangesAsync();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index", new { PhysicianId = model.PhysicianId });
             }
             return View(model);
@@ -138,8 +143,8 @@ namespace WebApp.Controllers
                         EndTime = endTime,
                         Duration = Duration
                     };
-                context.AvailableSlots.Add(slot);
-                await context.SaveChangesAsync();
+                db.AvailableSlots.Add(slot);
+                await db.SaveChangesAsync();
             }
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -148,14 +153,14 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> CancelDay(int id)
         {
-            var day = await context.AvailableDays.FirstAsync(c => c.Id == id);
+            var day = await db.AvailableDays.FirstAsync(c => c.Id == id);
 
             if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
             {
                 ModelState.AddModelError("", "Slots have already been booked.");
             }
-            context.AvailableDays.Remove(day);
-            await context.SaveChangesAsync();
+            db.AvailableDays.Remove(day);
+            await db.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
         }
 
@@ -163,15 +168,48 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Availability.Manage)]
         public async Task<ActionResult> CancelSlot(int id)
         {
-            var slot = await context.AvailableSlots.FirstAsync(c => c.Id == id);
+            var slot = await db.AvailableSlots.FirstAsync(c => c.Id == id);
 
             if (slot.ServiceRequests.Any())
             {
                 ModelState.AddModelError("", "Slot has already been booked.");
             }
-            context.AvailableSlots.Remove(slot);
-            await context.SaveChangesAsync();
+            db.AvailableSlots.Remove(slot);
+            await db.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public async Task<ActionResult> GetSlotsByAvailableDay(DateTime day)
+        {
+            var ad = await db.AvailableDays.Include(a => a.AvailableSlots)
+                .SingleOrDefaultAsync(c => c.PhysicianId == physicianId && c.Day == day);
+
+            if (ad == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound, "Not available this day.");
+            }
+
+            return Json(
+                new
+                {
+                    Day = ad.Day,
+                    IsPrebook = ad.IsPrebook,
+                    CompanyId = ad.CompanyId,
+                    CompanyName = ad.Company == null ? string.Empty : ad.Company.Name,
+                    LocationId = ad.LocationId,
+                    LocationName = ad.Address == null ? string.Empty : ad.Address.Name,
+                    LocationOwner = ad.Address == null ? null : ad.Address.OwnerGuid,
+                    Slots = ad.AvailableSlots
+                        .OrderBy(s => s.StartTime)
+                        .Select(s => new
+                        {
+                            Id = s.Id,
+                            StartTime = s.StartTime.ToShortTimeSafe(),
+                            Duration = s.Duration,
+                            Title = (s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any() ? s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).FirstOrDefault().ClaimantName + " - " + s.ServiceRequests.FirstOrDefault().Id.ToString() : string.Empty),
+                            IsAvailable = !s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()
+                        })
+                }, JsonRequestBehavior.AllowGet);
         }
     }
 }

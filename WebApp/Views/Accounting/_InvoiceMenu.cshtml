@@ -21,6 +21,13 @@
                     <button type="button" class="btn btn-warning" onclick="onPaid(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-usd fa-lg"></i></button>
                 }
             }
+            else if (Model.Invoice.IsDeleted && features.Contains(Accounting.DeleteInvoice))
+            {
+                if (features.Contains(Accounting.ManageReceipts))
+                {
+                    <button type="button" class="btn btn-default" onclick="onUndeleteInvoice(@Model.Invoice.Id @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">Uncancel</button>
+                }
+            }
             else
             {
                 if (features.Contains(Accounting.SendInvoice))
@@ -28,76 +35,87 @@
                     <button type="button" class="btn btn-primary" onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))"><i class="fa fa-send"></i></button>
                 }
             }
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right">
-                @if (features.Contains(Accounting.ViewInvoice))
-                {
-                    <li>
-                        <a href="~/Accounting/PreviewInvoice/@Model.Invoice.InvoiceGuid" target="_blank">
-                            <i class="fa fa-eye"></i> &nbsp;Preview
-                        </a>
-                    </li>
-                }
-                @if (features.Contains(Accounting.DownloadInvoice))
-                {
-                    <li>
-                        <a href="~/Invoice/DownloadBody/@Model.Invoice.InvoiceGuid" target="_blank">
-                            <i class="fa fa-download"></i> &nbsp;Download
-                        </a>
-                    </li>
-                }
-                @if (features.Contains(Accounting.SendInvoice))
-                {
-                    <li>
-                        <a onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
-                            <i class="fa fa-send"></i> &nbsp;Send
-                        </a>
-                    </li>
-                }
-                @if (features.Contains(Accounting.EditInvoice))
-                {
-                    <li class="divider"></li>
-                    <li>
-                        <a onclick="onEditInvoiceHeader(@Model.Invoice.Id)" style="cursor:pointer;">
-                            <i class="fa fa-pencil"></i> &nbsp;Edit Header
-                        </a>
-                    </li>
-                    <li>
-                        <a onclick="onAddInvoiceItem(@Model.Invoice.Id)" style="cursor:pointer;">
-                            <i class="fa fa-plus"></i> &nbsp;Add Item
-                        </a>
-                    </li>
-                }
-                @if (features.Contains(Accounting.DeleteInvoice) && features.Contains(Accounting.EditInvoice))
-                {
-                    <li class="divider"></li>
-                    <li>
-                        <a onclick="onDeleteInvoice(@Model.Invoice.Id @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
-                            <i class="fa fa-remove"></i> &nbsp;Delete Invoice
-                        </a>
-                    </li>
-                }
-            </ul>
+            @if (!Model.Invoice.IsDeleted)
+            {
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    @if (features.Contains(Accounting.ViewInvoice))
+                    {
+                        <li>
+                            <a href="~/Accounting/PreviewInvoice/@Model.Invoice.Id" target="_blank">
+                                <i class="fa fa-eye"></i> &nbsp;Preview
+                            </a>
+                        </li>
+                    }
+                    @if (features.Contains(Accounting.DownloadInvoice))
+                    {
+                        <li>
+                            <a href="~/Accounting/DownloadInvoice/@Model.Invoice.Id" target="_blank">
+                                <i class="fa fa-download"></i> &nbsp;Download
+                            </a>
+                        </li>
+                    }
+                    @if (features.Contains(Accounting.GenerateInvoicePdf))
+                    {
+                        <li>
+                            <a onclick="onGenerateInvoicePdf(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty))" style="cursor:pointer;">
+                                <i class="fa fa-file-pdf-o"></i> &nbsp;Generate PDF
+                            </a>
+                        </li>
+                    }
+                    @if (features.Contains(Accounting.SendInvoice))
+                    {
+                        <li>
+                            <a onclick="onEditAndSendInvoice(@(Model.Invoice != null ? Model.Invoice.Id.ToString() : string.Empty) @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
+                                <i class="fa fa-send"></i> &nbsp;Send
+                            </a>
+                        </li>
+                    }
+                    @if (features.Contains(Accounting.EditInvoice))
+                    {
+                        <li class="divider"></li>
+                        <li>
+                            <a onclick="onEditInvoiceHeader(@Model.Invoice.Id)" style="cursor:pointer;">
+                                <i class="fa fa-pencil"></i> &nbsp;Edit Header
+                            </a>
+                        </li>
+                        <li>
+                            <a onclick="onAddInvoiceItem(@Model.Invoice.Id)" style="cursor:pointer;">
+                                <i class="fa fa-plus"></i> &nbsp;Add Item
+                            </a>
+                        </li>
+                    }
+                    @if (features.Contains(Accounting.DeleteInvoice) && features.Contains(Accounting.EditInvoice) && !Model.Invoice.IsPaid)
+                    {
+                        <li class="divider"></li>
+                        <li>
+                            <a onclick="onDeleteInvoice(@Model.Invoice.Id @(Model.ServiceRequest != null ? ", " + Model.ServiceRequest.ServiceRequestId.ToString() : string.Empty))" style="cursor:pointer;">
+                                <i class="fa fa-remove"></i> &nbsp;Cancel Invoice
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            </div>
+            @if (Model.Invoice.SentDate.HasValue)
+            {
+                <small class="help-block">
+                    <span>Sent </span>@Model.Invoice.SentDate.ToOrvosiDateTimeFormat()
+                </small>
+            }
         </div>
-        @if (Model.Invoice.SentDate.HasValue)
-        {
-            <small class="help-block">
-                <span>Sent </span>@Model.Invoice.SentDate.ToOrvosiDateTimeFormat()
-            </small>
         }
-    </div>
-}
-else
-{
-    if (features.Contains(Accounting.CreateInvoice))
-    {
+        else
+        {
+        if (features.Contains(Accounting.CreateInvoice))
+        {
         <div id="service-request-invoice-menu-@Model.ServiceRequest.ServiceRequestId">
             <div class="pull-right">
                 <button type="button" class="btn btn-success" name="Create" onclick="onCreate(@Model.ServiceRequest.ServiceRequestId)"><i class="fa fa-lg fa-plus"></i></button>
             </div>
         </div>
-    }
-}
+        }
+        }

@@ -98,19 +98,6 @@
         <div id="revenueByCompany" style="width:100%; height:100%;"></div>
     </div>
 </div>
-<div class="panel panel-default" style="margin-top: 40px">
-    <div class="panel-heading" role="tab" id="headingOne">
-        <h2 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                @Model.FilterArgs.Year Invoices
-                <small>&nbsp;(click to view)</small>
-            </a>
-        </h2>
-    </div>
-    <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-        @Html.Action("Table", "Invoice", new { invoices = Model.Invoices })
-    </div>
-</div>
 
 @section scripts {
 

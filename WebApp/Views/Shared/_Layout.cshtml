@@ -16,7 +16,7 @@
     var userId = User.Identity.GetGuidUserId();
     var roleId = User.Identity.GetRoleId();
 
-    var context = ContextPerRequest.db;
+    var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
 
     IEnumerable<CaseSearchListItem> caseSearchList = new List<CaseSearchListItem>();
     if (features.Contains(Features.ServiceRequest.Search))
@@ -187,7 +187,7 @@
             <div class="col-md-6">
                 @if (features.Contains(Features.AppContext.ChangeUserContext))
                 {
-                    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
+                    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
                     var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
                     <div class="text-danger">@TempData["UserContextMessage"]</div>
@@ -233,6 +233,7 @@
         </div>
     </footer>
 
+    @Html.Partial("ModalContainerForLoader");
     <!--
     To collect end-user usage analytics about your application,
     insert the following script into each page you want to track.
@@ -248,6 +249,16 @@
     <script src="~/MVCGridHandler.axd/script.js"></script>
 
     <script type="text/javascript">
+
+        function showLoader(message) {
+            $('#modal-container-for-loader').modal({backdrop: 'static'});
+            $('.loading-text').html(message);
+        }
+
+        function hideLoader() {
+            $('#modal-container-for-loader').modal('hide');
+            $('.loading-text').html('Loading ...');
+        }
 
         $(document).ajaxError(function( event, jqxhr, settings, thrownError ) {
             if ( jqxhr.status === 403 ) {

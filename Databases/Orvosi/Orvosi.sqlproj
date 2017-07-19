@@ -294,6 +294,7 @@
     <Build Include="Migrate\Stored Procedures\TaskIsCriticalPath.sql" />
     <Build Include="Security\Migrate.sql" />
     <Build Include="Migrate\Stored Procedures\LocationsToCities.sql" />
+    <Build Include="Security\Manual.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

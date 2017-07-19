@@ -59,8 +59,13 @@
 
         $.post(url)
         .done(function (result) {
-            toastr.success("Service removed successfully");
-            refreshServiceList();
+            if (result.success) {
+                toastr.success("Service removed successfully");
+                refreshServiceList();
+            }
+            else {
+                toastr.error(result.errorMessage);
+            }
         });
     }
 

@@ -51,10 +51,6 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="BouncyCastle">
       <HintPath>..\packages\MimeKit.1.2.22\lib\net45\BouncyCastle.dll</HintPath>
       <Private>True</Private>
@@ -73,10 +69,6 @@
     </Reference>
     <Reference Include="Box.V2.JWTAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
       <HintPath>..\packages\Box.V2.JWTAuth.1.1.0\lib\net45\Box.V2.JWTAuth.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Dropbox.Api, Version=0.1.5884.25547, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dropbox.Api.2.3.6\lib\portable-net45+sl50+win+wpa81+wp80\Dropbox.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Elmah, Version=1.2.13605.0, Culture=neutral, processorArchitecture=MSIL">
@@ -216,6 +208,22 @@
       <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
       <Private>True</Private>
@@ -347,6 +355,10 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.Mvc5, Version=1.2.3.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Mvc5.1.2.3\lib\net45\Unity.Mvc5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
       <Private>True</Private>
@@ -414,10 +426,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\AvailableSlotController.cs" />
-    <Compile Include="API\BaseController.cs" />
-    <Compile Include="API\ServiceRequestController.cs" />
-    <Compile Include="API\ServiceRequestTaskController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\EmailConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -426,6 +434,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SmsConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AspNetRolesFeatureController.cs" />
@@ -464,7 +473,6 @@
     <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
-    <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\ServiceRequestMessageController.cs" />
@@ -477,9 +485,9 @@
     <Compile Include="FormModels\ServiceCatalogueForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
+    <Compile Include="Library\AccountingService.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\DataHelper.cs" />
-    <Compile Include="Library\Dropbox.cs" />
     <Compile Include="Library\EnumExtensions.cs" />
     <Compile Include="Library\Enums.cs" />
     <Compile Include="Library\Filters\AuthorizeRoleAttribute.cs" />
@@ -505,6 +513,7 @@
     <Compile Include="Library\ServiceRequestHelper.cs" />
     <Compile Include="Library\SystemTime.cs" />
     <Compile Include="Library\UriExtensions.cs" />
+    <Compile Include="Library\SessionService.cs" />
     <Compile Include="Library\ViewDataService.cs" />
     <Compile Include="Library\WorkService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -523,7 +532,6 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Library\InvoiceHelper.cs" />
     <Compile Include="Models\MessageDto.cs" />
-    <Compile Include="Library\ContextPerRequest.cs" />
     <Compile Include="Models\ServiceProviderDto.cs" />
     <Compile Include="Models\ServiceRequestDtoFilters.cs">
       <DependentUpon>ServiceRequestDto.cs</DependentUpon>
@@ -565,7 +573,6 @@
     <Compile Include="ViewModels\DashboardViewModels\DueDateViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\TaskStatusSummaryViewModel.cs" />
-    <Compile Include="ViewModels\DiagnosticViewModels.cs" />
     <Compile Include="ViewModels\DueDateViewModel.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\LookupViewModel.cs" />
@@ -1287,6 +1294,9 @@
     <Content Include="Views\ServiceCatalogue\ServiceCatalogueJS.cshtml" />
     <Content Include="Views\ServiceCatalogue\_Exams.cshtml" />
     <Content Include="Views\ServiceCatalogue\_AddOns.cshtml" />
+    <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
+    <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
+    <Content Include="Views\Shared\NotificationTemplates\InvoiceDownloadLink.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1406,8 +1416,7 @@
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessage.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_PostMessage.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\_Layout.cshtml" />
-    <Content Include="Views\Dashboard\_SummaryCount.cshtml" />
-    <Content Include="Views\Accounting\AllInvoices.cshtml" />
+    <Content Include="Views\Dashboard\_TaskHeading.cshtml" />
     <Content Include="Views\Accounting\_Invoice.cshtml" />
     <Content Include="Views\Accounting\CreateInvoice.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />

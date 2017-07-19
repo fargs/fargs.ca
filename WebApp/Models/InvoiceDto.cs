@@ -26,6 +26,7 @@ namespace WebApp.Models
         public decimal? Total { get; set; }
         public DateTime? SentDate { get; set; }
         public DateTime? PaymentReceivedDate { get; set; }
+        public bool IsDeleted { get; set; }
         public ServiceProviderDto ServiceProvider { get; set; }
         public CustomerDto Customer { get; set; }
         public Guid InvoiceGuid { get; set; }
@@ -121,6 +122,7 @@ namespace WebApp.Models
             Hst = i.Hst,
             Total = i.Total,
             SentDate = i.SentDate,
+            IsDeleted = i.IsDeleted,
             PaymentReceivedDate = i.PaymentReceivedDate,
             InvoiceGuid = i.ObjectGuid,
             ServiceProvider = new ServiceProviderDto

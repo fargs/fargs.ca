@@ -42,8 +42,11 @@
     [DeletedDate]                 DATETIME         NULL,
     [DeletedBy]                   UNIQUEIDENTIFIER NULL,
     [ServiceProviderHstNumber]    NVARCHAR (50)    NULL,
+    [BoxFileId]                   NVARCHAR (50)    NULL,
     CONSTRAINT [PK_Invoice] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

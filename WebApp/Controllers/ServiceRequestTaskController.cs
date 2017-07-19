@@ -23,17 +23,26 @@ using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using NinjaNye.SearchExtensions;
 using WebApp.Components.Grid;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class ServiceRequestTaskController : BaseController
     {
+        private OrvosiDbContext db;
+        private WorkService service;
+
+        public ServiceRequestTaskController(OrvosiDbContext db, WorkService service, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+            this.service = service;
+        }
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public ActionResult TaskGrid(TaskListArgs args)
         {
             var dto = db.ServiceRequestTasks
-                .AreAssignedToUser(userId)
+                .AreAssignedToUser(loggedInUserId)
                 .AreActiveOrDone()
                 .Where(srt => srt.DueDate.HasValue)
                 .OrderBy(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence)
@@ -167,22 +176,22 @@ namespace WebApp.Controllers
             switch (args.ViewFilter)
             {
                 case TaskListViewModelFilter.CriticalPathOrAssignedToUser:
-                    query = tasksDto.AreOnCriticalPathOrAssignedToUser(userId);
+                    query = tasksDto.AreOnCriticalPathOrAssignedToUser(loggedInUserId);
                     break;
                 case TaskListViewModelFilter.CriticalPathOnly:
                     query = tasksDto.AreOnCriticalPath();
                     break;
                 case TaskListViewModelFilter.PrimaryRolesOnly:
                     var rolesThatShouldBeSeen = new Guid?[3] { AspNetRoles.Physician, AspNetRoles.IntakeAssistant, AspNetRoles.DocumentReviewer };
-                    query = tasksDto.AreAssignedToUserOrRoles(userId, rolesThatShouldBeSeen);
+                    query = tasksDto.AreAssignedToUserOrRoles(loggedInUserId, rolesThatShouldBeSeen);
                     break;
                 case TaskListViewModelFilter.MyTasks:
-                    query = tasksDto.AreAssignedToUser(userId);
+                    query = tasksDto.AreAssignedToUser(loggedInUserId);
                     break;
                 case TaskListViewModelFilter.MyActiveTasks:
                     query = tasksDto
                         .AreActive()
-                        .AreAssignedToUser(userId);
+                        .AreAssignedToUser(loggedInUserId);
                     break;
                 default: // default to all tasks
                     break;
@@ -194,10 +203,10 @@ namespace WebApp.Controllers
             }
 
             // role based filters that override everything
-            if (roleId == AspNetRoles.IntakeAssistant || roleId == AspNetRoles.DocumentReviewer)
+            if (loggedInRoleId == AspNetRoles.IntakeAssistant || loggedInRoleId == AspNetRoles.DocumentReviewer)
             {
                 query = query
-                    .AreOnCriticalPathOrAssignedToUser(userId)
+                    .AreOnCriticalPathOrAssignedToUser(loggedInUserId)
                     .ExcludeSubmitInvoice()
                     .ToList();
             }
@@ -441,6 +450,18 @@ namespace WebApp.Controllers
                 id = serviceRequestTaskId,
                 serviceRequestId = srt.ServiceRequestId
             });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> UrgentTaskCount()
+        {
+            var count = db.ServiceRequestTasks
+                .AreAssignedToUser(loggedInUserId)
+                .AreDueBetween(DateTime.MinValue, now)
+                .AreActiveOrDone()
+                .Count();
+
+            return PartialView("~/Views/Dashboard/_TaskHeading.cshtml", count);
         }
     }
 

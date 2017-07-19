@@ -3,9 +3,10 @@
 @model TaskListViewModel
 
 @{
-    var identity = User.Identity.GetClaimsIdentity();
-    var features = identity.GetFeatures();
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var session = DependencyResolver.Current.GetService<SessionService>();
+    var features = session.AuthorizedFeatures;
+    var identity = session.identity;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.Physician.Id);
     teamMemberSelectList.Add(new SelectListItem
     {

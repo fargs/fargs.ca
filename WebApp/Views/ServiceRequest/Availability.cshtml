@@ -6,7 +6,7 @@
 @{
     ViewBag.Title = "Create Booking - Availability";
     var userContext = User.Identity.GetUserContext();
-    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var physicianSelectList = viewDataService.GetPhysicianSelectList();
 }
 

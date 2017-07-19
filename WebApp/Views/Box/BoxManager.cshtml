@@ -9,7 +9,7 @@
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
 
-    var vds = ContextPerRequest.ViewDataService;
+    var vds = DependencyResolver.Current.GetService<ViewDataService>();
     var userSelectList = vds.GetCollaborationSelectList(physicianId);
 }
 

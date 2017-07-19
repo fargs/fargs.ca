@@ -60,6 +60,7 @@ namespace Orvosi.Data
         public System.DateTime? DeletedDate { get; set; } // DeletedDate
         public System.Guid? DeletedBy { get; set; } // DeletedBy
         public string ServiceProviderHstNumber { get; set; } // ServiceProviderHstNumber (length: 50)
+        public string BoxFileId { get; set; } // BoxFileId (length: 50)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_Invoice

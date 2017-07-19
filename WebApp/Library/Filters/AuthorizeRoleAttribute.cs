@@ -45,7 +45,7 @@ namespace WebApp.Library.Filters
             var roleId = identity.GetRoleId();
 
             short[] roleFeatures;
-            var context = ContextPerRequest.db;
+            var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
             if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
                 roleFeatures = context.Features.Select(srf => srf.Id).ToArray();
             else

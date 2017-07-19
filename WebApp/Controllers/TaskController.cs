@@ -11,15 +11,19 @@ using Orvosi.Data;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
-
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.Admin.ManageTasks)]
-    public class TaskController : Controller
+    public class TaskController : BaseController
     {
-        private OrvosiDbContext db = new OrvosiDbContext();
+        private OrvosiDbContext db;
 
+        public TaskController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
         // GET: Task
         public async threading.Task<ActionResult> Index()
         {
@@ -65,8 +69,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 task.ObjectGuid = Guid.NewGuid();
-                task.ModifiedDate = SystemTime.Now();
-                task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                task.ModifiedDate = now;
+                task.ModifiedUser = loggedInUserId.ToString();
                 db.OTasks.Add(task);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -103,8 +107,8 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                task.ModifiedDate = SystemTime.Now();
-                task.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                task.ModifiedDate = now;
+                task.ModifiedUser = loggedInUserId.ToString();
                 db.Entry(task).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");

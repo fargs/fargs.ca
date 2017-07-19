@@ -7,8 +7,8 @@
 @model WebApp.ViewModels.ServiceCatalogueViewModels.IndexViewModel
 
 @{
-    var db = ContextPerRequest.db;
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var db = DependencyResolver.Current.GetService<OrvosiDbContext>();
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
 
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();

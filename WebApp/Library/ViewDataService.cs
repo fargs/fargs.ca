@@ -21,10 +21,10 @@ namespace WebApp.Library
         IIdentity identity;
         Guid userId;
 
-        public ViewDataService(IIdentity identity)
+        public ViewDataService(OrvosiDbContext db, IPrincipal principal)
         {
-            this.dbContext = ContextPerRequest.db;
-            this.identity = identity;
+            this.dbContext = db;
+            this.identity = principal.Identity;
             this.userId = identity.GetGuidUserId();
         }
 

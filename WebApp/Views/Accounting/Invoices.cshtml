@@ -162,6 +162,19 @@ else
 @section Scripts {
     <script type="text/javascript">
 
+        function onGenerateEditAndSendInvoice(invoiceId, serviceRequestId) {
+            showLoader('Generating Invoice ...');
+            let url = '@Url.Content("~/Accounting/GenerateInvoicePdf")';
+            $.post(url, {
+                invoiceId: invoiceId
+            })
+            .done(function (data) {
+                toastr.success("Invoice was generated and saved to your invoices folder successfully");
+                onEditAndSendInvoice(invoiceId, serviceRequestId);
+            })
+            .always(hideLoader);
+        }
+
         function onEditAndSendInvoice(invoiceId, serviceRequestId) {
             let url = '@Url.Content("~/Accounting/EditAndSendInvoice?invoiceId=")' + invoiceId + (serviceRequestId != null ? '&serviceRequestId=' + serviceRequestId : '');
             $.get(url).done(function (result) {
@@ -196,15 +209,13 @@ else
             });
         }
 
-        function onSend(invoiceId, serviceRequestId) {
-            let url = '@Url.Content("~/Accounting/SendInvoice")';
+        function onGenerateInvoicePdf(invoiceId) {
+            let url = '@Url.Content("~/Accounting/GenerateInvoicePdf")';
             $.post(url, {
-                InvoiceId: invoiceId
+                invoiceId: invoiceId
             })
             .done(function () {
-                toastr.success("Invoice sent successfully");
-                refreshInvoice(invoiceId);
-                refreshInvoiceMenu(invoiceId, serviceRequestId);
+                toastr.success("Invoice was generated and saved to your invoices folder successfully");
             });
         }
 
@@ -248,6 +259,24 @@ else
                 else {
                     var invoiceContainer = document.getElementById('invoice-' + invoiceId).parentNode.parentNode;
                     invoiceContainer.remove();
+                }
+            });
+        }
+
+        function onUndeleteInvoice(invoiceId, serviceRequestId) {
+            let url = '@Url.Content("~/Accounting/UndeleteInvoice")';
+
+            $.post(url, {
+                invoiceId: invoiceId
+            })
+            .done(function () {
+                toastr.success("Invoice uncancelled successfully");
+                if (serviceRequestId) {
+                    refreshInvoice(invoiceId);
+                    refreshInvoiceMenu(invoiceId, serviceRequestId);
+                }
+                else {
+                    window.location.reload();
                 }
             });
         }

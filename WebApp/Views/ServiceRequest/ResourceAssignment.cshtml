@@ -5,7 +5,7 @@
 @model ResourceAssignmentViewModel
 
 @{ 
-    var viewDataService = ContextPerRequest.ViewDataService;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var teamMemberSelectList = viewDataService.GetCollaborationSelectList(Model.PhysicianId);
 }
 

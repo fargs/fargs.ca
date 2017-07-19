@@ -29,45 +29,9 @@ namespace WebApp.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ApplicationRoleManager roleManager)
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
-            RoleManager = roleManager;
-        }
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set 
-            { 
-                _signInManager = value; 
-            }
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
-
-        public ApplicationRoleManager RoleManager
-        {
-            get
-            {
-                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
-            }
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         //
@@ -94,14 +58,14 @@ namespace WebApp.Controllers
             Session["salt"] = "salt";
 
             // Require the user to have a confirmed email before they can log on.
-            var user = await UserManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
             {
                 ViewBag.errorMessage = "The e-mail address entered is incorrect.";
                 return View("Error");
             }
-            if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+            if (!await _userManager.IsEmailConfirmedAsync(user.Id))
             {
                 //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
@@ -112,7 +76,7 @@ namespace WebApp.Controllers
                 return View("Error");
             }
             
-            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: true);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -152,7 +116,7 @@ namespace WebApp.Controllers
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
         {
             // Require that the user has already logged in via username/password or external login
-            if (!await SignInManager.HasBeenVerifiedAsync())
+            if (!await _signInManager.HasBeenVerifiedAsync())
             {
                 return View("Error");
             }
@@ -175,7 +139,7 @@ namespace WebApp.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -215,7 +179,7 @@ namespace WebApp.Controllers
                     CompanyName = model.CompanyName,
                     Title = model.IsPhysician == "on" ? "Dr." : string.Empty
                 };
-                var result = await UserManager.CreateAsync(user, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     if (model.IsPhysician == "on")
@@ -268,7 +232,7 @@ namespace WebApp.Controllers
             {
                 return View("Error");
             }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
+            var result = await _userManager.ConfirmEmailAsync(userId, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
@@ -289,8 +253,8 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -298,7 +262,7 @@ namespace WebApp.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                string code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 var messenger = new MessagingService(Server.MapPath("~/Views/Shared/NotificationTemplates/"), HttpContext.Request.Url.GetLeftPart(UriPartial.Authority));
                 await messenger.SendResetPasswordEmail(user.Email, user.UserName, callbackUrl);
@@ -336,13 +300,13 @@ namespace WebApp.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
-            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            var result = await _userManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
@@ -375,12 +339,12 @@ namespace WebApp.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
+            var userId = await _signInManager.GetVerifiedUserIdAsync();
             if (userId == null)
             {
                 return View("Error");
             }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
+            var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
@@ -398,7 +362,7 @@ namespace WebApp.Controllers
             }
 
             // Generate the token and send it
-            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
+            if (!await _signInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
             {
                 return View("Error");
             }
@@ -417,7 +381,7 @@ namespace WebApp.Controllers
             }
 
             // Sign in the user with this external login provider if the user already has a login
-            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+            var result = await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -456,13 +420,13 @@ namespace WebApp.Controllers
                     return View("ExternalLoginFailure");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
+                var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    result = await _userManager.AddLoginAsync(user.Id, info.Login);
                     if (result.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await _signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToLocal(returnUrl);
                     }
                 }
@@ -503,7 +467,7 @@ namespace WebApp.Controllers
                 identity.RemoveClaim(roleNameClaim);
 
             // add new claim
-            var role = RoleManager.Roles.FirstOrDefault(c => c.Id == RoleId);
+            var role = _roleManager.Roles.FirstOrDefault(c => c.Id == RoleId);
             identity.AddClaim(new Claim("RoleId", role.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
             var authenticationManager = this.HttpContext.GetOwinContext().Authentication;
@@ -532,7 +496,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                var user = UserManager.Users.FirstOrDefault(c => c.Id == userId);
+                var user = _userManager.Users.FirstOrDefault(c => c.Id == userId);
                 identity.AddClaim(new Claim("UserContext", new UserContextViewModel
                 {
                     Id = user.Id,
@@ -549,10 +513,10 @@ namespace WebApp.Controllers
             var originalUserId = User.Identity.GetGuidUserId();
             var originalIsAppTester = User.Identity.GetIsAppTester();
 
-            var impersonatedUser = UserManager.FindById(userId);
+            var impersonatedUser = _userManager.FindById(userId);
 
-            var impersonatedIdentity = await impersonatedUser.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
-            //var impersonatedIdentity = UserManager.CreateIdentity(impersonatedUser, DefaultAuthenticationTypes.ApplicationCookie);
+            var impersonatedIdentity = await impersonatedUser.GenerateUserIdentityAsync((ApplicationUserManager)_userManager);
+            //var impersonatedIdentity = _userManager.CreateIdentity(impersonatedUser, DefaultAuthenticationTypes.ApplicationCookie);
 
             impersonatedIdentity.AddClaim(new Claim("UserImpersonation", "true"));
             impersonatedIdentity.AddClaim(new Claim("OriginalUserId", originalUserId.ToString()));
@@ -573,10 +537,10 @@ namespace WebApp.Controllers
 
             var originalUserId = User.Identity.GetOriginalUserId();
 
-            var originalUser = await UserManager.FindByIdAsync(originalUserId);
+            var originalUser = await _userManager.FindByIdAsync(originalUserId);
 
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            SignInManager.SignIn(originalUser, true, false);
+            _signInManager.SignIn(originalUser, true, false);
 
             return Redirect(Request.UrlReferrer.ToString());
         }
@@ -668,10 +632,10 @@ namespace WebApp.Controllers
 
         private async Task<string> SendEmailConfirmationTokenAsync(Guid userID, string subject)
         {
-            string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(userID);
             var callbackUrl = Url.Action("ConfirmEmail", "Account",
                new { userId = userID, code = code }, protocol: Request.Url.Scheme);
-            await UserManager.SendEmailAsync(userID, subject,
+            await _userManager.SendEmailAsync(userID, subject,
                "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
             return callbackUrl;

@@ -12,14 +12,19 @@ using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 using Orvosi.Data.Filters;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.Admin.ManageProcessTemplates)]
-    public class ServiceRequestTemplateTaskController : Controller
+    public class ServiceRequestTemplateTaskController : BaseController
     {
-        private OrvosiDbContext db = new OrvosiDbContext();
+        private OrvosiDbContext db;
 
+        public ServiceRequestTemplateTaskController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
         // GET: ServiceRequestTemplateTask
         public async Task<ActionResult> Index(short ServiceRequestTemplateId)
         {
@@ -61,8 +66,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,IsBaselineDate,DueDateDurationFromBaseline,EffectiveDateDurationFromBaseline,DueDateType,IsCriticalPath")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
-            serviceRequestTemplateTask.ModifiedDate = SystemTime.UtcNow();
-            serviceRequestTemplateTask.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            serviceRequestTemplateTask.ModifiedDate = now;
+            serviceRequestTemplateTask.ModifiedUser = loggedInUserId.ToString();
             if (ModelState.IsValid)
             {
                 var children = (Request.Form.GetValues("Child") ?? new string[0]);
@@ -109,8 +114,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,Sequence,ServiceRequestTemplateId,TaskId,DueDateType,IsBaselineDate,DueDateDurationFromBaseline,EffectiveDateDurationFromBaseline,ResponsibleRoleId,IsCriticalPath")] ServiceRequestTemplateTask serviceRequestTemplateTask)
         {
-            serviceRequestTemplateTask.ModifiedDate = SystemTime.UtcNow();
-            serviceRequestTemplateTask.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            serviceRequestTemplateTask.ModifiedDate = now;
+            serviceRequestTemplateTask.ModifiedUser = loggedInUserId.ToString();
 
             var c = Request.Form.GetValues("Child") == null ? new string[0] : Request.Form.GetValues("Child");
             foreach (var id in c)
@@ -130,8 +135,8 @@ namespace WebApp.Controllers
                 model.DueDateType = serviceRequestTemplateTask.DueDateType;
                 model.ResponsibleRoleId = serviceRequestTemplateTask.ResponsibleRoleId;
                 model.IsCriticalPath = serviceRequestTemplateTask.IsCriticalPath;
-                model.ModifiedDate = SystemTime.Now();
-                model.ModifiedUser = User.Identity.Name;
+                model.ModifiedDate = now;
+                model.ModifiedUser = loggedInUserId.ToString();
                 model.Child.Clear();
                 var children = Request.Form.GetValues("Child") == null ? new string[0] : Request.Form.GetValues("Child");
                 foreach (var id in children)
@@ -174,15 +179,6 @@ namespace WebApp.Controllers
 
             await db.SaveChangesAsync();
             return RedirectToAction("Index", new { ServiceRequestTemplateId = serviceRequestTemplateTask.ServiceRequestTemplateId });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

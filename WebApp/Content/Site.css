@@ -583,3 +583,10 @@ dd {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.loading-text {
+  padding-top: 15px;
+  text-align: center;
+  font: 14pt "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+}

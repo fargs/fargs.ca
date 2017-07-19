@@ -8,7 +8,7 @@
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
     var userContext = User.Identity.GetUserContext();
-    var viewDataService = ContextPerRequest.ViewDataService; // This should eventually be injected from the DI container
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
     var companySelectList = viewDataService.GetPhysicianCompanySelectListWithGuid(userContext.Id);
 }
 

@@ -12,6 +12,7 @@ using WebApp.Library.Extensions;
 using Box.V2.Exceptions;
 using System.Configuration;
 using Orvosi.Data;
+using System.IO;
 
 namespace WebApp.Library
 {
@@ -94,7 +95,7 @@ namespace WebApp.Library
             }
             return _UserClient;
         }
-        
+
 
         internal BoxCollection<BoxUser> GetUsers()
         {
@@ -125,6 +126,75 @@ namespace WebApp.Library
                 }
                 throw e;
             }
+        }
+
+        public async Task<BoxFile> GetInvoiceFileInfo(string fileId, string folderId, Guid invoiceGuid)
+        {
+            var client = UserClient(adminBoxUserId);
+
+            // use the invoice file id if we have it
+            var file = fileId == null ? null : await client.FilesManager.GetInformationAsync(fileId, fields: new List<string> { "id", "name" });
+
+            // the file was not in box
+            if (file == null)
+            {
+                // try searching box using the object guid
+                var results = await client.SearchManager.SearchAsync(invoiceGuid.ToString().Split('-')[0], type: "file", ancestorFolderIds: new List<string> { folderId }, contentTypes: new List<string> { "name" });
+
+                // this potentially could result in multiple results which we would throw an error
+                if (results.TotalCount == 1)
+                {
+                    file = results.Entries.Single() as BoxFile;
+                }
+                // an exact match was not found so upload a new file
+                else
+                {
+                    return null;
+                }
+            }
+
+            // upload a new version of the file
+            return file;
+        }
+
+        public async Task<Stream> GetFileStream(string fileId)
+        {
+            var client = UserClient(adminBoxUserId);
+            return await client.FilesManager.DownloadStreamAsync(fileId);
+        }
+
+        public async Task<BoxFile> UploadInvoiceAsync(string physicianInvoicesFolderId, string fileName, string fileId, Guid invoiceGuid, Stream stream)
+        {
+            var client = UserClient(adminBoxUserId);
+
+            // use the invoice file id if we have it
+            var file = fileId == null ? null : await client.FilesManager.GetInformationAsync(fileId, fields: new List<string> { "id" });
+
+            // the file was not in box
+            if (file == null)
+            {
+                // try searching box using the object guid
+                var results = await client.SearchManager.SearchAsync(invoiceGuid.ToString().Split('-')[0], type: "file", ancestorFolderIds: new List<string> { physicianInvoicesFolderId }, contentTypes: new List<string> { "name" });
+
+                // this potentially could result in multiple results which we would throw an error
+                if (results.TotalCount == 1)
+                {
+                    file = results.Entries.Single() as BoxFile;
+                }
+                // an exact match was not found so upload a new file
+                else
+                {
+                    var request = new BoxFileRequest
+                    {
+                        Name = fileName,
+                        Parent = new BoxItemRequest { Id = physicianInvoicesFolderId }
+                    };
+                    return await client.FilesManager.UploadAsync(request, stream);
+                }
+            }
+
+            // upload a new version of the file
+            return await client.FilesManager.UploadNewVersionAsync(fileName, file.Id, stream);
         }
 
         internal BoxCollection<BoxCollaboration> GetCollaborations(string folderId)

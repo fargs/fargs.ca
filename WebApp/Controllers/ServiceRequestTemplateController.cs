@@ -12,13 +12,19 @@ using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 using Orvosi.Data.Filters;
+using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
     [AuthorizeRole(Feature = Features.Admin.ManageProcessTemplates)]
-    public class ServiceRequestTemplateController : Controller
+    public class ServiceRequestTemplateController : BaseController
     {
-        private OrvosiDbContext db = new OrvosiDbContext();
+        private OrvosiDbContext db;
+
+        public ServiceRequestTemplateController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        {
+            this.db = db;
+        }
 
         // GET: ServiceRequestTemplates
         public async Task<ActionResult> Index()
@@ -54,8 +60,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(short processTemplateId, ServiceRequestTemplate serviceRequestTemplate)
         {
-            serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
-            serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            serviceRequestTemplate.ModifiedDate = now;
+            serviceRequestTemplate.ModifiedUser = loggedInUserId.ToString();
             if (ModelState.IsValid)
             {
                 db.ServiceRequestTemplates.Add(serviceRequestTemplate);
@@ -72,8 +78,8 @@ namespace WebApp.Controllers
                     st.Sequence = template.Sequence;
                     st.TaskId = template.OTask.Id;
                     st.DueDateType = template.DueDateType;
-                    st.ModifiedDate = SystemTime.Now();
-                    st.ModifiedUser = User.Identity.Name;
+                    st.ModifiedDate = now;
+                    st.ModifiedUser = loggedInUserId.ToString();
 
                     serviceRequestTemplate.ServiceRequestTemplateTasks.Add(st);
                 }
@@ -121,8 +127,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,Name,PhysicianId")] ServiceRequestTemplate serviceRequestTemplate)
         {
-            serviceRequestTemplate.ModifiedDate = SystemTime.UtcNow();
-            serviceRequestTemplate.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+            serviceRequestTemplate.ModifiedDate = now;
+            serviceRequestTemplate.ModifiedUser = loggedInUserId.ToString();
             if (ModelState.IsValid)
             {
                 db.Entry(serviceRequestTemplate).State = EntityState.Modified;
@@ -156,15 +162,6 @@ namespace WebApp.Controllers
             db.ServiceRequestTemplates.Remove(serviceRequestTemplate);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

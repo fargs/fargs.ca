@@ -94,6 +94,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public bool IsSent { get; set; }
         public bool IsPartiallyPaid { get; set; }
         public int InvoiceDetailCount { get; set; }
+        public bool IsDeleted { get; set; }
 
         public static Expression<Func<InvoiceDto, InvoiceViewModel>> FromInvoiceDto= i => new InvoiceViewModel
         {
@@ -114,6 +115,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
             IsPaid = i.IsPaid,
             IsSent = i.IsSent,
             IsPartiallyPaid = i.IsPartiallyPaid,
+            IsDeleted = i.IsDeleted,
 
             ServiceProvider = ServiceProviderViewModel.FromServiceProviderDto.Invoke(i.ServiceProvider),
             Customer = CustomerViewModel.FromCustomerDto.Invoke(i.Customer),

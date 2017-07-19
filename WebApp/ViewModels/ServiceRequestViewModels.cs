@@ -90,8 +90,6 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         }
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }
         public Orvosi.Data.Invoice Invoice { get; set; }
-        public Dropbox.Api.Files.Metadata Folder { get; set; }
-        public List<Dropbox.Api.Team.MembersGetInfoItem> Members { get; set; }
         public ModelErrorCollection Errors { get; set; }
     }
 

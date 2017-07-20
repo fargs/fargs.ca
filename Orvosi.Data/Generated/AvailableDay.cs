@@ -29,6 +29,7 @@ namespace Orvosi.Data
         public bool HasWarnings { get; set; } // HasWarnings
 
         // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource.FK_AvailableDayResource_AvailableDay
         public virtual System.Collections.Generic.ICollection<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot.FK_AvailableDay_AvailableSlot
 
         // Foreign keys
@@ -43,6 +44,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             HasErrors = false;
             HasWarnings = false;
+            AvailableDayResources = new System.Collections.Generic.List<AvailableDayResource>();
             AvailableSlots = new System.Collections.Generic.List<AvailableSlot>();
             InitializePartial();
         }

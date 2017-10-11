@@ -133,6 +133,7 @@ namespace WebApp.Controllers
                         Count = c.Count(),
                         ToDoCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.ToDo),
                         WaitingCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.Waiting),
+                        OnHoldCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.OnHold),
                         DoneCount = c.Count(sr => sr.NextTaskStatusForUser == null ? false : sr.NextTaskStatusForUser.Id == TaskStatuses.Done)
                     }
                 })
@@ -151,6 +152,7 @@ namespace WebApp.Controllers
                         Count = weekGrp.Sum(sr => sr.day.TaskStatusSummary.Count),
                         ToDoCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.ToDoCount),
                         WaitingCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.WaitingCount),
+                        OnHoldCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.OnHoldCount),
                         DoneCount = weekGrp.Sum(sr => sr.day.TaskStatusSummary.OnHoldCount)
                     }
                 };

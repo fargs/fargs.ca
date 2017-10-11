@@ -18,6 +18,10 @@
     {
         <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning">&nbsp;</span>
     }
+    else if ((Model.NextTaskStatusForUser == null ? 0 : Model.NextTaskStatusForUser.Id) == TaskStatuses.OnHold)
+    {
+        <span id="assessment-total-label" style="cursor: pointer;" class="small label label-info">&nbsp;</span>
+    }
     else
     {
         <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>

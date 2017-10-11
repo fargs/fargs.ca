@@ -70,7 +70,7 @@ if (pageToStart < pagingModel.CurrentPage)
 }
 
         <li class='@Html.Raw(cls)'>
-            <a href='#' aria-label='Previous page' onclick='@(Html.Raw(onclick))'><span aria-hidden='true'>&laquo; Previous</span></a>
+            <a href='#' aria-label='Previous page' onclick='@(Html.Raw(onclick))'><span aria-hidden='true'>&laquo; Prev</span></a>
         </li>
 }
 
@@ -150,7 +150,7 @@ if (pageToStart < pagingModel.CurrentPage)
                             </form>
                         </td>
                     }
-                    else if (col.Name == "AssignedTo")
+                    @*else if (col.Name == "AssignedTo")
                     {
                         var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
                         <td@(Html.Raw(tdClassAttr)) width="50px">
@@ -165,44 +165,50 @@ if (pageToStart < pagingModel.CurrentPage)
                                 @Html.Partial("_Initials2", task.AssignedTo == null ? new LookupViewModel<Guid>() : task.AssignedTo)
                             }
                         </td>
-                    }
-                    else if (col.Name == "Id")
-                    {
-                        var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
-                        <td@(Html.Raw(tdClassAttr)) width="20px">
-                            @Html.Partial("~/Views/ServiceRequestTask/Components/TaskActionMenu.cshtml", task)
-                            </td>
-                    }
-                    else if (col.Name == "Physician")
-                    {
-                        var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
-                        <td@(Html.Raw(tdClassAttr)) >
-                            @Html.Partial("_Initials2", task.Physician == null ? new LookupViewModel<Guid>() : task.Physician)
-                            </td>
-                    }
-                    else if (col.Name == "TaskStatusId")
-                    {
-                        var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
-                        <td@(Html.Raw(tdClassAttr)) width="100px" title="@("Due on " + (task.DueDate.HasValue ? task.DueDate.Value.ToOrvosiDateFormat() : "ASAP") + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
-                            @Html.Partial("~/Views/Shared/_TaskStatusLabel2.cshtml", task.TaskStatusId)
-                            </td>
-                    }
-                    else if (col.Name == "ClaimantName")
-                    {
-                        var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
-                        <td@(Html.Raw(tdClassAttr))>
-                            <a style="cursor:pointer;" onclick="showCaseDetails(@task.ServiceRequestId)">@task.ClaimantName</a>
-                            @if (task.HasNotes)
-                            {
-                                <i class="fa fa-sticky-note" style="color:goldenrod;"></i>
-                            }
+                    }*@
+                else if (col.Name == "Physician")
+                {
+                    var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
+                    <td@(Html.Raw(tdClassAttr)) width="50px">
+                        @Html.Partial("_Initials2", task.Physician == null ? new LookupViewModel<Guid>() : task.Physician)
                         </td>
-                    }
-                    else
-                    {
-                        <td@(Html.Raw(tdClassAttr))>
-                            @Html.Raw(cell.HtmlText)
-                            </td>
+                }
+                else if (col.Name == "Id")
+                {
+                    var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
+                    <td@(Html.Raw(tdClassAttr)) width="20px">
+                        @Html.Partial("~/Views/ServiceRequestTask/Components/TaskActionMenu.cshtml", task)
+                        </td>
+                }
+                else if (col.Name == "TaskStatusId")
+                {
+                    var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
+                    <td@(Html.Raw(tdClassAttr)) width="100px" title="@("Due on " + (task.DueDate.HasValue ? task.DueDate.Value.ToOrvosiDateFormat() : "ASAP") + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
+                        @Html.Partial("~/Views/Shared/_TaskStatusLabel2.cshtml", task.TaskStatusId)
+                        </td>
+                }
+                else if (col.Name == "ClaimantName")
+                {
+                    var task = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskGridRow>(cell.PlainText);
+                    <td@(Html.Raw(tdClassAttr))>
+                        <a style="cursor:pointer;" onclick="showCaseDetails(@task.ServiceRequestId)">@task.ClaimantName</a>
+                        @if (task.HasNotes)
+                        {
+                            <i class="fa fa-sticky-note" style="color:goldenrod;"></i>
+                        }
+                        <div>
+                            <span>@task.Service</span> for <span>@task.Company</span>
+                        </div>
+                        <div>
+                            <span>@task.City</span> on <span>@task.AppointmentDateAndStartTime</span>
+                        </div>
+                        </td>
+                }
+                else
+                {
+                    <td@(Html.Raw(tdClassAttr))>
+                        @Html.Raw(cell.HtmlText)
+                        </td>
                     }
                 }
                 </tr>

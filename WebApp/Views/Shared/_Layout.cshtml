@@ -184,7 +184,7 @@
     </div>
     <div class="container-fluid body-content">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-xs-8 col-md-6">
                 @if (features.Contains(Features.AppContext.ChangeUserContext))
                 {
                     var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
@@ -193,13 +193,12 @@
                     <div class="text-danger">@TempData["UserContextMessage"]</div>
                     <form action="~/Account/ChangeUserContext/" method="get" class="form-inline">
                         <div>
-                            <label for="userId" class="">My Physician: </label>
-                            @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- Service Provider --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
+                            @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- All physicians --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
                         </div>
                     </form>
                 }
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-4 col-md-6">
                     <a title="Secure Docs" href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right"><img alt="Secure Docs" src="~/Content/images/SendDocumentsSecurely.jpg" /></a>
             </div>
         </div>

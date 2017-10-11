@@ -53,7 +53,7 @@ namespace WebApp
                         .WithHeaderText("")
                         .WithHtmlEncoding(false)
                         .WithValueExpression(i => i.ToJson());
-                    cols.Add().WithColumnName("AssignedTo")
+                    cols.Add().WithColumnName("Physician")
                         .WithHeaderText("")
                         .WithHtmlEncoding(false)
                         .WithValueExpression(i => i.ToJson());
@@ -81,32 +81,6 @@ namespace WebApp
                         .WithHtmlEncoding(false)
                         .WithSorting(true)
                         .WithFiltering(true)
-                        .WithValueExpression(i => i.ToJson());
-                    cols.Add().WithColumnName("Company")
-                        .WithHeaderText("Company")
-                        .WithSorting(true)
-                        .WithFiltering(true)
-                        .WithValueExpression(i => i.Company);
-                    cols.Add().WithColumnName("Service")
-                        .WithHeaderText("Service")
-                        .WithSorting(true)
-                        .WithFiltering(true)
-                        .WithValueExpression(i => i.Service);
-                    cols.Add().WithColumnName("AppointmentDateAndStartTime")
-                        .WithHeaderText("Exam Date")
-                        .WithSorting(true)
-                        .WithFiltering(true)
-                        .WithValueExpression(i => i.AppointmentDateAndStartTime.HasValue ? i.AppointmentDateAndStartTime.Value.ToOrvosiDateShortFormat() : "" );
-                    cols.Add().WithColumnName("City")
-                        .WithHeaderText("City")
-                        .WithSorting(true)
-                        .WithFiltering(true)
-                        .WithValueExpression(i => i.City);
-                    cols.Add().WithColumnName("Physician")
-                        .WithHeaderText("Physician")
-                        .WithSorting(true)
-                        .WithFiltering(true)
-                        .WithHtmlEncoding(false)
                         .WithValueExpression(i => i.ToJson());
                 })
                 .WithSorting(true, "DueDate", SortDirection.Asc)

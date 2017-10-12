@@ -14,11 +14,11 @@
     {
         if (viewTarget == ViewTarget.Details)
         {
-        <h4>@Model.ClaimantName (@(Model.ServiceRequestId))</h4>
+            <h4>@Model.ClaimantName (@(Model.ServiceRequestId))</h4>
         }
         else
         {
-        <h4><a target="_blank" href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@(Model.ServiceRequestId))</a></h4>
+            <h4><a target="_blank" href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@(Model.ServiceRequestId))</a></h4>
         }
     }
     <p class="text-muted">
@@ -28,65 +28,71 @@
     <p>
         <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i>&nbsp;Open Case Folder</a>
     </p>
-@Html.Partial("~/Views/ServiceRequest/StatusLabel.cshtml", Model.ServiceRequestStatus)
-@if (Model.HasAppointment)
-{
-    <div id="section-case-togglenoshow">
-        @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
-        {
-            if (Model.CanBeNoShow)
+    @Html.Partial("~/Views/ServiceRequest/StatusLabel.cshtml", Model.ServiceRequestStatus)
+    @if (Model.HasAppointment)
+    {
+        <div id="section-case-togglenoshow">
+            @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
             {
-                <form id="noshow-form">
-                    <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
-                    <input type="checkbox"
-                           name="IsNoShow"
-                           value="true"
-                           @(Model.CancellationViewModel.IsNoShow ? "checked" : "")
-                           onclick="noShow($(this.form))" />
-                    <input type="hidden" name="IsNoShow" value="false" />
-                    <span>No Show</span>
-                </form>
+                if (Model.CanBeNoShow)
+                {
+                    <form id="noshow-form">
+                        <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
+                        <input type="checkbox"
+                               name="IsNoShow"
+                               value="true"
+                               @(Model.CancellationViewModel.IsNoShow ? "checked" : "")
+                               onclick="noShow($(this.form))" />
+                        <input type="hidden" name="IsNoShow" value="false" />
+                        <span>No Show</span>
+                    </form>
+                }
             }
-        }
-    </div>
+        </div>
         <p></p>
         @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
-        <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
-        <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
-    if (viewTarget == ViewTarget.Details)
+
+        <div class="section-collapse">
+            <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
+            <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
+            @if (viewTarget == ViewTarget.Details)
+            {
+                <p>
+                    <small class="text-muted">@Model.Address.Name</small><br />
+                    <small>@Model.Address.Address1</small><br />
+                    <strong>@Model.Address.City</strong>
+                    <small>@Model.Address.ProvinceCode</small><br />
+                    <small>@Model.Address.PostalCode</small>
+                </p>
+            }
+        </div>
+    }
+    @if (Model.HasReportDeliverable)
     {
-        <p>
-            <small class="text-muted">@Model.Address.Name</small><br />
-            <small>@Model.Address.Address1</small><br />
-            <strong>@Model.Address.City</strong>
-            <small>@Model.Address.ProvinceCode</small><br />
-            <small>@Model.Address.PostalCode</small>
+        <div class="section-collapse">
+            <h4>Due Date</h4>
+            @if (Model.DueDate.HasValue)
+            {
+                <p>@Model.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
+            }
+            else
+            {
+                <p>Not Set</p>
+            }
+        </div>
+    }
+
+
+    <div class="form-group section-collapse">
+        <label class="control-label">Assignments</label>
+        <p class="form-control-static">
+            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
+            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
+            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
+            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.CaseCoordinator == null ? new LookupViewModel<Guid>() : Model.CaseCoordinator)
         </p>
-    }
-}
-@if (Model.HasReportDeliverable)
-{
-    <h4>Due Date</h4>
-    if (Model.DueDate.HasValue)
-    {
-        <p>@Model.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
-    }
-    else
-    {
-        <p>Not Set</p>
-    }
-}
-
-<div class="form-group">
-    <label class="control-label">Assignments</label>
-    <p class="form-control-static">
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
-        @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.CaseCoordinator == null ? new LookupViewModel<Guid>() : Model.CaseCoordinator)
-    </p>
+    </div>
 </div>
-
 @*<section id="section-case-togglenohold">
         @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
         {
@@ -102,4 +108,3 @@
             </form>
         }
     </section>*@
-</div>

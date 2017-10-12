@@ -590,3 +590,15 @@ dd {
   font: 14pt "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
 }
+
+@media screen and (max-width: 991px) {
+    .section-collapse {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .section-collapse {
+        display: block;
+    }
+}

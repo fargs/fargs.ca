@@ -60,6 +60,7 @@ namespace WebApp
                       "~/Scripts/fullcalendar.min.js"));
 
             bundles.Add(new StyleBundle("~/Bundles/Content/css").Include(
+                      "~/Content/bootstrap-custom/bootstrap.min.css",
                       "~/Content/toastr.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",

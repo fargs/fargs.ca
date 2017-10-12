@@ -12,7 +12,7 @@
 }
 @if (Model != null)
 {
-    <div style="display:flex; flex-direction:row; align-content:center; align-self:stretch;">
+    <div style="display:flex; flex-flow:row wrap; justify-content: flex-start;">
         <div style="padding:10px;">
             @foreach (var address in Model.Addresses)
                 {

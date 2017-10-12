@@ -27,9 +27,13 @@
         <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>
     }
 </td>
-@if (viewTarget != ViewTarget.DueDates)
+@if (viewTarget == ViewTarget.Schedule)
 {
     <td style="vertical-align: text-top; width:80px;">@Model.StartTime.ToShortTimeSafe()</td>
+}
+else if (viewTarget == ViewTarget.Additionals)
+{
+    <td style="vertical-align: text-top; width:200px;"><span class="text-muted">Due on</span> @Model.DueDate.ToOrvosiDateFormat()</td>
 }
 <td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
     @if (!string.IsNullOrEmpty(Model.Notes))

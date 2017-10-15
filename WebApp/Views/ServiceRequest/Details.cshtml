@@ -2,6 +2,7 @@
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewDataModels
 @using WebApp.ViewModels.ServiceRequestViewModels
+@using WebApp.FormModels
 @model CaseViewModel
 
 @{
@@ -105,6 +106,7 @@
 @Html.Partial("ModalContainer")
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+@Html.Partial("~/Views/ServiceRequestTask/EditTaskModalForm.cshtml", new EditTaskForm())
 
 @section Scripts {
 

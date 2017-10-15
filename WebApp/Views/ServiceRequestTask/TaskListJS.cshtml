@@ -131,6 +131,32 @@
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
     }
+
+    function showEditTaskForm(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")';
+        $.get(url, {
+            serviceRequestTaskId: serviceRequestTaskId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function updateTask(form) {
+        let url = '@Url.Content("~/ServiceRequestTask/UpdateTask")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            taskChanged(data.id, data.serviceRequestId);
+            tasklistChanged(data.serviceRequestId);
+            serviceRequestStatusChanged(data.serviceRequestId);
+        })
+        .error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });;
+    }
     // these are default handlers.
 
     function taskChanged(serviceRequestTaskId, serviceRequestId) {

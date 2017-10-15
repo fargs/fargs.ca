@@ -68,13 +68,14 @@ namespace Orvosi.Shared.Enums.Features
         public const short ManageInvoiceNote = 280;
         public const short ViewInvoiceNote = 282;
         public const short LiveChat = 284;
+        public const short ManageTasks = 299;
         public const short PickupTask = 300;
         public const short AssignTask = 302;
         public const short UpdateTaskStatus = 304;
         public const short AddTask = 306;
+        public const short EditTask = 307;
         public const short DeleteTask = 308;
         public const short ViewTaskList = 310;
-        public const short ManageTasks = 299;
     }
 
     public class ServiceRequest_Box

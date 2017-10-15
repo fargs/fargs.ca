@@ -20,36 +20,36 @@
     });
 }
 <tr id="task-container-@task.Id">
-        <td width="50px">
-            <div class="dropdown">
-                <button class="btn btn-sm btn-link" data-toggle="dropdown">
-                    <i class="fa fa-ellipsis-h fa-lg"></i>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dLabel">
-                    @if (features.Contains(Features.ServiceRequest.PickupTask))
-                    {
-                        <li><a tabindex="-1" onclick="pickupTask(@task.Id)">Pickup</a></li>
-                    }
-                    @if (features.Contains(Features.ServiceRequest.AssignTask))
-                    {
-                        <li class="dropdown-submenu">
-                            <a tabindex="-1" class="assign-to" onclick="menuDropdownClick(event, this)">
-                                Assign To
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
-                                {
-                                    <li>
-                                        <a tabindex="-1" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
-                                    </li>
-                                }
-                            </ul>
-                        </li>
-                    }
-                    @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
-                    {
-                        <li class="divider"></li>
+    <td width="50px">
+        <div class="dropdown">
+            <button class="btn btn-sm btn-link" data-toggle="dropdown">
+                <i class="fa fa-ellipsis-h fa-lg"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dLabel">
+                @if (features.Contains(Features.ServiceRequest.PickupTask))
+                {
+                    <li><a tabindex="-1" onclick="pickupTask(@task.Id)">Pickup</a></li>
+                }
+                @if (features.Contains(Features.ServiceRequest.AssignTask))
+                {
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1" class="assign-to" onclick="menuDropdownClick(event, this)">
+                            Assign To
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
+                            {
+                                <li>
+                                    <a tabindex="-1" onclick="assignTask(@task.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+                @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
+                {
+                    <li class="divider"></li>
                         <li>
                             <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.OnHold)">
                                 On Hold
@@ -59,24 +59,24 @@
                                 }
                             </a>
                         </li>
-                                        <li>
-                                            <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
-                                                Cancel
-                                                @if (task.StatusId == TaskStatuses.Obsolete)
-                                                {
-                                                    <i class="fa fa-check"></i>
-                                                }
-                                            </a>
-                                        </li>
-                    }
-                    @if (features.Contains(Features.ServiceRequest.DeleteTask))
-                    {
-                        <li class="divider"></li>
+                        <li>
+                            <a tabindex="-1" onclick="toggleTaskStatus(@task.Id , @TaskStatuses.Obsolete)">
+                                Cancel
+                                @if (task.StatusId == TaskStatuses.Obsolete)
+                                {
+                                    <i class="fa fa-check"></i>
+                                }
+                            </a>
+                        </li>
+                }
+                @if (features.Contains(Features.ServiceRequest.DeleteTask))
+                {
+                    <li class="divider"></li>
                         <li><a tabindex="-1" onclick="deleteTask(@task.Id)">Delete</a></li>
-                    }
-                </ul>
-            </div>
-        </td>
+                }
+            </ul>
+        </div>
+    </td>
     <td width="50px">
         @if (task.TaskId == Tasks.AssessmentDay)
         {

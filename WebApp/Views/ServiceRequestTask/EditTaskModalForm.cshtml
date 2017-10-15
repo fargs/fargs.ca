@@ -1,0 +1,35 @@
+﻿@using WebApp.FormModels
+@model EditTaskForm
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Task Form
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="task-editform">
+        @Html.Hidden("ServiceRequestTaskId", Model.ServiceRequestTaskId)
+
+        <div class="form-group">
+            <label class="control-label">Due Date</label>
+            <div class="input-group date" style="width:100%" id="EditTaskFormDueDatePicker">
+                <input type="text" name="DueDate" , value="@Model.DueDate.ToOrvosiDateFormat()" class="form-control" />
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+            @Html.ValidationMessageFor(c => c.DueDate, "", new { @class = "text-danger" })
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" onclick="cancellation($('#task-editform'))">Save</button>
+</div>
+
+<script>
+    $(function() {
+        $('#EditTaskFormDueDatePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        });
+    })
+</script>

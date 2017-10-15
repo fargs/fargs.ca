@@ -24,6 +24,7 @@ using WebApp.ViewModels;
 using NinjaNye.SearchExtensions;
 using WebApp.Components.Grid;
 using System.Security.Principal;
+using WebApp.FormModels;
 
 namespace WebApp.Controllers
 {
@@ -331,6 +332,24 @@ namespace WebApp.Controllers
             });
         }
 
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.EditTask)]
+        public ActionResult ShowEditTaskForm(int serviceRequestTaskId)
+        {
+            var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
+            if (data == null)
+            {
+                return new HttpNotFoundResult();
+            }
+            var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
+            var viewModel = new EditTaskForm()
+            {
+                ServiceRequestTaskId = serviceRequestTaskId,
+                DueDate = now
+            };
+
+            return PartialView("EditTaskModalForm", viewModel);
+        }
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)

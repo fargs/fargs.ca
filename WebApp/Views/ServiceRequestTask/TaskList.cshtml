@@ -52,6 +52,10 @@
                                         <i class="fa fa-ellipsis-h fa-lg"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                        @if (features.Contains(Features.ServiceRequest.EditTask))
+                                        {
+                                            <li><a tabindex="-1" onclick="showEditTaskForm(@task.Id)">Edit</a></li>
+                                        }
                                         @if (features.Contains(Features.ServiceRequest.PickupTask))
                                         {
                                             <li><a tabindex="-1" onclick="pickupTask(@task.Id)">Pickup</a></li>
@@ -126,7 +130,7 @@
                         }
                     </td>
                     <td width="20px">
-                        @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus) && task.TaskId != Tasks.AssessmentDay)
+                        @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
                         {
                             <form action="~/ServiceRequestTask/ToggleCompleted" method="post" class="pull-left">
                                 @Html.Hidden("serviceRequestTaskId", task.Id)
@@ -146,13 +150,7 @@
                     <td width="100px" title="@("Due on " + task.DueDate.ToOrvosiDateFormat() + ". Last changed by " + (task.TaskStatusChangedDate.HasValue ? task.TaskStatusChangedBy.Name + " on " + task.TaskStatusChangedDate.Value.ToString("ddd, MMM dd") + " at " + task.TaskStatusChangedDate.Value.ToShortTimeString() : "was not recorded"))">
                         @Html.Partial("_TaskStatusLabel2", task.StatusId)
                     </td>
-                    <td title="@task.Status.Name">@task.Name</td>
-                    @*<td>
-                        @if (task.IsActive)
-                        {
-                            <small class="text-muted pull-right @IsOverdue(task)" style="padding-left:30px;">@(task.DueDate.ToHumanizedDate())</small>
-                        }
-                    </td>*@
+                    <td title="@task.Status.Name">@task.Name &nbsp;&nbsp; <small class="text-muted">@task.DueDate.ToOrvosiDateFormat()</small></td>
                 </tr>
             }
         </table>

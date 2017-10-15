@@ -28,6 +28,7 @@
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <ApplicationInsightsAnnotationResourceId>/subscriptions/dda60743-a5ee-4b67-b253-53ba97bcb271/resourcegroups/orvosi/providers/microsoft.insights/components/orvosiapp</ApplicationInsightsAnnotationResourceId>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -466,6 +467,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
+    <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
@@ -1297,6 +1299,7 @@
     <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
     <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\InvoiceDownloadLink.cshtml" />
+    <Content Include="Views\ServiceRequestTask\EditTaskModalForm.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

@@ -467,7 +467,6 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
-    <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
@@ -637,6 +636,18 @@
     </Content>
     <Content Include="Content\bootstrap-custom\bootstrap.min.css">
       <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap-custom\theme.css">
+      <DependentUpon>theme.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap-custom\theme.min.css">
+      <DependentUpon>theme.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap-custom\variables.css">
+      <DependentUpon>variables.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap-custom\variables.min.css">
+      <DependentUpon>variables.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.min.css" />
@@ -1300,6 +1311,9 @@
     <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\InvoiceDownloadLink.cshtml" />
     <Content Include="Views\ServiceRequestTask\EditTaskModalForm.cshtml" />
+    <Content Include="Views\Shared\ModalContainerSmall.cshtml" />
+    <Content Include="Views\ServiceRequestTask\EditTaskForm.cshtml" />
+    <Content Include="Views\ServiceRequestTask\DeleteModalForm.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

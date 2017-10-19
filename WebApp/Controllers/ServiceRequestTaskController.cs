@@ -333,7 +333,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        [AuthorizeRole(Feature = Features.ServiceRequest.EditTask)]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public ActionResult ShowEditTaskForm(int serviceRequestTaskId)
         {
             var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
@@ -341,15 +341,59 @@ namespace WebApp.Controllers
             {
                 return new HttpNotFoundResult();
             }
-            var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
-            var viewModel = new EditTaskForm()
-            {
-                ServiceRequestTaskId = serviceRequestTaskId,
-                DueDate = now
-            };
 
-            return PartialView("EditTaskModalForm", viewModel);
+            var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
+
+            var viewModel = TaskViewModel.FromTaskDto.Invoke(dto);
+
+            return PartialView("EditTaskForm", viewModel);
         }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public async Task<ActionResult> UpdateTaskDueDate(int serviceRequestTaskId, DateTime? dueDate)
+        {
+            var data = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            if (data == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            data.DueDate = dueDate;
+            data.ModifiedDate = now;
+            data.ModifiedUser = loggedInUserId.ToString();
+
+            if (data.TaskId == Tasks.SubmitReport)
+            {
+                data.ServiceRequest.DueDate = dueDate;
+            }
+            else if (data.TaskId == Tasks.AssessmentDay)
+            {
+                data.ServiceRequest.AppointmentDate = dueDate;
+            }
+
+            await db.SaveChangesAsync();
+
+            return Json(new
+            {
+                id = serviceRequestTaskId,
+                serviceRequestId = data.ServiceRequestId
+            });
+        }
+
+        [HttpGet]
+        public ActionResult ShowDeleteRequest(int serviceRequestTaskId)
+        {
+            var model = db.ServiceRequestTasks
+                .WithId(serviceRequestTaskId)
+                .Select(TaskDto.FromServiceRequestTaskEntityForSummary.Expand())
+                .SingleOrDefault();
+
+            var viewModel = TaskViewModel.FromTaskDto.Invoke(model);
+
+            return PartialView("DeleteModalForm", viewModel);
+        }
+
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
         public async Task<ActionResult> Delete(int serviceRequestTaskId)

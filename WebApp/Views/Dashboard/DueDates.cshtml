@@ -249,11 +249,6 @@
         }
 
         function taskChanged(id, serviceRequestId) {
-            toastr.success("The task has been updated");
-            MVCGrid.reloadGrid('TaskGrid');
-        }
-
-        function tasklistChanged(serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
 
             let container = document.getElementById('tasklist-container');

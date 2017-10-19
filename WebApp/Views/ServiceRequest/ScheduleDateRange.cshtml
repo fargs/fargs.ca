@@ -28,10 +28,10 @@
                         }
                     </div>
                 </div>
-                <table class="table table-condensed">
+                <table class="table table-condensed table-hover">
                     @foreach (var item in day.CaseLinks.OrderBy(c => c.AppointmentDate).ThenBy(c => c.StartTime))
                     {
-                        <tr>
+                        <tr onclick="showCaseDetailsModal(@item.ServiceRequestId)" ondblclick="showCaseDetails(@item.ServiceRequestId)" style="cursor:pointer;">
                             @Html.Partial("CaseLink", item, viewData)   
                         </tr>
 

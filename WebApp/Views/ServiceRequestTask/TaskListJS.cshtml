@@ -7,18 +7,21 @@
         e.preventDefault();
     };
 
-    function toggleCompleted(context) {
+    function toggleCompleted(e, context) {
+
+        e.stopPropagation();
+
         let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskCompleted")';
 
         $.post(url, $(context.form).serialize())
             .done(function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
     }
 
     function toggleTaskStatus(serviceRequestTaskId, taskStatusId) {
+
         let url = '@Url.Content("~/ServiceRequestTask/ToggleTaskStatus")';
 
         $.post(url,
@@ -28,7 +31,6 @@
             })
             .done(function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             });
     }
@@ -42,7 +44,6 @@
             },
             function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
@@ -54,7 +55,6 @@
             form.serialize()
         ).done(function (data) {
             taskChanged(data.id, data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
             serviceRequestStatusChanged(data.serviceRequestId);
             showCommentForm(data.serviceRequestId, null, 4);  //default to hold type
         });
@@ -68,7 +68,6 @@
             }
         ).done(function (data) {
             taskChanged(data.id, data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
         });
     }
 
@@ -81,7 +80,6 @@
             },
             function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
@@ -97,7 +95,6 @@
             },
             function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
@@ -113,44 +110,48 @@
             },
             function (data) {
                 taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
                 serviceRequestStatusChanged(data.serviceRequestId);
             }
         );
     };
 
-    function deleteTask(serviceRequestTaskId) {
-        let url = '@Url.Content("~/ServiceRequestTask/Delete")';
-        $.post(url,
-            {
-                serviceRequestTaskId: serviceRequestTaskId
-            })
-            .done(function (data) {
-                taskChanged(data.id, data.serviceRequestId);
-                tasklistChanged(data.serviceRequestId);
-                serviceRequestStatusChanged(data.serviceRequestId);
-            });
-    }
-
-    function showEditTaskForm(serviceRequestTaskId) {
-        let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")';
-        $.get(url, {
-            serviceRequestTaskId: serviceRequestTaskId
-        })
-        .done(function (result) {
+    function showDeleteTaskRequest(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ShowDeleteRequest")';
+        $.get(url,
+            {serviceRequestTaskId: serviceRequestTaskId}
+        ).done(function (result) {
             $('#modal-content').html(result);
             $('#modal-container').modal('toggle');
         });
     }
 
-    function updateTask(form) {
-        let url = '@Url.Content("~/ServiceRequestTask/UpdateTask")';
+    function deleteTask(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/Delete")';
+
         $.post(url,
-            form.serialize()
-        ).done(function (data) {
-            $('#modal-container').modal('toggle');
+            {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (data) {
+                $('#modal-container').modal('toggle');
+                taskDeleted(data.id, data.serviceRequestId);
+                serviceRequestStatusChanged(data.serviceRequestId);
+            });
+    }
+
+    function selectTask(serviceRequestTaskId) {
+        // hightlight the selected task
+        $('#tasklist-row-' + serviceRequestTaskId).addClass('bg-info').siblings().removeClass('bg-info');
+        taskSelected(serviceRequestTaskId);
+    }
+
+    function updateTaskDueDate(event, form) {
+        let url = '@Url.Content("~/ServiceRequestTask/UpdateTaskDueDate")';
+        $.post(url, {
+            serviceRequestTaskId: form["ServiceRequestTaskId"].value,
+            dueDate: form["DueDate"].value
+        }).done(function (data) {
             taskChanged(data.id, data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
             serviceRequestStatusChanged(data.serviceRequestId);
         })
         .error(function (result) {
@@ -163,12 +164,20 @@
 
     }
 
+    function taskDeleted(serviceRequestTaskId, serviceRequestId) {
+
+    }
+
     function tasklistChanged(serviceRequestId) {
 
     }
 
     function serviceRequestStatusChanged(serviceRequestId) {
 
+    }
+
+    function taskSelected(serviceRequestTaskId) {
+        console.log('this should be overridden');
     }
 
 </script>

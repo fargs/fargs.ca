@@ -13,6 +13,9 @@
     var viewData = new ViewDataDictionary();
     viewData.ViewFilter_Set(args.ViewFilter);
     viewData.ViewTarget_Set(args.ViewTarget);
+
+    int selectedTask;
+    var qs = this.Request.QueryString.Get("selectedTask");
 }
 
 <div id="actionmenu-container" class="col-md-12">
@@ -27,7 +30,7 @@
             @Html.Partial("Case", Model, viewData)
         </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-4">
         <h4>Tasks</h4>
         <hr />
         <div id="notes">
@@ -35,6 +38,24 @@
         </div>
         <div id="tasklist-container">
             @Html.Action("TaskList", "ServiceRequestTask", args)
+        </div>
+    </div>
+    <div class="col-md-5">
+        <h4>Task Details</h4>
+        <hr />
+        <div id="task-editform-container">
+            @if (int.TryParse(qs, out selectedTask))
+            {
+                var task = Model.Tasks.SingleOrDefault(c => c.Id == selectedTask);
+                if (task != null)
+                {
+                    @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
+                }
+            }
+            else
+            {
+                <div>Select a task</div>
+            }
         </div>
     </div>
 </div>
@@ -104,9 +125,9 @@
 
 
 @Html.Partial("ModalContainer")
+@Html.Partial("ModalContainerSmall")
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
-@Html.Partial("~/Views/ServiceRequestTask/EditTaskModalForm.cshtml", new EditTaskForm())
 
 @section Scripts {
 
@@ -119,7 +140,7 @@
 
     <script type="text/javascript">
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             //$('.dropdown-submenu a.assign-to').on("click", function(e){
             //    $(this).next('ul').toggle();
             //    e.stopPropagation();
@@ -128,11 +149,9 @@
             let = serviceRequestId = @(Model.ServiceRequestId);
             boxInfoChanged(serviceRequestId);
             @if (Model.AppointmentDate.HasValue)
-                {
-                    <text>
-            refreshGoogleCalendarIntegration(serviceRequestId);
-            </text>
-                }
+            {
+                <text>refreshGoogleCalendarIntegration(serviceRequestId);</text>
+            }
         });
 
         function onEditNote(serviceRequestId) {
@@ -186,7 +205,7 @@
             });
         }
 
-        function tasklistChanged(serviceRequestId) {
+        function taskChanged(serviceRequestTaskId, serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
             $.get(url,
                 {
@@ -196,7 +215,34 @@
                 })
                 .done(function (result) {
                     document.getElementById('tasklist-container').innerHTML = result;
+                    selectTask(serviceRequestTaskId);
                 });
+        }
+
+        function taskDeleted(serviceRequestTaskId, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: @args.ServiceRequestId,
+                    ViewTarget: '@args.ViewTarget',
+                    ViewFilter: '@args.ViewFilter'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container').innerHTML = result;
+                    $('#task-editform-container').html("");
+                    window.history.pushState({}, '');
+                });
+        }
+
+        function taskSelected(serviceRequestTaskId) {
+            let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")';
+            $.get(url, {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (result) {
+                $('#task-editform-container').html(result);
+                window.history.pushState({}, '', '?selectedTask=' + serviceRequestTaskId);
+            });
         }
 
         function serviceRequestStatusChanged(serviceRequestId) {

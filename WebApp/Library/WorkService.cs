@@ -325,6 +325,11 @@ namespace WebApp.Library
 
             var newTaskStatusId = srt.TaskStatusId == currentTaskStatusId ? TaskStatuses.ToDo : currentTaskStatusId;
 
+            if (srt.TaskStatusId == TaskStatuses.Archive)
+            {
+                newTaskStatusId = TaskStatuses.Done;
+            }
+
             await SaveTaskStatusChange(srt, newTaskStatusId);
 
             var sr = srt.ServiceRequest;

@@ -28,6 +28,17 @@ namespace WebApp.Library
             this.userId = identity.GetGuidUserId();
         }
 
+        public LookupViewModel<Guid> GetPhysician(int serviceRequestId)
+        {
+            var data = dbContext.ServiceRequests.Single(sr => sr.Id == serviceRequestId);
+
+            var dto = ServiceRequestDto.FromServiceRequestEntity.Invoke(data);
+
+            var viewModel = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician);
+
+            return viewModel;
+        }
+
         public List<Orvosi.Shared.Model.Person> GetPhysicians()
         {
             var physicians = identity.GetPhysicians();

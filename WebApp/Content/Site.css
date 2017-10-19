@@ -345,11 +345,11 @@ td.wordwrap-off {
 }
 
 .btn-circle.btn-sm {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     text-align: center;
     padding: 3px 1px 3px 1px;
-    font-size: 10px;
+    font-size: 8px;
     line-height: 1.428571429;
     border-radius: 11px;
     margin-right: 5px;

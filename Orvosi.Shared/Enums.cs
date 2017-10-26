@@ -169,6 +169,7 @@ namespace Orvosi.Shared.Enums
         public const byte ApproveReport = 9;
         public const byte AdditionalEdits = 132;
         public const byte PaymentReceived = 134;
+        public const byte General = 135;
     }
 
     public static class ServiceRequestStatuses

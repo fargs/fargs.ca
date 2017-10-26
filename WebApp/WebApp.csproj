@@ -473,6 +473,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
+    <Compile Include="Controllers\RescheduleController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
@@ -481,8 +482,10 @@
     <Compile Include="Controllers\ServiceRequestTemplateController.cs" />
     <Compile Include="Controllers\ServiceRequestTemplateTaskController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="FormModels\NewTaskForm.cs" />
     <Compile Include="FormModels\CancellationForm.cs" />
     <Compile Include="FormModels\NoShowForm.cs" />
+    <Compile Include="FormModels\RescheduleForm.cs" />
     <Compile Include="FormModels\ServiceCatalogueForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
@@ -519,6 +522,9 @@
     <Compile Include="Library\WorkService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddressDto.cs" />
+    <Compile Include="Models\AvailableDayDto.cs" />
+    <Compile Include="Models\AvailableDayResourceDto.cs" />
+    <Compile Include="Models\AvailableSlotDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
     <Compile Include="Models\CustomerDto.cs" />
     <Compile Include="Models\InvoiceDetailDto.cs" />
@@ -560,6 +566,8 @@
     <Compile Include="ViewDataModels\Common\ViewTarget.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
+    <Compile Include="ViewModels\ViewModelSelectList.cs" />
+    <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\CalendarViewModels\DayViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewOptions.cs" />
@@ -910,6 +918,24 @@
     <Content Include="Scripts\i18n\zh-TW.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\AUTHORS.txt" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\external\jquery\jquery.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_444444_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_555555_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_777620_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_777777_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\index.html" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.min.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.structure.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.structure.min.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.theme.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\jquery-ui.theme.min.css" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\LICENSE.txt" />
     <Content Include="Scripts\jquery.signalR-2.2.1.js" />
     <Content Include="Scripts\jquery.signalR-2.2.1.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -1226,6 +1252,7 @@
     <Content Include="Scripts\gcal.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.custom\package.json" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jQuery.FileUpload\cors\jquery.postmessage-transport.js" />
     <Content Include="Scripts\jQuery.FileUpload\cors\jquery.xdr-transport.js" />
@@ -1314,6 +1341,10 @@
     <Content Include="Views\Shared\ModalContainerSmall.cshtml" />
     <Content Include="Views\ServiceRequestTask\EditTaskForm.cshtml" />
     <Content Include="Views\ServiceRequestTask\DeleteModalForm.cshtml" />
+    <Content Include="Views\Reschedule\_RescheduleModalForm.cshtml" />
+    <Content Include="Views\Reschedule\_RescheduleJS.cshtml" />
+    <Content Include="Views\Reschedule\SlotPicker.cshtml" />
+    <Content Include="Views\ServiceRequestTask\NewTaskForm.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

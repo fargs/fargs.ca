@@ -24,7 +24,7 @@ namespace WebApp
                         "~/Scripts/jQuery.FileUpload/jquery.fileupload.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
-                        "~/Scripts/jquery-ui-{version}.js"));
+                        "~/Scripts/jquery-ui-1.12.1.custom/jquery-ui.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/markdown").Include(
                         "~/Scripts/MarkdownDeepLib.min.js"));
@@ -62,6 +62,7 @@ namespace WebApp
             bundles.Add(new StyleBundle("~/Bundles/Content/css").Include(
                       "~/Content/bootstrap-custom/bootstrap.min.css",
                       "~/Content/toastr.min.css",
+                      "~/Scripts/jquery-ui-1.12.1.custom/jquery-ui.min.css",
                       "~/Content/jQuery.FileUpload/css/jquery.fileupload.css",
                       "~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css",
                       "~/Content/css/select2.min.css",

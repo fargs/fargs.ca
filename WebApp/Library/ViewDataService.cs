@@ -424,5 +424,68 @@ namespace WebApp.Library
             });
         }
 
+        public AvailableDayDto GetPhysicianAvailableDay(Guid physicianId, DateTime day)
+        {
+            return dbContext.AvailableDays
+                .Where(c => c.PhysicianId == physicianId && c.Day == day)
+                .Select(AvailableDayDto.FromAvailableDayEntityForReschedule.Expand())
+                .SingleOrDefault();
+        }
+        public ViewModelSelectList<AvailableSlotViewModel, short?> GetPhysicianAvailableSlotSelectList(Guid physicianId, DateTime day, short? selectedItemId)
+        {
+            var dto = dbContext.AvailableDays
+                .Where(c => c.PhysicianId == physicianId && c.Day == day)
+                .Select(AvailableDayDto.FromAvailableDayEntityForReschedule.Expand())
+                .SingleOrDefault();
+
+            var result = new ViewModelSelectList<AvailableSlotViewModel, short?>();
+            if (dto == null)
+            {
+                return result;
+            }
+
+            result.Items = dto.AvailableSlots.AsQueryable().Select(AvailableSlotViewModel.FromAvailableSlotDto.Expand()).ToList();
+            result.SelectedItemId = selectedItemId;
+
+            return result;
+        }
+
+        public MvcHtmlString GetAvailableDays(Guid physicianId)
+        {
+            var availableDays = dbContext.AvailableDays.Where(c => c.PhysicianId == physicianId).ToList();
+
+            var arr = availableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray<string>();
+            return MvcHtmlString.Create(string.Join(",", arr));
+        }
+        public const string taskTypesKey = "task-types-key";
+        public IEnumerable<LookupViewModel<short>> GetTaskTypes()
+        {
+            var item = HttpContext.Current.Items[taskTypesKey] as IEnumerable<LookupViewModel<short>>;
+            if (item == null)
+            {
+                var dto = dbContext.OTasks
+                    .OrderBy(c => c.Name)
+                    .Select(LookupDto<short>.FromTaskEntity.Expand())
+                    .ToList();
+
+                var viewModel = dto
+                    .AsQueryable()
+                    .Select(LookupViewModel<short>.FromLookupDto.Expand())
+                    .ToList();
+
+                HttpContext.Current.Items[taskTypesKey] = item = viewModel;
+            }
+            return item;
+        }
+
+        public IEnumerable<SelectListItem> GetTaskTypesSelectList()
+        {
+            var statuses = GetTaskTypes();
+            return statuses.Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value = s.Id.ToString()
+            });
+        }
     }
 }

@@ -1,0 +1,13 @@
+﻿@using WebApp.ViewModels
+
+@model ViewModelSelectList<AvailableSlotViewModel, short?>
+
+<div class="form-group">
+    <label class="control-label">Time Slot</label>
+    @*@Html.DropDownList("AvailableSlotId", Model, new { @class = "form-control" })*@
+    @foreach (var item in Model.Items.OrderBy(m => m.StartTime))
+    {
+        <div>@Html.RadioButton("AvailableSlotId", item.Id, !Model.SelectedItemId.HasValue ? false : item.Id == Model.SelectedItemId.Value) @item.DisplayName</div>
+    }
+    @Html.ValidationMessage("AvailableSlotId", "", new { @class = "text-danger" })
+</div>

@@ -12,6 +12,7 @@ using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using WebApp.ViewModels;
 using Orvosi.Data.Filters;
+using System.Data.Entity.Validation;
 
 namespace WebApp.Library
 {
@@ -173,7 +174,96 @@ namespace WebApp.Library
             var newServiceRequestStatusId = form.IsOnHold ? ServiceRequestStatuses.OnHold : CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, ServiceRequestStatuses.Active);
             await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
         }
+        public async Task Reschedule(RescheduleForm form)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
+            // cache the service requests to ensure validation results are cleared properly
+            var originalSlot = sr.AvailableSlot;
+            var originalRelatedRequests = originalSlot.ServiceRequests;
+            originalSlot.ServiceRequests.Remove(sr);
 
+            var newSlot = db.AvailableSlots.Single(c => c.Id == form.AvailableSlotId);
+
+            newSlot.ServiceRequests.Add(sr);
+            sr.AvailableSlot = newSlot;
+            sr.AppointmentDate = newSlot.AvailableDay.Day;
+            sr.StartTime = newSlot.StartTime;
+            sr.EndTime = newSlot.EndTime;
+
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = identity.Name;
+
+            // validate the modified request
+            var validator = new ServiceRequestValidator();
+            foreach (var item in originalSlot.ServiceRequests)
+            {
+                var results = validator.Validate(item);
+                item.HasErrors = results.Errors.Any(error => error.CustomState.ToString() == ValidationTypeEnum.Error.ToString());
+                item.HasWarnings = results.Errors.Any(error => error.CustomState.ToString() == ValidationTypeEnum.Warning.ToString());
+            }
+            foreach (var item in newSlot.ServiceRequests)
+            {
+                var results = validator.Validate(item);
+                item.HasErrors = results.Errors.Any(error => error.CustomState.ToString() == ValidationTypeEnum.Error.ToString());
+                item.HasWarnings = results.Errors.Any(error => error.CustomState.ToString() == ValidationTypeEnum.Warning.ToString());
+            }
+
+            var task = db.ServiceRequestTasks.Single(srt => srt.Id == form.ServiceRequestTaskId);
+            task.DueDate = form.AppointmentDate;
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<ServiceRequestTask> AddTask(NewTaskForm form)
+        {
+            var task = db.OTasks.SingleOrDefault(t => t.Name == form.TaskName);
+            if (task == null)
+            {
+                task = db.OTasks.SingleOrDefault(t => t.Id == Tasks.General);
+            }
+
+            var newTask = new ServiceRequestTask()
+            {
+                ServiceRequestId = form.ServiceRequestId,
+                DueDate = form.DueDate,
+                AssignedTo = form.AssignedTo,
+                TaskName = form.TaskName,
+                IsCriticalPath = false,
+                ModifiedDate = now,
+                ModifiedUser = userId.ToString(),
+                TaskStatusId = TaskStatuses.ToDo,
+                TaskStatusChangedBy = userId,
+                TaskStatusChangedDate = now,
+                CreatedDate = now,
+                CreatedUser = userId.ToString(),
+                TaskId = task.Id,
+                ShortName = task.ShortName,
+                ResponsibleRoleId = task.ResponsibleRoleId,
+                ResponsibleRoleName = task.AspNetRole.Name,
+                TaskPhaseId = task.TaskPhaseId,
+                TaskPhaseName = task.TaskPhase.Name,
+                Sequence = task.Sequence,
+                IsBillable = task.IsBillable.Value,
+                HourlyRate = task.HourlyRate,
+                EstimatedHours = task.EstimatedHours,
+                DependsOn = task.DependsOn,
+                Guidance = task.Guidance
+            };
+
+            var request = db.ServiceRequests.Single(sr => sr.Id == newTask.ServiceRequestId);
+            request.ServiceRequestTasks.Add(newTask);
+
+            await db.SaveChangesAsync();
+
+            await SaveDependentTaskStatusChanges(request);
+
+            var newServiceRequestStatusId = CalculateNewServiceRequestStatus(request.ServiceRequestTasks, request.ServiceRequestStatusId);
+            await SaveServiceRequestStatusChange(request, newServiceRequestStatusId);
+
+            await (db as OrvosiDbContext).Entry(task).ReloadAsync();
+
+            return newTask;
+        }
 
         public async Task<ServiceRequestTask> AddTask(int serviceRequestId, byte taskId)
         {
@@ -337,6 +427,24 @@ namespace WebApp.Library
 
             var newServiceRequestStatusId = CalculateNewServiceRequestStatus(sr.ServiceRequestTasks, sr.ServiceRequestStatusId);
             await SaveServiceRequestStatusChange(sr, newServiceRequestStatusId);
+        }
+        public async Task UpdateTaskDueDate(int serviceRequestTaskId, DateTime? dueDate)
+        {
+            var data = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            data.DueDate = dueDate;
+            data.ModifiedDate = now;
+            data.ModifiedUser = userId.ToString();
+
+            if (data.TaskId == Tasks.SubmitReport)
+            {
+                data.ServiceRequest.DueDate = dueDate;
+            }
+            else if (data.TaskId == Tasks.AssessmentDay)
+            {
+                data.ServiceRequest.AppointmentDate = dueDate;
+            }
+
+            await db.SaveChangesAsync();
         }
 
         public async Task ArchiveTask(int serviceRequestTaskId)

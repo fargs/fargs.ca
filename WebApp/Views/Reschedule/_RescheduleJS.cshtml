@@ -1,0 +1,37 @@
+﻿<script type="text/javascript">
+
+    function showRescheduleForm(serviceRequestId) {
+        let url = '@Url.Content("~/Reschedule/ShowRescheduleForm")';
+        $.get(url, {
+            serviceRequestId: serviceRequestId
+        }).done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function reschedule(form) {
+        let url = '@Url.Content("~/Reschedule/Reschedule")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Reschedule was successful.");
+            taskChanged(data.serviceRequestTaskId, data.serviceRequestId)
+            serviceRequestChanged(data.serviceRequestId)
+        })
+        .error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function refreshSlots(form) {
+        let url = '@Url.Content("~/Reschedule/SelectedDayChanged")';
+        $.get(url,
+            form.serialize()
+        ).done(function (result) {
+            $('#modal-content-sm').html(result);
+        });
+    }
+
+</script>

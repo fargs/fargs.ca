@@ -24,53 +24,47 @@
         @Html.Partial("_TaskStatusLabel2", Model.StatusId) @Model.Name
     </div>
     <div class="btn-toolbar">
-        @if (features.Contains(Features.ServiceRequest.AssignTask))
+        @if (Model.TaskId != Tasks.AssessmentDay)
+        {
+            if (features.Contains(Features.ServiceRequest.AssignTask))
             {
-            <div class="btn-group">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    @if (Model.TaskId == Tasks.AssessmentDay)
-                {
-                        <span class="btn btn-sm btn-circle">
-                            <i class="fa fa-calendar fa-lg"></i>
-                        </span>
-                    }
-                    else
-                    {
+                <div class="btn-group">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         @Html.Partial("_Initials2", Model.AssignedTo == null ? new LookupViewModel<Guid>() : Model.AssignedTo)
                         <span style="margin-left:5px;margin-right:5px;">
                             @(Model.AssignedTo != null ? Model.AssignedTo.Name : "Not Assigned")
                         </span>
-                    }
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    @if (features.Contains(Features.ServiceRequest.PickupTask))
-                {
-                        <li>
-                            <a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a>
-                        </li>
-                        <li class="divider"></li>
-                    }
-                    @foreach (var teamMember in teamMembers.OrderBy(c => c.Name))
-                {
-                    if (Model.AssignedTo == null || (Model.AssignedTo != null && teamMember.Id != Model.AssignedTo.Id))
-                    {
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @if (features.Contains(Features.ServiceRequest.PickupTask))
+                        {
                             <li>
-                                <a onclick="assignTask(@Model.Id, '@(teamMember.Id)')">
-                                    @Html.Partial("_Initials2", teamMember)
-                                    <span style="margin-left:5px;margin-right:5px;">
-                                        @teamMember.Name
-                                    </span>
-                                </a>
+                                <a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a>
                             </li>
+                            <li class="divider"></li>
                         }
-                    }
-                </ul>
-            </div>
-        }
-        else
-        {
-            @Html.Partial("_Initials2", Model.AssignedTo == null ? new LookupViewModel<Guid>() : Model.AssignedTo) @(Model.AssignedTo != null ? Model.AssignedTo.Name : "Not Assigned")
+                        @foreach (var teamMember in teamMembers.OrderBy(c => c.Name))
+                        {
+                            if (Model.AssignedTo == null || (Model.AssignedTo != null && teamMember.Id != Model.AssignedTo.Id))
+                            {
+                                <li>
+                                    <a onclick="assignTask(@Model.Id, '@(teamMember.Id)')">
+                                        @Html.Partial("_Initials2", teamMember)
+                                        <span style="margin-left:5px;margin-right:5px;">
+                                            @teamMember.Name
+                                        </span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                @Html.Partial("_Initials2", Model.AssignedTo == null ? new LookupViewModel<Guid>() : Model.AssignedTo) @(Model.AssignedTo != null ? Model.AssignedTo.Name : "Not Assigned")
+            }
         }
         @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
         {
@@ -135,5 +129,20 @@
             format: 'yyyy-mm-dd',
             autoclose: true
         });
+        @if (Model.TaskId == Tasks.AssessmentDay)
+        {
+            <text>
+            $('#EditTaskFormDueDatePicker').on('show', function() {
+                // show the reschedule form
+                let url = '@Url.Content("~/Reschedule/ShowRescheduleForm")';
+            $.get(url, {
+                    serviceRequestTaskId: @Model.Id
+            }).done(function(result) {
+                $('#modal-content-sm').html(result);
+                $('#modal-container-sm').modal('toggle');
+                });
+            });
+            </text>
+        }
     })
 </script>

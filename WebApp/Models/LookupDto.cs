@@ -69,5 +69,13 @@ namespace WebApp.Models
             Code = e.ProvinceCode,
             ColorCode = ""
         };
+
+        public static Expression<Func<OTask, LookupDto<short>>> FromTaskEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.ShortName,
+            ColorCode = ""
+        };
     }
 }

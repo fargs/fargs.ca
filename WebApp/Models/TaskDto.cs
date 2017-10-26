@@ -52,8 +52,8 @@ namespace WebApp.Models
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
             ServiceRequestId = srt.ServiceRequestId,
-            Name = srt.OTask.Name,
-            ShortName = srt.OTask.ShortName,
+            Name = srt.TaskName,
+            ShortName = srt.ShortName,
             CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
@@ -72,8 +72,8 @@ namespace WebApp.Models
         {
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
-            Name = srt.OTask.Name,
-            ShortName = srt.OTask.ShortName,
+            Name = srt.TaskName,
+            ShortName = srt.ShortName,
             CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
@@ -93,8 +93,8 @@ namespace WebApp.Models
         {
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
-            Name = srt.OTask.Name,
-            ShortName = srt.OTask.ShortName,
+            Name = srt.TaskName,
+            ShortName = srt.ShortName,
             TaskStatusId = srt.TaskStatusId,
             DueDate = srt.DueDate
         };

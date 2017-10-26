@@ -36,8 +36,23 @@
         <div id="notes">
             @Html.Partial("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes, AllowEdit = true })
         </div>
-        <div id="tasklist-container">
-            @Html.Action("TaskList", "ServiceRequestTask", args)
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                New Task
+            </div>
+            <div class="panel-body">
+                @Html.Partial("~/Views/ServiceRequestTask/NewTaskForm.cshtml", new TaskViewModel() { ServiceRequestId = Model.ServiceRequestId })
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Task List
+            </div>
+            <div class="panel-body">
+                <div id="tasklist-container">
+                    @Html.Action("TaskList", "ServiceRequestTask", args)
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-5">
@@ -135,6 +150,7 @@
     @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
     @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
     @Html.Partial("~/Views/Box/BoxJS.cshtml")
 
@@ -245,7 +261,7 @@
             });
         }
 
-        function serviceRequestStatusChanged(serviceRequestId) {
+        function serviceRequestChanged(serviceRequestId) {
             $.get('@Url.Content("~/ServiceRequest/Case")',
                 {
                     serviceRequestId: serviceRequestId
@@ -261,6 +277,10 @@
                 .done(function (result) {
                     document.getElementById('actionmenu-container').innerHTML = result;
                 });
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            serviceRequestChanged(serviceRequestId);
         }
 
         function refreshGoogleCalendarIntegration(serviceRequestId) {

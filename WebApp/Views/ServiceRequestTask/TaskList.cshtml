@@ -37,15 +37,6 @@
     <div>No tasks are assigned to you.</div>
 }
 <div class="panel @(ViewBag.ViewOptions == ViewTarget.Details ? "panel-default" : null)">
-    @if (args.ViewTarget == ViewTarget.Details)
-    {
-        if (features.Contains(Features.ServiceRequest.ManageTasks))
-        {
-            <div class="panel-heading">
-                @Html.Partial("_TaskListActionMenu", Model.ServiceRequestId)
-            </div>
-        }
-    }
     <div class="panel-body">
         <table class="table table-condensed" style="cursor:pointer;">
             @foreach (var task in Model.Tasks)

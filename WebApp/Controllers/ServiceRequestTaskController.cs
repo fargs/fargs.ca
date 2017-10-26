@@ -25,6 +25,7 @@ using NinjaNye.SearchExtensions;
 using WebApp.Components.Grid;
 using System.Security.Principal;
 using WebApp.FormModels;
+using System.Data.Entity.Validation;
 
 namespace WebApp.Controllers
 {
@@ -170,7 +171,8 @@ namespace WebApp.Controllers
             var tasksDto = db.ServiceRequestTasks
                 .WithServiceRequestId(args.ServiceRequestId)
                 .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
-                .OrderBy(t => t.Sequence)
+                .OrderBy(t => t.DueDate)
+                .ThenBy(t => t.Sequence)
                 .ToList();
 
             IEnumerable<TaskDto> query = tasksDto;
@@ -334,6 +336,42 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public ActionResult ShowNewTaskForm(int serviceRequestId)
+        {
+            var data = db.ServiceRequestTasks.WithId(serviceRequestId).FirstOrDefault();
+            if (data == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            var viewModel = new TaskViewModel()
+            {
+                ServiceRequestId = serviceRequestId
+            };
+            
+            return PartialView("NewTaskForm", viewModel);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public async Task<ActionResult> CreateAsync(NewTaskForm form)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var task = await service.AddTask(form);
+
+            return Json(new
+            {
+                serviceRequestId = task.ServiceRequestId,
+                serviceRequestTaskId = task.Id
+            });
+        }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public ActionResult ShowEditTaskForm(int serviceRequestTaskId)
         {
             var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
@@ -353,31 +391,18 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public async Task<ActionResult> UpdateTaskDueDate(int serviceRequestTaskId, DateTime? dueDate)
         {
-            var data = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            if (data == null)
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+            if (serviceRequestTask == null)
             {
                 return new HttpNotFoundResult();
             }
 
-            data.DueDate = dueDate;
-            data.ModifiedDate = now;
-            data.ModifiedUser = loggedInUserId.ToString();
-
-            if (data.TaskId == Tasks.SubmitReport)
-            {
-                data.ServiceRequest.DueDate = dueDate;
-            }
-            else if (data.TaskId == Tasks.AssessmentDay)
-            {
-                data.ServiceRequest.AppointmentDate = dueDate;
-            }
-
-            await db.SaveChangesAsync();
+            await service.UpdateTaskDueDate(serviceRequestTaskId, dueDate);
 
             return Json(new
             {
                 id = serviceRequestTaskId,
-                serviceRequestId = data.ServiceRequestId
+                serviceRequestId = serviceRequestTask.ServiceRequestId
             });
         }
 

@@ -44,6 +44,8 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         public System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         public System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
+        public System.Data.Entity.DbSet<InvoiceDraft> InvoiceDrafts { get; set; } // InvoiceDraft
+        public System.Data.Entity.DbSet<InvoiceItem> InvoiceItems { get; set; } // InvoiceItem
         public System.Data.Entity.DbSet<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog
         public System.Data.Entity.DbSet<LocationArea> LocationAreas { get; set; } // LocationArea
         public System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
@@ -170,6 +172,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new FeatureConfiguration());
             modelBuilder.Configurations.Add(new InvoiceConfiguration());
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration());
+            modelBuilder.Configurations.Add(new InvoiceDraftConfiguration());
+            modelBuilder.Configurations.Add(new InvoiceItemConfiguration());
             modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration());
             modelBuilder.Configurations.Add(new LocationAreaConfiguration());
             modelBuilder.Configurations.Add(new LocationViewConfiguration());
@@ -248,6 +252,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new FeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceDetailConfiguration(schema));
+            modelBuilder.Configurations.Add(new InvoiceDraftConfiguration(schema));
+            modelBuilder.Configurations.Add(new InvoiceItemConfiguration(schema));
             modelBuilder.Configurations.Add(new InvoiceSentLogConfiguration(schema));
             modelBuilder.Configurations.Add(new LocationAreaConfiguration(schema));
             modelBuilder.Configurations.Add(new LocationViewConfiguration(schema));

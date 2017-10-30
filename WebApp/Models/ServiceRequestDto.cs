@@ -49,8 +49,9 @@ namespace WebApp.Models
 
         //public IEnumerable<ResourceDto> Resources { get; set; }
         public IEnumerable<TaskDto> Tasks { get; set; }
-        public IEnumerable<MessageDto> Messages { get; internal set; }
+        public IEnumerable<MessageDto> Messages { get; set; }
         //public IEnumerable<CommentDto> Comments { get; internal set; }
+        public IEnumerable<InvoiceDetailDto> InvoiceDetails { get; set; }
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntity = sr => new ServiceRequestDto
         {
@@ -82,6 +83,7 @@ namespace WebApp.Models
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
             Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
             //Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+            InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCase = sr => new ServiceRequestDto

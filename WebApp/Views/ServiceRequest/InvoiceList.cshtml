@@ -1,0 +1,45 @@
+﻿@model IEnumerable<WebApp.ViewModels.InvoiceViewModels.InvoiceViewModel>
+
+@foreach (var invoice in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div style="display:flex">
+                <div>
+                    <strong>@invoice.InvoiceNumber</strong>
+                </div>
+                <div style="margin-left:auto;">
+                    @Html.Partial("InvoiceMenu", invoice)
+                </div>
+            </div>
+        </div>
+        @if (!invoice.IsDeleted)
+        {
+            <div class="panel-body">
+                @Html.Partial("InvoiceReadOnly", invoice)
+                @if (invoice.SentLog.Any())
+                { <hr /> }
+                <dl class="dl-horizontal dl-clear-margins">
+                    @foreach (var send in invoice.SentLog)
+                    {
+                        <dt class="text-right">Sent</dt>
+                        <dd class="text-right">
+                            @send.SentDate.ToOrvosiDateFormat() to @send.EmailTo by @send.ModifiedUser
+                        </dd>
+                    }
+                </dl>
+                @if (invoice.Receipts.Any())
+                { <hr /> }
+                <dl class="dl-horizontal dl-clear-margins">
+                    @foreach (var receipt in invoice.Receipts)
+                    {
+                        <dt class="text-right">Payment</dt>
+                        <dd class="text-right">
+                            @receipt.Amount.ToString("C2")
+                        </dd>
+                    }
+                </dl>
+            </div>
+        }
+    </div>
+}

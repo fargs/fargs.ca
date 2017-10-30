@@ -13,43 +13,44 @@
 namespace Orvosi.Data
 {
 
-    // InvoiceDetail
+    // InvoiceItem
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
-    public partial class InvoiceDetailConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<InvoiceDetail>
+    public partial class InvoiceItemConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<InvoiceItem>
     {
-        public InvoiceDetailConfiguration()
+        public InvoiceItemConfiguration()
             : this("dbo")
         {
         }
 
-        public InvoiceDetailConfiguration(string schema)
+        public InvoiceItemConfiguration(string schema)
         {
-            ToTable(schema + ".InvoiceDetail");
+            ToTable(schema + ".InvoiceItem");
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("int").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
             Property(x => x.InvoiceId).HasColumnName(@"InvoiceId").IsRequired().HasColumnType("int");
             Property(x => x.ServiceRequestId).HasColumnName(@"ServiceRequestId").IsOptional().HasColumnType("int");
-            Property(x => x.Description).HasColumnName(@"Description").IsRequired().HasColumnType("nvarchar").HasMaxLength(256);
-            Property(x => x.Quantity).HasColumnName(@"Quantity").IsOptional().HasColumnType("smallint");
-            Property(x => x.Rate).HasColumnName(@"Rate").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.Total).HasColumnName(@"Total").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.Discount).HasColumnName(@"Discount").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.DiscountDescription).HasColumnName(@"DiscountDescription").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
+            Property(x => x.ServiceRequestDescription).HasColumnName(@"ServiceRequestDescription").IsOptional().HasColumnType("nvarchar").HasMaxLength(1000);
+            Property(x => x.Description).HasColumnName(@"Description").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
             Property(x => x.Amount).HasColumnName(@"Amount").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.AdditionalNotes).HasColumnName(@"AdditionalNotes").IsOptional().HasColumnType("nvarchar").HasMaxLength(1000);
+            Property(x => x.Discount).HasColumnName(@"Discount").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
+            Property(x => x.DiscountTypeId).HasColumnName(@"DiscountTypeId").IsOptional().HasColumnType("tinyint");
+            Property(x => x.DiscountDescription).HasColumnName(@"DiscountDescription").IsOptional().HasColumnType("nvarchar").HasMaxLength(256);
+            Property(x => x.SubTotal).HasColumnName(@"SubTotal").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
+            Property(x => x.Tax).HasColumnName(@"Tax").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
+            Property(x => x.TaxRate).HasColumnName(@"TaxRate").IsOptional().HasColumnType("decimal").HasPrecision(10,4);
+            Property(x => x.Total).HasColumnName(@"Total").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
+            Property(x => x.CreatedDate).HasColumnName(@"CreatedDate").IsRequired().HasColumnType("datetime");
+            Property(x => x.CreatedUser).HasColumnName(@"CreatedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
             Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").IsOptional().HasColumnType("datetime");
             Property(x => x.DeletedBy).HasColumnName(@"DeletedBy").IsOptional().HasColumnType("uniqueidentifier");
-            Property(x => x.Tax).HasColumnName(@"Tax").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.TaxRate).HasColumnName(@"TaxRate").IsOptional().HasColumnType("decimal").HasPrecision(10,4);
-            Property(x => x.DiscountTypeId).HasColumnName(@"DiscountTypeId").IsOptional().HasColumnType("tinyint");
 
             // Foreign keys
-            HasOptional(a => a.ServiceRequest).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_InvoiceDetail_ServiceRequest
-            HasRequired(a => a.Invoice).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.InvoiceId); // FK_InvoiceDetail_Invoice
+            HasOptional(a => a.ServiceRequest).WithMany(b => b.InvoiceItems).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_InvoiceItem_ServiceRequest
+            HasRequired(a => a.Invoice).WithMany(b => b.InvoiceItems).HasForeignKey(c => c.InvoiceId); // FK_InvoiceItem_Invoice
             InitializePartial();
         }
         partial void InitializePartial();

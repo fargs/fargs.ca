@@ -8,72 +8,73 @@
     var features = identity.GetFeatures();
 }
 
-<ul class="list-unstyled">
-    <li>
+    @if (features.Contains(Features.ServiceRequest.Edit))
+    {
+        <span class="btn-group">
+            <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i></a>
+        </span>
         <div class="btn-group">
-            @if (features.Contains(Features.ServiceRequest.Edit))
+            @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
             {
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="~/ServiceRequest/Edit/@Model.ServiceRequestId">Edit</a></li>
-                    @if (features.Contains(Features.ServiceRequest.AssignResources))
+                if (Model.CanBeNoShow)
+                {
+                    if (Model.CancellationViewModel.IsNoShow)
                     {
-                        <li><a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId">Resource Assignment</a></li>
+                        <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger"><i class="fa fa-calendar-minus-o"></i> No Show</button>
                     }
-                    @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
+                    else
                     {
-                        <li><a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequestId">Change Company or Service</a></li>
+                        <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default "><i class="fa fa-calendar-minus-o"></i> No Show</button>
                     }
-                    @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
+                }
+            }
+            @if (features.Contains(Features.ServiceRequest.Cancel))
+                {
+                    if (Model.CanBeUncancelled)
                     {
-                        <li><a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequestId">Change Process Template</a></li>
-                    }
-                    @if (features.Contains(Features.ServiceRequest.Reschedule))
-                    {
-                        if (Model.CanBeRescheduled)
-                        {
-                            <li><a href="~/ServiceRequest/Reschedule/@Model.ServiceRequestId">Reschedule</a></li>
-                        }
-                    }
-                    @if (features.Contains(Features.ServiceRequest.Cancel))
-                    {
-                        if (Model.CanBeUncancelled)
-                        {
-                            <li roleId="separator" class="divider"></li>
-                                <li><a onclick="undoCancellation(@Model.ServiceRequestId)">Undo Cancel</a></li>
-                                    <li><a onclick="showDeleteRequest(@Model.ServiceRequestId)">Delete</a></li>
-                        }
-                        else if (Model.CanBeCancelled)
-                        {
-                            <li><a onclick="showCancellationForm(@Model.ServiceRequestId)">Cancel</a></li>
-                        }
-                    }
-                    @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
-                    {
-                        <li class="divider"></li>
-                            <li>
-                                <a>
-                                    <form id="onhold-form">
-                                        <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox"
-                                                       name="IsOnHold"
-                                                       value="true"
-                                                       @(Model.IsOnHold ? "checked" : "")
-                                                       onclick="onHold($(this.form))" />
-                                            </label> On Hold
-                                        </div>
-                                        <input type="hidden" name="IsOnHold" value="false" />
-                                    </form>
-                                </a>
-                            </li>
-                    }
-                </ul>
+                    <a onclick="undoCancellation(@Model.ServiceRequestId)" class="btn btn-default btn-info"><i class="fa fa-ban"></i></a>
+                    <a onclick="showDeleteRequest(@Model.ServiceRequestId)" class="btn btn-default"><i class="fa fa-trash"></i></a>
+                }
+                else if (Model.CanBeCancelled)
+                {
+                    <a onclick="showCancellationForm(@Model.ServiceRequestId)" class="btn btn-default"><i class="fa fa-ban"></i></a>
+                }
+            }
+            @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
+            {
+                if (Model.ServiceRequestStatusId == TaskStatuses.OnHold)
+                {
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , true)" class="btn btn-default btn-info"><i class="fa fa-hand-paper-o"></i></button>
+                }
+                else
+                {
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , false)" class="btn btn-default "><i class="fa fa-hand-paper-o"></i></button>
+                }
             }
         </div>
-    </li>
-</ul>
+        <div class="btn-group">
+            @if (features.Contains(Features.ServiceRequest.AssignResources))
+                {
+                <a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-users"></i></a>
+            }
+            @if (features.Contains(Features.ServiceRequest.Reschedule))
+                {
+                    if (Model.CanBeRescheduled)
+                    {
+                    <a href="~/ServiceRequest/Reschedule/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-calendar"></i></a>
+                }
+            }
+            </div>
+            <div class="btn-group">
+                <a href="~/ServiceRequest/Edit/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
+                {
+                    <a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-building"></i></a>
+                }
+                @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
+                {
+                    <a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-tasks"></i></a>
+                }
+            </div>
+    }
 

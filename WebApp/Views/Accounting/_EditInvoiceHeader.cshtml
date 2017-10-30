@@ -1,7 +1,7 @@
 ﻿@using WebApp.Library.Extensions
 @model Orvosi.Shared.Model.Invoice
 <form id="edit-invoice-header-form">
-    <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" />
+    <input type="hidden" id="ServiceRequestId" name="ServiceRequestId" value="@Model.ServiceRequestId" />
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">

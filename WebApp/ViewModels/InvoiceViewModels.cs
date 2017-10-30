@@ -86,6 +86,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public IEnumerable<InvoiceDetailViewModel> InvoiceDetails { get; set; }
         public CaseViewModel ServiceRequest { get; set; }
         public IEnumerable<ReceiptViewModel> Receipts { get; set; }
+        public IEnumerable<InvoiceSentLogViewModel> SentLog { get; set; }
         public int? ServiceRequestId { get; set; }
         public string Terms { get; set; }
         public decimal AmountPaid { get; set; }
@@ -95,6 +96,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
         public bool IsPartiallyPaid { get; set; }
         public int InvoiceDetailCount { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         public static Expression<Func<InvoiceDto, InvoiceViewModel>> FromInvoiceDto= i => new InvoiceViewModel
         {
@@ -116,6 +118,7 @@ namespace WebApp.ViewModels.InvoiceViewModels
             IsSent = i.IsSent,
             IsPartiallyPaid = i.IsPartiallyPaid,
             IsDeleted = i.IsDeleted,
+            CreatedDate = i.CreatedDate,
 
             ServiceProvider = ServiceProviderViewModel.FromServiceProviderDto.Invoke(i.ServiceProvider),
             Customer = CustomerViewModel.FromCustomerDto.Invoke(i.Customer),
@@ -123,7 +126,8 @@ namespace WebApp.ViewModels.InvoiceViewModels
             InvoiceDetails = i.InvoiceDetails.AsQueryable().Select(InvoiceDetailViewModel.FromInvoiceDetailDto.Expand()),
             InvoiceDetailCount = i.InvoiceDetailCount,
 
-            Receipts = i.Receipts.AsQueryable().Select(ReceiptViewModel.FromReceiptDto.Expand())
+            Receipts = i.Receipts.AsQueryable().Select(ReceiptViewModel.FromReceiptDto.Expand()),
+            SentLog = i.SentLog.AsQueryable().Select(InvoiceSentLogViewModel.FromInvoiceSentLogDto.Expand())
         };
 
         public static Expression<Func<InvoiceDto, InvoiceViewModel>> FromInvoiceDtoForInvoiceMenu = i => new InvoiceViewModel
@@ -151,6 +155,22 @@ namespace WebApp.ViewModels.InvoiceViewModels
             Id = r.Id,
             Amount = r.Amount,
             ReceivedDate = r.ReceivedDate
+        };
+    }
+
+    public class InvoiceSentLogViewModel
+    {
+        public int Id { get; set; }
+        public string EmailTo { get; set; }
+        public DateTime SentDate { get; set; }
+        public string ModifiedUser { get; set; }
+
+        public static Expression<Func<InvoiceSentLogDto, InvoiceSentLogViewModel>> FromInvoiceSentLogDto = r => new InvoiceSentLogViewModel
+        {
+            Id = r.Id,
+            EmailTo = r.EmailTo,
+            SentDate = r.SentDate,
+            ModifiedUser = r.ModifiedUser
         };
     }
 

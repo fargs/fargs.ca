@@ -387,6 +387,23 @@ namespace WebApp.Controllers
             return PartialView("EditTaskForm", viewModel);
         }
 
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public ActionResult ShowTaskTools(int serviceRequestTaskId)
+        {
+            var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
+            if (data == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
+
+            var viewModel = TaskViewModel.FromTaskDto.Invoke(dto);
+
+            return PartialView("TaskTools", viewModel);
+        }
+
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
         public async Task<ActionResult> UpdateTaskDueDate(int serviceRequestTaskId, DateTime? dueDate)

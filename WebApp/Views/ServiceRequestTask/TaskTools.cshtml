@@ -1,0 +1,37 @@
+﻿@using WebApp.FormModels
+@using WebApp.Library
+@using Features = Orvosi.Shared.Enums.Features
+@model TaskViewModel
+
+@{
+    var session = DependencyResolver.Current.GetService<SessionService>();
+    var features = session.AuthorizedFeatures;
+    var identity = session.identity;
+}
+
+@if (Model.TaskId == Tasks.SubmitInvoice && features.Contains(Features.Accounting.ManageInvoices))
+{
+    if (features.Contains(Features.Accounting.CreateInvoice))
+    {
+        @Html.Partial("~/Views/ServiceRequest/InvoiceListMenu.cshtml", Model.ServiceRequestId)
+    }
+    if (features.Contains(Features.Accounting.ViewInvoice))
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Invoices
+            </div>
+            <div class="panel-body">
+                <div id="invoice-list-container">
+                    @Html.Action("GetInvoices", "ServiceRequest", new { serviceRequestId = Model.ServiceRequestId })
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <span>
+        No tools available related to this task
+    </span>
+}

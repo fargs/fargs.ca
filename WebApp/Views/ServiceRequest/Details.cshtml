@@ -14,25 +14,45 @@
     viewData.ViewFilter_Set(args.ViewFilter);
     viewData.ViewTarget_Set(args.ViewTarget);
 
+    TaskViewModel task = null;
     int selectedTask;
     var qs = this.Request.QueryString.Get("selectedTask");
+    if(int.TryParse(qs, out selectedTask))
+    {
+        task = Model.Tasks.SingleOrDefault(c => c.Id == selectedTask);
+    }
 }
 
-<div id="actionmenu-container" class="col-md-12">
-    @Html.Partial("ActionMenu", Model, viewData)
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div style="display:flex; align-items:center;">
+            <span style="margin-right:auto;">
+                @Model.ClaimantName (@(Model.ServiceRequestId))
+            </span>
+            <span id="actionmenu-container" style="margin:auto;">
+                @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
+                @Html.Partial("ActionMenu", Model, viewData)
+            </span>
+            <span style="margin-left:auto;">
+                @Html.Partial("PhysicianLabel", Model.Physician, viewData)
+            </span>
+        </div>
+    </div>
 </div>
-
 <div class="row">
     <div class="col-md-3">
-        @Html.Partial("PhysicianLabel", Model.Physician, viewData)
-        <hr />
-        <div id="case-container">
-            @Html.Partial("Case", Model, viewData)
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Case Details
+            </div>
+            <div class="panel-body">
+                <div id="case-container">
+                    @Html.Partial("Case", Model, viewData)
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-4">
-        <h4>Tasks</h4>
-        <hr />
         <div id="notes">
             @Html.Partial("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = Model.ServiceRequestId, Note = Model.Notes, AllowEdit = true })
         </div>
@@ -56,21 +76,35 @@
         </div>
     </div>
     <div class="col-md-5">
-        <h4>Task Details</h4>
-        <hr />
-        <div id="task-editform-container">
-            @if (int.TryParse(qs, out selectedTask))
-            {
-                var task = Model.Tasks.SingleOrDefault(c => c.Id == selectedTask);
-                if (task != null)
-                {
-                    @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
-                }
-            }
-            else
-            {
-                <div>Select a task</div>
-            }
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Task Details
+            </div>
+            <div class="panel-body">
+                <div id="task-editform-container">
+                    @if (task != null)
+                    {
+                        <span>
+                        @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Task Tools
+            </div>
+            <div class="panel-body">
+                <div id="task-tools-container">
+                    @if (task != null)
+                    {
+                        <span>
+                        @Html.Partial("~/Views/ServiceRequestTask/TaskTools.cshtml", task)
+                        </span>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -84,7 +118,7 @@
         </div>
     </div>
     @if (features.Contains(Features.ServiceRequest_Box.ManageBoxFolder))
-    {
+            {
         <div class="col-md-3">
             <h4>Box Integration</h4>
             @Html.Partial("_loader", "box-loader")
@@ -92,51 +126,13 @@
         </div>
     }
     @if (features.Contains(Features.ServiceRequest_Google.CreateEvent))
-    {
+            {
         <div class="col-md-3">
             <h4>Calendar Integration</h4>
             <div id="google-calendar-container"></div>
         </div>
     }
 </div>
-
-
-
-@*@if (roleId == AspNetRoles.SuperAdmin || roleId == AspNetRoles.Physician)
-        {
-        <h4 style="line-height:30px;" class="section-top-padding">Invoice</h4>
-        <hr />
-        if (roleId == AspNetRoles.SuperAdmin)
-        {
-            <form action="~/Invoice/Create" method="post">
-                @Html.Hidden("Id", Model.Id)
-                <input type="submit" class="btn btn-link btn-sm" name="Create" value="Add Invoice" />
-            </form>
-        }
-        else if (Model.InvoiceDetails.Count() == 0)
-        {
-            <div>Invoice has not been generated.<br />Your case coordinator will take care of this.</div>
-        }
-
-        foreach (var invoiceDetail in Model.InvoiceDetails)
-        {
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Invoice @invoiceDetail.Invoice.InvoiceNumber
-                    @if (roleId == AspNetRoles.SuperAdmin)
-                    {
-                        <div class="pull-right">
-                            @Html.Partial("_InvoiceActionMenu", invoiceDetail.Invoice)
-                        </div>
-                    }
-                </div>
-                <div class="panel-body">
-                    @Html.Partial("~/Views/Invoice/_ReadOnly.cshtml", invoiceDetail.Invoice)
-                </div>
-            </div>
-        }
-    }*@
-
 
 
 @Html.Partial("ModalContainer")
@@ -153,6 +149,7 @@
     @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
     @Html.Partial("~/Views/Box/BoxJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/InvoiceJS.cshtml")
 
     <script type="text/javascript">
 
@@ -251,14 +248,29 @@
         }
 
         function taskSelected(serviceRequestTaskId) {
-            let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")';
-            $.get(url, {
+
+            // refresh the edit task form
+            $.get('@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")', {
                 serviceRequestTaskId: serviceRequestTaskId
             })
             .done(function (result) {
                 $('#task-editform-container').html(result);
-                window.history.pushState({}, '', '?selectedTask=' + serviceRequestTaskId);
             });
+
+            // refresh the task tools
+            $.get('@Url.Content("~/ServiceRequestTask/ShowTaskTools/")', {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (result) {
+                $('#task-tools-container').html(result);
+            });
+
+            // update the url
+            window.history.pushState({}, '', '?selectedTask=' + serviceRequestTaskId);
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            serviceRequestChanged(serviceRequestId);
         }
 
         function serviceRequestChanged(serviceRequestId) {
@@ -277,10 +289,6 @@
                 .done(function (result) {
                     document.getElementById('actionmenu-container').innerHTML = result;
                 });
-        }
-
-        function serviceRequestStatusChanged(serviceRequestId) {
-            serviceRequestChanged(serviceRequestId);
         }
 
         function refreshGoogleCalendarIntegration(serviceRequestId) {
@@ -325,6 +333,27 @@
                     // undo the UI change made before the ajax call
                     toastr.error(err);
                 }
+            });
+        }
+
+
+        function invoiceChanged() {
+            $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#invoice-list-container').html(result);
+                console.log('from invoice changed');
+            });
+        }
+
+        function invoiceListChanged() {
+            $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#invoice-list-container').html(result);
+                console.log('from invoice list changed');
             });
         }
 

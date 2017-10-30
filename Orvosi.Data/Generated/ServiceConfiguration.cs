@@ -39,6 +39,7 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.IsLocationRequired).HasColumnName(@"IsLocationRequired").IsRequired().HasColumnType("bit");
             Property(x => x.ColorCode).HasColumnName(@"ColorCode").IsOptional().IsUnicode(false).HasColumnType("varchar").HasMaxLength(10);
+            Property(x => x.IsAppointmentRequired).HasColumnName(@"IsAppointmentRequired").IsRequired().HasColumnType("bit");
 
             // Foreign keys
             HasOptional(a => a.ServiceCategory).WithMany(b => b.Services).HasForeignKey(c => c.ServiceCategoryId).WillCascadeOnDelete(false); // FK_Service_ServiceCategory

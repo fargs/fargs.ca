@@ -1,0 +1,148 @@
+﻿
+<script>
+
+    function onShowEditAndSendInvoiceForm(invoiceId, serviceRequestId) {
+        let url = '@Url.Content("~/Accounting/EditAndSendInvoice?invoiceId=")' + invoiceId + (serviceRequestId != null ? '&serviceRequestId=' + serviceRequestId : '');
+        $.get(url).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function editAndSendInvoiceSaveChanges(invoiceId) {
+        let url = '@Url.Content("~/Accounting/EditAndSendInvoice")';
+        let form = $('#edit-invoice-message-form');
+        let formData = new FormData(form[0]);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function () {
+                toastr.success("Invoice sent successfully");
+                $('#modal-container').modal('toggle');
+                invoiceChanged(invoiceId);
+            }
+        });
+    }
+    
+    function onPaid(invoiceId) {
+        let url = '@Url.Content("~/Accounting/CreateReceipt")';
+        $.post(url, {
+            invoiceId: invoiceId
+        })
+        .done(function () {
+            toastr.success("Invoice has been paided in full");
+            invoiceChanged(invoiceId);
+        });
+    }
+
+    function onCreateInvoiceForServiceRequest() {
+        let url = '@Url.Content("~/Accounting/Create")';
+
+        $.post(url, {
+            serviceRequestId: serviceRequestId
+        })
+        .done(function (result) {
+            toastr.success("Invoice created successfully");
+            invoiceChanged(result.id);
+        });
+    }
+
+    function onDeleteInvoice(invoiceId) {
+        let url = '@Url.Content("~/Accounting/DeleteInvoice")';
+
+        $.post(url, {
+            invoiceId: invoiceId
+        })
+        .done(function () {
+            toastr.success("Invoice deleted successfully");
+            invoiceListChanged();
+        });
+    }
+
+    function onUndeleteInvoice(invoiceId) {
+        let url = '@Url.Content("~/Accounting/UndeleteInvoice")';
+
+        $.post(url, {
+            invoiceId: invoiceId
+        })
+        .done(function () {
+            toastr.success("Invoice uncancelled successfully");
+            invoiceListChanged();
+        });
+    }
+
+    function onShowEditInvoiceHeaderForm(invoiceId) {
+        let url = '@Url.Content("~/Accounting/EditInvoiceHeader?invoiceId=")' + invoiceId;
+        $.get(url).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function invoiceHeaderSaveChanges() {
+        var url = '@Url.Content("~/Accounting/EditInvoiceHeader")';
+        var form = $('#edit-invoice-header-form');
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function () {
+            toastr.success("Invoice updated successfully");
+            $('#modal-container').modal('toggle');
+            invoiceChanged(form.find('#Id').val());
+        });
+    }
+
+    function onShowEditInvoiceItemForm(invoiceDetailId) {
+        let url = '@Url.Content("~/Accounting/EditInvoiceItem?invoiceDetailId=")' + invoiceDetailId;
+        $.get(url).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function onAddInvoiceItem(invoiceId) {
+        let url = '@Url.Content("~/Accounting/AddInvoiceItem?invoiceId=")' + invoiceId;
+        $.post(url).done(function (result) {
+            onShowEditInvoiceItemForm(result.data.Id);
+        });
+    }
+
+    function onDeleteInvoiceItem(invoiceDetailId, invoiceId) {
+        let url = '@Url.Content("~/Accounting/DeleteInvoiceItem")';
+        $.post(url, {
+            invoiceDetailId: invoiceDetailId
+        }).done(function (result) {
+            invoiceChanged(invoiceId);
+        });
+    }
+
+    function invoiceItemSaveChanges() {
+        var url = '@Url.Content("~/Accounting/EditInvoiceItem")';
+        var form = $('#edit-invoice-item-form');
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function () {
+            toastr.success("Invoice item updated successfully");
+            $('#modal-container').modal('toggle');
+            invoiceChanged(form.find('#InvoiceId').val());
+        });
+    }
+   
+    // functions expected to be overridden
+    function invoiceChanged(invoiceId, serviceRequestId) {
+        console.log('invoice changed event handler: expected to be overridden');
+    }
+
+    function invoiceListChanged(serviceRequestId) {
+        console.log('invoice list changed event handler: expected to be overridden');
+    }
+    
+</script>

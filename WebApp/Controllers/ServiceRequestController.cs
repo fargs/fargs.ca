@@ -194,6 +194,16 @@ namespace WebApp.Controllers
             return PartialView(dayViewModel);
         }
 
+        public ActionResult GetInvoices(int serviceRequestId)
+        {
+            var invoiceIds = db.InvoiceDetails.Where(id => id.ServiceRequestId == serviceRequestId).Select(id => id.InvoiceId);
+            var invoices = db.Invoices.Where(i => invoiceIds.Contains(i.Id)).Select(m.InvoiceDto.FromInvoiceEntity.Expand()).ToList();
+
+            var viewModel = invoices.AsQueryable().Select(WebApp.ViewModels.InvoiceViewModels.InvoiceViewModel.FromInvoiceDto.Expand());
+
+            return PartialView("InvoiceList", viewModel);
+        }
+
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         [HttpPost]

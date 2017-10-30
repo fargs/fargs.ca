@@ -30,8 +30,10 @@ namespace WebApp.Models
         public ServiceProviderDto ServiceProvider { get; set; }
         public CustomerDto Customer { get; set; }
         public Guid InvoiceGuid { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public IEnumerable<InvoiceDetailDto> InvoiceDetails { get; set; }
         public IEnumerable<ReceiptDto> Receipts { get; set; }
+        public IEnumerable<InvoiceSentLogDto> SentLog { get; set; }
         public TaskDto SubmitInvoiceTask
         {
             get
@@ -125,6 +127,7 @@ namespace WebApp.Models
             IsDeleted = i.IsDeleted,
             PaymentReceivedDate = i.PaymentReceivedDate,
             InvoiceGuid = i.ObjectGuid,
+            CreatedDate = i.CreatedDate,
             ServiceProvider = new ServiceProviderDto
             {
                 Id = i.ServiceProviderGuid,
@@ -141,7 +144,8 @@ namespace WebApp.Models
                 Province = i.CustomerProvince
             },
             InvoiceDetails = i.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand()),
-            Receipts = i.Receipts.AsQueryable().Select(ReceiptDto.FromReceiptEntity.Expand())
+            Receipts = i.Receipts.AsQueryable().Select(ReceiptDto.FromReceiptEntity.Expand()),
+            SentLog = i.InvoiceSentLogs.AsQueryable().Select(InvoiceSentLogDto.FromInvoiceSentLogEntity.Expand())
         };
 
         public static Expression<Func<Invoice, InvoiceDto>> FromInvoiceEntityForInvoiceMenu = i => new InvoiceDto

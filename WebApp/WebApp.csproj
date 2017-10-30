@@ -529,6 +529,7 @@
     <Compile Include="Models\CustomerDto.cs" />
     <Compile Include="Models\InvoiceDetailDto.cs" />
     <Compile Include="Models\InvoiceDto.cs" />
+    <Compile Include="Models\InvoiceSentLogDto.cs" />
     <Compile Include="Models\ReceiptDto.cs" />
     <Compile Include="Models\ServiceCategoryDto.cs" />
     <Compile Include="Models\ProvinceDto.cs" />
@@ -1345,6 +1346,13 @@
     <Content Include="Views\Reschedule\_RescheduleJS.cshtml" />
     <Content Include="Views\Reschedule\SlotPicker.cshtml" />
     <Content Include="Views\ServiceRequestTask\NewTaskForm.cshtml" />
+    <Content Include="Views\Invoice\Create.cshtml" />
+    <Content Include="Views\ServiceRequest\InvoiceList.cshtml" />
+    <Content Include="Views\ServiceRequest\InvoiceReadOnly.cshtml" />
+    <Content Include="Views\ServiceRequestTask\TaskTools.cshtml" />
+    <Content Include="Views\ServiceRequest\InvoiceMenu.cshtml" />
+    <Content Include="Views\ServiceRequest\InvoiceJS.cshtml" />
+    <Content Include="Views\ServiceRequest\InvoiceListMenu.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

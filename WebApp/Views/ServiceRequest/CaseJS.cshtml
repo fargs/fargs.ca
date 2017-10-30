@@ -1,18 +1,24 @@
 ﻿<script type="text/javascript">
 
-    function noShow(form) {
+    function noShow(serviceRequestId, isNoShow) {
         let url = '@Url.Content("~/ServiceRequest/ToggleNoShow")';
         $.post(url,
-            form.serialize()
+            {
+                ServiceRequestId: serviceRequestId,
+                IsNoShow: isNoShow
+            }
         ).done(function (data) {
             serviceRequestStatusChanged(data.serviceRequestId);
             tasklistChanged(data.serviceRequestId);
         });
     }
-    function onHold(form) {
+    function onHold(serviceRequestId, isOnHold) {
         let url = '@Url.Content("~/ServiceRequest/ToggleOnHold")';
         $.post(url,
-            form.serialize()
+            {
+                ServiceRequestId: serviceRequestId,
+                IsOnHold: isOnHold
+            }
         ).done(function (data) {
             serviceRequestStatusChanged(data.serviceRequestId);
             tasklistChanged(data.serviceRequestId);

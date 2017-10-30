@@ -40,6 +40,9 @@
                         @if (features.Contains(Features.ServiceRequest.PickupTask))
                         {
                             <li>
+                                <a onclick="assignTask(@Model.Id , null)">Not Assigned</a>
+                            </li>
+                            <li>
                                 <a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a>
                             </li>
                             <li class="divider"></li>
@@ -90,24 +93,24 @@
                     </button>
                 }
             </div>
-            <div class="btn-group">
-                @if (Model.StatusId == TaskStatuses.OnHold)
+                    <div class="btn-group">
+                        @if (Model.StatusId == TaskStatuses.OnHold)
                 {
-                    <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)" class="btn btn-default btn-info"><i class="fa fa-hand-paper-o"></i></button>
-                }
-                else
+                            <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)" class="btn btn-default btn-info"><i class="fa fa-hand-paper-o"></i></button>
+                        }
+                        else
+                        {
+                            <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)" class="btn btn-default "><i class="fa fa-hand-paper-o"></i></button>
+                        }
+                        @if (Model.StatusId == TaskStatuses.Obsolete)
                 {
-                    <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)" class="btn btn-default "><i class="fa fa-hand-paper-o"></i></button>
-                }
-                @if (Model.StatusId == TaskStatuses.Obsolete)
-                {
-                    <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)" class="btn btn-default btn-info"><i class="fa fa-ban"></i></button>
-                }
-                else
-                {
-                    <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)" class="btn btn-default"><i class="fa fa-ban"></i></button>
-                }
-            </div>
+                            <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)" class="btn btn-default btn-info"><i class="fa fa-ban"></i></button>
+                        }
+                        else
+                        {
+                            <button type="button" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)" class="btn btn-default"><i class="fa fa-ban"></i></button>
+                        }
+                    </div>
         }
         <div class="btn-group" style="width:150px;">
             <div class="input-group date" style="width:100%" id="EditTaskFormDueDatePicker">

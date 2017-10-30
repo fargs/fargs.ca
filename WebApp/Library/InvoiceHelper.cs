@@ -50,6 +50,8 @@ namespace WebApp.Library
             invoice.TaxRateHst = TaxRateHst;
             invoice.ModifiedDate = SystemTime.Now();
             invoice.ModifiedUser = userName;
+            invoice.CreatedDate = SystemTime.Now();
+            invoice.CreatedUser = userName;
 
             invoice.CalculateTotal();
         }

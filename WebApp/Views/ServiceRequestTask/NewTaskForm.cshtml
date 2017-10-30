@@ -50,7 +50,7 @@
                     @if (features.Contains(Features.ServiceRequest.PickupTask))
                 {
                         <li>
-                            <a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a>
+                            <a onclick="newTaskForm_AssignedToChanged(event, this, null)">Not Assigned</a>
                         </li>
                         <li class="divider"></li>
                     }

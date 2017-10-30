@@ -635,7 +635,7 @@ namespace WebApp.Controllers
 
             // send the email
             invoice = await SendMessageUsingGoogle(invoice, message);
-
+            
             // set the submit invoice task to done
             foreach (var item in invoice.InvoiceDetails.Where(id => id.ServiceRequestId.HasValue))
             {
@@ -682,7 +682,7 @@ namespace WebApp.Controllers
             invoice.InvoiceSentLogs.Add(new Orvosi.Data.InvoiceSentLog()
             {
                 InvoiceId = invoice.Id,
-                EmailTo = invoice.CustomerEmail,
+                EmailTo = message.To.ToDelimitedString(),
                 SentDate = now,
                 ModifiedDate = now,
                 ModifiedUser = identity.Name

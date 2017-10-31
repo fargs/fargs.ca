@@ -221,6 +221,15 @@ namespace WebApp.Controllers
             return PartialView(viewModel);
         }
 
+        public ActionResult GetRelatedServiceRequestId(int serviceRequestTaskId)
+        {
+            var id = db.ServiceRequestTasks.Where(srt => srt.Id == serviceRequestTaskId).Select(srt => srt.ServiceRequestId).FirstOrDefault();
+            return Json(new
+            {
+                serviceRequestId = id
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         //[ChildActionOnlyOrAjax]
         //[AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
         //public ActionResult NextTaskList(ServiceRequestView serviceRequest, IEnumerable<ServiceRequestTask> serviceRequestTasks)

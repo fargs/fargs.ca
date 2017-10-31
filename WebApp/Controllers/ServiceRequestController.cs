@@ -407,6 +407,26 @@ namespace WebApp.Controllers
             return PartialView(viewModel);
         }
 
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public async Task<ActionResult> AgendaActionMenu(int serviceRequestId)
+        {
+            var dto = await db.ServiceRequests
+                .WithId(serviceRequestId)
+                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase.Expand())
+                .SingleOrDefaultAsync();
+
+            if (dto == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+
+            return PartialView(viewModel);
+        }
+
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
         public ActionResult ChangeCompany(int id)
         {
@@ -1161,7 +1181,6 @@ namespace WebApp.Controllers
                 // update the resource assignments
                 obj.ClaimantName = sr.ClaimantName;
                 obj.CompanyReferenceId = sr.CompanyReferenceId;
-                obj.DueDate = sr.DueDate;
                 obj.Notes = sr.AdditionalNotes;
                 obj.RequestedBy = sr.RequestedBy;
                 obj.RequestedDate = sr.RequestedDate;

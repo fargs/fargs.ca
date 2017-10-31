@@ -1353,6 +1353,7 @@
     <Content Include="Views\ServiceRequest\InvoiceMenu.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceJS.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceListMenu.cshtml" />
+    <Content Include="Views\ServiceRequest\AgendaActionMenu.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

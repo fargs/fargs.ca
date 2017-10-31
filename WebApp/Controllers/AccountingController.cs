@@ -391,6 +391,20 @@ namespace WebApp.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [AuthorizeRole(Feature = Accounting.ViewInvoice)]
+        public ActionResult GetRelatedServiceRequestId(int invoiceId)
+        {
+            var dto = db.ServiceRequests
+                .Where(sr => sr.InvoiceDetails.Select(id => id.InvoiceId).Contains(invoiceId))
+                .Select(sr => sr.Id)
+                .FirstOrDefault();
+
+            return Json(new
+            {
+                serviceRequestId = dto
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         #region InvoiceAPI
 
         [HttpPost]

@@ -22,7 +22,7 @@
                 Invoices
             </div>
             <div class="panel-body">
-                <div id="invoice-list-container">
+                <div id="invoice-list-container-@Model.ServiceRequestId">
                     @Html.Action("GetInvoices", "ServiceRequest", new { serviceRequestId = Model.ServiceRequestId })
                 </div>
             </div>

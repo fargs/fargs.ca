@@ -337,22 +337,30 @@
         }
 
 
-        function invoiceChanged() {
-            $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
-                serviceRequestId: serviceRequestId
+        function invoiceChanged(invoiceId) {
+
+            $.get('@Url.Content("~/Accounting/GetRelatedServiceRequestId/")', {
+                invoiceId: invoiceId
             })
-            .done(function (result) {
-                $('#invoice-list-container').html(result);
-                console.log('from invoice changed');
+            .done(function (data) {
+
+                $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                    serviceRequestId: data.serviceRequestId
+                })
+                .done(function (result) {
+                    $('#invoice-list-container-' + data.serviceRequestId).html(result);
+                    console.log('from invoice changed');
+                });
+
             });
         }
 
-        function invoiceListChanged() {
+        function invoiceListChanged(serviceRequestId) {
             $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
                 serviceRequestId: serviceRequestId
             })
             .done(function (result) {
-                $('#invoice-list-container').html(result);
+                $('#invoice-list-container-' + serviceRequestId).html(result);
                 console.log('from invoice list changed');
             });
         }

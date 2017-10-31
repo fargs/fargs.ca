@@ -1,0 +1,31 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@model CaseViewModel
+
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+}
+
+@if (features.Contains(Features.ServiceRequest.Edit))
+{
+    <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i> Case Folder</a>
+    if (features.Contains(Features.ServiceRequest.ToggleNoShow))
+    {
+        if (Model.CanBeNoShow)
+        {
+            if (Model.CancellationViewModel.IsNoShow)
+            {
+                <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger"><i class="fa fa-calendar-minus-o"></i> No Show</button>
+            }
+            else
+            {
+                <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default "><i class="fa fa-calendar-minus-o"></i> No Show</button>
+            }
+        }
+    }
+}
+
+
+

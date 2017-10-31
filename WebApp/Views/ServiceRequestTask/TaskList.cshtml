@@ -41,7 +41,7 @@
         <table class="table table-condensed" style="cursor:pointer;">
             @foreach (var task in Model.Tasks)
             {
-                <tr id="tasklist-row-@task.Id" onclick="selectTask(@task.Id)" class="@IsSelected(task.Id)">
+                <tr id="tasklist-row-@task.Id" onclick="selectTask(@task.Id , @task.ServiceRequestId)" class="@IsSelected(task.Id)">
                     <td width="50px">
                         @if (task.TaskId == Tasks.AssessmentDay)
                         {
@@ -79,7 +79,13 @@
                         <span style="@(task.TaskId == Tasks.AssessmentDay || task.TaskId == Tasks.SubmitReport ? "font-size:20px;" : "")">@task.Name</span>
                         &nbsp;&nbsp;
                         <small style="@(task.TaskId == Tasks.AssessmentDay || task.TaskId == Tasks.SubmitReport ? "font-size:20px;" : "")" class="text-muted">@task.DueDate.ToOrvosiDateFormat()</small>
-                </td>
+                    </td>
+                    <td>
+                        @if (args.ViewTarget == ViewTarget.Agenda && task.TaskId == Tasks.SubmitInvoice)
+                        {
+                            <a onclick="showTaskTools(@task.Id , @task.ServiceRequestId)" style="cursor:pointer;"><i class="fa fa-wrench"></i></a>
+                        }
+                    </td>
             </tr>
             }
         </table>

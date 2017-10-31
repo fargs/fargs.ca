@@ -139,10 +139,10 @@
             });
     }
 
-    function selectTask(serviceRequestTaskId) {
+    function selectTask(serviceRequestTaskId, serviceRequestId) {
         // hightlight the selected task
         $('#tasklist-row-' + serviceRequestTaskId).addClass('bg-info').siblings().removeClass('bg-info');
-        taskSelected(serviceRequestTaskId);
+        taskSelected(serviceRequestTaskId, serviceRequestId);
     }
 
     function updateTaskDueDate(event, form) {
@@ -160,6 +160,10 @@
     }
     // these are default handlers.
 
+    function showTaskTools(serviceRequestTaskId, serviceRequestId) {
+
+    }
+
     function taskChanged(serviceRequestTaskId, serviceRequestId) {
 
     }
@@ -176,7 +180,7 @@
 
     }
 
-    function taskSelected(serviceRequestTaskId) {
+    function taskSelected(serviceRequestTaskId, serviceRequestId) {
         console.log('this should be overridden');
     }
 

@@ -1,5 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using WebApp.ViewModels.CalendarViewModels
+@using Features = Orvosi.Shared.Enums.Features
 @model DayViewModel
 @{
     var roleId = User.Identity.GetRoleId();
@@ -35,6 +36,9 @@
                 </div>
             </div>
             <div class="col-md-5 o-dashboard-td">
+                <div id="actionmenu-@serviceRequest.ServiceRequestId" class="btn-group">
+                    @Html.Partial("~/Views/ServiceRequest/AgendaActionMenu.cshtml", serviceRequest)
+                </div>
                 <div id="tasklist-container-@serviceRequest.ServiceRequestId">
                     @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs
                {
@@ -45,9 +49,28 @@
                 </div>
             </div>
             <div class="col-md-5 o-dashboard-td">
-                @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes, AllowEdit = true })
-                @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
-                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
+                <ul class="nav nav-tabs" role="tablist" id="tabs-@serviceRequest.ServiceRequestId">
+                    <li role="presentation"><a href="#task-details-@serviceRequest.ServiceRequestId" aria-controls="Task Details" role="tab" data-toggle="tab">Task Details</a></li>
+                    <li role="presentation" class="active"><a href="#live-chat-@serviceRequest.ServiceRequestId" aria-controls="Live Chat" role="tab" data-toggle="tab">Live Chat</a></li>
+                    <li role="presentation"><a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(!string.IsNullOrWhiteSpace(serviceRequest.Notes) ? " (1)" : "" )</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane" id="task-details-@serviceRequest.ServiceRequestId">
+                        <p></p>
+                        <div id="task-editform-container-@serviceRequest.ServiceRequestId"></div>
+                        <p></p>
+                        <div id="task-tools-container-@serviceRequest.ServiceRequestId"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane active" id="live-chat-@serviceRequest.ServiceRequestId">
+                        @Html.Action("Discussion", "ServiceRequestMessage", new { serviceRequestId = serviceRequest.ServiceRequestId })
+                        @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest)
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="notes-@serviceRequest.ServiceRequestId">
+                        @Html.Partial("~/Views/Note/_Note.cshtml", new WebApp.ViewModels.ServiceRequestViewModels.NoteViewModel() { ServiceRequestId = serviceRequest.ServiceRequestId, Note = serviceRequest.Notes, AllowEdit = true })
+                    </div>
+                </div>
             </div>
         </div>
     }

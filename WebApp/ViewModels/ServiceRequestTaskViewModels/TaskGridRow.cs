@@ -54,8 +54,8 @@ namespace WebApp.ViewModels
             City = dto.ServiceRequest.Address != null ? dto.ServiceRequest.Address.CityCode : "",
             Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.ServiceRequest.Physician),
             PhysicianSortColumn = dto.ServiceRequest.Physician.LastName,
-            IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, DateTime.Now),
-            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, DateTime.Now)
+            IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now),
+            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now)
         };
     }
 }

@@ -44,8 +44,8 @@ namespace WebApp.ViewModels
             Status = LookupViewModel<short>.FromTaskStatusDto.Invoke(dto.TaskStatus),
             DueDate = dto.DueDate,
             IsActive = dto.IsActive,
-            IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, DateTime.Now), // This must be DateTime.Now and not SystemTime.Now() because it is getting translated to sql
-            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, DateTime.Now)
+            IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now), // This must be DateTime.Now and not SystemTime.Now() because it is getting translated to sql
+            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now)
         };
     }
 }

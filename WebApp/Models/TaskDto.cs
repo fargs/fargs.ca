@@ -42,9 +42,9 @@ namespace WebApp.Models
             }
         }
 
-        public static Expression<Func<DateTime?, DateTime, bool>> IsOverdueExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date < now.Date : false;
+        public static Expression<Func<DateTime?, short, DateTime, bool>> IsOverdueExp = (dueDate, status, now) => dueDate.HasValue && (status == TaskStatuses.ToDo || status == TaskStatuses.Waiting) ? dueDate.Value.Date < now.Date : false;
 
-        public static Expression<Func<DateTime?, DateTime, bool>> IsDueTodayExp = (dueDate, now) => dueDate.HasValue ? dueDate.Value.Date == now.Date : false;
+        public static Expression<Func<DateTime?, short, DateTime, bool>> IsDueTodayExp = (dueDate, status, now) => dueDate.HasValue && (status == TaskStatuses.ToDo || status == TaskStatuses.Waiting) ? dueDate.Value.Date == now.Date : false;
 
 
         public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntity = srt => srt == null ? null : new TaskDto()

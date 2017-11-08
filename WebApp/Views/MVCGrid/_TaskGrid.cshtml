@@ -144,7 +144,7 @@ if (pageToStart < pagingModel.CurrentPage)
                                                name="isChecked"
                                                value="@(task.TaskStatusId == TaskStatuses.Done)"
                                                @(task.TaskStatusId == TaskStatuses.Done ? "checked" : "")
-                                               onclick="toggleCompleted(this)">
+                                               onclick="toggleCompleted(event, this)">
                                     </label>
                                 </span>
                             </form>

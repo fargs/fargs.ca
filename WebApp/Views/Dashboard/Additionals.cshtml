@@ -12,9 +12,9 @@
 
 @section Scripts {
 
-
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+    <script src="@Url.Content("~/signalr/hubs")"></script>
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
 
     <script>
 

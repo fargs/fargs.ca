@@ -25,6 +25,11 @@
         });
     }
 
+    function showCaseDetails(serviceRequestId) {
+        let url = '@Url.Content("~/ServiceRequest/Details/")' + serviceRequestId;
+        window.location = url;
+    }
+
     function showCaseDetailsModal(serviceRequestId) {
         let url = '@Url.Content("~/ServiceRequest/Details2")';
         $.get(url, {

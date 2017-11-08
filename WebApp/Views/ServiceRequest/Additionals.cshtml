@@ -10,10 +10,10 @@
 
 @if (Model != null)
 {
-        <table class="table table-condensed">
+        <table class="table table-hover">
             @foreach (var item in Model)
             {
-                <tr>
+                <tr onclick="showCaseDetailsModal(@item.ServiceRequestId)" ondblclick="showCaseDetails(@item.ServiceRequestId)" style="cursor:pointer;">
                     @Html.Partial("CaseLink", item, caseLinkViewData)
                 </tr>
             }

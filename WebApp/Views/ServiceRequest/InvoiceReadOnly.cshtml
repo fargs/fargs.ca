@@ -12,12 +12,26 @@
 {
     <div style="display:flex;">
         <div>
-            <a onclick="onShowEditInvoiceItemForm(@item.Id)" style="cursor:pointer;">@item.Description </a>
+            @if (Model.IsSent)
+            {
+                <span>@item.Description</span>
+            }
+            else
+            {
+                <a onclick="onShowEditInvoiceItemForm(@item.Id)" style="cursor:pointer;">@item.Description </a>
+            }
+            @if (item.Discount != 1)
+            {
+                <span class="text-danger">@item.DiscountDescription</span>
+            }
             @if (!string.IsNullOrWhiteSpace(item.AdditionalNotes))
             { 
                 <i class="fa fa-sticky-note" style="color:goldenrod;"></i> 
             }
-            <a onclick="onDeleteInvoiceItem(@item.Id , @Model.Id , @Model.ServiceRequestId)" style="cursor:pointer;"><i class="fa fa-remove text-danger"></i></a>
+            @if (!item.ServiceRequestId.HasValue)
+            {
+                <a onclick="onDeleteInvoiceItem(@item.Id , @Model.Id , @Model.ServiceRequestId)" style="cursor:pointer;"><i class="fa fa-remove text-danger"></i></a>
+            }
         </div>
         <div style="margin-left:auto;">@item.Total.ToString("C2")</div>
     </div>

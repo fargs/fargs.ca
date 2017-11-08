@@ -18,6 +18,35 @@ namespace WebApp.Library.Projections
             };
         }
 
+        public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> Analytics()
+        {
+            return i => new Orvosi.Shared.Model.Invoice
+            {
+                Id = i.Id,
+                InvoiceNumber = i.InvoiceNumber,
+                InvoiceDate = i.InvoiceDate,
+                SubTotal = i.SubTotal,
+                TaxRateHst = i.TaxRateHst,
+                Hst = i.Hst,
+                Total = i.Total.Value,
+                ServiceProvider = new Orvosi.Shared.Model.ServiceProvider
+                {
+                    Id = i.ServiceProviderGuid,
+                    Name = i.ServiceProviderName,
+                    Email = i.ServiceProviderEmail,
+                    Province = i.ServiceProviderProvince
+                },
+                Customer = new Orvosi.Shared.Model.Customer
+                {
+                    Id = i.CustomerGuid,
+                    Name = i.CustomerName,
+                    BillingEmail = i.CustomerEmail,
+                    City = i.CustomerCity,
+                    Province = i.CustomerProvince
+                }
+            };
+        }
+
         public static Expression<Func<Orvosi.Data.Invoice, Orvosi.Shared.Model.Invoice>> MinimalInfoWithStatus()
         {
             return i => new Orvosi.Shared.Model.Invoice

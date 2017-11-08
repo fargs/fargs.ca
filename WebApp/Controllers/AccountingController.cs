@@ -230,7 +230,7 @@ namespace WebApp.Controllers
                 .AreSent()
                 .AreForCustomer(filterArgs.CustomerId)
                 .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
-                .Select(InvoiceProjections.Header())
+                .Select(InvoiceProjections.Analytics())
                 .ToList();
 
             filterArgs.Year = filterArgs.Year.GetValueOrDefault(now.Year);

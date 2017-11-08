@@ -75,7 +75,7 @@ namespace WebApp
                         .WithHeaderText("Task")
                         .WithSorting(true)
                         .WithFiltering(true)
-                        .WithValueExpression(i => i.TaskShortName);
+                        .WithValueExpression(i => i.TaskName);
                     cols.Add().WithColumnName("ClaimantName")
                         .WithHeaderText("Claimant")
                         .WithHtmlEncoding(false)

@@ -316,14 +316,14 @@
     <script type="text/javascript">
 
         function updateAssessmentDayTaskStatuses() {
-            let urlIds = '@Url.Content("~/ServiceRequest/GetAssessmentDayTasks")';
-            let urlUpdate = '@Url.Content("~/ServiceRequest/UpdateAssessmentDayTaskStatuses")';
+            let urlIds = '@Url.Content("~/ServiceRequestTask/GetAssessmentDayTasks")';
+            let urlUpdate = '@Url.Content("~/ServiceRequestTask/UpdateAssessmentDayTaskStatuses")';
 
             let adminMessages = document.getElementById('admin-tasks-messages');
             $.get(urlIds)
                 .done(function (data) {
                     for (var i = 0; i < data.length; i++) {
-                        $.post(urlUpdate, { serviceRequestId: data[i] })
+                        $.post(urlUpdate, { serviceRequestTaskId: data[i].id, newTaskStatusId: data[i].newTaskStatusId })
                             .done(function (data) {
                                 $(adminMessages).append('<div class="text-success">Assessment day task status success ' + data.serviceRequestId + '</div>');
                             })

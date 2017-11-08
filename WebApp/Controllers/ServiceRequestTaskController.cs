@@ -526,9 +526,7 @@ namespace WebApp.Controllers
             await service.ChangeTaskStatus(serviceRequestTaskId, taskStatusId);
 
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-
-            //await service.UpdateServiceRequestStatus(srt.ServiceRequestId);
-
+            
             return Json(new
             {
                 id = serviceRequestTaskId,
@@ -576,6 +574,48 @@ namespace WebApp.Controllers
                 .Count();
 
             return PartialView("~/Views/Dashboard/_TaskHeading.cshtml", count);
+        }
+
+        public ActionResult GetAssessmentDayTasks()
+        {
+            var shouldBeDone = db.ServiceRequestTasks
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now.Date)
+                .WithTaskId(Tasks.AssessmentDay)
+                .AreActive()
+                .Select(srt => new
+                {
+                    id = srt.Id,
+                    newTaskStatusId = TaskStatuses.Done
+                });
+
+            var shouldBeWaiting = db.ServiceRequestTasks
+                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate > now.Date)
+                .WithTaskId(Tasks.AssessmentDay)
+                .Where(t => t.TaskStatusId == TaskStatuses.ToDo || t.TaskStatusId == TaskStatuses.Done || t.TaskStatusId == TaskStatuses.Archive)
+                .Select(srt => new
+                {
+                    id = srt.Id,
+                    newTaskStatusId = TaskStatuses.Waiting
+                });
+
+            var result = shouldBeDone.Concat(shouldBeWaiting).OrderBy(id => id);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
+        public async Task<ActionResult> UpdateAssessmentDayTaskStatuses(int serviceRequestTaskId, byte newTaskStatusId)
+        {
+            await service.ChangeTaskStatus(serviceRequestTaskId, newTaskStatusId);
+
+            var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
+
+            return Json(new
+            {
+                id = serviceRequestTaskId,
+                serviceRequestId = srt.ServiceRequestId
+            });
         }
     }
 

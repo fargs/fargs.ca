@@ -1628,38 +1628,6 @@ namespace WebApp.Controllers
             return Json(ids, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetAssessmentDayTasks()
-        {
-            var shouldBeDone = db.ServiceRequestTasks
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now.Date)
-                .WithTaskId(Tasks.AssessmentDay)
-                .AreActive()
-                .Select(srt => srt.ServiceRequestId);
-
-            var shouldBeWaiting = db.ServiceRequestTasks
-                .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate > now.Date)
-                .WithTaskId(Tasks.AssessmentDay)
-                .Where(t => t.TaskStatusId == TaskStatuses.ToDo || t.TaskStatusId == TaskStatuses.Done || t.TaskStatusId == TaskStatuses.Archive)
-                .Select(srt => srt.ServiceRequestId);
-
-            var result = shouldBeDone.Concat(shouldBeWaiting).OrderBy(id => id);
-
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateAssessmentDayTaskStatuses(int serviceRequestId)
-        { 
-
-            await service.UpdateAssessmentDayTaskStatus(serviceRequestId);
-
-            return Json(new
-            {
-                serviceRequestId = serviceRequestId
-            });
-        }
-
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
         public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)

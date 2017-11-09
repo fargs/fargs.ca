@@ -5,7 +5,7 @@
 @if (Model != null && Model.Tasks.Any(srt => srt.TaskId == Tasks.SubmitInvoice && (srt.StatusId == TaskStatuses.Done || srt.StatusId == TaskStatuses.Archive)))
 {
     <small class="help-block">
-        <span>Submit Invoice task checked on </span> @Model.Tasks.Single(srt => srt.TaskId == Tasks.SubmitInvoice).TaskStatusChangedDate.ToOrvosiDateTimeFormat()
+        <span>Submit Invoice task checked on </span> @Model.Tasks.First(srt => srt.TaskId == Tasks.SubmitInvoice).TaskStatusChangedDate.ToOrvosiDateTimeFormat()
     </small>
 }
 

@@ -70,7 +70,6 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest
-        public virtual System.Collections.Generic.ICollection<InvoiceItem> InvoiceItems { get; set; } // InvoiceItem.FK_InvoiceItem_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestBoxCollaboration> ServiceRequestBoxCollaborations { get; set; } // ServiceRequestBoxCollaboration.FK_ServiceRequestBoxCollaboration_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestComment> ServiceRequestComments { get; set; } // ServiceRequestComment.FK_ServiceRequestComment_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_ServiceRequest
@@ -103,7 +102,6 @@ namespace Orvosi.Data
             HasWarnings = false;
             IsOnHold = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
-            InvoiceItems = new System.Collections.Generic.List<InvoiceItem>();
             ServiceRequestBoxCollaborations = new System.Collections.Generic.List<ServiceRequestBoxCollaboration>();
             ServiceRequestComments = new System.Collections.Generic.List<ServiceRequestComment>();
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();

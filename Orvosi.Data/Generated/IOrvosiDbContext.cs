@@ -41,8 +41,6 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         System.Data.Entity.DbSet<Invoice> Invoices { get; set; } // Invoice
         System.Data.Entity.DbSet<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail
-        System.Data.Entity.DbSet<InvoiceDraft> InvoiceDrafts { get; set; } // InvoiceDraft
-        System.Data.Entity.DbSet<InvoiceItem> InvoiceItems { get; set; } // InvoiceItem
         System.Data.Entity.DbSet<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog
         System.Data.Entity.DbSet<LocationArea> LocationAreas { get; set; } // LocationArea
         System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location

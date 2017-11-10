@@ -62,11 +62,10 @@ namespace Orvosi.Data
         public string ServiceProviderHstNumber { get; set; } // ServiceProviderHstNumber (length: 50)
         public string BoxFileId { get; set; } // BoxFileId (length: 50)
         public System.DateTime? CreatedDate { get; set; } // CreatedDate
-        public string CreatedUser { get; set; } // CreatedUser (length: 128)
+        public string CreatedUser { get; set; } // CreatedUser (length: 50)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_Invoice
-        public virtual System.Collections.Generic.ICollection<InvoiceItem> InvoiceItems { get; set; } // InvoiceItem.FK_InvoiceItem_Invoice
         public virtual System.Collections.Generic.ICollection<InvoiceSentLog> InvoiceSentLogs { get; set; } // InvoiceSentLog.FK_InvoiceSentLog_Invoice
         public virtual System.Collections.Generic.ICollection<Receipt> Receipts { get; set; } // Receipt.FK_Receipt_Invoice
 
@@ -77,7 +76,6 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsDeleted = false;
             InvoiceDetails = new System.Collections.Generic.List<InvoiceDetail>();
-            InvoiceItems = new System.Collections.Generic.List<InvoiceItem>();
             InvoiceSentLogs = new System.Collections.Generic.List<InvoiceSentLog>();
             Receipts = new System.Collections.Generic.List<Receipt>();
             InitializePartial();

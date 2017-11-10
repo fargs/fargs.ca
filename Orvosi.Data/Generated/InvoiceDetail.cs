@@ -33,13 +33,6 @@ namespace Orvosi.Data
         public bool IsDeleted { get; set; } // IsDeleted
         public System.DateTime? DeletedDate { get; set; } // DeletedDate
         public System.Guid? DeletedBy { get; set; } // DeletedBy
-        public decimal? Tax { get; set; } // Tax
-        public decimal? TaxRate { get; set; } // TaxRate
-
-        ///<summary>
-        /// 1 = FLAT, 2 = PERCENTAGE
-        ///</summary>
-        public byte? DiscountTypeId { get; set; } // DiscountTypeId
 
         // Foreign keys
         public virtual Invoice Invoice { get; set; } // FK_InvoiceDetail_Invoice

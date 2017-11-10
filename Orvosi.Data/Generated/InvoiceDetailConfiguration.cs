@@ -43,9 +43,6 @@ namespace Orvosi.Data
             Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
             Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").IsOptional().HasColumnType("datetime");
             Property(x => x.DeletedBy).HasColumnName(@"DeletedBy").IsOptional().HasColumnType("uniqueidentifier");
-            Property(x => x.Tax).HasColumnName(@"Tax").IsOptional().HasColumnType("decimal").HasPrecision(10,2);
-            Property(x => x.TaxRate).HasColumnName(@"TaxRate").IsOptional().HasColumnType("decimal").HasPrecision(10,4);
-            Property(x => x.DiscountTypeId).HasColumnName(@"DiscountTypeId").IsOptional().HasColumnType("tinyint");
 
             // Foreign keys
             HasOptional(a => a.ServiceRequest).WithMany(b => b.InvoiceDetails).HasForeignKey(c => c.ServiceRequestId).WillCascadeOnDelete(false); // FK_InvoiceDetail_ServiceRequest

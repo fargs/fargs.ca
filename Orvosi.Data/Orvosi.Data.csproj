@@ -250,18 +250,6 @@
     <Compile Include="Generated\InvoiceDetailConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
-    <Compile Include="Generated\InvoiceDraft.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\InvoiceDraftConfiguration.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\InvoiceItem.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Generated\InvoiceItemConfiguration.cs">
-      <DependentUpon>Orvosi.tt</DependentUpon>
-    </Compile>
     <Compile Include="Generated\InvoiceSentLog.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

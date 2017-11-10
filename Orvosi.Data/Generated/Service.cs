@@ -29,7 +29,6 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public bool IsLocationRequired { get; set; } // IsLocationRequired
         public string ColorCode { get; set; } // ColorCode (length: 10)
-        public bool IsAppointmentRequired { get; set; } // IsAppointmentRequired
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<PhysicianService> PhysicianServices { get; set; } // PhysicianService.FK_PhysicianService_Service
@@ -44,7 +43,6 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             IsLocationRequired = true;
-            IsAppointmentRequired = false;
             PhysicianServices = new System.Collections.Generic.List<PhysicianService>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();

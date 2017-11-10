@@ -82,6 +82,8 @@
     <Folder Include="_Data" />
     <Folder Include="Migrate\" />
     <Folder Include="Migrate\Stored Procedures\" />
+    <Folder Include="Manual\" />
+    <Folder Include="Manual\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -206,7 +208,6 @@
     <Build Include="API\Stored Procedures\AvailableDay_Delete.sql" />
     <Build Include="dbo\Tables\InvoiceDetail.sql" />
     <Build Include="dbo\Tables\Invoice.sql" />
-    <Build Include="API\Views\Invoice.sql" />
     <Build Include="dbo\Functions\GetInvoiceDetailAmount.sql" />
     <Build Include="API\Stored Procedures\InvoiceDetail_Update.sql" />
     <Build Include="API\Stored Procedures\InvoiceDetail_Insert.sql" />
@@ -295,6 +296,12 @@
     <Build Include="Security\Migrate.sql" />
     <Build Include="Migrate\Stored Procedures\LocationsToCities.sql" />
     <Build Include="Security\Manual.sql" />
+    <Build Include="dbo\Tables\AvailableDayResource.sql" />
+    <Build Include="API\Views\InvoiceToQBExport.sql" />
+    <Build Include="API\Views\Clients.sql" />
+    <Build Include="Manual\Stored Procedures\UpdateSubmitReportTaskDueDatesToReportDueDate.sql" />
+    <Build Include="dbo\Stored Procedures\_Migrations_DependentTasks.sql" />
+    <Build Include="API\Views\Invoice.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

@@ -58,3 +58,11 @@
 
 
 
+
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Invoice_1]
+    ON [dbo].[Invoice]([ServiceProviderGuid] ASC, [InvoiceDate] ASC)
+    INCLUDE([ObjectGuid], [InvoiceNumber], [Terms], [ServiceProviderName], [ServiceProviderEmail], [ServiceProviderProvince], [CustomerGuid], [CustomerName], [CustomerCity], [CustomerProvince], [CustomerEmail], [SubTotal], [TaxRateHst], [Total], [SentDate], [PaymentReceivedDate], [Hst], [IsDeleted]);
+

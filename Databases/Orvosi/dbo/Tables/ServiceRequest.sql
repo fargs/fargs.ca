@@ -87,6 +87,8 @@ ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_Service
 
 
 
+GO
+ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_ServiceRequestTemplate];
 
 
 
@@ -111,4 +113,14 @@ ALTER TABLE [dbo].[ServiceRequest] NOCHECK CONSTRAINT [FK_ServiceRequest_Service
 
 
 
+
+
+
+
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_ServiceRequest_1]
+    ON [dbo].[ServiceRequest]([PhysicianId] ASC)
+    INCLUDE([ClaimantName], [AddressId], [CancelledDate], [AppointmentDate], [StartTime], [DueDate], [Notes], [CompanyId], [IsNoShow], [IsLateCancellation], [ServiceId], [ServiceRequestStatusId]);
 

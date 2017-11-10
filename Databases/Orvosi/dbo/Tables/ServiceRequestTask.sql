@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[ServiceRequestTask] (
+CREATE TABLE [dbo].[ServiceRequestTask] (
     [Id]                                INT              IDENTITY (1, 1) NOT NULL,
     [ObjectGuid]                        UNIQUEIDENTIFIER CONSTRAINT [DF_ServiceRequestTask_ObjectGuid] DEFAULT (newid()) NOT NULL,
     [ServiceRequestId]                  INT              NOT NULL,
@@ -47,6 +47,20 @@
     CONSTRAINT [FK_ServiceRequestTask_Task] FOREIGN KEY ([TaskId]) REFERENCES [dbo].[Task] ([Id]),
     CONSTRAINT [FK_ServiceRequestTask_TaskStatus] FOREIGN KEY ([TaskStatusId]) REFERENCES [dbo].[TaskStatus] ([Id])
 );
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy];
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_AspNetUsers1];
+
+
+GO
+ALTER TABLE [dbo].[ServiceRequestTask] NOCHECK CONSTRAINT [FK_ServiceRequestTask_Task];
+
+
 
 
 GO
@@ -198,5 +212,7 @@ CREATE NONCLUSTERED INDEX [IX_ServiceRequestTask_AssignedTo_ServiceRequestId]
 
 
 GO
-
+CREATE NONCLUSTERED INDEX [IX_ServiceRequestTask_1]
+    ON [dbo].[ServiceRequestTask]([TaskId] ASC)
+    INCLUDE([Id], [ServiceRequestId], [TaskStatusId], [TaskStatusChangedDate]);
 

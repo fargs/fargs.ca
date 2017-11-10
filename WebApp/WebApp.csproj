@@ -473,6 +473,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
+    <Compile Include="Controllers\ReleaseHistoryController.cs" />
     <Compile Include="Controllers\RescheduleController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
     <Compile Include="Controllers\ServiceController.cs" />
@@ -707,6 +708,11 @@
     <Content Include="Content\images\Physician Branding\logo-rgandhi-md.jpg" />
     <Content Include="Content\images\Physician Branding\logo-sdessouki-md.jpg" />
     <Content Include="Content\images\Physician Branding\logo-zwaseem-md.jpg" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_CancellationForm1_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_CancellationForm2_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_DaySheet_CreateInvoice_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_DaySheet_PaidInvoiceAndCancelledInvoice_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_DaySheet_SentInvoice_PostChange.png" />
     <Content Include="Content\images\Screenshots\Admin_User_AddUserButton.png" />
     <Content Include="Content\images\SendDocumentsSecurely.jpg" />
     <Content Include="Content\images\SOMA Logo.png" />
@@ -1154,6 +1160,15 @@
     <Content Include="Scripts\ww.jquery.js" />
     <Content Include="Scripts\ww.jquery.min.js" />
     <Content Include="Views\Collaborator\_PhysicianDropDownList.cshtml" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_Additionals_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_Additionals_PreChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_NewTask_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_PreChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_CaseDetails_RescheduleFromTask_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_DaySheet_LiveChat_PostChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_DaySheet_LiveChat_PreChange.png" />
+    <Content Include="Content\images\ReleaseHistory\Oct2017\Work_Tasks_OnHoldOverdue_PostChange.png" />
     <Content Include="Views\ServiceRequest\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="ApplicationInsights.config">
@@ -1356,6 +1371,7 @@
     <Content Include="Views\ServiceRequest\AgendaActionMenu.cshtml" />
     <Content Include="Views\ReleaseHistory\Oct2017.cshtml" />
     <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
+    <Content Include="Views\ReleaseHistory\Index.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

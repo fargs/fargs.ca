@@ -10,7 +10,18 @@
 <div class="modal-body">
     <form id="cancellation-form">
         @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+        @Html.Hidden("AppointmentDate", Model.AppointmentDate)
 
+        <div class="form-group">
+            @if (Model.AppointmentDate.HasValue)
+            {
+                <span>Appointment Date is @Model.AppointmentDate.Value.ToOrvosiDateFormat()</span>
+            }
+            else
+            {
+                <span>No appointment date for this request.</span>
+            }
+        </div>
         <div class="form-group">
             <label class="control-label">Cancelled Date</label>
             <div class="input-group date" style="width:100%" id="CancelledDatePicker">
@@ -18,6 +29,19 @@
                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
             </div>
             @Html.ValidationMessageFor(c => c.CancelledDate, "", new { @class = "text-danger" })
+        </div>
+
+        @if (Model.LateCancellationPolicy.HasValue)
+        {
+            <span>Late cancellation policy is @Model.LateCancellationPolicy.Value hours.</span>
+        }
+        else
+        {
+            <span>A late cancellation policy has not been set.</span>
+        }
+
+        <div id="latecancellationpolicyviolation-container">
+            @Html.Partial("LateCancellationPolicyViolation", Model.IsLateCancellationPolicyViolated)
         </div>
 
         <div class="form-group">
@@ -41,8 +65,19 @@
 
 
 <script type="text/javascript">
+    console.log('cancellation form javascript is executed.');
     $('#CancelledDatePicker').datepicker({
         format: 'yyyy-mm-dd',
-        autoclose: true
+        autoclose: true,
+
+    }).on('changeDate', function (e) {
+        console.log('change date function is executed.');
+        var url = '@Url.Content("~/Cancellation/LateCancellationPolicyViolation")';
+        $.post(url, {
+            serviceRequestId: $('#cancellation-form input[name="ServiceRequestId"]').val(),
+            cancelledDate: $('#cancellation-form input[name="CancelledDate"]').val()
+        }).done(function (result) {
+            $('#latecancellationpolicyviolation-container').html(result);
+        })
     });
 </script>

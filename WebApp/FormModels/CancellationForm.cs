@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using WebApp.ViewModels;
 
 namespace WebApp.FormModels
 {
@@ -15,6 +16,8 @@ namespace WebApp.FormModels
         public DateTime CancelledDate { get; set; }
         public string IsLate { get; set; }
         public string Notes { get; set; }
-
+        public int? LateCancellationPolicy { get; set; }
+        public bool IsLateCancellationPolicyViolated { get; set; }
+        public DateTime? AppointmentDate { get; set; }
     }
 }

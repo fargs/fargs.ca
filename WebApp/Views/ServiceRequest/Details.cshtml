@@ -218,6 +218,20 @@
             });
         }
 
+        function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: @args.ServiceRequestId,
+                    ViewTarget: '@args.ViewTarget',
+                    ViewFilter: '@args.ViewFilter'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container').innerHTML = result;
+                    selectTask(null);
+                });
+        }
+
         function taskChanged(serviceRequestTaskId, serviceRequestId) {
             let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
             $.get(url,

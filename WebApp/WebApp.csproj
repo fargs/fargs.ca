@@ -1355,6 +1355,7 @@
     <Content Include="Views\ServiceRequest\InvoiceListMenu.cshtml" />
     <Content Include="Views\ServiceRequest\AgendaActionMenu.cshtml" />
     <Content Include="Views\ReleaseHistory\Oct2017.cshtml" />
+    <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

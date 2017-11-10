@@ -20,6 +20,7 @@ namespace WebApp.Models
             Messages = new List<MessageDto>();
             //Comments = new List<CommentDto>();
         }
+
         public int Id { get; set; }
         public string ClaimantName { get; set; }
         public DateTime? AppointmentDate { get; set; }
@@ -34,6 +35,46 @@ namespace WebApp.Models
         public string Notes { get; set; }
         public bool HasErrors { get; set; }
         public bool HasWarnings { get; set; }
+
+        // Computed properties
+
+
+        // Functions
+        public bool IsLateCancellationPolicyViolated(int? lateCancellationPolicy, DateTime cancelledDate)
+        {
+            //TODO: This potentially should move to the ServiceRequestTask on event tasks to allow for multiple events per case
+
+            if (!lateCancellationPolicy.HasValue)
+            {
+                return false;
+            }
+
+            // does not have an appointment
+            if (!HasAppointment)
+            {
+                return false;
+            }
+
+            if (cancelledDate >= AppointmentDate)
+            {
+                return true;
+            }
+
+            TimeSpan diff = AppointmentDate.Value - cancelledDate;
+            double hours = diff.TotalHours;
+
+            if (diff.TotalHours <= lateCancellationPolicy)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Foreign Keys
+        public Guid? PhysicianId { get; set; }
+        public int? ServiceId { get; set; }
+        public int? CompanyId { get; set; } // used to get the service catalogue rates
         public Guid? CompanyGuid { get; set; } // used to get the service catalogue in the accounting controller.
 
         public LookupDto<short> Service { get; set; }
@@ -113,6 +154,15 @@ namespace WebApp.Models
             IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant)
 
             //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+        };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForCancellationForm = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            PhysicianId = sr.PhysicianId,
+            CompanyId = sr.CompanyId,
+            ServiceId = sr.ServiceId,
+            AppointmentDate = sr.AppointmentDate
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForMessages = sr => new ServiceRequestDto

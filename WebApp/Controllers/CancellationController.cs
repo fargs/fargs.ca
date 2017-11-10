@@ -30,13 +30,37 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult ShowCancelRequest(int serviceRequestId)
         {
+            // retrieve the data from the database
+            var serviceRequest = db.ServiceRequests.WithId(serviceRequestId).Select(ServiceRequestDto.FromEntityForCancellationForm.Expand()).Single();
+
+            var policy = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.CompanyGuid).Single();
+
+            var policyResult = serviceRequest.IsLateCancellationPolicyViolated(policy.LateCancellationPolicy, now);
+
             var viewModel = new CancellationForm()
             {
+                AppointmentDate = serviceRequest.AppointmentDate,
                 ServiceRequestId = serviceRequestId,
-                CancelledDate = now
+                CancelledDate = now,
+                LateCancellationPolicy = policy.LateCancellationPolicy,
+                IsLateCancellationPolicyViolated = policyResult
             };
 
             return PartialView("CancellationModalForm", viewModel);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
+        public async Task<ActionResult> LateCancellationPolicyViolation(int serviceRequestId, DateTime cancelledDate)
+        {
+            // retrieve the data from the database
+            var serviceRequest = db.ServiceRequests.WithId(serviceRequestId).Select(ServiceRequestDto.FromEntityForCancellationForm.Expand()).Single();
+
+            var policy = db.GetServiceCatalogueRate(serviceRequest.PhysicianId, serviceRequest.CompanyGuid).Single();
+
+            var policyResult = serviceRequest.IsLateCancellationPolicyViolated(policy.LateCancellationPolicy, cancelledDate); // Cancelled Date is the difference between ShowCancelRequest
+
+            return PartialView("LateCancellationPolicyViolation", policyResult);
         }
 
         [HttpPost]

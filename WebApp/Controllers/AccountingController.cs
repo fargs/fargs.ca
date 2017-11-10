@@ -27,7 +27,6 @@ using WebApp.ViewModels.CalendarViewModels;
 using WebApp.ViewModels;
 using WebApp.Library.Helpers;
 using System.Collections.Specialized;
-using Orvosi.Data.Extensions;
 using System.Security.Principal;
 using System.Configuration;
 

@@ -24,6 +24,7 @@ namespace Orvosi.Data
         public decimal? LateCancellationRate { get; set; } // LateCancellationRate
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public int? LateCancellationPolicy { get; set; } // LateCancellationPolicy
 
         public ServiceCatalogueRate()
         {

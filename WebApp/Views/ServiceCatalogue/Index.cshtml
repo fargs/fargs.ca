@@ -60,6 +60,17 @@ else
             @{ var lateCancellationFormat = Model.ServiceCatalogueRate.LateCancellationRate.HasValue && Model.ServiceCatalogueRate.LateCancellationRate > 1 ? "C2" : "0%"; }
             @Model.ServiceCatalogueRate.LateCancellationRate.GetValueOrDefault(0).ToString(lateCancellationFormat)
         </dd>
+        <dt>Late Cancellation Policy in Hours (eg. 72 hours = 3 days)</dt>
+        <dd>
+            @if (Model.ServiceCatalogueRate.LateCancellationPolicy.HasValue)
+            {
+                <span>@Model.ServiceCatalogueRate.LateCancellationPolicy.GetValueOrDefault(0) hours</span>
+            }
+            else
+            {
+                <span>No policy set</span>
+            }
+        </dd>
     </dl>
                 }
 <a class="btn btn-sm btn-primary" style="margin-bottom:20px;" href="~/@(string.Format("ServiceCatalogue/EditRates?ServiceProviderGuid={0}&CustomerGuid={1}", userContext.Id, Model.SelectedCompany != null ? Model.SelectedCompany.ObjectGuid.ToString() : string.Empty))">Set Rates</a>

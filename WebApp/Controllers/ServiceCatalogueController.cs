@@ -46,6 +46,7 @@ namespace WebApp.Controllers
             var inheritedValues = db.GetServiceCatalogueRate(physicianOrLoggedInUserId, vm.SelectedCompany != null ? vm.SelectedCompany.ObjectGuid : Guid.Empty).First();
             vm.ServiceCatalogueRate.NoShowRate = inheritedValues.NoShowRate;
             vm.ServiceCatalogueRate.LateCancellationRate = inheritedValues.LateCancellationRate;
+            vm.ServiceCatalogueRate.LateCancellationPolicy = inheritedValues.LateCancellationPolicy;
             return View(vm);
         }
 
@@ -187,6 +188,7 @@ namespace WebApp.Controllers
                     CustomerGuid = form.CustomerGuid,
                     NoShowRate = form.NoShowRate,
                     LateCancellationRate = form.LateCancellationRate,
+                    LateCancellationPolicy = form.LateCancellationPolicy,
                     ModifiedDate = SystemTime.Now(),
                     ModifiedUser = User.Identity.Name
                 };
@@ -197,6 +199,7 @@ namespace WebApp.Controllers
                 var rate = await db.ServiceCatalogueRates.SingleAsync(c => c.ServiceProviderGuid == physicianOrLoggedInUserId && c.CustomerGuid == form.CustomerGuid);
                 rate.NoShowRate = form.NoShowRate.GetValueOrDefault(0);
                 rate.LateCancellationRate = form.LateCancellationRate.GetValueOrDefault(0);
+                rate.LateCancellationPolicy = form.LateCancellationPolicy.GetValueOrDefault(0);
                 rate.ModifiedDate = SystemTime.Now();
                 rate.ModifiedUser = User.Identity.Name;
             }

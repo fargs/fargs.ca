@@ -18,6 +18,7 @@ namespace Orvosi.Data
     {
         public System.Decimal? NoShowRate { get; set; }
         public System.Decimal? LateCancellationRate { get; set; }
+        public System.Int32? LateCancellationPolicy { get; set; }
     }
 
 }

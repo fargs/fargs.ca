@@ -3,7 +3,7 @@
 	@CustomerGuid uniqueidentifier
 AS
 
-DECLARE @NoShowRate DECIMAL(18,2), @LateCancellationRate DECIMAL(18,2)
+DECLARE @NoShowRate DECIMAL(18,2), @LateCancellationRate DECIMAL(18,2), @LateCancellationPolicy INT
 DECLARE @ParentId INT, @ParentGuid UNIQUEIDENTIFIER
 
 SELECT @ParentId = ParentId FROM dbo.Company WHERE ObjectGuid = @CustomerGuid
@@ -13,6 +13,7 @@ SELECT @ParentGuid = ObjectGuid FROM dbo.Company WHERE Id = @ParentId
 -- Get the rates of the selected company
 SELECT @NoShowRate = r.NoShowRate
 	, @LateCancellationRate = r.LateCancellationRate
+	, @LateCancellationPolicy = r.LateCancellationPolicy
 FROM dbo.ServiceCatalogueRate r
 WHERE r.ServiceProviderGuid = @ServiceProviderGuid AND r.CustomerGuid = @CustomerGuid
 
@@ -20,6 +21,7 @@ WHERE r.ServiceProviderGuid = @ServiceProviderGuid AND r.CustomerGuid = @Custome
 IF @ParentGuid IS NOT NULL BEGIN
 	SELECT @NoShowRate = ISNULL(@NoShowRate, r.NoShowRate)
 		, @LateCancellationRate = ISNULL(@LateCancellationRate, r.LateCancellationRate)
+		, @LateCancellationPolicy = ISNULL(@LateCancellationPolicy, r.LateCancellationPolicy)
 	FROM dbo.ServiceCatalogueRate r
 	WHERE r.ServiceProviderGuid = @ServiceProviderGuid AND r.CustomerGuid = @ParentGuid
 END
@@ -27,11 +29,13 @@ END
 -- Finally if the rates have still not been set, use the service provider defaults.
 SELECT @NoShowRate = ISNULL(@NoShowRate, r.NoShowRate)
 	, @LateCancellationRate = ISNULL(@LateCancellationRate, r.LateCancellationRate)
+	, @LateCancellationPolicy = ISNULL(@LateCancellationPolicy, r.LateCancellationPolicy)
 FROM dbo.ServiceCatalogueRate r
 WHERE r.ServiceProviderGuid = @ServiceProviderGuid AND r.CustomerGuid IS NULL
 
 SELECT NoShowRate = ISNULL(@NoShowRate, 0.0)
 	, LateCancellationRate = ISNULL(@LateCancellationRate, 0.0)
+	, LateCancellationPolicy = ISNULL(@LateCancellationPolicy, 0)
 
 RETURN 0
 

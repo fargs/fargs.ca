@@ -1258,6 +1258,9 @@
     <Content Include="orvosi-b54037435bbf.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\PublishProfiles\orvosi - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\orvosi-canada - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\orvosi-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosiapp-staging - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -1361,7 +1364,6 @@
     <Content Include="Views\Reschedule\_RescheduleJS.cshtml" />
     <Content Include="Views\Reschedule\SlotPicker.cshtml" />
     <Content Include="Views\ServiceRequestTask\NewTaskForm.cshtml" />
-    <Content Include="Views\Invoice\Create.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceList.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceReadOnly.cshtml" />
     <Content Include="Views\ServiceRequestTask\TaskTools.cshtml" />
@@ -1429,7 +1431,6 @@
     <Content Include="Views\Invoice\Index.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />
     <Content Include="Views\Invoice\_Invoice.cshtml" />
-    <Content Include="Views\ServiceRequest\_CreateInvoice.cshtml" />
     <Content Include="Views\Invoice\_Table.cshtml" />
     <Content Include="Views\Invoice\PrintableInvoice.cshtml" />
     <Content Include="Views\Invoice\Edit.cshtml" />

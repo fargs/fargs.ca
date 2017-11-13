@@ -174,4 +174,9 @@ namespace Orvosi.Shared.Enums.Features
         public const short Search = 504;
 
     }
+
+    public class Reports
+    {
+        public const short View = 800;
+    }
 }

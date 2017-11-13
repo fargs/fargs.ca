@@ -1,0 +1,10 @@
+﻿@model IEnumerable<WebApp.Areas.Reports.Data.InvoiceToQbExport>
+
+<table>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.InvoiceNumber</td>
+        </tr>
+    }
+</table>

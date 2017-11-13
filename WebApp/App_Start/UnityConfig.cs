@@ -11,6 +11,7 @@ using System;
 using System.Security.Principal;
 using System.Security.Claims;
 using WebApp.Library;
+using WebApp.Areas.Reports.Data;
 
 namespace WebApp
 {
@@ -29,6 +30,8 @@ namespace WebApp
             container.RegisterType<DateTime>(new InjectionFactory(c => DateTime.Now));
 
             container.RegisterType<IPrincipal>(new InjectionFactory(c => HttpContext.Current.User));
+
+            container.RegisterType<ReportsContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 
             container.RegisterType<OrvosiDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 

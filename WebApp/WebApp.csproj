@@ -290,6 +290,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
@@ -458,6 +459,35 @@
     <Compile Include="Areas\Admin\ViewModels\CompanyViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestViewModels.cs" />
+    <Compile Include="Areas\Reports\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Reports\Controllers\InvoiceController.cs" />
+    <Compile Include="Areas\Reports\Data\FakeDbSet.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\FakeReportsContext.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\InvoiceToQbExport.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\InvoiceToQbExportConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\IReportsContext.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\Orvosi.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\ReportsContext.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\Data\ReportsContextFactory.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reports\ReportsAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AccountingController.cs" />
     <Compile Include="Controllers\AvailabilityController.cs" />
@@ -492,6 +522,7 @@
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\AccountingService.cs" />
     <Compile Include="Library\Box.cs" />
+    <Compile Include="Library\CsvResult.cs" />
     <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\EnumExtensions.cs" />
     <Compile Include="Library\Enums.cs" />
@@ -625,6 +656,10 @@
     <Compile Include="ViewModels\UserContextViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Reports\Data\Orvosi.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Orvosi.cs</LastGenOutput>
+    </Content>
     <Content Include="CodeTemplates\AddController\ApiController.tt" />
     <Content Include="CodeTemplates\AddController\ApiControllerWithContext.tt" />
     <Content Include="CodeTemplates\AddController\Controller.tt" />
@@ -1198,6 +1233,11 @@
     <Content Include="Areas\Admin\Views\AspNetRolesFeature\Details.cshtml" />
     <Content Include="Areas\Admin\Views\AspNetRolesFeature\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\AspNetRolesFeature\Index.cshtml" />
+    <Content Include="Areas\Reports\Views\web.config" />
+    <Content Include="Areas\Reports\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Reports\Data\EF.Reverse.POCO.Core.ttinclude" />
+    <Content Include="Areas\Reports\Data\EF.Reverse.POCO.ttinclude" />
+    <Content Include="Areas\Reports\Views\Invoice\ForReconciliation.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1533,6 +1573,8 @@
     <Folder Include="Areas\Admin\Views\Box\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
+    <Folder Include="Areas\Reports\Models\" />
+    <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Home\" />

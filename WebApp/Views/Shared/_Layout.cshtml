@@ -103,6 +103,10 @@
                         {
                             <li>@Html.ActionLink("MyOrvo", "Index", "ServiceCatalogue", new { area = "" }, null)</li>
                         }
+                        if (features.Contains(Features.Reports.View))
+                        {
+                            <li>@Html.ActionLink("Reports", "Index", "Home", new { area = "Reports" }, null)</li>
+                        }
                         if (features.Contains(Features.Admin.Section))
                         {
                             <li role="presentation" class="dropdown">

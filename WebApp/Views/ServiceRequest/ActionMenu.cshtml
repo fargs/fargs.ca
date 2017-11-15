@@ -11,7 +11,7 @@
     @if (features.Contains(Features.ServiceRequest.Edit))
     {
         <span class="btn-group">
-            <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i></a>
+            <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL" title="Open Case Folder"><i class="fa fa-folder-open-o fa-lg"></i></a>
         </span>
         <div class="btn-group">
             @if (features.Contains(Features.ServiceRequest.ToggleNoShow))
@@ -20,11 +20,11 @@
                 {
                     if (Model.CancellationViewModel.IsNoShow)
                     {
-                        <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger"><i class="fa fa-calendar-minus-o"></i> No Show</button>
+                        <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger" title="Undo No Show"><i class="fa fa-calendar-minus-o"></i> No Show</button>
                     }
                     else
                     {
-                        <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default "><i class="fa fa-calendar-minus-o"></i> No Show</button>
+                        <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default" title="No Show"><i class="fa fa-calendar-minus-o"></i> No Show</button>
                     }
                 }
             }
@@ -32,48 +32,48 @@
                 {
                     if (Model.CanBeUncancelled)
                     {
-                    <a onclick="undoCancellation(@Model.ServiceRequestId)" class="btn btn-default btn-info"><i class="fa fa-ban"></i></a>
-                    <a onclick="showDeleteRequest(@Model.ServiceRequestId)" class="btn btn-default"><i class="fa fa-trash"></i></a>
+                    <a onclick="undoCancellation(@Model.ServiceRequestId)" class="btn btn-default btn-info" title="Undo Cancellation"><i class="fa fa-ban"></i></a>
+                    <a onclick="showDeleteRequest(@Model.ServiceRequestId)" class="btn btn-default" title="Delete"><i class="fa fa-trash"></i></a>
                 }
                 else if (Model.CanBeCancelled)
                 {
-                    <a onclick="showCancellationForm(@Model.ServiceRequestId)" class="btn btn-default"><i class="fa fa-ban"></i></a>
+                    <a onclick="showCancellationForm(@Model.ServiceRequestId)" class="btn btn-default" title="Cancel"><i class="fa fa-ban"></i></a>
                 }
             }
             @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
             {
                 if (Model.ServiceRequestStatusId == TaskStatuses.OnHold)
                 {
-                    <button type="button" onclick="onHold(@Model.ServiceRequestId , true)" class="btn btn-default btn-info"><i class="fa fa-hand-paper-o"></i></button>
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , true)" class="btn btn-default btn-info" title="Undo On Hold"><i class="fa fa-hand-paper-o"></i></button>
                 }
                 else
                 {
-                    <button type="button" onclick="onHold(@Model.ServiceRequestId , false)" class="btn btn-default "><i class="fa fa-hand-paper-o"></i></button>
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , false)" class="btn btn-default" title="On Hold"><i class="fa fa-hand-paper-o"></i></button>
                 }
             }
         </div>
         <div class="btn-group">
             @if (features.Contains(Features.ServiceRequest.AssignResources))
                 {
-                <a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-users"></i></a>
+                <a href="~/ServiceRequest/ResourceAssignment/@Model.ServiceRequestId" class="btn btn-default" title="Assign Resources"><i class="fa fa-users"></i></a>
             }
             @if (features.Contains(Features.ServiceRequest.Reschedule))
                 {
                     if (Model.CanBeRescheduled)
                     {
-                    <a href="~/ServiceRequest/Reschedule/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-calendar"></i></a>
+                    <a href="~/ServiceRequest/Reschedule/@Model.ServiceRequestId" class="btn btn-default" title="Reschedule"><i class="fa fa-calendar"></i></a>
                 }
             }
             </div>
             <div class="btn-group">
-                <a href="~/ServiceRequest/Edit/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                <a href="~/ServiceRequest/Edit/@Model.ServiceRequestId" class="btn btn-default" title="Edit"><i class="fa fa-pencil"></i></a>
                 @if (features.Contains(Features.ServiceRequest.ChangeCompanyOrService))
                 {
-                    <a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-building"></i></a>
+                    <a href="~/ServiceRequest/ChangeCompany/@Model.ServiceRequestId" class="btn btn-default" title="Change Company and Service"><i class="fa fa-building"></i></a>
                 }
                 @if (features.Contains(Features.ServiceRequest.ChangeProcessTemplate))
                 {
-                    <a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequestId" class="btn btn-default"><i class="fa fa-tasks"></i></a>
+                    <a href="~/ServiceRequest/ChangeProcessTemplate/@Model.ServiceRequestId" class="btn btn-default" title="Change Workflow Template"><i class="fa fa-tasks"></i></a>
                 }
             </div>
             <div class="btn-group">

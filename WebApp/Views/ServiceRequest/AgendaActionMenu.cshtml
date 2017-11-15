@@ -17,11 +17,11 @@
         {
             if (Model.CancellationViewModel.IsNoShow)
             {
-                <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger"><i class="fa fa-calendar-minus-o"></i> No Show</button>
+                <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger" style="border:0;"><i class="fa fa-check-square-o"></i> No Show</button>
             }
             else
             {
-                <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default "><i class="fa fa-calendar-minus-o"></i> No Show</button>
+                <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default" style="border:0;"><i class="fa fa-square-o"></i> No Show</button>
             }
         }
     }

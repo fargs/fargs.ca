@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<WebApp.ViewModels.InvoiceViewModels.InvoiceViewModel>
 
-@foreach (var invoice in Model)
+@foreach (var invoice in Model.OrderByDescending(i => i.InvoiceNumber))
 {
     <div class="panel panel-default">
         <div class="panel-heading">

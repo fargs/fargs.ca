@@ -12,16 +12,22 @@
 @if (Model.TaskId == Tasks.SubmitInvoice && features.Contains(Features.Accounting.ManageInvoices))
 {
     <section data-hastools="true">
-        @if (features.Contains(Features.Accounting.CreateInvoice))
-        {
-            @Html.Partial("~/Views/ServiceRequest/InvoiceListMenu.cshtml", Model.ServiceRequestId)
-        }
         @if (features.Contains(Features.Accounting.ViewInvoice))
         {
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                Invoices
+
+                <h3 class="panel-title pull-left">
+                    Invoices
+                </h3>
+                @if (features.Contains(Features.Accounting.CreateInvoice))
+                {
+                    <div class="pull-right">
+                        @Html.Partial("~/Views/ServiceRequest/InvoiceListMenu.cshtml", Model.ServiceRequestId)
+                    </div>
+                }
+                <div class="clearfix"></div>
             </div>
             <div class="panel-body">
                 <div id="invoice-list-container-@Model.ServiceRequestId">

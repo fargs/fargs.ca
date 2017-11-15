@@ -654,6 +654,7 @@
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\TaskViewModel.cs" />
     <Compile Include="ViewModels\UIElements\DropDownListViewModel.cs" />
     <Compile Include="ViewModels\UserContextViewModel.cs" />
+    <Compile Include="ViewModels\Shared\EntityValidationErrorsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Reports\Data\Orvosi.tt">
@@ -1414,6 +1415,7 @@
     <Content Include="Views\ReleaseHistory\Oct2017.cshtml" />
     <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
     <Content Include="Views\ReleaseHistory\Index.cshtml" />
+    <Content Include="Views\Shared\EntityValidationErrors.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

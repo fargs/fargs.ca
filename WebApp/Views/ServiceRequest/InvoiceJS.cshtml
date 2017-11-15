@@ -47,8 +47,13 @@
             serviceRequestId: serviceRequestId
         })
         .done(function (result) {
-            toastr.success("Invoice created successfully");
-            invoiceChanged(result.id);
+            if ($(result).data().haserrors) {
+                invoiceErrors(result);
+            }
+            else {
+                toastr.success("Invoice created successfully");
+                invoiceChanged(result.id, serviceRequestId);
+            }
         });
     }
 
@@ -143,6 +148,10 @@
 
     function invoiceListChanged(serviceRequestId) {
         console.log('invoice list changed event handler: expected to be overridden');
+    }
+
+    function invoiceErrors(entityValidationErrorsViewModel) {
+        console.log('invoice errors should be overriden');
     }
     
 </script>

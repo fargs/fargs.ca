@@ -224,8 +224,14 @@
                 serviceRequestId: serviceRequestId
             })
             .done(function (result) {
-                toastr.success("Invoice created successfully");
-                invoiceChanged(result.id, serviceRequestId);
+                if ($(result).data().haserrors) {
+                    var selector = "#invoice-list-container-" + $(result).data().id;
+                    $(selector).before(result);
+                }
+                else {
+                    toastr.success("Invoice created successfully");
+                    invoiceChanged(result.id, serviceRequestId);
+                }
             });
         }
 

@@ -29,6 +29,8 @@ using WebApp.Library.Helpers;
 using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Configuration;
+using System.Data.Entity.Validation;
+using WebApp.ViewModels.Shared;
 
 namespace WebApp.Controllers
 {
@@ -463,7 +465,14 @@ namespace WebApp.Controllers
 
             db.Invoices.Add(invoice);
 
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                return PartialView("EntityValidationErrors", new EntityValidationErrorsViewModel() { Id = serviceRequestId.ToString(), Exception = e });
+            }
 
             return Json(new
             {

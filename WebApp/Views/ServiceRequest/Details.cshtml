@@ -379,6 +379,10 @@
             });
         }
 
+        function invoiceErrors(result) {
+            var selector = "#invoice-list-container-" + $(result).data().id;
+            $(selector).before(result);
+        }
     </script>
 
 }

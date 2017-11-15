@@ -1,0 +1,22 @@
+﻿@model WebApp.ViewModels.Shared.EntityValidationErrorsViewModel
+
+@{ 
+    IEnumerable<System.Data.Entity.Validation.DbValidationError> errors = new List<System.Data.Entity.Validation.DbValidationError>();
+    var entityValidationException = Model.Exception;
+    if (entityValidationException != null)
+    {
+        errors = entityValidationException.EntityValidationErrors.SelectMany(err => err.ValidationErrors);
+    }
+}
+<section data-haserrors="true" data-id="@Model.Id">
+    <div class="alert alert-danger alert-dismissable" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Errors!</strong>
+        <ul>
+            @foreach (var error in errors)
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+</section>

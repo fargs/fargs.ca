@@ -52,7 +52,7 @@
             }
             else {
                 toastr.success("Invoice created successfully");
-                invoiceChanged(result.id, serviceRequestId);
+                invoiceChanged(result.id);
             }
         });
     }
@@ -65,7 +65,7 @@
         })
         .done(function () {
             toastr.success("Invoice deleted successfully");
-            invoiceListChanged();
+            invoiceChanged(invoiceId);
         });
     }
 
@@ -77,7 +77,7 @@
         })
         .done(function () {
             toastr.success("Invoice uncancelled successfully");
-            invoiceListChanged();
+            invoiceChanged(invoiceId);
         });
     }
 

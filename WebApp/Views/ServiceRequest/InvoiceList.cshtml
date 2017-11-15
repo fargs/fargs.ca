@@ -4,18 +4,20 @@
 {
     <div class="panel panel-default">
         <div class="panel-heading">
-            <div style="display:flex">
+            <div style="display:flex" @(invoice.IsDeleted ? string.Format("data-toggle=collapse data-target=#invoice-readonly-{0}", invoice.Id)  : "")>
                 <div>
                     <strong>@invoice.InvoiceNumber</strong>
+                    @if (invoice.IsDeleted)
+                    {
+                        <span class="label label-info">Cancelled</span>
+                    }
                 </div>
                 <div style="margin-left:auto;">
                     @Html.Partial("InvoiceMenu", invoice)
                 </div>
             </div>
         </div>
-        @if (!invoice.IsDeleted)
-        {
-            <div class="panel-body">
+            <div class="panel-body collapse @(!invoice.IsDeleted ? "in" : "")" id="invoice-readonly-@invoice.Id">
                 @Html.Partial("InvoiceReadOnly", invoice)
                 @if (invoice.SentLog.Any())
                 { <hr /> }
@@ -40,6 +42,5 @@
                     }
                 </dl>
             </div>
-        }
     </div>
 }

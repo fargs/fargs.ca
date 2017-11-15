@@ -94,7 +94,7 @@
         <div id="revenueByMonth" style="width:100%; height:100%;"></div>
     </div>
     <div class="col-xs-12 col-sm-6">
-        <h2>@Model.FilterArgs.Year Take Home By Company</h2>
+        <h2>@Model.FilterArgs.Year Revenue By Company</h2>
         <div id="revenueByCompany" style="width:100%; height:100%;"></div>
     </div>
 </div>
@@ -163,7 +163,7 @@
                     }
                 },
                 series: [{
-                    name: 'Your Take Home',
+                    name: 'Your Revenue',
                     data: [@string.Join(",", Model.NetIncomeByMonth)]
                 }]
             });
@@ -232,7 +232,7 @@
                     }
                 },
                 series: [{
-                    name: 'Your Take Home',
+                    name: 'Your Revenue',
                     data: [@string.Join(",", Model.NetIncomeByCompany)]
                 }]
             });

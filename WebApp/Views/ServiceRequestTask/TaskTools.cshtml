@@ -11,12 +11,14 @@
 
 @if (Model.TaskId == Tasks.SubmitInvoice && features.Contains(Features.Accounting.ManageInvoices))
 {
-    if (features.Contains(Features.Accounting.CreateInvoice))
-    {
-        @Html.Partial("~/Views/ServiceRequest/InvoiceListMenu.cshtml", Model.ServiceRequestId)
-    }
-    if (features.Contains(Features.Accounting.ViewInvoice))
-    {
+    <section data-hastools="true">
+        @if (features.Contains(Features.Accounting.CreateInvoice))
+        {
+            @Html.Partial("~/Views/ServiceRequest/InvoiceListMenu.cshtml", Model.ServiceRequestId)
+        }
+        @if (features.Contains(Features.Accounting.ViewInvoice))
+        {
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 Invoices
@@ -27,11 +29,14 @@
                 </div>
             </div>
         </div>
-    }
+        }
+    </section>
 }
 else
 {
-    <span>
-        No tools available related to this task
-    </span>
+    <section data-hastools="false">
+        <span>
+            No tools available related to this task
+        </span>
+    </section>
 }

@@ -77,13 +77,13 @@
                     </td>
                     <td title="@task.Status.Name">
                         <span style="@(task.TaskId == Tasks.AssessmentDay || task.TaskId == Tasks.SubmitReport ? "font-size:20px;" : "")">@task.Name</span>
-                        &nbsp;&nbsp;
+                        &nbsp;&nbsp;    
                         <small style="@(task.TaskId == Tasks.AssessmentDay || task.TaskId == Tasks.SubmitReport ? "font-size:20px;" : "")" class="text-muted">@task.DueDate.ToOrvosiDateFormat()</small>
                     </td>
                     <td>
                         @if (args.ViewTarget == ViewTarget.Agenda && task.TaskId == Tasks.SubmitInvoice)
                         {
-                            <a onclick="showTaskTools(@task.Id , @task.ServiceRequestId)" style="cursor:pointer;"><i class="fa fa-wrench"></i></a>
+                            <i class="fa fa-wrench"></i>
                         }
                     </td>
             </tr>

@@ -199,6 +199,13 @@
                 })
                 .done(function (result) {
                     $('#task-tools-container-' + data.serviceRequestId).html(result);
+                    if ($(result).data().hastools)
+                    {
+                        $('#tabs-' + data.serviceRequestId + ' a[href="#task-details-' + data.serviceRequestId + '"]').tab('show');
+                    }
+                    else {
+                        $('#tabs-' + data.serviceRequestId + ' a[href="#live-chat-' + data.serviceRequestId + '"]').tab('show');
+                    }
                 });
             });
         }

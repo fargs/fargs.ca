@@ -58,17 +58,18 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                New Task
+                <h3 class="panel-title pull-left">
+                    Task List
+                </h3>
+                <button class="btn btn-success btn-sm pull-right" type="button" data-toggle="collapse" data-target="#new-task-form-container" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-plus"></i> New Task
+                </button>
+                <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                @Html.Partial("~/Views/ServiceRequestTask/NewTaskForm.cshtml", new TaskViewModel() { ServiceRequestId = Model.ServiceRequestId })
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Task List
-            </div>
-            <div class="panel-body">
+                <div class="collapse" id="new-task-form-container">
+                    @Html.Partial("~/Views/ServiceRequestTask/NewTaskForm.cshtml", new TaskViewModel() { ServiceRequestId = Model.ServiceRequestId })
+                </div>
                 <div id="tasklist-container">
                     @Html.Action("TaskList", "ServiceRequestTask", args)
                 </div>

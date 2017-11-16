@@ -119,10 +119,12 @@
             </div>
             @Html.ValidationMessageFor(c => c.DueDate, "", new { @class = "text-danger" })
         </div>
+        @if (Model.StatusId == TaskStatuses.Obsolete)
+        {
         <div class="btn-group">
             <button type="button" onclick="showDeleteTaskRequest(@Model.Id)" class="btn btn-default"><i class="fa fa-trash"></i></button>
         </div>
-
+        }
     </div>
 </form>
 

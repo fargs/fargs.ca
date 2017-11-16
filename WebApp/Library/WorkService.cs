@@ -515,7 +515,7 @@ namespace WebApp.Library
         }
         private async Task SaveDependentTaskStatusChanges(ServiceRequest serviceRequest)
         {
-            foreach (var srt in serviceRequest.ServiceRequestTasks.OrderBy(srt => srt.DueDate))
+            foreach (var srt in serviceRequest.ServiceRequestTasks.OrderBy(srt => srt.DueDate).ThenBy(srt => srt.Sequence))
             {
                 if (srt.TaskId != Tasks.AssessmentDay)
                 {

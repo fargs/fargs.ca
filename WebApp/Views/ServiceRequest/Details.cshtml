@@ -242,7 +242,11 @@
                     ViewFilter: '@args.ViewFilter'
                 })
                 .done(function (result) {
-                    document.getElementById('tasklist-container').innerHTML = result;
+                    var container = $('#tasklist-container');
+                    container.html(result);
+                    container.find("script").each(function (i) {
+                        eval($(this).text());
+                    });
                     selectTask(serviceRequestTaskId);
                 });
         }
@@ -256,7 +260,11 @@
                     ViewFilter: '@args.ViewFilter'
                 })
                 .done(function (result) {
-                    document.getElementById('tasklist-container').innerHTML = result;
+                    var container = $('tasklist-container');
+                    container.html(result);
+                    container.find("script").each(function (i) {
+                        eval($(this).text());
+                    });
                     $('#task-editform-container').html("");
                     window.history.pushState({}, '');
                 });

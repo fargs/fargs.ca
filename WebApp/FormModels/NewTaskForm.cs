@@ -10,9 +10,8 @@ namespace WebApp.FormModels
     {
         [Required]
         public int ServiceRequestId { get; set; }
-        [Required]
         [Range(typeof(DateTime), "1970-01-01", "2050-01-01")]
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public string TaskName { get; set; }
         public Guid? AssignedTo { get; set; }
 

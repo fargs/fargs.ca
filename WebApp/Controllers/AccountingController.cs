@@ -225,14 +225,16 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Accounting.Analytics)]
         public ActionResult Analytics(FilterArgs filterArgs)
         {
-            var invoices = db.Invoices
+            var invoiceQuery = db.Invoices
                 .AreOwnedBy(physicianOrLoggedInUserId)
                 .AreNotDeleted()
                 .AreSent()
-                .AreForCustomer(filterArgs.CustomerId)
-                .AreWithinDateRange(now, filterArgs.Year, filterArgs.Month)
-                .Select(InvoiceProjections.Analytics())
-                .ToList();
+                .AreForCustomer(filterArgs.CustomerId);
+                
+            if (filterArgs.Year.HasValue)
+            {
+                invoiceQuery = invoiceQuery.Where(i => i.InvoiceDate.Year == filterArgs.Year);
+            }
 
             filterArgs.Year = filterArgs.Year.GetValueOrDefault(now.Year);
             var startDate = filterArgs.Year.HasValue ? new DateTime(filterArgs.Year.Value, 01, 01) : new DateTime(now.Year, 1, 1);
@@ -241,19 +243,8 @@ namespace WebApp.Controllers
 
             var dates = dateRange.Select(r => new { r.Month, r.Date });
 
-            var invoiceTotals = invoices
-                .Select(i => new
-                {
-                    CustomerId = i.Customer.Id,
-                    ServiceProviderName = i.ServiceProvider.Name,
-                    i.InvoiceDate,
-                    i.Total,
-                    i.SubTotal,
-                    Hst = i.Hst
-                });
-
             var netIncomeByMonth = dateRange
-                .GroupJoin(invoiceTotals,
+                .GroupJoin(invoiceQuery,
                     r => r.Date,
                     t => t.InvoiceDate,
                     (r, t) => new
@@ -270,36 +261,26 @@ namespace WebApp.Controllers
                     Hst = c.Sum(s => s.Hst),
                     Total = c.Sum(s => s.Total)
                 });
-            var billableEntities = db.BillableEntities.Select(be => new { be.EntityGuid, be.EntityName });
-            var netIncomeByCompany = invoiceTotals
-                .Join(billableEntities,
-                    i => i.CustomerId,
-                    c => c.EntityGuid,
-                    (i, c) => new
-                    {
-                        EntityGuid = c.EntityGuid,
-                        CompanyName = c.EntityName,
-                        Hst = i.Hst,
-                        Total = i.Total
-                    })
-                .GroupBy(c => new { c.EntityGuid, c.CompanyName })
-                .Select(c => new
+
+            var netIncomeByCompany = invoiceQuery
+                .GroupBy(i => new { i.CustomerGuid, i.CustomerName })
+                .Select(i => new
                 {
-                    CompanyName = c.Key.CompanyName,
-                    Hst = c.Sum(i => i.Hst),
-                    Total = c.Sum(s => s.Total)
+                    CustomerId = i.Key.CustomerGuid,
+                    CustomerName = i.Key.CustomerName,
+                    Hst = i.Sum(s => s.Hst),
+                    Total = i.Sum(s => s.Total)
                 });
 
             var vm = new DashboardViewModel();
 
             vm.Months = new string[12] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-            vm.Companies = netIncomeByCompany.Select(c => c.CompanyName).Distinct().ToList();
+            vm.Companies = netIncomeByCompany.Select(c => c.CustomerName).Distinct().ToList();
             vm.NetIncomeByMonth = netIncomeByMonth.Select(c => c.Total).ToList();
             vm.NetIncomeByCompany = netIncomeByCompany.Select(c => c.Total).ToList();
-            vm.NetIncome = netIncomeByMonth.Sum(c => c.Total);
+            vm.NetIncome = invoiceQuery.Sum(c => c.Total);
             vm.Hst = netIncomeByMonth.Sum(c => c.Hst);
-            vm.InvoiceCount = invoiceTotals.Count();
-            vm.Invoices = invoices;
+            vm.InvoiceCount = invoiceQuery.Count();
             vm.FilterArgs = filterArgs;
 
             return View("~/Views/Invoice/Dashboard.cshtml", vm);

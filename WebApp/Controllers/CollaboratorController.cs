@@ -1,24 +1,18 @@
 ﻿using Orvosi.Data;
+using Orvosi.Shared.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
 using System.Data.Entity;
-using WebApp.Library.Extensions;
+using System.Linq;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 using WebApp.Library.Filters;
 using WebApp.Library.Projections;
 using Features = Orvosi.Shared.Enums.Features;
-using Orvosi.Shared.Enums;
-using WebApp.ViewModels.UIElements;
-using WebApp.Library;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace WebApp.Controllers
 {
-    
+
     public class CollaboratorController : BaseController
     {
         private OrvosiDbContext db;
@@ -29,13 +23,13 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
-        public ActionResult Index()
+        public ViewResult Index()
         {
             return View();
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
-        public ActionResult List()
+        public PartialViewResult List()
         {
             var model = db.Collaborators
                 .Where(ww => ww.UserId == physicianId)
@@ -63,7 +57,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
-        public ActionResult Search(string searchTerm, int? page)
+        public JsonResult Search(string searchTerm, int? page)
         {
             var data = db.AspNetUsers
                 // WHERE User has a public profile needs to be added in
@@ -90,13 +84,13 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Search)]
-        public ActionResult Details()
+        public ViewResult Details()
         {
             return View();
         }
 
         [AuthorizeRole(Feature = Features.Collaborator.Create)]
-        public ActionResult Create(Guid collaboratorUserId)
+        public JsonResult Create(Guid collaboratorUserId)
         {
             if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {
@@ -128,7 +122,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Collaborator.Create)]
-        public async Task<ActionResult> Remove(Guid collaboratorUserId)
+        public async Task<JsonResult> Remove(Guid collaboratorUserId)
         {
             if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {

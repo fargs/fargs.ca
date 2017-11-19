@@ -2,11 +2,9 @@
 using Orvosi.Data;
 using Orvosi.Data.Filters;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using WebApp.FormModels;
 using WebApp.Library;
@@ -28,7 +26,7 @@ namespace WebApp.Controllers
             this.service = service;
         }
         [HttpGet]
-        public ActionResult ShowCancelRequest(int serviceRequestId)
+        public PartialViewResult ShowCancelRequest(int serviceRequestId)
         {
             // retrieve the data from the database
             var serviceRequest = db.ServiceRequests.WithId(serviceRequestId).Select(ServiceRequestDto.FromEntityForCancellationForm.Expand()).Single();
@@ -82,7 +80,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.Cancel)]
-        public async Task<ActionResult> CancelRequestUndo(int serviceRequestId)
+        public async Task<JsonResult> CancelRequestUndo(int serviceRequestId)
         {
             await service.CancelRequestUndo(serviceRequestId);
             return Json(new
@@ -92,7 +90,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowDeleteRequest(int serviceRequestId)
+        public PartialViewResult ShowDeleteRequest(int serviceRequestId)
         {
             var model = db.ServiceRequests
                 .WithId(serviceRequestId)

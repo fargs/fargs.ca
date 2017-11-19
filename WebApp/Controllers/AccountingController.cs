@@ -392,7 +392,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
-        public JsonResult Create(int serviceRequestId)
+        public ActionResult Create(int serviceRequestId)
         {
             var serviceRequest =
                 db.ServiceRequests

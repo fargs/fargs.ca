@@ -1,31 +1,27 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
-using System.Web;
-using System.Web.Mvc;
-using System.Net;
-using System.Threading.Tasks;
+using LinqKit;
+using MoreLinq;
+using NinjaNye.SearchExtensions;
 using Orvosi.Data;
 using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
-using Features = Orvosi.Shared.Enums.Features;
-using WebApp.ViewModels.ServiceRequestTaskViewModels;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using WebApp.Components.Grid;
+using WebApp.FormModels;
 using WebApp.Library;
-using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using WebApp.Models;
-using MoreLinq;
-using LinqKit;
-using System.ComponentModel.DataAnnotations;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
-using NinjaNye.SearchExtensions;
-using WebApp.Components.Grid;
-using System.Security.Principal;
-using WebApp.FormModels;
-using System.Data.Entity.Validation;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -41,7 +37,7 @@ namespace WebApp.Controllers
             this.service = service;
         }
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
-        public ActionResult TaskGrid(TaskListArgs args)
+        public PartialViewResult TaskGrid(TaskListArgs args)
         {
             var dto = db.ServiceRequestTasks
                 .AreAssignedToUser(loggedInUserId)
@@ -141,8 +137,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-
-        public ActionResult TaskGridRow(int serviceRequestTaskId)
+        public PartialViewResult TaskGridRow(int serviceRequestTaskId)
         {
             var dto = db.ServiceRequestTasks
                 .WithId(serviceRequestTaskId)
@@ -156,7 +151,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewTaskList)]
-        public ActionResult TaskList(TaskListArgs args)
+        public PartialViewResult TaskList(TaskListArgs args)
         {
 
             var viewModel = db.ServiceRequests
@@ -221,7 +216,7 @@ namespace WebApp.Controllers
             return PartialView(viewModel);
         }
 
-        public ActionResult GetRelatedServiceRequestId(int serviceRequestTaskId)
+        public JsonResult GetRelatedServiceRequestId(int serviceRequestTaskId)
         {
             var id = db.ServiceRequestTasks.Where(srt => srt.Id == serviceRequestTaskId).Select(srt => srt.ServiceRequestId).FirstOrDefault();
             return Json(new
@@ -332,7 +327,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.AddTask)]
-        public async Task<ActionResult> AddTask(int serviceRequestId, byte taskId)
+        public async Task<JsonResult> AddTask(int serviceRequestId, byte taskId)
         {
             var task = await service.AddTask(serviceRequestId, taskId);
 
@@ -345,12 +340,12 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
-        public ActionResult ShowNewTaskForm(int serviceRequestId)
+        public PartialViewResult ShowNewTaskForm(int serviceRequestId)
         {
             var data = db.ServiceRequestTasks.WithId(serviceRequestId).FirstOrDefault();
             if (data == null)
             {
-                return new HttpNotFoundResult();
+                return PartialView("NotFound");
             }
 
             var viewModel = new TaskViewModel()
@@ -381,12 +376,12 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
-        public ActionResult ShowEditTaskForm(int serviceRequestTaskId)
+        public PartialViewResult ShowEditTaskForm(int serviceRequestTaskId)
         {
             var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
             if (data == null)
             {
-                return new HttpNotFoundResult();
+                return PartialView("NotFound");
             }
 
             var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
@@ -398,12 +393,12 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
-        public ActionResult ShowTaskTools(int serviceRequestTaskId)
+        public PartialViewResult ShowTaskTools(int serviceRequestTaskId)
         {
             var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
             if (data == null)
             {
-                return new HttpNotFoundResult();
+                return PartialView("NotFound");
             }
 
             var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
@@ -433,7 +428,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowDeleteRequest(int serviceRequestTaskId)
+        public PartialViewResult ShowDeleteRequest(int serviceRequestTaskId)
         {
             var model = db.ServiceRequestTasks
                 .WithId(serviceRequestTaskId)
@@ -447,7 +442,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.DeleteTask)]
-        public async Task<ActionResult> Delete(int serviceRequestTaskId)
+        public async Task<JsonResult> Delete(int serviceRequestTaskId)
         {
             var serviceRequestId = (await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId)).ServiceRequestId;
 
@@ -462,7 +457,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> ArchiveCompleted()
+        public async Task<HttpStatusCodeResult> ArchiveCompleted()
         {
             await service.ArchiveCompletedTasksForCurrentUser();
             
@@ -471,7 +466,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> ArchiveTask(int serviceRequestTaskId)
+        public async Task<HttpStatusCodeResult> ArchiveTask(int serviceRequestTaskId)
         {
             await service.ArchiveTask(serviceRequestTaskId);
 
@@ -480,7 +475,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> ToggleTaskStatus(int serviceRequestTaskId, short taskStatusId)
+        public async Task<JsonResult> ToggleTaskStatus(int serviceRequestTaskId, short taskStatusId)
         {
             await service.ToggleTaskStatus(serviceRequestTaskId, taskStatusId);
 
@@ -503,7 +498,7 @@ namespace WebApp.Controllers
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
             if (srt == null)
             {
-                return HttpNotFound();
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
             }
             srt.IsObsolete = !srt.IsObsolete;
             srt.ModifiedDate = SystemTime.Now();
@@ -519,7 +514,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> ToggleTaskCompleted([Required] int serviceRequestTaskId, [Required] string isChecked)
+        public async Task<JsonResult> ToggleTaskCompleted([Required] int serviceRequestTaskId, [Required] string isChecked)
         {
             var taskStatusId = isChecked == "on" ? TaskStatuses.Done : TaskStatuses.ToDo;
 
@@ -536,7 +531,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.PickupTask)]
-        public async Task<ActionResult> PickUp(int serviceRequestTaskId)
+        public async Task<JsonResult> PickUp(int serviceRequestTaskId)
         {
             await service.PickUpTask(serviceRequestTaskId);
 
@@ -551,7 +546,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.AssignTask)]
-        public async Task<ActionResult> AssignTo(int serviceRequestTaskId, Guid? assignedTo)
+        public async Task<JsonResult> AssignTo(int serviceRequestTaskId, Guid? assignedTo)
         {
             await service.AssignTaskTo(serviceRequestTaskId, assignedTo);
 
@@ -565,7 +560,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> UrgentTaskCount()
+        public PartialViewResult UrgentTaskCount()
         {
             var count = db.ServiceRequestTasks
                 .AreAssignedToUser(loggedInUserId)
@@ -576,7 +571,7 @@ namespace WebApp.Controllers
             return PartialView("~/Views/Dashboard/_TaskHeading.cshtml", count);
         }
 
-        public ActionResult GetAssessmentDayTasks()
+        public JsonResult GetAssessmentDayTasks()
         {
             var shouldBeDone = db.ServiceRequestTasks
                 .Where(srt => srt.ServiceRequest.AppointmentDate.HasValue && srt.ServiceRequest.AppointmentDate <= now.Date)
@@ -605,7 +600,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateAssessmentDayTaskStatuses(int serviceRequestTaskId, byte newTaskStatusId)
+        public async Task<JsonResult> UpdateAssessmentDayTaskStatuses(int serviceRequestTaskId, byte newTaskStatusId)
         {
             await service.ChangeTaskStatus(serviceRequestTaskId, newTaskStatusId);
 

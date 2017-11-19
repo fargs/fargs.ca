@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Orvosi.Data;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using threading = System.Threading.Tasks;
 using System.Net;
-using System.Web;
+using System.Security.Principal;
 using System.Web.Mvc;
-using Orvosi.Data;
-using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
-using System.Security.Principal;
+using threading = System.Threading.Tasks;
 
 namespace WebApp.Controllers
 {
@@ -25,7 +22,7 @@ namespace WebApp.Controllers
             this.db = db;
         }
         // GET: Task
-        public async threading.Task<ActionResult> Index()
+        public async threading.Task<ViewResult> Index()
         {
             var tasks = 
                 db.OTasks
@@ -52,7 +49,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Task/Create
-        public ActionResult Create()
+        public ViewResult Create()
         {
             ViewBag.ResponsibleRoleId = new SelectList(db.AspNetRoles, "Id", "Name");
             ViewBag.TaskPhaseId = new SelectList(db.TaskPhases, "Id", "Name");
@@ -136,7 +133,7 @@ namespace WebApp.Controllers
         // POST: Task/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> DeleteConfirmed(short id)
+        public async threading.Task<RedirectToRouteResult> DeleteConfirmed(short id)
         {
             var task = await db.OTasks.FindAsync(id);
             db.OTasks.Remove(task);

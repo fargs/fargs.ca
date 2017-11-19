@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Orvosi.Data;
+using Orvosi.Data.Filters;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net;
-using System.Web;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using Orvosi.Data;
-using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
-using Orvosi.Data.Filters;
-using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
@@ -26,7 +23,7 @@ namespace WebApp.Controllers
             this.db = db;
         }
         // GET: ServiceRequestTemplateTask
-        public async Task<ActionResult> Index(short ServiceRequestTemplateId)
+        public ViewResult Index(short ServiceRequestTemplateId)
         {
             var serviceRequestTemplate = db.ServiceRequestTemplates
                 .Where(t => t.Id == ServiceRequestTemplateId)
@@ -35,22 +32,22 @@ namespace WebApp.Controllers
         }
 
         // GET: ServiceRequestTemplateTask/Details/5
-        public async Task<ActionResult> Details(Guid? id)
+        public async Task<ViewResult> Details(Guid? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("NotFound");
             }
             ServiceRequestTemplateTask serviceRequestTemplateTask = await db.ServiceRequestTemplateTasks.FindAsync(id);
             if (serviceRequestTemplateTask == null)
             {
-                return HttpNotFound();
+                return View("NotFound");
             }
             return View(serviceRequestTemplateTask);
         }
 
         // GET: ServiceRequestTemplateTask/Create
-        public ActionResult Create(short ServiceRequestTemplateId)
+        public ViewResult Create(short ServiceRequestTemplateId)
         {
             var serviceRequestTemplate = db.ServiceRequestTemplates.Find(ServiceRequestTemplateId);
             ViewBag.TaskSelectList = db.ServiceRequestTemplateTasks.Include(t => t.OTask).AreNotDeleted().Where(t => t.ServiceRequestTemplateId == serviceRequestTemplate.Id).OrderBy(t => t.Sequence);
@@ -172,7 +169,7 @@ namespace WebApp.Controllers
         // POST: ServiceRequestTemplateTask/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(Guid id)
+        public async Task<RedirectToRouteResult> DeleteConfirmed(Guid id)
         {
             ServiceRequestTemplateTask serviceRequestTemplateTask = await db.ServiceRequestTemplateTasks.FindAsync(id);
             serviceRequestTemplateTask.IsDeleted = true;

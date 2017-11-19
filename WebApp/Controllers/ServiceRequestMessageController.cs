@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Orvosi.Shared.Model;
-using System.Net;
-using WebApp.Library.Extensions;
-using Orvosi.Shared.Enums;
-using Features = Orvosi.Shared.Enums.Features;
-using WebApp.Library.Filters;
-using WebApp.ViewModels;
-using Orvosi.Data.Filters;
-using WebApp.Models;
-using LinqKit;
+﻿using LinqKit;
 using Orvosi.Data;
-using WebApp.Library;
+using Orvosi.Data.Filters;
+using System;
+using System.Linq;
 using System.Security.Principal;
+using System.Web.Mvc;
+using WebApp.Library;
+using WebApp.Library.Filters;
+using WebApp.Models;
+using WebApp.ViewModels;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -31,7 +25,7 @@ namespace WebApp.Controllers
             this.service = service;
         }
         // GET: ServiceRequestMessage
-        public ActionResult Discussion(int serviceRequestId)
+        public PartialViewResult Discussion(int serviceRequestId)
         {
             var dto = db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -42,7 +36,7 @@ namespace WebApp.Controllers
             return PartialView("_Discussion", viewModel);
         }
 
-        public ActionResult PostMessage(int serviceRequestId, string message)
+        public JsonResult PostMessage(int serviceRequestId, string message)
         {
             var newMessage = new Orvosi.Data.ServiceRequestMessage()
             {
@@ -57,7 +51,7 @@ namespace WebApp.Controllers
             return Json(newMessage);
         }
 
-        public ActionResult GetMessage(Guid serviceRequestMessageId)
+        public PartialViewResult GetMessage(Guid serviceRequestMessageId)
         {
             var dto = db.ServiceRequestMessages
                 .Where(srm => srm.Id == serviceRequestMessageId)

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Orvosi.Data;
+using Orvosi.Data.Filters;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net;
-using System.Web;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using Orvosi.Data;
-using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
-using Orvosi.Data.Filters;
-using System.Security.Principal;
 
 namespace WebApp.Controllers
 {
@@ -27,7 +24,7 @@ namespace WebApp.Controllers
         }
 
         // GET: ServiceRequestTemplates
-        public async Task<ActionResult> Index()
+        public async Task<ViewResult> Index()
         {
             return View(await db.ServiceRequestTemplates.ToListAsync());
         }
@@ -48,7 +45,7 @@ namespace WebApp.Controllers
         }
 
         // GET: ServiceRequestTemplates/Create
-        public ActionResult Create()
+        public ViewResult Create()
         {
             return View();
         }
@@ -156,7 +153,7 @@ namespace WebApp.Controllers
         // POST: ServiceRequestTemplates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(short id)
+        public async Task<RedirectToRouteResult> DeleteConfirmed(short id)
         {
             ServiceRequestTemplate serviceRequestTemplate = await db.ServiceRequestTemplates.FindAsync(id);
             db.ServiceRequestTemplates.Remove(serviceRequestTemplate);

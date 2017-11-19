@@ -133,7 +133,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ViewResult> Details(int id)
+        public ViewResult Details(int id)
         {
             var dto = db.ServiceRequests
                 .WithId(id)
@@ -889,7 +889,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.SubmitRequest)]
-        public async Task<ViewResult> CreateAddOn(bool serviceIdHasErrors = false)
+        public ViewResult CreateAddOn(bool serviceIdHasErrors = false)
         {
             var vm = new CreateViewModel();
 

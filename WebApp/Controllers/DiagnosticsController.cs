@@ -22,16 +22,16 @@ namespace WebApp.Controllers
     [AuthorizeRole()]
     public class DiagnosticsController : Controller
     {
-        public ActionResult Index()
+        public ViewResult Index()
         {
             return View();
         }
-        public ActionResult CodeFirstContextTests()
+        public ViewResult CodeFirstContextTests()
         {
             var db = new Orvosi.Data.OrvosiDbContext();
             return View(db.Invoices.First());
         }
-        public async Task<ActionResult> ConnectToBox()
+        public PartialViewResult ConnectToBox()
         {
             var manager = new BoxManager();
             var client = manager.AdminClientAsUser("257722377");
@@ -42,7 +42,7 @@ namespace WebApp.Controllers
 
             return PartialView(folder);
         }
-        public ActionResult CreateBoxFolder()
+        public HttpNotFoundResult CreateBoxFolder()
         {
             //var box = new BoxManager();
 
@@ -50,17 +50,17 @@ namespace WebApp.Controllers
             //    var caseFolder = box.CreateCaseFolder("7027883033", request.ProvinceName, request.AppointmentDate.Value, request.Title, );
             //    return PartialView(caseFolder);
 
-            return new HttpNotFoundResult();
+            return HttpNotFound();
         }
         // GET: Diagnostics
-        public async Task<ActionResult> SendEmail(string to)
+        public async Task<PartialViewResult> SendEmail(string to)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByEmailAsync(User.Identity.Name);
             await userManager.SendEmailAsync(user.Id, "Test Email Subject", "Test Email Body");
             return PartialView();
         }
-        public async Task<ActionResult> SendActivationEmail(string email)
+        public async Task<PartialViewResult> SendActivationEmail(string email)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByEmailAsync(email);
@@ -72,7 +72,7 @@ namespace WebApp.Controllers
 
             return PartialView("SendEmail");
         }
-        public async Task<ActionResult> SendResetPasswordEmail(string email)
+        public async Task<PartialViewResult> SendResetPasswordEmail(string email)
         {
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByEmailAsync(email);
@@ -84,7 +84,7 @@ namespace WebApp.Controllers
 
             return PartialView("SendEmail");
         }
-        public async Task<ActionResult> DashboardPerformanceTest()
+        public ViewResult DashboardPerformanceTest()
         {
             try
             {
@@ -107,7 +107,7 @@ namespace WebApp.Controllers
 
         }
         [HttpPost]
-        public async Task<ActionResult> GetListOfGoogleCalendars(string email)
+        public JsonResult GetListOfGoogleCalendars(string email)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
             CalendarList calendars = service.CalendarList.List().Execute();
@@ -118,7 +118,7 @@ namespace WebApp.Controllers
             return Json(model, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public async Task<ActionResult> GetListOfEventsGoogleCalendar(string email, DateTime start, DateTime end)
+        public JsonResult GetListOfEventsGoogleCalendar(string email, DateTime start, DateTime end)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
@@ -141,7 +141,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> GetEventGoogleCalendar(string email, string eventId)
+        public JsonResult GetEventGoogleCalendar(string email, string eventId)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
@@ -155,7 +155,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddEventToGoogleCalendar(string email, DateTime start, bool notify = false)
+        public JsonResult AddEventToGoogleCalendar(string email, DateTime start, bool notify = false)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
@@ -183,7 +183,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CancelEventGoogleCalendar(string email, string eventId)
+        public JsonResult CancelEventGoogleCalendar(string email, string eventId)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
@@ -198,7 +198,7 @@ namespace WebApp.Controllers
             return Json(model, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> UpdateEventToGoogleCalendar(string email, string eventId, DateTime start)
+        public JsonResult UpdateEventToGoogleCalendar(string email, string eventId, DateTime start)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
 
@@ -222,7 +222,7 @@ namespace WebApp.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> AddAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
+        public JsonResult AddAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(ownerEmail);
 
@@ -247,7 +247,7 @@ namespace WebApp.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> RemoveAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
+        public JsonResult RemoveAttendeeToEventGoogleCalendar(string ownerEmail, string attendeeEmail, string eventId)
         {
             var service = new WebApp.Library.GoogleServices().GetCalendarService(ownerEmail);
 
@@ -279,21 +279,21 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = features.Accounting.CreateInvoice)]
-        public async Task<ActionResult> AuthorizationAttribute_WithCreateInvoiceFeature()
+        public HttpStatusCodeResult AuthorizationAttribute_WithCreateInvoiceFeature()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         [AuthorizeRole(Features = new short[2] { features.Accounting.CreateInvoice, features.Accounting.ViewInvoice })]
-        public async Task<ActionResult> AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures()
+        public HttpStatusCodeResult AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         [AuthorizeRole]
-        public async Task<ActionResult> AuthorizationAttribute_WithNoFeatures()
+        public HttpStatusCodeResult AuthorizationAttribute_WithNoFeatures()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
-        public async Task<ActionResult> AuthorizationAttribute_NoAttribute()
+        public HttpStatusCodeResult AuthorizationAttribute_NoAttribute()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }

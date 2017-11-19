@@ -9,12 +9,12 @@ namespace WebApp.Controllers
     public class HomeController : Controller
     {
         // GET: Home
-        public ActionResult Index()
+        public ViewResult Index()
         {
             return View();
         }
 
-        public ActionResult Unauthorized()
+        public ViewResult Unauthorized()
         {
             return View();
         }

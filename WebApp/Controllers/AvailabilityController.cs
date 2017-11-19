@@ -29,7 +29,7 @@ namespace WebApp.Controllers
 
         // GET: Availability
         [AuthorizeRole(Feature = Features.Availability.ViewUnpublished)]
-        public async Task<ActionResult> Index(FilterArgs args)
+        public async Task<ViewResult> Index(FilterArgs args)
         {
             // if one of the params is set, both are required
             if ((args.Year.HasValue && !args.Month.HasValue) || (!args.Year.HasValue && args.Month.HasValue))
@@ -85,7 +85,7 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> AddDay(Guid id)
+        public async Task<ViewResult> AddDay(Guid id)
         {
             var physician = db.AspNetUsers.Single(c => c.Id == id);
 
@@ -129,7 +129,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> AddSlots(short AvailableDayId, short StartHour, short StartMinute, short Duration, byte Repeat)
+        public async Task<RedirectResult> AddSlots(short AvailableDayId, short StartHour, short StartMinute, short Duration, byte Repeat)
         {
             var firstStartTime = new TimeSpan(StartHour, StartMinute, 0);
                 for (int i = 0; i < Repeat; i++)
@@ -151,7 +151,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> CancelDay(int id)
+        public async Task<RedirectResult> CancelDay(int id)
         {
             var day = await db.AvailableDays.FirstAsync(c => c.Id == id);
 
@@ -166,7 +166,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> CancelSlot(int id)
+        public async Task<RedirectResult> CancelSlot(int id)
         {
             var slot = await db.AvailableSlots.FirstAsync(c => c.Id == id);
 

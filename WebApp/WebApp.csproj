@@ -1566,6 +1566,7 @@
     <Content Include="Views\Shared\_TaskStatusLabel2.cshtml" />
     <Content Include="Views\Shared\_ServiceStatusLabel2.cshtml" />
     <Content Include="Views\Shared\_Loader.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

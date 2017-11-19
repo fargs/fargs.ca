@@ -48,7 +48,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewUnsentInvoices)]
-        public ActionResult UnsentInvoices(FilterArgs filterArgs)
+        public ViewResult UnsentInvoices(FilterArgs filterArgs)
         {
             filterArgs.Year = filterArgs.Year ?? now.Year;
             filterArgs.Month = filterArgs.Month ?? now.Month;
@@ -110,7 +110,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewUnpaidInvoices)]
-        public ActionResult UnpaidInvoices(FilterArgs filterArgs)
+        public ViewResult UnpaidInvoices(FilterArgs filterArgs)
         {
             filterArgs.Year = filterArgs.Year ?? now.Year;
             filterArgs.Month = filterArgs.Month ?? now.Month;
@@ -162,7 +162,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SearchInvoices)]
-        public ActionResult AllInvoices(FilterArgs filterArgs)
+        public ViewResult AllInvoices(FilterArgs filterArgs)
         {
             filterArgs.Year = filterArgs.Year ?? now.Year;
             filterArgs.Month = filterArgs.Month ?? now.Month;
@@ -223,7 +223,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.Analytics)]
-        public ActionResult Analytics(FilterArgs filterArgs)
+        public ViewResult Analytics(FilterArgs filterArgs)
         {
             var invoiceQuery = db.Invoices
                 .AreOwnedBy(physicianOrLoggedInUserId)
@@ -287,20 +287,21 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public ActionResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
+        public PartialViewResult ServiceRequest(Guid? serviceProviderId, int serviceRequestId)
         {
             var serviceRequests = db.ServiceRequests
                     .Where(s => s.Id == serviceRequestId)
                     .Select(ServiceRequestProjections.DetailsWithInvoices(physicianOrLoggedInUserId, now))
                     .ToList();
+
             if (serviceRequests.Count() != 1)
-                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                return PartialView("NotFound");
 
             return PartialView("_ServiceRequest", serviceRequests.First());
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public ActionResult Invoice(int invoiceId)
+        public PartialViewResult Invoice(int invoiceId)
         {
             var dto = db.Invoices
                 .WithId(invoiceId)
@@ -313,7 +314,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public ActionResult InvoiceMenu(int invoiceId, int? serviceRequestId)
+        public PartialViewResult InvoiceMenu(int invoiceId, int? serviceRequestId)
         {
 
             CaseViewModel caseViewModel = null;
@@ -344,7 +345,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SearchInvoices)]
-        public ActionResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
+        public JsonResult Search(Guid? serviceProviderId, int? invoiceId, string searchTerm, int? page)
         {
             var data = db.Invoices
                 .AreOwnedBy(physicianOrLoggedInUserId)
@@ -391,7 +392,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
-        public ActionResult Create(int serviceRequestId)
+        public JsonResult Create(int serviceRequestId)
         {
             var serviceRequest =
                 db.ServiceRequests
@@ -462,7 +463,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
-        public ActionResult CreateInvoice(Guid? serviceProviderId)
+        public ViewResult CreateInvoice(Guid? serviceProviderId)
         {
             // TODO: Need to filter this list to show customers specific to the service provider.
             ViewBag.CustomerSelectList = GetCustomerList();
@@ -477,7 +478,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.CreateInvoice)]
-        public ActionResult CreateInvoice(CreateInvoiceForm form)
+        public RedirectToRouteResult CreateInvoice(CreateInvoiceForm form)
         {
             var serviceProvider = db.BillableEntities.First(c => c.EntityGuid == form.ServiceProviderGuid);
             var customer = db.BillableEntities.First(c => c.EntityGuid == form.CustomerGuid);
@@ -503,14 +504,14 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public async Task<ActionResult> PreviewInvoice(int id)
+        public async Task<PartialViewResult> PreviewInvoice(int id)
         {
             var invoice = await db.Invoices.Include(i => i.InvoiceDetails).FirstAsync(c => c.Id == id);
             return PartialView("~/Views/Invoice/PrintableInvoice.cshtml", invoice);
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public async Task<ActionResult> DownloadInvoice(int id)
+        public async Task<FileStreamResult> DownloadInvoice(int id)
         {
             var invoice = await db.Invoices.FindAsync(id);
             var invoiceFolder = await db.Physicians.FindAsync(invoice.ServiceProviderGuid);
@@ -535,7 +536,7 @@ namespace WebApp.Controllers
         [Route("Accounting/Download/{id}")]
         [Route("Invoice/Download/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult> Download(Guid id)
+        public async Task<FileStreamResult> Download(Guid id)
         {
             var invoice = await db.Invoices.FirstAsync(c => c.ObjectGuid == id);
 
@@ -567,7 +568,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ViewInvoice)]
-        public async Task<ActionResult> GenerateInvoicePdf(int invoiceId)
+        public async Task<HttpStatusCodeResult> GenerateInvoicePdf(int invoiceId)
         {
             var invoice = await db.Invoices.FindAsync(invoiceId);
             var content = HtmlHelpers.RenderViewToString(this.ControllerContext, "~/Views/Invoice/PrintableInvoice.cshtml", invoice);
@@ -578,7 +579,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
-        public async Task<ActionResult> EditAndSendInvoice(int invoiceId, int? serviceRequestId)
+        public async Task<PartialViewResult> EditAndSendInvoice(int invoiceId, int? serviceRequestId)
         {
             var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
 
@@ -594,7 +595,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
-        public async Task<ActionResult> EditAndSendInvoice()
+        public async Task<HttpStatusCodeResult> EditAndSendInvoice()
         {
             var message = new MailMessage();
             message.From = new MailAddress(Request.Form["Message.From"]);
@@ -652,7 +653,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.SendInvoice)]
-        public async Task<ActionResult> SendInvoice(int invoiceId)
+        public async Task<HttpStatusCodeResult> SendInvoice(int invoiceId)
         {
             var invoice = await db.Invoices.FirstAsync(c => c.Id == invoiceId);
 
@@ -695,7 +696,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult EditInvoiceHeader(int invoiceId)
+        public PartialViewResult EditInvoiceHeader(int invoiceId)
         {
             var model = db.Invoices
                     .WithId(invoiceId)
@@ -710,7 +711,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
+        public HttpStatusCodeResult EditInvoiceHeader(Orvosi.Shared.Model.Invoice invoice)
         {
             var record = db.Invoices.Find(invoice.Id);
             record.InvoiceDate = invoice.InvoiceDate;
@@ -726,7 +727,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult EditInvoiceItem(int invoiceDetailId)
+        public PartialViewResult EditInvoiceItem(int invoiceDetailId)
         {
             var editForm = db.InvoiceDetails
                     .Where(id => id.Id == invoiceDetailId)
@@ -738,7 +739,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
+        public HttpStatusCodeResult EditInvoiceItem(Orvosi.Shared.Model.InvoiceDetail invoiceDetail)
         {
             var record = db.InvoiceDetails.Find(invoiceDetail.Id);
             var invoiceDto = InvoiceDto.FromInvoiceEntity.Invoke(record.Invoice);
@@ -776,7 +777,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult AddInvoiceItem(int invoiceId)
+        public JsonResult AddInvoiceItem(int invoiceId)
         {
 
             var newItem = new Orvosi.Data.InvoiceDetail()
@@ -801,7 +802,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.EditInvoice)]
-        public ActionResult DeleteInvoiceItem(int invoiceDetailId)
+        public HttpStatusCodeResult DeleteInvoiceItem(int invoiceDetailId)
         {
             var item = db.InvoiceDetails.Find(invoiceDetailId);
 
@@ -823,7 +824,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
-        public ActionResult DeleteInvoice(int invoiceId)
+        public HttpStatusCodeResult DeleteInvoice(int invoiceId)
         {
             var invoice = db.Invoices.Find(invoiceId);
 
@@ -850,7 +851,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.DeleteInvoice)]
-        public ActionResult UndeleteInvoice(int invoiceId)
+        public HttpStatusCodeResult UndeleteInvoice(int invoiceId)
         {
 
             var invoice = db.Invoices.Find(invoiceId);
@@ -896,7 +897,7 @@ namespace WebApp.Controllers
         #region ReceiptAPI
 
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
-        public ActionResult CreateReceipt(int invoiceId, decimal? amount)
+        public JsonResult CreateReceipt(int invoiceId, decimal? amount)
         {
             var invoice = db.Invoices.WithId(invoiceId).First();
             var id = Guid.NewGuid();
@@ -922,7 +923,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
-        public ActionResult DeleteReceipt(Guid receiptId)
+        public HttpStatusCodeResult DeleteReceipt(Guid receiptId)
         {
             var receipt = db.Receipts.WithId(receiptId).First();
             db.Receipts.Remove(receipt);
@@ -931,7 +932,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Accounting.ManageReceipts)]
-        public ActionResult EditReceipt(Receipt receipt)
+        public HttpStatusCodeResult EditReceipt(Receipt receipt)
         {
             var record = db.Receipts.WithId(receipt.Id).First();
             record.ReceivedDate = receipt.ReceivedDate;

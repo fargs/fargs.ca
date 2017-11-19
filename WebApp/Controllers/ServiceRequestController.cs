@@ -47,7 +47,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> Index(FilterArgs filterArgs)
+        public async Task<ViewResult> Index(FilterArgs filterArgs)
         {
             var vm = new IndexViewModel();
             // get the user
@@ -110,7 +110,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public async Task<ActionResult> Dashboard()
+        public async Task<ViewResult> Dashboard()
         {
             var list = await db.ServiceRequests
                 .Where(sr => sr.CaseCoordinatorId == loggedInUserId || sr.IntakeAssistantId == loggedInUserId || sr.DocumentReviewerId == loggedInUserId || sr.PhysicianId == loggedInUserId)
@@ -120,7 +120,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Details2(int serviceRequestId)
+        public PartialViewResult Details2(int serviceRequestId)
         {
             var dto =  db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -133,7 +133,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> Details(int id)
+        public async Task<ViewResult> Details(int id)
         {
             var dto = db.ServiceRequests
                 .WithId(id)
@@ -143,7 +143,7 @@ namespace WebApp.Controllers
 
             if (dto == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return View("Unauthorized");
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
@@ -170,7 +170,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Agenda(DateTime selectedDate, ViewTarget viewOptions = ViewTarget.Agenda)
+        public PartialViewResult Agenda(DateTime selectedDate, ViewTarget viewOptions = ViewTarget.Agenda)
         {
             // Set date range variables used in where conditions
             var dto = db.ServiceRequests
@@ -194,7 +194,7 @@ namespace WebApp.Controllers
             return PartialView(dayViewModel);
         }
 
-        public ActionResult GetInvoices(int serviceRequestId)
+        public PartialViewResult GetInvoices(int serviceRequestId)
         {
             var invoiceIds = db.InvoiceDetails.Where(id => id.ServiceRequestId == serviceRequestId).Select(id => id.InvoiceId);
             var invoices = db.Invoices.Where(i => invoiceIds.Contains(i.Id)).Select(m.InvoiceDto.FromInvoiceEntity.Expand()).ToList();
@@ -207,7 +207,7 @@ namespace WebApp.Controllers
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         [HttpPost]
-        public ActionResult DueDate(DueDateArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
+        public PartialViewResult DueDate(DueDateArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
         {
             var dto = db.ServiceRequestTasks
                 .AreDueBetween(args.TaskListArgs.DateRange.StartDate, args.TaskListArgs.DateRange.EndDate.Value)
@@ -247,7 +247,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult ScheduleDateRange(TaskListArgs args)
+        public PartialViewResult ScheduleDateRange(TaskListArgs args)
         {
             var dto = db.ServiceRequests
                 .AsExpandable()
@@ -283,7 +283,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Additionals(TaskListArgs args)
+        public PartialViewResult Additionals(TaskListArgs args)
         {
             var dto = db.ServiceRequests
                 .AsExpandable()
@@ -315,7 +315,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAppointmentDate(int serviceRequestId)
+        public async Task<JsonResult> GetAppointmentDate(int serviceRequestId)
         {
             var result = await db.ServiceRequests
                 .HaveAppointment()
@@ -335,8 +335,9 @@ namespace WebApp.Controllers
                 FirstDayOfWeekTicks = result.AppointmentDate.Value.FirstDayOfWeek().Ticks
             }, JsonRequestBehavior.AllowGet);
         }
+
         [HttpGet]
-        public async Task<ActionResult> AdditionalCount()
+        public PartialViewResult AdditionalCount()
         {
             var count = db.ServiceRequests
                 .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
@@ -346,9 +347,10 @@ namespace WebApp.Controllers
 
             return PartialView("~/Views/Dashboard/_AdditionalsHeading.cshtml", count);
         }
+
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult CaseLink(CaseLinkArgs args)
+        public PartialViewResult CaseLink(CaseLinkArgs args)
         {
             var dto = db.ServiceRequests
                 .WithId(args.ServiceRequestId)
@@ -357,7 +359,7 @@ namespace WebApp.Controllers
 
             if (dto == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return PartialView("Unauthorized");
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
@@ -367,7 +369,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult Case(int serviceRequestId, ViewTarget viewOptions = ViewTarget.Details)
+        public PartialViewResult Case(int serviceRequestId, ViewTarget viewOptions = ViewTarget.Details)
         {
             var dto = db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -377,7 +379,7 @@ namespace WebApp.Controllers
 
             if (dto == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return PartialView("Unauthorized");
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
@@ -389,7 +391,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> ActionMenu(int serviceRequestId)
+        public async Task<PartialViewResult> ActionMenu(int serviceRequestId)
         {
             var dto = await db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -399,7 +401,7 @@ namespace WebApp.Controllers
 
             if (dto == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return PartialView("Unauthorized");
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
@@ -409,7 +411,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<ActionResult> AgendaActionMenu(int serviceRequestId)
+        public async Task<PartialViewResult> AgendaActionMenu(int serviceRequestId)
         {
             var dto = await db.ServiceRequests
                 .WithId(serviceRequestId)
@@ -419,7 +421,7 @@ namespace WebApp.Controllers
 
             if (dto == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return PartialView("Unauthorized");
             }
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
@@ -428,7 +430,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
-        public ActionResult ChangeCompany(int id)
+        public ViewResult ChangeCompany(int id)
         {
             var vm = db.ServiceRequests
                 .Where(sr => sr.Id == id)
@@ -496,7 +498,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
-        public ActionResult ChangeProcessTemplate(int id)
+        public ViewResult ChangeProcessTemplate(int id)
         {
             var serviceRequest = db.ServiceRequests.Single(sr => sr.Id == id);
 
@@ -608,7 +610,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Availability.Reschedule)]
-        public ActionResult Reschedule(int id)
+        public ViewResult Reschedule(int id)
         {
             var model = db.ServiceRequests.Single(c => c.Id == id);
             return View(model);
@@ -639,7 +641,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
-        public ActionResult Availability() => View();
+        public ViewResult Availability() => View();
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
@@ -663,7 +665,7 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
-        public async Task<ActionResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
+        public async Task<ViewResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
         {
             var availableDay = await db.AvailableDays.FindAsync(availableDayId);
             var physician = await db.Physicians.FindAsync(physicianId);
@@ -881,13 +883,13 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateSuccess(CreateSuccessViewModel obj)
+        public ViewResult CreateSuccess(CreateSuccessViewModel obj)
         {
             return View(obj);
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.SubmitRequest)]
-        public async Task<ActionResult> CreateAddOn(bool serviceIdHasErrors = false)
+        public async Task<ViewResult> CreateAddOn(bool serviceIdHasErrors = false)
         {
             var vm = new CreateViewModel();
 
@@ -1045,28 +1047,28 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult RefreshCompanyDropDown(Guid physicianId)
+        public PartialViewResult RefreshCompanyDropDown(Guid physicianId)
         {
             var companySelectList = viewDataService.GetPhysicianCompanySelectList(physicianId);
             return PartialView("_CreateAddOnCompanyDropDown", companySelectList);
         }
 
         [HttpGet]
-        public ActionResult RefreshServiceDropDown(Guid physicianId)
+        public PartialViewResult RefreshServiceDropDown(Guid physicianId)
         {
             var selectList = viewDataService.GetPhysicianServiceSelectList(physicianId);
             return PartialView("_CreateAddOnServiceDropDown", selectList);
         }
 
         [HttpGet]
-        public ActionResult RefreshCaseCoordinatorDropDown(Guid physicianId)
+        public PartialViewResult RefreshCaseCoordinatorDropDown(Guid physicianId)
         {
             var selectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physicianId);
             return PartialView("_CreateAddOnCaseCoordinatorDropDown", selectList);
         }
 
         [HttpGet]
-        public ActionResult RefreshProcessTemplateDropDown(Guid physicianId)
+        public PartialViewResult RefreshProcessTemplateDropDown(Guid physicianId)
         {
             var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
             return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
@@ -1234,7 +1236,7 @@ namespace WebApp.Controllers
         
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
-        public async Task<ActionResult> ToggleNoShow(NoShowForm form)
+        public async Task<JsonResult> ToggleNoShow(NoShowForm form)
         {
             await service.NoShow(form);
 
@@ -1246,7 +1248,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
-        public async Task<ActionResult> ToggleOnHold(OnHoldForm form)
+        public async Task<JsonResult> ToggleOnHold(OnHoldForm form)
         {
             await service.OnHold(form);
 
@@ -1257,7 +1259,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
-        public async Task<ActionResult> RefreshNote(int serviceRequestId, bool allowEdit = false)
+        public async Task<PartialViewResult> RefreshNote(int serviceRequestId, bool allowEdit = false)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var note = await context.ServiceRequests.FindAsync(serviceRequestId);
@@ -1266,7 +1268,7 @@ namespace WebApp.Controllers
 
         #region Box
 
-        public async Task<ActionResult> BoxManager(int serviceRequestId)
+        public async Task<PartialViewResult> BoxManager(int serviceRequestId)
         {
             var vm = new BoxManagerViewModel();
             vm.ServiceRequestId = serviceRequestId;
@@ -1335,7 +1337,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.UpdateFolder)]
-        public ActionResult UpdateBoxCaseFolderName(int serviceRequestId)
+        public JsonResult UpdateBoxCaseFolderName(int serviceRequestId)
         {
             // Get the request
             var serviceRequest = db.ServiceRequests
@@ -1397,7 +1399,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.AddCollaborator)]
-        public ActionResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
+        public RedirectToRouteResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
         {
             var resources = db.GetServiceRequestResources(ServiceRequestId);
             var resource = resources.Single(r => r.Id == UserId);
@@ -1423,7 +1425,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.RemoveCollaborator)]
-        public ActionResult UnshareBoxFolder(int serviceRequestId, string CollaborationId)
+        public JsonResult UnshareBoxFolder(int serviceRequestId, string CollaborationId)
         {
 
             var box = new BoxManager();
@@ -1438,7 +1440,7 @@ namespace WebApp.Controllers
             return Json(new { serviceRequestId = serviceRequestId });
         }
 
-        public ActionResult AcceptBoxFolder(int serviceRequestId, Guid UserId, string CollaborationId)
+        public JsonResult AcceptBoxFolder(int serviceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;
 
@@ -1451,7 +1453,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
-        public ActionResult UnsyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
+        public JsonResult UnsyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
@@ -1460,7 +1462,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.SyncUnsyncCollaborator)]
-        public ActionResult SyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
+        public JsonResult SyncBoxFolder(int serviceRequestId, string FolderId, string BoxUserId)
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
@@ -1622,7 +1624,7 @@ namespace WebApp.Controllers
 
         [HttpGet]
         //[AuthorizeRole(Feature = Features.SysAdmin.ManageTasks)]
-        public ActionResult GetAllServiceRequestIds()
+        public JsonResult GetAllServiceRequestIds()
         {
             var ids = db.ServiceRequests.Select(sr => sr.Id).OrderBy(sr => sr).ToList();
             return Json(ids, JsonRequestBehavior.AllowGet);
@@ -1630,7 +1632,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateDependentTaskStatuses(int serviceRequestId)
+        public async Task<JsonResult> UpdateDependentTaskStatuses(int serviceRequestId)
         {
             await service.UpdateDependentTaskStatuses(serviceRequestId);
 
@@ -1642,7 +1644,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.UpdateTaskStatus)]
-        public async Task<ActionResult> UpdateServiceRequestStatuses(int serviceRequestId)
+        public async Task<JsonResult> UpdateServiceRequestStatuses(int serviceRequestId)
         {
             await service.UpdateServiceRequestStatus(serviceRequestId);
 

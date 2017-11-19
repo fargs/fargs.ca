@@ -1,20 +1,15 @@
 ﻿using Orvosi.Data;
-using Orvosi.Shared.Enums;
-using WebApp.Library.Enums;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using WebApp.ViewModels.ServiceCatalogueViewModels;
-using WebApp.Library;
-using Features = Orvosi.Shared.Enums.Features;
-using WebApp.Library.Filters;
-using WebApp.Library.Extensions;
-using WebApp.FormModels;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using WebApp.FormModels;
+using WebApp.Library;
+using WebApp.Library.Filters;
+using WebApp.ViewModels.ServiceCatalogueViewModels;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -29,7 +24,7 @@ namespace WebApp.Controllers
             this.db = db;
             this.service = service;
         }
-        public async Task<ActionResult> Index(FilterArgs args)
+        public async Task<ViewResult> Index(FilterArgs args)
         {
             var vm = new IndexViewModel();
             vm.FilterArgs = args;
@@ -50,7 +45,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public async Task<ActionResult> _Details(FilterArgs args)
+        public async Task<PartialViewResult> _Details(FilterArgs args)
         {
             var vm = new IndexViewModel();
             vm.FilterArgs = args;
@@ -74,7 +69,7 @@ namespace WebApp.Controllers
             return PartialView(view, vm);
         }
 
-        public async Task<ActionResult> Edit(FilterArgs args)
+        public async Task<PartialViewResult> Edit(FilterArgs args)
         {
             var entity = await db.ServiceCatalogues
                 .SingleOrDefaultAsync(c => c.PhysicianId == physicianOrLoggedInUserId && c.CompanyId == args.CompanyId && c.LocationId == args.LocationId && c.ServiceId == args.ServiceId);
@@ -100,7 +95,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(ServiceCatalogueForm form)
+        public async Task<JsonResult> Edit(ServiceCatalogueForm form)
         {
             var exists = await db.ServiceCatalogues.AnyAsync(c => c.CompanyId == form.CompanyId && c.PhysicianId == physicianOrLoggedInUserId && c.LocationId == form.LocationId && c.ServiceId == form.ServiceId);
             if (!exists)
@@ -133,7 +128,7 @@ namespace WebApp.Controllers
             return Json(form);
         }
 
-        public async Task<ActionResult> EditRates(Guid? CustomerGuid)
+        public async Task<ViewResult> EditRates(Guid? CustomerGuid)
         {
             var serviceCatalogueRate = new ServiceCatalogueRate();
 
@@ -177,7 +172,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> EditRates(ServiceCatalogueRate form)
+        public async Task<RedirectToRouteResult> EditRates(ServiceCatalogueRate form)
         {
             var exists = await db.ServiceCatalogueRates.AnyAsync(c => c.ServiceProviderGuid == physicianOrLoggedInUserId && c.CustomerGuid == form.CustomerGuid);
             if (!exists)

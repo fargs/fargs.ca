@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Orvosi.Data;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Features = Orvosi.Shared.Enums.Features;
-using WebApp.Library.Filters;
-using Orvosi.Data;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using WebApp.Library.Filters;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -24,7 +22,7 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
-        public async Task<ActionResult> EditNote(int serviceRequestId)
+        public async Task<JsonResult> EditNote(int serviceRequestId)
         {
             var editForm = await db.ServiceRequests
                 .Where(sr => sr.Id == serviceRequestId)
@@ -40,7 +38,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageInvoiceNote)]
-        public async Task<ActionResult> UpdateNote(NoteEditForm form)
+        public async Task<HttpStatusCodeResult> UpdateNote(NoteEditForm form)
         {
             var target = db.ServiceRequests.Find(form.ServiceRequestId);
             target.Notes = form.Notes;

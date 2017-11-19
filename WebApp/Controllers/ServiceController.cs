@@ -1,17 +1,11 @@
 ﻿using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Principal;
-using System.Web;
 using System.Web.Mvc;
-using WebApp.Library;
-using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using WebApp.Library.Projections;
-using WebApp.ViewModels.UIElements;
 using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
@@ -25,13 +19,13 @@ namespace WebApp.Controllers
             this.db = db;
         }
         [AuthorizeRole(Feature = Features.Services.Search)]
-        public ActionResult Index()
+        public ViewResult Index()
         {
             return View();
         }
 
         [AuthorizeRole(Feature = Features.Services.Search)]
-        public ActionResult List()
+        public PartialViewResult List()
         {
             var model = db.PhysicianServices
                 .Where(pc => pc.PhysicianId == physicianId)
@@ -49,7 +43,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Services.Search)]
-        public ActionResult Search(string searchTerm, int? page)
+        public JsonResult Search(string searchTerm, int? page)
         {
                 var data = db.Services
                     // WHERE User has a public profile needs to be added in
@@ -66,12 +60,12 @@ namespace WebApp.Controllers
                 }, JsonRequestBehavior.AllowGet);
         }
         [AuthorizeRole(Feature = Features.Services.Search)]
-        public ActionResult Details()
+        public ViewResult Details()
         {
             return View();
         }
         [AuthorizeRole(Feature = Features.Services.Manage)]
-        public ActionResult Create(short serviceId)
+        public JsonResult Create(short serviceId)
         {
             if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {
@@ -104,7 +98,7 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Services.Manage)]
-        public ActionResult Remove(short serviceId)
+        public JsonResult Remove(short serviceId)
         {
             if (loggedInRoleId != AspNetRoles.Physician && !physicianId.HasValue)
             {

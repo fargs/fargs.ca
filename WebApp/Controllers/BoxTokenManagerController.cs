@@ -1,17 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using Box.V2;
+﻿using Box.V2;
 using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.Exceptions;
-using WebApp.Models.BoxModels;
 using Orvosi.Data;
+using System;
 using System.Configuration;
-using WebApp.Library;
 using System.Linq;
-using Features = Orvosi.Shared.Enums.Features;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 using WebApp.Library.Filters;
+using WebApp.Models.BoxModels;
+using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
 {
@@ -33,7 +32,7 @@ namespace WebApp.Controllers
         }
 
         // GET /Index
-        public async Task<ActionResult> Index()
+        public async Task<ViewResult> Index()
         {
             if (IsError()) return Error(Request.QueryString["error"], Request.QueryString["error_description"]);
             if (IsCode()) return await Token(Request.QueryString["code"], Request.QueryString["state"]);
@@ -52,7 +51,7 @@ namespace WebApp.Controllers
         /// The first step of the OAuth2 flow. Redirect the user to Box for credentialing and authorization of this application.
         /// </summary>
         // GET /Authorize
-        public ActionResult Authorize(AuthModel authModel)
+        public RedirectResult Authorize(AuthModel authModel)
         {
             // Generate and stash an antiforgery token
             var antiforgeryToken = Guid.NewGuid().ToString();
@@ -67,7 +66,7 @@ namespace WebApp.Controllers
             return new RedirectResult(authUrl);
         }
 
-        public async Task<ActionResult> Refresh()
+        public async Task<ViewResult> Refresh()
         {
             OAuthSession session;
             GetBoxTokensReturnModel tokens;
@@ -87,7 +86,7 @@ namespace WebApp.Controllers
         /// <summary>
         /// The second and final step of the OAuth2 flow. The user has authorized this application at Box's site and redirected them back to this site. Validate the redirect and exchange the authorization code for a access/refresh token pair.
         /// </summary>
-        private async Task<ActionResult> Token(string code, string state)
+        private async Task<ViewResult> Token(string code, string state)
         {
             try
             {

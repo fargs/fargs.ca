@@ -1,14 +1,6 @@
-﻿using Box.V2.Config;
-using Box.V2.JWTAuth;
-using Box.V2.Models;
+﻿using Box.V2.Models;
 using Orvosi.Data;
-using Orvosi.Shared.Enums;
-using Orvosi.Data;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
 using WebApp.Library.Filters;

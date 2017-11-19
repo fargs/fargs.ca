@@ -1,30 +1,25 @@
-﻿using System;
+﻿using FluentDateTime;
+using LinqKit;
+using Orvosi.Data;
+using Orvosi.Data.Filters;
+using Orvosi.Shared.Enums;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using dvm = WebApp.ViewModels.DashboardViewModels;
-using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
-using WebApp.Library;
-using WebApp.Models.ServiceRequestModels;
-using m = Orvosi.Shared.Model;
-using Westwind.Web.Mvc;
-using WebApp.ViewModels.ServiceRequestViewModels;
-using System.Net;
-using System.Data.Entity;
-using Orvosi.Data.Filters;
 using WebApp.Library.Filters;
-using Features = Orvosi.Shared.Enums.Features;
 using WebApp.Models;
-using LinqKit;
+using WebApp.Models.ServiceRequestModels;
+using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using WebApp.ViewModels.CalendarViewModels;
-using WebApp.ViewDataModels;
-using WebApp.ViewModels.ServiceRequestTaskViewModels;
-using FluentDateTime;
-using System.Collections.Generic;
-using Orvosi.Data;
-using System.Security.Principal;
+using WebApp.ViewModels.ServiceRequestViewModels;
+using dvm = WebApp.ViewModels.DashboardViewModels;
+using Features = Orvosi.Shared.Enums.Features;
+using m = Orvosi.Shared.Model;
 
 namespace WebApp.Controllers
 {
@@ -37,13 +32,13 @@ namespace WebApp.Controllers
         {
             this.db = db;
         }
-        public ActionResult Index()
+        public RedirectToRouteResult Index()
         {
             return RedirectToAction("DueDates");
         }
 
         [AuthorizeRole(Feature = Features.Work.Agenda)]
-        public ActionResult Agenda(DateTime? selectedDate)
+        public ViewResult Agenda(DateTime? selectedDate)
         {
             var date = selectedDate.GetValueOrDefault(SystemTime.Now()).Date;
             // Set date range variables used in where conditions
@@ -69,16 +64,16 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
-        public async Task<ActionResult> DueDates(TaskListArgs args)
+        public ViewResult DueDates(TaskListArgs args)
         {
             args.ViewTarget = ViewTarget.DueDates;
             args.ViewFilter = TaskListViewModelFilter.MyActiveTasks;
-            
+
             return View(args);
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
-        public async Task<ActionResult> Schedule(TaskListArgs args)
+        public PartialViewResult Schedule(TaskListArgs args)
         {
             var data = db.ServiceRequests
                             .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
@@ -100,7 +95,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
-        public async Task<ActionResult> WeekSummary(DateTime startDate)
+        public async Task<PartialViewResult> WeekSummary(DateTime startDate)
         {
             var dateRange = new DateFilterArgs
             {
@@ -160,15 +155,13 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Additionals)]
-        public ActionResult Additionals()
+        public ViewResult Additionals()
         {
             return View();   
         }
 
-
-
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public ActionResult RefreshServiceStatus(int serviceRequestId)
+        public PartialViewResult RefreshServiceStatus(int serviceRequestId)
         {
             var context = new Orvosi.Data.OrvosiDbContext();
             var request = context.ServiceRequests.Select(sr => new m.ServiceRequest
@@ -184,7 +177,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Agenda)]
-        public ActionResult RefreshAgendaSummaryCount(Guid? serviceProviderId, DateTime? day)
+        public PartialViewResult RefreshAgendaSummaryCount(Guid? serviceProviderId, DateTime? day)
         {
             var dayOrDefault = GetDayOrDefault(day);
             var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
@@ -195,7 +188,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
-        public ActionResult RefreshDueDateSummaryCount()
+        public PartialViewResult RefreshDueDateSummaryCount()
         {
             var result = db.ServiceRequestTasks;
 
@@ -203,7 +196,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
-        public ActionResult RefreshScheduleSummaryCount(Guid? serviceProviderId)
+        public PartialViewResult RefreshScheduleSummaryCount(Guid? serviceProviderId)
         {
             Guid userId = User.Identity.GetUserContext().Id;
 
@@ -219,7 +212,7 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Work.Additionals)]
-        public ActionResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)
+        public PartialViewResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)
         {
             var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
 
@@ -229,49 +222,14 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ViewInvoiceNote)]
-        public async Task<ActionResult> RefreshNote(int serviceRequestId)
+        public async Task<PartialViewResult> RefreshNote(int serviceRequestId)
         {
             var note = await db.ServiceRequests.FindAsync(serviceRequestId);
             return PartialView("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes });
         }
 
-
-
-        //[HttpPost]
-        //[AuthorizeRole(Feature = Features.ServiceRequest.ToggleNoShow)]
-        //public async Task<ActionResult> ToggleNoShow(int serviceRequestId, bool isChecked, Guid? serviceProviderGuid)
-        //{
-            
-        //    var serviceRequest = await context.ServiceRequests.FindAsync(serviceRequestId);
-        //    if (serviceRequest == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-
-        //    serviceRequest.IsNoShow = isChecked;
-
-        //    if (isChecked)
-        //    {
-        //        serviceRequest.MarkActiveTasksAsObsolete();
-        //    }
-        //    else
-        //    {
-        //        serviceRequest.MarkObsoleteTasksAsActive();
-        //    }
-
-        //    serviceRequest.UpdateIsClosed();
-
-        //    serviceRequest.UpdateInvoice(context);
-
-        //    await context.SaveChangesAsync();
-
-        //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-        //}
-
-
-
         [HttpGet]
-        public async Task<ActionResult> TaskHierarchy(int serviceRequestId, int? taskId = null)
+        public async Task<PartialViewResult> TaskHierarchy(int serviceRequestId, int? taskId = null)
         {
             var now = SystemTime.Now();
             Guid? userId = User.Identity.GetGuidUserId();
@@ -286,10 +244,9 @@ namespace WebApp.Controllers
             return PartialView("_TaskHierarchy", vm);
         }
 
-
         [HttpGet]
         [AuthorizeRole(Feature = Features.ServiceRequest.LiveChat)]
-        public async Task<ActionResult> Discussion(int serviceRequestId)
+        public async Task<PartialViewResult> Discussion(int serviceRequestId)
         {
             var now = SystemTime.Now();
 

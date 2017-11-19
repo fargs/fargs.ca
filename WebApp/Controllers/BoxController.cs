@@ -21,9 +21,9 @@ namespace WebApp.Controllers
     {
         private OrvosiDbContext context = new OrvosiDbContext();
         [ChildActionOnly]
-        public ActionResult _BoxIntegration(BoxFolder folder) => PartialView(folder);
+        public PartialViewResult _BoxIntegration(BoxFolder folder) => PartialView(folder);
 
-        public ActionResult Users()
+        public ViewResult Users()
         {
             var box = new BoxManager();
             var boxUsers = box.GetUsers();
@@ -58,14 +58,14 @@ namespace WebApp.Controllers
             return View(users);
         }
 
-        public ActionResult BoxUsers()
+        public ViewResult BoxUsers()
         {
             var box = new BoxManager();
             var boxUsers = box.GetUsers();
             return View(boxUsers);
         }
 
-        public ActionResult LogInAs(string id)
+        public ViewResult LogInAs(string id)
         {
             var box = new BoxManager();
             var user = box.UserClient(id).UsersManager.GetCurrentUserInformationAsync().Result;

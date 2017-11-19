@@ -9,6 +9,7 @@ using WebApp.Library;
 using WebApp.Library.Extensions;
 using WebApp.ViewModels;
 using FluentDateTime;
+using WebApp.Library.Filters;
 
 namespace WebApp.Controllers
 {
@@ -39,8 +40,8 @@ namespace WebApp.Controllers
             loggedInRoleId = identity.GetRoleId();
         }
         
-        [ChildActionOnly]
-        public ActionResult CalendarNavigation(DateTime? selectedDate, CalendarViewOptions? contentView)
+        [ChildActionOnlyOrAjax]
+        public PartialViewResult CalendarNavigation(DateTime? selectedDate, CalendarViewOptions? contentView)
         {
             var links = new Dictionary<string, Uri>();
             var date = selectedDate.GetValueOrDefault(now).Date;

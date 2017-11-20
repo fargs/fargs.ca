@@ -26,7 +26,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> ShowRescheduleForm(int serviceRequestTaskId)
+        public async Task<PartialViewResult> ShowRescheduleForm(int serviceRequestTaskId)
         {
             var task = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
             var dto = task.ServiceRequest;
@@ -47,13 +47,13 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> SelectedDayChanged(RescheduleForm form)
+        public PartialViewResult SelectedDayChanged(RescheduleForm form)
         {
             form.AvailableSlotId = null;
             return PartialView("_RescheduleModalForm", form);
         }
 
-        public ActionResult SlotPicker(RescheduleForm form)
+        public PartialViewResult SlotPicker(RescheduleForm form)
         {
             var selectList = this.viewDataService.GetPhysicianAvailableSlotSelectList(form.PhysicianId, form.AppointmentDate, form.OriginalAvailableSlotId);
             return PartialView(selectList);

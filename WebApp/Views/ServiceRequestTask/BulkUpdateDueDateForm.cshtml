@@ -34,7 +34,7 @@
 
                                 if (totalDays < 0)
                                 {
-                                    <span>Actual due date is behind (<i class="fa fa-minus text-danger"></i>) expected due date by @Math.Abs(totalDays) days</span>
+                                    <span>Actual due date is ahead (<i class="fa fa-minus text-danger"></i>) @Math.Abs(totalDays) days from the expected due date</span>
                                 }
                                 else if (totalDays == 0)
                                 {
@@ -42,7 +42,7 @@
                                 }
                                 else if (totalDays > 0)
                                 {
-                                    <span>Actual due date is ahead (<i class="fa fa-plus text-success"></i>) expected due date by @Math.Abs(totalDays) days</span>
+                                    <span>Actual due date is behind (<i class="fa fa-plus text-success"></i>) @Math.Abs(totalDays) days from expected due date</span>
                                 }
                             }
                         </div>

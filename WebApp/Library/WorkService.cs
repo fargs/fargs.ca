@@ -154,8 +154,7 @@ namespace WebApp.Library
             {
                 tasks = sr.ServiceRequestTasks
                     .AsQueryable()
-                    .AreActive()
-                    .Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+                    .AreActive();
             }
             else
             {
@@ -164,7 +163,7 @@ namespace WebApp.Library
                     .AreOnHold();
             }
 
-            foreach (var task in sr.ServiceRequestTasks.AsQueryable().AreActive())
+            foreach (var task in tasks)
             {
                 await SaveTaskStatusChange(task, newTaskStatus);
             }

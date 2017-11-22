@@ -42,13 +42,13 @@
             }
             @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
             {
-                if (Model.ServiceRequestStatusId == TaskStatuses.OnHold)
+                if (Model.ServiceRequestStatusId == ServiceRequestStatuses.OnHold)
                 {
-                    <button type="button" onclick="onHold(@Model.ServiceRequestId , true)" class="btn btn-default btn-info" title="Undo On Hold"><i class="fa fa-hand-paper-o"></i></button>
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , false)" class="btn btn-default btn-info" title="Undo On Hold"><i class="fa fa-hand-paper-o"></i></button>
                 }
                 else
                 {
-                    <button type="button" onclick="onHold(@Model.ServiceRequestId , false)" class="btn btn-default" title="On Hold"><i class="fa fa-hand-paper-o"></i></button>
+                    <button type="button" onclick="onHold(@Model.ServiceRequestId , true)" class="btn btn-default" title="On Hold"><i class="fa fa-hand-paper-o"></i></button>
                 }
             }
         </div>

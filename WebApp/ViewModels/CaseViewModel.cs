@@ -72,6 +72,7 @@ namespace WebApp.ViewModels
             CanBeUncancelled = dto.CanBeUncancelled(dto.IsLateCancellation, dto.CancelledDate),
             CanBeNoShow = dto.CanBeNoShow(dto.AppointmentDate),
             IsSubmitInvoiceTaskDone = dto.IsSubmitInvoiceTaskDone,
+            ServiceRequestStatusId = dto.ServiceRequestStatusId,
 
             ServiceRequestStatus = LookupViewModel<short>.FromServiceRequestStatusDto.Invoke(dto.ServiceRequestStatus),
             CancellationViewModel = CancellationViewModel.FromServiceRequestDto.Invoke(dto),

@@ -854,7 +854,9 @@
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
-    <Content Include="Bundles\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Bundles\fonts\glyphicons-halflings-regular.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1251,10 +1253,18 @@
     </None>
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <Content Include="Bundles\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Bundles\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Bundles\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Bundles\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Bundles\fonts\glyphicons-halflings-regular.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Bundles\fonts\glyphicons-halflings-regular.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Bundles\fonts\glyphicons-halflings-regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Bundles\fonts\glyphicons-halflings-regular.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bootstrap-custom\orvosi.less" />
     <Content Include="private_key.pem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

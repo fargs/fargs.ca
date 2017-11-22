@@ -4,32 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
-using WebApp.FormModels;
 using WebApp.Models;
 
-namespace WebApp.ViewModels
+namespace WebApp.ViewModels.ServiceRequestTaskViewModels
 {
-    public class TaskViewModel
+    public class BulkUpdateDueDateViewModel : TaskViewModel
     {
-        public int Id { get; set; }
-        public short TaskId { get; set; }
-        public int ServiceRequestId { get; set; }
-        public string Name { get; set; }
-        public string ShortName { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public DateTime? TaskStatusChangedDate { get; set; }
-        public LookupViewModel<Guid> TaskStatusChangedBy { get; set; }
-        public short Sequence { get; set; }
-        public short StatusId { get; set; }
-        public LookupViewModel<short> Status { get; set; }
-        public DateTime? DueDate { get; set; }
-        public LookupViewModel<Guid> AssignedTo { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsOverdue { get; set; } = false;
-        public bool IsDueToday { get; set; } = false;
-        public Guid? TaskTemplateId { get; set; }
+        public DateTime? NewDueDate { get; set; }
 
-        public static Expression<Func<TaskDto, TaskViewModel>> FromTaskDto = dto => dto == null ? null : new TaskViewModel
+        public new static Expression<Func<TaskDto, BulkUpdateDueDateViewModel>> FromTaskDto = dto => dto == null ? null : new BulkUpdateDueDateViewModel
         {
             Id = dto.Id,
             TaskId = dto.TaskId,

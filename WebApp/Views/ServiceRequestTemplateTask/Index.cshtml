@@ -32,6 +32,9 @@
             Due Date
         </th>
         <th>
+            Due Date Type
+        </th>
+        <th>
             Effective Date
         </th>
         <th>
@@ -59,6 +62,9 @@
         </td>
         <td>
             @(!item.IsBaselineDate ? item.DueDateDurationFromBaseline.HasValue ? Html.DisplayFor(modelItem => item.DueDateDurationFromBaseline) : Html.Raw("<span class='text-muted'>ASAP</span>") : Html.Raw("<span class='text-muted'> (BASELINE)</span>"))
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DueDateType)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.EffectiveDateDurationFromBaseline)

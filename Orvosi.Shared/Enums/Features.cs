@@ -76,6 +76,7 @@ namespace Orvosi.Shared.Enums.Features
         public const short EditTask = 307;
         public const short DeleteTask = 308;
         public const short ViewTaskList = 310;
+        public const short BulkUpdateDueDates = 311;
     }
 
     public class ServiceRequest_Box

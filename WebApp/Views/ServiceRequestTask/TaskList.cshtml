@@ -81,7 +81,7 @@
                         <small style="@(task.TaskId == Tasks.AssessmentDay || task.TaskId == Tasks.SubmitReport ? "font-size:20px;" : "")" class="text-muted">@task.DueDate.ToOrvosiDateFormat()</small>
                     </td>
                     <td>
-                        @if (args.ViewTarget == ViewTarget.Agenda && task.TaskId == Tasks.SubmitInvoice)
+                        @if (task.TaskId == Tasks.SubmitInvoice)
                         {
                             <i class="fa fa-wrench"></i>
                         }

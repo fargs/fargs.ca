@@ -32,7 +32,9 @@ namespace WebApp.Models
         public DateTime? EffectiveDate { get; set; }
         public bool IsCriticalPath { get; set; }
         public int ServiceRequestId { get; set; }
+        public Guid? TaskTemplateId { get; set; }
         public ServiceRequestDto ServiceRequest { get; set; }
+        public ServiceRequestTemplateTaskDto TaskTemplate { get; set; }
 
         public bool IsActive
         {
@@ -65,6 +67,7 @@ namespace WebApp.Models
             ResponsibleRoleName = srt.ResponsibleRoleName,
             IsCriticalPath = srt.IsCriticalPath,
             DueDate = srt.DueDate,
+            TaskTemplateId = srt.ServiceRequestTemplateTaskId,
             TaskStatus = LookupDto<short>.FromTaskStatusEntity.Invoke(srt.TaskStatu)
         };
 
@@ -105,6 +108,17 @@ namespace WebApp.Models
             TaskId = srt.TaskId.Value,
             TaskStatusId = srt.TaskStatusId,
             TaskStatusChangedDate = srt.TaskStatusChangedDate
+        };
+
+        public static Expression<Func<ServiceRequestTask, TaskDto>> FromServiceRequestTaskEntityAndTemplate = srt => new TaskDto
+        {
+            Id = srt.Id,
+            TaskId = srt.TaskId.Value,
+            Name = srt.TaskName,
+            Sequence = srt.Sequence.Value,
+            DueDate = srt.DueDate,
+            TaskTemplateId = srt.ServiceRequestTemplateTaskId,
+            TaskTemplate = ServiceRequestTemplateTaskDto.FromEntity.Invoke(srt.ServiceRequestTemplateTask)
         };
     }
 }

@@ -562,6 +562,7 @@
     <Compile Include="Models\InvoiceDetailDto.cs" />
     <Compile Include="Models\InvoiceDto.cs" />
     <Compile Include="Models\InvoiceSentLogDto.cs" />
+    <Compile Include="Models\PhysicianServiceRequestTemplateDto.cs" />
     <Compile Include="Models\ReceiptDto.cs" />
     <Compile Include="Models\ServiceCategoryDto.cs" />
     <Compile Include="Models\ProvinceDto.cs" />
@@ -586,6 +587,8 @@
     </Compile>
     <Compile Include="Models\ServiceRequestModels.cs" />
     <Compile Include="Models\ServiceRequestModels2.cs" />
+    <Compile Include="Models\ServiceRequestTemplateDto.cs" />
+    <Compile Include="Models\ServiceRequestTemplateTaskDto.cs" />
     <Compile Include="Models\TaskDependentDto.cs" />
     <Compile Include="Models\TaskDto.cs" />
     <Compile Include="Models\TaskDtoFilters.cs">
@@ -599,6 +602,9 @@
     <Compile Include="ViewDataModels\Common\ViewTarget.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
+    <Compile Include="ViewModels\BulkUpdateDueDateForm.cs" />
+    <Compile Include="FormModels\BulkUpdateDueDateFormModel.cs" />
+    <Compile Include="ViewModels\ServiceRequestTaskViewModels\BulkUpdateDueDateViewModel.cs" />
     <Compile Include="ViewModels\ViewModelSelectList.cs" />
     <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
@@ -1416,6 +1422,7 @@
     <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
     <Content Include="Views\ReleaseHistory\Index.cshtml" />
     <Content Include="Views\Shared\EntityValidationErrors.cshtml" />
+    <Content Include="Views\ServiceRequestTask\BulkUpdateDueDateForm.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

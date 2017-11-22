@@ -17,7 +17,7 @@
     TaskViewModel task = null;
     int selectedTask;
     var qs = this.Request.QueryString.Get("selectedTask");
-    if(int.TryParse(qs, out selectedTask))
+    if (int.TryParse(qs, out selectedTask))
     {
         task = Model.Tasks.SingleOrDefault(c => c.Id == selectedTask);
     }
@@ -61,9 +61,17 @@
                 <h3 class="panel-title pull-left">
                     Task List
                 </h3>
-                <button class="btn btn-success btn-sm pull-right" type="button" data-toggle="collapse" data-target="#new-task-form-container" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-plus"></i> New Task
-                </button>
+                <div class="btn-group pull-right">
+                    <button class="btn btn-success btn-sm" type="button" data-toggle="collapse" data-target="#new-task-form-container" aria-expanded="false" aria-controls="collapseExample">
+                        <i class="fa fa-plus"></i> New Task
+                    </button>
+                    @if (features.Contains(Features.ServiceRequest.BulkUpdateDueDates))
+                    {
+                        <button type="button" class="btn btn-sm btn-default" onclick="showBulkUpdateDueDateForm(@(Model.ServiceRequestId))">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                    }
+                </div>
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
@@ -86,7 +94,7 @@
                     @if (task != null)
                     {
                         <span>
-                        @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
+                            @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
                         </span>
                     }
                 </div>
@@ -101,7 +109,7 @@
                     @if (task != null)
                     {
                         <span>
-                        @Html.Partial("~/Views/ServiceRequestTask/TaskTools.cshtml", task)
+                            @Html.Partial("~/Views/ServiceRequestTask/TaskTools.cshtml", task)
                         </span>
                     }
                 </div>
@@ -229,7 +237,6 @@
                 })
                 .done(function (result) {
                     document.getElementById('tasklist-container').innerHTML = result;
-                    selectTask(null);
                 });
         }
 
@@ -391,6 +398,21 @@
         function invoiceErrors(result) {
             var selector = "#invoice-list-container-" + $(result).data().id;
             $(selector).before(result);
+        }
+
+        function showBulkUpdateDueDateForm(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/BulkUpdateDueDateForm")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    $('#modal-content').html(result);
+                    $('#modal-container').modal('toggle');
+                    $('#modal-content').find("script").each(function (i) {
+                        eval($(this).text());
+                    });
+                });
         }
     </script>
 

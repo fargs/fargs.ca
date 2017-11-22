@@ -21,6 +21,7 @@ using WebApp.Library.Filters;
 using WebApp.Models;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
+using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
@@ -131,7 +132,7 @@ namespace WebApp.Controllers
                 new GridColumn { DisplayName = "City", Name = "CityCode" },
                 new GridColumn { DisplayName = "Physician", Name = "PhysicianName" }
             };
-            
+
             return PartialView("TaskGrid", viewModel);
         }
 
@@ -352,7 +353,7 @@ namespace WebApp.Controllers
             {
                 ServiceRequestId = serviceRequestId
             };
-            
+
             return PartialView("NewTaskForm", viewModel);
         }
 
@@ -460,7 +461,7 @@ namespace WebApp.Controllers
         public async Task<HttpStatusCodeResult> ArchiveCompleted()
         {
             await service.ArchiveCompletedTasksForCurrentUser();
-            
+
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
@@ -521,7 +522,7 @@ namespace WebApp.Controllers
             await service.ChangeTaskStatus(serviceRequestTaskId, taskStatusId);
 
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
-            
+
             return Json(new
             {
                 id = serviceRequestTaskId,
@@ -612,6 +613,107 @@ namespace WebApp.Controllers
                 serviceRequestId = srt.ServiceRequestId
             });
         }
+
+        public PartialViewResult BulkUpdateDueDateForm(int serviceRequestId)
+        {
+            var viewModel = new BulkUpdateDueDateForm();
+            viewModel.ServiceRequestId = serviceRequestId;
+            var tasks = db.ServiceRequestTasks
+                .WithServiceRequestId(serviceRequestId)
+                .Select(TaskDto.FromServiceRequestTaskEntityAndTemplate.Expand())
+                .OrderBy(t => t.DueDate)
+                .ThenBy(t => t.Sequence)
+                .ToList();
+
+
+            //TODO: set the NewDueDate property on each task
+            var serviceRequest = db.ServiceRequests.WithId(serviceRequestId).First();
+
+            foreach (var task in tasks)
+            {
+                var bulkUpdateViewModel = BulkUpdateDueDateViewModel.FromTaskDto.Invoke(task);
+
+                if (!task.TaskTemplateId.HasValue)
+                {
+                    bulkUpdateViewModel.NewDueDate = task.DueDate;
+                }
+                else if (task.TaskTemplate.DueDateTypeTrimmed == DueDateTypes.AppointmentDate)
+                {
+                    bulkUpdateViewModel.NewDueDate = GetTaskDueDate(serviceRequest.AppointmentDate, task.TaskTemplate.DueDateDurationFromBaseline);
+                }
+                else if (task.TaskTemplate.DueDateTypeTrimmed == DueDateTypes.ReportDueDate)
+                {
+                    bulkUpdateViewModel.NewDueDate = GetTaskDueDate(serviceRequest.DueDate, task.TaskTemplate.DueDateDurationFromBaseline);
+                }
+                else
+                {
+                    bulkUpdateViewModel.NewDueDate = null;
+                }
+
+                viewModel.Tasks.Add(bulkUpdateViewModel);
+            }
+
+            return PartialView(viewModel);
+        }
+
+        [HttpPost]
+        public JsonResult BulkUpdateDueDates()
+        {
+            // the form is submitted with 2 arrays of values that need to be attached together. Zip is used for this.
+            var form = this.Request.Form[0].Split(',').Zip(this.Request.Form[1].Split(','), (first, second) =>
+            {
+                DateTime d;
+                if (DateTime.TryParse(second, out d))
+                {
+                    return new BulkUpdateDueDateFormModel()
+                    {
+                        ServiceRequestTaskId = int.Parse(first),
+                        NewDueDate = d
+                    };
+                }
+                else
+                {
+                    return new BulkUpdateDueDateFormModel()
+                    {
+                        ServiceRequestTaskId = int.Parse(first),
+                        NewDueDate = null
+                    };
+                }
+            });
+
+            var ids = form.Select(f => f.ServiceRequestTaskId);
+            var tasks = db.ServiceRequestTasks.Where(srt => ids.Contains(srt.Id));
+            foreach (var task in tasks)
+            {
+                var d = form.First(f => f.ServiceRequestTaskId == task.Id);
+                task.DueDate = d.NewDueDate;
+            }
+            db.SaveChanges();
+
+            int serviceRequestId = tasks.First().ServiceRequestId;
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
+        }
+
+        private DateTime GetTaskDueDate(DateTime? baselineDate, int? dueDateDurationFromBaseline)
+        {
+            if (!baselineDate.HasValue)
+            {
+                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+            }
+
+            if (dueDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
+            {
+                return baselineDate.Value.AddDays(dueDateDurationFromBaseline.Value);
+            }
+            else // ASAP
+            {
+                return now;
+            }
+        }
+
     }
 
 }

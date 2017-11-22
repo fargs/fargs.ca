@@ -8,21 +8,18 @@
     var features = identity.GetFeatures();
 }
 
-@if (features.Contains(Features.ServiceRequest.Edit))
+<a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i> Case Folder</a>
+@if (features.Contains(Features.ServiceRequest.ToggleNoShow))
 {
-    <a class="btn btn-default" target="_blank" href="@Model.BoxCaseFolderURL"><i class="fa fa-folder-open-o fa-lg"></i> Case Folder</a>
-    if (features.Contains(Features.ServiceRequest.ToggleNoShow))
+    if (Model.CanBeNoShow)
     {
-        if (Model.CanBeNoShow)
+        if (Model.CancellationViewModel.IsNoShow)
         {
-            if (Model.CancellationViewModel.IsNoShow)
-            {
-                <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger" style="border:0;"><i class="fa fa-check-square-o"></i> No Show</button>
-            }
-            else
-            {
-                <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default" style="border:0;"><i class="fa fa-square-o"></i> No Show</button>
-            }
+            <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger" style="border:0;"><i class="fa fa-check-square-o"></i> No Show</button>
+        }
+        else
+        {
+            <button type="button" onclick="noShow(@Model.ServiceRequestId , true)" class="btn btn-default" style="border:0;"><i class="fa fa-square-o"></i> No Show</button>
         }
     }
 }

@@ -22,7 +22,7 @@ namespace WebApp.Models
         public IEnumerable<TaskDependentDto> Dependencies { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? AppointmentDate { get; set; } // This is set from the parent service request to determine the status of the Assessment Day task
-        public short Sequence { get; set; }
+        public short? Sequence { get; set; }
         public Guid? AssignedToId { get; set; }
         public PersonDto AssignedTo { get; set; }
         public short TaskStatusId { get; set; }
@@ -59,7 +59,7 @@ namespace WebApp.Models
             CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
-            Sequence = srt.Sequence.Value,
+            Sequence = srt.Sequence,
             AssignedToId = srt.AssignedTo,
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
             TaskStatusId = srt.TaskStatusId,
@@ -80,7 +80,7 @@ namespace WebApp.Models
             CompletedDate = srt.CompletedDate,
             TaskStatusChangedDate = srt.TaskStatusChangedDate,
             TaskStatusChangedBy = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_TaskStatusChangedBy),
-            Sequence = srt.Sequence.Value,
+            Sequence = srt.Sequence,
             AssignedToId = srt.AssignedTo,
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
             TaskStatusId = srt.TaskStatusId,
@@ -115,7 +115,7 @@ namespace WebApp.Models
             Id = srt.Id,
             TaskId = srt.TaskId.Value,
             Name = srt.TaskName,
-            Sequence = srt.Sequence.Value,
+            Sequence = srt.Sequence,
             DueDate = srt.DueDate,
             TaskTemplateId = srt.ServiceRequestTemplateTaskId,
             TaskTemplate = ServiceRequestTemplateTaskDto.FromEntity.Invoke(srt.ServiceRequestTemplateTask)

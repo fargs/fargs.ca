@@ -61,7 +61,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Create([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
+        public async threading.Task<ActionResult> Create([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,ResponsibleRoleId,IsCriticalPath,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {
@@ -100,7 +100,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,ResponsibleRoleId,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
+        public async threading.Task<ActionResult> Edit([Bind(Include = "Id,Name,ShortName,Guidance,TaskPhaseId,IsCriticalPath,ResponsibleRoleId,IsBillable,Sequence,DueDateDiff,IsCriticalPath")] OTask task)
         {
             if (ModelState.IsValid)
             {

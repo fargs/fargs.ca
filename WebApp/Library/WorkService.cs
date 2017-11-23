@@ -227,7 +227,7 @@ namespace WebApp.Library
                 DueDate = form.DueDate,
                 AssignedTo = form.AssignedTo,
                 TaskName = form.TaskName,
-                IsCriticalPath = false,
+                IsCriticalPath = task.IsCriticalPath,
                 ModifiedDate = now,
                 ModifiedUser = userId.ToString(),
                 TaskStatusId = TaskStatuses.ToDo,

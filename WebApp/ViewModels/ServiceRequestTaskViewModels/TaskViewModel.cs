@@ -19,7 +19,7 @@ namespace WebApp.ViewModels
         public DateTime? CompletedDate { get; set; }
         public DateTime? TaskStatusChangedDate { get; set; }
         public LookupViewModel<Guid> TaskStatusChangedBy { get; set; }
-        public short Sequence { get; set; }
+        public short? Sequence { get; set; }
         public short StatusId { get; set; }
         public LookupViewModel<short> Status { get; set; }
         public DateTime? DueDate { get; set; }

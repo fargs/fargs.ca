@@ -34,7 +34,7 @@
 
                                 if (totalDays < 0)
                                 {
-                                    <span>Actual due date is ahead (<i class="fa fa-minus text-danger"></i>) @Math.Abs(totalDays) days from the expected due date</span>
+                                    <span>Actual due date is ahead (<i class="fa fa-plus text-warning"></i>) @Math.Abs(totalDays) days from the expected due date</span>
                                 }
                                 else if (totalDays == 0)
                                 {
@@ -42,8 +42,20 @@
                                 }
                                 else if (totalDays > 0)
                                 {
-                                    <span>Actual due date is behind (<i class="fa fa-plus text-success"></i>) @Math.Abs(totalDays) days from expected due date</span>
+                                    <span>Actual due date is behind (<i class="fa fa-minus text-danger"></i>) @Math.Abs(totalDays) days from expected due date</span>
                                 }
+                            }
+                            else if (!task.DueDate.HasValue && task.NewDueDate.HasValue)
+                            {
+                                <span>Actual due date is ASAP but there is one expected</span>
+                            }
+                            else if (task.DueDate.HasValue && !task.NewDueDate.HasValue)
+                            {
+                                <span>Actual due was manually set and expected was ASAP</span>
+                            }
+                            else if (!task.DueDate.HasValue && !task.NewDueDate.HasValue)
+                            {
+                                <span>ASAP is matching</span>
                             }
                         </div>
                     @* } *@

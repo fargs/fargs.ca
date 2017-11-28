@@ -43,7 +43,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().OrderBy(srt => srt.Sequence)) {
+@foreach (var item in Model.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().OrderBy(srt => srt.DueDateType).ThenBy(srt => srt.DueDateDurationFromBaseline).ThenBy(srt => srt.Sequence)) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.OTask.Name)

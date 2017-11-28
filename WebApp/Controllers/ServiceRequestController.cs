@@ -570,7 +570,7 @@ namespace WebApp.Controllers
                 st.ServiceRequestTemplateTaskId = template.Id;
                 st.TaskType = template.OTask.TaskType;
                 st.Workload = template.OTask.Workload;
-                st.DueDate = GetTaskDueDate(serviceRequest.AppointmentDate.HasValue ? serviceRequest.AppointmentDate : serviceRequest.DueDate, template);
+                st.DueDate = GetTaskDueDate(serviceRequest.AppointmentDate, serviceRequest.DueDate, template);
                 st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
                 st.TaskStatusId = TaskStatuses.ToDo;
                 st.TaskStatusChangedBy = loggedInUserId;
@@ -632,7 +632,7 @@ namespace WebApp.Controllers
 
             foreach (var t in sr.ServiceRequestTasks.AsQueryable().AreActive().Where(srt => srt.ServiceRequestTemplateTaskId.HasValue))
             {
-                t.DueDate = GetTaskDueDate(sr.AppointmentDate, t.ServiceRequestTemplateTask);
+                t.DueDate = GetTaskDueDate(sr.AppointmentDate, sr.DueDate, t.ServiceRequestTemplateTask);
                 t.EffectiveDate = GetEffectiveDate(sr.AppointmentDate, t.ServiceRequestTemplateTask);
             }
 
@@ -843,7 +843,7 @@ namespace WebApp.Controllers
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
                     st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
-                    st.DueDate = GetTaskDueDate(sr.AppointmentDate, template);
+                    st.DueDate = GetTaskDueDate(sr.AppointmentDate, sr.DueDate, template);
                     st.TaskStatusId = TaskStatuses.ToDo;
                     st.TaskStatusChangedBy = loggedInUserId;
                     st.TaskStatusChangedDate = now;
@@ -1006,7 +1006,7 @@ namespace WebApp.Controllers
                     st.TaskType = template.OTask.TaskType;
                     st.Workload = template.OTask.Workload;
                     st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
-                    st.DueDate = GetTaskDueDate(sr.DueDate, template);
+                    st.DueDate = GetTaskDueDate(sr.AppointmentDate, sr.DueDate, template);
                     st.TaskStatusId = TaskStatuses.ToDo;
                     st.TaskStatusChangedBy = loggedInUserId;
                     st.TaskStatusChangedDate = now;
@@ -1552,25 +1552,45 @@ namespace WebApp.Controllers
                 });
         }
 
-        private DateTime GetTaskDueDate(DateTime? baselineDate, ServiceRequestTemplateTask taskTemplate)
+        private DateTime? GetTaskDueDate(DateTime? appointmentDate, DateTime? reportDueDate, ServiceRequestTemplateTask taskTemplate)
         {
-            if (!baselineDate.HasValue)
+            DateTime? taskDueDate;
+            if (appointmentDate.HasValue && taskTemplate.TaskId == Tasks.AssessmentDay) // assessment day task is set to the appointment date
             {
-                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+                taskDueDate = appointmentDate.Value;
+            }
+            else if (reportDueDate.HasValue && taskTemplate.TaskId == Tasks.SubmitReport) // submit report task is set to the report due date
+            {
+                taskDueDate = reportDueDate.Value;
+            }
+            else // for all other tasks, we calculate the due date accordingly
+            {
+                if (!taskTemplate.DueDateDurationFromBaseline.HasValue) // If there is no duration, return null (ASAP) NOTE: 0 must be set explicitly to have it match the baseline date.
+                {
+                    taskDueDate = null; 
+                }
+                else
+                {
+                    if (taskTemplate.DueDateType == DueDateTypes.AppointmentDate)
+                    {
+                        taskDueDate = appointmentDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                    }
+                    else if (taskTemplate.DueDateType == DueDateTypes.ReportDueDate)
+                    {
+                        taskDueDate = reportDueDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                        if (appointmentDate.HasValue && taskDueDate < appointmentDate)
+                        {
+                            taskDueDate = appointmentDate;
+                        }
+                    }
+                    else
+                    {
+                        taskDueDate = null;
+                    }
+                }
             }
 
-            if (taskTemplate.IsBaselineDate) // BASELINE
-            {
-                return baselineDate.Value;
-            }
-            else if (taskTemplate.DueDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
-            {
-                return baselineDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
-            }
-            else // ASAP
-            {
-                return now;
-            }
+            return taskDueDate;
         }
 
         private DateTime GetEffectiveDate(DateTime? baselineDate, ServiceRequestTemplateTask taskTemplate)

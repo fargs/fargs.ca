@@ -633,23 +633,15 @@ namespace WebApp.Controllers
             {
                 var bulkUpdateViewModel = BulkUpdateDueDateViewModel.FromTaskDto.Invoke(task);
 
-                if (!task.TaskTemplateId.HasValue)
+                if (task.TaskTemplateId.HasValue)
                 {
-                    bulkUpdateViewModel.NewDueDate = task.DueDate;
-                }
-                else if (task.TaskTemplate.DueDateTypeTrimmed == DueDateTypes.AppointmentDate)
-                {
-                    bulkUpdateViewModel.NewDueDate = GetTaskDueDate(serviceRequest.AppointmentDate, task.TaskTemplate.DueDateDurationFromBaseline);
-                }
-                else if (task.TaskTemplate.DueDateTypeTrimmed == DueDateTypes.ReportDueDate)
-                {
-                    bulkUpdateViewModel.NewDueDate = GetTaskDueDate(serviceRequest.DueDate, task.TaskTemplate.DueDateDurationFromBaseline);
+                    bulkUpdateViewModel.NewDueDate = GetTaskDueDate(serviceRequest.AppointmentDate, serviceRequest.DueDate, task.TaskTemplate);
                 }
                 else
                 {
-                    bulkUpdateViewModel.NewDueDate = null;
+                    bulkUpdateViewModel.NewDueDate = task.DueDate;
                 }
-
+                
                 viewModel.Tasks.Add(bulkUpdateViewModel);
             }
 
@@ -697,21 +689,45 @@ namespace WebApp.Controllers
             });
         }
 
-        private DateTime GetTaskDueDate(DateTime? baselineDate, int? dueDateDurationFromBaseline)
+        private DateTime? GetTaskDueDate(DateTime? appointmentDate, DateTime? reportDueDate, ServiceRequestTemplateTaskDto taskTemplate)
         {
-            if (!baselineDate.HasValue)
+            DateTime? taskDueDate;
+            if (appointmentDate.HasValue && taskTemplate.TaskId == Tasks.AssessmentDay) // assessment day task is set to the appointment date
             {
-                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+                taskDueDate = appointmentDate.Value;
+            }
+            else if (reportDueDate.HasValue && taskTemplate.TaskId == Tasks.SubmitReport) // submit report task is set to the report due date
+            {
+                taskDueDate = reportDueDate.Value;
+            }
+            else // for all other tasks, we calculate the due date accordingly
+            {
+                if (!taskTemplate.DueDateDurationFromBaseline.HasValue) // If there is no duration, return null (ASAP) NOTE: 0 must be set explicitly to have it match the baseline date.
+                {
+                    taskDueDate = null;
+                }
+                else
+                {
+                    if (taskTemplate.DueDateTypeTrimmed == DueDateTypes.AppointmentDate)
+                    {
+                        taskDueDate = appointmentDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                    }
+                    else if (taskTemplate.DueDateTypeTrimmed == DueDateTypes.ReportDueDate)
+                    {
+                        taskDueDate = reportDueDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                        if (appointmentDate.HasValue && taskDueDate < appointmentDate)
+                        {
+                            taskDueDate = appointmentDate;
+                        }
+                    }
+                    else
+                    {
+                        taskDueDate = null;
+                    }
+                }
             }
 
-            if (dueDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
-            {
-                return baselineDate.Value.AddDays(dueDateDurationFromBaseline.Value);
-            }
-            else // ASAP
-            {
-                return now;
-            }
+            return taskDueDate;
         }
 
     }

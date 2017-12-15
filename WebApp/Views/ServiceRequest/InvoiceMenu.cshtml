@@ -16,13 +16,13 @@
             {
             <button type="button" class="btn btn-success btn-sm" disabled><i class="fa fa-check fa-lg"></i></button>
         }
-        else if (Model.IsSent && features.Contains(Features.Accounting.ManageReceipts))
-        {
-            <button type="button" class="btn btn-warning btn-sm" onclick="onPaid(@Model.Id)"><i class="fa fa-usd fa-lg"></i></button>
-        }
         else if (Model.IsDeleted && features.Contains(Features.Accounting.DeleteInvoice))
         {
             <button type="button" class="btn btn-default btn-sm" onclick="onUndeleteInvoice(@Model.Id)" style="cursor:pointer;">Uncancel</button>
+        }
+        else if (Model.IsSent && features.Contains(Features.Accounting.ManageReceipts))
+        {
+            <button type="button" class="btn btn-warning btn-sm" onclick="onPaid(@Model.Id)"><i class="fa fa-usd fa-lg"></i></button>
         }
         else
         {

@@ -39,17 +39,26 @@ namespace WebApp.Library.Extensions
         public static ApplicationUser GetApplicationUser(this IIdentity obj)
         {
             return HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(obj.GetGuidUserId());
-
         }
 
         public static short[] GetFeatures(this IIdentity obj)
         {
-            return obj.GetApplicationUser().Features;
+            var claim = obj.GetClaimsIdentity().FindFirstValue("Features");
+            if (claim != null)
+            {
+                return JsonConvert.DeserializeObject<short[]>(claim);
+            }
+            return null;
         }
 
         public static Guid[] GetPhysicians(this IIdentity obj)
         {
-            return obj.GetApplicationUser().Physicians;
+            var claim = obj.GetClaimsIdentity().FindFirstValue("Physicians");
+            if (claim != null)
+            {
+                return JsonConvert.DeserializeObject<Guid[]>(claim);
+            }
+            return null;
         }
 
         public static UserContextViewModel GetPhysicianContext(this IIdentity obj)

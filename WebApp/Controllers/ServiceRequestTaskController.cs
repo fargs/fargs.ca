@@ -19,10 +19,17 @@ using WebApp.FormModels;
 using WebApp.Library;
 using WebApp.Library.Filters;
 using WebApp.Models;
+using MoreLinq;
+using LinqKit;
+using System.ComponentModel.DataAnnotations;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using Features = Orvosi.Shared.Enums.Features;
+using NinjaNye.SearchExtensions;
+using WebApp.Components.Grid;
+using System.Security.Principal;
+using WebApp.FormModels;
 
 namespace WebApp.Controllers
 {
@@ -219,10 +226,11 @@ namespace WebApp.Controllers
 
         public JsonResult GetRelatedServiceRequestId(int serviceRequestTaskId)
         {
-            var id = db.ServiceRequestTasks.Where(srt => srt.Id == serviceRequestTaskId).Select(srt => srt.ServiceRequestId).FirstOrDefault();
+            var task = db.ServiceRequestTasks.Find(serviceRequestTaskId);
             return Json(new
             {
-                serviceRequestId = id
+                serviceRequestId = task.ServiceRequestId,
+                taskId = task.TaskId
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -387,9 +395,9 @@ namespace WebApp.Controllers
 
             var dto = TaskDto.FromServiceRequestTaskEntity.Invoke(data);
 
-            var viewModel = TaskViewModel.FromTaskDto.Invoke(dto);
+            var viewModel = EditTaskForm.FromTaskDto.Invoke(dto);
 
-            return PartialView("EditTaskForm", viewModel);
+            return PartialView("EditTaskModalForm", viewModel);
         }
 
         [HttpGet]
@@ -561,12 +569,27 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public PartialViewResult UrgentTaskCount()
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignTask)]
+        public ActionResult ShowPickupTasksAssignedToRoleForm(PickupTasksAssignedToRoleForm form)
+        {
+            return PartialView("~/Views/ServiceRequestTask/_PickupTasksAssignedToRoleModalForm.cshtml", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignTask)]
+        public async Task<ActionResult> PickupTasksAssignedToRole(PickupTasksAssignedToRoleForm form)
+        {
+            await service.PickupTasksAssignedToRole(form);
+
+            return Json(form);
+        }
+
+        [HttpGet]
+        public ActionResult UrgentTaskCount()
         {
             var count = db.ServiceRequestTasks
                 .AreAssignedToUser(loggedInUserId)
-                .AreDueBetween(DateTime.MinValue, now)
-                .AreActiveOrDone()
+                .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo)
                 .Count();
 
             return PartialView("~/Views/Dashboard/_TaskHeading.cshtml", count);

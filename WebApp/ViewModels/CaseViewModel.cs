@@ -42,13 +42,10 @@ namespace WebApp.ViewModels
         public LookupViewModel<short> Service { get; set; }
         public LookupViewModel<short> Company { get; set; }
         public AddressViewModel Address { get; set; }
-        //public IEnumerable<ResourceViewModel> Resources { get; set; }
+        public IEnumerable<ResourceViewModel> Resources { get; set; }
         public IEnumerable<TaskViewModel> Tasks { get; set; }
         public IEnumerable<MessageViewModel> Messages { get; set; }
-        //public IEnumerable<CommentViewModel> Comments { get; set; }
-        public LookupViewModel<Guid> CaseCoordinator { get; set; }
-        public LookupViewModel<Guid> DocumentReviewer { get; set; }
-        public LookupViewModel<Guid> IntakeAssistant { get; set; }
+        public IEnumerable<CommentViewModel> Comments { get; set; }
         public bool IsSubmitInvoiceTaskDone { get; set; } = false;
 
         public static Expression<Func<ServiceRequestDto, CaseViewModel>> FromServiceRequestDto = dto => new CaseViewModel
@@ -79,14 +76,11 @@ namespace WebApp.ViewModels
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
             Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
-            //Resources = dto.Resources.AsQueryable().Select(ResourceViewModel.FromResourceDto.Expand()),
             Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician),
-            CaseCoordinator = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.CaseCoordinator),
-            DocumentReviewer = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.DocumentReviewer),
-            IntakeAssistant = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.IntakeAssistant),
+            Resources = dto.Resources.AsQueryable().Select(ResourceViewModel.FromResourceDto.Expand()),
             Tasks = dto.Tasks.AsQueryable().Select(TaskViewModel.FromTaskDto.Expand()),
             Messages = dto.Messages.AsQueryable().Select(MessageViewModel.FromMessageDto.Expand()),
-            //Comments = dto.Comments.AsQueryable().Select(CommentViewModel.FromCommentDto.Expand())
+            Comments = dto.Comments.AsQueryable().Select(CommentViewModel.FromCommentDto.Expand())
         };
     }
 }

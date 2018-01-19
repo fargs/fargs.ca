@@ -1,0 +1,10 @@
+﻿@using WebApp.ViewModels
+@using DanTup.Web
+@model CommentNotificationViewModel
+
+@{
+    Layout = "~/Views/Shared/NotificationTemplates/_Layout.cshtml";
+}
+
+@Html.Markdown(Model.Comment.Message)
+

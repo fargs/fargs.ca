@@ -1,0 +1,71 @@
+﻿
+<script type="text/javascript">
+
+    function showCommentForm(serviceRequestId, commentId, commentTypeId) {
+        var url = '@Url.Content("~/Comment/ShowCommentForm")';
+
+        $.get(url, {
+            serviceRequestId: serviceRequestId,
+            commentTypeId: commentTypeId,
+            commentId: commentId,
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveComment(form, notify) {
+
+        var url = '@Url.Content("~/Comment/SaveComment")';
+        var notifyUrl = '@Url.Content("~/Comment/NotifyTeam")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Saved successfully.");
+            commentsChanged(data.serviceRequestId);
+
+            if (notify)
+                $.post(notifyUrl, {
+                    commentId: data.commentId
+                })
+                .done(function () { toastr.success("The team has been notified."); })
+                .error(function () { toastr.error("Something unexpected occurred with sending the notifications."); });
+
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function showDeleteCommentForm(commentId) {
+        var url = '@Url.Content("~/Comment/ShowDeleteCommentForm")';
+
+        $.get(url, {
+            commentId: commentId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function deleteComment(commentId) {
+
+        var url = '@Url.Content("~/Comment/DeleteComment")';
+
+        $.post(url,
+            { commentId: commentId }
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Deleted successfully.");
+            commentsChanged(data.serviceRequestId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    };
+
+    function commentsChanged(serviceRequestId) {
+
+    }
+
+</script>

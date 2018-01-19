@@ -1,0 +1,242 @@
+﻿<script type="text/javascript">
+
+    function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewData.ViewTarget_Get()',
+                    ViewFilter: '@ViewData.ViewFilter_Get()'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                });
+        }
+
+        function taskChanged(serviceRequestTaskId, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewData.ViewTarget_Get()',
+                    ViewFilter: '@ViewData.ViewFilter_Get()'
+                })
+                .done(function (result) {
+                    var container = $('#tasklist-container-' + serviceRequestId);
+                    container.html(result);
+                    container.find("script").each(function (i) {
+                        eval($(this).text());
+                    });
+                    selectTask(serviceRequestTaskId, serviceRequestId);
+                });
+        }
+
+        function taskDeleted(serviceRequestTaskId, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewData.ViewTarget_Get()',
+                    ViewFilter: '@ViewData.ViewFilter_Get()'
+                })
+                .done(function (result) {
+                    var container = $('tasklist-container-' + serviceRequestId);
+                    container.html(result);
+                    container.find("script").each(function (i) {
+                        eval($(this).text());
+                    });
+                    $('#task-editform-container-' + serviceRequestId).html("");
+                    window.history.pushState({}, '');
+                });
+        }
+
+        @*function taskSelected(serviceRequestTaskId, serviceRequestId) {
+
+            // refresh the edit task form
+            $.get('@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")', {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (result) {
+                $('#task-editform-container-' + serviceRequestId).html(result);
+            });
+
+            // refresh the task tools
+            $.get('@Url.Content("~/ServiceRequestTask/ShowTaskTools/")', {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (result) {
+                $('#task-tools-container-' + serviceRequestId).html(result);
+            });
+
+            // update the url
+            window.history.pushState({}, '', '?selectedTask=' + serviceRequestTaskId);
+        }*@
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            serviceRequestChanged(serviceRequestId);
+        }
+
+        function serviceRequestChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                });
+
+            $.get('@Url.Content("~/ServiceRequest/ActionMenu")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('actionmenu-container-' + serviceRequestId).innerHTML = result;
+                });
+        }
+
+        function resourcesChanged(serviceRequestId) {
+            $.get('@Url.Content("~/Resources/List")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('resources-container-' + serviceRequestId).innerHTML = result;
+                    // auto assign resources to tasks
+                    assignRequiredResourcesToTasks(serviceRequestId);
+                });
+        }
+
+
+        function refreshGoogleCalendarIntegration(serviceRequestId) {
+            $.ajax({
+                type: "GET",
+                url: '@string.Format("{0}?serviceRequestId=", Url.Content("~/Google/Calendar/Get"))' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#google-calendar-container-' + serviceRequestId).html(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
+            });
+        }
+
+        function boxInfoChanged(serviceRequestId) {
+            var loader = $('#box-loader');
+            loader.show();
+            $.get('@Url.Content("~/ServiceRequest/BoxManager")',
+                {
+                    serviceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    document.getElementById('box-container-' + serviceRequestId).innerHTML = result;
+                })
+                .always(function() {
+                    loader.hide();
+                });
+        }
+
+        function addGoogleCalendarEvent(serviceRequestId) {
+            $.ajax({
+                type: "POST",
+                url: '@string.Format("{0}?serviceRequestId=", Url.Content("~/Google/Calendar/Add"))' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    refreshGoogleCalendarIntegration(serviceRequestId);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    toastr.error(err);
+                }
+            });
+        }
+
+
+        function invoiceChanged(invoiceId) {
+
+            $.get('@Url.Content("~/Accounting/GetRelatedServiceRequestId/")', {
+                invoiceId: invoiceId
+            })
+            .done(function (data) {
+
+                $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                    serviceRequestId: data.serviceRequestId
+                })
+                .done(function (result) {
+                    $('#invoice-list-container-' + data.serviceRequestId).html(result);
+                    console.log('from invoice changed');
+                });
+
+            });
+        }
+
+        function invoiceListChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#invoice-list-container-' + serviceRequestId).html(result);
+                console.log('from invoice list changed');
+            });
+        }
+
+        function invoiceErrors(result) {
+            var selector = "#invoice-list-container-" + $(result).data().id;
+            $(selector).before(result);
+        }
+
+        function showBulkUpdateDueDateForm(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/BulkUpdateDueDateForm")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId
+                })
+                .done(function (result) {
+                    $('#modal-content').html(result);
+                    $('#modal-container').modal('toggle');
+                    $('#modal-content').find("script").each(function (i) {
+                        eval($(this).text());
+                    });
+                });
+        }
+
+        function commentsChanged(serviceRequestId) {
+            $.get('@Url.Content("~/Comment/List/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#comment-list-container-' + serviceRequestId).html(result);
+            });
+        }
+
+        function companyChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+            });
+        }
+
+        function serviceChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+            });
+        }
+
+        function claimantChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+            });
+        }
+</script>

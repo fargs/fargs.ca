@@ -1,0 +1,29 @@
+﻿<script type="text/javascript">
+
+    let addressBaseUri = '@Url.Content("~/ServiceRequest/")';
+
+    function showChangeAddressForm(serviceRequestId) {
+        let url = addressBaseUri + 'ShowChangeAddressForm';
+        $.get(url, {
+            serviceRequestId: serviceRequestId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveAddress(form) {
+        let url = addressBaseUri + 'ChangeAddress';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Changes was saved successfully.");
+            addressChanged(data.serviceRequestId)
+        })
+        .error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+</script>

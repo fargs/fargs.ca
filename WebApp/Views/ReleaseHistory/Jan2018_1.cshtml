@@ -1,0 +1,177 @@
+﻿<div>
+    <h1>Release - JAN 2018</h1>
+    <h2>Work</h2>
+    <h3>DaySheet</h3>
+    <hr />
+    <h4>Overview</h4>
+    <ul>
+        <li>Extra space at the top of the page has been removed.</li>
+        <li>No Show checkbox has been changed to a toggle button.</li>
+        <li>Open Case Folder and No Show buttons have been moved above the task list.</li>
+        <li>
+            A new Task Details section has been added to each case.
+            This section displays the details of the selected task in the list.
+            The Task list is now selectable by clicking anywhere on the row.
+            The Task Details is not automatically displayed when a task is selected.
+            This is to keep the focus on the Live Chat during the assessment day.
+        </li>
+        <li>
+            The Invoice Notes have been moved to a tab as well. A count on the tab will indicate if a note exists.
+        </li>
+        <li>
+            The "Wrench" icon is for the Task Tools.
+            Each task can have Tools that are system features intended to help complete the task.
+            Currently only the Submit Invoice task has tools but we can explore building more in the future.
+            Click the Wrench will select the task and activate the Task Details tab where the tool is embedded. Selecting the task by clicking the row does not change the active tab.
+        </li>
+        <li>Task list action buttons have been replaced with the Task Details tab.</li>
+        <li>The task list is now sorted by Due Date and the due date is displayed beside the Task name.</li>
+    </ul>
+    <h4>Pre Release</h4>
+    <div class="panel panel-default">
+        <div class="panel-heading">Entire Page</div>
+        <div class="panel-body">
+            <p>The red boxes are the areas of the page where changes have been made. Compare this to the Post Release screen shots below.</p>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_DaySheet_LiveChat_PreChange.png" style="width:100%" />
+        </div>
+    </div>
+    <h4>Post Release</h4>
+    <div class="panel panel-default">
+        <div class="panel-heading">Entire Page</div>
+        <div class="panel-body">
+            <p>
+                The green boxes are the areas of the page where changes are visible.
+                <ul>
+                    <li>Highlighted in this image is the No Show and Open Case Folder buttons moved to above the task list.</li>
+                    <li>The task due date displayed beside the Task.</li>
+                    <li>The Wrench icon that activates the Task Details tab for the task.</li>
+                    <li>The Highlighted row that indicates the selected task.</li>
+                    <li>The Tab layout for the Live Chat, Task Details and Notes.</li>
+                </ul>
+            </p>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_DaySheet_LiveChat_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Create Invoice Button and List of All Existing Invoices</div>
+        <div class="panel-body">
+            These screenshots show the Task Tools for the Submit Invoice task. This will add the ability to create and send invoices directly from the DaySheet.
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_DaySheet_CreateInvoice_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Send Invoices from the Day Sheet with History</div>
+        <div class="panel-body">
+            You can perform all actions on your invoices from the DaySheet now. Editing, adding items, re-sending, preview, and download.
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_DaySheet_SentInvoice_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Mark Invoices as paid</div>
+        <div class="panel-body">
+            <ul>
+                <li>Notice the Uncancel button. This shows that all the invoices that were ever created for this request are listed. If they are Cancelled, they are collapsed.</li>
+                <li>You can also mark the invoice as Paid and see the history here This will not be typical on the Day Sheet but it is the same component used on the Details page so it is available here as well.</li>
+            </ul>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_DaySheet_PaidInvoiceAndCancelledInvoice_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <hr />
+    <h2>Case Details</h2>
+    <h3>Overview</h3>
+    <ul>
+        <li>Reduced the wasted space at the top of the page with a new menu bar (no more Actions button).</li>
+        <li>Create new tasks with the New Task Form.</li>
+        <li>The New Tasks can be linked with a built in task type or ad-hoc. Built In task types are part of default workflows and can potentially have tools!</li>
+        <li>Managing invoices can be done from this page as well. Using the search bar at the top, a user can go directly to the details page and manage invoices from there.</li>
+        <li>The Assessment Day and Submit Report tasks are special in that they also update the Appointment Date and Due Date of the case itself. This will keep those dates and the task dates in sync.</li>
+        <li>The Assessment Day task opens a Reschedule form to allow them to select from the physicians availability. The Reschedule button at the top is the original form that includes the location if that needs to be changed.</li>
+        <li>Note that the tab layout was not applied here with the live chat and comments but it could be in the future.</li>
+        <li>FUTURE: Make the Box Integration section of this page a Task Tool for Create Case Folder and Sync and Close Case and Unsync</li>
+        <li>FUTURE: Make the Calendar Integration section of this page a Task Tool for Create Calendar Event</li>
+    </ul>
+    <h4>Pre Release</h4>
+    <div class="panel panel-default">
+        <div class="panel-heading">Entire Page</div>
+        <div class="panel-body">
+            <p>The red boxes are the areas of the page where changes have been made. Compare this to the Post Release screen shots below.</p>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_PreChange.png" style="width:100%" />
+        </div>
+    </div>
+    <h4>Post Release</h4>
+    <div class="panel panel-default">
+        <div class="panel-heading">Entire Page</div>
+        <div class="panel-body">
+            <p>
+                The green boxes are the areas of the page where changes are visible. This is similar to the Day Sheet with a few extras.
+            </p>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">New Task Form</div>
+        <div class="panel-body">
+            <ul>
+                <li>As you type it looks for existing task types. If one is selected, it associates the task to the type. If not, it creates it as a standalone task.</li>
+                <li>You can assign the task to someone and set the due date.</li>
+            </ul>
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_NewTask_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Reschedule Form</div>
+                <div class="panel-body">
+                    <ul>
+                        <li>When the Due Date picker is clicked on the Task Details for the Assessment Day task, it opens a Reschedule form. All other tasks are just the default date picker.</li>
+                    </ul>
+                    <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_RescheduleFromTask_PostChange.png" style="width:100%" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Cancellation Form</div>
+        <div class="panel-body">
+            <ul>
+                <li>The My Orvo page now has a field to set Late Cancellation Policy along with the Late Cancellation Rate. Globally or per company.</li>
+                <li>The Late Cancellation Policy is used on the Cancellation page to recommend if the Cancellation should be considered late.</li>
+                <li>The Cancellation Date is set to the current date by default. The policy is reapplied when the cancellation date is changed.</li>
+            </ul>
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_CancellationForm1_PostChange.png" style="width:100%" />
+                </div>
+                <div class="col-sm-6 col-xs-12">
+                    <img src="~/Content/images/ReleaseHistory/Oct2017/Work_CaseDetails_CancellationForm2_PostChange.png" style="width:100%" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Tasks</h2>
+    <h3>Overview</h3>
+    <ul>
+        <li>More accurate overdue count. Tasks that were On Hold were being considered Overdue which was taking the emphasis away from the Waiting and ToDo tasks that were actually overdue and required attention.</li>
+    </ul>
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_Tasks_OnHoldOverdue_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+    <h2>Additionals</h2>
+    <h3>Overview</h3>
+    <ul>
+        <li>The due date is now displayed and the row selection works similar to the task list. Click anywhere in the row to open.</li>
+    </ul>
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_Additionals_PreChange.png" style="width:100%" />
+        </div>
+        <div class="col-sm-6">
+            <img src="~/Content/images/ReleaseHistory/Oct2017/Work_Additionals_PostChange.png" style="width:100%" />
+        </div>
+    </div>
+</div>

@@ -23,6 +23,8 @@ namespace WebApp.Models
         public bool IsDeleted { get; set; } // IsDeleted
         public System.DateTime ModifiedDate { get; set; } // ModifiedDate
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public string TaskName { get; set; }
+        public string ShortName { get; set; }
 
         public string DueDateTypeTrimmed { get
             {
@@ -53,7 +55,9 @@ namespace WebApp.Models
             EffectiveDateDurationFromBaseline = srt.EffectiveDateDurationFromBaseline,
             IsCriticalPath = srt.IsCriticalPath,
             IsBillable = srt.IsBillable,
-            IsDeleted = srt.IsDeleted
+            IsDeleted = srt.IsDeleted,
+            TaskName = srt.OTask.Name,
+            ShortName = srt.OTask.ShortName
         };
     }
 }

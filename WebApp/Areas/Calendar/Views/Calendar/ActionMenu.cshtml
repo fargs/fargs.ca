@@ -1,0 +1,31 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@model WebApp.Areas.Calendar.Views.Calendar.ActionMenu
+
+@{
+    var features = User.Identity.GetFeatures();
+}
+
+<div id="calendar-day-actionmenu-@Model.Day.Ticks">
+    <div class="btn-group">
+        @*<button type="button" class="btn btn-primary" onclick="showResourceEditForm('@(Model.Id)')"><i class="fa fa-pencil"></i></button>*@
+        <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer;">
+            <i class="fa fa-ellipsis-h"></i>
+            <span class="sr-only">Toggle Dropdown</span>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a style="cursor:pointer;">
+                    <i class="fa fa-tasks"></i> &nbsp;Book Assessment
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a style="cursor:pointer;">
+                    <i class="fa fa-remove"></i> &nbsp;View
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+

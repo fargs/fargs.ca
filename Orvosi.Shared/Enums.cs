@@ -275,4 +275,12 @@ namespace Orvosi.Shared.Enums
         public const string EasternStandardTime = "Eastern Standard Time";
         public const string PacificStandardTime = "Pacific Standard Time";
     }
+
+    public static class CommentTypes
+    {
+        public const byte Note = 1;
+        public const byte Invoice = 2;
+        public const byte Teleconference = 3;
+        public const byte OnHold = 4;
+    }
 }

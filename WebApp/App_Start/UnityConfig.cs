@@ -52,6 +52,8 @@ namespace WebApp
             container.RegisterType<IRoleStore<ApplicationRole, Guid>, RoleStore<ApplicationRole, Guid, ApplicationUserRole>>(
                 new InjectionConstructor(typeof(ApplicationDbContext)));
 
+            container.RegisterType<IEmailService, GoogleServices>(new HierarchicalLifetimeManager(), new InjectionConstructor());
+
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }

@@ -27,7 +27,10 @@
 <form action="~/ServiceRequest/ChangeProcessTemplate" method="post">
     @Html.HiddenFor(model => model.ServiceRequestId)
     <p>
-        @Model.CurrentServiceRequestTemplate.Text
+        @if (Model.CurrentServiceRequestTemplate != null)
+        {
+            <span>@Model.CurrentServiceRequestTemplate.Text</span>
+        }
     </p>
     <div class="form-group">
         <label class="control-label">New Process Template</label>

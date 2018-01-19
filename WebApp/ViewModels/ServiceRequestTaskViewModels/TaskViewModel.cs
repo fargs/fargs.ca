@@ -24,9 +24,11 @@ namespace WebApp.ViewModels
         public LookupViewModel<short> Status { get; set; }
         public DateTime? DueDate { get; set; }
         public LookupViewModel<Guid> AssignedTo { get; set; }
+        public string ResponsibleRoleName { get; set; }
         public bool IsActive { get; set; }
         public bool IsOverdue { get; set; } = false;
         public bool IsDueToday { get; set; } = false;
+        public bool IsAppointment { get; set; } = false;
         public Guid? TaskTemplateId { get; set; }
 
         public static Expression<Func<TaskDto, TaskViewModel>> FromTaskDto = dto => dto == null ? null : new TaskViewModel
@@ -38,6 +40,7 @@ namespace WebApp.ViewModels
             ShortName = dto.ShortName,
             CompletedDate = dto.CompletedDate,
             Sequence = dto.Sequence,
+            ResponsibleRoleName = dto.ResponsibleRoleName,
             AssignedTo = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
             TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.TaskStatusChangedBy),
             TaskStatusChangedDate = dto.TaskStatusChangedDate,
@@ -47,7 +50,8 @@ namespace WebApp.ViewModels
             IsActive = dto.IsActive,
             TaskTemplateId = dto.TaskTemplateId,
             IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now), // This must be DateTime.Now and not SystemTime.Now() because it is getting translated to sql
-            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now)
+            IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now),
+            IsAppointment = dto.IsAppointment
         };
     }
 }

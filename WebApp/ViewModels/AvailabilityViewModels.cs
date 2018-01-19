@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebApp.Models;
 
 namespace WebApp.ViewModels.AvailabilityViewModels
 {
@@ -24,6 +25,6 @@ namespace WebApp.ViewModels.AvailabilityViewModels
 
     public class MonthGroup    {
         public DateTime Month { get; set; }
-        public IEnumerable<Orvosi.Data.AvailableDay> AvailableDays { get; set; }
+        public IEnumerable<AvailableDayViewModel> AvailableDays { get; set; }
     }
 }

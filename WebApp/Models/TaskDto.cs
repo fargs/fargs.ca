@@ -44,6 +44,14 @@ namespace WebApp.Models
             }
         }
 
+        public bool IsAppointment
+        {
+            get
+            {
+                return TaskId == Tasks.AssessmentDay;
+            }
+        }
+
         public static Expression<Func<DateTime?, short, DateTime, bool>> IsOverdueExp = (dueDate, status, now) => dueDate.HasValue && (status == TaskStatuses.ToDo || status == TaskStatuses.Waiting) ? dueDate.Value.Date < now.Date : false;
 
         public static Expression<Func<DateTime?, short, DateTime, bool>> IsDueTodayExp = (dueDate, status, now) => dueDate.HasValue && (status == TaskStatuses.ToDo || status == TaskStatuses.Waiting) ? dueDate.Value.Date == now.Date : false;
@@ -64,7 +72,7 @@ namespace WebApp.Models
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
             TaskStatusId = srt.TaskStatusId,
             ResponsibleRoleId = srt.ResponsibleRoleId,
-            ResponsibleRoleName = srt.ResponsibleRoleName,
+            ResponsibleRoleName = srt.ResponsibleRoleName ?? (srt.ServiceRequestTemplateTask == null || srt.ServiceRequestTemplateTask.AspNetRole == null ? "" : srt.ServiceRequestTemplateTask.AspNetRole.Name),
             IsCriticalPath = srt.IsCriticalPath,
             DueDate = srt.DueDate,
             TaskTemplateId = srt.ServiceRequestTemplateTaskId,
@@ -85,7 +93,7 @@ namespace WebApp.Models
             AssignedTo = PersonDto.FromAspNetUserEntity.Invoke(srt.AspNetUser_AssignedTo),
             TaskStatusId = srt.TaskStatusId,
             ResponsibleRoleId = srt.ResponsibleRoleId,
-            ResponsibleRoleName = srt.ResponsibleRoleName,
+            ResponsibleRoleName = srt.ResponsibleRoleName ?? (srt.ServiceRequestTemplateTask == null || srt.ServiceRequestTemplateTask.AspNetRole == null ? "" : srt.ServiceRequestTemplateTask.AspNetRole.Name),
             IsCriticalPath = srt.IsCriticalPath,
             DueDate = srt.DueDate,
             TaskStatus = LookupDto<short>.FromTaskStatusEntity.Invoke(srt.TaskStatu),

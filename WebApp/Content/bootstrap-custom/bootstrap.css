@@ -5649,6 +5649,24 @@ button.list-group-item-danger.active:focus {
 .panel-group .panel-footer + .panel-collapse .panel-body {
   border-bottom: 1px solid #ddd;
 }
+.panel .panel-heading .nav-tabs {
+  margin: -10px -15px;
+  border-bottom-width: 0;
+}
+.panel .panel-heading .nav-tabs > li > a {
+  padding: 10px 15px;
+  margin-bottom: 1px;
+  border: solid 0 transparent;
+  border-radius: 0px;
+}
+.panel .panel-heading .nav-tabs > li > a:hover {
+  border-color: transparent;
+}
+.panel .panel-heading .nav-tabs > li.active > a,
+.panel .panel-heading .nav-tabs > li.active > a:hover,
+.panel .panel-heading .nav-tabs > li.active > a:focused {
+  border: solid 0 transparent;
+}
 .panel-default {
   border-color: #ddd;
 }

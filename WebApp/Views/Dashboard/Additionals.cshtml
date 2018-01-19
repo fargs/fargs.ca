@@ -2,6 +2,8 @@
 @using Orvosi.Shared.Enums
 @{
     Layout = "~/Views/Dashboard/_Layout.cshtml";
+
+    ViewBag.Title = "AddOns";
 }
 
 <div id="additionals-container">
@@ -52,6 +54,10 @@
             });
 
             // refresh the week counts
+        }
+
+        function showCaseDetails(serviceRequestId) {
+            window.open('@Url.Content("~/ServiceRequest/Details/")' + serviceRequestId, '_Blank');
         }
 
     </script>

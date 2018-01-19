@@ -24,6 +24,7 @@ namespace WebApp.ViewModels
         public IEnumerable<CaseViewModel> ServiceRequests { get; set; }
 
         public bool IsAvailable { get; set; }
+        public AvailableDayViewModel AvailableDay { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -38,6 +39,15 @@ namespace WebApp.ViewModels
             ServiceRequestIds = e.ServiceRequestIds,
             ServiceRequests = e.ServiceRequests.AsQueryable().Select(CaseViewModel.FromServiceRequestDto.Expand())
         };
-        
+
+        public static Expression<Func<AvailableSlotDto, AvailableSlotViewModel>> FromAvailableSlotDtoForBooking = e => e == null ? null : new AvailableSlotViewModel
+        {
+            Id = e.Id,
+            StartTime = e.StartTime,
+            EndTime = e.EndTime,
+            Duration = e.Duration,
+            ServiceRequestIds = e.ServiceRequestIds,
+            AvailableDay = AvailableDayViewModel.FromAvailableDayDtoForBooking.Invoke(e.AvailableDay)
+        };
     }
 }

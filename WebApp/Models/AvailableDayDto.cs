@@ -40,6 +40,17 @@ namespace WebApp.Models
             Resources = e.AvailableDayResources.AsQueryable().Select(AvailableDayResourceDto.FromAvailableDayResourceEntity.Expand())
         };
 
+        public static Expression<Func<AvailableDay, AvailableDayDto>> FromAvailableDayEntityForDayView = e => e == null ? null : new AvailableDayDto
+        {
+            Id = e.Id,
+            Physician = PersonDto.FromAspNetUserEntityWithRole.Invoke(e.Physician.AspNetUser),
+            Day = e.Day,
+            Company = LookupDto<short>.FromCompanyEntity.Invoke(e.Company),
+            Address = AddressDto.FromAddressEntity.Invoke(e.Address),
+            AvailableSlots = e.AvailableSlots.AsQueryable().Select(AvailableSlotDto.FromAvailableSlotEntityForDayView.Expand()),
+            Resources = e.AvailableDayResources.AsQueryable().Select(AvailableDayResourceDto.FromAvailableDayResourceEntity.Expand())
+        };
+
         // exclude Available Slots
         public static Expression<Func<AvailableDay, AvailableDayDto>> FromAvailableDayEntityForBooking = e => e == null ? null : new AvailableDayDto
         {

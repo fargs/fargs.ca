@@ -12,6 +12,7 @@ namespace WebApp.ViewDataModels
         public TaskListArgs()
         {
         }
+        public string Area { get; set; }
         public int ServiceRequestId { get; set; }
         public short[] Cities { get; set; }
         public short[] TaskIds { get; set; }
@@ -44,13 +45,14 @@ namespace WebApp.ViewDataModels
             viewData.Add("args", value);
         }
 
+        public const string ViewFilterKey = "viewfilter";
         public static TaskListViewModelFilter ViewFilter_Get(this ViewDataDictionary viewData)
         {
-            return (TaskListViewModelFilter)viewData["args"];
+            return (TaskListViewModelFilter)viewData[ViewFilterKey];
         }
         public static void ViewFilter_Set(this ViewDataDictionary viewData, TaskListViewModelFilter value)
         {
-            viewData.Add("args", value);
+            viewData.Add(ViewFilterKey, value);
         }
     }
 

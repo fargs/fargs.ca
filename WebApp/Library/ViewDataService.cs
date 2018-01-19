@@ -260,13 +260,13 @@ namespace WebApp.Library
                 .Select(c => new OwnerViewModel { Id = c.ObjectGuid, Name = c.Name });
 
             // retrieve any parent ids
-            var query3 = pc
-                .Where(c => c.ParentObjectGuid.HasValue)
-                .Select(c => new OwnerViewModel { Id = c.ParentObjectGuid, Name = c.ParentName })
-                .Distinct();
+            //var query3 = pc
+            //    .Where(c => c.ParentObjectGuid.HasValue)
+            //    .Select(c => new OwnerViewModel { Id = c.ParentObjectGuid, Name = c.ParentName })
+            //    .Distinct();
 
             // concat them into 1 list
-            var entities = query1.Concat(query2).Concat(query3);
+            var entities = query1.Concat(query2);//.Concat(query3);
 
             var ownerIds = entities.Select(e => e.Id).ToArray();
             var addresses = dbContext.Addresses
@@ -292,15 +292,21 @@ namespace WebApp.Library
         {
             var data = GetPhysicianAddresses(physicianId);
 
-            return data
+            var query = data
                 .Select(d => new SelectListItem
                 {
-                    Text = $"{d.Address.City}, {d.Address.Address1}",
+                    Text = $"{d.Address.Name} - {d.Address.City}, {d.Address.Address1}",
                     Value = d.Address.Id.ToString(),
                     Group = new SelectListGroup { Name = d.Owner == null ? string.Empty : d.Owner.Name }
-                })
-                .OrderBy(d => d.Text)
-                .ToList();
+                });
+
+            var noOwners = query.Where(d => string.IsNullOrEmpty(d.Group.Name))
+                .OrderBy(d => d.Text);
+            var owners = query.Where(d => !string.IsNullOrEmpty(d.Group.Name))
+                .OrderBy(d => d.Group.Name)
+                .ThenBy(d => d.Text);
+            
+            return owners.Concat(noOwners).ToList();
         }
         
         public class AddressViewModel
@@ -450,6 +456,54 @@ namespace WebApp.Library
             return result;
         }
 
+        public IEnumerable<LookupViewModel<Guid>> GetRequiredRoles(IEnumerable<TaskDto> tasks)
+        {
+            return tasks
+                .Where(t => t.ResponsibleRoleId.HasValue)
+                .Select(t => new LookupViewModel<Guid>
+                {
+                    Id = t.ResponsibleRoleId.Value,
+                    Name = t.ResponsibleRoleName
+                })
+                .Distinct(new LookupViewModel<Guid>.LookupViewModelEquals());
+        }
+        public IEnumerable<SelectListItem> GetRequiredRolesSelectList(IEnumerable<TaskDto> tasks)
+        {
+            var roles = GetRequiredRoles(tasks);
+            return roles
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                });
+        }
+
+        public IEnumerable<LookupViewModel<Guid>> GetRequiredRolesFromTemplate(short? serviceRequestTemplateId)
+        {
+            var templateTasks = dbContext.ServiceRequestTemplateTasks
+                .Where(s => s.ServiceRequestTemplateId == serviceRequestTemplateId)
+                .ToList();
+
+            return templateTasks
+                .Where(t => t.ResponsibleRoleId.HasValue)
+                .Select(t => new LookupViewModel<Guid>
+                {
+                    Id = t.AspNetRole.Id,
+                    Name = t.AspNetRole.Name
+                })
+                .Distinct(new LookupViewModel<Guid>.LookupViewModelEquals());
+        }
+        public IEnumerable<SelectListItem> GetRequiredRolesFromTemplateSelectList(short? serviceRequestTemplateId)
+        {
+            var roles = GetRequiredRolesFromTemplate(serviceRequestTemplateId);
+            return roles
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                });
+        }
+
         public MvcHtmlString GetAvailableDays(Guid physicianId)
         {
             var availableDays = dbContext.AvailableDays.Where(c => c.PhysicianId == physicianId).ToList();
@@ -487,5 +541,39 @@ namespace WebApp.Library
                 Value = s.Id.ToString()
             });
         }
+
+        public List<SelectListItem> GetCommentTypeSelectList()
+        {
+            return dbContext.CommentTypes
+                .OrderBy(ts => ts.Id)
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                })
+                .ToList();
+        }
+
+        public List<PersonDto> GetCaseResources(int serviceRequestId)
+        {
+            return dbContext.ServiceRequestResources
+                .Where(sr => sr.ServiceRequestId == serviceRequestId)
+                .Select(PersonDto.FromServiceRequestResourceEntity.Expand())
+                .ToList();
+        }
+
+        public List<SelectListItem> GetCaseResourceSelectList(int serviceRequestId)
+        {
+            var data = GetCaseResources(serviceRequestId);
+
+            return data
+                .Select(d => new SelectListItem
+                {
+                    Text = d.DisplayName,
+                    Value = d.Id.ToString()
+                })
+                .ToList();
+        }
+
     }
 }

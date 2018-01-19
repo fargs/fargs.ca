@@ -1,0 +1,29 @@
+﻿@using FluentDateTime
+@model WebApp.Areas.Calendar.Views.Calendar.AvailabilityDateRange
+
+<section id="calendar-daterange" data-calendar-start-date="@Model.DateRange.FirstDayOfStartWeek" data-calendar-end-date="@Model.DateRange.FirstDayOfEndWeek">
+    @{
+        foreach (var weekGrouping in Model.Weeks)
+        {
+            <div class="calendar-month-container">
+                <div class="calendar-month rotate">
+                    @if (weekGrouping.Count() > 1)
+                {
+                        <div class="calendar-day-header-title">@weekGrouping.Key.Year @weekGrouping.Key.ToString("MMM").ToUpper()</div>
+                    }
+                </div>
+                <div class="calendar-week-container">
+                    @foreach (var days in weekGrouping)
+                {
+                        <div class="calendar-week">
+                            @foreach (var day in days)
+                            {
+                                @Html.Partial("AvailabilityDate", day)
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</section>

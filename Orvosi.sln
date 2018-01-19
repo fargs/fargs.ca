@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{681AF567-05F4-409D-B31E-64AB12FFCB42}"
 EndProject
@@ -65,6 +65,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		LessCompiler = 6b72176d-e6d3-4caf-9bc0-e281700840a9
-		SolutionGuid = {2AF3FA91-820F-44A7-AC01-E371F9A5E4BB}
+		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
 	EndGlobalSection
 EndGlobal

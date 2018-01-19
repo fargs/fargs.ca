@@ -1,0 +1,30 @@
+﻿@model WebApp.Areas.Calendar.Views.Calendar.DayView
+
+<section>
+    @if (Model == null)
+    {
+        <div>
+            Nothing schedule.
+        </div>
+    }
+    else
+    {
+        <div style="padding-top:10px;">
+            <strong>@Model.AvailableDay.Day.ToOrvosiDateFormat()</strong>
+        </div>
+        <div style="display:flex; flex-wrap:nowrap; flex-direction:row; align-content:center; align-self:stretch;">
+            <div style="padding-top:5px; padding-bottom:5px">
+                @if (Model.AvailableDay.Address != null)
+                {
+                    <div>@Model.AvailableDay.Address.City</div>
+                }
+            </div>
+        </div>
+        foreach (var slot in Model.AvailableDay.AvailableSlots)
+        {
+            <div>
+                @slot.StartTime.ToShortTimeSafe()
+            </div>
+        }
+    }
+</section>

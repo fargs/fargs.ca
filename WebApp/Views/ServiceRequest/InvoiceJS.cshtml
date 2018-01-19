@@ -40,7 +40,7 @@
         });
     }
 
-    function onCreateInvoiceForServiceRequest() {
+    function onCreateInvoiceForServiceRequest(serviceRequestId) {
         let url = '@Url.Content("~/Accounting/Create")';
 
         $.post(url, {

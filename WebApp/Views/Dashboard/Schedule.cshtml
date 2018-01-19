@@ -7,6 +7,8 @@
 
     var roleId = User.Identity.GetRoleId();
     var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
+
+    ViewBag.Title = "Schedule";
 }
 
 @functions {
@@ -60,7 +62,8 @@
 
     <script src="@Url.Content("~/signalr/hubs")"></script>
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/_DetailsJS.cshtml")
+    
 
     <script>
 

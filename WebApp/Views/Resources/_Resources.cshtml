@@ -1,0 +1,25 @@
+﻿@using Features = Orvosi.Shared.Enums.Features
+
+@model IEnumerable<ResourceViewModel>
+
+@{
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+}
+
+
+<table>
+    @foreach (var resource in Model)
+    {
+        <tr>
+            <td width="20px">@Html.Partial("~/Views/Resources/_ActionMenu.cshtml", resource)</td>
+            <td width="50px">@Html.Partial("_Initials2", resource.Person)</td>
+            <td>
+                <div>@resource.Person.Name</div>
+                <div class="text-muted"><small>@(resource.Role == null ? string.Empty : resource.Role.Name)</small></div>
+            </td>
+        </tr>
+    }
+</table>
+

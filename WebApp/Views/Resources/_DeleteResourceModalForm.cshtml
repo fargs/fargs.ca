@@ -1,0 +1,25 @@
+﻿@using WebApp.FormModels
+@using WebApp.Library
+@model AdditionalResourceForm
+
+@{
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Delete Resource Confirmation
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="comment-form">
+        @Html.Hidden("ResourceId", Model.ResourceId)
+    </form>
+    <div>
+        This will permanently delete this resource assignment. Are you sure?
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" data-dismiss="modal">Cancel</button>
+    <button class="btn btn-danger" onclick="deleteResource('@Model.ResourceId')">Delete</button>
+</div>

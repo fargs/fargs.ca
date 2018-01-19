@@ -14,6 +14,10 @@ using System.Net;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
+using WebApp.Models;
+using LinqKit;
+using WebApp.FormModels;
+using WebApp.ViewModels;
 using System.Security.Principal;
 
 namespace WebApp.Controllers
@@ -29,14 +33,14 @@ namespace WebApp.Controllers
 
         // GET: Availability
         [AuthorizeRole(Feature = Features.Availability.ViewUnpublished)]
-        public async Task<ViewResult> Index(FilterArgs args)
+        public ViewResult Index(FilterArgs args)
         {
             // if one of the params is set, both are required
             if ((args.Year.HasValue && !args.Month.HasValue) || (!args.Year.HasValue && args.Month.HasValue))
             {
                 ModelState.AddModelError("", "Both the year and month must be set to a value");
                 
-                return View(new IndexViewModel
+                return View(new WebApp.ViewModels.AvailabilityViewModels.IndexViewModel
                 {
                     Months = new List<MonthGroup>(),
                     FilterArgs = args
@@ -62,9 +66,11 @@ namespace WebApp.Controllers
                     .Where(c => c.Day >= thisMonth);
             }
 
-            var result = availableDays.ToList();
+            var dto = availableDays.Select(AvailableDayDto.FromAvailableDayEntity.Expand()).ToList();
 
-            var months = result
+            var viewModel = dto.AsQueryable().Select(AvailableDayViewModel.FromAvailableDayDto.Expand());
+
+            var months = viewModel
                 .GroupBy(ad => new { Month = new DateTime(ad.Day.Year, ad.Day.Month, 1) })
                 .Select(ad => new MonthGroup
                 {
@@ -72,7 +78,7 @@ namespace WebApp.Controllers
                     AvailableDays = ad
                 }).ToList();
 
-            var model = new IndexViewModel()
+            var model = new WebApp.ViewModels.AvailabilityViewModels.IndexViewModel()
             {
                 Months = months,
                 Calendar = CultureInfo.CurrentCulture.Calendar,
@@ -166,9 +172,9 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<RedirectResult> CancelSlot(int id)
+        public async Task<JsonResult> CancelSlot(int availableSlotId)
         {
-            var slot = await db.AvailableSlots.FirstAsync(c => c.Id == id);
+            var slot = await db.AvailableSlots.FirstAsync(c => c.Id == availableSlotId);
 
             if (slot.ServiceRequests.Any())
             {
@@ -176,8 +182,78 @@ namespace WebApp.Controllers
             }
             db.AvailableSlots.Remove(slot);
             await db.SaveChangesAsync();
-            return Redirect(Request.UrlReferrer.ToString());
+            return Json(new { availableDayId = slot.AvailableDayId });
         }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public ActionResult ShowNewAvailableDayResourceForm(short availableDayId)
+        {
+            var form = new AvailableDayResourceForm();
+            form.AvailableDayId = availableDayId;
+            
+            return PartialView("~/Views/Availability/_AvailableDayResourceForm.cshtml", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> SaveAvailableDayResourceForm(AvailableDayResourceForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                var item = new AvailableDayResource();
+                item.Id = Guid.NewGuid();
+                item.AvailableDayId = form.AvailableDayId;
+                item.UserId = form.UserId;
+                item.CreatedUser = User.Identity.GetGuidUserId().ToString();
+                item.CreatedDate = SystemTime.Now();
+                item.ModifiedUser = User.Identity.GetGuidUserId().ToString();
+                item.ModifiedDate = SystemTime.Now();
+
+                db.AvailableDayResources.Add(item);
+                await db.SaveChangesAsync();
+                return Json(item);
+            }
+
+            return PartialView("~/Views/Availability/_AvailableDayResourceForm.cshtml", form);
+        }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> ShowDeleteAvailableDayResourceForm(Guid resourceId)
+        {
+            return PartialView("_DeleteAvailableDayResourceModalForm", resourceId);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> DeleteAvailableDayResource(Guid resourceId)
+        {
+            var entity = await db.AvailableDayResources.FindAsync(resourceId);
+            var availableDayId = entity.AvailableDayId;
+
+            db.AvailableDayResources.Remove(entity);
+            await db.SaveChangesAsync();
+
+            return Json(new
+            {
+                availableDayId = availableDayId
+            });
+        }
+
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> AvailableDayResourceList(short availableDayId)
+        {
+            var dto = db.AvailableDayResources
+                .Where(adr => adr.AvailableDayId == availableDayId)
+                .Select(AvailableDayResourceDto.FromAvailableDayResourceEntity.Expand())
+                .ToList();
+
+            var viewModel = dto.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand());
+
+            return PartialView("~/Views/Availability/_AvailableDayResourceList.cshtml", viewModel);
+        }
+
 
         public async Task<ActionResult> GetSlotsByAvailableDay(DateTime day)
         {
@@ -210,6 +286,66 @@ namespace WebApp.Controllers
                             IsAvailable = !s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()
                         })
                 }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> ShowAvailableDayCompanyForm(short availableDayId)
+        {
+            var ad = await db.AvailableDays.FindAsync(availableDayId);
+            var form = new AvailableDayCompanyForm { AvailableDayId = availableDayId, CompanyId = ad.CompanyId };
+            return PartialView("_AvailableDayCompanyModalForm", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> SaveAvailableDayCompanyForm(AvailableDayCompanyForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                var ad = await db.AvailableDays.FindAsync(form.AvailableDayId);
+                ad.CompanyId = form.CompanyId;
+                ad.ModifiedDate = now;
+                ad.ModifiedUser = loggedInUserId.ToString();
+
+                await db.SaveChangesAsync();
+
+                return Json(new
+                {
+                    availableDayId = form.AvailableDayId
+                });
+            }
+            return PartialView("_AvailableDayCompanyModalForm", form);
+        }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> ShowAvailableDayAddressForm(short availableDayId)
+        {
+            var ad = await db.AvailableDays.FindAsync(availableDayId);
+            var form = new AvailableDayAddressForm { AvailableDayId = availableDayId, AddressId = ad.LocationId, PhysicianId = ad.PhysicianId };
+            return PartialView("_AvailableDayAddressModalForm", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.Manage)]
+        public async Task<ActionResult> SaveAvailableDayAddressForm(AvailableDayAddressForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                var ad = await db.AvailableDays.FindAsync(form.AvailableDayId);
+                ad.LocationId = form.AddressId;
+                ad.ModifiedDate = now;
+                ad.ModifiedUser = loggedInUserId.ToString();
+
+                await db.SaveChangesAsync();
+
+                return Json(new
+                {
+                    availableDayId = form.AvailableDayId
+                });
+            }
+            return PartialView("_AvailableDayAddressModalForm", form);
         }
     }
 }

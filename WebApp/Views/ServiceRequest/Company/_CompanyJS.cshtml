@@ -1,0 +1,29 @@
+﻿<script type="text/javascript">
+
+    let companyBaseUri = '@Url.Content("~/ServiceRequest/")';
+
+    function showChangeCompanyForm(serviceRequestId) {
+        let url = companyBaseUri + 'ShowChangeCompanyForm';
+        $.get(url, {
+            serviceRequestId: serviceRequestId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveCompany(form) {
+        let url = companyBaseUri + 'ChangeCompany';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Changes was saved successfully.");
+            companyChanged(data.serviceRequestId)
+        })
+        .error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+</script>

@@ -100,6 +100,49 @@
         );
     }
 
+    function showPickupTasksAssignedToRole(serviceRequestId, roleId, assignedTo) {
+        var url = '@Url.Content("~/ServiceRequestTask/ShowPickupTasksAssignedToRoleForm")';
+
+        $.get(url, {
+            ServiceRequestId: serviceRequestId,
+            RoleId: roleId,
+            UserId: assignedTo
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function pickupTasksAssignedToRole(serviceRequestId, roleId, assignedTo) {
+        let url = '@Url.Content("~/ServiceRequestTask/PickupTasksAssignedToRole")';
+        $.post(
+            url,
+            {
+                ServiceRequestId: serviceRequestId,
+                RoleId: roleId,
+                UserId: assignedTo
+            },
+            function (data) {
+                tasklistChanged(data.serviceRequestId);
+                $('#modal-container').modal('toggle');
+            }
+        );
+    }
+
+    function assignRequiredResourcesToTasks(serviceRequestId) {
+        var url = '@Url.Content("~/ServiceRequest/AssignRequiredResourcesToTasks")';
+
+        $.post(
+            url,
+            {
+                serviceRequestId: serviceRequestId
+            },
+            function (data) {
+                tasklistChanged(data.serviceRequestId);
+            }
+        );
+    }
+
     function addTask(serviceRequestId, taskId) {
         let url = '@Url.Content("~/ServiceRequestTask/AddTask")';
         $.post(
@@ -151,6 +194,7 @@
             serviceRequestTaskId: form["ServiceRequestTaskId"].value,
             dueDate: form["DueDate"].value
         }).done(function (data) {
+            $('#modal-container').modal('toggle');
             taskChanged(data.id, data.serviceRequestId);
             serviceRequestStatusChanged(data.serviceRequestId);
         })
@@ -159,6 +203,26 @@
         });;
     }
     // these are default handlers.
+
+    function showEditTaskForm(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskForm")';
+        $.get(url,
+            {serviceRequestTaskId: serviceRequestTaskId}
+        ).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function showRescheduleForm(serviceRequestTaskId) {
+        let url = '@Url.Content("~/Reschedule/ShowRescheduleForm")';
+        $.get(url, {
+                serviceRequestTaskId: serviceRequestTaskId
+        }).done(function(result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
 
     function showTaskTools(serviceRequestTaskId, serviceRequestId) {
 

@@ -144,9 +144,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MarkdownDeep.Full.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MarkdownDeep, Version=1.1.4117.36784, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MarkdownDeep.NET.1.4\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
@@ -241,9 +240,8 @@
       <HintPath>..\packages\MimeKit.1.2.22\lib\net45\MimeKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MoreLinq, Version=2.0.19309.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
-      <HintPath>..\packages\morelinq.2.0.0-beta03\lib\net35\MoreLinq.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MoreLinq, Version=2.0.20029.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.2.0.0\lib\net35\MoreLinq.dll</HintPath>
     </Reference>
     <Reference Include="MVCGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MVCGrid.Net.1.0.0.61\lib\net40\MVCGrid.dll</HintPath>
@@ -459,6 +457,17 @@
     <Compile Include="Areas\Admin\ViewModels\CompanyViewModels.cs" />
     <Compile Include="Areas\Admin\ViewModels\Role\AssignUsersViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestViewModels.cs" />
+    <Compile Include="Areas\Calendar\CalendarAreaRegistration.cs" />
+    <Compile Include="Areas\Calendar\CalendarService.cs" />
+    <Compile Include="Areas\Calendar\Controllers\CalendarController.cs" />
+    <Compile Include="Areas\Calendar\Controllers\ShellController.cs" />
+    <Compile Include="Areas\Calendar\Controllers\TaskController.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\AvailabilityDate.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\AvailabilityDateRange.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\ActionMenu.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\DateRangeViewModel.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\DayView.cs" />
+    <Compile Include="Areas\Calendar\Views\Calendar\Index.cs" />
     <Compile Include="Areas\Reports\Controllers\HomeController.cs" />
     <Compile Include="Areas\Reports\Controllers\InvoiceController.cs" />
     <Compile Include="Areas\Reports\Data\FakeDbSet.cs">
@@ -497,12 +506,14 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
+    <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Google\CalendarController.cs" />
     <Compile Include="Controllers\NoteController.cs" />
+    <Compile Include="Controllers\ResourcesController.cs" />
     <Compile Include="Controllers\ReleaseHistoryController.cs" />
     <Compile Include="Controllers\RescheduleController.cs" />
     <Compile Include="Controllers\ServiceCatalogueController.cs" />
@@ -513,12 +524,26 @@
     <Compile Include="Controllers\ServiceRequestTemplateController.cs" />
     <Compile Include="Controllers\ServiceRequestTemplateTaskController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="FormModels\ChangeClaimantForm.cs" />
+    <Compile Include="FormModels\ChangeCompanyForm.cs" />
+    <Compile Include="FormModels\ChangeAddressForm.cs" />
+    <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="FormModels\NewTaskForm.cs" />
+    <Compile Include="FormModels\AvailableDayAddressForm.cs" />
+    <Compile Include="FormModels\AvailableDayCompanyForm.cs" />
+    <Compile Include="FormModels\BookingForm.cs" />
     <Compile Include="FormModels\CancellationForm.cs" />
+    <Compile Include="FormModels\CommentForm.cs" />
     <Compile Include="FormModels\NoShowForm.cs" />
+    <Compile Include="FormModels\PickupTasksAssignedToRoleForm.cs" />
+    <Compile Include="FormModels\RequiredResourcesForm.cs" />
+    <Compile Include="FormModels\AvailableDayResourceForm.cs" />
+    <Compile Include="FormModels\ResourceForm.cs" />
     <Compile Include="FormModels\RescheduleForm.cs" />
     <Compile Include="FormModels\ServiceCatalogueForm.cs" />
     <Compile Include="FormModels\OnHoldForm.cs" />
+    <Compile Include="FormModels\ChangeServiceForm.cs" />
+    <Compile Include="Helpers\MarkdownHelper.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\AccountingService.cs" />
     <Compile Include="Library\Box.cs" />
@@ -558,12 +583,15 @@
     <Compile Include="Models\AvailableDayResourceDto.cs" />
     <Compile Include="Models\AvailableSlotDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
+    <Compile Include="Models\CommentDto.cs" />
     <Compile Include="Models\CustomerDto.cs" />
     <Compile Include="Models\InvoiceDetailDto.cs" />
     <Compile Include="Models\InvoiceDto.cs" />
     <Compile Include="Models\InvoiceSentLogDto.cs" />
     <Compile Include="Models\PhysicianServiceRequestTemplateDto.cs" />
+    <Compile Include="Models\PhysicianDto.cs" />
     <Compile Include="Models\ReceiptDto.cs" />
+    <Compile Include="Models\ResourceDto.cs" />
     <Compile Include="Models\ServiceCategoryDto.cs" />
     <Compile Include="Models\ProvinceDto.cs" />
     <Compile Include="Models\CityDto.cs" />
@@ -604,31 +632,41 @@
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BulkUpdateDueDateForm.cs" />
     <Compile Include="FormModels\BulkUpdateDueDateFormModel.cs" />
+    <Compile Include="ViewModels\CommentListViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\BulkUpdateDueDateViewModel.cs" />
     <Compile Include="ViewModels\ViewModelSelectList.cs" />
     <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
+    <Compile Include="ViewModels\AvailableDayResourceViewModel.cs" />
+    <Compile Include="ViewModels\AvailableDayViewModel.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\CalendarViewModels\DayViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewOptions.cs" />
     <Compile Include="ViewModels\CancellationViewModel.cs" />
     <Compile Include="ViewModels\CaseLinkViewModel.cs" />
+    <Compile Include="ViewModels\CaseNotificationViewModel.cs" />
     <Compile Include="ViewModels\CaseViewModel.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="Components\Grid\GridColumn.cs" />
+    <Compile Include="ViewModels\CommentNotificationViewModel.cs" />
+    <Compile Include="ViewModels\CommentViewModel.cs" />
+    <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDateViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\TaskStatusSummaryViewModel.cs" />
     <Compile Include="ViewModels\DueDateViewModel.cs" />
+    <Compile Include="ViewModels\ICaseNotificationViewModel.cs" />
     <Compile Include="ViewModels\InvoiceViewModels.cs" />
     <Compile Include="ViewModels\LookupViewModel.cs" />
     <Compile Include="ViewModels\MailMessage.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\PagerViewModel.cs" />
+    <Compile Include="ViewModels\PersonViewModel.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\Company.cs" />
     <Compile Include="ViewModels\PhysicianCompanyViewModels\IndexViewModel.cs" />
+    <Compile Include="ViewModels\ResourceViewModel.cs" />
     <Compile Include="ViewModels\ServiceCatalogueViewModels.cs" />
     <Compile Include="ViewModels\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels.cs" />
@@ -661,6 +699,7 @@
     <Compile Include="ViewModels\UIElements\DropDownListViewModel.cs" />
     <Compile Include="ViewModels\UserContextViewModel.cs" />
     <Compile Include="ViewModels\Shared\EntityValidationErrorsViewModel.cs" />
+    <Compile Include="Views\ServiceRequestTask\Components\TaskActionMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Reports\Data\Orvosi.tt">
@@ -853,7 +892,6 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
-    <Content Include="favicon.ico" />
     <Content Include="Bundles\fonts\glyphicons-halflings-regular.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -862,7 +900,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\gulpfile.js" />
-    <Content Include="logo_icon.ico" />
+    <Content Include="favicon.ico" />
     <Content Include="Content\images\Orvosi-Banners-01-nologo.pdn" />
     <Content Include="Content\images\Orvosi-Banners-01.pdn" />
     <Content Include="Content\bootstrap-custom\bootstrap.less" />
@@ -1057,6 +1095,10 @@
     <Content Include="Scripts\locales\bootstrap-datepicker.vi.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-CN.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-TW.min.js" />
+    <Content Include="Scripts\lodash.core.js" />
+    <Content Include="Scripts\lodash.core.min.js" />
+    <Content Include="Scripts\lodash.js" />
+    <Content Include="Scripts\lodash.min.js" />
     <Content Include="Scripts\MarkdownDeep License.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1067,22 +1109,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_ajax_loader.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_gripper.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_help.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_modal_background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_styles.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\mdd_toolbar.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\select2.js" />
@@ -1247,6 +1289,14 @@
     <Content Include="Areas\Reports\Data\EF.Reverse.POCO.Core.ttinclude" />
     <Content Include="Areas\Reports\Data\EF.Reverse.POCO.ttinclude" />
     <Content Include="Areas\Reports\Views\Invoice\ForReconciliation.cshtml" />
+    <Content Include="Areas\Calendar\Views\web.config" />
+    <Content Include="Areas\Calendar\Views\Calendar\Index.cshtml" />
+    <Content Include="Areas\Calendar\Views\Task\GetByDay.cshtml" />
+    <Content Include="Areas\Calendar\Views\Task\AssessmentCollapsed.cshtml" />
+    <Content Include="Areas\Calendar\Views\Calendar\AvailabilityDateRange.cshtml" />
+    <Content Include="Areas\Calendar\Views\Calendar\AvailabilityDate.cshtml" />
+    <Content Include="Areas\Calendar\Views\Calendar\ActionMenu.cshtml" />
+    <Content Include="Areas\Calendar\Views\Calendar\DayView.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1315,6 +1365,7 @@
     <Content Include="orvosi-b54037435bbf.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\site_less.less" />
     <None Include="Properties\PublishProfiles\orvosi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosi-canada - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\orvosi-staging - Web Deploy.pubxml" />
@@ -1411,7 +1462,6 @@
     <Content Include="Views\ServiceCatalogue\_Exams.cshtml" />
     <Content Include="Views\ServiceCatalogue\_AddOns.cshtml" />
     <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
-    <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\InvoiceDownloadLink.cshtml" />
     <Content Include="Views\ServiceRequestTask\EditTaskModalForm.cshtml" />
     <Content Include="Views\Shared\ModalContainerSmall.cshtml" />
@@ -1428,11 +1478,45 @@
     <Content Include="Views\ServiceRequest\InvoiceJS.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceListMenu.cshtml" />
     <Content Include="Views\ServiceRequest\AgendaActionMenu.cshtml" />
-    <Content Include="Views\ReleaseHistory\Oct2017.cshtml" />
+    <Content Include="Views\ReleaseHistory\Oct2017_1.cshtml" />
     <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
     <Content Include="Views\ReleaseHistory\Index.cshtml" />
     <Content Include="Views\Shared\EntityValidationErrors.cshtml" />
     <Content Include="Views\ServiceRequestTask\BulkUpdateDueDateForm.cshtml" />
+    <Content Include="Views\Resources\_DeleteResourceModalForm.cshtml" />
+    <Content Include="Views\Resources\_RequiredResourcesModalForm.cshtml" />
+    <Content Include="Views\Resources\_ResourceJS.cshtml" />
+    <Content Include="Views\Resources\_ResourceModalForm.cshtml" />
+    <Content Include="Views\Resources\_Resources.cshtml" />
+    <Content Include="Views\Availability\_AvailabilityJS.cshtml" />
+    <Content Include="Views\Availability\_AvailableDayResourceForm.cshtml" />
+    <Content Include="Views\Availability\_AvailableDayResourceList.cshtml" />
+    <Content Include="Views\Availability\_DeleteAvailableDayResourceModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\BookingJS.cshtml" />
+    <Content Include="Views\ServiceRequest\Booking.cshtml" />
+    <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
+    <Content Include="Views\Resources\_ActionMenu.cshtml" />
+    <Content Include="Views\ServiceRequestTask\_PickupTasksAssignedToRoleModalForm.cshtml" />
+    <Content Include="Views\Availability\_ResourceActionMenu.cshtml" />
+    <Content Include="Views\Availability\_AvailableDayCompanyModalForm.cshtml" />
+    <Content Include="Views\Availability\_AvailableDayAddressModalForm.cshtml" />
+    <Content Include="Views\Comment\_CommentModalForm.cshtml" />
+    <Content Include="Views\Comment\_DeleteCommentModalForm.cshtml" />
+    <Content Include="Views\Comment\_Notification.cshtml" />
+    <Content Include="Views\Comment\_CommentJS.cshtml" />
+    <Content Include="Views\Comment\_List.cshtml" />
+    <Content Include="Views\ServiceRequest\_Details.cshtml" />
+    <Content Include="Views\ServiceRequest\_DetailsJS.cshtml" />
+    <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
+    <Content Include="Views\ServiceRequest\Claimant\_ClaimantJS.cshtml" />
+    <Content Include="Views\ServiceRequest\Claimant\_ClaimantModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\Company\_CompanyJS.cshtml" />
+    <Content Include="Views\ServiceRequest\Company\_CompanyModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\Service\_ServiceJS.cshtml" />
+    <Content Include="Views\ServiceRequest\Service\_ServiceModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\Address\_AddressModalForm.cshtml" />
+    <Content Include="Views\ServiceRequest\Address\_AddressJS.cshtml" />
+    <Content Include="Views\ReleaseHistory\Jan2018_1.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1584,6 +1668,7 @@
     <Content Include="Views\Shared\_ServiceStatusLabel2.cshtml" />
     <Content Include="Views\Shared\_Loader.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
+    <Content Include="Views\Shared\_LookupColorAndCode.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1593,6 +1678,9 @@
     <Folder Include="Areas\Admin\Views\Box\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
+    <Folder Include="Areas\Calendar\Models\" />
+    <Folder Include="Areas\Calendar\Views\Shared\" />
+    <Folder Include="Areas\Calendar\Views\Shell\" />
     <Folder Include="Areas\Reports\Models\" />
     <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
@@ -1628,7 +1716,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo_icon.ico</ApplicationIcon>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />

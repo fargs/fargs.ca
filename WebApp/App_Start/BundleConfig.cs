@@ -11,6 +11,7 @@ namespace WebApp
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.unobtrusive-ajax.js",
+                        "~/Scripts/lodash.min.js",
                         "~/Scripts/select2.min.js",
                         "~/Scripts/list.min.js"));
 
@@ -30,7 +31,8 @@ namespace WebApp
                         "~/Scripts/MarkdownDeepLib.min.js"));
 
             bundles.Add(new StyleBundle("~/Bundles/Content/markdown").Include(
-                      "~/Scripts/mdd_styles.css"));
+                      "~/Scripts/mdd_styles.css",
+                      new CssRewriteUrlTransform()));
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                       "~/Scripts/knockout-3.3.0.js",
@@ -60,6 +62,7 @@ namespace WebApp
                       "~/Scripts/fullcalendar.min.js"));
 
             bundles.Add(new StyleBundle("~/Bundles/Content/css").Include(
+                      "~/Content/theme.min.css",
                       "~/Content/bootstrap-custom/bootstrap.min.css",
                       "~/Content/toastr.min.css",
                       "~/Scripts/jquery-ui-1.12.1.custom/jquery-ui.min.css",

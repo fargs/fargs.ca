@@ -20,6 +20,16 @@ namespace WebApp.Models
             ColorCode = a.ColorCode,
             Email = a.Email
         };
-        
+
+        public static Expression<Func<ServiceRequestCommentAccess, ContactDto>> FromServiceRequestCommentAccessEntity = a => a == null ? null : new ContactDto
+        {
+            Id = a.AspNetUser.Id,
+            FirstName = a.AspNetUser.FirstName,
+            LastName = a.AspNetUser.LastName,
+            Title = a.AspNetUser.Title,
+            ColorCode = a.AspNetUser.ColorCode,
+            Email = a.AspNetUser.Email
+        };
+
     }
 }

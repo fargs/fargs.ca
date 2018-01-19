@@ -1,82 +1,22 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
 @model CaseViewModel
-
-@{
-    var identity = User.Identity.GetClaimsIdentity();
-    var roleId = identity.GetRoleId();
-    var features = identity.GetFeatures();
-    var viewTarget = ViewData.ViewTarget_Get();
-}
-
-<div>
-    @if (viewTarget != ViewTarget.Modal)
+<div style="padding-bottom:5px;">
+    @if (ViewData.ViewTarget_Get() == ViewTarget.Agenda)
     {
-        if (viewTarget != ViewTarget.Details)
-        {
-            <h4><a target="_blank" href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@(Model.ServiceRequestId))</a></h4>
-        }
+    <span style="padding-right:5px; font-size:16px;"><strong>@Model.StartTime.ToShortTimeSafe()</strong></span>
+        <a href="@Url.Content("~/ServiceRequest/Details/" + Model.ServiceRequestId)" target="_blank" style="font-size:16px;">@Model.ClaimantName (@(Model.ServiceRequestId))</a>
     }
-    <p class="text-muted">
-        @Model.Company.Name<br />
-        @Model.Service.Name
-    </p>
+    else
+    {
+        <strong>@Model.ClaimantName (@(Model.ServiceRequestId))</strong>
+    }
     @Html.Partial("~/Views/ServiceRequest/StatusLabel.cshtml", Model.ServiceRequestStatus)
-    @if (Model.HasAppointment)
-    {
-        <div class="section-collapse">
-            <strong>@Model.AppointmentDate.Value.ToString("ddd MMM dd yyyy")</strong><br />
-            <strong>@(Model.StartTime.HasValue ? Model.StartTime.Value.ToShortTimeSafe() : string.Empty)</strong><br />
-            @if (viewTarget == ViewTarget.Details)
-            {
-                <p>
-                    <small class="text-muted">@Model.Address.Name</small><br />
-                    <small>@Model.Address.Address1</small><br />
-                    <strong>@Model.Address.City</strong>
-                    <small>@Model.Address.ProvinceCode</small><br />
-                    <small>@Model.Address.PostalCode</small>
-                </p>
-            }
-        </div>
-    }
-    @if (Model.HasReportDeliverable)
-    {
-        <div class="section-collapse">
-            <h4>Due Date</h4>
-            @if (Model.DueDate.HasValue)
-            {
-                <p>@Model.DueDate.Value.ToString("ddd MMM dd yyyy")</p>
-            }
-            else
-            {
-                <p>Not Set</p>
-            }
-        </div>
-    }
-
-
-    <div class="form-group section-collapse">
-        <label class="control-label">Assignments</label>
-        <p class="form-control-static">
-            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.Physician == null ? new LookupViewModel<Guid>() : Model.Physician)
-            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.IntakeAssistant == null ? new LookupViewModel<Guid>() : Model.IntakeAssistant)
-            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.DocumentReviewer == null ? new LookupViewModel<Guid>() : Model.DocumentReviewer)
-            @Html.Partial("~/Views/Shared/_Initials2.cshtml", Model.CaseCoordinator == null ? new LookupViewModel<Guid>() : Model.CaseCoordinator)
-        </p>
-    </div>
+    @Html.Partial("_ServiceStatusLabel2", Model.CancellationViewModel)
 </div>
-@*<section id="section-case-togglenohold">
-        @if (features.Contains(Features.ServiceRequest.ToggleOnHold))
-        {
-            <form id="onhold-form">
-                <input type="hidden" name="ServiceRequestId" value="@Model.ServiceRequestId" />
-                <input type="checkbox"
-                        name="IsOnHold"
-                        value="true"
-                        @(Model.IsOnHold ? "checked" : "")
-                        onclick="onHold($('#onhold-form'))" />
-                <input type="hidden" name="IsOnHold" value="false" />
-                <span>On Hold</span>
-            </form>
-        }
-    </section>*@
+<div>
+    <small class="text-muted">@Model.Company.Name</small>
+</div>
+<div>
+    <small class="text-muted">@Model.Service.Name</small>
+</div>

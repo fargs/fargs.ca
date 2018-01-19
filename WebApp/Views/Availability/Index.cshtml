@@ -1,13 +1,14 @@
 ﻿@using Orvosi.Data
 @using Orvosi.Shared.Enums
 @using WebApp.Library.Extensions
+@using WebApp.Library
+
 @model WebApp.ViewModels.AvailabilityViewModels.IndexViewModel
+
 @{
     ViewBag.Title = "Availability";
 
     var userContext = User.Identity.GetUserContext();
-
-    var db = new OrvosiDbContext();
 
     var yearsSelectList = DateRanges.GetYears()
         .Select(c => new SelectListItem()
@@ -59,14 +60,27 @@
     {
         <div class="row o-dashboard-tr">
             <div class="col-md-2" style="padding:15px 15px">
+                <div class="btn-toolbar">
+                    <div class="btn-group btn-group-xs">
+                        <button class="btn btn-default btn-sm" onclick="showAvailableDayAddressForm(@day.Id)">
+                            <i class="fa fa-map-marker"></i>
+                        </button>
+                        <button class="btn btn-default btn-sm" onclick="showAvailableDayCompanyForm(@day.Id)">
+                            <i class="fa fa-building"></i>
+                        </button>
+                        <button class="btn btn-default btn-sm" onclick="showAvailableDayResourceForm(@day.Id)">
+                            <i class="fa fa-user"></i>
+                        </button>
+                    </div>
+                </div>
                 <div>
 
-                    @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()))
+                    @if (day.AvailableSlots.Any() && day.AvailableSlots.All(a => a.ServiceRequestIds.Any()))
                     {
                         <div class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-check fa-lg text-success"></i>
                     }
-                    else if (day.AvailableSlots.Any(a => a.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()))
+                    else if (day.AvailableSlots.Any(a => a.ServiceRequestIds.Any()))
                     {
                         <div class="pull-left bg-warning">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
                         <i class="fa fa-exclamation fa-lg text-warning"></i>
@@ -76,12 +90,12 @@
                         <form action="~/Availability/CancelDay" method="post">
                             @Html.Hidden("id", day.Id)
                             <div class="pull-left bg-danger">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></div>
-                            <button type="submit" class="btn btn-link" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove"></i></button>
+                            <button type="submit" class="btn btn-link" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove text-danger"></i></button>
                         </form>
                     }
                 </div>
-                <span>
-                    @if (day.LocationId == null)
+                <div>
+                    @if (day.Address == null)
                     {
                         <span class="small text-muted">No Location</span>
                     }
@@ -89,10 +103,9 @@
                     {
                         <strong class="small">@string.Format("{0} - {1}", day.Address.Name, day.Address.City)</strong>
                     }
-                </span>
-                <span> | </span>
-                <span>
-                    @if (day.CompanyId == null)
+                </div>
+                <div>
+                    @if (day.Company == null)
                     {
                         <span class="small text-muted">No Company</span>
                     }
@@ -100,7 +113,12 @@
                     {
                         <strong class="small">@day.Company.Name</strong>
                     }
-                </span>
+                </div>
+                <div>
+                    <div id="availableday-resource-container-@day.Id">
+                        @Html.Partial("~/Views/Availability/_AvailableDayResourceList.cshtml", day.Resources)
+                    </div>
+                </div>
             </div>
             <div class="col-md-10" style="padding:15px 15px">
                 <form action="~/Availability/AddSlots" method="post">
@@ -159,25 +177,23 @@
                     {
                         <li>
                             <div class="pull-left" style="vertical-align: middle">
-                                <form action="~/Availability/CancelSlot" method="post">
-                                    @Html.Hidden("id", slot.Id)
-                                    @if (slot.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any())
-                                    {
-                                        <a href="~/ServiceRequest/Details/@slot.ServiceRequests.First().Id" target="_blank">
-                                            <div class="pull-left text-muted">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
-                                            <i class="fa fa-check fa-lg" style="color:green;"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <div class="bg-info">
-                                            <div class="pull-left">
-                                                <strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong>
-                                            </div>
-                                            <button type="submit" class="btn btn-link" style="padding: 0 0 0 0"><i class="glyphicon glyphicon-remove"></i></button>
+                                @if (slot.ServiceRequestIds.Any())
+                                {
+                                    <a href="~/ServiceRequest/Details/@slot.ServiceRequestIds.First()" target="_blank">
+                                        <div class="pull-left text-muted">@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</div>
+                                        <i class="fa fa-check fa-lg" style="color:green;"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div style="display:inline-flex" class="bg-info">
+                                        <button type="button" onclick="showBookingForm(@slot.Id)" class="btn btn-link pull-left" style="padding: 0 0 0 0;color:green;"><i class="glyphicon glyphicon-plus"></i></button>
+                                        <div class="pull-left">
+                                            <strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong>
                                         </div>
-                                    }
-                                </form>
+                                        <button type="button" onclick="cancelSlot(@slot.Id)" class="btn btn-link pull-left" style="padding: 0 0 0 0;"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </div>
+                                }
                             </div>
                         </li>
                     }
@@ -185,4 +201,46 @@
             </div>
         </div>
     }
+}
+
+@Html.Partial("ModalContainer")
+
+@section Scripts {
+
+    @Html.Partial("~/Views/Availability/_AvailabilityJS.cshtml")
+    @Html.Partial("~/Views/ServiceRequest/BookingJS.cshtml")
+    @Html.Partial("~/Views/Resources/_ResourceJS.cshtml")
+
+    <script type="text/javascript">
+
+        function availableSlotChanged(availableSlotId) {
+            window.location.reload();
+        }
+
+        function availableDayAddressChanged(availableSlotId) {
+            window.location.reload();
+        }
+
+        function availableDayCompanyChanged(availableSlotId) {
+            window.location.reload();
+        }
+
+        function bookingChanged(serviceRequestId) {
+            showRequiredResourcesForm(serviceRequestId);
+        }
+
+        function resourcesChanged(serviceRequestId) {
+            var url = '@Url.Content("~/ServiceRequest/AssignRequiredResourcesToTasks")';
+            $.post(
+                url,
+                {
+                    serviceRequestId: serviceRequestId
+                }
+            ).done(function () {
+                window.location.reload();
+            });
+        }
+
+    </script>
+
 }

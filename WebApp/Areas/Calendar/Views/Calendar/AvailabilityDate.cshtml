@@ -1,0 +1,36 @@
+﻿@using WebApp.Areas.Calendar.Views.Calendar
+@model AvailabilityDate
+
+@functions {
+    string MonthCss(DateTime day)
+    {
+        return day.Month % 2 == 0 ? "even" : "odd";
+    }
+
+    string WorkingDayCss(AvailableDayViewModel day)
+    {
+        return day == null ? "not-working-day" : "";
+    }
+}
+
+<div id="calendar-day-@Model.Day.Ticks" class="calendar-day @MonthCss(Model.Day.Date)" onclick="daySelected('#calendar-day-@Model.Day.Ticks', '@(Model.Day.Date)')" style="cursor:pointer;">
+    <div class="calendar-day-header @WorkingDayCss(Model.AvailableDay)">
+        <span class="calendar-day-header-title">@Model.Day.Day</span>
+        @*<div class="calendar-day-header-menu" id="calendar-day-actionmenu-@Model.Day.Ticks">
+            @Html.Partial("ActionMenu", new ActionMenu() { Day = Model.Day })
+        </div>*@
+    </div>
+    <div class="calendar-day-body">
+        @if (Model.AvailableDay != null)
+        {
+            <span class="text-danger">
+                @Model.AvailableDay.AvailableSlots.Count()
+            </span>
+            <span> / </span>
+            <span class="text-success">
+                @Model.AvailableDay.AvailableSlots.Count(a => a.ServiceRequestIds.Any())
+            </span>
+        }
+    </div>
+</div>
+

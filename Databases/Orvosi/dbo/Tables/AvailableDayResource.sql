@@ -11,3 +11,5 @@
     CONSTRAINT [FK_AvailableDayResource_AvailableDay] FOREIGN KEY ([AvailableDayId]) REFERENCES [dbo].[AvailableDay] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
+

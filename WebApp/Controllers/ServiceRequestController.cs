@@ -129,16 +129,38 @@ namespace WebApp.Controllers
 
             var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
 
-            return PartialView(viewModel);
+            var args = new TaskListArgs
+            {
+                ServiceRequestId = serviceRequestId,
+                ViewTarget = ViewTarget.Details,
+                ViewFilter = TaskListViewModelFilter.AllTasks
+            };
+
+            if (loggedInRoleId == AspNetRoles.SuperAdmin || loggedInRoleId == AspNetRoles.Physician || loggedInRoleId == AspNetRoles.CaseCoordinator)
+            {
+                args.ViewFilter = TaskListViewModelFilter.AllTasks;
+            }
+            else
+            {
+                args.ViewFilter = TaskListViewModelFilter.CriticalPathOrAssignedToUser;
+            }
+            ViewData.TaskListArgs_Set(args);
+
+            ViewData.ViewTarget_Set(args.ViewTarget);
+            ViewData.ViewFilter_Set(args.ViewFilter);
+
+            return PartialView("Details", viewModel);
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public ViewResult Details(int id)
         {
             var dto = db.ServiceRequests
+                .AsExpandable()
                 .WithId(id)
                 .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
-                .Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityV2(loggedInUserId))
+                //.Select(m.ServiceRequestDto.FromServiceRequestEntity.Expand())
                 .SingleOrDefault();
 
             if (dto == null)
@@ -165,6 +187,9 @@ namespace WebApp.Controllers
             }
             ViewData.TaskListArgs_Set(args);
 
+            ViewData.ViewTarget_Set(args.ViewTarget);
+            ViewData.ViewFilter_Set(args.ViewFilter);
+
             return View(viewModel);
         }
 
@@ -178,7 +203,7 @@ namespace WebApp.Controllers
                 .AreScheduledThisDay(selectedDate)
                 .AreNotCancellations()
                 .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCase)
+                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseV2(loggedInUserId))
                 .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
                 .ToList();
 
@@ -190,6 +215,9 @@ namespace WebApp.Controllers
                 .AsQueryable()
                 .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCases.Expand())
                 .SingleOrDefault();
+
+            ViewData.ViewTarget_Set(ViewTarget.Agenda);
+            ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
 
             return PartialView(dayViewModel);
         }
@@ -430,73 +458,117 @@ namespace WebApp.Controllers
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
-        public ViewResult ChangeCompany(int id)
+        public async Task<ActionResult> ShowChangeCompanyForm(int serviceRequestId)
         {
-            var vm = db.ServiceRequests
-                .Where(sr => sr.Id == id)
-                .Select(sr => new ChangeCompanyViewModel
-                {
-                    ServiceRequestId = sr.Id,
-                    ClaimantName = sr.ClaimantName,
-                    CompanyId = sr.CompanyId,
-                    ServiceId = sr.ServiceId,
-                    HasInvoices = sr.InvoiceDetails.Any()
-                })
-                .First();
+            var dto = await db.ServiceRequests.FindAsync(serviceRequestId);
 
-            vm.CompanySelectList = db.Companies
-                .Where(c => c.IsParent == false)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.ParentId.ToString() }
-                })
-                .ToList();
+            var form = new WebApp.FormModels.ChangeCompanyForm();
+            form.ServiceRequestId = dto.Id;
+            form.CompanyId = dto.CompanyId;
+            form.PhysicianId = dto.PhysicianId;
 
-            vm.ServiceSelectList = db.Services
-                .Where(c => c.ServicePortfolioId == e.ServicePortfolios.Physician)
-                .Select(c => new SelectListItem()
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString(),
-                    Group = new SelectListGroup() { Name = c.ServiceCategory.Name }
-                })
-                .ToList();
-
-
-            // pre validation rules
-            if (vm.HasInvoices)
-            {
-                ModelState.AddModelError("CompanyId", "This request has a pending invoice to the original company. Please delete all invoices and try again.");
-            }
-
-            return View(vm);
+            return PartialView("~/Views/ServiceRequest/Company/_CompanyModalForm.cshtml", form);
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
-        public async Task<ActionResult> ChangeCompany(ChangeCompanyFormViewModel form)
+        public async Task<ActionResult> ChangeCompany(ChangeCompanyForm form)
         {
-            var record = db.ServiceRequests
-                .Where(sr => sr.Id == form.ServiceRequestId)
-                .Single();
-
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View("ChangeCompany", form);
+                //var response = await service.Reschedule(form);
+                //response.AddToModelState(ModelState, null);
+                await service.ChangeCompany(form);
+                return Json(new
+                {
+                    serviceRequestId = form.ServiceRequestId
+                });
             }
-
-            // update the company
-            record.CompanyId = form.CompanyId;
-            record.ServiceId = form.ServiceId;
-            record.ModifiedDate = now;
-            record.ModifiedUser = loggedInUserId.ToString();
-
-            await db.SaveChangesAsync();
-            return RedirectToAction("Details", new { id = record.Id });
+            Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+            return PartialView("~/Views/ServiceRequest/Company/_CompanyModalForm.cshtml", form);
         }
 
+        public async Task<PartialViewResult> ShowChangeServiceForm(int serviceRequestId)
+        {
+            var dto = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            var form = new ChangeServiceForm();
+            form.ServiceRequestId = dto.Id;
+            form.ServiceId = dto.ServiceId;
+            form.PhysicianId = dto.PhysicianId;
+
+            return PartialView("~/Views/ServiceRequest/Service/_ServiceModalForm.cshtml", form);
+        }
+        [HttpPost]
+        public async Task<ActionResult> ChangeService(ChangeServiceForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                //var response = await service.Reschedule(form);
+                //response.AddToModelState(ModelState, null);
+                await service.ChangeService(form);
+                return Json(new
+                {
+                    serviceRequestId = form.ServiceRequestId
+                });
+            }
+            Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+            return PartialView("~/Views/ServiceRequest/Service/_ServiceModalForm.cshtml", form);
+        }
+
+        public async Task<PartialViewResult> ShowChangeAddressForm(int serviceRequestId)
+        {
+            var dto = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            var form = new ChangeAddressForm();
+            form.ServiceRequestId = dto.Id;
+            form.AddressId = dto.AddressId;
+            form.PhysicianId = dto.PhysicianId;
+
+            return PartialView("~/Views/ServiceRequest/Address/_AddressModalForm.cshtml", form);
+        }
+        [HttpPost]
+        public async Task<ActionResult> ChangeAddress(ChangeAddressForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                //var response = await service.Reschedule(form);
+                //response.AddToModelState(ModelState, null);
+                await service.ChangeAddress(form);
+                return Json(new
+                {
+                    serviceRequestId = form.ServiceRequestId
+                });
+            }
+            Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+            return PartialView("~/Views/ServiceRequest/Address/_AddressModalForm.cshtml", form);
+        }
+        public async Task<ActionResult> ShowChangeClaimantForm(int serviceRequestId)
+        {
+            var dto = await db.ServiceRequests.FindAsync(serviceRequestId);
+
+            var form = new ChangeClaimantForm();
+            form.ServiceRequestId = dto.Id;
+            form.ClaimantName = dto.ClaimantName;
+
+            return PartialView("~/Views/ServiceRequest/Claimant/_ClaimantModalForm.cshtml", form);
+        }
+        [HttpPost]
+        public async Task<ActionResult> ChangeClaimant(ChangeClaimantForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                //var response = await service.Reschedule(form);
+                //response.AddToModelState(ModelState, null);
+                await service.ChangeClaimant(form);
+                return Json(new
+                {
+                    serviceRequestId = form.ServiceRequestId
+                });
+            }
+            Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+            return PartialView("~/Views/ServiceRequest/Claimant/_ClaimantModalForm.cshtml", form);
+        }
         [AuthorizeRole(Feature = Features.ServiceRequest.ChangeProcessTemplate)]
         public ViewResult ChangeProcessTemplate(int id)
         {
@@ -665,7 +737,38 @@ namespace WebApp.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
-        public async Task<ViewResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
+        public async Task<ActionResult> ShowBookingForm(int availableSlotId)
+        {
+            var dto = await db.AvailableSlots
+                .Where(a => a.Id == availableSlotId)
+                .Select(m.AvailableSlotDto.FromAvailableSlotEntityForBooking.Expand())
+                .SingleAsync();
+
+            var form = BookingForm.FromAvailableSlotDto.Invoke(dto);
+
+            form.DueDate = form.AvailableSlotViewModel.AvailableDay.Day.AddDays(3);
+
+            return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        public async Task<ActionResult> BookAssessment(BookingForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = await service.BookAssessment(form);
+                return Json(new
+                {
+                    serviceRequestId = id
+                });
+            }
+            return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
+        }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        public async Task<ActionResult> Create(int availableDayId, Guid physicianId, bool serviceIdHasErrors = false)
         {
             var availableDay = await db.AvailableDays.FindAsync(availableDayId);
             var physician = await db.Physicians.FindAsync(physicianId);
@@ -1072,6 +1175,17 @@ namespace WebApp.Controllers
         {
             var selectList = viewDataService.GetPhysicianProcessTemplateSelectList(physicianId);
             return PartialView("_CreateAddOnProcessTemplateDropDown", selectList);
+        }
+
+        [AuthorizeRole(Feature = Features.ServiceRequest.AssignResources)]
+        public async Task<ActionResult> AssignRequiredResourcesToTasks(int serviceRequestId)
+        {
+            await service.AssignRequiredResourcesToTasks(serviceRequestId);
+
+            return Json(new
+            {
+                serviceRequestId = serviceRequestId
+            });
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest.AssignResources)]

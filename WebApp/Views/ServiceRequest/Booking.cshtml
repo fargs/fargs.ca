@@ -1,0 +1,190 @@
+﻿@using WebApp.FormModels
+@using Orvosi.Shared.Enums
+@using WebApp.Library
+@model BookingForm
+
+@{
+
+    var identity = User.Identity.GetClaimsIdentity();
+    var roleId = identity.GetRoleId();
+    var features = identity.GetFeatures();
+    var physician = identity.GetPhysicianContext();
+
+    var physicianDisplayName = physician.DisplayName;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
+    var companySelectList = viewDataService.GetPhysicianCompanySelectList(physician.Id);
+    var serviceSelectList = viewDataService.GetPhysicianServiceSelectList(physician.Id);
+    var addressSelectList = viewDataService.GetPhysicianAddressSelectList(physician.Id);
+    var caseCoordinatorSelectList = viewDataService.GetPhysicianCaseCoordinatorSelectList(physician.Id);
+    var processTemplateSelectList = viewDataService.GetPhysicianProcessTemplateSelectList(physician.Id);
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Booking
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="add-booking-form" class="form-horizontal">
+
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" name="AvailableSlotId" value="@Model.AvailableSlotId" />
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Physician</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">@physicianDisplayName</p>
+            </div>
+        </div>
+
+        @Html.Hidden("AppointmentDate", Model.AvailableSlotViewModel.AvailableDay.Day)
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Appointment Date</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">@Model.AvailableSlotViewModel.AvailableDay.Day.ToLongDateString()</p>
+            </div>
+        </div>
+
+        @if (Model.AvailableSlotViewModel.AvailableDay.Company != null)
+    {
+        <div class="form-group">
+            <div class="col-md-push-3 col-md-9 text-info">
+                @physicianDisplayName has offered this day to <strong>@Model.AvailableSlotViewModel.AvailableDay.Company.Name</strong>
+            </div>
+        </div>
+}
+else
+{
+    <div class="form-group">
+        <div class="col-sm-push-3 col-sm-9 text-info">
+            @physicianDisplayName <strong>is available</strong> to <strong>all</strong> companies
+        </div>
+    </div>
+}
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Company</label>
+            <div class="col-sm-9">
+                @Html.DropDownList("CompanyId", new SelectList(companySelectList, "Value", "Text", "Group.Name", Model.CompanyId), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("CompanyId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @if (Model.AvailableSlotViewModel.AvailableDay.Address != null)
+    {
+        <div class="form-group">
+            <div class="col-sm-push-3 col-sm-9 text-info">
+                @physicianDisplayName has committed to a location on this day
+            </div>
+        </div>
+
+        @Html.Hidden("AddressId", Model.AddressId)
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Location</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">@string.Format("{0}", Model.AvailableSlotViewModel.AvailableDay.Address.Name)</p>
+            </div>
+        </div>
+}
+else
+{
+    <div class="form-group">
+        <div class="col-sm-push-3 col-sm-9 text-info">
+            The location is <strong>to be determined</strong>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-3">Address</label>
+        <div class="col-sm-9">
+            @Html.DropDownList("AddressId", new SelectList(addressSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+            @Html.ValidationMessage("AddressId", "", new { @class = "text-danger" })
+        </div>
+    </div>
+}
+
+        @*<div class="form-group">
+            <label class="control-label col-sm-3">Resources</label>
+            <div class="col-sm-9">
+                <div style="display:inline-flex">
+                    @foreach (var resource in Model.Resources)
+                    {
+                        @Html.Partial("_Initials2", resource.Person)
+                        <div>
+                            @resource.Person.Name<br />
+                            @resource.Person.Role.Name
+                        </div>
+                    }
+                </div>
+                @Html.ValidationMessage("Resources", "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Service</label>
+            <div class="col-sm-9">
+                @Html.DropDownList("ServiceId", new SelectList(serviceSelectList, "Value", "Text", "Group.Name", new { }), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("ServiceId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+            <label class="control-label col-sm-3">Process Template</label>
+            <div class="col-sm-9">
+                @Html.DropDownList("ServiceRequestTemplateId", new SelectList(processTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("ServiceRequestTemplateId", "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Due Date</label>
+            <div class="col-sm-9">
+                <input type="date" name="DueDate" value="@Model.DueDate.ToOrvosiDateFormat()" id="DueDate" class="form-control" style="line-height:14px;" />
+                @Html.ValidationMessage("DueDate", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Claimant</label>
+            <div class="col-sm-9">
+                @Html.Editor("ClaimantName", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("ClaimantName", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Case Reference Id</label>
+            <div class="col-sm-9">
+                @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-3">Process Template</label>
+            <div class="col-sm-9">
+                @Html.DropDownList("ServiceRequestTemplateId", new SelectList(processTemplateSelectList, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessage("ServiceRequestTemplateId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+            <label class="control-label col-sm-3">Company Reference Id</label>
+            <div class="col-sm-9">
+                @Html.Editor("CompanyReferenceId", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage("CompanyReferenceId", "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+    </form>
+
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
+    <button class="btn btn-success" onclick="bookAssessment($('#add-booking-form'), false)">Save</button>
+</div>

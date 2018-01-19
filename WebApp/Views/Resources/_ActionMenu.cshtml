@@ -1,0 +1,36 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@model ResourceViewModel
+
+@{
+    var features = User.Identity.GetFeatures();
+}
+
+@if (features.Contains(Features.ServiceRequest.AssignResources))
+{
+    <div id="resource-menu-@Model.Id" class="text-right">
+        <div class="btn-group">
+            @*<button type="button" class="btn btn-primary" onclick="showResourceEditForm('@(Model.Id)')"><i class="fa fa-pencil"></i></button>*@
+            <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-ellipsis-h fa-lg"></i>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                @if (Model.Role != null)
+                {
+                    <li>
+                        <a onclick="showPickupTasksAssignedToRole(@Model.ServiceRequestId, '@Model.Role.Id' @(Model.Person != null ? ", '" + Model.Person.Id + "'" : ""))" style="cursor:pointer;" title="Pick up all tasks my role is responsible for.">
+                            <i class="fa fa-tasks"></i> &nbsp;Assign Tasks
+                        </a>
+                    </li>
+                }
+                <li class="divider"></li>
+                <li>
+                    <a onclick="showDeleteResourceForm('@(Model.Id)')" style="cursor:pointer;">
+                        <i class="fa fa-remove"></i> &nbsp;Remove
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+}

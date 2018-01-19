@@ -22,6 +22,7 @@
         ).done(function (data) {
             serviceRequestStatusChanged(data.serviceRequestId);
             tasklistChanged(data.serviceRequestId);
+            showCommentForm(serviceRequestId, null, 4); // 4 = OnHold
         });
     }
 

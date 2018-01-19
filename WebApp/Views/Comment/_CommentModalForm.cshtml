@@ -1,0 +1,65 @@
+﻿@using WebApp.Library
+@using WebApp.FormModels
+
+@model CommentForm
+
+@{
+    var session = DependencyResolver.Current.GetService<SessionService>();
+    var features = session.AuthorizedFeatures;
+    var identity = session.identity;
+    var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
+    var commentTypes = viewDataService.GetCommentTypeSelectList();
+    var teamMembers = viewDataService.GetCaseResourceSelectList(Model.ServiceRequestId).Where(c => c.Value != session.userId.ToString());
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Note
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="comment-form">
+        @Html.Hidden("ServiceRequestId", Model.ServiceRequestId)
+        @Html.Hidden("CommentId", Model.CommentId)
+        <div class="form-group">
+            <label class="control-label">Type</label>
+            @*@Html.DropDownList("CommentTypeId", new SelectList(commentTypes, "Value", "Text", Model.CommentTypeId), new { @class = "form-control", style = "width:100%;" })*@
+            @foreach (var ct in commentTypes)
+            {
+                @Html.RadioButton("CommentTypeId", byte.Parse(ct.Value)) @ct.Text <span>&nbsp;&nbsp;</span>
+            }
+            @Html.ValidationMessageFor(c => c.CommentTypeId, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label class="control-label">To</label>
+            <div>
+                @Model.Physician.Name
+                @Html.ListBoxFor(m => m.AccessList,
+                 new MultiSelectList(teamMembers, "Value", "Text"),
+                  new { @class = "form-control", style = "width:100%" })
+            </div>
+        </div>
+        <div id="editor">
+            <div class="mdd_toolbar"></div>
+            <textarea cols=50 rows=6 class="mdd_editor" id="comment-message" name="Message">@Model.Message</textarea>
+            <div class="mdd_resizer"></div>
+        </div>
+        <div class="mdd_preview"></div>
+        @Html.ValidationMessageFor(c => c.Message, "", new { @class = "text-danger" })
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" onclick="saveComment($('#comment-form'), false)">Save</button>
+    <button class="btn btn-success" onclick="saveComment($('#comment-form'), true)">Save and Notify</button>
+</div>
+
+<script type="text/javascript">
+
+    $("#comment-message").MarkdownDeep({
+        help_location: "/Content/mdd_help.html",
+        disableTabHandling: true
+    });
+
+    $("#AccessList").select2();
+
+</script>

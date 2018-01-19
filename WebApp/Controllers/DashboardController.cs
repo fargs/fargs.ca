@@ -47,18 +47,24 @@ namespace WebApp.Controllers
                 .AreScheduledThisDay(date)
                 .AreNotCancellations()
                 .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
-                .Select(ServiceRequestDto.FromServiceRequestEntityForCase)
+                .Select(ServiceRequestDto.FromServiceRequestEntityV2(loggedInUserId))
                 .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
                 .ToList();
             
             var caseViewModels = dto.AsQueryable()
                 .Select(CaseViewModel.FromServiceRequestDto.Expand());
 
-            var dayViewModel = caseViewModels
-                .GroupBy(c => c.AppointmentDate.Value)
-                .AsQueryable()
-                .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCases.Expand())
-                .SingleOrDefault();
+            var dayViewModel = new DayViewModel()
+            {
+                Day = date,
+                DayName = date.ToOrvosiLongDateFormat(),
+                Companies = caseViewModels.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct(),
+                Addresses = caseViewModels.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
+                Cases = caseViewModels
+            };
+
+            ViewData.ViewTarget_Set(ViewTarget.Agenda);
+            ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
 
             return View(dayViewModel);
         }
@@ -89,6 +95,16 @@ namespace WebApp.Controllers
             // otherwise create a view model and load the due dates page.
             var vm = new ViewModels.DashboardViewModels.ScheduleViewModel();
             vm.WeekFolders = viewModel;
+
+            if (loggedInRoleId == AspNetRoles.SuperAdmin || loggedInRoleId == AspNetRoles.Physician || loggedInRoleId == AspNetRoles.CaseCoordinator)
+            {
+                ViewData.ViewFilter_Set(TaskListViewModelFilter.AllTasks);
+            }
+            else
+            {
+                ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
+            }
+            ViewData.ViewTarget_Set(ViewTarget.Schedule);
 
             // return the Due Dates view
             return PartialView("Schedule", vm);
@@ -190,9 +206,12 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Work.DueDates)]
         public PartialViewResult RefreshDueDateSummaryCount()
         {
-            var result = db.ServiceRequestTasks;
-
-            return PartialView("_SummaryCount", result);
+            var count = db.ServiceRequestTasks
+                .AreAssignedToUser(physicianOrLoggedInUserId)
+                .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo)
+                .Count();
+            
+            return PartialView("_SummaryCount", count);
         }
 
         [AuthorizeRole(Feature = Features.Work.Schedule)]
@@ -214,9 +233,7 @@ namespace WebApp.Controllers
         [AuthorizeRole(Feature = Features.Work.Additionals)]
         public PartialViewResult RefreshAdditionalsSummaryCount(Guid? serviceProviderId)
         {
-            var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;
-
-            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.AdditionalsCount(serviceProviderIdOrDefault);
+            var count = Models.ServiceRequestModels2.ServiceRequestMapper2.AdditionalsCount(physicianOrLoggedInUserId);
 
             return PartialView("_SummaryCount", count);
         }

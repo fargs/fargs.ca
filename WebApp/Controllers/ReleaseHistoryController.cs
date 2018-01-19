@@ -16,9 +16,8 @@ namespace WebApp.Controllers
             return View();
         }
 
-        public ActionResult Oct2017()
-        {
-            return View();
-        }
+        public ActionResult Oct2017_1() => View();
+
+        public ActionResult Jan2018_1() => View();
     }
 }

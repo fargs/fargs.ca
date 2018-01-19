@@ -113,7 +113,7 @@ body {
     margin-bottom: 100px;
 }
 
-.panel-footer {
+/*.panel-footer {
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -121,7 +121,7 @@ body {
     height: 100px;
     background-color: transparent;
     border: 0;
-}
+}*/
 
 .invoice-description {
     white-space: pre-line;
@@ -593,7 +593,7 @@ dd {
 
 @media screen and (max-width: 991px) {
     .section-collapse {
-        display: none;
+        display: block;
     }
 }
 
@@ -612,4 +612,34 @@ dd {
     line-height: normal;
     width: 75%;
     padding-top: 8px;
+}
+
+.panel-shadow {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.h3-margins {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.toolbar-margins {
+    margin-bottom: 10px;
+}
+
+.truncate {
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sticky-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: #;
 }

@@ -1,0 +1,18 @@
+﻿@model LookupViewModel<short>
+
+@if (Model.Id == null)
+{
+    <span title="Unassigned"
+          class="btn btn-sm btn-circle btn-circle-groupitem"
+          style="margin-right: 2px; color: red; border-color: red; cursor: default;">
+        <span class="small">?</span>
+    </span>
+}
+else
+{
+    <span title="@(Model.Name)"
+          class="btn btn-sm btn-circle btn-circle-groupitem"
+          style="margin-right: 2px; color: white; background-color: @(Model.ColorCode);">
+        @Model.Code
+    </span>
+}

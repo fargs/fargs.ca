@@ -1,0 +1,19 @@
+﻿@using WebApp.FormModels
+@using WebApp.Library
+@model PickupTasksAssignedToRoleForm
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Pickup all tasks assigned to role
+    </h4>
+</div>
+<div class="modal-body">
+    <div>
+        Do you wish to pickup all the tasks assigned to this role?
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+    <button class="btn btn-danger" onclick="pickupTasksAssignedToRole(@Model.ServiceRequestId, '@Model.RoleId' @(Model.UserId.HasValue ? ", '" + Model.UserId + "'" : ""))">Yes</button>
+</div>

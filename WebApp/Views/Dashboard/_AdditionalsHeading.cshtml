@@ -1,9 +1,9 @@
 ﻿@model int
-    @if (Model > 0)
-    {
-        <span class="text-danger"><i class="fa fa-exclamation text-danger"></i> Additionals</span>
-    }
-    else
-    {
-        <span>Additionals</span>
-    }
+@if (Model > 0)
+{
+    <span class="text-danger"><i class="fa fa-exclamation text-danger"></i> Additionals (@Model)</span>
+}
+else
+{
+    <span>Additionals</span>
+}

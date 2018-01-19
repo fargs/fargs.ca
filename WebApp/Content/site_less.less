@@ -1,0 +1,31 @@
+﻿@panel-heading-padding-negate: -10px -15px;
+
+.panel {
+    .panel-heading {
+        .nav-tabs {
+            margin: @panel-heading-padding-negate;
+            border-bottom-width: 0;
+
+            > li {
+                > a {
+                    // re-apply the original padding
+                    padding: @panel-heading-padding;
+                    margin-bottom: 1px;
+                    border: solid 0 transparent;
+
+                    &:hover {
+                        border-color: transparent;
+                    }
+                }
+
+                &.active > a {
+                    &,
+                    &:hover,
+                    &:focused {
+                        border: solid 0 transparent;
+                    }
+                }
+            }
+        }
+    }
+}

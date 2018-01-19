@@ -15,10 +15,10 @@ namespace WebApp.Models
     {
         public ServiceRequestDto()
         {
-            //Resources = new List<ResourceDto>();
+            Resources = new List<ResourceDto>();
             Tasks = new List<TaskDto>();
             Messages = new List<MessageDto>();
-            //Comments = new List<CommentDto>();
+            Comments = new List<CommentDto>();
         }
 
         public int Id { get; set; }
@@ -76,6 +76,7 @@ namespace WebApp.Models
         public int? ServiceId { get; set; }
         public int? CompanyId { get; set; } // used to get the service catalogue rates
         public Guid? CompanyGuid { get; set; } // used to get the service catalogue in the accounting controller.
+        public short? ServiceRequestTemplateId { get; set; }
 
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
@@ -88,10 +89,10 @@ namespace WebApp.Models
         public PersonDto DocumentReviewer { get; set; }
         public PersonDto IntakeAssistant { get; set; }
 
-        //public IEnumerable<ResourceDto> Resources { get; set; }
+        public IEnumerable<ResourceDto> Resources { get; set; }
         public IEnumerable<TaskDto> Tasks { get; set; }
         public IEnumerable<MessageDto> Messages { get; set; }
-        //public IEnumerable<CommentDto> Comments { get; internal set; }
+        public IEnumerable<CommentDto> Comments { get; internal set; }
         public IEnumerable<InvoiceDetailDto> InvoiceDetails { get; set; }
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntity = sr => new ServiceRequestDto
@@ -110,21 +111,73 @@ namespace WebApp.Models
             BoxCaseFolderId = sr.BoxCaseFolderId,
             ServiceCataloguePrice = sr.ServiceCataloguePrice,
             Notes = sr.Notes,
+            ServiceRequestTemplateId = sr.ServiceRequestTemplateId,
 
             ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
             Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
-            CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
-            DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
-            IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant),
 
-            //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+            Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
             Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
-            //Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+            Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
             InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())
+        };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityV2(Guid userId)
+        {
+            return sr => new ServiceRequestDto {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                DueDate = sr.DueDate,
+                CancelledDate = sr.CancelledDate,
+                IsNoShow = sr.IsNoShow,
+                IsLateCancellation = sr.IsLateCancellation,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                HasErrors = sr.HasErrors,
+                HasWarnings = sr.HasWarnings,
+                BoxCaseFolderId = sr.BoxCaseFolderId,
+                ServiceCataloguePrice = sr.ServiceCataloguePrice,
+                Notes = sr.Notes,
+                ServiceRequestTemplateId = sr.ServiceRequestTemplateId,
+
+                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+
+                Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+                Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
+                Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
+                // The security is applied to the comments at the query/projection line below (access list, posted by, and physician)
+                // Refactored this Where clause out to Orvosi.Data.Filters.ServiceRequestCommentFilters.CanAccess but it does not translate into SQL
+                Comments = sr.ServiceRequestComments.Where(c => c.ServiceRequestCommentAccesses.Select(a => a.AspNetUser.Id).Contains(userId) || c.AspNetUser.Id == userId || c.ServiceRequest.PhysicianId == userId).OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+                InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())
+            };
+        }
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCaseNotification = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            AppointmentDate = sr.AppointmentDate,
+            StartTime = sr.StartTime,
+            DueDate = sr.DueDate,
+            CancelledDate = sr.CancelledDate,
+            IsNoShow = sr.IsNoShow,
+            IsLateCancellation = sr.IsLateCancellation,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+            Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+            Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Physician = ContactDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCase = sr => new ServiceRequestDto
@@ -149,11 +202,45 @@ namespace WebApp.Models
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
             Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
-            CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
-            DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
-            IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant)
+            Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand())
+        };
 
-            //Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCaseV2(Guid userId)
+        {
+            return sr => new ServiceRequestDto
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                AppointmentDate = sr.AppointmentDate,
+                StartTime = sr.StartTime,
+                DueDate = sr.DueDate,
+                CancelledDate = sr.CancelledDate,
+                IsNoShow = sr.IsNoShow,
+                IsLateCancellation = sr.IsLateCancellation,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
+                HasErrors = sr.HasErrors,
+                HasWarnings = sr.HasWarnings,
+                BoxCaseFolderId = sr.BoxCaseFolderId,
+                ServiceCataloguePrice = sr.ServiceCataloguePrice,
+                Notes = sr.Notes,
+
+                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
+                Comments = sr.ServiceRequestComments.Where(c => c.ServiceRequestCommentAccesses.Select(a => a.AspNetUser.Id).Contains(userId) || c.AspNetUser.Id == userId || c.ServiceRequest.PhysicianId == userId).OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+            };
+        }
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForAvailability = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            PhysicianId = sr.PhysicianId,
+            CompanyId = sr.CompanyId,
+            ServiceId = sr.ServiceId,
+            AppointmentDate = sr.AppointmentDate
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForCancellationForm = sr => new ServiceRequestDto
@@ -194,6 +281,7 @@ namespace WebApp.Models
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
                 Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
                 Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
                 DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
                 IntakeAssistant = PersonDto.FromAspNetUserEntity.Invoke(sr.IntakeAssistant),

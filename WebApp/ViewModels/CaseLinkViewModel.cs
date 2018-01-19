@@ -20,7 +20,7 @@ namespace WebApp.ViewModels
         public DateTime? AppointmentDate { get; set; }
         public TimeSpan? StartTime { get; set; }
         public DateTime? DueDate { get; set; }
-        public string Notes { get; set; }
+        public bool HasNotes { get; set; }
         public bool HasAppointment { get; set; }
         public bool HasReportDeliverable { get; set; }
         public CancellationViewModel CancellationViewModel { get; set; }
@@ -31,6 +31,7 @@ namespace WebApp.ViewModels
         public LookupViewModel<short> Service { get; set; }
         public LookupViewModel<short> Company { get; set; }
         public AddressViewModel Address { get; set; }
+        public IEnumerable<ResourceViewModel> Resources { get; set; }
         public LookupViewModel<Guid> CaseCoordinator { get; set; }
         public LookupViewModel<Guid> DocumentReviewer { get; set; }
         public LookupViewModel<Guid> IntakeAssistant { get; set; }
@@ -42,7 +43,7 @@ namespace WebApp.ViewModels
             AppointmentDate = dto.AppointmentDate,
             StartTime = dto.StartTime,
             DueDate = dto.DueDate,
-            Notes = dto.Notes,
+            HasNotes = dto.Comments.Any(),
             HasAppointment = dto.HasAppointment,
             HasReportDeliverable = dto.HasReportDeliverable,
 
@@ -53,9 +54,7 @@ namespace WebApp.ViewModels
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
             Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
             Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician),
-            CaseCoordinator = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.CaseCoordinator),
-            DocumentReviewer = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.DocumentReviewer),
-            IntakeAssistant = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.IntakeAssistant)
+            Resources = dto.Resources.AsQueryable().Select(ResourceViewModel.FromResourceDto.Expand())
         };
     }
 }

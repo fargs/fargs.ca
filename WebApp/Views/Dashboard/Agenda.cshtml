@@ -7,6 +7,8 @@
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
     var features = User.Identity.GetFeatures();
+
+    ViewBag.Title = "DaySheet";
 }
 
 @Html.Action("CalendarNavigation")
@@ -27,6 +29,7 @@
     @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
     @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/InvoiceJS.cshtml")
+    @Html.Partial("~/Views/Comment/_CommentJS.cshtml")
 
     @if (Model != null)
     {
@@ -185,28 +188,13 @@
                 serviceRequestTaskId: serviceRequestTaskId
             })
             .done(function (data) {
-               // refresh the edit task form
-                $.get('@Url.Content("~/ServiceRequestTask/ShowEditTaskForm/")', {
-                    serviceRequestTaskId: serviceRequestTaskId
-                })
-                .done(function (result) {
-                    $('#task-editform-container-' + data.serviceRequestId).html(result);
-                });
-
-                // refresh the task tools
-                $.get('@Url.Content("~/ServiceRequestTask/ShowTaskTools/")', {
-                    serviceRequestTaskId: serviceRequestTaskId
-                })
-                .done(function (result) {
-                    $('#task-tools-container-' + data.serviceRequestId).html(result);
-                    if ($(result).data().hastools)
-                    {
-                        $('#tabs-' + data.serviceRequestId + ' a[href="#task-details-' + data.serviceRequestId + '"]').tab('show');
-                    }
-                    else {
-                        $('#tabs-' + data.serviceRequestId + ' a[href="#live-chat-' + data.serviceRequestId + '"]').tab('show');
-                    }
-                });
+                if (data.taskId === 24) // enum Tasks.SubmitInvoice
+                {
+                    $('#tabs-' + data.serviceRequestId + ' a[href="#invoices-' + data.serviceRequestId + '"]').tab('show');
+                }
+                else {
+                    $('#tabs-' + data.serviceRequestId + ' a[href="#live-chat-' + data.serviceRequestId + '"]').tab('show');
+                }
             });
         }
 

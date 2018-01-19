@@ -66,6 +66,7 @@
     <Compile Include="Extensions\ServiceRequestExtensions.cs" />
     <Compile Include="Filters\InvoiceDetailFilters.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
+    <Compile Include="Filters\ServiceRequestCommentFilters.cs" />
     <Compile Include="Filters\ServiceRequestTemplateTaskFilters.cs" />
     <Compile Include="Filters\ReceiptFilters.cs" />
     <Compile Include="Filters\ServiceRequestFilters.cs" />

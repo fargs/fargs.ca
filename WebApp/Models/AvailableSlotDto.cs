@@ -46,10 +46,29 @@ namespace WebApp.Models
             StartTime = e.StartTime,
             EndTime = e.EndTime,
             Duration = e.Duration,
-            ServiceRequestIds = e.ServiceRequests.AsQueryable().Where(sr => !sr.CancelledDate.HasValue).Select(sr => sr.Id)
+            ServiceRequestIds = e.ServiceRequests.AsQueryable().Where(sr => !sr.CancelledDate.HasValue).Select(sr => sr.Id),
+            ServiceRequests = e.ServiceRequests.AsQueryable().Select(ServiceRequestDto.FromEntityForAvailability.Expand())
         };
 
         public static Expression<Func<AvailableSlot, AvailableSlotDto>> FromAvailableSlotEntityForReschedule = e => e == null ? null : new AvailableSlotDto
+        {
+            Id = e.Id,
+            StartTime = e.StartTime,
+            EndTime = e.EndTime,
+            Duration = e.Duration,
+            ServiceRequestIds = e.ServiceRequests.AsQueryable().Where(sr => !sr.CancelledDate.HasValue).Select(sr => sr.Id),
+            ServiceRequests = e.ServiceRequests.Select(sr => new ServiceRequestDto
+            {
+                Id = sr.Id,
+                ClaimantName = sr.ClaimantName,
+                CancelledDate = sr.CancelledDate,
+                IsLateCancellation = sr.IsLateCancellation,
+                IsNoShow = sr.IsNoShow,
+                ServiceRequestStatusId = sr.ServiceRequestStatusId
+            })
+        };
+
+        public static Expression<Func<AvailableSlot, AvailableSlotDto>> FromAvailableSlotEntityForDayView = e => e == null ? null : new AvailableSlotDto
         {
             Id = e.Id,
             StartTime = e.StartTime,

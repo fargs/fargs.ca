@@ -13,6 +13,8 @@ using WebApp.Library.Extensions;
 using WebApp.ViewModels;
 using Orvosi.Data.Filters;
 using System.Data.Entity.Validation;
+using WebApp.Models;
+using LinqKit;
 
 namespace WebApp.Library
 {
@@ -35,6 +37,88 @@ namespace WebApp.Library
             this.now = SystemTime.Now();
         }
 
+
+        public async Task<int> BookAssessment(BookingForm form)
+        {
+            var sr = new ServiceRequest();
+            var slot = await db.AvailableSlots.FindAsync(form.AvailableSlotId);
+            sr.ServiceRequestStatusId = ServiceRequestStatuses.Active;
+            sr.ServiceRequestStatusChangedBy = userId;
+            sr.ServiceRequestStatusChangedDate = now;
+            sr.ServiceRequestTemplateId = form.ServiceRequestTemplateId;
+            sr.RequestedDate = now;
+            sr.ServiceId = form.ServiceId;
+            sr.PhysicianId = physicianId;
+            sr.CompanyId = form.CompanyId;
+            sr.AddressId = form.AddressId;
+            sr.AppointmentDate = form.AppointmentDate;
+            sr.AvailableSlotId = (short)form.AvailableSlotId;
+            sr.StartTime = slot.StartTime;
+            sr.EndTime = slot.EndTime;
+            sr.DueDate = form.DueDate;
+            sr.CompanyReferenceId = form.CompanyReferenceId;
+            sr.ClaimantName = form.ClaimantName;
+            sr.ModifiedUser = userId.ToString();
+            sr.ModifiedDate = now;
+            sr.CreatedUser = userId.ToString();
+            sr.CreatedDate = now;
+            
+            // clone the workflow template tasks
+            var requestTemplate = await db.ServiceRequestTemplates.FindAsync(sr.ServiceRequestTemplateId);
+            foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().Select(ServiceRequestTemplateTaskDto.FromEntity.Expand()))
+            {
+                var st = new Orvosi.Data.ServiceRequestTask();
+                st.Guidance = null;
+                st.ObjectGuid = Guid.NewGuid();
+                st.ResponsibleRoleId = template.ResponsibleRoleId;
+                st.Sequence = template.Sequence;
+                st.ShortName = template.ShortName;
+                st.TaskId = template.TaskId;
+                st.TaskName = template.TaskName;
+                st.ModifiedDate = now;
+                st.ModifiedUser = userId.ToString();
+                st.CreatedDate = now;
+                st.CreatedUser = userId.ToString();
+                // Assign tasks to physician and case coordinator to start
+                st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+                st.ServiceRequestTemplateTaskId = template.Id;
+                st.TaskType = template.DueDateType;
+                st.Workload = null;
+                st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
+                st.DueDate = GetTaskDueDate(sr.AppointmentDate, sr.DueDate, template);
+                st.TaskStatusId = TaskStatuses.ToDo;
+                st.TaskStatusChangedBy = userId;
+                st.TaskStatusChangedDate = now;
+                st.IsCriticalPath = template.IsCriticalPath;
+                st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
+                st.EffectiveDate = GetEffectiveDate(sr.AppointmentDate, template);
+
+                sr.ServiceRequestTasks.Add(st);
+            }
+
+            sr.UpdateIsClosed();
+            db.ServiceRequests.Add(sr);
+
+            await db.SaveChangesAsync();
+
+            // Clone the task dependencies
+            foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
+            {
+                foreach (var dependentTemplate in taskTemplate.Child)
+                {
+                    var task = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
+                    var dependent = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
+                    task.Child.Add(dependent);
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            await UpdateDependentTaskStatuses(sr.Id);
+            await UpdateServiceRequestStatus(sr.Id);
+
+            return sr.Id; 
+        }
 
         public async Task UpdateServiceRequestStatus(int serviceRequestId)
         {
@@ -63,7 +147,8 @@ namespace WebApp.Library
 
             var query = sr.ServiceRequestTasks
                 .AsQueryable()
-                .AreActive();
+                .AreActive()
+                .Where(srt => srt.TaskId != Tasks.CloseCase);
 
             if (sr.IsLateCancellation)
             {
@@ -123,7 +208,7 @@ namespace WebApp.Library
                 tasks = sr.ServiceRequestTasks
                     .AsQueryable()
                     .AreActive()
-                    .Where(srt => srt.TaskId != Tasks.SubmitInvoice);
+                    .Where(srt => srt.TaskId != Tasks.SubmitInvoice && srt.TaskId != Tasks.CloseCase);
             }
             else
             {
@@ -209,6 +294,50 @@ namespace WebApp.Library
 
             var task = db.ServiceRequestTasks.Single(srt => srt.Id == form.ServiceRequestTaskId);
             task.DueDate = form.AppointmentDate;
+
+            await db.SaveChangesAsync();
+        }
+        public async Task ChangeCompany(ChangeCompanyForm form)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
+
+            sr.CompanyId = form.CompanyId;
+
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = identity.Name;
+
+            await db.SaveChangesAsync();
+        }
+        public async Task ChangeService(ChangeServiceForm form)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
+
+            sr.ServiceId = form.ServiceId;
+
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = identity.Name;
+
+            await db.SaveChangesAsync();
+        }
+        public async Task ChangeAddress(ChangeAddressForm form)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
+
+            sr.AddressId = form.AddressId;
+
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = identity.Name;
+
+            await db.SaveChangesAsync();
+        }
+        public async Task ChangeClaimant(ChangeClaimantForm form)
+        {
+            var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
+
+            sr.ClaimantName = form.ClaimantName;
+
+            sr.ModifiedDate = now;
+            sr.ModifiedUser = identity.Name;
 
             await db.SaveChangesAsync();
         }
@@ -369,6 +498,20 @@ namespace WebApp.Library
             task.ModifiedUser = userId.ToString();
             await db.SaveChangesAsync();
         }
+        public async Task PickupTasksAssignedToRole(PickupTasksAssignedToRoleForm form)
+        {
+            var sr = await db.ServiceRequests.Include(c => c.ServiceRequestTasks).SingleAsync(c => c.Id == form.ServiceRequestId);
+            
+            foreach (var task in sr.ServiceRequestTasks.Where(t => t.ResponsibleRoleId == form.RoleId))
+            {
+                task.AssignedTo = form.UserId;
+                task.ModifiedDate = now;
+                task.ModifiedUser = userId.ToString();
+            }
+
+            await db.SaveChangesAsync();
+        }
+
         public async Task ChangeTaskStatus(int serviceRequestTaskId, short newTaskStatusId)
         {
             var srt = await db.ServiceRequestTasks.FindAsync(serviceRequestTaskId);
@@ -564,6 +707,68 @@ namespace WebApp.Library
                 return ServiceRequestStatuses.Closed;
             }
         }
+
+        private DateTime? GetTaskDueDate(DateTime? appointmentDate, DateTime? reportDueDate, ServiceRequestTemplateTaskDto taskTemplate)
+        {
+            DateTime? taskDueDate;
+            if (appointmentDate.HasValue && taskTemplate.TaskId == Tasks.AssessmentDay) // assessment day task is set to the appointment date
+            {
+                taskDueDate = appointmentDate.Value;
+            }
+            else if (reportDueDate.HasValue && taskTemplate.TaskId == Tasks.SubmitReport) // submit report task is set to the report due date
+            {
+                taskDueDate = reportDueDate.Value;
+            }
+            else // for all other tasks, we calculate the due date accordingly
+            {
+                if (!taskTemplate.DueDateDurationFromBaseline.HasValue) // If there is no duration, return null (ASAP) NOTE: 0 must be set explicitly to have it match the baseline date.
+                {
+                    taskDueDate = null;
+                }
+                else
+                {
+                    if (taskTemplate.DueDateTypeTrimmed == DueDateTypes.AppointmentDate)
+                    {
+                        taskDueDate = appointmentDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                    }
+                    else if (taskTemplate.DueDateTypeTrimmed == DueDateTypes.ReportDueDate)
+                    {
+                        taskDueDate = reportDueDate.Value.AddDays(taskTemplate.DueDateDurationFromBaseline.Value);
+                        if (appointmentDate.HasValue && taskDueDate < appointmentDate)
+                        {
+                            taskDueDate = appointmentDate;
+                        }
+                    }
+                    else
+                    {
+                        taskDueDate = null;
+                    }
+                }
+            }
+
+            return taskDueDate;
+        }
+        private DateTime GetEffectiveDate(DateTime? baselineDate, ServiceRequestTemplateTaskDto taskTemplate)
+        {
+            if (!baselineDate.HasValue)
+            {
+                throw new Exception("Baseline Date is required to calculate Due Dates and Effective Dates.");
+            }
+
+            if (taskTemplate.IsBaselineDate) // BASELINE
+            {
+                return baselineDate.Value;
+            }
+            else if (taskTemplate.EffectiveDateDurationFromBaseline.HasValue) // HAS A DURATION FROM BASELINE
+            {
+                return baselineDate.Value.AddDays(taskTemplate.EffectiveDateDurationFromBaseline.Value);
+            }
+            else // ASAP
+            {
+                return now;
+            }
+        }
+
         private DateTime? GetTaskDueDate(string dueDateType, DateTime? appointmentDate, DateTime? dueDate)
         {
             switch (dueDateType)
@@ -604,5 +809,170 @@ namespace WebApp.Library
         {
             db.Dispose();
         }
+
+        public async Task<Guid> CreateAdditionalResource(AdditionalResourceForm form)
+        {
+            var resource = new ServiceRequestResource
+            {
+                Id = Guid.NewGuid(),
+                ServiceRequestId = form.ServiceRequestId,
+                UserId = form.UserId,
+                CreatedDate = now,
+                CreatedUser = identity.GetGuidUserId().ToString(),
+                ModifiedDate = now,
+                ModifiedUser = identity.GetGuidUserId().ToString()
+            };
+            db.ServiceRequestResources.Add(resource);
+
+            await db.SaveChangesAsync();
+
+            return resource.Id;
+        }
+
+        public async Task<Guid> RemoveAdditionalResource(Guid resourceId)
+        {
+            var resource = await db.ServiceRequestResources.FindAsync(resourceId);
+
+            db.ServiceRequestResources.Remove(resource);
+
+            await db.SaveChangesAsync();
+
+            return resourceId;
+        }
+
+        public void SaveRequiredResources(RequiredResourceForm formItem, int serviceRequestId, ICollection<ServiceRequestResource> existingResources)
+        {
+            // if does not exist then Add
+            var existingItem = existingResources.FirstOrDefault(dbItem => dbItem.RoleId == formItem.RoleId);
+            if (existingItem == null && formItem.UserId.HasValue)
+            {
+                var newResource = new ServiceRequestResource
+                {
+                    Id = Guid.NewGuid(),
+                    ServiceRequestId = serviceRequestId,
+                    UserId = formItem.UserId.Value,
+                    RoleId = formItem.RoleId.Value,
+                    CreatedDate = now,
+                    CreatedUser = userId.ToString(),
+                    ModifiedDate = now,
+                    ModifiedUser = userId.ToString()
+                };
+                db.ServiceRequestResources.Add(newResource);
+            }
+            else if (existingItem != null && formItem.UserId.HasValue && existingItem.UserId != formItem.UserId)
+            {
+                existingItem.UserId = formItem.UserId.Value;
+                existingItem.ModifiedDate = now;
+                existingItem.ModifiedUser = userId.ToString();
+            }
+            else if (existingItem != null && !formItem.UserId.HasValue)
+            {
+                db.ServiceRequestResources.Remove(existingItem);
+            }
+        }
+
+        public async Task DeleteResource(Guid resourceId)
+        {
+            var resource = await db.ServiceRequestResources.FindAsync(resourceId);
+            db.ServiceRequestResources.Remove(resource);
+            await db.SaveChangesAsync();
+        }
+
+        internal async Task AssignRequiredResourcesToTasks(int serviceRequestId)
+        {
+            var sr = await db.ServiceRequests.Include(c => c.ServiceRequestResources).Include(c => c.ServiceRequestTasks).WithId(serviceRequestId).SingleAsync(); ;
+
+            sr.ServiceRequestTasks.Where(t => t.ResponsibleRoleId != AspNetRoles.Physician).ForEach(t =>
+            {
+                var resource = sr.ServiceRequestResources.FirstOrDefault(r => r.RoleId == t.ResponsibleRoleId);
+                if (resource == null)
+                {
+                    t.AssignedTo = null;
+                }
+                else if (resource.UserId != t.AssignedTo)
+                {
+                    t.AssignedTo = resource.UserId;
+                }
+            });
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<Guid> SaveComment(CommentForm form)
+        {
+            Guid commentId = form.CommentId.HasValue ? form.CommentId.Value : Guid.NewGuid();
+
+            if (!form.CommentId.HasValue)
+            {
+                var comment = new ServiceRequestComment
+                {
+                    Id = commentId,
+                    ServiceRequestId = form.ServiceRequestId,
+                    Comment = form.Message,
+                    IsPrivate = form.IsPrivate,
+                    CommentTypeId = form.CommentTypeId,
+                    PostedDate = now,
+                    UserId = identity.GetGuidUserId(),
+                    CreatedDate = now,
+                    CreatedUser = identity.GetGuidUserId().ToString(),
+                    ModifiedDate = now,
+                    ModifiedUser = identity.GetGuidUserId().ToString()
+                };
+                foreach (var access in form.AccessList)
+                {
+                    var newAccess = new ServiceRequestCommentAccess
+                    {
+                        Id = Guid.NewGuid(),
+                        ServiceRequestCommentId = commentId,
+                        UserId = access,
+                        CreatedDate = now,
+                        CreatedUser = identity.GetGuidUserId().ToString(),
+                        ModifiedDate = now,
+                        ModifiedUser = identity.GetGuidUserId().ToString()
+                    };
+                    db.ServiceRequestCommentAccesses.Add(newAccess);
+                }
+                db.ServiceRequestComments.Add(comment);
+            }
+            else
+            {
+                var comment = await db.ServiceRequestComments.FindAsync(form.CommentId);
+                comment.Comment = form.Message;
+                comment.IsPrivate = form.IsPrivate;
+                comment.CommentTypeId = form.CommentTypeId;
+                comment.UserId = identity.GetGuidUserId();
+                comment.ModifiedDate = now;
+                comment.ModifiedUser = identity.GetGuidUserId().ToString();
+
+                comment.ServiceRequestCommentAccesses.ToList()
+                    .ForEach(x => db.ServiceRequestCommentAccesses.Remove(x));
+
+                foreach (var access in form.AccessList)
+                {
+                    var newAccess = new ServiceRequestCommentAccess
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = access,
+                        ServiceRequestCommentId = commentId,
+                        CreatedDate = now,
+                        CreatedUser = identity.GetGuidUserId().ToString(),
+                        ModifiedDate = now,
+                        ModifiedUser = identity.GetGuidUserId().ToString()
+                    };
+                    db.ServiceRequestCommentAccesses.Add(newAccess);
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            return commentId;
+        }
+        public async Task DeleteComment(Guid commentId)
+        {
+            var comment = await db.ServiceRequestComments.FindAsync(commentId);
+            db.ServiceRequestComments.Remove(comment);
+            await db.SaveChangesAsync();
+        }
+
     }
 }

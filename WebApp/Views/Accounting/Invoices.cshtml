@@ -6,6 +6,8 @@
 @{
     Layout = "~/Views/Accounting/_Layout.cshtml";
 
+    ViewBag.Title = "Invoices";
+
     var roleId = User.Identity.GetRoleId();
 
     var db = new OrvosiDbContext();

@@ -1,10 +1,10 @@
 ﻿<script type="text/javascript">
 
-    function showRescheduleForm(serviceRequestId) {
+    function showRescheduleForm(serviceRequestTaskId) {
         let url = '@Url.Content("~/Reschedule/ShowRescheduleForm")';
         $.get(url, {
-            serviceRequestId: serviceRequestId
-        }).done(function (result) {
+                serviceRequestTaskId: serviceRequestTaskId
+        }).done(function(result) {
             $('#modal-content-sm').html(result);
             $('#modal-container-sm').modal('toggle');
         });

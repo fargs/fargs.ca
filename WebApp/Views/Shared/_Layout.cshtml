@@ -42,9 +42,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Orvosi Medical</title>
+    <title>@ViewBag.Title</title>
     <script src="https://use.fontawesome.com/3877822095.js"></script>
     @Styles.Render("~/Bundles/Content/css")
+    @Styles.Render("~/Bundles/Content/markdown")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
@@ -209,7 +210,7 @@
 
         <div id="admin-tasks-messages"></div>
     </div>
-    <footer class="panel-footer">
+    <footer class="sticky-footer">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
@@ -244,6 +245,7 @@
 
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/signalr")
+    @Scripts.Render("~/bundles/markdown")
 
     <script src="~/MVCGridHandler.axd/script.js"></script>
 

@@ -70,6 +70,14 @@ namespace WebApp.Models
             ColorCode = ""
         };
 
+        public static Expression<Func<CommentType, LookupDto<byte>>> FromCommentTypeEntity = e => e == null ? null : new LookupDto<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<OTask, LookupDto<short>>> FromTaskEntity = e => e == null ? null : new LookupDto<short>
         {
             Id = e.Id,

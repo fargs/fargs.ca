@@ -44,20 +44,12 @@ namespace WebApp.Library.Filters
 
             var roleId = identity.GetRoleId();
 
-            short[] roleFeatures;
-            var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
-            if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
-                roleFeatures = context.Features.Select(srf => srf.Id).ToArray();
-            else
-                roleFeatures = context.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
+            var roleFeatures = identity.GetFeatures();
+            if (roleFeatures == null)
+            {
+                return;
+            }
 
-            identity.GetApplicationUser().Features = roleFeatures;
-
-                //if (identity.GetApplicationUser().Physicians == null)
-                //{
-            identity.GetApplicationUser().Physicians = GetPhysicians(identity, context);
-                //}
-            
 
             // Super Admin role has access to all features
             if (roleId == Orvosi.Shared.Enums.AspNetRoles.SuperAdmin) return;
@@ -85,32 +77,6 @@ namespace WebApp.Library.Filters
                     return;
                 }
             }
-        }
-
-        private Guid[] GetPhysicians(IIdentity identity, IOrvosiDbContext context)
-        {
-            var userId = identity.GetGuidUserId();
-            IQueryable<AspNetUser> userSelectListQuery;
-
-            if (identity.GetIsAppTester())
-            {
-                userSelectListQuery = context.AspNetUsers
-                    .Where(u => u.AspNetUserRoles.Any(r => r.RoleId == AspNetRoles.Physician));
-            }
-            else
-            {
-                userSelectListQuery = context.Collaborators
-                    .Join(context.AspNetUsers,
-                        c => c.UserId,
-                        u => u.Id,
-                        (c, u) => new { c.User, CollaboratorUserId = c.CollaboratorUserId })
-                    .Where(u => u.CollaboratorUserId == userId)
-                    .Select(u => u.User);
-            }
-
-            return userSelectListQuery
-                .Select(u => u.Id)
-                .ToArray();
         }
     }
 }

@@ -164,7 +164,7 @@
                             {
                                 if (!item.BoxCollaborations.Any())
                                 {
-                                    <button class="btn btn-link">Delete</button>
+                                    <button class="btn btn-link" onclick="deleteOrvosiBoxCollaboration(@inner.Id)">Delete</button>
                                 }
                                 <span>
                                     @inner.AspNetUser.GetDisplayName()

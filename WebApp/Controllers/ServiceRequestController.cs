@@ -1554,6 +1554,17 @@ namespace WebApp.Controllers
             return Json(new { serviceRequestId = serviceRequestId });
         }
 
+        [AuthorizeRole(Feature = Features.ServiceRequest_Box.RemoveCollaborator)]
+        public JsonResult DeleteOrvosiBoxCollaboration(int id)
+        {
+            var collaboration = db.ServiceRequestBoxCollaborations.Single(b => b.Id == id);
+            var serviceRequestId = collaboration.ServiceRequestId;
+            db.ServiceRequestBoxCollaborations.Remove(collaboration);
+            db.SaveChanges();
+            return Json(new { serviceRequestId });
+        }
+
+
         public JsonResult AcceptBoxFolder(int serviceRequestId, Guid UserId, string CollaborationId)
         {
             string boxUserId;

@@ -28,12 +28,16 @@
         let url = '@Url.Content("~/ServiceRequest/UnsyncBoxFolder")';
         boxExecute(url, $(form).serialize());
     }
+    function deleteOrvosiBoxCollaboration(id) {
+        let url = '@Url.Content("~/ServiceRequest/DeleteOrvosiBoxCollaboration")';
+        boxExecute(url, { id: id });
+    }
     function boxExecute(url, params) {
 
         var loader = $('#box-loader');
         loader.show();
         $.post(url, params)
-            .done(function (data) {
+            .done(function (serviceRequestId) {
                 boxInfoChanged(serviceRequestId);
             })
             .always(function (data) {

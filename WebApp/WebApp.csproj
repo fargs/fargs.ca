@@ -527,6 +527,7 @@
     <Compile Include="FormModels\ChangeClaimantForm.cs" />
     <Compile Include="FormModels\ChangeCompanyForm.cs" />
     <Compile Include="FormModels\ChangeAddressForm.cs" />
+    <Compile Include="FormModels\EditTaskDependenciesForm.cs" />
     <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="FormModels\NewTaskForm.cs" />
     <Compile Include="FormModels\AvailableDayAddressForm.cs" />
@@ -1517,6 +1518,7 @@
     <Content Include="Views\ServiceRequest\Address\_AddressModalForm.cshtml" />
     <Content Include="Views\ServiceRequest\Address\_AddressJS.cshtml" />
     <Content Include="Views\ReleaseHistory\Jan2018_1.cshtml" />
+    <Content Include="Views\ServiceRequestTask\EditTaskDependenciesModalForm.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

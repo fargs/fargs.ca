@@ -1,0 +1,39 @@
+﻿@using WebApp.FormModels
+@model EditTaskDependenciesForm
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Edit Task Dependencies
+    </h4>
+</div>
+<div class="modal-body">
+    <h4>@Model.TaskName</h4>
+    <form id="task-editdependenciesform">
+        @Html.Hidden("ServiceRequestTaskId", Model.ServiceRequestTaskId)
+
+        <div class="editor-field">
+            <ul>
+                @foreach (var task in ViewBag.TaskSelectList)
+        {
+            <li>
+                @if (Model.Dependencies.Any(e => e == task.Id))
+        {
+            <input type="checkbox" name="Dependencies" value="@task.Id" checked="checked" />
+}
+else
+{
+        <input type="checkbox" name="Dependencies" value="@task.Id" />
+}
+                @task.Name
+            </li>
+}
+                @Html.ValidationMessageFor(model => Model.Dependencies)
+            </ul>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" onclick="updateTaskDependencies(event, $('#task-editdependenciesform')[0])">Save</button>
+</div>

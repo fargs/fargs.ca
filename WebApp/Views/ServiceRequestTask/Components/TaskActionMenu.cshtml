@@ -22,65 +22,66 @@ else
         </button>
         <ul class="dropdown-menu" aria-labelledby="dLabel">
             @if (features.Contains(Features.ServiceRequest.PickupTask))
-            {
-                <li><a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a></li>
-            }
+    {
+        <li><a tabindex="-1" onclick="pickupTask(@Model.Id)">Pickup</a></li>
+}
             @if (features.Contains(Features.ServiceRequest.AssignTask))
-            {
-                <li class="dropdown-submenu">
-                    <a tabindex="-1" class="assign-to" onclick="menuDropdownClick(event, this)">
-                        Assign To
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
-                        {
-                            <li>
-                                <a tabindex="-1" onclick="assignTask(@Model.Id, '@(teamMember.Value)')">@teamMember.Text</a>
-                            </li>
-                        }
-                    </ul>
-                </li>
-            }
+    {
+        <li class="dropdown-submenu">
+            <a tabindex="-1" class="assign-to" onclick="menuDropdownClick(event, this)">
+                Assign To
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (var teamMember in teamMemberSelectList.OrderBy(c => c.Text))
+        {
+            <li>
+                <a tabindex="-1" onclick="assignTask(@Model.Id, '@(teamMember.Value)')">@teamMember.Text</a>
+            </li>
+}
+            </ul>
+        </li>
+}
             @if (features.Contains(Features.ServiceRequest.EditTask))
-            {
-                <li class="divider"></li>
-                if (Model.IsAppointment)
-                {
-                    <li><a tabindex="-1" onclick="showRescheduleForm(@Model.Id)">Reschedule</a></li>
-                }
-                else
-                {
-                    <li><a tabindex="-1" onclick="showEditTaskForm(@Model.Id)">Due Date</a></li>
-                }
-            }
+    {
+        <li class="divider"></li>
+if (Model.IsAppointment)
+{
+        <li><a tabindex="-1" onclick="showRescheduleForm(@Model.Id)">Reschedule</a></li>
+}
+else
+{
+        <li><a tabindex="-1" onclick="showEditTaskForm(@Model.Id)">Due Date</a></li>
+}
+        <li><a tabindex="-1" onclick="showEditTaskDependenciesForm(@Model.Id)">Dependencies</a></li>
+}
             @if (features.Contains(Features.ServiceRequest.UpdateTaskStatus))
-            {
-                <li class="divider"></li>
-                <li>
-                    <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)">
-                        On Hold
-                        @if (Model.TaskStatusId == TaskStatuses.OnHold)
-                        {
-                            <i class="fa fa-check"></i>
-                        }
-                    </a>
-                </li>
-                <li>
-                    <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)">
-                        Cancel
-                        @if (Model.TaskStatusId == TaskStatuses.Obsolete)
-                        {
-                            <i class="fa fa-check"></i>
-                        }
-                    </a>
-                </li>
-            }
+    {
+        <li class="divider"></li>
+        <li>
+            <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.OnHold)">
+                On Hold
+                @if (Model.TaskStatusId == TaskStatuses.OnHold)
+        {
+            <i class="fa fa-check"></i>
+}
+            </a>
+        </li>
+        <li>
+            <a tabindex="-1" onclick="toggleTaskStatus(@Model.Id , @TaskStatuses.Obsolete)">
+                Cancel
+                @if (Model.TaskStatusId == TaskStatuses.Obsolete)
+        {
+            <i class="fa fa-check"></i>
+}
+            </a>
+        </li>
+}
             @if (features.Contains(Features.ServiceRequest.DeleteTask))
-            {
-                <li class="divider"></li>
-                <li><a tabindex="-1" onclick="deleteTask(@Model.Id)">Delete</a></li>
-            }
+    {
+        <li class="divider"></li>
+        <li><a tabindex="-1" onclick="deleteTask(@Model.Id)">Delete</a></li>
+}
         </ul>
     </div>
 }

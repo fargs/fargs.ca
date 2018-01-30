@@ -588,6 +588,23 @@ namespace WebApp.Library
 
             await db.SaveChangesAsync();
         }
+        public async Task UpdateTaskDependencies(EditTaskDependenciesForm form)
+        {
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(form.ServiceRequestTaskId);
+            serviceRequestTask.ModifiedDate = now;
+            serviceRequestTask.ModifiedUser = userId.ToString();
+
+            serviceRequestTask.Child.Clear();
+            foreach (var dependent in form.Dependencies)
+            {
+                var child = db.ServiceRequestTasks.Find(dependent);
+                serviceRequestTask.Child.Add(child);
+            }
+            await db.SaveChangesAsync();
+
+            var sr = serviceRequestTask.ServiceRequest;
+            await SaveDependentTaskStatusChanges(sr);
+        }
 
         public async Task ArchiveTask(int serviceRequestTaskId)
         {

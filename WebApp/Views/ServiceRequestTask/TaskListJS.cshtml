@@ -202,6 +202,7 @@
             $('#modal-content').html(result.responseText);
         });;
     }
+
     // these are default handlers.
 
     function showEditTaskForm(serviceRequestTaskId) {
@@ -221,6 +222,30 @@
         }).done(function(result) {
             $('#modal-content-sm').html(result);
             $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showEditTaskDependenciesForm(serviceRequestTaskId) {
+        let url = '@Url.Content("~/ServiceRequestTask/ShowEditTaskDependenciesForm")';
+        $.get(url, {
+                serviceRequestTaskId: serviceRequestTaskId
+        }).done(function(result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function updateTaskDependencies(event, form) {
+        let url = '@Url.Content("~/ServiceRequestTask/UpdateTaskDependencies")';
+        $.post(url,
+            $(form).serialize())
+        .done(function (data) {
+            $('#modal-container-sm').modal('toggle');
+            taskChanged(data.id, data.serviceRequestId);
+            serviceRequestStatusChanged(data.serviceRequestId);
+        })
+        .error(function (result) {
+            $('#modal-content').html(result.responseText);
         });
     }
 

@@ -32,9 +32,9 @@
     @*<input type="date" class="form-control" data-mvcgrid-type="filter" data-mvcgrid-option="DueDate" data-mvcgrid-apply-filter="change" placeholder="Due Date Filter" />*@
     @*@Html.CheckBoxListFor(m => m.TaskStatusIds, taskStatuses, new { data_mvcgrid_type = "filter", data_mvcgrid_option = "TaskStatusId", data_mvcgrid_apply_filter = "change" })*@
     @*<label class="control-label">
-        <input type="checkbox" data-mvcgrid-option="IsOverdue" data-mvcgrid-apply-filter="change" class="form-control" />
-        Always show Overdue
-    </label>*@
+            <input type="checkbox" data-mvcgrid-option="IsOverdue" data-mvcgrid-apply-filter="change" class="form-control" />
+            Always show Overdue
+        </label>*@
     <div style="width:120px; padding:5px;">
         <select id="task-status-filter" data-mvcgrid-type="filter" data-mvcgrid-option="TaskStatusId" data-mvcgrid-apply-filter="change" class="form-control" multiple>
             @foreach (var statusId in taskStatuses)
@@ -162,6 +162,7 @@
 *@
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 @Html.Partial("ModalContainer")
+@Html.Partial("ModalContainerSmall")
 
 @section Scripts {
 

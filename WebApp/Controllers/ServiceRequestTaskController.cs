@@ -19,17 +19,10 @@ using WebApp.FormModels;
 using WebApp.Library;
 using WebApp.Library.Filters;
 using WebApp.Models;
-using MoreLinq;
-using LinqKit;
-using System.ComponentModel.DataAnnotations;
 using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using WebApp.ViewModels.ServiceRequestTaskViewModels;
 using Features = Orvosi.Shared.Enums.Features;
-using NinjaNye.SearchExtensions;
-using WebApp.Components.Grid;
-using System.Security.Principal;
-using WebApp.FormModels;
 
 namespace WebApp.Controllers
 {
@@ -416,6 +409,47 @@ namespace WebApp.Controllers
 
             return PartialView("TaskTools", viewModel);
         }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public PartialViewResult ShowEditTaskDependenciesForm(int serviceRequestTaskId)
+        {
+            var data = db.ServiceRequestTasks.WithId(serviceRequestTaskId).FirstOrDefault();
+            if (data == null)
+            {
+                return PartialView("NotFound");
+            }
+
+            var viewModel = EditTaskDependenciesForm.FromTaskEntity.Invoke(data);
+
+            ViewBag.TaskSelectList = db.ServiceRequestTasks
+                .Where(t => t.ServiceRequestId == data.ServiceRequestId)
+                .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
+                .OrderBy(t => t.DueDate)
+                .ThenBy(t => t.Sequence);
+
+            return PartialView("EditTaskDependenciesModalForm", viewModel);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]
+        public async Task<ActionResult> UpdateTaskDependencies(EditTaskDependenciesForm form)
+        {
+            var serviceRequestTask = await db.ServiceRequestTasks.FindAsync(form.ServiceRequestTaskId);
+            if (serviceRequestTask == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            await service.UpdateTaskDependencies(form);
+
+            return Json(new
+            {
+                id = form.ServiceRequestTaskId,
+                serviceRequestId = serviceRequestTask.ServiceRequestId
+            });
+        }
+
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest.ManageTasks)]

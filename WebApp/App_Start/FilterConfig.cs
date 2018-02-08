@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using WebApp.Library;
 
 namespace WebApp
 {
@@ -7,7 +8,7 @@ namespace WebApp
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
+            filters.Add(new AiHandleErrorAttribute());
             filters.Add(new AuthorizeAttribute());
             filters.Add(new RequireHttpsAttribute());
         }

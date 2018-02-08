@@ -12,7 +12,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using WebApp.Library;
-using WebApp.Library.ApplicationInsights;
 
 namespace WebApp
 {
@@ -20,7 +19,6 @@ namespace WebApp
     {
         protected void Application_Start()
         {
-            TelemetryConfiguration.Active.InstrumentationKey = WebConfigurationManager.AppSettings["iKey"];
             AreaRegistration.RegisterAllAreas();
             UnityConfig.RegisterComponents();
             GlobalConfiguration.Configure(WebApiConfig.Register);
@@ -30,10 +28,6 @@ namespace WebApp
             FluentValidationModelValidatorProvider.Configure();
             // This turns off code first migrations on the database
             Database.SetInitializer<Models.ApplicationDbContext>(null);
-
-#if DEBUG
-            TelemetryConfiguration.Active.DisableTelemetry = true;
-#endif
         }
 
         protected virtual void Application_EndRequest()

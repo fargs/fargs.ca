@@ -1263,6 +1263,7 @@
     <Content Include="Areas\Admin\Views\User\ChangePassword.cshtml" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Compile Include="Areas\Admin\ViewModels\ServiceRequestTemplateTaskViewModels.cs" />
     <Content Include="Areas\Admin\Views\AspNetUsers\Create.cshtml" />

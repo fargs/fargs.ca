@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
-using WebApp.Library;
+using WebApp.ErrorHandler;
 
 namespace WebApp
 {

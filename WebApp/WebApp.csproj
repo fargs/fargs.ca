@@ -547,9 +547,6 @@
     <Compile Include="Helpers\MarkdownHelper.cs" />
     <Compile Include="Hubs\ServiceRequestHub.cs" />
     <Compile Include="Library\AccountingService.cs" />
-    <Compile Include="Library\ApplicationInsights\ApplicationInsightsHtmlHelpers.cs" />
-    <Compile Include="Library\ApplicationInsights\AiHandleErrorAttribute.cs" />
-    <Compile Include="Library\ApplicationInsights\KeyAndVersionTelemetryInitializer.cs" />
     <Compile Include="Library\Box.cs" />
     <Compile Include="Library\CsvResult.cs" />
     <Compile Include="Library\DataHelper.cs" />

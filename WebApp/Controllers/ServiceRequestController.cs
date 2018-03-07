@@ -1463,7 +1463,7 @@ namespace WebApp.Controllers
             var caseFolder = box.RenameCaseFolder(serviceRequest.BoxCaseFolderId, serviceRequest.CaseFolderName);
             
             // Redirect to display the Box Folder
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         [HttpPost]
@@ -1508,14 +1508,14 @@ namespace WebApp.Controllers
             db.SaveChanges();
 
             // Redirect to display the Box Folder
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.AddCollaborator)]
-        public RedirectToRouteResult ShareBoxFolder(int ServiceRequestId, string FolderId, Guid UserId)
+        public JsonResult ShareBoxFolder(int serviceRequestId, string FolderId, Guid UserId)
         {
-            var resources = db.GetServiceRequestResources(ServiceRequestId);
+            var resources = db.GetServiceRequestResources(serviceRequestId);
             var resource = resources.Single(r => r.Id == UserId);
 
             var box = new BoxManager();
@@ -1524,7 +1524,7 @@ namespace WebApp.Controllers
                 new ServiceRequestBoxCollaboration()
                 {
                     BoxCollaborationId = collaboration.Id,
-                    ServiceRequestId = ServiceRequestId,
+                    ServiceRequestId = serviceRequestId,
                     UserId = UserId,
                     ModifiedUser = User.Identity.Name,
                     ModifiedDate = SystemTime.Now()
@@ -1534,7 +1534,7 @@ namespace WebApp.Controllers
 
             box.UpdateSyncState(collaboration.Item.Id, resource.BoxUserId, BoxSyncStateType.synced);
 
-            return RedirectToAction("BoxManager", new { serviceRequestId = ServiceRequestId });
+            return Json(serviceRequestId);
 
         }
 
@@ -1551,7 +1551,7 @@ namespace WebApp.Controllers
                 db.ServiceRequestBoxCollaborations.Remove(collaboration);
                 db.SaveChanges();
             }
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         [AuthorizeRole(Feature = Features.ServiceRequest_Box.RemoveCollaborator)]
@@ -1561,7 +1561,7 @@ namespace WebApp.Controllers
             var serviceRequestId = collaboration.ServiceRequestId;
             db.ServiceRequestBoxCollaborations.Remove(collaboration);
             db.SaveChanges();
-            return Json(new { serviceRequestId });
+            return Json(serviceRequestId);
         }
 
 
@@ -1573,7 +1573,7 @@ namespace WebApp.Controllers
             boxUserId = user.BoxUserId;
             var box = new BoxManager();
             var collaboration = box.AcceptCollaboration(CollaborationId, boxUserId);
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         [HttpPost]
@@ -1582,7 +1582,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.not_synced);
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         [HttpPost]
@@ -1591,7 +1591,7 @@ namespace WebApp.Controllers
         {
             var box = new BoxManager();
             box.UpdateSyncState(FolderId, BoxUserId, BoxSyncStateType.synced);
-            return Json(new { serviceRequestId = serviceRequestId });
+            return Json(serviceRequestId);
         }
 
         #endregion

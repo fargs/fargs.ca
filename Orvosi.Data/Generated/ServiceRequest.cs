@@ -75,6 +75,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestMessage> ServiceRequestMessages { get; set; } // ServiceRequestMessage.FK_ServiceRequestMessage_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource.FK_ServiceRequestResource_ServiceRequest
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> ServiceRequestTasks { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_ServiceRequest
+        public virtual System.Collections.Generic.ICollection<Teleconference> Teleconferences { get; set; } // Teleconference.FK_Teleconference_ServiceRequest
 
         // Foreign keys
         public virtual Address Address { get; set; } // FK_ServiceRequest_Address
@@ -107,6 +108,7 @@ namespace Orvosi.Data
             ServiceRequestMessages = new System.Collections.Generic.List<ServiceRequestMessage>();
             ServiceRequestResources = new System.Collections.Generic.List<ServiceRequestResource>();
             ServiceRequestTasks = new System.Collections.Generic.List<ServiceRequestTask>();
+            Teleconferences = new System.Collections.Generic.List<Teleconference>();
             InitializePartial();
         }
 

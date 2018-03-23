@@ -85,5 +85,13 @@ namespace WebApp.Models
             Code = e.ShortName,
             ColorCode = ""
         };
+
+        public static Expression<Func<TeleconferenceResult, LookupDto<byte>>> FromTeleconferenceResultEntity = e => e == null ? null : new LookupDto<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
     }
 }

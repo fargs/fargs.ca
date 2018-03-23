@@ -87,6 +87,8 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
+        public System.Data.Entity.DbSet<Teleconference> Teleconferences { get; set; } // Teleconference
+        public System.Data.Entity.DbSet<TeleconferenceResult> TeleconferenceResults { get; set; } // TeleconferenceResult
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
@@ -213,6 +215,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration());
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration());
             modelBuilder.Configurations.Add(new TaskStatuConfiguration());
+            modelBuilder.Configurations.Add(new TeleconferenceConfiguration());
+            modelBuilder.Configurations.Add(new TeleconferenceResultConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
             modelBuilder.Configurations.Add(new TimeZoneConfiguration());
             modelBuilder.Configurations.Add(new UserInboxConfiguration());
@@ -291,6 +295,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskStatuConfiguration(schema));
+            modelBuilder.Configurations.Add(new TeleconferenceConfiguration(schema));
+            modelBuilder.Configurations.Add(new TeleconferenceResultConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeZoneConfiguration(schema));
             modelBuilder.Configurations.Add(new UserInboxConfiguration(schema));

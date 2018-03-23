@@ -991,5 +991,48 @@ namespace WebApp.Library
             await db.SaveChangesAsync();
         }
 
+
+        public async Task<Guid> SaveTeleconference(TeleconferenceForm form)
+        {
+            Guid teleconferenceId = form.TeleconferenceId.HasValue ? form.TeleconferenceId.Value : Guid.NewGuid();
+
+            if (!form.TeleconferenceId.HasValue)
+            {
+                var teleconference = new Teleconference
+                {
+                    Id = teleconferenceId,
+                    ServiceRequestId = form.ServiceRequestId,
+                    AppointmentDate = form.AppointmentDate,
+                    StartTime = form.StartTime,
+                    LastModifiedBy = identity.GetGuidUserId().ToString()
+                };
+                db.Teleconferences.Add(teleconference);
+            }
+            else
+            {
+                var teleconference = await db.Teleconferences.FindAsync(form.TeleconferenceId);
+                teleconference.ServiceRequestId = form.ServiceRequestId;
+                teleconference.AppointmentDate = form.AppointmentDate;
+                teleconference.StartTime = form.StartTime;
+                teleconference.LastModifiedBy = identity.GetGuidUserId().ToString();
+            }
+
+            await db.SaveChangesAsync();
+
+            return teleconferenceId;
+        }
+
+        public void SaveTeleconferenceResultForm(TeleconferenceForm form)
+        {
+            
+        }
+
+        public async Task DeleteTeleconference(Guid teleconferenceId)
+        {
+            var teleconference = await db.Teleconferences.FindAsync(teleconferenceId);
+            db.Teleconferences.Remove(teleconference);
+            await db.SaveChangesAsync();
+        }
+
     }
 }

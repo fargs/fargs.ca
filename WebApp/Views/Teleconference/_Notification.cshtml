@@ -1,0 +1,40 @@
+﻿@model WebApp.Views.Teleconference.NotificationViewModel
+
+Hi Team,
+
+Please see the results of Dr. Waseem's teleconference:
+
+@if (Model.ResultTypeId.HasValue)
+{
+    
+    @Model.ClaimantName.Trim()
+
+    if (Model.ResultTypeId == TeleconferenceResults.ReportOrdered)
+    {
+        <text>
+Report ordered
+        </text>
+    }
+    else if (Model.ResultTypeId == TeleconferenceResults.ReportOnHold)
+    {
+        <text>
+Report on hold (Lawyer will notify you if report is ordered)
+        </text>
+    }
+    else if (Model.ResultTypeId == TeleconferenceResults.NoAnswer)
+    {
+        <text>
+Lawyer did not pick up (I have left a detailed voicemail with my findings, this may need to be rescheduled)
+        </text>
+    }
+    else if (Model.ResultTypeId == TeleconferenceResults.ReportNotOrdered)
+    {
+        <text>
+Report not ordered
+        </text>
+    }
+}
+Best Regards,
+Zeeshan Waseem
+
+NOTE: Please do not reply back to this automated email, any questions or concerns please email rangelucci@orvosi.ca

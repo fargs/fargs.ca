@@ -575,5 +575,17 @@ namespace WebApp.Library
                 .ToList();
         }
 
+        public List<SelectListItem> GetTeleconferenceResultTypesSelectList()
+        {
+            return dbContext.TeleconferenceResults
+                .OrderBy(ts => ts.Id)
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                })
+                .ToList();
+        }
+
     }
 }

@@ -79,6 +79,14 @@ namespace Orvosi.Shared.Enums.Features
         public const short BulkUpdateDueDates = 311;
     }
 
+    public class ServiceRequest_Teleconference
+    {
+        public const short Update = 550;
+        public const short Read = 551;
+        public const short Delete = 552;
+        public const short Create = 553;
+    }
+
     public class ServiceRequest_Box
     {
         public const short CreateFolder = 240;

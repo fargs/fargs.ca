@@ -40,6 +40,22 @@
 </div>
 <div class="row">
     <div class="col-md-3">
+        <div class="panel panel-default panel-shadow" id="notes-@Model.ServiceRequestId">
+            <div class="panel-heading">
+                <h3 class="panel-title pull-left">Notes @(Model.Comments.Any() ? string.Format(" ({0})", Model.Comments.Count()) : "" )</h3>
+                <div class="pull-right">
+                    <button class="btn btn-success btn-sm" type="button" onclick="showCommentForm(@(Model.ServiceRequestId))">
+                        <i class="fa fa-plus"></i> New Note
+                    </button>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div id="comment-list-container-@Model.ServiceRequestId">
+                    @Html.Partial("~/Views/Comment/_List.cshtml", CommentListViewModel.FromCaseViewModel.Invoke(Model))
+                </div>
+            </div>
+        </div>
         <div class="panel panel-default panel-shadow">
             <div class="panel-heading">
                 <ul class="nav nav-tabs" role="tablist" id="tabs-@Model.ServiceRequestId">
@@ -52,7 +68,6 @@
                         <li role="presentation" class="@(!Model.HasAppointment ? "active" : "")"><a href="#report-@Model.ServiceRequestId" aria-controls="Report" role="tab" data-toggle="tab">Report</a></li>
                     }
                     <li role="presentation"><a href="#team-@Model.ServiceRequestId" aria-controls="Team" role="tab" data-toggle="tab">Team @(Model.Resources.Any() ? string.Format(" ({0})", Model.Resources.Count()) : "" )</a></li>
-                    <li role="presentation"><a href="#notes-@Model.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes @(Model.Comments.Any() ? string.Format(" ({0})", Model.Comments.Count()) : "" )</a></li>
                 </ul>
             </div>
             <div class="panel-body tab-content">
@@ -116,20 +131,6 @@
                         </section>
                     }
                 </div>
-                <div role="tabpanel" class="tab-pane" id="notes-@Model.ServiceRequestId">
-                    <section id="section-case-comments-@Model.ServiceRequestId">
-                        <div style="display:flex;">
-                            <div style="margin-left:auto;" class="toolbar-margins">
-                                <button class="btn btn-success btn-sm" type="button" onclick="showCommentForm(@(Model.ServiceRequestId))">
-                                    <i class="fa fa-plus"></i> New Note
-                                </button>
-                            </div>
-                        </div>
-                        <div id="comment-list-container-@Model.ServiceRequestId">
-                            @Html.Partial("~/Views/Comment/_List.cshtml", CommentListViewModel.FromCaseViewModel.Invoke(Model))
-                        </div>
-                    </section>
-                </div>
             </div>
         </div>
     </div>
@@ -163,48 +164,13 @@
         </div>
     </div>
     <div class="col-md-4">
-        @*<div class="panel panel-default panel-shadow">
-                <div class="panel-heading">
-                    Task Details
-                </div>
-                <div class="panel-body">
-                    <div id="task-editform-container-@Model.ServiceRequestId">
-                        @if (task != null)
-                        {
-                            <span>
-                                @Html.Partial("~/Views/ServiceRequestTask/EditTaskForm.cshtml", task)
-                            </span>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default panel-shadow">
-                <div class="panel-heading">
-                    Task Tools
-                </div>
-                <div class="panel-body">
-                    <div id="task-tools-container-@Model.ServiceRequestId">
-                        @if (task != null)
-                        {
-                            <span>
-                                @Html.Partial("~/Views/ServiceRequestTask/TaskTools.cshtml", task)
-                            </span>
-                        }
-                    </div>
-                </div>
-            </div>*@
-        @if (features.Contains(Features.ServiceRequest.LiveChat))
+        @if (features.Contains(Features.ServiceRequest_Teleconference.Read))
         {
-            <div class="panel panel-default panel-shadow">
-                <div class="panel-heading">
-                    Live Chat
-                </div>
-                <div class="panel-body">
-                    <div id="livechat-container-@Model.ServiceRequestId">
-                        @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
-                        @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
-                    </div>
-                </div>
+            <div id="teleconference-list-@Model.ServiceRequestId">
+                @if (Model.Teleconferences.Any())
+                {
+                    @Html.Partial("~/Views/Teleconference/_List.cshtml", TeleconferenceListViewModel.FromCaseViewModel.Invoke(Model))
+                }
             </div>
         }
         @if (features.Contains(Features.Accounting.ViewInvoice))
@@ -244,6 +210,19 @@
                 </div>
             </div>
         }
-
+        @if (features.Contains(Features.ServiceRequest.LiveChat))
+        {
+            <div class="panel panel-default panel-shadow">
+                <div class="panel-heading">
+                    Live Chat
+                </div>
+                <div class="panel-body">
+                    <div id="livechat-container-@Model.ServiceRequestId">
+                        @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
+                        @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>

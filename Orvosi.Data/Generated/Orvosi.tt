@@ -126,7 +126,7 @@
     SchemaFilterInclude = null;
     TableFilterExclude = null;
     TableFilterInclude = null;
-    ColumnFilterExclude = new Regex("NodeId");
+    ColumnFilterExclude = new Regex("NodeId|SysStartTime|SysEndTime");
 
     // Filtering of tables using a function. This can be used in conjunction with the Regex's above.
     // Regex are used first to filter the list down, then this function is run last.
@@ -157,6 +157,9 @@
 
         // Example: Exclude any table in dbo schema with "order" in its name.
         if(t.Schema.Equals("API", StringComparison.InvariantCultureIgnoreCase))// && t.NameHumanCase.ToLowerInvariant().Contains("order"))
+            return false;
+
+		if(t.NameHumanCase.ToLowerInvariant().EndsWith("history"))
             return false;
 
         return true;

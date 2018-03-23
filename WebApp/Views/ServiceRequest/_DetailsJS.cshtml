@@ -238,5 +238,16 @@
             .done(function (result) {
                 document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
             });
-        }
+    }
+
+    function teleconferencesChanged(serviceRequestId) {
+        $.get('@Url.Content("~/Teleconference/List")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('teleconference-list-' + serviceRequestId).innerHTML = result;
+            });
+    }
+
 </script>

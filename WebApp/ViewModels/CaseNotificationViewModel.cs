@@ -22,6 +22,13 @@ namespace WebApp.ViewModels
         public LookupViewModel<short> Company { get; set; }
         public AddressViewModel Address { get; set; }
         public LookupViewModel<Guid> Physician { get; set; }
+        public Uri CaseDetailsUri
+        {
+            get
+            {
+                return new Uri("https://orvosi.ca/servicerequest/details/" + ServiceRequestId);
+            }
+        }
 
         public static Expression<Func<ServiceRequestDto, CaseNotificationViewModel>> FromServiceRequestDto = dto => new CaseNotificationViewModel
         {

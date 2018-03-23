@@ -19,6 +19,7 @@ namespace WebApp.Models
             Tasks = new List<TaskDto>();
             Messages = new List<MessageDto>();
             Comments = new List<CommentDto>();
+            Teleconferences = new List<TeleconferenceDto>();
         }
 
         public int Id { get; set; }
@@ -93,6 +94,7 @@ namespace WebApp.Models
         public IEnumerable<TaskDto> Tasks { get; set; }
         public IEnumerable<MessageDto> Messages { get; set; }
         public IEnumerable<CommentDto> Comments { get; internal set; }
+        public IEnumerable<TeleconferenceDto> Teleconferences { get; internal set; }
         public IEnumerable<InvoiceDetailDto> InvoiceDetails { get; set; }
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntity = sr => new ServiceRequestDto
@@ -123,6 +125,7 @@ namespace WebApp.Models
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
             Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
             Comments = sr.ServiceRequestComments.OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+            Teleconferences = sr.Teleconferences.OrderBy(t => t.AppointmentDate).ThenBy(t => t.StartTime).AsQueryable().Select(TeleconferenceDto.FromEntity.Expand()),
             InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())
         };
 
@@ -154,6 +157,7 @@ namespace WebApp.Models
                 Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
                 Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
+                Teleconferences = sr.Teleconferences.OrderBy(t => t.AppointmentDate).ThenBy(t => t.StartTime).AsQueryable().Select(TeleconferenceDto.FromEntity.Expand()),
                 // The security is applied to the comments at the query/projection line below (access list, posted by, and physician)
                 // Refactored this Where clause out to Orvosi.Data.Filters.ServiceRequestCommentFilters.CanAccess but it does not translate into SQL
                 Comments = sr.ServiceRequestComments.Where(c => c.ServiceRequestCommentAccesses.Select(a => a.AspNetUser.Id).Contains(userId) || c.AspNetUser.Id == userId || c.ServiceRequest.PhysicianId == userId).OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),

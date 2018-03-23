@@ -520,6 +520,18 @@
     <Compile Include="Generated\TaskStatuConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\Teleconference.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TeleconferenceConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TeleconferenceResult.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\TeleconferenceResultConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Temp.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

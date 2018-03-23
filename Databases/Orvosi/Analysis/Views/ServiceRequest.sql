@@ -1,98 +1,49 @@
 ﻿
 
-
-
-
-
-
-
 CREATE VIEW [Analysis].[ServiceRequest]
 AS
-
-	SELECT sr.Id
-		, sr.ClaimantName
-		, [Day] = sr.DueDate
-		, StartTime = NULL
-		, [Service] = s.Name
-		, ServiceCode = s.Code
-		, ServiceCategory = sc.Name
-		, [State] = lis.[Text]
-		, Physician = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
-		, Company = c.Name
-		, ParentCompany = cp.Name
-		, a.City
-		, i.InvoiceNumber
-		, InvoiceDetailId = id.Id
-		, id.Rate
-		, id.Amount
-		, id.Total
-		, ServiceCataloguePriceAtTheTime = sr.ServiceCataloguePrice
-		, ServiceCataloguePriceCurrent = sca.Price
-	FROM dbo.ServiceRequest sr 
-	LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
-	LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
-	LEFT JOIN dbo.LookupItem lis ON dbo.GetServiceStatusId2(sr.IsLateCancellation, sr.CancelledDate, sr.IsNoShow) = lis.Id
-	LEFT JOIN dbo.Company c ON sr.CompanyId = c.Id
-	LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
-	LEFT JOIN dbo.[Address] a ON sr.AddressId = a.Id
-	LEFT JOIN dbo.InvoiceDetail id ON sr.Id = id.ServiceRequestId
-	LEFT JOIN dbo.Invoice i ON id.InvoiceId = i.Id
-	LEFT JOIN dbo.AspNetUsers p ON sr.PhysicianId = p.Id
-	LEFT JOIN dbo.ServiceCatalogue sca ON sr.ServiceCatalogueId = sca.Id
-	WHERE sr.ServiceId IN (16,17)
-	UNION ALL
-	-- Includes available slots 
-	SELECT 
-		  sr.Id
-		, sr.ClaimantName
-		, [Day] = COALESCE(sr.[AppointmentDate], ad.[Day])
-		, [StartTime] = COALESCE(sr.[StartTime], a.[StartTime])
-		, sr.[Service]
-		, sr.ServiceCode
-		, sr.ServiceCategory
-		, [State] = CASE WHEN sr.Id IS NULL THEN 'Unused' ELSE sr.[State] END
-		, Physician = COALESCE(sr.Physician, dbo.GetDisplayName(p.FirstName, p.LastName, p.Title))
-		, Company = COALESCE(sr.Company, c.Name)
-		, ParentCompany = COALESCE(sr.ParentCompany, cp.Name)
-		, City = COALESCE(sr.City, adr.City)
-		, sr.InvoiceNumber
-		, sr.InvoiceDetailId
-		, sr.Rate
-		, sr.Amount
-		, sr.Total
-		, sr.ServiceCataloguePriceAtTheTime
-		, sr.ServiceCataloguePriceCurrent
-	FROM dbo.AvailableDay ad
-	LEFT JOIN dbo.AvailableSlot a ON ad.Id = a.AvailableDayId
-	LEFT JOIN dbo.AspNetUsers p ON ad.PhysicianId = p.Id
-	LEFT JOIN dbo.AspNetUserRoles ur ON p.Id = ur.UserId
-	LEFT JOIN dbo.Company c ON ad.CompanyId = c.Id
-	LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
-	LEFT JOIN dbo.[Address] adr ON ad.LocationId = adr.Id
-	LEFT JOIN (
-		SELECT sr.Id
+	WITH InvoiceDetailCte
+	AS (
+		SELECT InvoiceDetailId = id.Id
+			, id.ServiceRequestId
+			, id.InvoiceId
+			, InvoiceDetailRate = id.Rate
+			, InvoiceDetailAmount = id.Amount
+			, InvoiceDetailTotal = id.Total
+			, InvoiceDetailCount = c.DetailCount
+			, i.InvoiceNumber
+			, InvoiceSubTotal = i.SubTotal
+			, InvoiceHst = i.Hst
+			, InvoiceTotal = i.Total
+		FROM dbo.InvoiceDetail id
+		INNER JOIN dbo.Invoice i ON id.InvoiceId = i.Id
+		LEFT JOIN (
+			SELECT id.InvoiceId, DetailCount = COUNT(id.Id)
+			FROM dbo.InvoiceDetail id
+			GROUP BY id.InvoiceId
+		) c ON i.Id = c.InvoiceId
+		WHERE id.ServiceRequestId IS NOT NULL 
+			AND i.IsDeleted = 0
+	),
+	ServiceRequestCte
+	AS (
+		SELECT ServiceRequestId = sr.Id
 			, sr.ClaimantName
-			, sr.AppointmentDate
-			, sr.StartTime
+			, sr.AvailableSlotId
+			, [AppointmentDate] = sr.AppointmentDate
+			, StartTime = sr.StartTime
+			, DueDate = sr.DueDate
 			, [Service] = s.Name
 			, ServiceCode = s.Code
-			, Physician = dbo.GetDisplayName(p.FirstName, p.LastName, p.Title)
 			, ServiceCategory = sc.Name
-			, [State] = lis.[Text]
+			, [Status] = lis.[Text]
+			, Physician = p.LastName
 			, Company = c.Name
 			, ParentCompany = cp.Name
-			, a.City
-			, id.Rate
-			, id.Amount
-			, id.Total
-			, sr.AvailableSlotId
-			, InvoiceDetailId = id.Id
-			, ServiceCataloguePriceAtTheTime = sr.ServiceCataloguePrice
-			, ServiceCataloguePriceCurrent = sca.Price
-			, sr.LocationId
-			, li.[Text]
-			, sr.AddressId
-			, i.InvoiceNumber
+			, City = ci.Name
+			, Province = pr.ProvinceName
+			, HasAppointment = CASE WHEN sr.AppointmentDate IS NOT NULL THEN 1 ELSE 0 END
+			, HasAddress = CASE WHEN sr.AddressId IS NOT NULL THEN 1 ELSE 0 END
 		FROM dbo.ServiceRequest sr 
 		LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
 		LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
@@ -100,12 +51,72 @@ AS
 		LEFT JOIN dbo.Company c ON sr.CompanyId = c.Id
 		LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
 		LEFT JOIN dbo.[Address] a ON sr.AddressId = a.Id
-		LEFT JOIN dbo.InvoiceDetail id ON sr.Id = id.ServiceRequestId
-		LEFT JOIN dbo.Invoice i ON id.InvoiceId = i.Id
+		LEFT JOIN dbo.City ci ON a.CityId = ci.Id
+		LEFT JOIN dbo.Province pr ON pr.Id = ci.ProvinceId
 		LEFT JOIN dbo.AspNetUsers p ON sr.PhysicianId = p.Id
-		LEFT JOIN dbo.ServiceCatalogue sca ON sr.ServiceCatalogueId = sca.Id
-		LEFT JOIN dbo.LookupItem li ON sr.LocationId = li.Id
-		WHERE sr.ServiceId NOT IN (16,17)
-	) sr ON sr.AvailableSlotId = a.Id
-	WHERE ur.RoleId = '8359141f-e423-4e48-8925-4624ba86245a' -- Include physicians only
-	-- NOTE: There are service requests with the same available slot id. This accounts for the more requests than available slots.
+	),
+	AvailableSlotCte
+	AS (
+		SELECT AvailableSlotId = a.Id
+			, AvailableSlotStartTime = a.StartTime
+			, AvailableSlotRequestCount = RequestCount
+			, AvailableDay = ad.Day
+			, AvailableDayPhysician = p.LastName
+			, AvailableDayCompany = c.Name
+			, AvailableDayCity = ci.Name
+			, AvailableDayProvince = pr.ProvinceName
+		FROM dbo.AvailableDay ad
+		INNER JOIN dbo.AvailableSlot a ON ad.Id = a.AvailableDayId
+		LEFT JOIN dbo.AspNetUsers p ON ad.PhysicianId = p.Id
+		LEFT JOIN dbo.AspNetUserRoles ur ON p.Id = ur.UserId
+		LEFT JOIN dbo.Company c ON ad.CompanyId = c.Id
+		LEFT JOIN dbo.Company cp ON c.ParentId = cp.Id
+		LEFT JOIN dbo.[Address] adr ON ad.LocationId = adr.Id
+		LEFT JOIN dbo.City ci ON adr.CityId = ci.Id
+		LEFT JOIN dbo.Province pr ON ci.ProvinceId = pr.Id
+		LEFT JOIN (
+			SELECT sr.AvailableSlotId, RequestCount = COUNT(sr.Id)
+			FROM dbo.ServiceRequest sr
+			WHERE CancelledDate IS NULL
+			GROUP BY sr.AvailableSlotId
+		) src ON a.Id = src.AvailableSlotId
+	)
+	SELECT DateSlicer = COALESCE(sr.AppointmentDate, a.AvailableDay, sr.DueDate)
+		, a.AvailableSlotId
+		, a.AvailableSlotStartTime
+		, a.AvailableDay
+		, a.AvailableDayPhysician
+		, a.AvailableDayCompany
+		, a.AvailableDayCity
+		, a.AvailableDayProvince
+		, a.AvailableSlotRequestCount
+		, AvailableSlotStatus = CASE WHEN a.AvailableSlotRequestCount IS NOT NULL AND a.AvailableSlotRequestCount > 0 THEN 'Filled' ELSE 'Not Filled' END
+		, sr.ServiceRequestId
+		, sr.ClaimantName
+		, sr.AppointmentDate
+		, sr.StartTime
+		, sr.DueDate
+		, sr.City
+		, sr.Province
+		, sr.Company
+		, sr.ParentCompany
+		, sr.Physician
+		, sr.Service
+		, sr.ServiceCode
+		, sr.ServiceCategory
+		, sr.HasAppointment
+		, sr.HasAddress
+		, sr.Status
+		, id.InvoiceDetailId
+		, id.InvoiceDetailAmount
+		, id.InvoiceDetailRate
+		, id.InvoiceDetailTotal
+		, id.InvoiceDetailCount
+		, id.InvoiceId
+		, id.InvoiceNumber
+		, id.InvoiceSubTotal
+		, id.InvoiceHst
+		, id.InvoiceTotal
+	FROM AvailableSlotCte a
+	FULL OUTER JOIN ServiceRequestCte sr ON a.AvailableSlotId = sr.AvailableSlotId
+	LEFT JOIN InvoiceDetailCte id ON sr.ServiceRequestId = id.ServiceRequestId

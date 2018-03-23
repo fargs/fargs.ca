@@ -46,6 +46,7 @@ namespace WebApp.ViewModels
         public IEnumerable<TaskViewModel> Tasks { get; set; }
         public IEnumerable<MessageViewModel> Messages { get; set; }
         public IEnumerable<CommentViewModel> Comments { get; set; }
+        public IEnumerable<TeleconferenceViewModel> Teleconferences { get; set; }
         public bool IsSubmitInvoiceTaskDone { get; set; } = false;
 
         public static Expression<Func<ServiceRequestDto, CaseViewModel>> FromServiceRequestDto = dto => new CaseViewModel
@@ -80,7 +81,8 @@ namespace WebApp.ViewModels
             Resources = dto.Resources.AsQueryable().Select(ResourceViewModel.FromResourceDto.Expand()),
             Tasks = dto.Tasks.AsQueryable().Select(TaskViewModel.FromTaskDto.Expand()),
             Messages = dto.Messages.AsQueryable().Select(MessageViewModel.FromMessageDto.Expand()),
-            Comments = dto.Comments.AsQueryable().Select(CommentViewModel.FromCommentDto.Expand())
+            Comments = dto.Comments.AsQueryable().Select(CommentViewModel.FromCommentDto.Expand()),
+            Teleconferences = dto.Teleconferences.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDto.Expand())
         };
     }
 }

@@ -6,5 +6,26 @@
     Layout = "~/Views/Shared/NotificationTemplates/_Layout.cshtml";
 }
 
-@Html.Markdown(Model.Comment.Message)
+<h5>Note</h5>
+<p>
+    @Html.Markdown(Model.Comment.Message)
+</p>
+
+<h5>
+    Case Details
+</h5>
+<div>
+    <div>
+        @Model.CaseNotificationViewModel.ClaimantName (@Model.CaseNotificationViewModel.ServiceRequestId)
+    </div>
+    <div>
+        @Model.CaseNotificationViewModel.CaseDetailsUri.ToString()
+    </div>
+    <div>
+        @Model.CaseNotificationViewModel.Service.Name
+    </div>
+    <div>
+        @Model.CaseNotificationViewModel.Company.Name
+    </div>
+</div>
 

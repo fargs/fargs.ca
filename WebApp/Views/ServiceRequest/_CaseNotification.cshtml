@@ -1,0 +1,12 @@
+﻿@model CaseNotificationViewModel
+
+<div>@Model.Service.Name</div>
+<div>@Model.Company.Name</div>
+@if (Model.AppointmentDate.HasValue)
+{
+    <div>
+        Assessment Date: @Model.AppointmentDate.ToOrvosiDateFormat() @Model.StartTime.ToShortTimeSafe()
+    </div>
+}
+
+

@@ -505,6 +505,7 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
+    <Compile Include="Controllers\TeleconferenceController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -527,6 +528,7 @@
     <Compile Include="FormModels\ChangeClaimantForm.cs" />
     <Compile Include="FormModels\ChangeCompanyForm.cs" />
     <Compile Include="FormModels\ChangeAddressForm.cs" />
+    <Compile Include="FormModels\TeleconferenceForm.cs" />
     <Compile Include="FormModels\EditTaskDependenciesForm.cs" />
     <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="FormModels\NewTaskForm.cs" />
@@ -589,6 +591,7 @@
     <Compile Include="Models\InvoiceDetailDto.cs" />
     <Compile Include="Models\InvoiceDto.cs" />
     <Compile Include="Models\InvoiceSentLogDto.cs" />
+    <Compile Include="Models\TeleconferenceDto.cs" />
     <Compile Include="Models\PhysicianServiceRequestTemplateDto.cs" />
     <Compile Include="Models\PhysicianDto.cs" />
     <Compile Include="Models\ReceiptDto.cs" />
@@ -633,6 +636,9 @@
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BulkUpdateDueDateForm.cs" />
     <Compile Include="FormModels\BulkUpdateDueDateFormModel.cs" />
+    <Compile Include="ViewModels\TeleconferenceNotificationViewModel.cs" />
+    <Compile Include="ViewModels\TeleconferenceViewModel.cs" />
+    <Compile Include="ViewModels\TeleconferenceListViewModel.cs" />
     <Compile Include="ViewModels\CommentListViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\BulkUpdateDueDateViewModel.cs" />
     <Compile Include="ViewModels\ViewModelSelectList.cs" />
@@ -701,6 +707,7 @@
     <Compile Include="ViewModels\UserContextViewModel.cs" />
     <Compile Include="ViewModels\Shared\EntityValidationErrorsViewModel.cs" />
     <Compile Include="Views\ServiceRequestTask\Components\TaskActionMenu.cs" />
+    <Compile Include="Views\Teleconference\_NotificationViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Reports\Data\Orvosi.tt">
@@ -1520,6 +1527,12 @@
     <Content Include="Views\ServiceRequest\Address\_AddressJS.cshtml" />
     <Content Include="Views\ReleaseHistory\Jan2018_1.cshtml" />
     <Content Include="Views\ServiceRequestTask\EditTaskDependenciesModalForm.cshtml" />
+    <Content Include="Views\Teleconference\_TeleconferenceJS.cshtml" />
+    <Content Include="Views\Teleconference\_TeleconferenceModalForm.cshtml" />
+    <Content Include="Views\Teleconference\_DeleteTeleconferenceModalForm.cshtml" />
+    <Content Include="Views\Teleconference\_List.cshtml" />
+    <Content Include="Views\Teleconference\_Notification.cshtml" />
+    <Content Include="Views\ServiceRequest\_CaseNotification.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1672,6 +1685,7 @@
     <Content Include="Views\Shared\_Loader.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
     <Content Include="Views\Shared\_LookupColorAndCode.cshtml" />
+    <Content Include="Views\Teleconference\_TeleconferenceResultModalForm.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

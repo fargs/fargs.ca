@@ -58,6 +58,11 @@
 }
 }
         <li class="divider"></li>
+        @if (features.Contains(Features.ServiceRequest_Teleconference.Create))
+    {
+        <li class="dropdown-header">Teleconferences</li>
+        <li><a a onclick="showTeleconferenceForm(@Model.ServiceRequestId)" title="Add Teleconference"><i class="fa fa-phone"></i> Add Teleconference</a></li>
+}
         <li class="dropdown-header">Case</li>
         @if (features.Contains(Features.ServiceRequest.Edit))
     {

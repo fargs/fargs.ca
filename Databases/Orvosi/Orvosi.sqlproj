@@ -278,7 +278,6 @@
     <Build Include="dbo\Tables\Collaborator.sql" />
     <Build Include="dbo\Tables\PhysicianService.sql" />
     <Build Include="Analysis\Views\ServiceCatalogueCleanUp.sql" />
-    <Build Include="Analysis\Views\InvoiceServiceCatalogueReconciliation.sql" />
     <Build Include="dbo\Functions\GetServiceStatusId2.sql" />
     <Build Include="dbo\Tables\ServiceRequestStatus.sql" />
     <Build Include="dbo\Tables\ServiceRequestResource.sql" />
@@ -302,6 +301,15 @@
     <Build Include="Manual\Stored Procedures\UpdateSubmitReportTaskDueDatesToReportDueDate.sql" />
     <Build Include="dbo\Stored Procedures\_Migrations_DependentTasks.sql" />
     <Build Include="API\Views\Invoice.sql" />
+    <Build Include="dbo\Tables\TeleconferenceResult.sql" />
+    <Build Include="dbo\Tables\TeleconferenceHistory.sql" />
+    <Build Include="dbo\Tables\Teleconference.sql" />
+    <Build Include="Analysis\Views\User.sql" />
+    <Build Include="Analysis\Views\Physician.sql" />
+    <Build Include="Analysis\Views\InvoiceItem.sql" />
+    <Build Include="Analysis\Views\Availability.sql" />
+    <Build Include="Analysis\Views\Assessment.sql" />
+    <Build Include="Analysis\Views\AddOn.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

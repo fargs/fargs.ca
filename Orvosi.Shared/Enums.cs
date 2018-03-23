@@ -283,4 +283,12 @@ namespace Orvosi.Shared.Enums
         public const byte Teleconference = 3;
         public const byte OnHold = 4;
     }
+
+    public static class TeleconferenceResults
+    {
+        public const byte ReportOrdered = 1;
+        public const byte ReportOnHold = 2;
+        public const byte NoAnswer = 3;
+        public const byte ReportNotOrdered = 4;
+    }
 }

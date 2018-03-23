@@ -84,6 +84,8 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
         System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
+        System.Data.Entity.DbSet<Teleconference> Teleconferences { get; set; } // Teleconference
+        System.Data.Entity.DbSet<TeleconferenceResult> TeleconferenceResults { get; set; } // TeleconferenceResult
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox

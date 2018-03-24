@@ -58,7 +58,7 @@
 }
 }
         <li class="divider"></li>
-        @if (features.Contains(Features.ServiceRequest_Teleconference.Create))
+        @if (features.Contains(Features.ServiceRequest_Teleconference.Create) && (Model.Physician.Id == new Guid("8E9885D8-A0F7-49F6-9A3E-FF1B4D52F6A9") || Model.Physician.Id == new Guid("A34268D3-3B5E-4632-A31B-0EB8C8F73A50")))
     {
         <li class="dropdown-header">Teleconferences</li>
         <li><a a onclick="showTeleconferenceForm(@Model.ServiceRequestId)" title="Add Teleconference"><i class="fa fa-phone"></i> Add Teleconference</a></li>

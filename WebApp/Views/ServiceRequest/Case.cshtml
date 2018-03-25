@@ -16,7 +16,15 @@
 </div>
 <div>
     <small class="text-muted">@Model.Company.Name</small>
+    @if (!string.IsNullOrEmpty(Model.SourceCompany))
+    {
+        <small class="text-muted"> - @Model.SourceCompany</small>
+    }
 </div>
 <div>
     <small class="text-muted">@Model.Service.Name</small>
+    @if (Model.MedicolegalTypeId.HasValue)
+    {
+        <small class="text-muted"> (@Model.MedicolegalType.Name)</small>
+    }
 </div>

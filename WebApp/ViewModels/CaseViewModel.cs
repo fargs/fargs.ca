@@ -24,6 +24,9 @@ namespace WebApp.ViewModels
         public DateTime? DueDate { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public string Notes { get; set; }
+        public string SourceCompany { get; set; }
+        public byte? MedicolegalTypeId { get; set; }
+        public LookupViewModel<byte> MedicolegalType { get; set; }
         public string BoxCaseFolderId { get; set; }
         public string BoxCaseFolderURL { get; set; }
         public decimal? ServiceCataloguePrice { get; set; }
@@ -71,7 +74,10 @@ namespace WebApp.ViewModels
             CanBeNoShow = dto.CanBeNoShow(dto.AppointmentDate),
             IsSubmitInvoiceTaskDone = dto.IsSubmitInvoiceTaskDone,
             ServiceRequestStatusId = dto.ServiceRequestStatusId,
+            SourceCompany = dto.SourceCompany,
+            MedicolegalTypeId = dto.MedicolegalTypeId,
 
+            MedicolegalType = LookupViewModel<byte>.FromLookupDto.Invoke(dto.MedicolegalType),
             ServiceRequestStatus = LookupViewModel<short>.FromServiceRequestStatusDto.Invoke(dto.ServiceRequestStatus),
             CancellationViewModel = CancellationViewModel.FromServiceRequestDto.Invoke(dto),
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),

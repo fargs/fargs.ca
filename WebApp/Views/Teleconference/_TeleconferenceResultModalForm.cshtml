@@ -7,7 +7,7 @@
     var features = session.AuthorizedFeatures;
     var identity = session.identity;
     var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
-    var resultTypes = viewDataService.GetTeleconferenceResultTypesSelectList();
+    var resultTypes = viewDataService.GetTeleconferenceResultTypes();
     var teamMembers = viewDataService.GetCaseResourceSelectList(Model.Teleconference.ServiceRequestId).Where(c => c.Value != session.userId.ToString());
 }
 
@@ -26,7 +26,7 @@
             @foreach (var ct in resultTypes)
             {
                 <div class="radio">
-                    <label><input type="radio" name="TeleconferenceResultId" value="@ct.Value" checked="@Model.Teleconference.ResultTypeId" onchange="getTeleconferenceNotificationTemplate(@ct.Value , @Model.CaseNotificationViewModel.ServiceRequestId)">@ct.Text</label>
+                    <label><input type="radio" name="TeleconferenceResultId" value="@ct.Id" checked="@(Model.Teleconference.ResultTypeId == ct.Id)" onchange="getTeleconferenceNotificationTemplate(@ct.Id , @Model.CaseNotificationViewModel.ServiceRequestId)">@ct.Name</label>
                 </div>
             }
             @Html.ValidationMessageFor(c => c.Teleconference.ResultTypeId, "", new { @class = "text-danger" })

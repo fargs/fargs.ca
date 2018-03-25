@@ -67,6 +67,8 @@ namespace Orvosi.Data
         public bool HasErrors { get; set; } // HasErrors
         public bool HasWarnings { get; set; } // HasWarnings
         public bool IsOnHold { get; set; } // IsOnHold
+        public byte? MedicolegalTypeId { get; set; } // MedicolegalTypeId
+        public string SourceCompany { get; set; } // SourceCompany (length: 200)
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<InvoiceDetail> InvoiceDetails { get; set; } // InvoiceDetail.FK_InvoiceDetail_ServiceRequest
@@ -84,6 +86,7 @@ namespace Orvosi.Data
         public virtual AspNetUser IntakeAssistant { get; set; } // FK_ServiceRequest_IntakeAssistant
         public virtual AvailableSlot AvailableSlot { get; set; } // FK_ServiceRequest_AvailableSlot
         public virtual Company Company { get; set; } // FK_ServiceRequest_Company
+        public virtual MedicolegalType MedicolegalType { get; set; } // FK_ServiceRequest_MedicolegalType
         public virtual Physician Physician { get; set; } // FK_ServiceRequest_Physician
         public virtual Service Service { get; set; } // FK_ServiceRequest_Service
         public virtual ServiceRequestStatu ServiceRequestStatu { get; set; } // FK_ServiceRequest_ServiceRequestStatus

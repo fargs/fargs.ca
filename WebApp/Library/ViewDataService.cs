@@ -575,9 +575,40 @@ namespace WebApp.Library
                 .ToList();
         }
 
+        public IEnumerable<LookupViewModel<byte>> GetTeleconferenceResultTypes()
+        {
+            return dbContext.TeleconferenceResults
+                .OrderBy(ts => ts.Id)
+                .Select(LookupDto<byte>.FromTeleconferenceResultEntity.Expand())
+                .ToList()
+                .AsQueryable()
+                .Select(LookupViewModel<byte>.FromLookupDto.Expand());
+        }
+
         public List<SelectListItem> GetTeleconferenceResultTypesSelectList()
         {
             return dbContext.TeleconferenceResults
+                .OrderBy(ts => ts.Id)
+                .Select(d => new SelectListItem
+                {
+                    Text = d.Name,
+                    Value = d.Id.ToString()
+                })
+                .ToList();
+        }
+        public IEnumerable<LookupViewModel<byte>> GetMedicolegalTypes()
+        {
+            return dbContext.MedicolegalTypes
+                .OrderBy(ts => ts.Id)
+                .Select(LookupDto<byte>.FromMedicolegalTypeEntity.Expand())
+                .ToList()
+                .AsQueryable()
+                .Select(LookupViewModel<byte>.FromLookupDto.Expand());
+        }
+
+        public List<SelectListItem> GetMedicolegalTypeSelectList()
+        {
+            return dbContext.MedicolegalTypes
                 .OrderBy(ts => ts.Id)
                 .Select(d => new SelectListItem
                 {

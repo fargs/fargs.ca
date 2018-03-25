@@ -313,6 +313,7 @@ namespace WebApp.Library
             var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
 
             sr.ServiceId = form.ServiceId;
+            sr.MedicolegalTypeId = form.MedicolegalTypeId;
 
             sr.ModifiedDate = now;
             sr.ModifiedUser = identity.Name;

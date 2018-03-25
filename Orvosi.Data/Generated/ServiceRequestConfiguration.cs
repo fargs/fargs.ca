@@ -77,6 +77,8 @@ namespace Orvosi.Data
             Property(x => x.HasErrors).HasColumnName(@"HasErrors").IsRequired().HasColumnType("bit");
             Property(x => x.HasWarnings).HasColumnName(@"HasWarnings").IsRequired().HasColumnType("bit");
             Property(x => x.IsOnHold).HasColumnName(@"IsOnHold").IsRequired().HasColumnType("bit");
+            Property(x => x.MedicolegalTypeId).HasColumnName(@"MedicolegalTypeId").IsOptional().HasColumnType("tinyint");
+            Property(x => x.SourceCompany).HasColumnName(@"SourceCompany").IsOptional().HasColumnType("nvarchar").HasMaxLength(200);
 
             // Foreign keys
             HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address
@@ -85,6 +87,7 @@ namespace Orvosi.Data
             HasOptional(a => a.Company).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_ServiceRequest_Company
             HasOptional(a => a.DocumentReviewer).WithMany(b => b.DocumentReviewer).HasForeignKey(c => c.DocumentReviewerId).WillCascadeOnDelete(false); // FK_ServiceRequest_DocumentReviewer
             HasOptional(a => a.IntakeAssistant).WithMany(b => b.IntakeAssistant).HasForeignKey(c => c.IntakeAssistantId).WillCascadeOnDelete(false); // FK_ServiceRequest_IntakeAssistant
+            HasOptional(a => a.MedicolegalType).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.MedicolegalTypeId).WillCascadeOnDelete(false); // FK_ServiceRequest_MedicolegalType
             HasOptional(a => a.Service).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_ServiceRequest_Service
             HasOptional(a => a.ServiceRequestTemplate).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceRequestTemplateId).WillCascadeOnDelete(false); // FK_ServiceRequest_ServiceRequestTemplate
             HasRequired(a => a.Physician).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceRequest_Physician

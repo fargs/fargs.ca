@@ -93,5 +93,13 @@ namespace WebApp.Models
             Code = e.Code,
             ColorCode = e.ColorCode
         };
+
+        public static Expression<Func<MedicolegalType, LookupDto<byte>>> FromMedicolegalTypeEntity = e => e == null ? null : new LookupDto<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
     }
 }

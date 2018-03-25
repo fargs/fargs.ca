@@ -284,6 +284,12 @@
     <Compile Include="Generated\LookupItemConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\MedicolegalType.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\MedicolegalTypeConfiguration.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Organization.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

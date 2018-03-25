@@ -46,6 +46,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
         System.Data.Entity.DbSet<Lookup> Lookups { get; set; } // Lookup
         System.Data.Entity.DbSet<LookupItem> LookupItems { get; set; } // LookupItem
+        System.Data.Entity.DbSet<MedicolegalType> MedicolegalTypes { get; set; } // MedicolegalType
         System.Data.Entity.DbSet<Organization> Organizations { get; set; } // Organization
         System.Data.Entity.DbSet<OTask> OTasks { get; set; } // Task
         System.Data.Entity.DbSet<Person> People { get; set; } // Person

@@ -49,6 +49,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<LocationView> LocationViews { get; set; } // Location
         public System.Data.Entity.DbSet<Lookup> Lookups { get; set; } // Lookup
         public System.Data.Entity.DbSet<LookupItem> LookupItems { get; set; } // LookupItem
+        public System.Data.Entity.DbSet<MedicolegalType> MedicolegalTypes { get; set; } // MedicolegalType
         public System.Data.Entity.DbSet<Organization> Organizations { get; set; } // Organization
         public System.Data.Entity.DbSet<OTask> OTasks { get; set; } // Task
         public System.Data.Entity.DbSet<Person> People { get; set; } // Person
@@ -177,6 +178,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new LocationViewConfiguration());
             modelBuilder.Configurations.Add(new LookupConfiguration());
             modelBuilder.Configurations.Add(new LookupItemConfiguration());
+            modelBuilder.Configurations.Add(new MedicolegalTypeConfiguration());
             modelBuilder.Configurations.Add(new OrganizationConfiguration());
             modelBuilder.Configurations.Add(new OTaskConfiguration());
             modelBuilder.Configurations.Add(new PersonConfiguration());
@@ -257,6 +259,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new LocationViewConfiguration(schema));
             modelBuilder.Configurations.Add(new LookupConfiguration(schema));
             modelBuilder.Configurations.Add(new LookupItemConfiguration(schema));
+            modelBuilder.Configurations.Add(new MedicolegalTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new OrganizationConfiguration(schema));
             modelBuilder.Configurations.Add(new OTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new PersonConfiguration(schema));

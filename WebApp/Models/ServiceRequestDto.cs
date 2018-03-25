@@ -36,6 +36,8 @@ namespace WebApp.Models
         public string Notes { get; set; }
         public bool HasErrors { get; set; }
         public bool HasWarnings { get; set; }
+        public string SourceCompany { get; set; }
+        public byte? MedicolegalTypeId { get; set; }
 
         // Computed properties
 
@@ -79,6 +81,7 @@ namespace WebApp.Models
         public Guid? CompanyGuid { get; set; } // used to get the service catalogue in the accounting controller.
         public short? ServiceRequestTemplateId { get; set; }
 
+        public LookupDto<byte> MedicolegalType { get; set; }
         public LookupDto<short> Service { get; set; }
         public LookupDto<short> Company { get; set; }
         public LookupDto<short> ServiceRequestStatus { get; set; }
@@ -114,7 +117,10 @@ namespace WebApp.Models
             ServiceCataloguePrice = sr.ServiceCataloguePrice,
             Notes = sr.Notes,
             ServiceRequestTemplateId = sr.ServiceRequestTemplateId,
+            SourceCompany = sr.SourceCompany,
+            MedicolegalTypeId = sr.MedicolegalTypeId,
 
+            MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
             ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
@@ -147,7 +153,10 @@ namespace WebApp.Models
                 ServiceCataloguePrice = sr.ServiceCataloguePrice,
                 Notes = sr.Notes,
                 ServiceRequestTemplateId = sr.ServiceRequestTemplateId,
+                SourceCompany = sr.SourceCompany,
+                MedicolegalTypeId = sr.MedicolegalTypeId,
 
+                MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
                 ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
                 Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
@@ -200,7 +209,10 @@ namespace WebApp.Models
             BoxCaseFolderId = sr.BoxCaseFolderId,
             ServiceCataloguePrice = sr.ServiceCataloguePrice,
             Notes = sr.Notes,
+            SourceCompany = sr.SourceCompany,
+            MedicolegalTypeId = sr.MedicolegalTypeId,
 
+            MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
             ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
@@ -227,7 +239,10 @@ namespace WebApp.Models
                 BoxCaseFolderId = sr.BoxCaseFolderId,
                 ServiceCataloguePrice = sr.ServiceCataloguePrice,
                 Notes = sr.Notes,
+                SourceCompany = sr.SourceCompany,
+                MedicolegalTypeId = sr.MedicolegalTypeId,
 
+                MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
                 ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
                 Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),

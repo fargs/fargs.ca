@@ -11,5 +11,6 @@ namespace WebApp.FormModels
         public short? ServiceId { get; set; }
         public int ServiceRequestId { get; set; }
         public Guid PhysicianId { get; set; }
+        public byte? MedicolegalTypeId { get; set; }
     }
 }

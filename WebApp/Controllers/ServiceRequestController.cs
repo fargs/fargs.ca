@@ -495,6 +495,7 @@ namespace WebApp.Controllers
             var form = new ChangeServiceForm();
             form.ServiceRequestId = dto.Id;
             form.ServiceId = dto.ServiceId;
+            form.MedicolegalTypeId = dto.MedicolegalTypeId;
             form.PhysicianId = dto.PhysicianId;
 
             return PartialView("~/Views/ServiceRequest/Service/_ServiceModalForm.cshtml", form);

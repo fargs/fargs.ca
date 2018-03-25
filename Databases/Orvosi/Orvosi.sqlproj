@@ -310,6 +310,7 @@
     <Build Include="Analysis\Views\Availability.sql" />
     <Build Include="Analysis\Views\Assessment.sql" />
     <Build Include="Analysis\Views\AddOn.sql" />
+    <Build Include="dbo\Tables\MedicolegalType.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

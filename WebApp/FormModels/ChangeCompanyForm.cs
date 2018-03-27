@@ -11,5 +11,6 @@ namespace WebApp.FormModels
         public short? CompanyId { get; set; }
         public int ServiceRequestId { get; set; }
         public Guid PhysicianId { get; set; }
+        public string SourceCompany { get; set; }
     }
 }

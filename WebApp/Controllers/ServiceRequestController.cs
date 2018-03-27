@@ -466,6 +466,7 @@ namespace WebApp.Controllers
             form.ServiceRequestId = dto.Id;
             form.CompanyId = dto.CompanyId;
             form.PhysicianId = dto.PhysicianId;
+            form.SourceCompany = dto.SourceCompany;
 
             return PartialView("~/Views/ServiceRequest/Company/_CompanyModalForm.cshtml", form);
         }

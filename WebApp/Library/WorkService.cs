@@ -302,6 +302,7 @@ namespace WebApp.Library
             var sr = db.ServiceRequests.Single(c => c.Id == form.ServiceRequestId);
 
             sr.CompanyId = form.CompanyId;
+            sr.SourceCompany = form.SourceCompany;
 
             sr.ModifiedDate = now;
             sr.ModifiedUser = identity.Name;

@@ -31,5 +31,24 @@ namespace Fargs.Web.Controllers
             return View(profile);
         }
 
+        public ActionResult Print()
+        {
+            var job = new Job()
+            {
+                StartDate = new DateTime(2004, 5, 1)
+            };
+
+            var jobs = new List<Job>();
+            jobs.Add(job);
+
+            var profile = new Profile()
+            {
+                Title = "Profile",
+                Jobs = jobs
+            };
+
+            return View(profile);
+        }
+
     }
 }

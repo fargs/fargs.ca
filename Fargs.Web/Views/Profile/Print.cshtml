@@ -1,0 +1,140 @@
+@model Fargs.Web.Models.Profile
+
+@{
+    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+}
+
+<div class="container">
+    <h2>Les Farago</h2>
+    <hr />
+    <div class="row">
+        <div class="span2">
+            @* To change the bootstrap see line 110 in the Library/Helpers/GravatarHtmlHelper class. I should eventually add the css class as a parameter. *@
+            @Html.GravatarImage("lesliefarago@gmail.com", size: 120, defaultImage: GravatarHtmlHelper.DefaultImage.Identicon, rating: GravatarHtmlHelper.Rating.PG)
+        </div>
+        <div class="span10">
+            <h5>Professional Software Developer</h5>
+            <h5>Hamilton Ontario Canada</h5>
+            <h5>lesliefarago@gmail.com</h5>
+            <h5>+1-905-512-4365</h5>
+        </div>
+    </div>
+    <hr />
+    <div class="row-fluid">
+        <div class="span12">
+            <h3>Employment</h3>
+            <h4>The Population Health Research Institute (PHRI)</h4>
+            <div class="muted">@Model.Jobs.First().Duration</div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <h5>Solutions Manager, ICT (Information Communication Technology)</h5>
+            <ul>
+                <li>Responsible for the management of the ICT Solutions Team which consists of 30 team
+                    members specializing in architecture, business analysis, development, and testing.
+                </li>
+                <li>Led the Solutions Team during a transition period where we grew from 6 to 30 team
+                    members and initiated structural and procedural changes to set the team up for success.
+                </li>
+                <li>Organized the team using a Products and Services based approach and introduced critical
+                    success factors and key performance indicators to ensure compliance, quality and
+                    performance.</li>
+                <li>Applied standard ALM (Application Lifecycle Management) procedures to align with
+                    PHRI policies and industry regulations.</li>
+                <li>Initiated infrastructure changes to have proper development, test, staging, and
+                    production environments which enabled a efficient, controlled life cycle process
+                    to be applied.</li>
+                <li>Continued to contribute to the architectural design and evolution of ROME (the primary
+                    product the Solutions Team develops).</li>
+                <li>Responsible for providing monthly status reports to the Coordination Committee.
+                </li>
+                <li>Defended the quality of our products in numerous sponsor audits and one joint FDA/EMA
+                    regulatory audit which spanned 2 weeks.</li>
+                <li>Author of a number of Standard Operating Procedures and Policies at PHRI.</li>
+                <li>Member of the Business Continuity Planning team</li>
+            </ul>
+        </div>
+    </div>
+    <section class="row-fluid">
+        <div class="span6">
+            <h5>Solutions Architect, ICT</h5>
+            <ul>
+                <li>Contributed to the development and design of ROME which, at this time, was a web
+                    application used to support the operational activities of the clinical trials being
+                    managed at PHRI.</li>
+                <li>Contributed to the system design which included technology such as ASP.NET, SQL
+                    Databases and Queries for all new studies.</li>
+                <li>Worked extensively with partners to setup data integration services.</li>
+            </ul>
+        </div>
+        <div class="span6">
+            <h5>Solutions Developer, ICT</h5>
+            <ul>
+                <li>Developed a data collection application using an ACCESS database and VB6. This application
+                    was used to collect community, household, and participant data for the PURE study.
+                </li>
+                <li>Migrated hundred++ of ACCESS databases into a centralized data store and upgraded
+                    the VB6 application to an ASP.NET web application.</li>
+                <li>Supported the RDMS (Randomization Data Management System) application used to manage
+                    a number of ongoing clinical trials.</li>
+            </ul>
+        </div>
+    </section>
+    <section class="row-fluid">
+        <h3>Soft Skills</h3>
+        <ul>
+            <li>Innovative and creative thinking</li>
+            <li>Strong leadership and motivational skills</li>
+            <li>Ability to translate complex processes (scenarios) into simplified workflows
+            </li>
+            <li>Ability to visualize and communicate large, complex solutions</li>
+            <li>Strong knowledge of various ALM (Application Lifecycle Management) methodologies
+                and management techniques.</li>
+        </ul>
+        <h3>Technical Skills</h3>
+        <ul>
+            <li>ITIL Foundations Certified</li>
+            <li>Implemented Incident, Problem, Change Management, procedures</li>
+            <li>Source control structures and best practices mainly using GIT</li>
+            <li>Automated builds and release guidance and best practices</li>
+            <li>Lifecycle management using TFS and Github</li>
+            <li>Actively using Microsoft Azure services such as Azure Functions, CosmosDB, and Event Grid</li>
+            <li>Design Patterns and best practices related to security, database design, data access,
+                data validation, and exception handling</li>
+            <li>Service Oriented architecture and programming</li>
+            <li>Test Driven Development</li>
+            <li>Client side development (JavaScript, HMTL, CSS)</li>
+            <li>Web Platforms such as ASP.NET, ASP.NET MVC</li>
+            <li>C# and SQL Programming languages. Decent with language theory and concepts.</li>
+            <li>SQL programming and Database Modeling</li>
+            <li>SQL Server Analysis Services, Integration Services and Reporting Services</li>
+            <li>Database, Data Warehouse theory and administration tasks</li>
+        </ul>
+        <h3>Research Experience</h3>
+        <ul>
+            <li>Extensive experience with many different types of clinical trial designs having
+                been involved with 50+ clinical trials ranging from very small to very large
+            </li>
+            <li>Expert knowledge of randomization and resupply systems</li>
+            <li>Expert knowledge of IP Logistics which is the management of batches, orders, and
+                inventory for the investigational product</li>
+            <li>Strong knowledge of applicable regulations such as 21 CFR Part 11 and GCP</li>
+        </ul>
+        <h3>Life Experience</h3>
+        <ul>
+            <li>West Coast Trail - 7 day hike through the Pacific Rim National Park</li>
+            <li>El Camino de Santiago - 29 day hike across northern Spain</li>
+            <li>Won the Sutherland Cup with the Thorold Blackhawks Jr B hockey team</li>
+            <li>Won the All Ontario championship with the Glanbrook Rangers Jr C hockey team
+            </li>
+            <li>Played competitive soccer with Saltfleet Soccer Club and Cardinal Newman</li>
+        </ul>
+        <h3>Education</h3>
+        <ul>
+            <li>Brock University  St.Catharines, Ontario, Canada </li>
+            <li>Bachelor of Computing and Business</li>
+            <li>Cardinal Newman Catholic Secondary School</li>
+        </ul>
+    </section>
+</div>

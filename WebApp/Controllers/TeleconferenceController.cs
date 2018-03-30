@@ -122,6 +122,10 @@ namespace WebApp.Controllers
                 .Select(ServiceRequestDto.FromServiceRequestEntityForCaseNotification.Expand())
                 .Single();
 
+            var admin = db.ServiceRequestResources
+                .Where(r => r.ServiceRequestId == sr.Id && r.RoleId == AspNetRoles.CaseCoordinator)
+                .SingleOrDefault();
+
             // dto to viewmodel
             var caseNotificationViewModel = CaseNotificationViewModel.FromServiceRequestDto.Invoke(sr);
             var teleconferenceViewModel = TeleconferenceViewModel.FromTeleconferenceDto.Invoke(teleconference);
@@ -135,6 +139,8 @@ namespace WebApp.Controllers
             // viewmodel to email
             var notificationViewModel = new WebApp.Views.Teleconference.NotificationViewModel
             {
+                PhysicianName = sr.Physician.DisplayName,
+                AdminEmail = admin == null ? string.Empty : admin.AspNetUser.Email,
                 ClaimantName = sr.ClaimantName,
                 ResultTypeId = teleconference.ResultTypeId
             };
@@ -154,9 +160,6 @@ namespace WebApp.Controllers
             }
 
             // always CC the admin if there is one
-            var admin = db.ServiceRequestResources
-                .Where(r => r.ServiceRequestId == sr.Id && r.RoleId == AspNetRoles.CaseCoordinator)
-                .SingleOrDefault();
             if (admin != null)
             {
                 message.CC.Add(admin.AspNetUser.Email);
@@ -171,24 +174,30 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetNotificationTemplate(byte? resultTypeId, int serviceRequestId)
+        public ActionResult GetNotificationTemplate(byte? resultTypeId, int serviceRequestId)
         {
             // database to dto
 
-            var claimantName = db.ServiceRequests
-                .Where(s => s.Id == serviceRequestId)
-                .Select(s => s.ClaimantName)
+            var sr = db.ServiceRequests
+                .WithId(serviceRequestId)
+                .Select(ServiceRequestDto.FromServiceRequestEntityForTeleconferenceNotification.Expand())
                 .Single();
+
+            var admin = db.ServiceRequestResources
+                .Where(r => r.ServiceRequestId == sr.Id && r.RoleId == AspNetRoles.CaseCoordinator)
+                .SingleOrDefault();
 
             var viewModel = new WebApp.Views.Teleconference.NotificationViewModel
             {
-                ClaimantName = claimantName,
+                PhysicianName = sr.Physician.DisplayName,
+                AdminEmail = admin == null ? string.Empty : admin.AspNetUser.Email,
+                ClaimantName = sr.ClaimantName,
                 ResultTypeId = resultTypeId
             };
 
             return PartialView("_Notification", viewModel);
         }
-
+        
         [HttpGet]
         public async Task<ActionResult> ShowDeleteTeleconferenceForm(Guid teleconferenceId)
         {

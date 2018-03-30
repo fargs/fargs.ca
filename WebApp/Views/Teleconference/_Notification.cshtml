@@ -1,12 +1,12 @@
 ﻿@model WebApp.Views.Teleconference.NotificationViewModel
 
-Hi Team,
+Hi,
 
-Please see the results of Dr. Waseem's teleconference:
+Please see the results of @Model.PhysicianName's teleconference:
 
 @if (Model.ResultTypeId.HasValue)
 {
-    
+
     @Model.ClaimantName.Trim()
 
     if (Model.ResultTypeId == TeleconferenceResults.ReportOrdered)
@@ -35,6 +35,10 @@ Report not ordered
     }
 }
 Best Regards,
-Zeeshan Waseem
-
-NOTE: Please do not reply back to this automated email, any questions or concerns please email rangelucci@orvosi.ca
+@Model.PhysicianName
+@if (!string.IsNullOrEmpty(Model.AdminEmail))
+{
+<text>
+NOTE: Please direct any questions or concerns regarding this teleconference to @Model.AdminEmail
+</text>
+}

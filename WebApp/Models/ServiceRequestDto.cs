@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using FluentValidation.Attributes;
 using Orvosi.Data.Filters;
-using System.Data.Entity.Core.Objects;
 
 namespace WebApp.Models
 {
@@ -443,6 +442,14 @@ namespace WebApp.Models
             Tasks = sr.ServiceRequestTasks.AsQueryable()
                 .Where(srt => srt.TaskId == Orvosi.Shared.Enums.Tasks.SubmitInvoice)
                 .Select(TaskDto.FromServiceRequestTaskEntityForInvoiceDetail.Expand())
+        };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTeleconferenceNotification = sr => new ServiceRequestDto
+        {
+            Id =  sr.Id,
+            ClaimantName = sr.ClaimantName,
+            PhysicianId = sr.PhysicianId,
+            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
     }
 }

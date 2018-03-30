@@ -20,17 +20,22 @@
 <div class="modal-body">
     <form id="edit-teleconference-message-form" method="post" enctype="multipart/form-data">
         <input type="hidden" name="TeleconferenceId" value="@Model.Teleconference.Id" />
-        <div class="form-group">
+        <div class="form-group pull-right">
             <label class="control-label">Result</label>
             @*@Html.DropDownList("CommentTypeId", new SelectList(commentTypes, "Value", "Text", Model.CommentTypeId), new { @class = "form-control", style = "width:100%;" })*@
             @foreach (var ct in resultTypes)
-            {
-                <div class="radio">
-                    <label><input type="radio" name="TeleconferenceResultId" value="@ct.Id" checked="@(Model.Teleconference.ResultTypeId == ct.Id)" onchange="getTeleconferenceNotificationTemplate(@ct.Id , @Model.CaseNotificationViewModel.ServiceRequestId)">@ct.Name</label>
-                </div>
-            }
-            @Html.ValidationMessageFor(c => c.Teleconference.ResultTypeId, "", new { @class = "text-danger" })
+    {
+        <div class="radio">
+            <label><input type="radio" name="TeleconferenceResultId" value="@ct.Id" checked="@(Model.Teleconference.ResultTypeId == ct.Id)" onchange="getTeleconferenceNotificationTemplate(@ct.Id , @Model.CaseNotificationViewModel.ServiceRequestId)">@ct.Name</label>
         </div>
+}
+            @Html.ValidationMessageFor(c => c.Teleconference.ResultTypeId, "", new { @class = "text-danger" })
+            <input class="btn btn-success"
+                   type="submit"
+                   onclick="saveTeleconferenceResultForm('@Model.Teleconference.Id' , '@Model.Teleconference.ServiceRequestId')"
+                   value="Send" />
+        </div>
+        <div class="clearfix"></div>
         <div class="form-group">
             <label class="control-label">From</label>
             <input type="text" name="Message.From" class="form-control" value="@Model.Message.From" />
@@ -49,7 +54,7 @@
         </div>
         <div class="form-group">
             <label class="control-label">Body</label>
-            <textarea id="teleconference-message-body" name="Message.Body" class="form-control" rows="8">@Model.Message.Body</textarea>
+            <textarea id="teleconference-message-body" name="Message.Body" class="form-control" rows="10">@Model.Message.Body</textarea>
         </div>
         @*<div class="checkbox">
                 <label>
@@ -61,13 +66,4 @@
             <input type="file" name="Attachment1" class="form-control" />
         </div>
     </form>
-</div>
-<div class="modal-footer">
-    <input class="btn btn-success"
-           type="submit"
-           onclick="saveTeleconferenceResultForm('@Model.Teleconference.Id' , '@Model.Teleconference.ServiceRequestId')"
-           value="Send" />
-
-
-
 </div>

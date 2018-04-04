@@ -257,7 +257,9 @@ namespace WebApp.Controllers
             await emailService.SendEmailAsync(message);
 
             // update the status of the teleconference
-            teleconference.TeleconferenceResultId = byte.Parse(Request.Form["TeleconferenceResultId"]);
+            byte teleconferenceResultId;
+            if (byte.TryParse(Request.Form["TeleconferenceResultId"], out teleconferenceResultId)) teleconference.TeleconferenceResultId = teleconferenceResultId;
+
             teleconference.TeleconferenceResultSentDate = now;
 
             await db.SaveChangesAsync();

@@ -33,13 +33,16 @@
                     @teleconference.AppointmentDate.ToOrvosiDateFormat() @teleconference.StartTime.ToShortTimeSafe()
                 </span>
                 <span style="margin-left:auto;" class="text-right">
-                    @if (teleconference.ResultTypeId.HasValue)
+                    @if (teleconference.ResultSentDate.HasValue)
                     {
                         <i class="fa fa-check text-success"></i>
                         <span>Email sent: <strong>@teleconference.ResultSentDate.ToOrvosiDateTimeFormat()</strong></span><br />
+                    }
+                    @if (teleconference.ResultTypeId.HasValue)
+                    { 
                         <span>Status: <strong>@teleconference.ResultType.Name</strong></span>
                     }
-                    else
+                    @if (!teleconference.ResultSentDate.HasValue)
                     {
                         <button class="btn btn-sm btn-default" onclick="showTeleconferenceResultForm(@Model.ServiceRequestId, '@(teleconference.Id)')">Send Result</button>
                         <button class="btn btn-sm btn-default" onclick="showTeleconferenceForm(@Model.ServiceRequestId, '@(teleconference.Id)')">Edit</button>

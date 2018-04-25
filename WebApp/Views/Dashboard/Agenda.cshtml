@@ -25,6 +25,7 @@
 
     <script src="@Url.Content("~/signalr/hubs")"></script>
 
+    @Html.Partial("~/Views/ServiceRequest/AgendaJS.cshtml")
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
     @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
@@ -170,6 +171,17 @@
             .done(function (result) {
                 $('#actionmenu-' + serviceRequestId).html(result);
             });
+        }
+
+        function serviceRequestDetailsChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@ViewTarget.Agenda',
+                })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                });
         }
 
         function serviceRequestStatusChanged(serviceRequestId) {

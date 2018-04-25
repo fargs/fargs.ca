@@ -1,5 +1,10 @@
 ﻿
 
+
+
+
+
+
 CREATE VIEW [Analysis].[ServiceRequest]
 AS
 	WITH InvoiceDetailCte
@@ -44,6 +49,8 @@ AS
 			, Province = pr.ProvinceName
 			, HasAppointment = CASE WHEN sr.AppointmentDate IS NOT NULL THEN 1 ELSE 0 END
 			, HasAddress = CASE WHEN sr.AddressId IS NOT NULL THEN 1 ELSE 0 END
+			, ReferralSource = SourceCompany
+			, MedicolegalType = mt.Name
 		FROM dbo.ServiceRequest sr 
 		LEFT JOIN dbo.[Service] s ON s.Id = sr.ServiceId
 		LEFT JOIN dbo.ServiceCategory sc ON s.ServiceCategoryId = sc.Id
@@ -54,6 +61,7 @@ AS
 		LEFT JOIN dbo.City ci ON a.CityId = ci.Id
 		LEFT JOIN dbo.Province pr ON pr.Id = ci.ProvinceId
 		LEFT JOIN dbo.AspNetUsers p ON sr.PhysicianId = p.Id
+		LEFT JOIN dbo.MedicolegalType mt ON sr.MedicolegalTypeId = mt.Id
 	),
 	AvailableSlotCte
 	AS (
@@ -117,6 +125,8 @@ AS
 		, id.InvoiceSubTotal
 		, id.InvoiceHst
 		, id.InvoiceTotal
+		, sr.ReferralSource
+		, sr.MedicolegalType
 	FROM AvailableSlotCte a
 	FULL OUTER JOIN ServiceRequestCte sr ON a.AvailableSlotId = sr.AvailableSlotId
 	LEFT JOIN InvoiceDetailCte id ON sr.ServiceRequestId = id.ServiceRequestId

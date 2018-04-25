@@ -65,6 +65,9 @@ namespace WebApp.FormModels
         public string ClaimantName { get; set; }
         [Required]
         public short ServiceRequestTemplateId { get; set; }
+        [Required]
+        public string SourceCompany { get; set; }
+
 
         public static Expression<Func<AvailableSlotDto, BookingForm>> FromAvailableSlotDto = r => r == null ? null : new BookingForm
         {

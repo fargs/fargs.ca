@@ -918,6 +918,7 @@ namespace WebApp.Controllers
                 sr.StartTime = slot.StartTime;
                 sr.EndTime = slot.EndTime;
                 sr.DueDate = sr.DueDate;
+                sr.SourceCompany = sr.SourceCompany;
                 //sr.ServiceCataloguePrice = serviceCatalogue == null ? null : serviceCatalogue.Price;
                 //sr.NoShowRate = rates.NoShowRate;
                 //sr.LateCancellationRate = rates.LateCancellationRate;
@@ -1380,6 +1381,23 @@ namespace WebApp.Controllers
             var context = new Orvosi.Data.OrvosiDbContext();
             var note = await context.ServiceRequests.FindAsync(serviceRequestId);
             return PartialView("~/Views/Note/_Note.cshtml", new NoteViewModel() { ServiceRequestId = note.Id, Note = note.Notes, AllowEdit = allowEdit });
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.ServiceRequest.ChangeCompanyOrService)]
+        public async Task<ActionResult> ChangeCaseDetails(ChangeCompanyForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                //var response = await service.Reschedule(form);
+                //response.AddToModelState(ModelState, null);
+                await service.ChangeCompany(form);
+                return Json(new
+                {
+                    serviceRequestId = form.ServiceRequestId
+                });
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         #region Box

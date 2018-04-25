@@ -2,6 +2,7 @@
 @using WebApp.ViewModels.CalendarViewModels
 @using LinqKit
 @using Features = Orvosi.Shared.Enums.Features
+@using WebApp.FormModels
 @model DayViewModel
 @{
     var roleId = User.Identity.GetRoleId();
@@ -52,11 +53,16 @@
             <div class="col-md-6 o-dashboard-td">
                 <ul class="nav nav-tabs" role="tablist" id="tabs-@serviceRequest.ServiceRequestId">
                     <li role="presentation" class="active"><a href="#live-chat-@serviceRequest.ServiceRequestId" aria-controls="Live Chat" role="tab" data-toggle="tab">Live Chat</a></li>
-                    <li role="presentation"><a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(serviceRequest.Comments.Any() ? " (" + serviceRequest.Comments.Count() + ")" : "" )</a></li>
+                    <li role="presentation">
+                        <a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(serviceRequest.Comments.Any() ? " (" + serviceRequest.Comments.Count() + ")" : "" )</a>
+                    </li>
                     @if (features.Contains(Features.Accounting.CreateInvoice))
                     {
                         <li role="presentation"><a href="#invoices-@serviceRequest.ServiceRequestId" aria-controls="Invoices" role="tab" data-toggle="tab">Invoices</a></li>
                     }
+                    <li role="presentation" id="case-tab-details-' + serviceRequestId">
+                        <a href="#details-@serviceRequest.ServiceRequestId" aria-controls="Details" role="tab" data-toggle="tab">Details</a>
+                    </li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -114,6 +120,30 @@
                                 </div>
                                 <div id="comment-list-container-@serviceRequest.ServiceRequestId" class="panel-body">
                                     @Html.Partial("~/Views/Comment/_List.cshtml", CommentListViewModel.FromCaseViewModel.Invoke(serviceRequest))
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="details-@serviceRequest.ServiceRequestId">
+                        <section id="section-case-details-@serviceRequest.ServiceRequestId">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <form id="servicerequest-details-form-@serviceRequest.ServiceRequestId">
+                                        @Html.Hidden("ServiceRequestId", serviceRequest.ServiceRequestId)
+                                        @Html.Hidden("CompanyId", serviceRequest.Company.Id)
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Referral Source
+                                            </label>
+                                            <input type="text" name="SourceCompany" value="@serviceRequest.SourceCompany" class="form-control" />
+                                            @Html.ValidationMessage("SourceCompany")
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary btn-sm" type="button" onclick="saveCaseDetails($('#servicerequest-details-form-@serviceRequest.ServiceRequestId'))">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </section>

@@ -58,6 +58,7 @@ namespace WebApp.Library
             sr.DueDate = form.DueDate;
             sr.CompanyReferenceId = form.CompanyReferenceId;
             sr.ClaimantName = form.ClaimantName;
+            sr.SourceCompany = form.SourceCompany;
             sr.ModifiedUser = userId.ToString();
             sr.ModifiedDate = now;
             sr.CreatedUser = userId.ToString();

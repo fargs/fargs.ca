@@ -1533,6 +1533,7 @@
     <Content Include="Views\Teleconference\_List.cshtml" />
     <Content Include="Views\Teleconference\_Notification.cshtml" />
     <Content Include="Views\ServiceRequest\_CaseNotification.cshtml" />
+    <Content Include="Views\ServiceRequest\AgendaJS.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

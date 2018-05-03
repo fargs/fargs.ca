@@ -90,8 +90,12 @@ namespace WebApp.Areas.Calendar.Controllers
                 .SingleOrDefault();
 
             var availableDayViewModel = AvailableDayViewModel.FromAvailableDayDto.Invoke(availableDay);
+            var viewModel = new DayView
+            {
+                AvailableDay = availableDayViewModel
+            };
 
-            return PartialView(availableDayViewModel);
+            return PartialView(viewModel);
 
             //// Set date range variables used in where conditions
             //var dto = context.ServiceRequests

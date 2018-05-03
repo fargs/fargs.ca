@@ -46,6 +46,10 @@
 
     .calendar-header-row {
         display:flex;
+        padding-top: 2em;
+        padding-bottom: 2em;
+        background-color: black;
+        color:whitesmoke;
     }
 
     .calendar-header-col-first {
@@ -77,8 +81,8 @@
 
     .calendar-day {
         flex-grow: 1;
-        height: 70px;
-        width: 70px;
+        height: 100px;
+        width: 100px;
         padding: 5px;
     }
     .calendar-day:hover {
@@ -196,7 +200,7 @@
                 </section>
             </div>
         </div>
-        <div id="right" class="column">
+        <div id="right" class="column" style="padding-left:3em;">
             <div class="top-right"></div>
             <div class="bottom" id="day-container"></div>
         </div>
@@ -246,7 +250,7 @@
                 $('.bottom-left').find('.calendar-day-selected').removeClass('calendar-day-selected');
                 $(e).addClass('calendar-day-selected');
 
-                $.get('@Url.Content("~/Calendar/Task/GetByDay")',
+                $.get('@Url.Content("~/Calendar/Calendar/DayView")',
                     {
                         day: day
                     }).done(function (result) {

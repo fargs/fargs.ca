@@ -22,15 +22,15 @@
     </div>
     <div class="calendar-day-body">
         @if (Model.AvailableDay != null)
-        {
-            <span class="text-danger">
-                @Model.AvailableDay.AvailableSlots.Count()
-            </span>
-            <span> / </span>
-            <span class="text-success">
-                @Model.AvailableDay.AvailableSlots.Count(a => a.ServiceRequestIds.Any())
-            </span>
-        }
+    {
+        <span class="text-success">
+            @Model.AvailableDay.AvailableSlots.Count(a => a.ServiceRequestIds.Any())
+        </span>
+        <span> / </span>
+        <span class="text-danger">
+            @Model.AvailableDay.AvailableSlots.Count()
+        </span>
+}
     </div>
 </div>
 

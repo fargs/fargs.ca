@@ -12,11 +12,10 @@ namespace Orvosi.Data
     {
         public ServiceRequestValidator()
         {
-            RuleFor(sr => sr.ClaimantName).NotEmpty();
-            RuleFor(sr => sr.PhysicianId).NotNull();
-            RuleFor(sr => sr.CompanyId).NotNull();
-            RuleFor(sr => sr.ServiceId).NotNull();
-            RuleFor(sr => sr.CaseCoordinatorId).NotNull();
+            RuleFor(sr => sr.ClaimantName).NotEmpty().WithState(sr => ValidationTypeEnum.Error);
+            RuleFor(sr => sr.PhysicianId).NotNull().WithState(sr => ValidationTypeEnum.Error);
+            RuleFor(sr => sr.CompanyId).NotNull().WithState(sr => ValidationTypeEnum.Error);
+            RuleFor(sr => sr.ServiceId).NotNull().WithState(sr => ValidationTypeEnum.Error);
 
             var addonServices = new short?[] { Services.Addendum, Services.PaperReview };
 

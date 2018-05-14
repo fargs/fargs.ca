@@ -32,6 +32,7 @@
     @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/InvoiceJS.cshtml")
     @Html.Partial("~/Views/Comment/_CommentJS.cshtml")
+    @Html.Partial("~/Views/Teleconference/_TeleconferenceJS.cshtml")
 
     @if (Model != null)
     {
@@ -262,5 +263,15 @@
                 console.log('from invoice list changed');
             });
         }
+
+        function teleconferencesChanged() {
+        $.get('@Url.Content("~/Teleconference/ListByDay")',
+            {
+                day: '@Model.Day.ToOrvosiDateFormat()'
+            })
+            .done(function (result) {
+                document.getElementById('teleconference-list').innerHTML = result;
+            });
+    }
     </script>
 }

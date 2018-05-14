@@ -1687,6 +1687,7 @@
     <Content Include="Views\Shared\NotFound.cshtml" />
     <Content Include="Views\Shared\_LookupColorAndCode.cshtml" />
     <Content Include="Views\Teleconference\_TeleconferenceResultModalForm.cshtml" />
+    <Content Include="Views\Teleconference\_ListByDay.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

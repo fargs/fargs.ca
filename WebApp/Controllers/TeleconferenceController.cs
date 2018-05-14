@@ -31,6 +31,28 @@ namespace WebApp.Controllers
             this.emailService = emailService;
         }
 
+        public PartialViewResult ListByDay(DateTime day)
+        {
+            var query = db.Teleconferences
+                .Where(c => c.AppointmentDate == day);
+
+            if (this.physicianId.HasValue)
+            {
+                query = query.Where(t => t.ServiceRequest.PhysicianId == physicianId);
+            }
+            var dto = query.Select(TeleconferenceDto.FromEntityForAgenda.Expand()).ToList();
+
+            var teleconferenceViewModels = dto.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDtoForAgenda.Expand());
+
+            var viewModel = new TeleconferenceDayListViewModel()
+            {
+                Day = day,
+                Teleconferences = teleconferenceViewModels
+            };
+
+            return PartialView("_ListByDay", viewModel);
+        }
+
         [HttpGet]
         public PartialViewResult List(int serviceRequestId)
         {
@@ -197,7 +219,7 @@ namespace WebApp.Controllers
 
             return PartialView("_Notification", viewModel);
         }
-        
+
         [HttpGet]
         public async Task<ActionResult> ShowDeleteTeleconferenceForm(Guid teleconferenceId)
         {
@@ -242,7 +264,7 @@ namespace WebApp.Controllers
             var teleconferenceId = Guid.Parse(Request.Form["TeleconferenceId"]);
             var teleconference = await db.Teleconferences.FindAsync(teleconferenceId);
             var physician = await db.Physicians.FindAsync(teleconference.ServiceRequest.PhysicianId);
-            
+
             foreach (string fileName in Request.Files)
             {
                 HttpPostedFileBase file = Request.Files[fileName];

@@ -22,4 +22,10 @@ namespace WebApp.ViewModels
             Notes = dto.Comments.Where(c => c.CommentTypeId == CommentTypes.Teleconference)
         };
     }
+
+    public class TeleconferenceDayListViewModel
+    {
+        public DateTime Day { get; set; }
+        public IEnumerable<TeleconferenceViewModel> Teleconferences { get; set; }
+    }
 }

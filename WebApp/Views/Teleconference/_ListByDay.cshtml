@@ -14,7 +14,7 @@
         </div>
         <div class="panel-body">
             @{ int i = 0; }
-            @foreach (var teleconference in Model.Teleconferences)
+            @foreach (var teleconference in Model.Teleconferences.OrderBy(t => t.StartTime))
             {
                 if (i > 0)
                 {
@@ -28,7 +28,7 @@
                     <div style="margin:auto; cursor:pointer;" onclick="window.open('@Url.Content("~/ServiceRequest/Details/" + teleconference.ServiceRequestId)', '_Blank')">
                         <div style="padding-bottom:5px;">
                             <strong>
-                                @teleconference.ClaimantName (@(teleconference.ServiceRequestId))
+                                <a>@teleconference.ClaimantName (@(teleconference.ServiceRequestId)) </a>
                                 @if (teleconference.CommentCount > 0)
                                 {
                                     <i class="fa fa-sticky-note" style="color:goldenrod;"></i> @teleconference.CommentCount

@@ -16,6 +16,7 @@ using WebApp.Library;
 using WebApp.Library.Helpers;
 using WebApp.Models;
 using WebApp.ViewModels;
+using Orvosi.Data.Filters;
 namespace WebApp.Controllers
 {
     public class TeleconferenceController : BaseController
@@ -36,10 +37,8 @@ namespace WebApp.Controllers
             var query = db.Teleconferences
                 .Where(c => c.AppointmentDate == day);
 
-            if (this.physicianId.HasValue)
-            {
-                query = query.Where(t => t.ServiceRequest.PhysicianId == physicianId);
-            }
+            query = query.CanAccess(loggedInUserId, physicianId, loggedInRoleId);
+
             var dto = query.Select(TeleconferenceDto.FromEntityForAgenda.Expand()).ToList();
 
             var teleconferenceViewModels = dto.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDtoForAgenda.Expand());

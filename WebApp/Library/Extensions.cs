@@ -67,18 +67,10 @@ namespace WebApp.Library.Extensions
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             return TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
         }
-        public static DateTime ToTimeZoneIana(this DateTime time, string timeZoneIana)
+        public static DateTime ToTimeZoneIana(this DateTime time, string timeZoneIana, IEnumerable<Orvosi.Data.TimeZone> timeZones)
         {
             //TODO: This mapping info is already in the Timezone table. Needs to be loaded in and cached
-            string timeZone = TimeZones.EasternStandardTime;
-            switch (timeZoneIana)
-            {
-                case "America/Vancouver":
-                    timeZone = TimeZones.PacificStandardTime;
-                    break;
-                default:
-                    break;
-            }
+            var timeZone = timeZones.SingleOrDefault(c => c.Iana == timeZoneIana).Name;
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             return TimeZoneInfo.ConvertTime(time, cstZone);
         }

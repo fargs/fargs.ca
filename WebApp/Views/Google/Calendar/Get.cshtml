@@ -1,9 +1,12 @@
 ﻿@using Features = Orvosi.Shared.Enums.Features
 @using WebApp.Library.Extensions
+@using Orvosi.Data
 @model Google.Apis.Calendar.v3.Data.Event
 
 @{
     var features = User.Identity.GetFeatures();
+    var db = DependencyResolver.Current.GetService<OrvosiDbContext>();
+    var timeZones = db.TimeZones;
 }
 
 @if (features.Contains(Features.ServiceRequest_Google.OpenInGoogle))
@@ -17,7 +20,7 @@
         </div>
         <strong>When</strong>
         <div>
-            @Model.Start.DateTime.Value.ToTimeZoneIana(Model.Start.TimeZone)
+            @Model.Start.DateTime.Value.ToTimeZoneIana(Model.Start.TimeZone, timeZones)
             <small class="text-muted">@Model.Start.TimeZone</small>
         </div>
         <strong>Where</strong>

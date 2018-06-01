@@ -38,7 +38,7 @@
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    @if (features.Contains(Features.Accounting.SendInvoice))
+                    @if (!Model.IsPaid && features.Contains(Features.Accounting.SendInvoice))
                     {
                         <li>
                             <a onclick="onShowEditAndSendInvoiceForm(@Model.Id)" style="cursor:pointer;">
@@ -54,7 +54,7 @@
                             </a>
                         </li>
                     }
-                    @if (features.Contains(Features.Accounting.ManageReceipts))
+                    @if (Model.IsSent && !Model.IsPaid && features.Contains(Features.Accounting.ManageReceipts))
                     {
                         <li>
                             <a onclick="onPaid(@Model.Id)" style="cursor:pointer;">

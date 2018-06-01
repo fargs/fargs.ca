@@ -84,6 +84,7 @@
     <Folder Include="Migrate\Stored Procedures\" />
     <Folder Include="Manual\" />
     <Folder Include="Manual\Stored Procedures\" />
+    <Folder Include="_Operations" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetUsers.sql" />
@@ -311,6 +312,7 @@
     <Build Include="Analysis\Views\Assessment.sql" />
     <Build Include="Analysis\Views\AddOn.sql" />
     <Build Include="dbo\Tables\MedicolegalType.sql" />
+    <Build Include="_Operations\ReferralSourceMedicolegalTypeMergeQueries.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

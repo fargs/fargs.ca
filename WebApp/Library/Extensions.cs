@@ -69,6 +69,8 @@ namespace WebApp.Library.Extensions
         }
         public static DateTime ToTimeZoneIana(this DateTime time, string timeZoneIana, IEnumerable<Orvosi.Data.TimeZone> timeZones)
         {
+            if (string.IsNullOrEmpty(timeZoneIana)) throw new Exception($"Event on {time.ToOrvosiDateTimeFormat()} does not have a timezone set.");
+
             //TODO: This mapping info is already in the Timezone table. Needs to be loaded in and cached
             var timeZone = timeZones.SingleOrDefault(c => c.Iana == timeZoneIana).Name;
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);

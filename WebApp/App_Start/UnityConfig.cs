@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Security.Claims;
 using WebApp.Library;
 using WebApp.Areas.Reports.Data;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApp
 {
@@ -42,6 +43,9 @@ namespace WebApp
             container.RegisterType<AccountingService>(new HierarchicalLifetimeManager(), new InjectionConstructor(typeof(OrvosiDbContext), typeof(IPrincipal)));
 
             container.RegisterType<ViewDataService>(new HierarchicalLifetimeManager(), new InjectionConstructor(typeof(OrvosiDbContext), typeof(IPrincipal)));
+
+            container.RegisterType<ApplicationUserManager>(
+                new InjectionFactory(c => HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>()));
 
             container.RegisterType<IAuthenticationManager>(
                 new InjectionFactory(c => HttpContext.Current.GetOwinContext().Authentication));

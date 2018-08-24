@@ -187,10 +187,34 @@ namespace WebApp.Library
         {
             switch (provinceName)
             {
+                case "Alberta":
+                    return 0.05M;
                 case "British Columbia":
                     return 0.05M;
-                default:
+                case "Manitoba":
+                    return 0.05M;
+                case "Newfoundland and Labrador":
+                    return 0.15M;
+                case "New Brunswick":
+                    return 0.15M;
+                case "Northwest Territories":
+                    return 0.05M;
+                case "Nova Scotia":
+                    return 0.15M;
+                case "Nunavut":
+                    return 0.05M;
+                case "Ontario":
                     return 0.13M;
+                case "Prince Edward Island":
+                    return 0.15M;
+                case "Quebec":
+                    return 0.05M;
+                case "Saskatchewan":
+                    return 0.05M;
+                case "Yukon":
+                    return 0.05M;
+                default:
+                    throw new Exception("Provincial tax rate is missing.");
             }
         }
     }

@@ -27,7 +27,7 @@ namespace Orvosi.Data
             ToTable(schema + ".Task");
             HasKey(x => x.Id);
 
-            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
             Property(x => x.ObjectGuid).HasColumnName(@"ObjectGuid").IsRequired().HasColumnType("uniqueidentifier");
             Property(x => x.ServiceCategoryId).HasColumnName(@"ServiceCategoryId").IsOptional().HasColumnType("smallint");
             Property(x => x.ServiceId).HasColumnName(@"ServiceId").IsOptional().HasColumnType("smallint");

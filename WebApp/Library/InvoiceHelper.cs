@@ -214,8 +214,7 @@ namespace WebApp.Library
                 case "Yukon":
                     return 0.05M;
                 default:
-                    return 0.13M;
-                    //throw new Exception("Provincial tax rate is missing.");
+                    throw new Exception("Provincial tax rate is missing.");
             }
         }
     }

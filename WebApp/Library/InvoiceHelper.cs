@@ -15,10 +15,12 @@ namespace WebApp.Library
     public static class InvoiceHelper
     {
 
-        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string terms, string userName)
+        public static void BuildInvoice(this Invoice invoice, BillableEntity serviceProvider, BillableEntity customer, long invoiceNumber, DateTime invoiceDate, string terms, string userName, string taxProvinceName)
         {
-            var TaxRateHst = GetTaxRate(customer.ProvinceName);
+            var TaxRateHst = GetTaxRate(taxProvinceName);
+
             var paymentTerms = string.IsNullOrEmpty(terms) ? "30" : terms;
+
             invoice.InvoiceNumber = invoiceNumber.ToString();
             invoice.InvoiceDate = invoiceDate;
             invoice.Terms = paymentTerms;

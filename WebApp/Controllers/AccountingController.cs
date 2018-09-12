@@ -436,8 +436,10 @@ namespace WebApp.Controllers
                 invoiceDate = serviceRequest.AppointmentDate.Value;
             }
 
+            // scenario: Work is completed in a province that is different than the company's billing province.
+            var taxProvinceName = serviceRequest.Address?.ProvinceName ?? customer.ProvinceName;
             var invoice = new Orvosi.Data.Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name, taxProvinceName);
 
             var invoiceDetail = new Orvosi.Data.InvoiceDetail();
             invoiceDetail.BuildInvoiceDetailFromServiceRequest(serviceRequest, loggedInUserId.ToString(), serviceCatalogue.Price.GetValueOrDefault(0), rates.NoShowRate.GetValueOrDefault(1), rates.LateCancellationRate.GetValueOrDefault(1));
@@ -495,8 +497,10 @@ namespace WebApp.Controllers
 
             var invoiceDate = form.InvoiceDate;
 
+            // scenario: No service request is associated here so tax rate will use the customer billing address province
+            var taxProvinceName = customer.ProvinceName;
             var invoice = new Orvosi.Data.Invoice();
-            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name);
+            invoice.BuildInvoice(serviceProvider, customer, invoiceNumber, invoiceDate, string.Empty, identity.Name, taxProvinceName);
 
             db.Invoices.Add(invoice);
             db.SaveChanges();

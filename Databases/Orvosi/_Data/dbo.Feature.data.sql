@@ -74,7 +74,7 @@ INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedB
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (308, N'Service Request - Delete Task', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-12 11:13:23')
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (310, N'Service Request - View Task List', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-12 11:13:41')
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (320, N'Work', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:24:30')
-INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (322, N'Work - Agenda', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:24:55')
+INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (322, N'Work - Day Sheet', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:24:55')
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (324, N'Work - Due Dates', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:25:10')
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (326, N'Work - Schedule', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:25:30')
 INSERT INTO [dbo].[Feature] ([Id], [Name], [Description], [IsActive], [ModifiedBy], [ModifiedDate]) VALUES (328, N'Work - Additionals', NULL, 1, N'0538a347-fddc-4f03-97b1-a1e816e888ed', N'2017-01-11 14:25:46')

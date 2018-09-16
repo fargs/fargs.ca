@@ -8,7 +8,7 @@ namespace WebApp.ViewDataModels
 {
     public enum ViewTarget
     {
-        Agenda,
+        DaySheet,
         DueDates,
         Schedule,
         Additionals,

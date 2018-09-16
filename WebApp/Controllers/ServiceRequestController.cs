@@ -110,7 +110,7 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
-        public async Task<ViewResult> Dashboard()
+        public async Task<ViewResult> Work()
         {
             var list = await db.ServiceRequests
                 .Where(sr => sr.CaseCoordinatorId == loggedInUserId || sr.IntakeAssistantId == loggedInUserId || sr.DocumentReviewerId == loggedInUserId || sr.PhysicianId == loggedInUserId)
@@ -193,35 +193,6 @@ namespace WebApp.Controllers
             return View(viewModel);
         }
 
-        [ChildActionOnlyOrAjax]
-        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public PartialViewResult Agenda(DateTime selectedDate, ViewTarget viewOptions = ViewTarget.Agenda)
-        {
-            // Set date range variables used in where conditions
-            var dto = db.ServiceRequests
-                .AsExpandable()
-                .AreScheduledThisDay(selectedDate)
-                .AreNotCancellations()
-                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
-                .Select(m.ServiceRequestDto.FromServiceRequestEntityForCaseV2(loggedInUserId))
-                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
-                .ToList();
-
-            var caseViewModels = dto.AsQueryable()
-                .Select(CaseViewModel.FromServiceRequestDto.Expand());
-
-            var dayViewModel = caseViewModels
-                .GroupBy(c => c.AppointmentDate.Value)
-                .AsQueryable()
-                .Select(DayViewModel.FromServiceRequestDtoGroupingDtoForCases.Expand())
-                .SingleOrDefault();
-
-            ViewData.ViewTarget_Set(ViewTarget.Agenda);
-            ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
-
-            return PartialView(dayViewModel);
-        }
-
         public PartialViewResult GetInvoices(int serviceRequestId)
         {
             var invoiceIds = db.InvoiceDetails.Where(id => id.ServiceRequestId == serviceRequestId).Select(id => id.InvoiceId);
@@ -235,7 +206,7 @@ namespace WebApp.Controllers
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         [HttpPost]
-        public PartialViewResult DueDate(DueDateArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.Agenda)
+        public PartialViewResult DueDate(DueDateArgs args)//DateTime selectedDate, short[] selectedTaskTypes = null, CaseViewOptions viewOptions = CaseViewOptions.DaySheet)
         {
             var dto = db.ServiceRequestTasks
                 .AreDueBetween(args.TaskListArgs.DateRange.StartDate, args.TaskListArgs.DateRange.EndDate.Value)
@@ -373,7 +344,7 @@ namespace WebApp.Controllers
                 .HaveNoAppointment()
                 .Count();
 
-            return PartialView("~/Views/Dashboard/_AdditionalsHeading.cshtml", count);
+            return PartialView("~/Views/Work/_AdditionalsHeading.cshtml", count);
         }
 
         [ChildActionOnlyOrAjax]
@@ -439,7 +410,7 @@ namespace WebApp.Controllers
 
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
-        public async Task<PartialViewResult> AgendaActionMenu(int serviceRequestId)
+        public async Task<PartialViewResult> DaySheetActionMenu(int serviceRequestId)
         {
             var dto = await db.ServiceRequests
                 .WithId(serviceRequestId)

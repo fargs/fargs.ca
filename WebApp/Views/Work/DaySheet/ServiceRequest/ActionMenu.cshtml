@@ -1,6 +1,6 @@
 ﻿@using WebApp.Library.Extensions
 @using Features = Orvosi.Shared.Enums.Features
-@model CaseViewModel
+@model WebApp.Views.Work.DaySheet.ServiceRequest.ActionMenuViewModel
 
 @{
     var identity = User.Identity.GetClaimsIdentity();
@@ -12,7 +12,7 @@
 {
     if (Model.CanBeNoShow)
     {
-        if (Model.CancellationViewModel.IsNoShow)
+        if (Model.IsNoShow)
         {
             <button type="button" onclick="noShow(@Model.ServiceRequestId , false)" class="btn btn-default btn-danger" style="border:0;"><i class="fa fa-check-square-o"></i> No Show</button>
         }

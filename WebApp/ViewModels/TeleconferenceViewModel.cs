@@ -35,7 +35,7 @@ namespace WebApp.ViewModels
             ResultTypeId = dto.ResultTypeId,
             ResultType = LookupViewModel<byte>.FromLookupDto.Invoke(dto.ResultType)
         };
-        public static Expression<Func<TeleconferenceDto, TeleconferenceViewModel>> FromTeleconferenceDtoForAgenda = dto => dto == null ? null : new TeleconferenceViewModel
+        public static Expression<Func<TeleconferenceDto, TeleconferenceViewModel>> FromTeleconferenceDtoForDaySheet = dto => dto == null ? null : new TeleconferenceViewModel
         {
             Id = dto.Id,
             ServiceRequestId = dto.ServiceRequestId,

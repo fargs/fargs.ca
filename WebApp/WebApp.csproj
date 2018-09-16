@@ -505,10 +505,11 @@
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CancellationController.cs" />
     <Compile Include="Controllers\CollaboratorController.cs" />
+    <Compile Include="Controllers\DaySheetController.cs" />
     <Compile Include="Controllers\TeleconferenceController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\PhysicianCompanyController.cs" />
-    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\WorkController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Google\CalendarController.cs" />
@@ -554,6 +555,7 @@
     <Compile Include="Library\DataHelper.cs" />
     <Compile Include="Library\EnumExtensions.cs" />
     <Compile Include="Library\Enums.cs" />
+    <Compile Include="Library\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Library\Filters\AuthorizeRoleAttribute.cs" />
     <Compile Include="Library\Filters\ChildActionOnlyOrAjaxAttribute.cs" />
     <Compile Include="Library\Google\GoogleServices.cs" />
@@ -653,7 +655,7 @@
     <Compile Include="ViewModels\CaseNotificationViewModel.cs" />
     <Compile Include="ViewModels\CaseViewModel.cs" />
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
-    <Compile Include="ViewModels\CalendarNavigationViewModel.cs" />
+    <Compile Include="Views\Calendar\CalendarNavigationViewModel.cs" />
     <Compile Include="Components\Grid\GridColumn.cs" />
     <Compile Include="ViewModels\CommentNotificationViewModel.cs" />
     <Compile Include="ViewModels\CommentViewModel.cs" />
@@ -684,7 +686,7 @@
     <Compile Include="ViewModels\ServiceRequestViewModels.cs" />
     <Compile Include="ViewModels\SpecialRequestFormViewModel.cs" />
     <Compile Include="ViewModels\LoginPartialViewModel.cs" />
-    <Compile Include="ViewModels\DashboardViewModels.cs" />
+    <Compile Include="ViewModels\WorkViewModels.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
@@ -706,6 +708,19 @@
     <Compile Include="ViewModels\UIElements\DropDownListViewModel.cs" />
     <Compile Include="ViewModels\UserContextViewModel.cs" />
     <Compile Include="ViewModels\Shared\EntityValidationErrorsViewModel.cs" />
+    <Compile Include="Views\Comment\CommentViewModel.cs" />
+    <Compile Include="Views\ServiceRequestMessage\DiscussionViewModel.cs" />
+    <Compile Include="Views\ServiceRequestMessage\MessageFormModel.cs" />
+    <Compile Include="Views\Shared\ContactViewModel.cs" />
+    <Compile Include="Views\Shared\LookupViewModel.cs" />
+    <Compile Include="Views\ServiceRequestMessage\MessageViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\ServiceRequest\ActionMenuViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\DaySheetViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\IndexViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\ServiceRequest\EditFormModel.cs" />
+    <Compile Include="Views\Work\DaySheet\ServiceRequest\SummaryViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\ServiceRequest\CancellationStatusViewModel.cs" />
+    <Compile Include="Views\Work\DaySheet\ServiceRequest\ServiceRequestViewModel.cs" />
     <Compile Include="Views\ServiceRequestTask\Components\TaskActionMenu.cs" />
     <Compile Include="Views\Teleconference\_NotificationViewModel.cs" />
   </ItemGroup>
@@ -1441,7 +1456,7 @@
     <Content Include="Views\ServiceRequest\_CreateAddOnProcessTemplateDropDown.cshtml" />
     <Content Include="Views\Accounting\_EditAndSendInvoice.cshtml" />
     <Content Include="Views\Accounting\_SubmitInvoiceTaskStatus.cshtml" />
-    <Content Include="Views\Dashboard\_TaskListJS.cshtml" />
+    <Content Include="Views\Work\_TaskListJS.cshtml" />
     <Content Include="Views\ServiceRequestTask\TaskListJS.cshtml" />
     <Content Include="Views\Cancellation\CancellationJS.cshtml" />
     <Content Include="Views\Cancellation\CancellationModalForm.cshtml" />
@@ -1452,8 +1467,8 @@
     <Content Include="Views\ServiceRequest\PhysicianLabel.cshtml" />
     <Content Include="Views\Box\CaseFolder.cshtml" />
     <Content Include="Views\ServiceRequest\CaseJS.cshtml" />
-    <Content Include="Views\Shared\CalendarNavigation.cshtml" />
-    <Content Include="Views\Dashboard\Agenda.cshtml" />
+    <Content Include="Views\Calendar\CalendarNavigation.cshtml" />
+    <Content Include="Views\Work\DaySheet\Index.cshtml" />
     <Content Include="Views\ServiceRequest\DueDate.cshtml" />
     <Content Include="Views\ServiceRequest\CaseLink.cshtml" />
     <Content Include="Views\ServiceRequest\ScheduleDateRange.cshtml" />
@@ -1466,7 +1481,7 @@
     <Content Include="Views\MVCGrid\_TaskGrid.cshtml" />
     <Content Include="Views\ServiceRequestTask\Components\TaskActionMenu.cshtml" />
     <Content Include="Views\Box\BoxJS.cshtml" />
-    <Content Include="Views\Dashboard\_WeekSummary.cshtml" />
+    <Content Include="Views\Work\_WeekSummary.cshtml" />
     <Content Include="Views\ServiceCatalogue\ServiceCatalogueJS.cshtml" />
     <Content Include="Views\ServiceCatalogue\_Exams.cshtml" />
     <Content Include="Views\ServiceCatalogue\_AddOns.cshtml" />
@@ -1486,7 +1501,7 @@
     <Content Include="Views\ServiceRequest\InvoiceMenu.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceJS.cshtml" />
     <Content Include="Views\ServiceRequest\InvoiceListMenu.cshtml" />
-    <Content Include="Views\ServiceRequest\AgendaActionMenu.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\ActionMenu.cshtml" />
     <Content Include="Views\ReleaseHistory\Oct2017_1.cshtml" />
     <Content Include="Views\Cancellation\LateCancellationPolicyViolation.cshtml" />
     <Content Include="Views\ReleaseHistory\Index.cshtml" />
@@ -1516,7 +1531,7 @@
     <Content Include="Views\Comment\_List.cshtml" />
     <Content Include="Views\ServiceRequest\_Details.cshtml" />
     <Content Include="Views\ServiceRequest\_DetailsJS.cshtml" />
-    <Content Include="Views\Dashboard\_AdditionalsHeading.cshtml" />
+    <Content Include="Views\Work\_AdditionalsHeading.cshtml" />
     <Content Include="Views\ServiceRequest\Claimant\_ClaimantJS.cshtml" />
     <Content Include="Views\ServiceRequest\Claimant\_ClaimantModalForm.cshtml" />
     <Content Include="Views\ServiceRequest\Company\_CompanyJS.cshtml" />
@@ -1533,7 +1548,12 @@
     <Content Include="Views\Teleconference\_List.cshtml" />
     <Content Include="Views\Teleconference\_Notification.cshtml" />
     <Content Include="Views\ServiceRequest\_CaseNotification.cshtml" />
-    <Content Include="Views\ServiceRequest\AgendaJS.cshtml" />
+    <Content Include="Views\Work\DaySheet\DaySheetJS.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\ServiceRequest.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\ServiceRequestJS.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\CancellationStatus.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\ServiceRequestStatus.cshtml" />
+    <Content Include="Views\Comment\_Comment.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1615,14 +1635,14 @@
     <Content Include="Views\Shared\_TaskButton.cshtml" />
     <Content Include="Views\Box\BoxManager.cshtml" />
     <Content Include="Views\Shared\_TaskActionMenu.cshtml" />
-    <Content Include="Views\Dashboard\_Task.cshtml" />
-    <Content Include="Views\Dashboard\_TaskButton.cshtml" />
-    <Content Include="Views\Dashboard\_TaskStatusLabel.cshtml" />
-    <Content Include="Views\Dashboard\_Person.cshtml" />
-    <Content Include="Views\Dashboard\_TaskList.cshtml" />
-    <Content Include="Views\Dashboard\_ServiceStatus.cshtml" />
-    <Content Include="Views\Dashboard\_DiscussionModal.cshtml" />
-    <Content Include="Views\Dashboard\_TaskHierarchy.cshtml" />
+    <Content Include="Views\Work\_Task.cshtml" />
+    <Content Include="Views\Work\_TaskButton.cshtml" />
+    <Content Include="Views\Work\_TaskStatusLabel.cshtml" />
+    <Content Include="Views\Work\_Person.cshtml" />
+    <Content Include="Views\Work\_TaskList.cshtml" />
+    <Content Include="Views\Work\_ServiceStatus.cshtml" />
+    <Content Include="Views\Work\_DiscussionModal.cshtml" />
+    <Content Include="Views\Work\_TaskHierarchy.cshtml" />
     <Content Include="Views\Diagnostics\DashboardPerformanceTest.cshtml" />
     <Content Include="Views\ServiceRequestTemplateTask\Create.cshtml" />
     <Content Include="Views\ServiceRequestTemplateTask\Delete.cshtml" />
@@ -1634,25 +1654,25 @@
     <Content Include="Views\ServiceRequestTemplate\Details.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Edit.cshtml" />
     <Content Include="Views\ServiceRequestTemplate\Index.cshtml" />
-    <Content Include="Views\ServiceRequest\Agenda.cshtml" />
-    <Content Include="Views\Dashboard\_Layout.cshtml" />
-    <Content Include="Views\Dashboard\DueDates.cshtml" />
-    <Content Include="Views\Dashboard\Schedule.cshtml" />
-    <Content Include="Views\Dashboard\Additionals.cshtml" />
-    <Content Include="Views\Dashboard\_TaskStatusLabel2.cshtml" />
+    <Content Include="Views\Work\DaySheet\DaySheet.cshtml" />
+    <Content Include="Views\Work\_Layout.cshtml" />
+    <Content Include="Views\Work\DueDates.cshtml" />
+    <Content Include="Views\Work\Schedule.cshtml" />
+    <Content Include="Views\Work\Additionals.cshtml" />
+    <Content Include="Views\Work\_TaskStatusLabel2.cshtml" />
     <Content Include="Views\Accounting\Invoices.cshtml" />
     <Content Include="Views\Accounting\_Layout.cshtml" />
     <Content Include="Views\Accounting\_ServiceRequest.cshtml" />
     <Content Include="Views\Box\BoxUsers.cshtml" />
     <Content Include="Views\ServiceRequest\Note.cshtml" />
     <Content Include="Views\ServiceRequest\_Note.cshtml" />
-    <Content Include="Views\Dashboard\_ServiceRequestTasks_Today.cshtml" />
+    <Content Include="Views\Work\_ServiceRequestTasks_Today.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_Discussion.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessageJS.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_ServiceRequestMessage.cshtml" />
     <Content Include="Views\ServiceRequestMessage\_PostMessage.cshtml" />
     <Content Include="Views\Shared\NotificationTemplates\_Layout.cshtml" />
-    <Content Include="Views\Dashboard\_TaskHeading.cshtml" />
+    <Content Include="Views\Work\_TaskHeading.cshtml" />
     <Content Include="Views\Accounting\_Invoice.cshtml" />
     <Content Include="Views\Accounting\CreateInvoice.cshtml" />
     <Content Include="Views\Note\_Note.cshtml" />
@@ -1688,6 +1708,8 @@
     <Content Include="Views\Shared\_LookupColorAndCode.cshtml" />
     <Content Include="Views\Teleconference\_TeleconferenceResultModalForm.cshtml" />
     <Content Include="Views\Teleconference\_ListByDay.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\Summary.cshtml" />
+    <Content Include="Views\Work\DaySheet\ServiceRequest\Edit.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

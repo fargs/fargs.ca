@@ -1,0 +1,29 @@
+﻿@using DanTup.Web
+@model WebApp.Views.Comment.CommentViewModel
+
+    <div class="panel panel-default panel-shadow">
+        <div class="panel-heading" style="display:flex;">
+            <span class="panel-title" style="margin-right:auto; width:auto;">
+                <span class="text-muted">@Model.PostedDate.ToOrvosiDateTimeFormat()</span>
+            </span>
+            <span style="margin-left:auto;">
+                @Html.Partial("_Initials2", Model.PostedBy)
+            </span>
+        </div>
+        <div class="panel-body">
+                @Html.Markdown(Model.Message)
+        </div>
+        <div class="panel-footer" style="display:flex;">
+            <span style="margin-right:auto;">
+                <span class="label label-default">@Model.CommentType.Name</span>
+                @foreach (var access in Model.AccessList)
+                {
+                    @Html.Partial("_Initials2", access)
+                }
+            </span>
+            <span style="margin-left:auto;">
+                <button class="btn btn-sm btn-default" onclick="showCommentForm(@Model.ServiceRequestId, '@(Model.Id)')">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="showDeleteCommentForm('@Model.Id')">Delete</button>
+            </span>
+        </div>
+    </div>

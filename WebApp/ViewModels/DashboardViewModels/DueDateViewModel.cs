@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
     public class DueDateViewModel
     {

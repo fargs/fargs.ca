@@ -5,7 +5,7 @@
 
 @model TaskListArgs
 @{
-    Layout = "~/Views/Dashboard/_Layout.cshtml";
+    Layout = "~/Views/Work/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
@@ -67,7 +67,7 @@
 @Html.MVCGrid("TaskGrid")
 
 
-@*<form action="~/Dashboard/DueDates" method="get">
+@*<form action="~/Work/DueDates" method="get">
             <input type="hidden" name="serviceProviderId" value="@Model.SelectedUserId" />
             <ul class="list-unstyled list-inline">
                 @foreach (var item in Model.TaskFilterViewModel.Tasks)
@@ -224,7 +224,7 @@
         function onTaskChecked(checkbox, taskId, serviceRequestId) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Content("~/Dashboard/UpdateTaskStatus")',
+                url: '@Url.Content("~/Work/UpdateTaskStatus")',
                 data: JSON.stringify({
                     taskId: taskId,
                     isChecked: checkbox.checked

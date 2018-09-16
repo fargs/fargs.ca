@@ -17,18 +17,18 @@ using WebApp.ViewDataModels;
 using WebApp.ViewModels;
 using WebApp.ViewModels.CalendarViewModels;
 using WebApp.ViewModels.ServiceRequestViewModels;
-using dvm = WebApp.ViewModels.DashboardViewModels;
+using dvm = WebApp.ViewModels.WorkViewModels;
 using Features = Orvosi.Shared.Enums.Features;
 using m = Orvosi.Shared.Model;
 
 namespace WebApp.Controllers
 {
     [Authorize]
-    public class DashboardController : BaseController
+    public class WorkController : BaseController
     {
         private OrvosiDbContext db;
 
-        public DashboardController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        public WorkController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
         {
             this.db = db;
         }
@@ -37,37 +37,37 @@ namespace WebApp.Controllers
             return RedirectToAction("DueDates");
         }
 
-        [AuthorizeRole(Feature = Features.Work.Agenda)]
-        public ViewResult Agenda(DateTime? selectedDate)
-        {
-            var date = selectedDate.GetValueOrDefault(SystemTime.Now()).Date;
-            // Set date range variables used in where conditions
-            var dto = db.ServiceRequests
-                .AsExpandable()
-                .AreScheduledThisDay(date)
-                .AreNotCancellations()
-                .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
-                .Select(ServiceRequestDto.FromServiceRequestEntityV2(loggedInUserId))
-                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
-                .ToList();
+        //[AuthorizeRole(Feature = Features.Work.DaySheet)]
+        //public ViewResult DaySheet(DateTime? selectedDate)
+        //{
+        //    var date = selectedDate.GetValueOrDefault(SystemTime.Now()).Date;
+        //    // Set date range variables used in where conditions
+        //    var dto = db.ServiceRequests
+        //        .AsExpandable()
+        //        .AreScheduledThisDay(date)
+        //        .AreNotCancellations()
+        //        .CanAccess(loggedInUserId, physicianId, loggedInRoleId)
+        //        .Select(ServiceRequestDto.FromServiceRequestEntityV2(loggedInUserId))
+        //        .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
+        //        .ToList();
             
-            var caseViewModels = dto.AsQueryable()
-                .Select(CaseViewModel.FromServiceRequestDto.Expand());
+        //    var caseViewModels = dto.AsQueryable()
+        //        .Select(CaseViewModel.FromServiceRequestDto.Expand());
 
-            var dayViewModel = new DayViewModel()
-            {
-                Day = date,
-                DayName = date.ToOrvosiLongDateFormat(),
-                Companies = caseViewModels.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct(),
-                Addresses = caseViewModels.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
-                Cases = caseViewModels
-            };
+        //    var dayViewModel = new DayViewModel()
+        //    {
+        //        Day = date,
+        //        DayName = date.ToOrvosiLongDateFormat(),
+        //        Companies = caseViewModels.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct(),
+        //        Addresses = caseViewModels.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray(),
+        //        Cases = caseViewModels
+        //    };
 
-            ViewData.ViewTarget_Set(ViewTarget.Agenda);
-            ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
+        //    ViewData.ViewTarget_Set(ViewTarget.DaySheet);
+        //    ViewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
 
-            return View(dayViewModel);
-        }
+        //    return View(dayViewModel);
+        //}
 
         [AuthorizeRole(Feature = Features.Work.DueDates)]
         public ViewResult DueDates(TaskListArgs args)
@@ -93,7 +93,7 @@ namespace WebApp.Controllers
             ViewData.TaskListArgs_Set(args);
 
             // otherwise create a view model and load the due dates page.
-            var vm = new ViewModels.DashboardViewModels.ScheduleViewModel();
+            var vm = new ViewModels.WorkViewModels.ScheduleViewModel();
             vm.WeekFolders = viewModel;
 
             if (loggedInRoleId == AspNetRoles.SuperAdmin || loggedInRoleId == AspNetRoles.Physician || loggedInRoleId == AspNetRoles.CaseCoordinator)
@@ -192,8 +192,8 @@ namespace WebApp.Controllers
             return PartialView("_ServiceStatus", request);
         }
 
-        [AuthorizeRole(Feature = Features.Work.Agenda)]
-        public PartialViewResult RefreshAgendaSummaryCount(Guid? serviceProviderId, DateTime? day)
+        [AuthorizeRole(Feature = Features.Work.DaySheet)]
+        public PartialViewResult RefreshDaySheetSummaryCount(Guid? serviceProviderId, DateTime? day)
         {
             var dayOrDefault = GetDayOrDefault(day);
             var serviceProviderIdOrDefault = User.Identity.GetUserContext().Id;

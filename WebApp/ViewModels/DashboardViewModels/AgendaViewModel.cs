@@ -4,11 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
-    public class AgendaViewModel
+    public class DaySheetViewModel
     {
-        public AgendaViewModel()
+        public DaySheetViewModel()
         {
         }
         public Orvosi.Shared.Model.DayFolder DayFolder { get; set; }

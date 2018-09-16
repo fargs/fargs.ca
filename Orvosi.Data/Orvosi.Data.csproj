@@ -210,6 +210,12 @@
     <Compile Include="Generated\DocumentTypeConfiguration.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\FakeDbSet.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Generated\FakeOrvosiDbContext.cs">
+      <DependentUpon>Orvosi.tt</DependentUpon>
+    </Compile>
     <Compile Include="Generated\Feature.cs">
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>

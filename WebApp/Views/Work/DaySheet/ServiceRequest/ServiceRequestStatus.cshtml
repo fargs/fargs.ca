@@ -1,0 +1,6 @@
+﻿@model WebApp.Views.Shared.LookupViewModel<short>
+
+@if (Model.Id != ServiceRequestStatuses.Active)
+{
+    <span class="label" style="color:white;background-color:@Model.ColorCode"><strong>@Model.Name</strong></span>
+}

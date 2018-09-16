@@ -1,8 +1,8 @@
 ﻿@using WebApp.Library.Extensions
 @using WebApp.ViewModels.CalendarViewModels
-@model DayViewModel
+@model WebApp.Views.Work.DaySheet.IndexViewModel
 @{
-    Layout = "~/Views/Dashboard/_Layout.cshtml";
+    Layout = "~/Views/Work/_Layout.cshtml";
     var roleId = User.Identity.GetRoleId();
     var userId = User.Identity.GetGuidUserId();
     var physicianId = User.Identity.GetUserContext().Id;
@@ -11,9 +11,9 @@
     ViewBag.Title = "DaySheet";
 }
 
-@Html.Action("CalendarNavigation")
+@Html.Partial("~/Views/Calendar/CalendarNavigation.cshtml", Model.CalendarNavigation)
 
-@Html.Partial("~/Views/ServiceRequest/Agenda.cshtml", Model)
+@Html.Partial("~/Views/Work/DaySheet/DaySheet.cshtml", Model.DaySheet)
 
 @Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
 
@@ -25,7 +25,7 @@
 
     <script src="@Url.Content("~/signalr/hubs")"></script>
 
-    @Html.Partial("~/Views/ServiceRequest/AgendaJS.cshtml")
+    @Html.Partial("~/Views/Work/DaySheet/DaySheetJS.cshtml")
     @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
     @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
     @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
@@ -36,7 +36,7 @@
 
     @if (Model != null)
     {
-        var ids = Model.Cases.Any() ? Model.Cases.Select(c => c.ServiceRequestId).ToArray() : new int[0];
+        var ids = Model.DaySheet.ServiceRequests.Any() ? Model.DaySheet.ServiceRequests.Select(c => c.ServiceRequestId).ToArray() : new int[0];
         <span>
             @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = ids })
         </span>
@@ -55,7 +55,7 @@
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
+                url: '@Url.Content("~/Work/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
                     $('#service-status-' + serviceRequestId).replaceWith(result);
@@ -126,7 +126,7 @@
             $.get(url,
                 {
                     ServiceRequestId: serviceRequestId,
-                    ViewTarget: '@ViewTarget.Agenda',
+                    ViewTarget: '@ViewTarget.DaySheet',
                     ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
                 })
                 .done(function (result) {
@@ -140,7 +140,7 @@
             $.get(url,
                 {
                     ServiceRequestId: serviceRequestId,
-                    ViewTarget: '@ViewTarget.Agenda',
+                    ViewTarget: '@ViewTarget.DaySheet',
                     ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
                 })
                 .done(function (result) {
@@ -154,7 +154,7 @@
 
             $.get(url, {
                 ServiceRequestId: serviceRequestId,
-                ViewTarget: '@ViewTarget.Agenda',
+                ViewTarget: '@ViewTarget.DaySheet',
                 ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
             })
             .done(function (result) {
@@ -166,7 +166,7 @@
                 //loader.hide();
             });
 
-            $.get('@Url.Content("~/ServiceRequest/AgendaActionMenu/")', {
+            $.get('@Url.Content("~/ServiceRequest/DaySheetActionMenu/")', {
                 serviceRequestId: serviceRequestId
             })
             .done(function (result) {
@@ -178,7 +178,7 @@
             $.get('@Url.Content("~/ServiceRequest/Case")',
                 {
                     serviceRequestId: serviceRequestId,
-                    viewOptions: '@ViewTarget.Agenda',
+                    viewOptions: '@ViewTarget.DaySheet',
                 })
                 .done(function (result) {
                     document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
@@ -189,7 +189,7 @@
             $.get('@Url.Content("~/ServiceRequest/Case")',
                 {
                     serviceRequestId: serviceRequestId,
-                    viewOptions: '@ViewTarget.Agenda',
+                    viewOptions: '@ViewTarget.DaySheet',
                 })
                 .done(function (result) {
                     document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
@@ -267,7 +267,7 @@
         function teleconferencesChanged() {
         $.get('@Url.Content("~/Teleconference/ListByDay")',
             {
-                day: '@Model.Day.ToOrvosiDateFormat()'
+                day: '@Model.DaySheet.Day.ToOrvosiDateFormat()'
             })
             .done(function (result) {
                 document.getElementById('teleconference-list').innerHTML = result;

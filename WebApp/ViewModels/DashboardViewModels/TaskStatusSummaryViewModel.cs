@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
     public class TaskStatusSummaryViewModel
     {

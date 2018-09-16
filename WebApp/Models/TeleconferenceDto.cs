@@ -37,7 +37,7 @@ namespace WebApp.Models
             ResultTypeId = e.TeleconferenceResultId,
             ResultType = LookupDto<byte>.FromTeleconferenceResultEntity.Invoke(e.TeleconferenceResult)
         };
-        public static Expression<Func<Teleconference, TeleconferenceDto>> FromEntityForAgenda = e => e == null ? null : new TeleconferenceDto
+        public static Expression<Func<Teleconference, TeleconferenceDto>> FromEntityForDaySheet = e => e == null ? null : new TeleconferenceDto
         {
             Id = e.Id,
             ServiceRequestId = e.ServiceRequestId,

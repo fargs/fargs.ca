@@ -17,14 +17,7 @@ namespace WebApp.ViewModels.ServiceRequestViewModels
         public FilterArgs FilterArgs { get; set; }
         public List<ServiceRequestTask> ServiceRequestTasks { get; internal set; }
     }
-
-    public class DashboardViewModel
-    {
-        public AspNetUser User { get; set; }
-        public List<Orvosi.Data.ServiceRequest> Today { get; set; }
-        public List<Orvosi.Data.ServiceRequest> Upcoming { get; set; }
-    }
-
+    
     public class CreateViewModel
     {
         public Orvosi.Data.ServiceRequest ServiceRequest { get; set; }

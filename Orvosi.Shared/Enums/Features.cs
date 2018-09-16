@@ -143,7 +143,7 @@ namespace Orvosi.Shared.Enums.Features
     public class Work
     {
         public const short WorkSection = 320;
-        public const short Agenda = 322;
+        public const short DaySheet = 322;
         public const short DueDates = 324;
         public const short Schedule = 326;
         public const short Additionals = 328;

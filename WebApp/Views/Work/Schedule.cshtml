@@ -1,9 +1,9 @@
 ﻿@using WebApp.Library.Extensions
 @using Orvosi.Shared.Enums
 @using FluentDateTime
-@model WebApp.ViewModels.DashboardViewModels.ScheduleViewModel
+@model WebApp.ViewModels.WorkViewModels.ScheduleViewModel
 @{
-    Layout = "~/Views/Dashboard/_Layout.cshtml";
+    Layout = "~/Views/Work/_Layout.cshtml";
 
     var roleId = User.Identity.GetRoleId();
     var roles = new Guid[3] { AspNetRoles.AppTester, AspNetRoles.SuperAdmin, AspNetRoles.CaseCoordinator };
@@ -49,7 +49,7 @@
     {
         <div class="panel @WeekStyle(weekFolder.Day)">
             <div id="header-weekfolder-@weekFolder.Day.Ticks" class="panel-heading" role="tab">
-                @Html.Partial("~/Views/Dashboard/_WeekSummary.cshtml", weekFolder)
+                @Html.Partial("~/Views/Work/_WeekSummary.cshtml", weekFolder)
             </div>
             <section id="week-@weekFolder.Day.Ticks" class="panel-collapse collapse"></section>
         </div>
@@ -78,7 +78,7 @@
                             StartDate: day,
                             FilterType: 'Week'
                         },
-                        ViewOptions: "Dashboard",
+                        ViewOptions: "Work",
                         Options: "MyActiveTasks"
                     })
                     .done(function (result) {
@@ -95,7 +95,7 @@
         }
 
         function getWeekSummary(day, firstDayOfWeekTicks) { // ticks are used to uniquely identify the element to update
-            let url = '@Url.Content("~/Dashboard/WeekSummary")';
+            let url = '@Url.Content("~/Work/WeekSummary")';
 
             var target = document.getElementById('header-weekfolder-' + firstDayOfWeekTicks)
             if (target) {
@@ -112,7 +112,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Content("~/Dashboard/ToggleNoShow")',
+                url: '@Url.Content("~/Work/ToggleNoShow")',
                 data: JSON.stringify({
                     serviceRequestId: serviceRequestId,
                     isChecked: checkbox.checked,
@@ -174,7 +174,7 @@
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
+                url: '@Url.Content("~/Work/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
                     $('#service-status-' + serviceRequestId).replaceWith(result);
@@ -272,7 +272,7 @@
             // get the html and display it in the model
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/TaskList")' + '?serviceRequestId=' + serviceRequestId,
+                url: '@Url.Content("~/Work/TaskList")' + '?serviceRequestId=' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
                     // inject the html into the modal and display it
@@ -289,7 +289,7 @@
         function onShowDiscussion(serviceRequestId) {
             $.ajax({
                 type: "GET",
-                url: '@Url.Content("~/Dashboard/Discussion")' + '?serviceRequestId=' + serviceRequestId,
+                url: '@Url.Content("~/Work/Discussion")' + '?serviceRequestId=' + serviceRequestId,
                 contentType: "text/html",
                 success: function (result) {
                     // inject the html into the modal and display it

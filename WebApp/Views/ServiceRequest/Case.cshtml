@@ -2,7 +2,7 @@
 @using Features = Orvosi.Shared.Enums.Features
 @model CaseViewModel
 <div style="padding-bottom:5px;">
-    @if (ViewData.ViewTarget_Get() == ViewTarget.Agenda)
+    @if (ViewData.ViewTarget_Get() == ViewTarget.DaySheet)
     {
     <span style="padding-right:5px; font-size:16px;"><strong>@Model.StartTime.ToShortTimeSafe()</strong></span>
         <a href="@Url.Content("~/ServiceRequest/Details/" + Model.ServiceRequestId)" target="_blank" style="font-size:16px;">@Model.ClaimantName (@(Model.ServiceRequestId))</a>

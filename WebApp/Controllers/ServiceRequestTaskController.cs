@@ -626,7 +626,7 @@ namespace WebApp.Controllers
                 .Where(srt => srt.TaskStatusId == TaskStatuses.ToDo)
                 .Count();
 
-            return PartialView("~/Views/Dashboard/_TaskHeading.cshtml", count);
+            return PartialView("~/Views/Work/_TaskHeading.cshtml", count);
         }
 
         public JsonResult GetAssessmentDayTasks()

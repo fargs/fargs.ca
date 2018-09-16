@@ -8,7 +8,7 @@ using WebApp.Library.Extensions;
 using Orvosi.Shared.Enums;
 using WebApp.Models.ServiceRequestModels;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
     public class IndexViewModel
     {   
@@ -366,7 +366,7 @@ namespace WebApp.ViewModels.DashboardViewModels
     {
         public Task()
         {
-            Dependencies = new List<DashboardViewModels.Task>();
+            Dependencies = new List<WorkViewModels.Task>();
         }
         public int Id { get; set; }
         public string Name { get; set; }

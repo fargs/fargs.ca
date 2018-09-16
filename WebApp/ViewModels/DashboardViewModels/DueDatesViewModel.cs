@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using WebApp.Models.ServiceRequestModels2;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
     public class DueDatesViewModel
     {

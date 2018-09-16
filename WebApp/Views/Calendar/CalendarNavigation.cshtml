@@ -58,7 +58,7 @@
         {
             <a href="@Model.Links["Previous"]" class="btn btn-default"><i class="fa fa-chevron-left"></i></a>
             <a href="@Model.Links["Next"]" class="btn btn-default"><i class="fa fa-chevron-right"></i></a>
-            <input type="date" required value="@Model.SelectedDate.ToOrvosiDateFormat()" onchange="window.location.href='@Url.Content("~/Dashboard/Agenda?selectedDate=")' + this.value" />
+            <input type="date" required value="@Model.SelectedDate.ToOrvosiDateFormat()" onchange="window.location.href='@Url.Content("~/Work/DaySheet?selectedDate=")' + this.value" />
             <a href="@Model.Links["Now"]" class="btn btn-default">@ViewText(view)</a>
         }
     </div>

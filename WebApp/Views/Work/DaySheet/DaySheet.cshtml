@@ -1,0 +1,49 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewModels.CalendarViewModels
+@using LinqKit
+@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.FormModels
+@model WebApp.Views.Work.DaySheet.DaySheetViewModel
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+    var viewData = new ViewDataDictionary();
+    viewData.ViewTarget_Set(ViewTarget.DaySheet);
+    viewData.ViewFilter_Set(TaskListViewModelFilter.CriticalPathOrAssignedToUser);
+}
+@if (Model != null)
+{
+    <div id="teleconference-list">
+        @Html.Action("ListByDay", "Teleconference", new { day = Model.Day })
+    </div>
+    <div style="display:flex; flex-flow:row wrap; justify-content: flex-start;">
+        <div style="padding:10px;">
+            @foreach (var address in Model.Addresses)
+            {
+                <div>@address</div>
+            }
+        </div>
+        <div class="text-muted" style="padding:10px;">
+            @foreach (var company in Model.Companies)
+            {
+                <div>@company.ToString()</div>
+            }
+        </div>
+    </div>
+    <div id="servicerequest-list">
+        @foreach (var serviceRequest in Model.ServiceRequests)
+        {
+        <div id="servicerequest-container-@serviceRequest.ServiceRequestId">
+            @Html.Partial("~/Views/Work/DaySheet/ServiceRequest/ServiceRequest.cshtml", serviceRequest)
+        </div>
+        }
+    </div>
+}
+else
+{
+    <p></p>
+    <p><strong> No assessments today</strong></p>
+}
+

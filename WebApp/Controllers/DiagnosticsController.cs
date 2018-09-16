@@ -95,7 +95,7 @@ namespace WebApp.Controllers
                 var userId = new Guid("8e9885d8-a0f7-49f6-9a3e-ff1b4d52f6a9");
 
                 var requests = new List<GetAssignedServiceRequestsReturnModel>(); // await context.API_GetAssignedServiceRequestsAsync(userId, now);
-                //var vm = new WebApp.ViewModels.DashboardViewModels.IndexViewModel(requests, now, userId, this.ControllerContext);
+
                 System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
                 return View(requests);
             }

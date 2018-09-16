@@ -39,9 +39,9 @@ namespace WebApp.Controllers
 
             query = query.CanAccess(loggedInUserId, physicianId, loggedInRoleId);
 
-            var dto = query.Select(TeleconferenceDto.FromEntityForAgenda.Expand()).ToList();
+            var dto = query.Select(TeleconferenceDto.FromEntityForDaySheet.Expand()).ToList();
 
-            var teleconferenceViewModels = dto.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDtoForAgenda.Expand());
+            var teleconferenceViewModels = dto.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDtoForDaySheet.Expand());
 
             var viewModel = new TeleconferenceDayListViewModel()
             {

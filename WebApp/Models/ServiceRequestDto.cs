@@ -39,6 +39,7 @@ namespace WebApp.Models
         public byte? MedicolegalTypeId { get; set; }
 
         // Computed properties
+        public bool IsCancelled => this.CancelledDate.HasValue;
 
 
         // Functions
@@ -220,7 +221,7 @@ namespace WebApp.Models
             Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand())
         };
 
-        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCaseV2(Guid userId)
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForDaySheet(Guid userId)
         {
             return sr => new ServiceRequestDto
             {

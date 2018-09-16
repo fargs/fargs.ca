@@ -1,32 +1,7 @@
 ﻿@using DanTup.Web
-@model CommentListViewModel
+@model IEnumerable<WebApp.Views.Comment.CommentViewModel>
 
-@foreach (var comment in Model.Comments.OrderByDescending(c => c.PostedDate))
+@foreach (var comment in Model.OrderByDescending(c => c.PostedDate))
 {
-    <div class="panel panel-default panel-shadow">
-        <div class="panel-heading" style="display:flex;">
-            <span class="panel-title" style="margin-right:auto; width:auto;">
-                <span class="text-muted">@comment.PostedDate.ToOrvosiDateTimeFormat()</span>
-            </span>
-            <span style="margin-left:auto;">
-                @Html.Partial("_Initials2", comment.PostedBy)
-            </span>
-        </div>
-        <div class="panel-body">
-                @Html.Markdown(comment.Message)
-        </div>
-        <div class="panel-footer" style="display:flex;">
-            <span style="margin-right:auto;">
-                <span class="label label-default">@comment.CommentType.Name</span>
-                @foreach (var access in comment.AccessList)
-                {
-                    @Html.Partial("_Initials2", access)
-                }
-            </span>
-            <span style="margin-left:auto;">
-                <button class="btn btn-sm btn-default" onclick="showCommentForm(@Model.ServiceRequestId, '@(comment.Id)')">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="showDeleteCommentForm('@comment.Id')">Delete</button>
-            </span>
-        </div>
-    </div>
+    @Html.Partial("~/Views/Comment/Comment.cshtml", comment)
 }

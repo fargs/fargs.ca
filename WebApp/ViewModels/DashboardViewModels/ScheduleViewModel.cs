@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using WebApp.ViewModels.CalendarViewModels;
 
-namespace WebApp.ViewModels.DashboardViewModels
+namespace WebApp.ViewModels.WorkViewModels
 {
     public class ScheduleViewModel
     {

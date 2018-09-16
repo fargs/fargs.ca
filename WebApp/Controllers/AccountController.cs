@@ -444,7 +444,7 @@ namespace WebApp.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction("Index", "Work");
         }
 
         //
@@ -597,7 +597,7 @@ namespace WebApp.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction("Index", "Work");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using WebApp.Library.Extensions;
 using WebApp.Models;
-using WebApp.ViewModels.DashboardViewModels;
+using WebApp.ViewModels.WorkViewModels;
 using WebApp.ViewModels.InvoiceViewModels;
 
 namespace WebApp.ViewModels.CalendarViewModels

@@ -1,0 +1,21 @@
+﻿@model EditFormModel
+@{ 
+    var serviceRequest = Model;
+}
+
+<form id="servicerequest-details-form-@serviceRequest.ServiceRequestId">
+    @Html.Hidden("ServiceRequestId", serviceRequest.ServiceRequestId)
+    @Html.Hidden("CompanyId", serviceRequest.CompanyId)
+    <div class="form-group">
+        <label class="control-label">
+            Referral Source
+        </label>
+        <input type="text" name="SourceCompany" value="@serviceRequest.SourceCompany" class="form-control" />
+        @Html.ValidationMessage("SourceCompany")
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-sm" type="button" onclick="saveCaseDetails($('#servicerequest-details-form-@serviceRequest.ServiceRequestId'))">
+            Save
+        </button>
+    </div>
+</form>

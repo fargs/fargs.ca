@@ -3,22 +3,17 @@
 namespace WebApp
 {
     using System;
-    using System.Web;
-    using System.Web.Mvc;
+    using System.ArrayExtensions;
     using System.Linq;
-    using System.Collections.Generic;
-
+    using System.Web.Mvc;
+    using Library.Extensions;
+    using LinqKit;
+    using Models;
     using MVCGrid.Models;
     using MVCGrid.Web;
-    using ViewModels;
-    using Library;
-    using Orvosi.Data.Filters;
-    using Library.Extensions;
-    using Models;
-    using LinqKit;
-    using ViewDataModels;
-    using System.ArrayExtensions;
     using Orvosi.Data;
+    using Orvosi.Data.Filters;
+    using WebApp.Areas.Work.Views.Tasks;
 
     public static class MVCGridConfig 
     {
@@ -32,13 +27,13 @@ namespace WebApp
                 DefaultSortColumn = "DueDate",
                 DefaultSortDirection = SortDirection.Asc,
                 NoResultsMessage = "Sorry, no results were found",
-                Filtering = true
+                Filtering = true,
             };
 
             MVCGridDefinitionTable.Add("TaskGrid", new MVCGridBuilder<TaskGridRow>(defaults)
                 .WithAuthorizationType(AuthorizationType.Authorized)
                 .WithRenderingMode(RenderingMode.Controller)
-                .WithViewPath("~/Views/MVCGrid/_TaskGrid.cshtml")
+                .WithViewPath("~/Areas/Work/Views/Tasks/TaskGrid.cshtml")
                 .WithRowCssClassExpression(c =>
                 {
                     if (c.IsOverdue.HasValue && c.IsDueToday.HasValue)
@@ -71,7 +66,7 @@ namespace WebApp
                         .WithSorting(true)
                         .WithFiltering(true)
                         .WithValueExpression(i => i.DueDate.HasValue ? i.DueDate.Value.ToOrvosiDateShortFormat() : "ASAP");
-                    cols.Add().WithColumnName("Task")
+                    cols.Add().WithColumnName("TaskId")
                         .WithHeaderText("Task")
                         .WithSorting(true)
                         .WithFiltering(true)
@@ -93,6 +88,7 @@ namespace WebApp
                     var identity = context.CurrentHttpContext.User.Identity;
                     var physicianContext = context.CurrentHttpContext.User.Identity.GetPhysicianContext();
                     var userId = identity.GetGuidUserId();
+                    var now = DependencyResolver.Current.GetService<DateTime>();
 
                     var entityQuery = db.ServiceRequestTasks
                         .AreAssignedToUser(userId)
@@ -105,13 +101,7 @@ namespace WebApp
                             .Where(srt => srt.ServiceRequest.PhysicianId == physicianContext.Id);
                     }
 
-                    var dto = entityQuery
-                        .OrderByDescending(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence)
-                        .Select(TaskDto.FromServiceRequestTaskAndServiceRequestEntity.Expand())
-                        .ToList();
-
-                    var query = dto.AsQueryable();
-
+                    
                     var options = context.QueryOptions;
                     var result = new QueryResult<TaskGridRow>();
 
@@ -120,28 +110,20 @@ namespace WebApp
                     {
                         switch (filter.Key.ToLower())
                         {
-                            //case "duedate":
-                            //    var range = new DateFilterArgs() { StartDate = DateTime.Parse(filter.Value), FilterType = ViewDataModels.DateFilterType.On };
-                            //    query = query.AreDueBetween(range);
-                            //    break;
-                            case "claimantname":
-                                query = query.Where(sr => sr.ServiceRequest.ClaimantName.Contains(filter.Value));
+                            case "taskid":
+                                var selectedTaskIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse).ToList();
+                                entityQuery = entityQuery.Where(sr => selectedTaskIds.Any() ? selectedTaskIds.Contains(sr.TaskId.Value) : true);
                                 break;
-                            case "task":
-                                var selectedTaskIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse);
-                                query = query.Where(sr => selectedTaskIds.Any() ? selectedTaskIds.Contains(sr.TaskId) : true);
-                                break;
-                            case "city":
-
+                            case "cityid":
                                 short cityId;
                                 if (short.TryParse(filter.Value, out cityId))
                                 { 
-                                    query = query.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == cityId);
+                                    entityQuery = entityQuery.Where(sr => sr.ServiceRequest.Address == null ? true : sr.ServiceRequest.Address.CityId == cityId);
                                 }
                                 break;
                             case "taskstatusid":
-                                var selectedTaskStatusIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse); // filters out any items that are not valid shorts.
-                                query = query.Where(sr => selectedTaskStatusIds.Any() ? selectedTaskStatusIds.Contains(sr.TaskStatusId) : true);
+                                var selectedTaskStatusIds = filter.Value.Split(',').SelectTry<string, string, short>(c => c, short.TryParse).ToList(); // filters out any items that are not valid shorts.
+                                entityQuery = entityQuery.Where(sr => selectedTaskStatusIds.Any() ? selectedTaskStatusIds.Contains(sr.TaskStatusId) : true);
                                 break;
                             default:
                                 break;
@@ -154,62 +136,41 @@ namespace WebApp
                         switch (options.SortColumnName.ToLower())
                         {
                             case "duedate":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.DueDate) :
-                                    query.OrderByDescending(i => i.DueDate);
+                                entityQuery = options.SortDirection == SortDirection.Asc ?
+                                    entityQuery.OrderBy(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence) :
+                                    entityQuery.OrderByDescending(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence); ;
                                 break;
                             case "task":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ShortName) :
-                                    query.OrderByDescending(i => i.ShortName);
-                                break;
-                            case "company":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.Company.Name) :
-                                    query.OrderByDescending(i => i.ServiceRequest.Company.Name);
-                                break;
-                            case "service":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.Service.Name) :
-                                    query.OrderByDescending(i => i.ServiceRequest.Service.Name);
-                                break;
-                            case "city":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.Address == null ? "" : i.ServiceRequest.Address.CityCode) :
-                                    query.OrderByDescending(i => i.ServiceRequest.Address == null ? "" : i.ServiceRequest.Address.CityCode);
+                                entityQuery = options.SortDirection == SortDirection.Asc ?
+                                    entityQuery.OrderBy(i => i.ShortName) :
+                                    entityQuery.OrderByDescending(i => i.ShortName);
                                 break;
                             case "claimantname":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.ClaimantName) :
-                                    query.OrderByDescending(i => i.ServiceRequest.ClaimantName);
-                                break;
-                            case "appointmentdateandstarttime":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.AppointmentDateAndStartTime) :
-                                    query.OrderByDescending(i => i.ServiceRequest.AppointmentDateAndStartTime);
-                                break;
-                            case "physician":
-                                query = options.SortDirection == SortDirection.Asc ?
-                                    query.OrderBy(i => i.ServiceRequest.Physician.DisplayName) :
-                                    query.OrderByDescending(i => i.ServiceRequest.Physician.DisplayName);
+                                entityQuery = options.SortDirection == SortDirection.Asc ?
+                                    entityQuery.OrderBy(i => i.ServiceRequest.ClaimantName) :
+                                    entityQuery.OrderByDescending(i => i.ServiceRequest.ClaimantName);
                                 break;
                             default:
+                                entityQuery = entityQuery.OrderByDescending(srt => srt.DueDate).ThenBy(srt => srt.ServiceRequestId).ThenBy(srt => srt.Sequence);
                                 break;
                         }
                     }
 
-                    result.TotalRecords = query.Count();
+                    result.TotalRecords = entityQuery.Count();
 
                     if (options.GetLimitOffset().HasValue)
                     {
-                        query = query
+                        entityQuery = entityQuery
                             .Skip(options.GetLimitOffset().Value)
                             .Take(options.GetLimitRowcount().Value);
                     }
 
-                    result.Items = query
-                        .AsQueryable()
-                        .Select(TaskGridRow.FromTaskDto.Expand());
+                    var dto = entityQuery
+                        .Select(TaskDto.FromServiceRequestTaskForTasks.Expand())
+                        .ToList();
+
+                    result.Items = dto
+                        .Select(t => new TaskGridRow(t, identity, now));
 
                     return result;
                 })

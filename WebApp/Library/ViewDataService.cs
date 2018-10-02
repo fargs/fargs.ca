@@ -34,7 +34,7 @@ namespace WebApp.Library
 
             var dto = ServiceRequestDto.FromServiceRequestEntity.Invoke(data);
 
-            var viewModel = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician);
+            var viewModel = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Physician);
 
             return viewModel;
         }
@@ -328,7 +328,7 @@ namespace WebApp.Library
 
                 var viewModel = dto
                     .AsQueryable()
-                    .Select(LookupViewModel<Guid>.FromPersonDto.Expand())
+                    .Select(LookupViewModel<Guid>.FromPersonDtoExpr.Expand())
                     .ToList();
 
                 HttpContext.Current.Items[collaboratorsKey] = item = viewModel;

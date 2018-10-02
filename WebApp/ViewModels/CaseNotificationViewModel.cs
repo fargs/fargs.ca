@@ -5,6 +5,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using WebApp.Models;
+using WebApp.Views.Address;
+using WebApp.Views.Cancellation;
 
 namespace WebApp.ViewModels
 {
@@ -42,7 +44,7 @@ namespace WebApp.ViewModels
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
             Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
-            Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician),
+            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Physician),
         };
     }
 }

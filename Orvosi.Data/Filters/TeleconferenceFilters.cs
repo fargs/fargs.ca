@@ -30,5 +30,10 @@ namespace Orvosi.Data.Filters
 
             return query;
         }
+        
+        public static IQueryable<Teleconference> AreScheduledThisDay(this IQueryable<Teleconference> query, DateTime selectedDate)
+        {
+            return query.Where(t => t.AppointmentDate == selectedDate);
+        }
     }
 }

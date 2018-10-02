@@ -1,0 +1,46 @@
+﻿@model InvoiceListViewModel
+
+@foreach (var invoice in Model.Invoices.OrderByDescending(i => i.InvoiceNumber))
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div style="display:flex" @(invoice.IsDeleted ? string.Format("data-toggle=collapse data-target=#invoice-readonly-{0}", invoice.Id)  : "")>
+                <div>
+                    <strong>@invoice.InvoiceNumber</strong>
+                    @if (invoice.IsDeleted)
+                    {
+                        <span class="label label-info">Cancelled</span>
+                    }
+                </div>
+                <div style="margin-left:auto;">
+                    @Html.Partial("ServiceRequest/InvoiceList/InvoiceMenu", invoice)
+                </div>
+            </div>
+        </div>
+            <div class="panel-body collapse @(!invoice.IsDeleted ? "in" : "")" id="invoice-readonly-@invoice.Id">
+                @Html.Partial("ServiceRequest/InvoiceList/InvoiceReadOnly", invoice)
+                @if (invoice.SentLog.Any())
+                { <hr /> }
+                <dl class="dl-horizontal dl-clear-margins">
+                    @foreach (var send in invoice.SentLog)
+                    {
+                        <dt class="text-right">Sent</dt>
+                        <dd class="text-right">
+                            @send.SentDate to @send.EmailTo by @send.ModifiedUser
+                        </dd>
+                    }
+                </dl>
+                @if (invoice.Receipts.Any())
+                { <hr /> }
+                <dl class="dl-horizontal dl-clear-margins">
+                    @foreach (var receipt in invoice.Receipts)
+                    {
+                        <dt class="text-right">Payment</dt>
+                        <dd class="text-right">
+                            @receipt.Amount
+                        </dd>
+                    }
+                </dl>
+            </div>
+    </div>
+}

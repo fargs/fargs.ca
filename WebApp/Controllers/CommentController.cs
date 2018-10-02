@@ -171,7 +171,7 @@ namespace WebApp.Controllers
             message.IsBodyHtml = true;
 
             // Always add the physician, except when the physician posted the comment.
-            var physicianEmail = (sr.Physician as ContactDto).Email;
+            var physicianEmail = (sr.Physician as PhysicianDto).Email;
             if (physicianEmail != comment.PostedBy.Email)
                 message.To.Add(physicianEmail);
             foreach (ContactDto access in comment.AccessList)

@@ -19,7 +19,7 @@ namespace WebApp.ViewModels
         {
             Id = dto.Id,
             ServiceRequestId = dto.ServiceRequestId,
-            Person = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Person),
+            Person = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Person),
             Role = LookupViewModel<Guid>.FromLookupDto.Invoke(dto.Role)
         };
     }

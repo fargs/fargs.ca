@@ -1,0 +1,11 @@
+﻿@model IndexViewModel
+
+@{ ViewBag.Title = "Schedule"; }
+
+@Html.Partial("Schedule", Model.WeekList)
+
+@Html.Partial("ModalContainer")
+
+@section Scripts{
+    @Html.Partial("ScheduleJS")
+}

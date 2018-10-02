@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using WebApp.Models;
+using WebApp.Views.Address;
 
 namespace WebApp.ViewModels
 {
@@ -26,7 +27,7 @@ namespace WebApp.ViewModels
         public static Expression<Func<AvailableDayDto, AvailableDayViewModel>> FromAvailableDayDto = e => e == null ? null : new AvailableDayViewModel
         {
             Id = e.Id,
-            Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(e.Physician),
+            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
             Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
             Address = AddressViewModel.FromAddressDto.Invoke(e.Address),
@@ -38,7 +39,7 @@ namespace WebApp.ViewModels
         public static Expression<Func<AvailableDayDto, AvailableDayViewModel>> FromAvailableDayDtoForBooking = e => e == null ? null : new AvailableDayViewModel
         {
             Id = e.Id,
-            Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(e.Physician),
+            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
             Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
             Address = AddressViewModel.FromAddressDto.Invoke(e.Address),

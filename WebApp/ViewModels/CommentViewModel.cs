@@ -21,7 +21,7 @@ namespace WebApp.ViewModels
             TimeZone = dto.TimeZone,
             Message = dto.Message,
             PostedDate = dto.PostedDateLocal,
-            PostedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.PostedBy),
+            PostedBy = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.PostedBy),
             IsPrivate = dto.IsPrivate,
             CommentTypeId = dto.CommentTypeId,
             CommentType = LookupViewModel<byte>.FromLookupDto.Invoke(dto.CommentType),

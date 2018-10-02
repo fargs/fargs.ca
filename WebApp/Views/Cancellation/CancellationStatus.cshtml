@@ -1,0 +1,13 @@
+﻿@model CancellationStatusViewModel
+@if (Model.IsNoShow)
+{
+    <span class="label label-danger">No Show</span>
+}
+else if (Model.IsLateCancellation)
+{
+    <span class="label label-warning">Late Cancel</span>
+}
+else if (Model.IsCancelled)
+{
+    <span class="label label-info">Cancelled</span>
+}

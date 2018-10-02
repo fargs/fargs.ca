@@ -13,16 +13,20 @@ namespace WebApp.Library.Helpers
 
         public static string IsActive(this HtmlHelper html,
                                         string control,
-                                        string action)
+                                        string action,
+                                        string area)
         {
             var routeData = html.ViewContext.RouteData;
 
+            var routeArea = (string)routeData.DataTokens["area"];
             var routeAction = (string)routeData.Values["action"];
             var routeControl = (string)routeData.Values["controller"];
 
             // both must match
-            var returnActive = control == routeControl &&
-                                action == routeAction;
+            var returnActive = 
+                area == routeArea &&
+                control == routeControl &&
+                action == routeAction;
 
             return returnActive ? "active" : "";
         }

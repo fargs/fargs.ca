@@ -1,0 +1,278 @@
+﻿@using WebApp.Library.Extensions
+@using WebApp.ViewModels.CalendarViewModels
+@using WebApp.ViewModels
+@using WebApp.ViewDataModels
+@model IndexViewModel
+@{
+    var roleId = User.Identity.GetRoleId();
+    var userId = User.Identity.GetGuidUserId();
+    var physicianId = User.Identity.GetUserContext().Id;
+    var features = User.Identity.GetFeatures();
+
+    ViewBag.Title = "DaySheet";
+}
+
+@Html.Partial("~/Views/Calendar/CalendarNavigation.cshtml", Model.CalendarNavigation)
+
+@Html.Partial("DaySheet", Model.DaySheet)
+
+@Html.Partial("~/Views/Note/_NoteModalForm.cshtml")
+
+@Html.Partial("ModalContainer")
+@Html.Partial("ModalContainerSmall")
+
+
+@section Scripts {
+
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+
+    @Html.Partial("DaySheetJS")
+    @Html.Partial("ServiceRequest/ServiceRequestJS")
+    @Html.Partial("ServiceRequest/InvoiceList/InvoiceJS")
+    @Html.Partial("ServiceRequest/TaskList/TaskListJS")
+    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+    @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
+    @Html.Partial("~/Views/Comment/_CommentJS.cshtml")
+    @Html.Partial("~/Views/Teleconference/_TeleconferenceJS.cshtml")
+
+    @if (Model != null)
+    {
+        var ids = Model.DaySheet.ServiceRequests.Any() ? Model.DaySheet.ServiceRequests.Select(c => c.ServiceRequestId).ToArray() : new int[0];
+        <span>
+            @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = ids })
+        </span>
+    }
+
+    <script>
+
+        let serviceRequestId = null;
+
+        $('#AppointmentDatePicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        })
+
+        function refreshServiceStatus(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Work/RefreshServiceStatus?serviceRequestId=")' + serviceRequestId,
+                contentType: "text/html",
+                success: function (result) {
+                    $('#service-status-' + serviceRequestId).replaceWith(result);
+                },
+                error: function (err) {
+                    // undo the UI change made before the ajax call
+                    window.location.reload();
+                }
+            }, this);
+
+        }
+
+        function onEditNote(serviceRequestId) {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Note/EditNote?serviceRequestId=")' + serviceRequestId,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+
+                    var modalDiv = $("#edit-note-modal");
+                    modalDiv.find('#ServiceRequestId').val(result.ServiceRequestId); // hidden field
+                    modalDiv.find('#Notes').val(result.Notes);
+                    modalDiv.find('#ClaimantName').html(result.ClaimantName);
+
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $("#edit-note-form").submit(function (e) {
+
+            var url = '@Url.Content("~/Note/UpdateNote")';
+
+            var form = $("#edit-note-form");
+            var serviceRequestId = form.find('#ServiceRequestId').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // serializes the form's elements.
+                success: function () {
+                    $("#edit-note-modal").modal('toggle');
+                    toastr.success("The note was updated successfully.");
+                    refreshNote(serviceRequestId);
+                }
+            });
+            e.preventDefault();
+        });
+
+        function refreshNote(serviceRequestId) {
+
+            var url = '@Url.Content("~/ServiceRequest/RefreshNote")';
+            $.get(url, {
+                serviceRequestId: serviceRequestId,
+                allowEdit: true
+            }).done(function (result) {
+                $('#note-' + serviceRequestId).replaceWith(result);
+            });
+
+        }
+
+        function taskChanged(serviceRequestTaskId, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewTarget.DaySheet',
+                    ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                    selectTask(serviceRequestTaskId);
+                });
+        }
+
+        function taskDeleted(serviceRequestTaskId, serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+            $.get(url,
+                {
+                    ServiceRequestId: serviceRequestId,
+                    ViewTarget: '@ViewTarget.DaySheet',
+                    ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+                })
+                .done(function (result) {
+                    document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                    $('#task-editform-container-' + serviceRequestId).html("");
+                });
+        }
+
+        function tasklistChanged(serviceRequestId) {
+            let url = '@Url.Content("~/ServiceRequestTask/TaskList")';
+
+            $.get(url, {
+                ServiceRequestId: serviceRequestId,
+                ViewTarget: '@ViewTarget.DaySheet',
+                ViewFilter: '@TaskListViewModelFilter.CriticalPathOrAssignedToUser'
+            })
+            .done(function (result) {
+                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+                //joinRoom(serviceRequestId);
+                //refreshValidationResults(serviceRequestId);
+            })
+            .always(function () {
+                //loader.hide();
+            });
+
+            $.get('@Url.Content("~/Work/DaySheet/ServiceRequest/ActionMenu/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#actionmenu-' + serviceRequestId).html(result);
+            });
+        }
+
+        function serviceRequestDetailsChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@ViewTarget.DaySheet',
+                })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                });
+        }
+
+        function serviceRequestStatusChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/Case")',
+                {
+                    serviceRequestId: serviceRequestId,
+                    viewOptions: '@ViewTarget.DaySheet',
+                })
+                .done(function (result) {
+                    document.getElementById('case-container-' + serviceRequestId).innerHTML = result;
+                });
+        }
+
+        function taskSelected(serviceRequestTaskId) {
+
+            $.get('@Url.Content("~/ServiceRequestTask/GetRelatedServiceRequestId/")', {
+                serviceRequestTaskId: serviceRequestTaskId
+            })
+            .done(function (data) {
+                if (data.taskId === 24) // enum Tasks.SubmitInvoice
+                {
+                    $('#tabs-' + data.serviceRequestId + ' a[href="#invoices-' + data.serviceRequestId + '"]').tab('show');
+                }
+                else {
+                    $('#tabs-' + data.serviceRequestId + ' a[href="#live-chat-' + data.serviceRequestId + '"]').tab('show');
+                }
+            });
+        }
+
+        function showTaskTools(serviceRequestTaskId, serviceRequestId) {
+
+            taskSelected(serviceRequestTaskId, serviceRequestId);
+
+            $('#tabs-' + serviceRequestId + ' a[href="#task-details-' + serviceRequestId + '"]').tab('show');
+        }
+
+        function onCreateInvoiceForServiceRequest(serviceRequestId) {
+            let url = '@Url.Content("~/Accounting/Create")';
+
+            $.post(url, {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                if ($(result).data().haserrors) {
+                    var selector = "#invoice-list-container-" + $(result).data().id;
+                    $(selector).before(result);
+                }
+                else {
+                    toastr.success("Invoice created successfully");
+                    invoiceChanged(result.id, serviceRequestId);
+                }
+            });
+        }
+
+        function invoiceChanged(invoiceId) {
+            $.get('@Url.Content("~/Accounting/GetRelatedServiceRequestId/")', {
+                invoiceId: invoiceId
+            })
+            .done(function (data) {
+
+                $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                    serviceRequestId: data.serviceRequestId
+                })
+                .done(function (result) {
+                    $('#invoice-list-container-' + data.serviceRequestId).html(result);
+                    console.log('from invoice changed');
+                });
+
+            });
+        }
+
+        function invoiceListChanged(serviceRequestId) {
+            $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#invoice-list-container-' + serviceRequestId).html(result);
+                console.log('from invoice list changed');
+            });
+        }
+
+        function teleconferencesChanged() {
+        $.get('@Url.Content("~/Teleconference/ListByDay")',
+            {
+                day: '@Model.DaySheet.Day.ToOrvosiDateFormat()'
+            })
+            .done(function (result) {
+                document.getElementById('teleconference-list').innerHTML = result;
+            });
+    }
+    </script>
+}

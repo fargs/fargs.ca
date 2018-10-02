@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using WebApp.Library;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using WebApp.Models;
@@ -24,11 +25,11 @@ using m = Orvosi.Shared.Model;
 namespace WebApp.Controllers
 {
     [Authorize]
-    public class WorkController : BaseController
+    public class Work2Controller : BaseController
     {
         private OrvosiDbContext db;
 
-        public WorkController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        public Work2Controller(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
         {
             this.db = db;
         }

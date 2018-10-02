@@ -18,6 +18,7 @@ namespace WebApp.Models
             Tasks = new List<TaskDto>();
             Messages = new List<MessageDto>();
             Comments = new List<CommentDto>();
+            InvoiceDetails = new List<InvoiceDetailDto>();
             Teleconferences = new List<TeleconferenceDto>();
         }
 
@@ -88,7 +89,7 @@ namespace WebApp.Models
         public LookupDto<short> NextTaskStatusForUser { get; set; }
         public AddressDto Address { get; set; }
 
-        public PersonDto Physician { get; set; }
+        public PhysicianDto Physician { get; set; }
         public PersonDto CaseCoordinator { get; set; }
         public PersonDto DocumentReviewer { get; set; }
         public PersonDto IntakeAssistant { get; set; }
@@ -125,7 +126,7 @@ namespace WebApp.Models
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
 
             Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
             Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
@@ -161,7 +162,7 @@ namespace WebApp.Models
                 Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
                 Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
 
                 Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
@@ -190,7 +191,7 @@ namespace WebApp.Models
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-            Physician = ContactDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForCase = sr => new ServiceRequestDto
@@ -217,7 +218,35 @@ namespace WebApp.Models
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand())
+        };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForTasks = sr => new ServiceRequestDto
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            AppointmentDate = sr.AppointmentDate,
+            StartTime = sr.StartTime,
+            DueDate = sr.DueDate,
+            CancelledDate = sr.CancelledDate,
+            IsNoShow = sr.IsNoShow,
+            IsLateCancellation = sr.IsLateCancellation,
+            ServiceRequestStatusId = sr.ServiceRequestStatusId,
+            HasErrors = sr.HasErrors,
+            HasWarnings = sr.HasWarnings,
+            BoxCaseFolderId = sr.BoxCaseFolderId,
+            ServiceCataloguePrice = sr.ServiceCataloguePrice,
+            Notes = sr.Notes,
+            SourceCompany = sr.SourceCompany,
+            MedicolegalTypeId = sr.MedicolegalTypeId,
+
+            MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+            Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+            Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+            Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+            Physician = PhysicianDto.FromPhysicianEntity.Invoke(sr.Physician.AspNetUser),
             Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand())
         };
 
@@ -233,23 +262,30 @@ namespace WebApp.Models
                 CancelledDate = sr.CancelledDate,
                 IsNoShow = sr.IsNoShow,
                 IsLateCancellation = sr.IsLateCancellation,
-                ServiceRequestStatusId = sr.ServiceRequestStatusId,
                 HasErrors = sr.HasErrors,
                 HasWarnings = sr.HasWarnings,
                 BoxCaseFolderId = sr.BoxCaseFolderId,
                 ServiceCataloguePrice = sr.ServiceCataloguePrice,
                 Notes = sr.Notes,
                 SourceCompany = sr.SourceCompany,
-                MedicolegalTypeId = sr.MedicolegalTypeId,
 
+                MedicolegalTypeId = sr.MedicolegalTypeId,
                 MedicolegalType = LookupDto<byte>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
+                ServiceRequestStatusId = sr.ServiceRequestStatusId,
                 ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                ServiceId = sr.ServiceId,
                 Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                CompanyId = sr.CompanyId,
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
                 Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                PhysicianId = sr.PhysicianId,
+                Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+
                 Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 Comments = sr.ServiceRequestComments.Where(c => c.ServiceRequestCommentAccesses.Select(a => a.AspNetUser.Id).Contains(userId) || c.AspNetUser.Id == userId || c.ServiceRequest.PhysicianId == userId).OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+                Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
+                Teleconferences = sr.Teleconferences.OrderBy(t => t.AppointmentDate).ThenBy(t => t.StartTime).AsQueryable().Select(TeleconferenceDto.FromEntity.Expand()),
+                InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())
             };
         }
 
@@ -299,7 +335,7 @@ namespace WebApp.Models
                 Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
                 Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
                 Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-                Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
                 Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 CaseCoordinator = PersonDto.FromAspNetUserEntity.Invoke(sr.CaseCoordinator),
                 DocumentReviewer = PersonDto.FromAspNetUserEntity.Invoke(sr.DocumentReviewer),
@@ -334,22 +370,15 @@ namespace WebApp.Models
                 IsNoShow = sr.IsNoShow,
                 IsLateCancellation = sr.IsLateCancellation,
                 ServiceRequestStatusId = sr.ServiceRequestStatusId,
-                HasErrors = sr.HasErrors,
-                HasWarnings = sr.HasWarnings,
+                
+                ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
+                Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
+                Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
+                Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
+                Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+                Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
 
-                NextTaskStatusForUser = sr.ServiceRequestTasks
-                    .AsQueryable()
-                    .Where(srt => srt.AssignedTo == userId)
-                    .GroupBy(srt => srt.ServiceRequestId)
-                    .Select(srt => srt.OrderBy(grp => grp.TaskStatu.ServiceRequestPrecedence).FirstOrDefault().TaskStatu)
-                    .Select(ts => new LookupDto<short>
-                    {
-                        Id = ts.Id,
-                        Name = ts.Name,
-                        Code = "",
-                        ColorCode = ts.ColorCode
-                    })
-                    .FirstOrDefault()
+                NextTaskStatusForUser = LookupDto<short>.ForNextTaskStatusForUser.Invoke(sr.ServiceRequestTasks.AsQueryable(), userId)
             };
         }
 
@@ -394,7 +423,7 @@ namespace WebApp.Models
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForInvoice = sr => new ServiceRequestDto
@@ -411,7 +440,7 @@ namespace WebApp.Models
             Notes = sr.Notes,
             CompanyGuid = sr.Company.ObjectGuid,
 
-            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
             ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
@@ -450,7 +479,7 @@ namespace WebApp.Models
             Id =  sr.Id,
             ClaimantName = sr.ClaimantName,
             PhysicianId = sr.PhysicianId,
-            Physician = PersonDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
         };
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.Owin.Security;
 
 namespace WebApp.Models
 {
-    public class IndexViewModel
+    public class ManageIndexViewModel
     {
         public bool HasPassword { get; set; }
         public IList<UserLoginInfo> Logins { get; set; }

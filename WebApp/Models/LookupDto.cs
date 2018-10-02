@@ -14,6 +14,21 @@ namespace WebApp.Models
         public string Code { get; set; }
         public string ColorCode { get; set; }
 
+        public static Expression<Func<IQueryable<ServiceRequestTask>, Guid, LookupDto<short>>> ForNextTaskStatusForUser = (serviceRequestTasks, userId) =>
+                serviceRequestTasks
+                    .Where(srt => srt.AssignedTo == userId)
+                    .GroupBy(srt => srt.ServiceRequestId)
+                    .Select(srt => srt.OrderBy(grp => grp.TaskStatu.ServiceRequestPrecedence).FirstOrDefault().TaskStatu)
+                    .Select(ts => new LookupDto<short>
+                    {
+                        Id = ts.Id,
+                        Name = ts.Name,
+                        Code = "",
+                        ColorCode = ts.ColorCode
+                    })
+                    .FirstOrDefault();
+
+
         public static Expression<Func<ServiceRequestStatu, LookupDto<short>>> FromServiceRequestStatusEntity = e => e == null ? null : new LookupDto<short>
         {
             Id = e.Id,
@@ -58,7 +73,7 @@ namespace WebApp.Models
         {
             Id = e.Id,
             Name = e.Name,
-            Code = e.Name.Substring(0, 2),
+            Code = "",
             ColorCode = ""
         };
 

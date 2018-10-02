@@ -1,15 +1,8 @@
-﻿using Orvosi.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Security.Principal;
-using System.Web;
 using System.Web.Mvc;
-using WebApp.Library;
 using WebApp.Library.Extensions;
 using WebApp.ViewModels;
-using FluentDateTime;
-using WebApp.Library.Filters;
 
 namespace WebApp.Controllers
 {

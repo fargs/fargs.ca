@@ -1,0 +1,74 @@
+﻿@using WebApp.Library.Helpers
+@using WebApp.Library.Extensions
+@using Orvosi.Data
+@using Features = Orvosi.Shared.Enums.Features
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var features = User.Identity.GetFeatures();
+}
+
+<div style="display:flex;">
+    <ul class="nav nav-tabs">
+        @if (features.Contains(Features.Work.DaySheet))
+        {
+            <li role="presentation" class="@Html.IsActive("DaySheet", "Index", "Work")"><a href="~/Work/DaySheet?@(Request.QueryString)">Day Sheet</a></li>
+        }
+        @if (features.Contains(Features.Work.DueDates))
+        {
+            <li role="presentation" class="@Html.IsActive("Tasks", "Index", "Work")"><a id="urgenttaskcount-container" href="~/Work/Tasks?@(Request.QueryString)">Tasks <i id="urgenttaskcount-container-icon"></i></a></li>
+        }
+        @if (features.Contains(Features.Work.Schedule))
+        {
+            <li role="presentation" class="@Html.IsActive("Schedule", "Index", "Work")"><a href="~/Work/Schedule?@(Request.QueryString)">Schedule</a></li>
+        }
+        @if (features.Contains(Features.Work.Additionals))
+        {
+            <li role="presentation" class="@Html.IsActive("Additionals", "Index", "Work")"><a id="additionalcount-container" href="~/Work/Additionals?@(Request.QueryString)">Additionals <i id="additionalcount-container-icon"></i></a></li>
+        }
+    </ul>
+    <div style="margin-left:auto;">
+        <a title="Secure Docs" href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right"><img alt="Secure Docs" src="~/Content/images/SendDocumentsSecurely.jpg" /></a>
+    </div>
+</div>
+<section class="tab-content">
+    <div role="tabpanel" class="tab-pane active panel-body">
+        @RenderBody()
+    </div>
+</section>
+<div class="modal fade" id="dependencies-modal"></div>
+
+@section Scripts {
+
+    <script>
+        function onShowTaskHierarchy(serviceRequestId, taskId) {
+            // get the html and display it in the model
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/Work/TaskHierarchy")' + '?serviceRequestId=' + serviceRequestId + '&taskId=' + taskId,
+                contentType: "text/html",
+                success: function (result) {
+                    // inject the html into the modal and display it
+                    var modalDiv = $("#dependencies-modal");
+                    modalDiv.html(result);
+                    modalDiv.modal('toggle');
+                },
+                error: function (err) {
+                    alert(err.status + " - " + err.statusText);
+                }
+            }, this);
+        }
+
+        $.get('@Url.Content("~/servicerequesttask/urgenttaskcount")')
+            .done(function (result) {
+                $('#urgenttaskcount-container').html(result);
+            });
+
+        $.get('@Url.Content("~/servicerequest/additionalcount")')
+            .done(function (result) {
+                $('#additionalcount-container').html(result);
+            });
+    </script>
+
+@RenderSection("scripts", required: false)
+
+}

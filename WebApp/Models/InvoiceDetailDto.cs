@@ -22,6 +22,7 @@ namespace WebApp.Models
             }
         }
         public decimal? Amount { get; set; }
+        public bool HasDiscount => Discount != 1;
         public decimal Discount { get; set; }
         public string DiscountDescription { get; set; }
         public decimal? Total { get; set; }

@@ -53,7 +53,7 @@ namespace WebApp.Controllers
                     .Select(AddressProjections.MinimalInfo())
                     .ToListAsync();
 
-                var model = new IndexViewModel
+                var model = new ManageIndexViewModel
                 {
                     HasPassword = HasPassword(),
                     PhoneNumber = await _userManager.GetPhoneNumberAsync(userId),

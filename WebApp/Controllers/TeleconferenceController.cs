@@ -15,8 +15,10 @@ using WebApp.FormModels;
 using WebApp.Library;
 using WebApp.Library.Helpers;
 using WebApp.Models;
-using WebApp.ViewModels;
-using Orvosi.Data.Filters;
+using WebApp.Views.Teleconference;
+using WebApp.Views.Comment;
+using WebApp.Views.Shared;
+
 namespace WebApp.Controllers
 {
     public class TeleconferenceController : BaseController
@@ -41,13 +43,7 @@ namespace WebApp.Controllers
 
             var dto = query.Select(TeleconferenceDto.FromEntityForDaySheet.Expand()).ToList();
 
-            var teleconferenceViewModels = dto.AsQueryable().Select(TeleconferenceViewModel.FromTeleconferenceDtoForDaySheet.Expand());
-
-            var viewModel = new TeleconferenceDayListViewModel()
-            {
-                Day = day,
-                Teleconferences = teleconferenceViewModels
-            };
+            var viewModel = new TeleconferenceDayListViewModel(day, dto);
 
             return PartialView("_ListByDay", viewModel);
         }
@@ -67,8 +63,7 @@ namespace WebApp.Controllers
                 .Select(CommentDto.FromServiceRequestCommentEntity.Expand())
                 .ToList();
 
-            var comments = commentsDto.AsQueryable()
-                .Select(CommentViewModel.FromCommentDto.Expand());
+            var comments = commentsDto.Select(CommentViewModel.FromCommentDto);
 
             var viewModel = new TeleconferenceListViewModel()
             {
@@ -167,7 +162,7 @@ namespace WebApp.Controllers
             };
             var body = HtmlHelpers.RenderPartialViewToString(this, "_Notification", notificationViewModel);
 
-            var physicianEmail = (sr.Physician as ContactDto).Email;
+            var physicianEmail = (sr.Physician as PhysicianDto).Email;
 
             var message = new MailMessage();
             message.From = new MailAddress(physicianEmail);

@@ -18,7 +18,7 @@ namespace WebApp.ViewModels
         public static Expression<Func<ServiceRequestDto, TaskListViewModel>> FromServiceRequestDtoWithNoTasks = dto => new TaskListViewModel
         {
             ServiceRequestId = dto.Id,
-            Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician)
+            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Physician)
         };
     }
 }

@@ -36,7 +36,7 @@ namespace WebApp.ViewModels
         public static Expression<Func<TaskDto, TaskGridRow>> FromTaskDto = dto => dto == null ? null : new TaskGridRow
         {
             Id = dto.Id,
-            AssignedTo = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.AssignedTo),
+            AssignedTo = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.AssignedTo),
             TaskId = dto.TaskId,
             TaskShortName = dto.ShortName,
             TaskName = dto.Name,
@@ -44,7 +44,7 @@ namespace WebApp.ViewModels
             IsDone = dto.TaskStatusId == TaskStatuses.Done,
             DueDate = dto.DueDate,
             TaskStatusChangedDate = dto.TaskStatusChangedDate,
-            TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.TaskStatusChangedBy),
+            TaskStatusChangedBy = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.TaskStatusChangedBy),
             ServiceRequestId = dto.ServiceRequest.Id,
             ClaimantName = dto.ServiceRequest.ClaimantName,
             HasNotes = !string.IsNullOrEmpty(dto.ServiceRequest.Notes),
@@ -52,7 +52,7 @@ namespace WebApp.ViewModels
             Company = dto.ServiceRequest.Company.Code,
             Service = dto.ServiceRequest.Service.Code,
             City = dto.ServiceRequest.Address != null ? dto.ServiceRequest.Address.CityCode : "",
-            Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.ServiceRequest.Physician),
+            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.ServiceRequest.Physician),
             PhysicianSortColumn = dto.ServiceRequest.Physician.LastName,
             IsOverdue = TaskDto.IsOverdueExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now),
             IsDueToday = TaskDto.IsDueTodayExp.Invoke(dto.DueDate, dto.TaskStatusId, DateTime.Now)

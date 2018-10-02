@@ -1,0 +1,107 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@using DanTup.Web
+
+@model  ServiceRequestViewModel
+@{ 
+    var serviceRequest = Model;
+    var features = User.Identity.GetFeatures();
+}
+
+<div class="row o-dashboard-tr">
+    <div class="col-md-6 o-dashboard-td">
+        <div style="display:flex;">
+            <div id="case-container-@serviceRequest.ServiceRequestId" style="margin-right:auto;">
+                @Html.Partial("ServiceRequest/Summary", serviceRequest.Summary)
+            </div>
+            <div id="actionmenu-@serviceRequest.ServiceRequestId" style="margin-left:auto;">
+                @Html.Partial("ServiceRequest/ActionMenu", serviceRequest.ActionMenu)
+            </div>
+        </div>
+        <div id="tasklist-container-@serviceRequest.ServiceRequestId">
+            @Html.Partial("ServiceRequest/TaskList/TaskList", serviceRequest.TaskList)
+        </div>
+    </div>
+    <div class="col-md-6 o-dashboard-td">
+        <ul class="nav nav-tabs" role="tablist" id="tabs-@serviceRequest.ServiceRequestId">
+            <li role="presentation" class="active"><a href="#live-chat-@serviceRequest.ServiceRequestId" aria-controls="Live Chat" role="tab" data-toggle="tab">Live Chat</a></li>
+            <li role="presentation">
+                <a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(serviceRequest.Comments.Any() ? " (" + serviceRequest.Comments.Count() + ")" : "" )</a>
+            </li>
+            @if (features.Contains(Features.Accounting.CreateInvoice))
+            {
+                <li role="presentation"><a href="#invoices-@serviceRequest.ServiceRequestId" aria-controls="Invoices" role="tab" data-toggle="tab">Invoices</a></li>
+            }
+            <li role="presentation" id="case-tab-details-' + serviceRequestId">
+                <a href="#details-@serviceRequest.ServiceRequestId" aria-controls="Details" role="tab" data-toggle="tab">Details</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            @if (features.Contains(Features.Accounting.CreateInvoice))
+            {
+                <div role="tabpanel" class="tab-pane" id="invoices-@serviceRequest.ServiceRequestId">
+                    <div class="panel panel-default panel-shadow">
+                        <div class="panel-heading">
+
+                            <h3 class="panel-title pull-left">
+                                Invoices
+                            </h3>
+                            <div class="clearfix"></div>
+                            <div class="pull-right">
+                                @Html.Partial("ServiceRequest/InvoiceList/InvoiceListMenu", serviceRequest.ServiceRequestId)
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="panel-body">
+                            @if (serviceRequest.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice).Any())
+                            {
+                                <div style="display:flex;">
+                                    @foreach (var comment in serviceRequest.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice))
+                                    {
+                                        <div class="alert alert-warning" title="Posted on @comment.PostedDate.ToOrvosiDateTimeFormat()">
+                                            <span>
+                                                @Html.Markdown(comment.Message)
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            <div id="invoice-list-container-@serviceRequest.ServiceRequestId">
+                                @Html.Partial("ServiceRequest/InvoiceList/InvoiceList", Model.InvoiceList)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div role="tabpanel" class="tab-pane active" id="live-chat-@serviceRequest.ServiceRequestId">
+                @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", serviceRequest.Discussion)
+                @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", serviceRequest.PostMessage)
+            </div>
+            <div role="tabpanel" class="tab-pane" id="notes-@serviceRequest.ServiceRequestId">
+                <section id="section-case-comments-@serviceRequest.ServiceRequestId">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button class="btn btn-success btn-sm" type="button" onclick="showCommentForm(@(serviceRequest.ServiceRequestId))">
+                                <i class="fa fa-plus"></i> New Note
+                            </button>
+                        </div>
+                        <div id="comment-list-container-@serviceRequest.ServiceRequestId" class="panel-body">
+                            @Html.Partial("~/Views/Comment/_List.cshtml", serviceRequest.Comments)
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="details-@serviceRequest.ServiceRequestId">
+                <section id="section-case-details-@serviceRequest.ServiceRequestId">
+                    <div class="panel panel-default">
+                        <div id="servicerequest-edit-container" class="panel-heading">
+                            @Html.Partial("ServiceRequest/Edit", serviceRequest.Edit)
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+﻿@model IndexViewModel
+
+@{ ViewBag.Title = "Additionals"; }
+
+@Html.Partial("Additionals", Model.Additionals)
+
+@section Scripts {
+    @Html.Partial("AdditionalsJS")
+}

@@ -14,16 +14,17 @@ namespace WebApp.Views.Shared
         public string Code { get; set; }
         public string ColorCode { get; set; }
 
-        public static Func<LookupDto<T>, LookupViewModel<T>> FromLookupDto = e => FromLookupDtoExpr.Compile().Invoke(e);
-        public static Expression<Func<LookupDto<T>, LookupViewModel<T>>> FromLookupDtoExpr = e => e == null ? null : new LookupViewModel<T>
+        public static Func<LookupDto<T>, LookupViewModel<T>> FromLookupDto = e => e == null ? null : new LookupViewModel<T>
         {
             Id = e.Id,
             Name = e.Name,
             Code = e.Code,
             ColorCode = e.ColorCode
         };
+        public static Expression<Func<LookupDto<T>, LookupViewModel<T>>> FromLookupDtoExpr = e => LookupViewModel<T>.FromLookupDto.Invoke(e);
 
-        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromServiceDto = e => e == null ? null : new LookupViewModel<short>
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromServiceDtoExpr = e => FromServiceDto(e);
+        public static Func<LookupDto<short>, LookupViewModel<short>> FromServiceDto = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,
             Name = e.Name,
@@ -71,7 +72,8 @@ namespace WebApp.Views.Shared
             ColorCode = e.ColorCode
         };
 
-        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromTaskStatusDto = e => e == null ? null : new LookupViewModel<short>
+        public static Func<LookupDto<short>, LookupViewModel<short>> FromTaskStatusDto = dto => FromTaskStatusDtoExpr.Compile().Invoke(dto);
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromTaskStatusDtoExpr = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,
             Name = e.Name,

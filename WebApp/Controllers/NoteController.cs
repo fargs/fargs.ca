@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using WebApp.Library;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 

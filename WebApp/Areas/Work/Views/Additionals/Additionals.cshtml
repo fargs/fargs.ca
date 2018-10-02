@@ -1,0 +1,34 @@
+﻿@model AdditionalsViewModel
+
+@if (Model != null)
+{
+        <table class="table table-hover">
+            @foreach (var item in Model.Additionals)
+            {
+                <tr onclick="showCaseDetails(@item.ServiceRequestId)" ondblclick="showCaseDetails(@item.ServiceRequestId)" style="cursor:pointer;">
+                    <td>
+                        <strong style="color: @item.Service.ColorCode;">@item.Service.Code</strong>
+                    </td>
+                    <td>
+                        Due on @item.DueDate
+                    </td>
+                    <td>
+                        @item.ClaimantName
+                    </td>
+                    <td>
+                        @foreach (var collaborator in item.Collaborators)
+                        {
+                            <span>
+                                @Html.Partial("Initials", collaborator)
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+}
+else
+{
+    <p></p>
+    <p><strong> No additionals</strong></p>
+}

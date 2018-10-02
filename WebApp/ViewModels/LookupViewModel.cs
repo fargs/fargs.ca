@@ -78,7 +78,8 @@ namespace WebApp.ViewModels
             ColorCode = e.ColorCode
         };
 
-        public static Expression<Func<PersonDto, LookupViewModel<Guid>>> FromPersonDto = e => e == null ? null : new LookupViewModel<Guid>
+        public static Func<PersonDto, LookupViewModel<Guid>> FromPersonDto = person => FromPersonDtoExpr.Compile().Invoke(person);
+        public static Expression<Func<PersonDto, LookupViewModel<Guid>>> FromPersonDtoExpr = e => e == null ? null : new LookupViewModel<Guid>
         {
             Id = e.Id,
             Name = e.DisplayName,

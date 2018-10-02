@@ -3,5 +3,5 @@
 
 @foreach (var comment in Model.OrderByDescending(c => c.PostedDate))
 {
-    @Html.Partial("~/Views/Comment/Comment.cshtml", comment)
+    @Html.Partial("~/Views/Comment/_Comment.cshtml", comment)
 }

@@ -1,0 +1,46 @@
+﻿@model AppointmentViewModel
+
+<td style="vertical-align: text-top; width:40px;">
+    <strong style="color: @Model.Service.ColorCode;">@Model.Service.Code</strong>
+</td>
+<td style="vertical-align: text-top; width:30px;">
+    @if ((Model.NextTaskStatusForUser == null ? 0 : Model.NextTaskStatusForUser.Id) == TaskStatuses.Obsolete)
+    {
+        <span id="assessment-total-label" class="fa fa-frown-o" style="color: dodgerblue;" title="@(Model.CancellationStatus.IsNoShow ? "No Show" : "Late Cancellation")">&nbsp;</span>
+    }
+    else if ((Model.NextTaskStatusForUser == null ? 0 : Model.NextTaskStatusForUser.Id) == TaskStatuses.ToDo)
+    {
+        <span id="assessment-total-label" style="color: red;" class="small label label-danger">&nbsp;</span>
+    }
+    else if ((Model.NextTaskStatusForUser == null ? 0 : Model.NextTaskStatusForUser.Id) == TaskStatuses.Waiting)
+    {
+        <span id="assessment-total-label" style="cursor: pointer;" class="small label label-warning">&nbsp;</span>
+    }
+    else if ((Model.NextTaskStatusForUser == null ? 0 : Model.NextTaskStatusForUser.Id) == TaskStatuses.OnHold)
+    {
+        <span id="assessment-total-label" style="cursor: pointer;" class="small label label-info">&nbsp;</span>
+    }
+    else
+    {
+        <span id="assessment-total-label" class="fa fa-check" style="color: green;">&nbsp;</span>
+    }
+</td>
+<td style="vertical-align: text-top; width:80px;">
+    @Model.StartTime
+</td>
+<td style="vertical-align: text-top; max-width: 50px;" class="wordwrap-off">
+    @if (Model.HasNotes)
+    {
+        <i class="fa fa-sticky-note" style="color:goldenrod;"></i>
+    }
+    <span>@Model.ClaimantName</span>
+    <div>@Html.Partial("~/Views/Cancellation/CancellationStatus.cshtml", Model.CancellationStatus)</div>
+</td>
+<td style="vertical-align: text-top; width:100px;" class="text-right">
+
+    @foreach (var resource in Model.Resources)
+    {
+        <span>@Html.Partial("Initials", resource.Person)</span>
+    }
+    @Html.Partial("Initials", Model.Physician)
+</td>

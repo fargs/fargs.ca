@@ -64,6 +64,7 @@
     <Compile Include="AvailableSlot.cs" />
     <Compile Include="Extensions\InvoiceExtensions.cs" />
     <Compile Include="Extensions\ServiceRequestExtensions.cs" />
+    <Compile Include="Filters\CollaboratorFilters.cs" />
     <Compile Include="Filters\InvoiceDetailFilters.cs" />
     <Compile Include="Filters\InvoiceFilters.cs" />
     <Compile Include="Filters\ServiceRequestCommentFilters.cs" />

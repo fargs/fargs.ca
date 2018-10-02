@@ -1,0 +1,47 @@
+﻿@model TaskFilterViewModel
+@functions {
+    string IsSelected(string item, short[] selectedItems)
+    {
+        foreach (var selected in selectedItems)
+        {
+            if (item == selected.ToString())
+            {
+                return " selected";
+            }
+        }
+        return "";
+    }
+}
+<div style="display:flex; flex-flow:row wrap; justify-content:flex-start;">
+    <div style="width:120px; padding:5px;">
+        <select id="task-status-filter" data-mvcgrid-type="filter" data-mvcgrid-option="TaskStatusId" data-mvcgrid-apply-filter="change" class="form-control" multiple>
+            <option>Select a status</option>
+            @foreach (var statusId in Model.TaskStatuses)
+            {
+                <option value="@statusId.Value">@statusId.Text</option>
+            }
+        </select>
+    </div>
+    <div style="width:200px; padding:5px;">
+        <select id="task-filter" data-mvcgrid-type="filter" data-mvcgrid-option="TaskId" data-mvcgrid-apply-filter="change" class="form-control" multiple>
+            <option>Select a task</option>
+            @foreach (var taskId in Model.Tasks)
+            {
+                <option value="@taskId.Value">@taskId.Text</option>
+            }
+        </select>
+    </div>
+    <div style="width:50px; padding:5px;">
+        <button onclick="archiveCompletedTasks()"><i class="fa fa-archive"></i></button>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+    //$(function () {
+    //    $('#task-status-filter').select2({ placeholder: { id: "", text: "All Statuses" }, allowClear: true });
+    //    $('#task-filter').select2({ placeholder: { id: "", text: "All Tasks" }, allowClear: true });
+    //    $('#city-filter').select2({ placeholder: { id: "", text: "All Cities" }, allowClear: true });
+    //})
+</script>
+}

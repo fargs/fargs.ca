@@ -5,7 +5,6 @@ using Orvosi.Data;
 using WebApp.Areas.Shared;
 using WebApp.Library;
 using WebApp.Library.Filters;
-using WebApp.Views.Calendar;
 using WebApp.Areas.Work.Views.DaySheet;
 using Features = Orvosi.Shared.Enums.Features;
 
@@ -35,7 +34,13 @@ namespace WebApp.Areas.Work.Controllers
 
             return View(viewModel);
         }
+        [ChildActionOnlyOrAjax]
+        public PartialViewResult CalendarNavigation(DateTime? selectedDate, CalendarViewOptions viewOptions = CalendarViewOptions.Day)
+        {
+            var viewModel = new CalendarNavigationViewModel(selectedDate, now, Request, viewOptions);
 
+            return PartialView(viewModel);
+        }
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.ServiceRequest.View)]
         public PartialViewResult DaySheet(DateTime selectedDate)
@@ -44,6 +49,7 @@ namespace WebApp.Areas.Work.Controllers
 
             return PartialView(viewModel);
         }
+
 
         //[Route("Work/DaySheet/ServiceRequest/ActionMenu")]
         //[ChildActionOnlyOrAjax]

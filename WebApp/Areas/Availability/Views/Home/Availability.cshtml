@@ -1,0 +1,13 @@
+﻿@model AvailabilityViewModel
+<h2>@Model.MonthName</h2>
+@if (Model.AvailableDays.Count() <= 0)
+{
+    <div>No available days</div>
+}
+@foreach (var day in Model.AvailableDays.OrderBy(c => c.Day))
+{
+    <div class="row o-dashboard-tr">
+        @Html.Partial("../Availability/AvailableDay", day)
+    </div>
+}
+

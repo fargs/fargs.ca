@@ -14,14 +14,15 @@ namespace WebApp.Views.Shared
         {
             LoggedInRoleId = identity.GetRoleId();
             LoggedInUserId = identity.GetGuidUserId();
-            PhysicianId = identity.GetUserContext().Id;
+            var physicianContext = identity.GetPhysicianContext();
+            PhysicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
             AuthorizedFeatures = identity.GetFeatures();
             Now = now;
         }
 
         public Guid LoggedInRoleId { get; set; }
         public Guid LoggedInUserId { get; set; }
-        public Guid PhysicianId { get; set; }
+        public Guid? PhysicianId { get; set; }
         public IEnumerable<short> AuthorizedFeatures { get; set; }
         public DateTime Now { get; set; }
     }

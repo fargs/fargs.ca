@@ -21,6 +21,16 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest.TaskList
         MyActiveTasks
     }
 
+    public enum ViewTarget
+    {
+        DaySheet,
+        DueDates,
+        Schedule,
+        Additionals,
+        Details,
+        Modal
+    }
+
     public class TaskListViewModel : ViewModelBase
     {
         public TaskListViewModel(ServiceRequestDto serviceRequest, TaskListViewModelFilter filter, IList<PersonDto> teamMembers, IIdentity identity, DateTime now) : base(identity, now)

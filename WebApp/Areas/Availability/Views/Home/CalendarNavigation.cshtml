@@ -1,0 +1,17 @@
+﻿@model CalendarNavigationViewModel
+
+<div style="display:flex; padding-top:10px; padding-bottom:10px;">
+    <div class="input-group">
+        <div class="input-group-btn">
+            <button type="button" onclick="navigateToMonth('@Model.PreviousMonth')" class="btn btn-default"><i class="fa fa-chevron-left"></i></button>
+            <button type="button" onclick="navigateToMonth('@Model.NextMonth')" class="btn btn-default"><i class="fa fa-chevron-right"></i></button>
+        </div>
+        <div class="input-group date" style="width:100%" id="calendar-navigation-datepicker">
+            <input class="form-control" data-val="true" data-val-required="The Day field is required." id="selected-month" name="SelectedMonth" size="16" type="text" value="@Model.SelectedMonth">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <div class="input-group-btn">
+            <button type="button" onclick="navigateToMonth('@Model.ThisMonth')" class="btn btn-default">This Month</button>
+        </div>
+    </div>
+</div>

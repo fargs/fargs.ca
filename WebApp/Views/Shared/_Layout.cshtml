@@ -49,6 +49,7 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
 </head>
 <body>
     <div class="navbar navbar-default">
@@ -94,7 +95,7 @@
                         }
                         if (features.Contains(Features.Availability.AvailabilitySection))
                         {
-                            <li>@Html.ActionLink("Availability", "", "Availability", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Availability", "Home", "Availability", new { area = "" }, null)</li>
                         }
                         if (features.Contains(Features.Accounting.AccountingSection))
                         {
@@ -243,7 +244,6 @@
     automatically in just a few seconds.
     -->
 
-    @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/signalr")
     @Scripts.Render("~/bundles/markdown")
 

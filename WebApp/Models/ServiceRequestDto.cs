@@ -295,7 +295,10 @@ namespace WebApp.Models
             PhysicianId = sr.PhysicianId,
             CompanyId = sr.CompanyId,
             ServiceId = sr.ServiceId,
-            AppointmentDate = sr.AppointmentDate
+            AppointmentDate = sr.AppointmentDate,
+            CancelledDate = sr.CancelledDate,
+            IsNoShow = sr.IsNoShow,
+            IsLateCancellation = sr.IsLateCancellation
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromEntityForCancellationForm = sr => new ServiceRequestDto

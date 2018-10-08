@@ -10,6 +10,7 @@ namespace WebApp.Models
     public class AddressDto
     {
         public int Id { get; set; }
+        public Guid? OwnerGuid { get; set; }
         public string Name { get; set; }
         public string Address1 { get; set; }
         public string PostalCode { get; set; }
@@ -30,6 +31,7 @@ namespace WebApp.Models
         public static Expression<Func<Address, AddressDto>> FromAddressEntity = e => e == null ? null : new AddressDto
         {
             Id = e.Id,
+            OwnerGuid = e.OwnerGuid,
             Name = e.Name,
             CityId = e.City_CityId.Id,
             City = e.City_CityId.Name,

@@ -18,6 +18,35 @@ namespace WebApp.Models
         public IEnumerable<AvailableSlotDto> AvailableSlots { get; set; }
         public IEnumerable<AvailableDayResourceDto> Resources { get; set; }
 
+        public bool AreAllSlotsFilled
+        {
+            get
+            {
+                return AvailableSlots.Any() && AvailableSlots.All(a => a.ServiceRequestIds.Any()) ? true : false;
+            }
+        }
+        public bool AreSomeSlotsFilled
+        {
+            get
+            {
+                return AvailableSlots.Any(a => a.ServiceRequestIds.Any()) ? true : false;
+            }
+        }
+        public bool AreNoSlotsFilled
+        {
+            get
+            {
+                return AvailableSlots.Any() && !AreSomeSlotsFilled ? true : false;
+            }
+        }
+        public bool HasSlots
+        {
+            get
+            {
+                return AvailableSlots.Any();
+            }
+        }
+
         public static Expression<Func<AvailableDay, AvailableDayDto>> FromAvailableDayEntity = e => e == null ? null : new AvailableDayDto
         {
             Id = e.Id,

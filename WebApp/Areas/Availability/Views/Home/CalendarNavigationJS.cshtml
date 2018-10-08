@@ -1,0 +1,27 @@
+﻿<script type="text/javascript">
+
+    function initCalendarNavigation() {
+        $('#calendar-navigation-datepicker').datepicker({
+            startView: "months",
+            minViewMode: "months",
+            format: 'MM yyyy',
+            autoclose: true
+        });
+
+        $('#calendar-navigation-datepicker').on('changeDate', calendarNavigationValueChanged);
+    }
+    function calendarNavigationValueChanged() {
+        let date = $('#calendar-navigation-datepicker').datepicker('getFormattedDate');
+        $('#selected-month').val(date);
+        calendarNavigationChanged(date);
+    }
+    function navigateToMonth(selectedDate) {
+        $('#calendar-navigation-datepicker').datepicker('setDate', selectedDate);
+        $('#selected-month').val(selectedDate);
+        calendarNavigationChanged(selectedDate);
+    }
+    function calendarNavigationChanged(date) {
+        // this should be overriden
+    }
+
+</script>

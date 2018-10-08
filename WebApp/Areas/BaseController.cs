@@ -25,12 +25,15 @@ namespace WebApp.Areas.Shared
         {
             this.now = now;
             identity = principal.Identity;
+
             loggedInUserContext = identity.GetLoggedInUserContext();
-            physicianContext = principal.Identity.GetPhysicianContext();
-            loggedInUserId = principal.Identity.GetGuidUserId();
-            physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
-            physicianOrLoggedInUserId = physicianId.GetValueOrDefault(loggedInUserId);
+            physicianContext = identity.GetPhysicianContext();
             loggedInRoleId = identity.GetRoleId();
+
+            loggedInUserId = loggedInUserContext.Id;
+            physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
+
+            physicianOrLoggedInUserId = physicianId.GetValueOrDefault(loggedInUserId);
         }
 
     }

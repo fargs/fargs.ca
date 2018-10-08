@@ -26,7 +26,7 @@ namespace WebApp
             // it is NOT necessary to register your controllers
 
             // e.g. container.RegisterType<ITestService, TestService>();
-            container.RegisterTypes(AllClasses.FromAssemblies(), WithMappings.FromMatchingInterface, WithName.Default);
+            //container.RegisterTypes(AllClasses.FromAssemblies(), WithMappings.FromMatchingInterface, WithName.Default);
 
             container.RegisterType<DateTime>(new InjectionFactory(c => DateTime.Now));
 

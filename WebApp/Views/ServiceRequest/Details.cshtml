@@ -37,22 +37,22 @@
 @section Scripts {
 
 
-    <script src="@Url.Content("~/signalr/hubs")"></script>
-    @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
-    @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
-    @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
-    @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
-    @Html.Partial("~/Views/Box/BoxJS.cshtml")
-    @Html.Partial("~/Views/Resources/_ResourceJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/InvoiceJS.cshtml")
-    @Html.Partial("~/Views/Comment/_CommentJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/Company/_CompanyJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/Service/_ServiceJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/Claimant/_ClaimantJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/Address/_AddressJS.cshtml")
-    @Html.Partial("~/Views/Teleconference/_TeleconferenceJS.cshtml")
-    @Html.Partial("~/Views/ServiceRequest/_DetailsJS.cshtml")
+    @*<script src="@Url.Content("~/signalr/hubs")"></script>
+        @Html.Partial("~/Views/ServiceRequestMessage/_ServiceRequestMessageJS.cshtml", new ServiceRequestMessageJSViewModel { ServiceRequestIds = new int[1] { Model.ServiceRequestId } })
+        @Html.Partial("~/Views/ServiceRequestTask/TaskListJS.cshtml")
+        @Html.Partial("~/Views/Cancellation/CancellationJS.cshtml")
+        @Html.Partial("~/Views/Reschedule/_RescheduleJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/CaseJS.cshtml")
+        @Html.Partial("~/Views/Box/BoxJS.cshtml")
+        @Html.Partial("~/Views/Resources/_ResourceJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/InvoiceJS.cshtml")
+        @Html.Partial("~/Views/Comment/_CommentJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/Company/_CompanyJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/Service/_ServiceJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/Claimant/_ClaimantJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/Address/_AddressJS.cshtml")
+        @Html.Partial("~/Views/Teleconference/_TeleconferenceJS.cshtml")
+        @Html.Partial("~/Views/ServiceRequest/_DetailsJS.cshtml")*@
 
     <script>
         $(document).ready(function () {

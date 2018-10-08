@@ -1,7 +1,6 @@
 ﻿@using WebApp.Library.Extensions
-@using WebApp.ViewModels.CalendarViewModels
-@using WebApp.ViewModels
-@using WebApp.ViewDataModels
+@using WebApp.Areas.Work.Views.DaySheet.ServiceRequest.TaskList
+@using WebApp.Views.ServiceRequestMessage
 @model IndexViewModel
 @{
     var roleId = User.Identity.GetRoleId();
@@ -12,7 +11,7 @@
     ViewBag.Title = "DaySheet";
 }
 
-@Html.Partial("~/Views/Calendar/CalendarNavigation.cshtml", Model.CalendarNavigation)
+@Html.Partial("CalendarNavigation", Model.CalendarNavigation)
 
 @Html.Partial("DaySheet", Model.DaySheet)
 

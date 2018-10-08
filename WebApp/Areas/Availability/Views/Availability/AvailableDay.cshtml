@@ -1,0 +1,89 @@
+﻿@model AvailableDayViewModel
+@{
+    var day = Model;
+}
+<div class="col-md-1" style="padding:15px 15px">
+    <div class="btn-group btn-group-sm">
+        <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-ellipsis-h fa-lg"></i>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a onclick="showAvailableDayAddressForm(@day.Id)"><i class="fa fa-map-marker"></i> Address</a></li>
+            <li><a onclick="showAvailableDayCompanyForm(@day.Id)"><i class="fa fa-building"></i> Company</a></li>
+            <li><a onclick="showAvailableDayResourceForm(@day.Id)"><i class="fa fa-user"></i> Resources</a></li>
+            @if (day.AreNoSlotsFilled)
+            {
+                <li class="divider"></li>
+                <li><a onclick="cancelDay(@day.Id)"><i class="fa fa-remove"></i> Delete Day</a></li>
+            }
+        </ul>
+    </div>
+</div>
+<div class="col-md-1" style="padding:15px 15px">
+    <div>
+        <strong class="pull-left">@day.Day.ToString("dddd dd")<span>&nbsp;&nbsp;</span></strong><br />
+        @if (day.AreAllSlotsFilled)
+        {
+            <span class="label label-success">Filled</span>
+        }
+        else if (day.AreSomeSlotsFilled || day.AreNoSlotsFilled)
+        {
+            <span class="label label-warning">Slots Available</span>
+        }
+    </div>
+</div>
+<div class="col-md-2" style="padding:15px 15px">
+    <div>
+        @if (day.Address == null)
+        {
+            <span class="small text-muted">No Location</span>
+        }
+        else
+        {
+            <span class="small">@string.Format("{0} - {1}", day.Address.Name, day.Address.City)</span>
+        }
+    </div>
+    <div>
+        @if (day.Company == null)
+        {
+            <span class="small text-muted">No Company</span>
+        }
+        else
+        {
+            <span class="small">@day.Company.Name</span>
+        }
+    </div>
+    <div>
+        <div id="availableday-resource-container-@day.Id">
+            @if (day.Resources.Any())
+            {
+                @Html.Partial("../Availability/_AvailableDayResourceList", day.Resources)
+            }
+            else
+            {
+            <span class="small text-muted">No Resources</span>
+            }
+        </div>
+    </div>
+
+</div>
+<div class="col-md-8" style="padding:15px 15px">
+    @if (!day.AvailableSlots.Any())
+    {
+        <button type="button" class="btn btn-success" onclick="showAddSlotsForm(@day.Id)">Add Slots</button>
+    }
+    else
+    {
+        <ul class="list-inline" style="margin-bottom: 0;">
+            @foreach (var slot in day.AvailableSlots.OrderBy(c => c.StartTime))
+            {
+                <li style="vertical-align:top;">
+                    <div class="pull-left" style="vertical-align: top">
+                        @Html.Partial("../Availability/AvailableSlot", slot)
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>

@@ -1,4 +1,5 @@
 ﻿using Orvosi.Data;
+using Orvosi.Data.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,16 @@ namespace WebApp.Areas.Work.Controllers
             var viewModel = new IndexViewModel(additionals);
 
             return View(viewModel);
+        }
+        public ActionResult AdditionalsCount()
+        {
+            var count = db.ServiceRequests
+                .CanAccess(this.loggedInUserId, physicianId, loggedInRoleId)
+                .AreNotClosed()
+                .HaveNoAppointment()
+                .Count();
+
+            return PartialView("AdditionalsHeading", count);
         }
     }
 }

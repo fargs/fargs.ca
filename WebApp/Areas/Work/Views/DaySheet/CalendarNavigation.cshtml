@@ -1,7 +1,8 @@
 ﻿@model CalendarNavigationViewModel
 @{
     var now = SystemTime.Now();
-    var view = (ViewContext.RouteData.Values["contentView"] != null ? ViewContext.RouteData.Values["contentView"].ToString() : "Day").ToEnum<CalendarViewOptions>();
+    //var view = (ViewContext.RouteData.Values["contentView"] != null ? ViewContext.RouteData.Values["contentView"].ToString() : "Day").ToEnum<CalendarViewOptions>();
+    var view = Model.ViewOptions;
 }
 @functions
 {
@@ -52,13 +53,15 @@
     <div>
         @if (view == CalendarViewOptions.Month)
         {
-            <div id="calendarnav-month-filter" data-date="@Model.SelectedDate.ToOrvosiDateFormat()"></div>
+            <div id="calendarnav-month-filter" data-date="@Model.SelectedDateFormatted">
+
+            </div>
         }
         else
         {
             <a href="@Model.Links["Previous"]" class="btn btn-default"><i class="fa fa-chevron-left"></i></a>
             <a href="@Model.Links["Next"]" class="btn btn-default"><i class="fa fa-chevron-right"></i></a>
-            <input type="date" required value="@Model.SelectedDate.ToOrvosiDateFormat()" onchange="window.location.href='@Url.Content("~/Work/DaySheet?selectedDate=")' + this.value" />
+            <input type="date" required value="@Model.SelectedDateFormatted" onchange="window.location.href='@Url.Content("~/Work/DaySheet?selectedDate=")' + this.value" />
             <a href="@Model.Links["Now"]" class="btn btn-default">@ViewText(view)</a>
         }
     </div>

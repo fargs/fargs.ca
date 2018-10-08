@@ -5,14 +5,19 @@ using System.Linq;
 using System.Web;
 using WebApp.Library.Extensions;
 
-namespace WebApp.Views.Calendar
+namespace WebApp.Areas.Work.Views.DaySheet
 {
+    public enum CalendarViewOptions
+    {
+        Year, Month, Week, Day
+    }
     public class CalendarNavigationViewModel
     {
         public CalendarNavigationViewModel(DateTime? selectedDate, DateTime now, HttpRequestBase request, CalendarViewOptions viewOptions = CalendarViewOptions.Day)
         {
             Links = new Dictionary<string, Uri>();
             SelectedDate = selectedDate.GetValueOrDefault(now).Date;
+            SelectedDateFormatted = SelectedDate.ToOrvosiDateFormat();
             ViewOptions = viewOptions;
 
             Links.Add("Previous", request.Url.AddQuery("SelectedDate", GetPreviousDate(SelectedDate, ViewOptions)));
@@ -29,6 +34,7 @@ namespace WebApp.Views.Calendar
         public CalendarViewOptions ViewOptions { get; internal set; }
         public Dictionary<string, Uri> Links { get; set; }
         public DateTime SelectedDate { get; private set; }
+        public string SelectedDateFormatted { get; private set; }
 
 
         private string GetPreviousDate(DateTime selectedDate, CalendarViewOptions contentView)

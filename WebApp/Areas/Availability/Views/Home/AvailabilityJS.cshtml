@@ -1,0 +1,223 @@
+﻿<script type="text/javascript">
+
+    function showAddDayForm() {
+        let params = new URLSearchParams(document.location.search.substring(1));
+        let selectedDate = params.get("SelectedDate");
+
+        var url = '@Url.Content("~/Availability/Availability/ShowAddDayForm")';
+
+        $.get(url, {
+            selectedDate: selectedDate
+        }).done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function saveAddDayForm(form) {
+        var url = '@Url.Content("~/Availability/Availability/SaveAddDayForm")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Saved successfully.");
+            availabilityChanged();
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function showAddSlotsForm(availableDayId) {
+        var url = '@Url.Content("~/Availability/Availability/ShowAddSlotsForm")';
+        $.get(url, {
+            availableDayId: availableDayId
+        }).done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function saveAddSlotsForm(form) {
+        var url = '@Url.Content("~/Availability/Availability/SaveAddSlotsForm")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Saved successfully.");
+            availabilityChanged();
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function showAvailableDayResourceForm(availableDayId) {
+        var url = '@Url.Content("~/Availability/Availability/ShowNewAvailableDayResourceForm")';
+
+        $.get(url, {
+            availableDayId: availableDayId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveAvailableDayResource(form, notify) {
+
+        var url = '@Url.Content("~/Availability/Availability/SaveAvailableDayResourceForm")';
+        var notifyUrl = '@Url.Content("~/Availability/NotifyTeam")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Saved successfully.");
+            availableDayResourcesChanged(data.AvailableDayId);
+
+            if (notify)
+                $.post(notifyUrl, {
+                    availableDayResourceId: data.availableDayResourceId
+                })
+                .done(function () { toastr.success("The team has been notified."); })
+                .error(function () { toastr.error("Something unexpected occurred with sending the notifications."); });
+
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function showDeleteAvailableDayResourceForm(resourceId) {
+        var url = '@Url.Content("~/Availability/Availability/ShowDeleteAvailableDayResourceForm")';
+
+        $.get(url, {
+            resourceId: resourceId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function deleteAvailableDayResource(resourceId) {
+
+        var url = '@Url.Content("~/Availability/Availability/DeleteAvailableDayResource")';
+
+        $.post(url,
+            { resourceId: resourceId }
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Deleted successfully.");
+            availableDayResourcesChanged(data.availableDayId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    };
+
+    function cancelDay(availableDayId) {
+
+        var url = '@Url.Content("~/Availability/Availability/CancelDay")';
+
+        $.post(url,
+            {
+                id: availableDayId
+            }
+        ).done(function (data) {
+            toastr.success("Day cancelled successfully.");
+            availabilityChanged();
+        }).error(function (result) {
+            toastr.error("Error occurred cancelling slot.");
+        });
+    }
+
+    function cancelSlot(availableSlotId) {
+
+        var url = '@Url.Content("~/Availability/Availability/CancelSlot")';
+
+        $.post(url,
+            {
+                availableSlotId: availableSlotId
+            }
+        ).done(function (data) {
+            toastr.success("Slot cancelled successfully.");
+            availableSlotChanged(data.availableSlotId);
+        }).error(function (result) {
+            toastr.error("Error occurred cancelling slot.");
+        });
+    }
+
+    function showAvailableDayCompanyForm(availableDayId) {
+        var url = '@Url.Content("~/Availability/Availability/ShowAvailableDayCompanyForm")';
+
+        $.get(url, {
+            availableDayId: availableDayId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveAvailableDayCompanyForm(form) {
+        var url = '@Url.Content("~/Availability/Availability/SaveAvailableDayCompanyForm")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Saved successfully.");
+            availableDayCompanyChanged(data.AvailableDayId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function showAvailableDayAddressForm(availableDayId) {
+        var url = '@Url.Content("~/Availability/Availability/ShowAvailableDayAddressForm")';
+
+        $.get(url, {
+            availableDayId: availableDayId
+        }).done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveAvailableDayAddressForm(form) {
+        var url = '@Url.Content("~/Availability/Availability/SaveAvailableDayAddressForm")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Saved successfully.");
+            availableDayAddressChanged(data.AvailableDayId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function availableSlotChanged(availableSlotId) {
+        window.location.reload();
+    }
+
+    function availableDayResourcesChanged(availableDayId) {
+        var url = '@Url.Content("~/Availability/Availability/AvailableDayResourceList")';
+
+        $.get(url, {
+            availableDayId: availableDayId
+        }).done(function (result) {
+            $('#availableday-resource-container-' + availableDayId).html(result);
+        });
+    };
+
+    function availabilityChanged() {
+        // template method that needs to be overriden
+    }
+
+    function availableDayCompanyChanged(availableDayId) {
+        // template method that needs to be overriden
+    }
+
+    function availableDayAddressChanged(AvailableDayId){
+        // template method that needs to be overriden
+    }
+
+</script>

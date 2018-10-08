@@ -2,6 +2,7 @@
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.ViewDataModels
 @using LinqKit
+@using WebApp.Views.Teleconference
 @model CaseViewModel
 
 @{
@@ -51,9 +52,9 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                <div id="comment-list-container-@Model.ServiceRequestId">
+                @*<div id="comment-list-container-@Model.ServiceRequestId">
                     @Html.Partial("~/Views/Comment/_List.cshtml", CommentListViewModel.FromCaseViewModel.Invoke(Model))
-                </div>
+                </div>*@
             </div>
         </div>
         <div class="panel panel-default panel-shadow">
@@ -126,9 +127,9 @@
                     }
                     else
                     {
-                        <section id="resources-container-@Model.ServiceRequestId">
+                        @*<section id="resources-container-@Model.ServiceRequestId">
                             @Html.Partial("~/Views/Resources/_Resources.cshtml", Model.Resources)
-                        </section>
+                        </section>*@
                     }
                 </div>
             </div>
@@ -148,30 +149,30 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-body">
-                <div class="collapse" id="new-task-form-container-@Model.ServiceRequestId">
-                    @Html.Partial("~/Views/ServiceRequestTask/NewTaskForm.cshtml", new TaskViewModel() { ServiceRequestId = Model.ServiceRequestId })
-                </div>
-                <div id="tasklist-container-@Model.ServiceRequestId">
-                    @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs()
-                    {
-                        Area = "",
-                        ServiceRequestId = Model.ServiceRequestId,
-                        ViewFilter = filter,
-                        ViewTarget = target
-                    })
-                </div>
+                @*<div class="collapse" id="new-task-form-container-@Model.ServiceRequestId">
+            @Html.Partial("~/Views/ServiceRequestTask/NewTaskForm.cshtml", new TaskViewModel() { ServiceRequestId = Model.ServiceRequestId })
+        </div>
+        <div id="tasklist-container-@Model.ServiceRequestId">
+            @Html.Action("TaskList", "ServiceRequestTask", new TaskListArgs()
+            {
+                Area = "",
+                ServiceRequestId = Model.ServiceRequestId,
+                ViewFilter = filter,
+                ViewTarget = target
+            })
+        </div>*@
             </div>
         </div>
     </div>
     <div class="col-md-4">
         @if (features.Contains(Features.ServiceRequest_Teleconference.Read))
         {
-            <div id="teleconference-list-@Model.ServiceRequestId">
+            @*<div id="teleconference-list-@Model.ServiceRequestId">
                 @if (Model.Teleconferences.Any())
                 {
                     @Html.Partial("~/Views/Teleconference/_List.cshtml", TeleconferenceListViewModel.FromCaseViewModel.Invoke(Model))
                 }
-            </div>
+            </div>*@
         }
         @if (features.Contains(Features.Accounting.ViewInvoice))
         {
@@ -217,10 +218,10 @@
                     Live Chat
                 </div>
                 <div class="panel-body">
-                    <div id="livechat-container-@Model.ServiceRequestId">
+                    @*<div id="livechat-container-@Model.ServiceRequestId">
                         @Html.Partial("~/Views/ServiceRequestMessage/_Discussion.cshtml", Model)
                         @Html.Partial("~/Views/ServiceRequestMessage/_PostMessage.cshtml", Model)
-                    </div>
+                    </div>*@
                 </div>
             </div>
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Views.Calendar;
 
 namespace WebApp.Areas.Work.Views.Additionals
 {

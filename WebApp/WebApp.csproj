@@ -484,6 +484,7 @@
     <Compile Include="Areas\Calendar\Views\Calendar\DateRangeViewModel.cs" />
     <Compile Include="Areas\Calendar\Views\Calendar\DayView.cs" />
     <Compile Include="Areas\Calendar\Views\Calendar\Index.cs" />
+    <Compile Include="Areas\Invoices\InvoicesAreaRegistration.cs" />
     <Compile Include="Areas\Pricing\PricingAreaRegistration.cs" />
     <Compile Include="Areas\Reports\Controllers\HomeController.cs" />
     <Compile Include="Areas\Reports\Controllers\InvoiceController.cs" />
@@ -541,6 +542,7 @@
     <Content Include="Areas\Availability\Views\Availability\AvailableDay.cshtml" />
     <Content Include="Areas\Availability\Views\Availability\AddSlotsForm.cshtml" />
     <Content Include="Areas\Availability\Views\Availability\AvailableSlot.cshtml" />
+    <Content Include="Areas\Invoices\Views\web.config" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -1836,6 +1838,9 @@
     <Folder Include="Areas\Calendar\Models\" />
     <Folder Include="Areas\Calendar\Views\Shared\" />
     <Folder Include="Areas\Calendar\Views\Shell\" />
+    <Folder Include="Areas\Invoices\Controllers\" />
+    <Folder Include="Areas\Invoices\Models\" />
+    <Folder Include="Areas\Invoices\Views\Shared\" />
     <Folder Include="Areas\Pricing\Controllers\" />
     <Folder Include="Areas\Pricing\Models\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />

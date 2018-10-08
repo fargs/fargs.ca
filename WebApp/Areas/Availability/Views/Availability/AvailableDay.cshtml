@@ -9,10 +9,12 @@
             <span class="sr-only">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
+            <li><a onclick="showAddSlotsForm(@day.Id)"><i class="fa fa-calendar"></i> Add Slots</a></li>
+            <li class="divider"></li>
             <li><a onclick="showAvailableDayAddressForm(@day.Id)"><i class="fa fa-map-marker"></i> Address</a></li>
             <li><a onclick="showAvailableDayCompanyForm(@day.Id)"><i class="fa fa-building"></i> Company</a></li>
             <li><a onclick="showAvailableDayResourceForm(@day.Id)"><i class="fa fa-user"></i> Resources</a></li>
-            @if (day.AreNoSlotsFilled)
+            @if (day.AreNoSlotsFilled || !day.HasSlots)
             {
                 <li class="divider"></li>
                 <li><a onclick="cancelDay(@day.Id)"><i class="fa fa-remove"></i> Delete Day</a></li>

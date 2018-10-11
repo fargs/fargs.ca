@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Orvosi.Data;
+using System;
 using System.Security.Principal;
 using System.Web.Mvc;
-using Orvosi.Data;
 using WebApp.Areas.Shared;
-using WebApp.Library;
-using WebApp.Library.Filters;
 using WebApp.Areas.Work.Views.DaySheet;
+using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
+using FluentDateTime;
+using WebApp.Areas.Work.Views.DaySheet.ServiceRequest;
+using WebApp.Areas.Work.Views.DaySheet.ServiceRequest.TaskList;
 
 namespace WebApp.Areas.Work.Controllers
 {
     public class DaySheetController : BaseController
     {
-        private DateTime _selectedDate;
         private OrvosiDbContext db;
 
         public DaySheetController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
@@ -21,13 +22,13 @@ namespace WebApp.Areas.Work.Controllers
         }
         public ActionResult Index(DateTime? selectedDate)
         {
-            _selectedDate = selectedDate.GetValueOrDefault(now);
-
+            selectedDate = selectedDate.GetValueOrDefault(now);
+            
             // calendar navigation component
-            var calendarNavigation = new CalendarNavigationViewModel(_selectedDate, now, this.Request);
+            var calendarNavigation = new CalendarNavigationViewModel(db, selectedDate.Value, Request, identity, now);
 
             // day sheet component
-            var daySheet = new DaySheetViewModel(_selectedDate, db, identity, now);
+            var daySheet = new DaySheetViewModel(selectedDate.Value, db, identity, now);
 
             // this view model
             var viewModel = new IndexViewModel(calendarNavigation, daySheet);
@@ -35,9 +36,10 @@ namespace WebApp.Areas.Work.Controllers
             return View(viewModel);
         }
         [ChildActionOnlyOrAjax]
-        public PartialViewResult CalendarNavigation(DateTime? selectedDate, CalendarViewOptions viewOptions = CalendarViewOptions.Day)
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public PartialViewResult CalendarNavigation(DateTime selectedDate)
         {
-            var viewModel = new CalendarNavigationViewModel(selectedDate, now, Request, viewOptions);
+            var viewModel = new CalendarNavigationViewModel(db, selectedDate, Request, identity, now);
 
             return PartialView(viewModel);
         }
@@ -49,7 +51,30 @@ namespace WebApp.Areas.Work.Controllers
 
             return PartialView(viewModel);
         }
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public PartialViewResult TaskList(int serviceRequestId)
+        {
+            var viewModel = new TaskListViewModel(serviceRequestId, db, identity, now);
 
+            return PartialView("ServiceRequest/TaskList/TaskList", viewModel);
+        }
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public PartialViewResult ServiceRequestSummary(int serviceRequestId)
+        {
+            var viewModel = new SummaryViewModel(serviceRequestId, db);
+
+            return PartialView("ServiceRequest/Summary", viewModel);
+        }
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public PartialViewResult ServiceRequestActionMenu(int serviceRequestId)
+        {
+            var viewModel = new ActionMenuViewModel(serviceRequestId, db, identity, now);
+
+            return PartialView("ServiceRequest/ActionMenu", viewModel);
+        }
 
         //[Route("Work/DaySheet/ServiceRequest/ActionMenu")]
         //[ChildActionOnlyOrAjax]
@@ -57,7 +82,7 @@ namespace WebApp.Areas.Work.Controllers
         //public PartialViewResult ServiceRequestActionMenu(int serviceRequestId)
         //{
         //    var viewModel = new ActionMenuViewModel(db, serviceRequestId, identity, now);
-            
+
         //    return PartialView("~/Views/Work/DaySheet/ServiceRequest/ActionMenu.cshtml", viewModel);
         //}
 

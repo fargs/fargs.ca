@@ -20,47 +20,56 @@ namespace WebApp.Areas.Work.Views.DaySheet
     {
         public DaySheetViewModel(DateTime selectedDate, OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
-            var physician = PersonDto.FromAspNetUserEntity.Invoke(db.AspNetUsers.Single(a => a.Id == PhysicianId));
-            var teamMembers = db.Collaborators
-                .ForPhysician(physician.Id)
-                .Select(PersonDto.FromCollaboratorEntity.Expand())
-                .ToList();
-            teamMembers.Add(physician);
+            if (!PhysicianId.HasValue)
+            {
+                PhysicianIsNotSelected = true;
+            }
+            else
+            {
+                var physician = PersonDto.FromAspNetUserEntity.Invoke(db.AspNetUsers.Single(a => a.Id == PhysicianId));
+                var teamMembers = db.Collaborators
+                    .ForPhysician(physician.Id)
+                    .Select(PersonDto.FromCollaboratorEntity.Expand())
+                    .ToList();
+                teamMembers.Add(physician);
 
-            var serviceRequests = db.ServiceRequests
-                .AsNoTracking()
-                .AsExpandable()
-                .AreScheduledThisDay(selectedDate)
-                .AreNotCancellations()
-                .CanAccess(LoggedInUserId, PhysicianId, LoggedInRoleId)
-                .Select(ServiceRequestDto.FromServiceRequestEntityForDaySheet(LoggedInUserId))
-                .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
-                .AsEnumerable();
+                var serviceRequests = db.ServiceRequests
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .AreScheduledThisDay(selectedDate)
+                    .AreNotCancellations()
+                    .CanAccess(LoggedInUserId, PhysicianId, LoggedInRoleId)
+                    .Select(ServiceRequestDto.FromServiceRequestEntityForDaySheet(LoggedInUserId))
+                    .OrderBy(sr => sr.AppointmentDate).ThenBy(sr => sr.StartTime)
+                    .AsEnumerable();
 
-            var invoiceIds = serviceRequests.SelectMany(sr => sr.InvoiceDetails.Select(id => id.InvoiceId)).ToArray();
-            var invoices = db.Invoices
-                .AsNoTracking()
-                .AsExpandable()
-                .Where(i => invoiceIds.Contains(i.Id))
-                .Select(InvoiceDto.FromInvoiceEntity)
-                .AsEnumerable();
+                var invoiceIds = serviceRequests.SelectMany(sr => sr.InvoiceDetails.Select(id => id.InvoiceId)).ToArray();
+                var invoices = db.Invoices
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(i => invoiceIds.Contains(i.Id))
+                    .Select(InvoiceDto.FromInvoiceEntity)
+                    .AsEnumerable();
 
-            var teleconferences = db.Teleconferences
-                .AsNoTracking()
-                .AsExpandable()
-                .AreScheduledThisDay(selectedDate)
-                .Select(TeleconferenceDto.FromEntityForDaySheet)
-                .AsEnumerable();
+                var teleconferences = db.Teleconferences
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .AreScheduledThisDay(selectedDate)
+                    .Select(TeleconferenceDto.FromEntityForDaySheet)
+                    .AsEnumerable();
 
-            Day = selectedDate;
-            DayName = selectedDate.ToOrvosiLongDateFormat();
-            Companies = serviceRequests.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct();
-            Addresses = serviceRequests.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray();
-            ServiceRequests = serviceRequests.Select(sr => new ServiceRequestViewModel(sr, invoices, teamMembers, identity, now));
-            Teleconferences = teleconferences.Select(TeleconferenceViewModel.FromTeleconferenceDtoForDaySheet);
+                Day = selectedDate;
+                DayFormatted = selectedDate.ToOrvosiDateFormat();
+                DayName = selectedDate.ToOrvosiLongDateFormat();
+                Companies = serviceRequests.Select(sr => sr.Company == null ? "No company" : sr.Company.Name).Distinct();
+                Addresses = serviceRequests.Select(sr => sr.Address == null ? "No address" : sr.Address.City).Distinct().ToArray();
+                ServiceRequests = serviceRequests.Select(sr => new ServiceRequestViewModel(sr, invoices, teamMembers, identity, now));
+                Teleconferences = teleconferences.Select(TeleconferenceViewModel.FromTeleconferenceDtoForDaySheet);
+            }
         }
-
+        public bool PhysicianIsNotSelected { get; set; } = false;
         public DateTime Day { get; set; }
+        public string DayFormatted { get; set; }
         public string DayName { get; set; }
         public IEnumerable<string> Addresses { get; set; }
         public IEnumerable<string> Companies { get; set; }

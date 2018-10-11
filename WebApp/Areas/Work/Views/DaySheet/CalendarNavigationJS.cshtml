@@ -1,0 +1,42 @@
+﻿<script type="text/javascript">
+
+    function initCalendarNavigation() {
+        $('#calendar-navigation-datepicker').datepicker({
+            startView: "months",
+            minViewMode: "months",
+            format: "MM yyyy",
+            autoclose: true
+        });
+
+        $('#calendar-navigation-datepicker').on('changeMonth', calendarNavigationValueChanged);
+
+        $('#daysheet-dropdownlist-selected').on('change', daySheetDropDownListValueChanged);
+    }
+    function calendarNavigationValueChanged(e) {
+        let val = e.date.toISOString().substring(0, 10);
+        $('#selected-month').val(val);
+        calendarNavigationChanged(val);
+    }
+    function daySheetDropDownListValueChanged() {
+        let date = $('#daysheet-dropdownlist-selected').val();
+        calendarNavigationChanged(date);
+    }
+    function navigateToMonth(selectedDate) {
+        //$('#calendar-navigation-datepicker').datepicker('setDate', selectedDate);
+        $('#selected-month').val(selectedDate);
+        calendarNavigationChanged(selectedDate);
+    }
+    function navigateToDate(selectedDate) {
+        //$('#calendar-navigation-datepicker').datepicker('setDate', selectedDate);
+        $('#selected-month').val(selectedDate);
+        $('#daysheet-dropdownlist-selected').val(selectedDate);
+        calendarNavigationChanged(selectedDate);
+    }
+    function calendarNavigationChanged(date) {
+        // this should be overriden
+    }
+    function daySheetChanged(selectedDate) {
+        // this should be overriden
+    }
+
+</script>

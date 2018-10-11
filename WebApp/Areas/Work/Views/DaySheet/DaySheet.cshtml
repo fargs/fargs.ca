@@ -4,7 +4,11 @@
 @using Features = Orvosi.Shared.Enums.Features
 @using WebApp.FormModels
 @model DaySheetViewModel
-@if (Model != null)
+@if (Model.PhysicianIsNotSelected)
+{
+    <div>Please select a physician</div>
+}
+else if (Model.ServiceRequests.Any())
 {
     <div id="teleconference-list">
         @Html.Partial("~/Views/Teleconference/_ListByDay.cshtml", Model.Teleconferences)

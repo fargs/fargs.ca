@@ -1,14 +1,16 @@
-﻿<script>
-    function saveCaseDetails(form) {
-        let url = '@Url.Content("~/ServiceRequest/ChangeCaseDetails")';
-        $.post(url,
-            form.serialize()
-        ).done(function (data) {
-            toastr.success("Changes was saved successfully.");
-            serviceRequestDetailsChanged(data.serviceRequestId);
+﻿@model DaySheetViewModel
+<script>
+    function teleconferencesChanged() {
+
+        refreshTeleconferences('@Model.DayFormatted');
+    }
+    function refreshTeleconferences(date) {
+        $.get('@Url.Content("~/Teleconference/ListByDay")',
+        {
+            day: date
         })
-        .error(function (result) {
-            toastr.error("Changes were not saved.");
+        .done(function (result) {
+            document.getElementById('teleconference-list').innerHTML = result;
         });
     }
 </script>

@@ -1,86 +1,91 @@
 ﻿using FluentDateTime;
+using LinqKit;
+using Orvosi.Data;
+using Orvosi.Data.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Web;
+using System.Web.Mvc;
 using WebApp.Library.Extensions;
+using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Work.Views.DaySheet
 {
-    public enum CalendarViewOptions
+    public class CalendarNavigationViewModel : ViewModelBase
     {
-        Year, Month, Week, Day
-    }
-    public class CalendarNavigationViewModel
-    {
-        public CalendarNavigationViewModel(DateTime? selectedDate, DateTime now, HttpRequestBase request, CalendarViewOptions viewOptions = CalendarViewOptions.Day)
+        private OrvosiDbContext db;
+        private IEnumerable<DateTime> daySheets;
+        public CalendarNavigationViewModel(OrvosiDbContext db, DateTime selectedDate, HttpRequestBase request, IIdentity identity, DateTime now) : base(identity, now)
         {
+            this.db = db;
+
+            // this loads the selected month, previous month, and next month.
+            LoadDaySheets(db, selectedDate);
+
+            DaySheets = GetDaySheetsOfSelectedMonth(selectedDate);
+
+            SelectedDate = selectedDate.ToOrvosiDateFormat();
+            SelectedMonth = selectedDate.ToString("MMMM yyyy");
+
+            PreviousMonth = GetFirstDaySheetOfPreviousMonth(selectedDate).ToOrvosiDateFormat();
+            NextMonth = GetFirstDaySheetOfNextMonth(selectedDate).ToOrvosiDateFormat();
+            
+            Today = now.ToOrvosiDateFormat();
+
             Links = new Dictionary<string, Uri>();
-            SelectedDate = selectedDate.GetValueOrDefault(now).Date;
-            SelectedDateFormatted = SelectedDate.ToOrvosiDateFormat();
-            ViewOptions = viewOptions;
-
-            Links.Add("Previous", request.Url.AddQuery("SelectedDate", GetPreviousDate(SelectedDate, ViewOptions)));
-            Links.Add("Next", request.Url.AddQuery("SelectedDate", GetNextDate(SelectedDate, ViewOptions)));
-            Links.Add("Now", request.Url.AddQuery("SelectedDate", now.ToOrvosiDateFormat()));
-
-            Links.Add("Year", request.Url.AddQuery("ContentView", "Year"));
-            Links.Add("Month", request.Url.AddQuery("ContentView", "Month"));
-            Links.Add("Week", request.Url.AddQuery("ContentView", "Week"));
-            Links.Add("Day", request.Url.AddQuery("ContentView", "Day"));
-            Links.Add("Today", request.Url.AddQuery("ContentView", "Day"));
-
+            Links.Add("Previous", request.Url.AddQuery("SelectedDate", PreviousMonth));
+            Links.Add("Next", request.Url.AddQuery("SelectedDate", NextMonth));
         }
-        public CalendarViewOptions ViewOptions { get; internal set; }
-        public Dictionary<string, Uri> Links { get; set; }
-        public DateTime SelectedDate { get; private set; }
-        public string SelectedDateFormatted { get; private set; }
+        public string SelectedMonth { get; private set; }
+        public string PreviousMonth { get; private set; }
+        public string NextMonth { get; private set; }
+        public Dictionary<string, Uri> Links { get; private set; }
+        public string SelectedDate { get; private set; }
+        public string Today { get; private set; }
+        public IEnumerable<SelectListItem> DaySheets { get; private set; }
 
-
-        private string GetPreviousDate(DateTime selectedDate, CalendarViewOptions contentView)
+        private DateTime GetFirstDaySheetOfPreviousMonth(DateTime selectedDate)
         {
-            DateTime result;
-            switch (contentView)
-            {
-                case CalendarViewOptions.Year:
-                    result = selectedDate.PreviousYear();
-                    break;
-                case CalendarViewOptions.Month:
-                    result = selectedDate.PreviousMonth();
-                    break;
-                case CalendarViewOptions.Week:
-                    result = selectedDate.FirstDayOfWeek().Previous(DayOfWeek.Sunday);
-                    break;
-                case CalendarViewOptions.Day:
-                    result = selectedDate.AddDays(-1);
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-            return result.ToOrvosiDateFormat();
+            var day = daySheets
+                .FirstOrDefault(ds => ds.FirstDayOfMonth() == selectedDate.PreviousMonth().FirstDayOfMonth());
+
+            return (day == DateTime.MinValue ? selectedDate.PreviousMonth().FirstDayOfMonth() : day);
         }
-
-        private string GetNextDate(DateTime selectedDate, CalendarViewOptions contentView)
+        private DateTime GetFirstDaySheetOfNextMonth(DateTime selectedDate)
         {
-            DateTime result;
-            switch (contentView)
-            {
-                case CalendarViewOptions.Year:
-                    result = selectedDate.NextYear();
-                    break;
-                case CalendarViewOptions.Month:
-                    result = selectedDate.NextMonth();
-                    break;
-                case CalendarViewOptions.Week:
-                    result = selectedDate.Next(DayOfWeek.Sunday);
-                    break;
-                case CalendarViewOptions.Day:
-                    result = selectedDate.AddDays(1);
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-            return result.ToOrvosiDateFormat();
+            var day = daySheets
+                .FirstOrDefault(ds => ds.FirstDayOfMonth() == selectedDate.NextMonth().FirstDayOfMonth());
+
+            return (day == DateTime.MinValue ? selectedDate.NextMonth().FirstDayOfMonth() : day);
+        }
+        private IEnumerable<SelectListItem> GetDaySheetsOfSelectedMonth(DateTime selectedDate)
+        {
+            var days = daySheets
+                .Where(ds => ds.FirstDayOfMonth() == selectedDate.FirstDayOfMonth());
+
+            return days
+                .Select(d => new SelectListItem
+                {
+                    Value = d.ToOrvosiDateFormat(),
+                    Text = d.ToString("dd dddd")
+                });
+        }
+        private void LoadDaySheets(OrvosiDbContext db, DateTime selectedDate)
+        {
+            var startDate = selectedDate.PreviousMonth().FirstDayOfMonth();
+            var endDate = selectedDate.NextMonth().LastDayOfMonth();
+            daySheets = db.ServiceRequests
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .AreScheduledBetween(startDate, endDate)
+                    .AreNotCancellations()
+                    .CanAccess(LoggedInUserId, PhysicianId, LoggedInRoleId)
+                    .Select(sr => sr.AppointmentDate.Value)
+                    .Distinct()
+                    .OrderBy(sr => sr)
+                    .ToList();
         }
     }
 }

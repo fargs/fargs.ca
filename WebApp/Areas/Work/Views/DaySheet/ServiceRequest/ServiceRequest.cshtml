@@ -11,10 +11,10 @@
 <div class="row o-dashboard-tr">
     <div class="col-md-6 o-dashboard-td">
         <div style="display:flex;">
-            <div id="case-container-@serviceRequest.ServiceRequestId" style="margin-right:auto;">
+            <div id="summary-container-@serviceRequest.ServiceRequestId" style="margin-right:auto;">
                 @Html.Partial("ServiceRequest/Summary", serviceRequest.Summary)
             </div>
-            <div id="actionmenu-@serviceRequest.ServiceRequestId" style="margin-left:auto;">
+            <div id="actionmenu-container-@serviceRequest.ServiceRequestId" style="margin-left:auto;">
                 @Html.Partial("ServiceRequest/ActionMenu", serviceRequest.ActionMenu)
             </div>
         </div>

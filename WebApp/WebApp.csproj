@@ -543,9 +543,11 @@
     <Content Include="Areas\Availability\Views\Availability\AddSlotsForm.cshtml" />
     <Content Include="Areas\Availability\Views\Availability\AvailableSlot.cshtml" />
     <Content Include="Areas\Invoices\Views\web.config" />
+    <Content Include="Areas\Work\Views\DaySheet\CalendarNavigationJS.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
+    <Compile Include="Areas\Work\Views\DaySheet\_ViewModels\DaySheetDropDownList.cs" />
     <Compile Include="Areas\Work\Views\Schedule\_ViewModels\IndexViewModel.cs" />
     <Compile Include="Areas\Work\Views\Schedule\Week\_ViewModels\AppointmentViewModel.cs" />
     <Compile Include="Areas\Work\Views\Schedule\_ViewModels\ScheduleViewModel.cs" />

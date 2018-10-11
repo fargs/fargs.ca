@@ -409,7 +409,7 @@ namespace WebApp.Models
                     })
         };
 
-        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntitySummary = sr => new ServiceRequestDto
+        public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForDaySheetSummary = sr => new ServiceRequestDto
         {
             Id = sr.Id,
             ClaimantName = sr.ClaimantName,
@@ -426,7 +426,8 @@ namespace WebApp.Models
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),
-            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser)
+            Physician = PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser),
+            ServiceRequestStatus = LookupDto<short>.FromServiceRequestStatusEntity.Invoke(sr.ServiceRequestStatu)
         };
 
         public static Expression<Func<ServiceRequest, ServiceRequestDto>> FromServiceRequestEntityForInvoice = sr => new ServiceRequestDto

@@ -17,7 +17,7 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest
         {
             SetValues(serviceRequest);
         }
-        public ActionMenuViewModel(OrvosiDbContext db, int serviceRequestId, IIdentity identity, DateTime now) : base(identity, now)
+        public ActionMenuViewModel(int serviceRequestId, OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             var serviceRequest = db.ServiceRequests
                 .AsExpandable()

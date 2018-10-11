@@ -53,7 +53,7 @@ namespace WebApp.Models
                 else
                     Features = db.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
 
-                userIdentity.GetClaimsIdentity().AddClaim(new Claim("Features", Features.ToJson()));
+                userIdentity.AddClaim(new Claim("Features", Features.ToJson()));
 
 
                 IQueryable<AspNetUser> userSelectListQuery;
@@ -74,11 +74,11 @@ namespace WebApp.Models
                         .Select(u => u.User);
                 }
 
-
-                userIdentity.GetClaimsIdentity().AddClaim(new Claim("Physicians", userSelectListQuery
+                userIdentity.AddClaim(new Claim("Physicians", userSelectListQuery
                     .Select(u => u.Id)
                     .ToArray().ToJson()));
 
+                
             }
 
             return userIdentity;

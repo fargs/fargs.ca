@@ -503,7 +503,7 @@ namespace WebApp.Controllers
                     DisplayName = user.DisplayName
                 }.ToJson()));
             }
-            AuthenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true });
+            AuthenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true,  });
 
             return Redirect(Request.UrlReferrer.ToString());
         }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
+using LinqKit;
+using Orvosi.Data;
+using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
 using WebApp.Library;
 using WebApp.Models;
@@ -69,7 +72,38 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest.TaskList
             // Create the lookup for the team member list, each task will remove the selected item
             Tasks = query.Select(t => new TaskViewModel(t, serviceRequest.Physician, teamMembers, identity, now));
         }
+        public TaskListViewModel(int serviceRequestId, OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        {
+            // Get the related physician (could create a projection here but this reasonable as well)
+            var physician = db.ServiceRequests
+                .AsNoTracking()
+                .AsExpandable()
+                .WithId(serviceRequestId)
+                .Select(sr => PhysicianDto.FromAspNetUserEntity.Invoke(sr.Physician.AspNetUser))
+                .Single();
 
+            var teamMembers = db.Collaborators
+                .AsNoTracking()
+                .AsExpandable()
+                .ForPhysician(physician.Id)
+                .Select(PersonDto.FromCollaboratorEntity.Expand())
+                .ToList();
+            teamMembers.Add(physician);
+
+            ServiceRequestId = serviceRequestId;
+            var query = db.ServiceRequestTasks
+                .AsNoTracking()
+                .AsExpandable()
+                .Where(srt => srt.ServiceRequestId == serviceRequestId)
+                .Select(TaskDto.FromServiceRequestTaskEntity.Expand())
+                .AsEnumerable()
+                .AreOnCriticalPathOrAssignedToUser(LoggedInUserId)
+                .OrderBy(t => t.DueDate)
+                .ThenBy(t => t.Sequence);
+
+            // Create the lookup for the team member list, each task will remove the selected item
+            Tasks = query.Select(t => new TaskViewModel(t, physician, teamMembers, identity, now));
+        }
         public int ServiceRequestId { get; set; }
         public IEnumerable<TaskViewModel> Tasks { get; set; }
     }

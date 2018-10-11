@@ -10,7 +10,10 @@ namespace WebApp.Library.Helpers
 {
     public static class HtmlHelpers
     {
-
+        public static string IsActive(this HtmlHelper html, string control, string action)
+        {
+            return IsActive(html, control, action, string.Empty);
+        }
         public static string IsActive(this HtmlHelper html,
                                         string control,
                                         string action,

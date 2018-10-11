@@ -1,5 +1,6 @@
 ﻿<script type="text/javascript">
 
+    // Commands
     function noShow(serviceRequestId, isNoShow) {
         let url = '@Url.Content("~/ServiceRequest/ToggleNoShow")';
         $.post(url,
@@ -8,8 +9,11 @@
                 IsNoShow: isNoShow
             }
         ).done(function (data) {
+            refreshTaskList(data.serviceRequestId);
+            refreshServiceRequestSummary(data.serviceRequestId);
+            refreshServiceRequestActionMenu(data.serviceRequestId);
+
             serviceRequestStatusChanged(data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
         });
     }
     function onHold(serviceRequestId, isOnHold) {
@@ -20,24 +24,102 @@
                 IsOnHold: isOnHold
             }
         ).done(function (data) {
+            // bulk update bypasses the taskChanged handler
+            refreshTaskList(serviceRequestId);
+            // service request status
+            refreshServiceRequestSummary(data.serviceRequestId);
+            refreshServiceRequestActionMenu(data.serviceRequestId);
+
             serviceRequestStatusChanged(data.serviceRequestId);
-            tasklistChanged(data.serviceRequestId);
+
+            // navigation
             showCommentForm(serviceRequestId, null, 4); // 4 = OnHold
         });
     }
 
+    // Task List Event Handlers (override in parent containers if needed)
+    function taskSelected(serviceRequestTaskId) {
+        showTaskTool(serviceRequestTaskId);
+    }
+    function taskChanged(serviceRequestTaskId, serviceRequestId) {
+        refreshTaskList(serviceRequestId);
+    }
+    function taskDeleted(serviceRequestTaskId, serviceRequestId) {
+        refreshTaskList(serviceRequestId);
+    }
+    function tasklistChanged(serviceRequestId) {
+        refreshTaskList(serviceRequestId);
+    }
+    // Invoice List Event Handlers
+    function invoiceChanged(invoiceId, serviceRequestId) {
+        refreshInvoiceList(serviceRequestId);
+    }
+
+    function invoiceListChanged(serviceRequestId) {
+        refreshInvoiceList(serviceRequestId);
+    }
+
+    function invoiceErrors(entityValidationErrorsViewModel) {
+        var selector = "#invoice-list-container-" + $(entityValidationErrorsViewModel).data().id;
+        $(selector).before(entityValidationErrorsViewModel);
+    }
+    
+    // private functions
+    function refreshServiceRequestSummary(serviceRequestId) {
+        $.get('@Url.Content("~/Work/DaySheet/ServiceRequestSummary")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('summary-container-' + serviceRequestId).innerHTML = result;
+            });
+    }
+    function refreshServiceRequestActionMenu(serviceRequestId) {
+        $.get('@Url.Content("~/Work/DaySheet/ServiceRequestActionMenu")',
+            {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('actionmenu-container-' + serviceRequestId).innerHTML = result;
+            });
+    }
+    function refreshTaskList(serviceRequestId) {
+        let url = '@Url.Content("~/Work/DaySheet/TaskList")';
+        $.get(url,
+            {
+                ServiceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('tasklist-container-' + serviceRequestId).innerHTML = result;
+            });
+    }
+    function refreshInvoiceList(serviceRequestId) {
+        $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                $('#invoice-list-container-' + serviceRequestId).html(result);
+                console.log('from invoice list changed');
+            });
+    }
+
+    // Navigation
     function showCaseDetails(serviceRequestId) {
         let url = '@Url.Content("~/ServiceRequest/Details/")' + serviceRequestId;
         window.location = url;
     }
-
-    function showCaseDetailsModal(serviceRequestId) {
-        let url = '@Url.Content("~/ServiceRequest/Details2")';
-        $.get(url, {
-            serviceRequestId: serviceRequestId
-        }).done(function (result) {
-            $('#modal-content').html(result);
-            $('#modal-container').modal('toggle');
+    function showTaskTool(serviceRequestTaskId) {
+        $.get('@Url.Content("~/ServiceRequestTask/GetRelatedServiceRequestId/")', {
+            serviceRequestTaskId: serviceRequestTaskId
+        })
+        .done(function (data) {
+            if (data.taskId === 24) // enum Tasks.SubmitInvoice
+            {
+                $('#tabs-' + data.serviceRequestId + ' a[href="#invoices-' + data.serviceRequestId + '"]').tab('show');
+            }
+            else {
+                $('#tabs-' + data.serviceRequestId + ' a[href="#live-chat-' + data.serviceRequestId + '"]').tab('show');
+            }
         });
     }
 </script>

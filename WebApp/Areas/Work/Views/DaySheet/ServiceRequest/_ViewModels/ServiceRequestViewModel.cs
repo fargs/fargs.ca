@@ -24,7 +24,7 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest
             Edit = EditFormModel.FromServiceRequestDto(dto);
             ActionMenu = new ActionMenuViewModel(dto, identity, now);
 
-            Comments = dto.Comments.Select(CommentViewModel.FromCommentDto);
+            CommentList = new CommentListViewModel(dto);
             CommentCount = dto.Comments.Count();
             Discussion = DiscussionViewModel.FromServiceRequestDto(dto);
             PostMessage = MessageFormModel.FromServiceRequestDto(dto);
@@ -63,7 +63,7 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest
             Edit = EditFormModel.FromServiceRequestDto(serviceRequest);
             ActionMenu = new ActionMenuViewModel(serviceRequest, identity, now);
 
-            Comments = serviceRequest.Comments.Select(CommentViewModel.FromCommentDto);
+            CommentList = new CommentListViewModel(serviceRequest);
             CommentCount = serviceRequest.Comments.Count();
             Discussion = DiscussionViewModel.FromServiceRequestDto(serviceRequest);
             PostMessage = MessageFormModel.FromServiceRequestDto(serviceRequest);
@@ -77,7 +77,7 @@ namespace WebApp.Areas.Work.Views.DaySheet.ServiceRequest
         public EditFormModel Edit { get; set; }
         public ActionMenuViewModel ActionMenu { get; set; }
         public TaskListViewModel TaskList { get; set; }
-        public IEnumerable<CommentViewModel> Comments { get; set; }
+        public CommentListViewModel CommentList { get; set; }
         public int CommentCount { get; set; }
         public DiscussionViewModel Discussion { get; set; }
         public MessageFormModel PostMessage { get; set; }

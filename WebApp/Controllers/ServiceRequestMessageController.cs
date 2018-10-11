@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using WebApp.Library;
 using WebApp.Library.Filters;
 using WebApp.Models;
-using WebApp.ViewModels;
+using WebApp.Views.ServiceRequestMessage;
 using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
@@ -32,13 +32,13 @@ namespace WebApp.Controllers
                 .Select(ServiceRequestDto.FromEntityForMessages.Expand())
                 .Single();
 
-            var viewModel = CaseViewModel.FromServiceRequestDto.Invoke(dto);
+            var viewModel = DiscussionViewModel.FromServiceRequestDto(dto);
             return PartialView("_Discussion", viewModel);
         }
 
         public JsonResult PostMessage(int serviceRequestId, string message)
         {
-            var newMessage = new Orvosi.Data.ServiceRequestMessage()
+            var newMessage = new ServiceRequestMessage()
             {
                 Id = Guid.NewGuid(),
                 Message = message,

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WebApp.ViewModels;
+using WebApp.Views.Shared;
 
-namespace WebApp.FormModels
+namespace WebApp.Views.Comment
 {
     public class CommentForm
     {

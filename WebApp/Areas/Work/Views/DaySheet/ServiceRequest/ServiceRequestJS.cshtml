@@ -63,6 +63,10 @@
         var selector = "#invoice-list-container-" + $(entityValidationErrorsViewModel).data().id;
         $(selector).before(entityValidationErrorsViewModel);
     }
+    // Comments Event Handlers
+    function commentsChanged(serviceRequestId) {
+        refreshComments(serviceRequestId);
+    }
     
     // private functions
     function refreshServiceRequestSummary(serviceRequestId) {
@@ -98,8 +102,15 @@
                 serviceRequestId: serviceRequestId
             })
             .done(function (result) {
-                $('#invoice-list-container-' + serviceRequestId).html(result);
-                console.log('from invoice list changed');
+                document.getElementById('invoice-list-container-' + serviceRequestId).innerHTML = result;
+            });
+    }
+    function refreshComments(serviceRequestId) {
+        $.get('@Url.Content("~/Comment/List/")', {
+                serviceRequestId: serviceRequestId
+            })
+            .done(function (result) {
+                document.getElementById('comment-list-container-' + serviceRequestId).innerHTML = result;
             });
     }
 

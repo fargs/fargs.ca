@@ -30,7 +30,7 @@ namespace WebApp.Areas.Work.Views.Tasks
             }).ToList();
             if (task.AssignedToId.HasValue)
             {
-                AssignedToSelectList.Remove(AssignedToSelectList.Single(m => m.Value == task.AssignedToId.Value.ToString()));
+                AssignedToSelectList.Remove(AssignedToSelectList.SingleOrDefault(m => m.Value == task.AssignedToId.Value.ToString()));
             }
         }
         public long Id { get; set; }

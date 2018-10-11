@@ -26,7 +26,7 @@
         <ul class="nav nav-tabs" role="tablist" id="tabs-@serviceRequest.ServiceRequestId">
             <li role="presentation" class="active"><a href="#live-chat-@serviceRequest.ServiceRequestId" aria-controls="Live Chat" role="tab" data-toggle="tab">Live Chat</a></li>
             <li role="presentation">
-                <a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(serviceRequest.Comments.Any() ? " (" + serviceRequest.Comments.Count() + ")" : "" )</a>
+                <a href="#notes-@serviceRequest.ServiceRequestId" aria-controls="Notes" role="tab" data-toggle="tab">Notes@(serviceRequest.CommentList.Comments.Any() ? " (" + serviceRequest.CommentList.Comments.Count() + ")" : "" )</a>
             </li>
             @if (features.Contains(Features.Accounting.CreateInvoice))
             {
@@ -55,10 +55,10 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="panel-body">
-                            @if (serviceRequest.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice).Any())
+                            @if (serviceRequest.CommentList.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice).Any())
                             {
                                 <div style="display:flex;">
-                                    @foreach (var comment in serviceRequest.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice))
+                                    @foreach (var comment in serviceRequest.CommentList.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice))
                                     {
                                         <div class="alert alert-warning" title="Posted on @comment.PostedDate.ToOrvosiDateTimeFormat()">
                                             <span>
@@ -88,7 +88,7 @@
                             </button>
                         </div>
                         <div id="comment-list-container-@serviceRequest.ServiceRequestId" class="panel-body">
-                            @Html.Partial("~/Views/Comment/_List.cshtml", serviceRequest.Comments)
+                            @Html.Partial("~/Views/Comment/_List.cshtml", serviceRequest.CommentList)
                         </div>
                     </div>
                 </section>

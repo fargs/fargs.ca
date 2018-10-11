@@ -602,7 +602,7 @@
     <Compile Include="FormModels\AvailableDayCompanyForm.cs" />
     <Compile Include="FormModels\BookingForm.cs" />
     <Compile Include="FormModels\CancellationForm.cs" />
-    <Compile Include="FormModels\CommentForm.cs" />
+    <Compile Include="Views\Comment\CommentForm.cs" />
     <Compile Include="FormModels\NoShowForm.cs" />
     <Compile Include="FormModels\PickupTasksAssignedToRoleForm.cs" />
     <Compile Include="FormModels\RequiredResourcesForm.cs" />
@@ -704,6 +704,7 @@
     <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BulkUpdateDueDateForm.cs" />
     <Compile Include="FormModels\BulkUpdateDueDateFormModel.cs" />
+    <Compile Include="Views\Comment\CommentListViewModel.cs" />
     <Compile Include="Views\Resources\ResourceViewModel.cs" />
     <Compile Include="Views\ServiceRequestMessage\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="Views\Shared\CaseNotificationViewModel.cs" />
@@ -711,7 +712,6 @@
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceNotificationViewModel.cs" />
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceViewModel.cs" />
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceListViewModel.cs" />
-    <Compile Include="ViewModels\CommentListViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\BulkUpdateDueDateViewModel.cs" />
     <Compile Include="ViewModels\ViewModelSelectList.cs" />
     <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
@@ -726,8 +726,7 @@
     <Compile Include="ViewModels\ChangeCompanyViewModel.cs" />
     <Compile Include="Areas\Work\Views\DaySheet\_ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="Components\Grid\GridColumn.cs" />
-    <Compile Include="ViewModels\CommentNotificationViewModel.cs" />
-    <Compile Include="ViewModels\CommentViewModel.cs" />
+    <Compile Include="Views\Comment\CommentNotificationViewModel.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\AgendaViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModels\DueDatesViewModel.cs" />

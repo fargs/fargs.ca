@@ -1,20 +1,18 @@
 ﻿using LinqKit;
 using Orvosi.Data;
-using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using WebApp.FormModels;
 using WebApp.Library;
 using WebApp.Library.Helpers;
 using WebApp.Models;
-using WebApp.ViewModels;
+using WebApp.Views.Comment;
+using WebApp.Views.Shared;
+
 namespace WebApp.Controllers
 {
     public class CommentController : BaseController
@@ -32,20 +30,8 @@ namespace WebApp.Controllers
 
         [HttpGet]
         public PartialViewResult List(int serviceRequestId)
-        {            
-            var dto = db.ServiceRequestComments
-                .CanAccess(loggedInUserId) //this filter is duplicated in the ServiceRequestDto.FromServiceRequestEntity projection
-                .Where(c => c.ServiceRequestId == serviceRequestId)
-                .Select(CommentDto.FromServiceRequestCommentEntity.Expand())
-                .ToList();
-
-            var commentViewModels = dto.AsQueryable().Select(CommentViewModel.FromCommentDto.Expand());
-            
-            var viewModel = new CommentListViewModel()
-            {
-                ServiceRequestId = serviceRequestId,
-                Comments = commentViewModels
-            };
+        {
+            var viewModel = new CommentListViewModel(serviceRequestId, db, identity, now);
             
             return PartialView("_List", viewModel);
         }

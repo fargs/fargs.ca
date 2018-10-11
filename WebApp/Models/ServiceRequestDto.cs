@@ -283,6 +283,7 @@ namespace WebApp.Models
 
                 Resources = sr.ServiceRequestResources.AsQueryable().Select(ResourceDto.FromServiceRequestResourceEntity.Expand()),
                 Comments = sr.ServiceRequestComments.Where(c => c.ServiceRequestCommentAccesses.Select(a => a.AspNetUser.Id).Contains(userId) || c.AspNetUser.Id == userId || c.ServiceRequest.PhysicianId == userId).OrderBy(srm => srm.PostedDate).AsQueryable().Select(CommentDto.FromServiceRequestCommentEntity.Expand()),
+                Messages = sr.ServiceRequestMessages.OrderBy(srm => srm.PostedDate).AsQueryable().Select(MessageDto.FromServiceRequestMessageEntity.Expand()),
                 Tasks = sr.ServiceRequestTasks.AsQueryable().Select(TaskDto.FromServiceRequestTaskEntity.Expand()),
                 Teleconferences = sr.Teleconferences.OrderBy(t => t.AppointmentDate).ThenBy(t => t.StartTime).AsQueryable().Select(TeleconferenceDto.FromEntity.Expand()),
                 InvoiceDetails = sr.InvoiceDetails.AsQueryable().Select(InvoiceDetailDto.FromInvoiceDetailEntity.Expand())

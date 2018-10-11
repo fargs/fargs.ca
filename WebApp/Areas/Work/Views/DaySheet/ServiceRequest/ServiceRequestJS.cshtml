@@ -51,8 +51,14 @@
         refreshTaskList(serviceRequestId);
     }
     // Invoice List Event Handlers
-    function invoiceChanged(invoiceId, serviceRequestId) {
-        refreshInvoiceList(serviceRequestId);
+    function invoiceChanged(invoiceId) {
+        $.get('@Url.Content("~/Accounting/GetRelatedServiceRequestId")',
+            {
+                invoiceId: invoiceId
+            })
+            .done(function (result) {
+                refreshInvoiceList(result.serviceRequestId);
+            });
     }
 
     function invoiceListChanged(serviceRequestId) {
@@ -98,7 +104,7 @@
             });
     }
     function refreshInvoiceList(serviceRequestId) {
-        $.get('@Url.Content("~/ServiceRequest/GetInvoices/")', {
+        $.get('@Url.Content("~/Work/DaySheet/InvoiceList/")', {
                 serviceRequestId: serviceRequestId
             })
             .done(function (result) {

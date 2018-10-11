@@ -9,6 +9,7 @@ using Features = Orvosi.Shared.Enums.Features;
 using FluentDateTime;
 using WebApp.Areas.Work.Views.DaySheet.ServiceRequest;
 using WebApp.Areas.Work.Views.DaySheet.ServiceRequest.TaskList;
+using WebApp.Areas.Work.Views.DaySheet.ServiceRequest.InvoiceList;
 
 namespace WebApp.Areas.Work.Controllers
 {
@@ -74,6 +75,14 @@ namespace WebApp.Areas.Work.Controllers
             var viewModel = new ActionMenuViewModel(serviceRequestId, db, identity, now);
 
             return PartialView("ServiceRequest/ActionMenu", viewModel);
+        }
+        [ChildActionOnlyOrAjax]
+        [AuthorizeRole(Feature = Features.ServiceRequest.View)]
+        public PartialViewResult InvoiceList(int serviceRequestId)
+        {
+            var viewModel = new InvoiceListViewModel(db, serviceRequestId, identity, now);
+
+            return PartialView("ServiceRequest/InvoiceList/InvoiceList", viewModel);
         }
 
         //[Route("Work/DaySheet/ServiceRequest/ActionMenu")]

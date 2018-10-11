@@ -17,8 +17,7 @@ namespace WebApp.Views.ServiceRequestMessage
         public LookupViewModel<Guid> PostedBy { get; set; }
         public int ServiceRequestId { get; set; }
 
-        public static Func<MessageDto, MessageViewModel> FromMessageDto = dto => FromMessageDtoExpr.Compile().Invoke(dto);
-        public static Expression<Func<MessageDto, MessageViewModel>> FromMessageDtoExpr = dto => dto == null ? null : new MessageViewModel
+        public static Func<MessageDto, MessageViewModel> FromMessageDto = dto => dto == null ? null : new MessageViewModel
         {
             Id = dto.Id,
             TimeZone = dto.TimeZone,
@@ -27,5 +26,6 @@ namespace WebApp.Views.ServiceRequestMessage
             PostedBy = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.PostedBy),
             ServiceRequestId = dto.ServiceRequestId
         };
+        public static Expression<Func<MessageDto, MessageViewModel>> FromMessageDtoExpr = dto => FromMessageDto(dto);
     }
 }

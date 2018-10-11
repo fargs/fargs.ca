@@ -36,6 +36,18 @@
             showCommentForm(serviceRequestId, null, 4); // 4 = OnHold
         });
     }
+    function saveCaseDetails(form) {
+        let url = '@Url.Content("~/ServiceRequest/ChangeCaseDetails")';
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            toastr.success("Changes was saved successfully.");
+            refreshServiceRequestSummary(data.serviceRequestId);
+        })
+        .error(function (result) {
+            toastr.error("Changes were not saved.");
+        });
+    }
 
     // Task List Event Handlers (override in parent containers if needed)
     function taskSelected(serviceRequestTaskId) {

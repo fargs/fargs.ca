@@ -420,9 +420,9 @@ namespace WebApp.Models
             IsNoShow = sr.IsNoShow,
             IsLateCancellation = sr.IsLateCancellation,
             ServiceRequestStatusId = sr.ServiceRequestStatusId,
-            HasErrors = sr.HasErrors,
-            HasWarnings = sr.HasWarnings,
-
+            SourceCompany = sr.SourceCompany,
+            MedicolegalTypeId = sr.MedicolegalTypeId,
+            MedicolegalType = LookupDto<short>.FromMedicolegalTypeEntity.Invoke(sr.MedicolegalType),
             Service = LookupDto<short>.FromServiceEntity.Invoke(sr.Service),
             Company = LookupDto<short>.FromCompanyEntity.Invoke(sr.Company),
             Address = AddressDto.FromAddressEntity.Invoke(sr.Address),

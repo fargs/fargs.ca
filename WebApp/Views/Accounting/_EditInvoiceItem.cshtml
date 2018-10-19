@@ -30,6 +30,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <input class="btn btn-success" type="button" onclick="invoiceItemSaveChanges()" value="Save" />
+        <input class="btn btn-success" type="button" onclick="invoiceItemSaveChanges(@(Model.Invoice.Id), @(Model.ServiceRequestId))" value="Save" />
     </div>
 </form>

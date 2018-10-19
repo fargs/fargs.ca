@@ -1,0 +1,34 @@
+﻿@using DanTup.Web
+@using WebApp.Library.Extensions
+@model ServiceRequestViewModel
+
+<div id="service-request-@Model.ServiceRequestId">
+    <h4>
+        <a target="_blank" href="~/ServiceRequest/Details/@Model.ServiceRequestId">@Model.ClaimantName (@Model.ServiceRequestId)</a>
+    </h4>
+    <div style="color: @Model.Service.ColorCode;">@Model.Service.Name</div>
+
+    <div>@Model.Company.Name</div>
+    @if (Model.Address != null)
+    {
+        <div>
+            <span>@Model.Address.City</span><span>, </span><span>@Model.Address.ProvinceCode.Split('-')[1]</span>
+        </div>
+    }
+    <div>
+        @Html.Partial("~/Views/Cancellation/CancellationStatus.cshtml", Model.CancellationStatus)
+    </div>
+    @if (Model.CommentList.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice).Any())
+    {
+        <div style="display:flex;">
+            @foreach (var comment in Model.CommentList.Comments.Where(c => c.CommentTypeId == CommentTypes.Invoice))
+            {
+                <div class="alert alert-warning" title="Posted on @comment.PostedDate.ToOrvosiDateTimeFormat()">
+                    <span>
+                        @Html.Markdown(comment.Message)
+                    </span>
+                </div>
+            }
+        </div>
+    }
+</div>

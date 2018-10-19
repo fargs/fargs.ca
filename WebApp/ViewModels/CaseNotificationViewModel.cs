@@ -43,7 +43,7 @@ namespace WebApp.ViewModels
             ServiceRequestStatusId = dto.ServiceRequestStatusId,
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
-            Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
+            Address = AddressViewModel.FromAddressDtoExpr.Invoke(dto.Address),
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Physician),
         };
     }

@@ -1,0 +1,74 @@
+﻿@model IndexViewModel
+@{
+    ViewBag.Title = "Unsent Invoices";
+}
+
+<div class="row">
+    <div id="calendar-navigation-container" class="col-md-2">
+        @Html.Partial("CalendarNavigation", Model.CalendarNavigation)
+    </div>
+
+    <div id="unsent-container" class="col-md-10">
+        @Html.Partial("Unsent", Model.Unsent)
+    </div>
+</div>
+
+@Html.Partial("ModalContainer")
+@Html.Partial("ModalContainerSmall")
+
+
+@section Scripts {
+
+    @Html.Partial("CalendarNavigationJS")
+    @Html.Partial("UnsentJS")
+
+    <script>
+
+        $(document).ready(function () {
+            // this is a function that is in CalendarNavigationJS (it inits bootstrap datepicker)
+            initCalendarNavigation();
+        });
+
+        // Event Handlers
+        function calendarNavigationChanged(selectedDate) {
+
+            refreshCalendarNavigation(selectedDate);
+            refreshUnsent(selectedDate);
+        }
+
+        // Private Functions
+        function refreshCalendarNavigation(selectedDate) {
+            let url = '@Url.Content("~/Invoices/Unsent/CalendarNavigation")';
+            $.get(url,
+            {
+                selectedDate: selectedDate // this variable is set at the top of this script section
+            })
+            .done(function (result) {
+                document.getElementById('calendar-navigation-container').innerHTML = result;
+
+                // this is also called in the onready function to init the bootstrap datepicker
+                initCalendarNavigation();
+
+                let url = new URL(window.location);
+                url.searchParams.set('SelectedDate', selectedDate);
+                history.pushState({}, "", url);
+            });
+        }
+
+        function refreshUnsent(selectedDate) {
+            let url = '@Url.Content("~/Invoices/Unsent/Unsent")';
+            $.get(url,
+            {
+                selectedDate: selectedDate
+            })
+            .done(function (result) {
+                document.getElementById('unsent-container').innerHTML = result;
+
+                let url = new URL(window.location);
+                url.searchParams.set('SelectedDate', selectedDate);
+                history.pushState({}, "", url);
+            });
+        }
+
+    </script>
+}

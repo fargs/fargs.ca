@@ -19,7 +19,7 @@ namespace WebApp.Views.Address
         public string TimeZone { get; set; }
         public string TimeZoneIana { get; set; }
 
-        public static Expression<Func<AddressDto, AddressViewModel>> FromAddressDto = dto => dto == null ? null : new AddressViewModel
+        public static Func<AddressDto, AddressViewModel> FromAddressDto = dto => dto == null ? null : new AddressViewModel
         {
             Id = dto.Id,
             Name = dto.Name,
@@ -30,5 +30,6 @@ namespace WebApp.Views.Address
             ProvinceCode = dto.ProvinceCode,
             TimeZone = dto.TimeZone
         };
+        public static Expression<Func<AddressDto, AddressViewModel>> FromAddressDtoExpr = dto => FromAddressDto(dto);
     }
 }

@@ -89,17 +89,17 @@
                                 </ul>
                             </li>
                         }
-                        if (features.Contains(Features.Work.WorkSection))
-                        {
-                            <li>@Html.ActionLink("Work", "DaySheet", "Work", new { area = "" }, null)</li>
-                        }
                         if (features.Contains(Features.Availability.AvailabilitySection))
                         {
-                            <li>@Html.ActionLink("Availability", "Home", "Availability", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Availability", "Index", "Home", new { area = "Availability" }, null)</li>
+                        }
+                        if (features.Contains(Features.Work.WorkSection))
+                        {
+                            <li>@Html.ActionLink("Work", "Index", "DaySheet", new { area = "Work" }, null)</li>
                         }
                         if (features.Contains(Features.Accounting.AccountingSection))
                         {
-                            <li>@Html.ActionLink("Invoices", "UnsentInvoices", "Accounting", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Invoices", "Index", "Unsent", new { area = "Invoices" }, null)</li>
                         }
                         if (features.Contains(Features.Services.Manage))
                         {

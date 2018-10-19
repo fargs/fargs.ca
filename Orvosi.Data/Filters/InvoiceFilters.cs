@@ -67,6 +67,10 @@ namespace Orvosi.Data.Filters
             return invoices;
         }
 
+        public static IQueryable<Invoice> AreInvoicedBetween(this IQueryable<Invoice> invoices, DateTime startDate, DateTime endDate)
+        {
+            return invoices.Where(c => c.InvoiceDate >= startDate && c.InvoiceDate < endDate);
+        }
         public static IQueryable<Invoice> AreWithinDateRange(this IQueryable<Invoice> invoices, DateTime now, int? year, int? month)
         {
             now = now.Date.AddDays(1);

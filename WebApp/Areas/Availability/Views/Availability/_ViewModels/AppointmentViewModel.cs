@@ -54,7 +54,7 @@ namespace WebApp.Areas.Availability.Views.Home
             CancellationStatus = CancellationStatusViewModel.FromServiceRequestDto.Invoke(dto),
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
-            Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
+            Address = AddressViewModel.FromAddressDtoExpr.Invoke(dto.Address),
             Physician = LookupViewModel<Guid>.FromPersonDto.Invoke(dto.Physician),
             Resources = dto.Resources.Where(r => r.RoleId != AspNetRoles.CaseCoordinator)
                 .Select(ResourceViewModel.FromResourceDto)

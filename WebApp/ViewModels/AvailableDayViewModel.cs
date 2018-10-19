@@ -30,7 +30,7 @@ namespace WebApp.ViewModels
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
             Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
-            Address = AddressViewModel.FromAddressDto.Invoke(e.Address),
+            Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
             AvailableSlots = e.AvailableSlots.AsQueryable().Select(AvailableSlotViewModel.FromAvailableSlotDto.Expand()),
             Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand())
         };
@@ -42,7 +42,7 @@ namespace WebApp.ViewModels
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
             Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
-            Address = AddressViewModel.FromAddressDto.Invoke(e.Address),
+            Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
             Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand())
         };
     }

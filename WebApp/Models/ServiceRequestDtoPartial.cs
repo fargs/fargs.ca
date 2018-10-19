@@ -73,11 +73,11 @@ namespace WebApp.Models
                 return AppointmentDate.HasValue && StartTime.HasValue ? AppointmentDate.Value.AddTicks(StartTime.HasValue ? StartTime.Value.Ticks : 0) : (DateTime?)null;
             }
         }
-        public DateTime? EffectiveDate
+        public DateTime ExpectedInvoiceDate
         {
             get
             {
-                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.HasValue ? DueDate.Value : (DateTime?)null;
+                return AppointmentDate.HasValue ? AppointmentDate.Value : DueDate.Value;
             }
         }
 

@@ -12,10 +12,40 @@
         return "";
     }
 }
+<style>
+    .multiselect,
+    .multiselect:focus,
+    .multiselect:active,
+    .multiselect:hover {
+        height: 100%;
+        border: 0;
+        outline: 0;
+        display: inline-block;
+        vertical-align: top;
+        overflow: hidden;
+        padding: 0;
+    }
+        .multiselect option,
+        .multiselect option[selected],
+        .multiselect option:hover,
+        .multiselect option:focus,
+        .multiselect option:active,
+        .multiselect option:checked {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    .multiselect option::before {
+        content: "\2610";
+        padding-right: 10px;
+    }
+    .multiselect option:checked::before {
+        content: "\2611";
+    }
+</style>
 <div style="display:flex; flex-flow:row wrap; justify-content:flex-start;">
     <div style="width:120px; padding:5px;">
-        <select id="task-status-filter" data-mvcgrid-type="filter" data-mvcgrid-option="TaskStatusId" data-mvcgrid-apply-filter="change" class="form-control" multiple>
-            <option>Select a status</option>
+        <h5>Status</h5>
+        <select id="task-status-filter" size="@Model.TaskStatuses.Count()" data-mvcgrid-type="filter" data-mvcgrid-option="TaskStatusId" data-mvcgrid-apply-filter="change" class="form-control multiselect" multiple>
             @foreach (var statusId in Model.TaskStatuses)
             {
                 <option value="@statusId.Value">@statusId.Text</option>
@@ -23,8 +53,8 @@
         </select>
     </div>
     <div style="width:200px; padding:5px;">
-        <select id="task-filter" data-mvcgrid-type="filter" data-mvcgrid-option="TaskId" data-mvcgrid-apply-filter="change" class="form-control" multiple>
-            <option>Select a task</option>
+        <h5>Task</h5>
+        <select id="task-filter" size="@Model.Tasks.Count()" data-mvcgrid-type="filter" data-mvcgrid-option="TaskId" data-mvcgrid-apply-filter="change" class="form-control multiselect" multiple>
             @foreach (var taskId in Model.Tasks)
             {
                 <option value="@taskId.Value">@taskId.Text</option>
@@ -37,11 +67,11 @@
 </div>
 
 @section Scripts{
-<script>
-    //$(function () {
-    //    $('#task-status-filter').select2({ placeholder: { id: "", text: "All Statuses" }, allowClear: true });
-    //    $('#task-filter').select2({ placeholder: { id: "", text: "All Tasks" }, allowClear: true });
-    //    $('#city-filter').select2({ placeholder: { id: "", text: "All Cities" }, allowClear: true });
-    //})
-</script>
+    <script>
+            //$(function () {
+            //    $('#task-status-filter').select2({ placeholder: { id: "", text: "All Statuses" }, allowClear: true });
+            //    $('#task-filter').select2({ placeholder: { id: "", text: "All Tasks" }, allowClear: true });
+            //    $('#city-filter').select2({ placeholder: { id: "", text: "All Cities" }, allowClear: true });
+            //})
+    </script>
 }

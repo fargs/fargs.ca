@@ -54,7 +54,7 @@ namespace WebApp.ViewModels
             CancellationViewModel = CancellationViewModel.FromServiceRequestDto.Invoke(dto),
             Service = LookupViewModel<short>.FromLookupDto.Invoke(dto.Service),
             Company = LookupViewModel<short>.FromLookupDto.Invoke(dto.Company),
-            Address = AddressViewModel.FromAddressDto.Invoke(dto.Address),
+            Address = AddressViewModel.FromAddressDtoExpr.Invoke(dto.Address),
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(dto.Physician),
             Resources = dto.Resources.AsQueryable().Select(ResourceViewModel.FromResourceDto.Expand())
         };

@@ -51,24 +51,34 @@ namespace WebApp.Library.Extensions
             return null;
         }
 
-        public static Guid[] GetPhysicians(this IIdentity obj)
+        public static IEnumerable<LookupViewModel<Guid>> GetPhysicians(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("Physicians");
             if (claim != null)
             {
-                return JsonConvert.DeserializeObject<Guid[]>(claim);
+                return JsonConvert.DeserializeObject<IEnumerable<LookupViewModel<Guid>>>(claim);
             }
             return null;
         }
-
-        public static UserContextViewModel GetPhysicianContext(this IIdentity obj)
+        public static Guid? GetPhysicianId(this IIdentity identity)
         {
-            var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");
-            if (claim != null)
+            var claim = identity.GetClaimsIdentity().FindFirstValue("PhysicianId");
+            if (claim == null)
             {
-                return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
+                return Guid.Empty;
             }
-            return null;
+            return new Guid(claim);
+        }
+        public static LookupViewModel<Guid> GetPhysician(this IIdentity identity)
+        {
+            var physicians = identity.GetPhysicians();
+            var physicianId = identity.GetPhysicianId();
+
+            if (physicians == null)
+            {
+                throw new Exception("User does not belong to any teams");
+            }
+            return physicians.SingleOrDefault(p => p.Id == physicianId);
         }
 
         public static UserContextViewModel GetLoggedInUserContext(this IIdentity obj)
@@ -79,7 +89,7 @@ namespace WebApp.Library.Extensions
                 return new UserContextViewModel
                 {
                     Id = obj.GetGuidUserId(),
-                    DisplayName = obj.GetDisplayName()
+                    Name = obj.GetDisplayName()
                 };
             }
             return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
@@ -93,7 +103,7 @@ namespace WebApp.Library.Extensions
                 return new UserContextViewModel
                 {
                     Id = obj.GetGuidUserId(),
-                    DisplayName = obj.GetDisplayName()
+                    Name = obj.GetDisplayName()
                 };
             }
             return JsonConvert.DeserializeObject<UserContextViewModel>(claim);

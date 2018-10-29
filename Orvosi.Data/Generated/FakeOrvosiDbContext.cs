@@ -21,6 +21,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Account> Accounts { get; set; }
         public System.Data.Entity.DbSet<Address> Addresses { get; set; }
         public System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; }
+        public System.Data.Entity.DbSet<AddressV2> AddressV2 { get; set; }
         public System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; }
         public System.Data.Entity.DbSet<AspNetRolesFeature> AspNetRolesFeatures { get; set; }
         public System.Data.Entity.DbSet<AspNetUser> AspNetUsers { get; set; }
@@ -37,6 +38,8 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; }
         public System.Data.Entity.DbSet<CommentType> CommentTypes { get; set; }
         public System.Data.Entity.DbSet<Company> Companies { get; set; }
+        public System.Data.Entity.DbSet<CompanyService> CompanyServices { get; set; }
+        public System.Data.Entity.DbSet<CompanyV2> CompanyV2 { get; set; }
         public System.Data.Entity.DbSet<Country> Countries { get; set; }
         public System.Data.Entity.DbSet<Document> Documents { get; set; }
         public System.Data.Entity.DbSet<DocumentTemplate> DocumentTemplates { get; set; }
@@ -86,12 +89,15 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; }
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; }
         public System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; }
+        public System.Data.Entity.DbSet<ServiceV2> ServiceV2 { get; set; }
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; }
         public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; }
+        public System.Data.Entity.DbSet<TeamMember> TeamMembers { get; set; }
         public System.Data.Entity.DbSet<Teleconference> Teleconferences { get; set; }
         public System.Data.Entity.DbSet<TeleconferenceResult> TeleconferenceResults { get; set; }
         public System.Data.Entity.DbSet<Time> Times { get; set; }
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; }
+        public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; }
         public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; }
 
         public FakeOrvosiDbContext()
@@ -99,6 +105,7 @@ namespace Orvosi.Data
             Accounts = new FakeDbSet<Account>("Id", "EmailConfirmed", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount", "UserName", "ModifiedDate", "ModifiedUser", "IsTestRecord", "IsAppTester");
             Addresses = new FakeDbSet<Address>("Id");
             AddressTypes = new FakeDbSet<AddressType>("Id");
+            AddressV2 = new FakeDbSet<AddressV2>("Id");
             AspNetRoles = new FakeDbSet<AspNetRole>("Id");
             AspNetRolesFeatures = new FakeDbSet<AspNetRolesFeature>("Id");
             AspNetUsers = new FakeDbSet<AspNetUser>("Id");
@@ -115,6 +122,8 @@ namespace Orvosi.Data
             Collaborators = new FakeDbSet<Collaborator>("Id");
             CommentTypes = new FakeDbSet<CommentType>("Id");
             Companies = new FakeDbSet<Company>("Id");
+            CompanyServices = new FakeDbSet<CompanyService>("Id");
+            CompanyV2 = new FakeDbSet<CompanyV2>("Id");
             Countries = new FakeDbSet<Country>("Id");
             Documents = new FakeDbSet<Document>("Id");
             DocumentTemplates = new FakeDbSet<DocumentTemplate>("Id");
@@ -164,12 +173,15 @@ namespace Orvosi.Data
             ServiceRequestTemplates = new FakeDbSet<ServiceRequestTemplate>("Id");
             ServiceRequestTemplateTasks = new FakeDbSet<ServiceRequestTemplateTask>("Id");
             ServiceRequestViews = new FakeDbSet<ServiceRequestView>("Id", "ObjectGuid", "IsNoShow", "IsLateCancellation", "ModifiedDate", "ModifiedUser", "ServiceName", "PhysicianId", "PhysicianUserName");
+            ServiceV2 = new FakeDbSet<ServiceV2>("Id");
             TaskPhases = new FakeDbSet<TaskPhase>("Id");
             TaskStatus = new FakeDbSet<TaskStatu>("Id");
+            TeamMembers = new FakeDbSet<TeamMember>("Id");
             Teleconferences = new FakeDbSet<Teleconference>("Id");
             TeleconferenceResults = new FakeDbSet<TeleconferenceResult>("Id");
             Times = new FakeDbSet<Time>("Id", "PkDate", "ModifiedDate");
             TimeZones = new FakeDbSet<TimeZone>("Id");
+            TravelPrices = new FakeDbSet<TravelPrice>("Id");
             UserInboxes = new FakeDbSet<UserInbox>("Id");
 
             InitializePartial();

@@ -1,0 +1,258 @@
+﻿<script type="text/javascript">
+
+    function navigateToCompany(companyId) {
+        refreshCompanyList(companyId);
+        refreshCompanyReadOnly(companyId);
+    }
+
+    function showNewCompanyForm() {
+        var url = '@Url.Content("~/Companies/Company/ShowNewCompanyForm")';
+
+        $.get(url)
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showEditCompanyForm(companyId) {
+        var url = '@Url.Content("~/Companies/Company/ShowEditCompanyForm")';
+
+        $.get(url, {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showDeleteCompanyConfirmation(companyId) {
+        var url = '@Url.Content("~/Companies/Company/ShowDeleteCompanyConfirmation")';
+
+        $.get(url, {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showNewAddressForm(companyId) {
+        $.get('@Url.Content("~/Companies/Company/ShowNewAddressForm")', {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function showAddServiceForm(companyId) {
+        $.get('@Url.Content("~/Companies/Company/ShowAddServiceForm")', {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function serviceTemplateChanged(companyId) {
+        var selectedServiceId = $('#company-addservice-form-serviceid').val();
+        $.get('@Url.Content("~/Companies/Company/ShowAddServiceForm")', {
+            companyId: companyId,
+            selectedServiceId: selectedServiceId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+        });
+    }
+
+    function showEditServiceForm(companyId, companyServiceId) {
+        $.get('@Url.Content("~/Companies/Company/ShowEditServiceForm")', {
+            companyId: companyId,
+            companySeviceId: companySeviceId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function showEditTravelPriceForm(companyId, travelPriceId) {
+        $.get('@Url.Content("~/Companies/Company/ShowEditTravelPriceForm")', {
+            companyId: companyId,
+            travelPriceId: travelPriceId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+    function showNewTravelPriceForm(companyId, companyServiceId, cityId) {
+        $.get('@Url.Content("~/Companies/Company/ShowNewTravelPriceForm")', {
+            companyId: companyId,
+            companyServiceId: companyServiceId,
+            cityId: cityId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+    function showEditCancellationPolicyForm(companyId) {
+        $.get('@Url.Content("~/Companies/Company/ShowEditCancellationPolicyForm")', {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveNewCompanyForm(form) {
+        var url = '@Url.Content("~/Companies/Company/SaveNewCompanyForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Company added successfully");
+            refreshCompanyList(result.id);
+            refreshCompanyReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function saveEditCompanyForm(form) {
+        var url = '@Url.Content("~/Companies/Company/SaveEditCompanyForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Company added successfully");
+            refreshCompanyReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function removeCompany(companyId) {
+        var url = '@Url.Content("~/Companies/Company/Remove")';
+
+        $.post(url, {
+            companyId: companyId
+        })
+        .done(function () {
+            toastr.success("Company removed successfully");
+            refreshCompanyList();
+            refreshCompanyReadOnly();
+        });
+    }
+
+    // Address API
+    function saveNewAddressForm(companyId, form) {
+
+        $.post('@Url.Content("~/Companies/Company/SaveNewAddressForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Address added successfully");
+            refreshCompanyList(companyId);
+            refreshCompanyReadOnly(companyId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    // Service API
+    function saveAddServiceForm(companyId, form) {
+
+        $.post('@Url.Content("~/Companies/Company/SaveAddServiceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Address added successfully");
+            refreshCompanyList(companyId);
+            refreshCompanyReadOnly(companyId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    // Travel Price API
+    function saveNewTravelPriceForm(companyId, form) {
+
+        $.post('@Url.Content("~/Companies/Company/SaveNewTravelPriceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Price override added successfully");
+            refreshCompanyList(companyId);
+            refreshCompanyReadOnly(companyId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+    function saveEditTravelPriceForm(companyId, form) {
+
+        $.post('@Url.Content("~/Companies/Company/SaveEditTravelPriceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Price override updated successfully");
+            refreshCompanyReadOnly(companyId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    // Cancellation Policy API
+    function saveEditCancellationPolicyForm(companyId, form) {
+
+        $.post('@Url.Content("~/Companies/Company/SaveEditCancellationPolicyForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Cancellation policy updated successfully");
+            refreshCompanyReadOnly(companyId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function refreshCompanyList(companyId) {
+        let url = '@Url.Content("~/Companies/Company/List")';
+        $.get(url, {
+            companyId: companyId
+        })
+            .done(function (result) {
+                $('#company-list-container').html(result);
+            });
+    }
+    function refreshCompanyReadOnly(companyId) {
+
+        let url = new URL(window.location);
+        url.searchParams.set('companyId', companyId);
+        history.pushState({}, "", url);
+
+        $.get('@Url.Content("~/Companies/Company/ReadOnly")', {
+            companyId: companyId
+        })
+        .done(function (result) {
+            $('#company-readonly-container').html(result);
+        });
+    }
+
+</script>

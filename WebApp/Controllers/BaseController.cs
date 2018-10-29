@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
+using WebApp.Models;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers
@@ -10,7 +11,7 @@ namespace WebApp.Controllers
     {
         protected IIdentity identity;
         protected UserContextViewModel loggedInUserContext;
-        protected UserContextViewModel physicianContext;
+        protected LookupViewModel<Guid> physicianContext;
         protected Guid loggedInUserId;
         protected Guid loggedInRoleId;
         protected Guid? physicianId;
@@ -26,9 +27,9 @@ namespace WebApp.Controllers
             this.now = now;
             identity = principal.Identity;
             loggedInUserContext = identity.GetLoggedInUserContext();
-            physicianContext = principal.Identity.GetPhysicianContext();
+            physicianContext = principal.Identity.GetPhysician();
             loggedInUserId = principal.Identity.GetGuidUserId();
-            physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
+            physicianId = principal.Identity.GetPhysicianId();
             physicianOrLoggedInUserId = physicianId.GetValueOrDefault(loggedInUserId);
             loggedInRoleId = identity.GetRoleId();
         }

@@ -27,11 +27,12 @@ namespace Orvosi.Data
             ToTable(schema + ".Organization");
             HasKey(x => x.Id);
 
-            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("smallint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            Property(x => x.ObjectGuid).HasColumnName(@"ObjectGuid").IsOptional().HasColumnType("uniqueidentifier");
-            Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(128);
-            Property(x => x.ModifiedDate).HasColumnName(@"ModifiedDate").IsRequired().HasColumnType("datetime");
-            Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
+            Property(x => x.Id).HasColumnName(@"Id").IsRequired().HasColumnType("uniqueidentifier").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").IsOptional().HasColumnType("nvarchar").HasMaxLength(128);
+            Property(x => x.Code).HasColumnName(@"Code").IsOptional().HasColumnType("nvarchar").HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").IsRequired().HasColumnType("nvarchar").HasMaxLength(10);
+            Property(x => x.OwnerId).HasColumnName(@"OwnerId").IsRequired().HasColumnType("uniqueidentifier");
+            Property(x => x.AdministratorId).HasColumnName(@"AdministratorId").IsOptional().HasColumnType("uniqueidentifier");
             InitializePartial();
         }
         partial void InitializePartial();

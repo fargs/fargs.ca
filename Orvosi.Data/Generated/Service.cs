@@ -29,9 +29,11 @@ namespace Orvosi.Data
         public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
         public bool IsLocationRequired { get; set; } // IsLocationRequired
         public string ColorCode { get; set; } // ColorCode (length: 10)
+        public System.Guid? PhysicianId { get; set; } // PhysicianId
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<PhysicianService> PhysicianServices { get; set; } // PhysicianService.FK_PhysicianService_Service
+        public virtual System.Collections.Generic.ICollection<ServiceCatalogue> ServiceCatalogues { get; set; } // ServiceCatalogue.FK_ServiceCatalogue_Service
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Service
 
         // Foreign keys
@@ -44,6 +46,7 @@ namespace Orvosi.Data
             ModifiedUser = "suser_name()";
             IsLocationRequired = true;
             PhysicianServices = new System.Collections.Generic.List<PhysicianService>();
+            ServiceCatalogues = new System.Collections.Generic.List<ServiceCatalogue>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

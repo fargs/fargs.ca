@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
+using WebApp.Models;
 using WebApp.ViewModels;
 
 namespace WebApp.Areas.Shared
@@ -10,7 +11,7 @@ namespace WebApp.Areas.Shared
     {
         protected IIdentity identity;
         protected UserContextViewModel loggedInUserContext;
-        protected UserContextViewModel physicianContext;
+        protected LookupViewModel<Guid> physicianContext;
         protected Guid loggedInUserId;
         protected Guid loggedInRoleId;
         protected Guid? physicianId;
@@ -27,11 +28,11 @@ namespace WebApp.Areas.Shared
             identity = principal.Identity;
 
             loggedInUserContext = identity.GetLoggedInUserContext();
-            physicianContext = identity.GetPhysicianContext();
+            physicianContext = identity.GetPhysician();
             loggedInRoleId = identity.GetRoleId();
 
             loggedInUserId = loggedInUserContext.Id;
-            physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
+            physicianId = identity.GetPhysicianId();
 
             physicianOrLoggedInUserId = physicianId.GetValueOrDefault(loggedInUserId);
         }

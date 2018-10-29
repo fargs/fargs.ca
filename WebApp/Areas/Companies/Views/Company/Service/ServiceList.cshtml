@@ -1,0 +1,36 @@
+﻿@model ServiceListViewModel
+
+<div class="btn-group" style="margin-bottom: 15px;">
+    <button type="button" class="btn btn-default" onclick="showAddServiceForm('@Model.CompanyId')">Add Service</button>
+    <button type="button" class="btn btn-default" onclick="showEditCancellationPolicyForm('@Model.CompanyId')">Edit Rates</button>
+</div>
+<div>
+    @Html.Partial("Pricing/CancellationPolicy", Model.CancellationPolicy)
+</div>
+<div class="list-group">
+    @foreach (var service in Model.Services)
+    {
+        <div class="list-group-item">
+            <div>
+                <span>@service.Name</span>
+                @if (service.ServiceId.HasValue && service.Service.Name != service.Name)
+                {
+                    <span class="small text-muted">(@service.Service.Name)</span>
+                }
+            </div>
+            <div>
+                <span>@service.Price</span>
+                @if (service.ServiceId.HasValue && service.Service.Price != service.Price)
+                {
+                    <span class="small text-muted">(@service.Service.Price)</span>
+                }
+            </div>
+            @if (service.IsTravelRequired)
+            {
+                <div>
+                    <small>Travel is required</small>
+                </div>
+            }
+        </div>
+    }
+</div>

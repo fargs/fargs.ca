@@ -18,6 +18,7 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<Account> Accounts { get; set; } // Account
         System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
+        System.Data.Entity.DbSet<AddressV2> AddressV2 { get; set; } // AddressV2
         System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
         System.Data.Entity.DbSet<AspNetRolesFeature> AspNetRolesFeatures { get; set; } // AspNetRolesFeature
         System.Data.Entity.DbSet<AspNetUser> AspNetUsers { get; set; } // AspNetUsers
@@ -34,6 +35,8 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
         System.Data.Entity.DbSet<CommentType> CommentTypes { get; set; } // CommentType
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
+        System.Data.Entity.DbSet<CompanyService> CompanyServices { get; set; } // CompanyService
+        System.Data.Entity.DbSet<CompanyV2> CompanyV2 { get; set; } // CompanyV2
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
         System.Data.Entity.DbSet<DocumentTemplate> DocumentTemplates { get; set; } // DocumentTemplate
@@ -83,12 +86,15 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
+        System.Data.Entity.DbSet<ServiceV2> ServiceV2 { get; set; } // ServiceV2
         System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
+        System.Data.Entity.DbSet<TeamMember> TeamMembers { get; set; } // TeamMember
         System.Data.Entity.DbSet<Teleconference> Teleconferences { get; set; } // Teleconference
         System.Data.Entity.DbSet<TeleconferenceResult> TeleconferenceResults { get; set; } // TeleconferenceResult
         System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
+        System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         int SaveChanges();

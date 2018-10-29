@@ -1,9 +1,16 @@
 ﻿CREATE TABLE [dbo].[Organization] (
-    [Id]           SMALLINT         IDENTITY (1, 1) NOT NULL,
-    [ObjectGuid]   UNIQUEIDENTIFIER CONSTRAINT [DF_Organization_ObjectGuid] DEFAULT (newid()) NULL,
-    [Name]         NVARCHAR (128)   NOT NULL,
-    [ModifiedDate] DATETIME         CONSTRAINT [DF_Organization_ModifiedDate] DEFAULT (getdate()) NOT NULL,
-    [ModifiedUser] NVARCHAR (100)   CONSTRAINT [DF_Organization_ModifiedUser] DEFAULT (suser_name()) NOT NULL,
-    CONSTRAINT [PK_Organization] PRIMARY KEY CLUSTERED ([Id] ASC)
-);
+    [Id]              UNIQUEIDENTIFIER                            NOT NULL,
+    [SysStartTime]    DATETIME2 (7) GENERATED ALWAYS AS ROW START NOT NULL,
+    [SysEndTime]      DATETIME2 (7) GENERATED ALWAYS AS ROW END   NOT NULL,
+    [Name]            NVARCHAR (128)                              NULL,
+    [Code]            NVARCHAR (10)                               NULL,
+    [ColorCode]       NVARCHAR (10)                               NOT NULL,
+    [OwnerId]         UNIQUEIDENTIFIER                            NOT NULL,
+    [AdministratorId] UNIQUEIDENTIFIER                            NULL,
+    CONSTRAINT [PK_Organization] PRIMARY KEY CLUSTERED ([Id] ASC),
+    PERIOD FOR SYSTEM_TIME ([SysStartTime], [SysEndTime])
+)
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE=[dbo].[OrganizationHistory], DATA_CONSISTENCY_CHECK=ON));
+
+
 

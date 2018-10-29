@@ -11,10 +11,14 @@
 @{
     var features = User.Identity.GetFeatures();
     var userContext = User.Identity.GetUserContext();
-    var physicianContext = User.Identity.GetPhysicianContext();
-    var physicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
     var userId = User.Identity.GetGuidUserId();
     var roleId = User.Identity.GetRoleId();
+
+    var physicianId = User.Identity.GetPhysicianId();
+    var physician = User.Identity.GetPhysician();
+    var physicians = User.Identity.GetPhysicians().ToList();
+    physicians.Remove(physician);
+
 
     var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
 
@@ -60,12 +64,25 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="~/" class="navbar-brand top-nav"><div class="image-logo-sm"></div></a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
+                        <li>
+                            <a data-toggle="dropdown" href="#">
+                                <i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@physicianId
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                @foreach (var p in physicians)
+                                {
+                                    <li>
+                                        <a tabindex="-1" href="~/Account/ChangeUserContextAsync/?physicianId=@p.Id">@p.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
                         if (features.Contains(Features.ServiceRequest.Search))
                         {
                             <li>
@@ -101,14 +118,6 @@
                         {
                             <li>@Html.ActionLink("Invoices", "Index", "Unsent", new { area = "Invoices" }, null)</li>
                         }
-                        if (features.Contains(Features.Services.Manage))
-                        {
-                            <li>@Html.ActionLink("MyOrvo", "Index", "ServiceCatalogue", new { area = "" }, null)</li>
-                        }
-                        if (features.Contains(Features.Reports.View))
-                        {
-                            <li>@Html.ActionLink("Reports", "Index", "Home", new { area = "Reports" }, null)</li>
-                        }
                         if (features.Contains(Features.Admin.Section))
                         {
                             <li role="presentation" class="dropdown">
@@ -122,37 +131,19 @@
                                     }
                                     @if (features.Contains(Features.Admin.ViewCompanies))
                                     {
-                                        <li>@Html.ActionLink("Companies", "", "PhysicianCompany", new { area = "" }, null)</li>
+                                        <li>@Html.ActionLink("Companies", "Index", "Company", new { area = "Companies" }, null)</li>
                                     }
                                     @if (features.Contains(Features.Admin.ViewServices))
                                     {
-                                        <li>@Html.ActionLink("Services", "", "Service", new { area = "" }, null)</li>
+                                        <li>@Html.ActionLink("Services", "", "Service", new { area = "Services" }, null)</li>
                                     }
-                                </ul>
-                            </li>
-                        }
-                        if (features.Contains(Features.SysAdmin.Section))
-                        {
-                            <li role="presentation" class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                    Sys Admin <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
+                                    @if (features.Contains(Features.Reports.View))
+                                    {
+                                        <li>@Html.ActionLink("Reports", "Index", "Home", new { area = "Reports" }, null)</li>
+                                    }
                                     @if (features.Contains(Features.SysAdmin.ViewProcessTemplates))
                                     {
                                         <li>@Html.ActionLink("Workflow Master List", "", "ServiceRequestTemplate", new { area = "" }, null)</li>
-                                    }
-                                    @if (features.Contains(Features.SysAdmin.ViewCompanies))
-                                    {
-                                        <li>@Html.ActionLink("Company Master List", "", "Company", new { area = "Admin" }, null)</li>
-                                    }
-                                    @if (features.Contains(Features.SysAdmin.ViewAddresses))
-                                    {
-                                        <li>@Html.ActionLink("Address Master List", "", "Location", new { area = "Admin" }, null)</li>
-                                    }
-                                    @if (features.Contains(Features.SysAdmin.ViewServices))
-                                    {
-                                        <li>@Html.ActionLink("Service Master List", "", "Service", new { area = "Admin", parentId = ServicePortfolios.Physician }, null)</li>
                                     }
                                     @if (features.Contains(Features.SysAdmin.ManageTasks))
                                     {
@@ -169,7 +160,7 @@
                         {
                             <li role="presentation" class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                    Security <span class="caret"></span>
+                                    <i class="glyphicon glyphicon-cog"></i> <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = RoleCategories.Physician }, null)</li>
@@ -190,23 +181,7 @@
         </div>
     </div>
     <div class="container-fluid body-content">
-        @if (features.Contains(Features.AppContext.ChangeUserContext))
-        {
-            var viewDataService = DependencyResolver.Current.GetService<ViewDataService>();
-            var physicianSelectList = viewDataService.GetPhysicianSelectList();
 
-            <div class="row">
-                <div class="col-xs-8 col-md-6">
-                    <div class="text-danger">@TempData["UserContextMessage"]</div>
-                    <form action="~/Account/ChangeUserContext/" method="get" class="form-inline">
-                        <div>
-                            @Html.DropDownList("userId", new SelectList(physicianSelectList, "Value", "Text", "Group.Name", userContext.Id), "-- All physicians --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <hr />
-        }
         @RenderBody()
 
         <div id="admin-tasks-messages"></div>

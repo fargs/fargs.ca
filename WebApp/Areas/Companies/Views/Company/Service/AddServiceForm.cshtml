@@ -1,0 +1,53 @@
+﻿@model AddServiceFormModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Add Service
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="company-addservice-form" class="form-horizontal">
+        <input type="hidden" name="Id" value="@Model.Id.ToString()" />
+        <input type="hidden" name="CompanyId" value="@Model.CompanyId.ToString()" />
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Template</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ServiceId, new SelectList(Model.ViewData.Services, "Value", "Text", Model.ServiceId), "None", new { @class = "form-control", id = "company-addservice-form-serviceid", onChange = "serviceTemplateChanged('" + Model.CompanyId + "')" })
+                @Html.ValidationMessageFor(model => model.ServiceId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="Name" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : Model.ServiceId.HasValue ? Model.SelectedService.Name : string.Empty)" />
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Price</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="Price" value="@(Model.Price.HasValue ? String.Format("{0:C2}", Model.Price.Value.ToString()) : Model.ServiceId.HasValue ? Model.SelectedService.Price : string.Empty)" />
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"></label>
+            <div class="checkbox col-md-10">
+                <label>
+                    <input type="checkbox" name="IsTravelRequired" value="true" checked="@(Model.IsTravelRequired.HasValue ? Model.IsTravelRequired : Model.ServiceId.HasValue ? Model.SelectedService.IsTravelRequired  : false)" />
+                    Is Travel Required
+                 </label>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" onclick="saveAddServiceForm('@Model.CompanyId', $('#company-addservice-form'))" class="btn btn-primary">Save</button>
+
+</div>

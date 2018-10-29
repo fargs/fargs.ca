@@ -37,6 +37,11 @@ namespace Orvosi.Data
             Property(x => x.ModifiedUser).HasColumnName(@"ModifiedUser").IsRequired().HasColumnType("nvarchar").HasMaxLength(100);
             Property(x => x.NoShowRate).HasColumnName(@"NoShowRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
             Property(x => x.LateCancellationRate).HasColumnName(@"LateCancellationRate").IsOptional().HasColumnType("decimal").HasPrecision(18,2);
+
+            // Foreign keys
+            HasOptional(a => a.City).WithMany(b => b.ServiceCatalogues).HasForeignKey(c => c.LocationId).WillCascadeOnDelete(false); // FK_ServiceCatalogue_City
+            HasOptional(a => a.Company).WithMany(b => b.ServiceCatalogues).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_ServiceCatalogue_Company
+            HasOptional(a => a.Service).WithMany(b => b.ServiceCatalogues).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_ServiceCatalogue_Service
             InitializePartial();
         }
         partial void InitializePartial();

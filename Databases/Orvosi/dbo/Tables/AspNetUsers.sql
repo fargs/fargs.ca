@@ -32,9 +32,12 @@
     [HstNumber]            NVARCHAR (50)    NULL,
     [Notes]                NVARCHAR (MAX)   NULL,
     [IsAppTester]          BIT              CONSTRAINT [DF_AspNetUsers_IsAppTester] DEFAULT ((0)) NOT NULL,
+    [PhysicianId]          UNIQUEIDENTIFIER NULL,
     CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_AspNetUsers_Company] FOREIGN KEY ([CompanyId]) REFERENCES [dbo].[Company] ([Id])
 );
+
+
 
 
 

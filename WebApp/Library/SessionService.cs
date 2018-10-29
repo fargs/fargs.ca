@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Web;
 using WebApp.Library.Extensions;
+using WebApp.Models;
 using WebApp.ViewModels;
 
 namespace WebApp.Library
@@ -13,7 +14,7 @@ namespace WebApp.Library
     public class SessionService
     {
         public IIdentity identity { get; }
-        public UserContextViewModel userContext { get; }
+        public LookupViewModel<Guid> userContext { get; }
         public Guid userId { get; }
         public Guid? physicianId { get; }
         public Guid currentContextId { get; }
@@ -27,8 +28,8 @@ namespace WebApp.Library
             this.db = db;
             identity = principal.Identity;
             userId = principal.Identity.GetGuidUserId();
-            userContext = principal.Identity.GetPhysicianContext();
-            physicianId = userContext == null ? (Guid?)null : userContext.Id;
+            userContext = principal.Identity.GetPhysician();
+            physicianId = principal.Identity.GetPhysicianId();
             currentContextId = physicianId.GetValueOrDefault(userId);
             roleId = identity.GetRoleId();
             authorizedFeatures = identity.GetFeatures();

@@ -34,7 +34,7 @@ namespace WebApp.Areas.Availability.Views.Home
             Id = e.Id,
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
-            Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
+            Company = LookupViewModel<short>.FromCompanyDtoExpr.Invoke(e.Company),
             Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
             AreAllSlotsFilled = e.AreAllSlotsFilled,
             AreSomeSlotsFilled = e.AreSomeSlotsFilled,
@@ -50,7 +50,7 @@ namespace WebApp.Areas.Availability.Views.Home
             Id = e.Id,
             Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
             Day = e.Day,
-            Company = LookupViewModel<short>.FromCompanyDto.Invoke(e.Company),
+            Company = LookupViewModel<short>.FromCompanyDtoExpr.Invoke(e.Company),
             Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
             Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand())
         };

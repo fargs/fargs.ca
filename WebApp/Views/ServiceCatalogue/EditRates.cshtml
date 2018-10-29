@@ -3,7 +3,7 @@
 @{ 
 
     var userId = User.Identity.GetGuidUserId();
-    var userContext = User.Identity.GetPhysicianContext();
+    var userContext = User.Identity.GetPhysician();
     var physicianId = userContext == null ? (Guid?)null : userContext.Id;
     var currentContextId = physicianId.GetValueOrDefault(userId);
     var roleId = User.Identity.GetRoleId();

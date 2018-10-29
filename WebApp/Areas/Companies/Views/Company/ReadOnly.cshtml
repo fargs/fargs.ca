@@ -1,0 +1,20 @@
+﻿@model ReadOnlyViewModel
+
+<div style="margin-left:20px;">
+    <div id="company-readonly-properties-container">
+        @Html.Partial("Properties", Model)
+    </div>
+</div>
+<div style="margin-left:20px;">
+    <div id="company-readonly-addresses-container">
+        @Html.Partial("Address/AddressList", Model.AddressList)
+    </div>
+</div>
+<div style="margin-left:20px;">
+    <div id="company-readonly-services-container">
+        @Html.Partial("Service/ServiceList", Model.ServiceList)
+    </div>
+    <div id="company-readonly-pricing-container">
+        @Html.Partial("Pricing/PricingMatrix", Model.PricingMatrix)
+    </div>
+</div>

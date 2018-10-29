@@ -21,6 +21,7 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Account> Accounts { get; set; } // Account
         public System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         public System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
+        public System.Data.Entity.DbSet<AddressV2> AddressV2 { get; set; } // AddressV2
         public System.Data.Entity.DbSet<AspNetRole> AspNetRoles { get; set; } // AspNetRoles
         public System.Data.Entity.DbSet<AspNetRolesFeature> AspNetRolesFeatures { get; set; } // AspNetRolesFeature
         public System.Data.Entity.DbSet<AspNetUser> AspNetUsers { get; set; } // AspNetUsers
@@ -37,6 +38,8 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<Collaborator> Collaborators { get; set; } // Collaborator
         public System.Data.Entity.DbSet<CommentType> CommentTypes { get; set; } // CommentType
         public System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
+        public System.Data.Entity.DbSet<CompanyService> CompanyServices { get; set; } // CompanyService
+        public System.Data.Entity.DbSet<CompanyV2> CompanyV2 { get; set; } // CompanyV2
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         public System.Data.Entity.DbSet<Document> Documents { get; set; } // Document
         public System.Data.Entity.DbSet<DocumentTemplate> DocumentTemplates { get; set; } // DocumentTemplate
@@ -86,12 +89,15 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate
         public System.Data.Entity.DbSet<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask
         public System.Data.Entity.DbSet<ServiceRequestView> ServiceRequestViews { get; set; } // ServiceRequest
+        public System.Data.Entity.DbSet<ServiceV2> ServiceV2 { get; set; } // ServiceV2
         public System.Data.Entity.DbSet<TaskPhase> TaskPhases { get; set; } // TaskPhase
         public System.Data.Entity.DbSet<TaskStatu> TaskStatus { get; set; } // TaskStatus
+        public System.Data.Entity.DbSet<TeamMember> TeamMembers { get; set; } // TeamMember
         public System.Data.Entity.DbSet<Teleconference> Teleconferences { get; set; } // Teleconference
         public System.Data.Entity.DbSet<TeleconferenceResult> TeleconferenceResults { get; set; } // TeleconferenceResult
         public System.Data.Entity.DbSet<Time> Times { get; set; } // Time
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
+        public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         public System.Data.Entity.DbSet<UserInbox> UserInboxes { get; set; } // UserInbox
 
         static OrvosiDbContext()
@@ -150,6 +156,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AccountConfiguration());
             modelBuilder.Configurations.Add(new AddressConfiguration());
             modelBuilder.Configurations.Add(new AddressTypeConfiguration());
+            modelBuilder.Configurations.Add(new AddressV2Configuration());
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration());
             modelBuilder.Configurations.Add(new AspNetRolesFeatureConfiguration());
             modelBuilder.Configurations.Add(new AspNetUserConfiguration());
@@ -166,6 +173,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new CollaboratorConfiguration());
             modelBuilder.Configurations.Add(new CommentTypeConfiguration());
             modelBuilder.Configurations.Add(new CompanyConfiguration());
+            modelBuilder.Configurations.Add(new CompanyServiceConfiguration());
+            modelBuilder.Configurations.Add(new CompanyV2Configuration());
             modelBuilder.Configurations.Add(new CountryConfiguration());
             modelBuilder.Configurations.Add(new DocumentConfiguration());
             modelBuilder.Configurations.Add(new DocumentTemplateConfiguration());
@@ -215,12 +224,15 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration());
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration());
+            modelBuilder.Configurations.Add(new ServiceV2Configuration());
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration());
             modelBuilder.Configurations.Add(new TaskStatuConfiguration());
+            modelBuilder.Configurations.Add(new TeamMemberConfiguration());
             modelBuilder.Configurations.Add(new TeleconferenceConfiguration());
             modelBuilder.Configurations.Add(new TeleconferenceResultConfiguration());
             modelBuilder.Configurations.Add(new TimeConfiguration());
             modelBuilder.Configurations.Add(new TimeZoneConfiguration());
+            modelBuilder.Configurations.Add(new TravelPriceConfiguration());
             modelBuilder.Configurations.Add(new UserInboxConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
@@ -231,6 +243,7 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new AccountConfiguration(schema));
             modelBuilder.Configurations.Add(new AddressConfiguration(schema));
             modelBuilder.Configurations.Add(new AddressTypeConfiguration(schema));
+            modelBuilder.Configurations.Add(new AddressV2Configuration(schema));
             modelBuilder.Configurations.Add(new AspNetRoleConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetRolesFeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new AspNetUserConfiguration(schema));
@@ -247,6 +260,8 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new CollaboratorConfiguration(schema));
             modelBuilder.Configurations.Add(new CommentTypeConfiguration(schema));
             modelBuilder.Configurations.Add(new CompanyConfiguration(schema));
+            modelBuilder.Configurations.Add(new CompanyServiceConfiguration(schema));
+            modelBuilder.Configurations.Add(new CompanyV2Configuration(schema));
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentConfiguration(schema));
             modelBuilder.Configurations.Add(new DocumentTemplateConfiguration(schema));
@@ -296,12 +311,15 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new ServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestTemplateTaskConfiguration(schema));
             modelBuilder.Configurations.Add(new ServiceRequestViewConfiguration(schema));
+            modelBuilder.Configurations.Add(new ServiceV2Configuration(schema));
             modelBuilder.Configurations.Add(new TaskPhaseConfiguration(schema));
             modelBuilder.Configurations.Add(new TaskStatuConfiguration(schema));
+            modelBuilder.Configurations.Add(new TeamMemberConfiguration(schema));
             modelBuilder.Configurations.Add(new TeleconferenceConfiguration(schema));
             modelBuilder.Configurations.Add(new TeleconferenceResultConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeConfiguration(schema));
             modelBuilder.Configurations.Add(new TimeZoneConfiguration(schema));
+            modelBuilder.Configurations.Add(new TravelPriceConfiguration(schema));
             modelBuilder.Configurations.Add(new UserInboxConfiguration(schema));
             return modelBuilder;
         }

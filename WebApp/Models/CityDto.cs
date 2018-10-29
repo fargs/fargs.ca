@@ -12,13 +12,15 @@ namespace WebApp.Models
     {
         public short Id { get; set; }
         public string Name { get; set; }
+        public string Code { get; set; }
         public int ProvinceId { get; set; }
         public LookupDto<short> Province { get; set; }
 
-        public static Expression<Func<City, CityDto>> FromCityEntity = c => new CityDto
+        public static Expression<Func<City, CityDto>> FromCityEntity = c => c == null ? null : new CityDto
         {
             Id = c.Id,
             Name = c.Name,
+            Code = c.Code,
             ProvinceId = c.ProvinceId,
             Province = LookupDto<short>.FromProvinceEntity.Invoke(c.Province)
         };

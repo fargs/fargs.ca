@@ -476,36 +476,48 @@ namespace WebApp.Controllers
             return Redirect(Request.UrlReferrer.ToString());
         }
 
-        public ActionResult ChangeUserContext(Guid? userId)
+        public async Task<ActionResult> ChangeUserContextAsync(Guid? physicianId)
         {
-            var identity = User.Identity.GetClaimsIdentity();
-            var userContextClaim = identity.FindFirst("UserContext");
-            if (userContextClaim != null)
-                identity.RemoveClaim(userContextClaim);
+            var originalUserId = User.Identity.GetGuidUserId();
+            var originalUser = await _userManager.FindByIdAsync(originalUserId);
+            originalUser.PhysicianId = physicianId;
+            _userManager.Update(originalUser);
 
-            if (userId.HasValue)
-            {
-                var collaboratorUserId = User.Identity.GetGuidUserId();
-                using (var context = new OrvosiDbContext())
-                {
-                    var collaboration = context.Collaborators.SingleOrDefault(c => c.UserId == userId && c.CollaboratorUserId == collaboratorUserId);
-                    if (collaboration == null && !User.Identity.GetOriginalIsAppTester())
-                    {
-                        TempData["UserContextMessage"] = "You do not have access to this user's information";
-                        return Redirect(Request.UrlReferrer.ToString());
-                    }
-                }
+            var identity = await originalUser.GenerateUserIdentityAsync(_userManager);
 
-                var user = _userManager.Users.FirstOrDefault(c => c.Id == userId);
-                identity.AddClaim(new Claim("UserContext", new UserContextViewModel
-                {
-                    Id = user.Id,
-                    DisplayName = user.DisplayName
-                }.ToJson()));
-            }
-            AuthenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true,  });
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
 
             return Redirect(Request.UrlReferrer.ToString());
+
+            //var identity = User.Identity.GetClaimsIdentity();
+            //var userContextClaim = identity.FindFirst("UserContext");
+            //if (userContextClaim != null)
+            //    identity.RemoveClaim(userContextClaim);
+
+            //if (userId.HasValue)
+            //{
+            //    var collaboratorUserId = User.Identity.GetGuidUserId();
+            //    using (var context = new OrvosiDbContext())
+            //    {
+            //        var collaboration = context.Collaborators.SingleOrDefault(c => c.UserId == userId && c.CollaboratorUserId == collaboratorUserId);
+            //        if (collaboration == null && !User.Identity.GetOriginalIsAppTester())
+            //        {
+            //            TempData["UserContextMessage"] = "You do not have access to this user's information";
+            //            return Redirect(Request.UrlReferrer.ToString());
+            //        }
+            //    }
+
+            //    var user = _userManager.Users.FirstOrDefault(c => c.Id == userId);
+            //    identity.AddClaim(new Claim("UserContext", new UserContextViewModel
+            //    {
+            //        Id = user.Id,
+            //        DisplayName = user.DisplayName
+            //    }.ToJson()));
+            //}
+            //AuthenticationManager.AuthenticationResponseGrant = new AuthenticationResponseGrant(new ClaimsPrincipal(identity), new AuthenticationProperties() { IsPersistent = true,  });
+
+            //return Redirect(Request.UrlReferrer.ToString());
         }
 
         public async Task<ActionResult> ImpersonateUser(Guid userId)

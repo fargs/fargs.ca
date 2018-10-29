@@ -8,6 +8,6 @@ namespace WebApp.ViewModels
     public class UserContextViewModel
     {
         public Guid Id { get; set; }
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
     }
 }

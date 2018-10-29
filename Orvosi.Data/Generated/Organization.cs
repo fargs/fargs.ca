@@ -17,17 +17,15 @@ namespace Orvosi.Data
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.21.1.0")]
     public partial class Organization
     {
-        public short Id { get; set; } // Id (Primary key)
-        public System.Guid? ObjectGuid { get; set; } // ObjectGuid
+        public System.Guid Id { get; set; } // Id (Primary key)
         public string Name { get; set; } // Name (length: 128)
-        public System.DateTime ModifiedDate { get; set; } // ModifiedDate
-        public string ModifiedUser { get; set; } // ModifiedUser (length: 100)
+        public string Code { get; set; } // Code (length: 10)
+        public string ColorCode { get; set; } // ColorCode (length: 10)
+        public System.Guid OwnerId { get; set; } // OwnerId
+        public System.Guid? AdministratorId { get; set; } // AdministratorId
 
         public Organization()
         {
-            ObjectGuid = System.Guid.NewGuid();
-            ModifiedDate = System.DateTime.Now;
-            ModifiedUser = "suser_name()";
             InitializePartial();
         }
 

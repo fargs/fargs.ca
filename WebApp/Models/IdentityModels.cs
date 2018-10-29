@@ -11,6 +11,8 @@ using Orvosi.Shared.Enums;
 using System.Web.Mvc;
 using Orvosi.Data;
 using WebApp.Library.Extensions;
+using LinqKit;
+using WebApp.Views.Shared;
 
 namespace WebApp.Models
 {
@@ -31,13 +33,14 @@ namespace WebApp.Models
 
             var roleId = Roles.First().RoleId;
             // Add custom user claims here
-            userIdentity.AddClaim(new Claim("DisplayName", this.DisplayName));
+            userIdentity.AddClaim(new Claim(nameof(DisplayName), this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
-            userIdentity.AddClaim(new Claim("Initials", this.Initials));
+            userIdentity.AddClaim(new Claim(nameof(Initials), this.Initials));
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
             userIdentity.AddClaim(new Claim("RoleId", roleId.ToString()));
-            userIdentity.AddClaim(new Claim("Roles", string.Join("|", Roles.Select(r => r.RoleId))));
-            userIdentity.AddClaim(new Claim("IsAppTester", this.IsAppTester.ToString()));
+            userIdentity.AddClaim(new Claim(nameof(Roles), string.Join("|", Roles.Select(r => r.RoleId))));
+            userIdentity.AddClaim(new Claim(nameof(IsAppTester), this.IsAppTester.ToString()));
+            userIdentity.AddClaim(new Claim(nameof(this.PhysicianId), this.PhysicianId.ToString()));
 
             // ASP.NET Identity automatically creates ClaimTypes.Role for all the associated Roles. We only want to have one role at a time. Delete all except for the default.
             var roles = userIdentity.FindAll(i => i.Type == ClaimTypes.Role).Where(r => r.Value != defaultRole);
@@ -56,29 +59,16 @@ namespace WebApp.Models
                 userIdentity.AddClaim(new Claim("Features", Features.ToJson()));
 
 
-                IQueryable<AspNetUser> userSelectListQuery;
                 // set the physicians to the cookie
-                if (this.IsAppTester)
-                {
-                    userSelectListQuery = db.AspNetUsers
-                        .Where(u => u.AspNetUserRoles.Any(r => r.RoleId == AspNetRoles.Physician));
-                }
-                else
-                {
-                    userSelectListQuery = db.Collaborators
-                        .Join(db.AspNetUsers,
-                            c => c.UserId,
-                            u => u.Id,
-                            (c, u) => new { c.User, CollaboratorUserId = c.CollaboratorUserId })
-                        .Where(u => u.CollaboratorUserId == this.Id)
-                        .Select(u => u.User);
-                }
+                var userSelectListQuery = db.TeamMembers
+                    .AsNoTracking()
+                    .Where(tm => tm.UserId == Id)
+                    .Select(tm => tm.Physician)
+                    .Select(LookupDto<Guid>.FromPhysicianEntity.Expand())
+                    .AsEnumerable()
+                    .Select(LookupViewModel<Guid>.FromLookupDto);
 
-                userIdentity.AddClaim(new Claim("Physicians", userSelectListQuery
-                    .Select(u => u.Id)
-                    .ToArray().ToJson()));
-
-                
+                userIdentity.AddClaim(new Claim("Physicians", userSelectListQuery.ToJson()));               
             }
 
             return userIdentity;
@@ -123,6 +113,7 @@ namespace WebApp.Models
         public short[] Features { get; set; }
         public Guid[] Physicians { get; set; }
         public bool IsAppTester { get; set; }
+        public Guid? PhysicianId { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>

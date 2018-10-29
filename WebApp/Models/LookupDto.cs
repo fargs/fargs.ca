@@ -28,6 +28,21 @@ namespace WebApp.Models
                     })
                     .FirstOrDefault();
 
+        public static Expression<Func<Physician, LookupDto<Guid>>> FromPhysicianEntity = e => e == null ? null : new LookupDto<Guid>
+        {
+            Id = e.Id,
+            Name = e.CompanyName,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
+        public static Expression<Func<AddressType, LookupDto<byte>>> FromAddressTypeEntity = e => e == null ? null : new LookupDto<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = "",
+            ColorCode = ""
+        };
 
         public static Expression<Func<ServiceRequestStatu, LookupDto<short>>> FromServiceRequestStatusEntity = e => e == null ? null : new LookupDto<short>
         {
@@ -46,6 +61,14 @@ namespace WebApp.Models
         };
 
         public static Expression<Func<Service, LookupDto<short>>> FromServiceEntity = e => e == null ? null : new LookupDto<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
+        public static Expression<Func<ServiceV2, LookupDto<Guid>>> FromServiceV2Entity = e => e == null ? null : new LookupDto<Guid>
         {
             Id = e.Id,
             Name = e.Name,

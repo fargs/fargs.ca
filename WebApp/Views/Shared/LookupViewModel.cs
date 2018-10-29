@@ -31,8 +31,15 @@ namespace WebApp.Views.Shared
             Code = e.Code,
             ColorCode = e.ColorCode
         };
-
-        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromCompanyDto = e => e == null ? null : new LookupViewModel<short>
+        public static Expression<Func<CityDto, LookupViewModel<short>>> FromCityDtoExpr = e => FromCityDto(e);
+        public static Func<CityDto, LookupViewModel<short>> FromCityDto = e => e == null ? null : new LookupViewModel<short>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code
+        };
+        public static Expression<Func<LookupDto<short>, LookupViewModel<short>>> FromCompanyDtoExpr = e => FromCompanyDto(e);
+        public static Func<LookupDto<short>, LookupViewModel<short>> FromCompanyDto = e => e == null ? null : new LookupViewModel<short>
         {
             Id = e.Id,
             Name = e.Name,

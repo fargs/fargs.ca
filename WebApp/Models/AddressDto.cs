@@ -22,6 +22,8 @@ namespace WebApp.Models
         public short? ProvinceId { get; set; }
         public string TimeZoneIana { get; set; }
         public string ProvinceName { get; set; }
+        public int CountryId { get; set; }
+        public string CountryName { get; set; }
 
         public override string ToString()
         {
@@ -40,7 +42,9 @@ namespace WebApp.Models
             Address1 = e.Address1,
             ProvinceCode = e.Province.ProvinceCode,
             TimeZone = e.TimeZone.Name,
-            ProvinceName = e.Province.ProvinceName
+            ProvinceName = e.Province.ProvinceName,
+            CountryId = e.CountryId,
+            CountryName = e.Country.Name
         };
     }
 }

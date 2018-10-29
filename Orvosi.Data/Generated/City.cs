@@ -26,6 +26,9 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_City
+        public virtual System.Collections.Generic.ICollection<AddressV2> AddressV2 { get; set; } // AddressV2.FK_AddressV2_City
+        public virtual System.Collections.Generic.ICollection<ServiceCatalogue> ServiceCatalogues { get; set; } // ServiceCatalogue.FK_ServiceCatalogue_City
+        public virtual System.Collections.Generic.ICollection<TravelPrice> TravelPrices { get; set; } // TravelPrice.FK_TravelPrice_City
 
         // Foreign keys
         public virtual Province Province { get; set; } // FK_City_Province
@@ -35,6 +38,9 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             Addresses = new System.Collections.Generic.List<Address>();
+            AddressV2 = new System.Collections.Generic.List<AddressV2>();
+            ServiceCatalogues = new System.Collections.Generic.List<ServiceCatalogue>();
+            TravelPrices = new System.Collections.Generic.List<TravelPrice>();
             InitializePartial();
         }
 

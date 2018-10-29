@@ -50,6 +50,7 @@ namespace Orvosi.Data
         public string HstNumber { get; set; } // HstNumber (length: 50)
         public string Notes { get; set; } // Notes
         public bool IsAppTester { get; set; } // IsAppTester
+        public System.Guid? PhysicianId { get; set; } // PhysicianId
 
         // Reverse navigation
         public virtual Physician Physician { get; set; } // Physician.FK_Physician_AspNetUsers
@@ -70,6 +71,8 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> AssignedTo { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> CompletedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers1
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> TaskStatusChangedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
+        public virtual System.Collections.Generic.ICollection<ServiceV2> ServiceV2 { get; set; } // ServiceV2.FK_ServiceV2_AspNetUsers
+        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_User
         public virtual System.Collections.Generic.ICollection<UserInbox> UserInboxes { get; set; } // UserInbox.FK_UserInbox_AspNetUsers
 
         // Foreign keys
@@ -98,6 +101,8 @@ namespace Orvosi.Data
             AssignedTo = new System.Collections.Generic.List<ServiceRequestTask>();
             CompletedBy = new System.Collections.Generic.List<ServiceRequestTask>();
             TaskStatusChangedBy = new System.Collections.Generic.List<ServiceRequestTask>();
+            ServiceV2 = new System.Collections.Generic.List<ServiceV2>();
+            TeamMembers = new System.Collections.Generic.List<TeamMember>();
             UserInboxes = new System.Collections.Generic.List<UserInbox>();
             InitializePartial();
         }

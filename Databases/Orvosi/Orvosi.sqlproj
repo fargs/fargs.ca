@@ -312,6 +312,18 @@
     <Build Include="Analysis\Views\Assessment.sql" />
     <Build Include="Analysis\Views\AddOn.sql" />
     <Build Include="dbo\Tables\MedicolegalType.sql" />
+    <Build Include="dbo\Tables\TravelPriceHistory.sql" />
+    <Build Include="dbo\Tables\TravelPrice.sql" />
+    <Build Include="dbo\Tables\ServiceV2History.sql" />
+    <Build Include="dbo\Tables\ServiceV2.sql" />
+    <Build Include="dbo\Tables\PhysicianHistory.sql" />
+    <Build Include="dbo\Tables\OrganizationHistory.sql" />
+    <Build Include="dbo\Tables\CompanyV2History.sql" />
+    <Build Include="dbo\Tables\CompanyV2.sql" />
+    <Build Include="dbo\Tables\CompanyServiceHistory.sql" />
+    <Build Include="dbo\Tables\CompanyService.sql" />
+    <Build Include="dbo\Tables\AddressV2History.sql" />
+    <Build Include="dbo\Tables\AddressV2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Orvosi.publish.xml" />

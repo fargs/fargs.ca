@@ -28,6 +28,11 @@ namespace Orvosi.Data
         public decimal? NoShowRate { get; set; } // NoShowRate
         public decimal? LateCancellationRate { get; set; } // LateCancellationRate
 
+        // Foreign keys
+        public virtual City City { get; set; } // FK_ServiceCatalogue_City
+        public virtual Company Company { get; set; } // FK_ServiceCatalogue_Company
+        public virtual Service Service { get; set; } // FK_ServiceCatalogue_Service
+
         public ServiceCatalogue()
         {
             ModifiedDate = System.DateTime.Now;

@@ -27,6 +27,7 @@ namespace Orvosi.Data
 
         // Reverse navigation
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_Provinces
+        public virtual System.Collections.Generic.ICollection<AddressV2> AddressV2 { get; set; } // AddressV2.FK_AddressV2_Provinces
         public virtual System.Collections.Generic.ICollection<City> Cities { get; set; } // City.FK_City_Province
         public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Province
 
@@ -35,6 +36,7 @@ namespace Orvosi.Data
             ModifiedDate = System.DateTime.Now;
             ModifiedUser = "suser_name()";
             Addresses = new System.Collections.Generic.List<Address>();
+            AddressV2 = new System.Collections.Generic.List<AddressV2>();
             Cities = new System.Collections.Generic.List<City>();
             PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
             InitializePartial();

@@ -1,0 +1,12 @@
+﻿<script type="text/javascript">
+    
+    function serviceCatalogueChanged() {
+        var url = '@Url.Content("~/Pricing/Home/ServiceCatalogue")';
+
+        $.get(url)
+        .done(function (result) {
+            document.getElementById('servicecatalogue-container').innerHTML = result;
+        });
+    }
+
+</script>

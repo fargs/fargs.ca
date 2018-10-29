@@ -39,30 +39,6 @@ namespace WebApp.Library
             return viewModel;
         }
 
-        public List<Orvosi.Shared.Model.Person> GetPhysicians()
-        {
-            var physicians = identity.GetPhysicians();
-
-            return dbContext.AspNetUsers
-                .Where(u => physicians.Contains(u.Id))
-                .Select(AspNetUserProjections.Basic())
-                .ToList();
-        }
-
-        public List<SelectListItem> GetPhysicianSelectList()
-        {
-            var data = GetPhysicians();
-
-            return data
-                .Select(d => new SelectListItem
-                {
-                    Text = d.DisplayName,
-                    Value = d.Id.ToString()
-                })
-                .OrderBy(d => d.Text)
-                .ToList();
-        }
-
         public List<CompanyProjections.CompanySearchResult> GetPhysicianCompanies(Guid? physicianId)
         {
             return dbContext.PhysicianCompanies

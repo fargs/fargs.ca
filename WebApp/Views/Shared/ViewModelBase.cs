@@ -14,8 +14,8 @@ namespace WebApp.Views.Shared
         {
             LoggedInRoleId = identity.GetRoleId();
             LoggedInUserId = identity.GetGuidUserId();
-            var physicianContext = identity.GetPhysicianContext();
-            PhysicianId = physicianContext == null ? (Guid?)null : physicianContext.Id;
+            var physicianContext = identity.GetPhysician();
+            PhysicianId = identity.GetPhysicianId();
             AuthorizedFeatures = identity.GetFeatures();
             Now = now;
         }

@@ -35,6 +35,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Company
         public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_Company
         public virtual System.Collections.Generic.ICollection<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany.FK_PhysicianCompany_Company
+        public virtual System.Collections.Generic.ICollection<ServiceCatalogue> ServiceCatalogues { get; set; } // ServiceCatalogue.FK_ServiceCatalogue_Company
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Company
 
         // Foreign keys
@@ -50,6 +51,7 @@ namespace Orvosi.Data
             AvailableDays = new System.Collections.Generic.List<AvailableDay>();
             Companies = new System.Collections.Generic.List<Company>();
             PhysicianCompanies = new System.Collections.Generic.List<PhysicianCompany>();
+            ServiceCatalogues = new System.Collections.Generic.List<ServiceCatalogue>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }

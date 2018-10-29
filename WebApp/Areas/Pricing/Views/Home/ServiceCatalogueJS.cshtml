@@ -1,0 +1,31 @@
+﻿<script type="text/javascript">
+
+    function showServiceCatalogueForm() {
+        var url = '@Url.Content("~/Pricing/Home/ShowServiceCatalogueForm")';
+
+        $.get(url)
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function saveServiceCatalogueForm(form) {
+        var url = '@Url.Content("~/Pricing/Home/SaveServiceCatalogueForm")';
+
+        $.post(url,
+            form.serialize()
+        ).done(function (data) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Saved successfully.");
+            serviceCatalogueChanged(data);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function serviceCatalogueChanged() {
+        // template method that needs to be overriden
+    }
+
+</script>

@@ -86,7 +86,7 @@ namespace WebApp
                     // Return QueryResult object containing IEnumerable<YouModelItem>
                     var db = DependencyResolver.Current.GetService<OrvosiDbContext>();
                     var identity = context.CurrentHttpContext.User.Identity;
-                    var physicianContext = context.CurrentHttpContext.User.Identity.GetPhysicianContext();
+                    var physicianId = context.CurrentHttpContext.User.Identity.GetPhysicianId();
                     var userId = identity.GetGuidUserId();
                     var now = DependencyResolver.Current.GetService<DateTime>();
 
@@ -95,10 +95,10 @@ namespace WebApp
                         .AreActiveOrDone();
                         //.Where(srt => srt.DueDate.HasValue);
 
-                    if (physicianContext != null)
+                    if (physicianId.HasValue)
                     {
                         entityQuery = entityQuery
-                            .Where(srt => srt.ServiceRequest.PhysicianId == physicianContext.Id);
+                            .Where(srt => srt.ServiceRequest.PhysicianId == physicianId);
                     }
 
                     

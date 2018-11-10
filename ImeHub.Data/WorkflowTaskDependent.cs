@@ -15,25 +15,25 @@
 namespace ImeHub.Data
 {
 
-    // RoleFeature
-    public partial class RoleFeature
+    // WorkflowTaskDependent
+    public partial class WorkflowTaskDependent
     {
-        public System.Guid RoleId { get; set; } // RoleId (Primary key)
-        public System.Guid FeatureId { get; set; } // FeatureId (Primary key)
+        public System.Guid ParentId { get; set; } // ParentId (Primary key)
+        public System.Guid ChildId { get; set; } // ChildId (Primary key)
 
         // Foreign keys
 
         /// <summary>
-        /// Parent Feature pointed by [RoleFeature].([FeatureId]) (FK_RoleFeature_Feature)
+        /// Parent WorkflowTask pointed by [WorkflowTaskDependent].([ChildId]) (FK_WorkflowTaskDependent_Dependent)
         /// </summary>
-        public virtual Feature Feature { get; set; } // FK_RoleFeature_Feature
+        public virtual WorkflowTask Child { get; set; } // FK_WorkflowTaskDependent_Dependent
 
         /// <summary>
-        /// Parent Role pointed by [RoleFeature].([RoleId]) (FK_RoleFeature_Role)
+        /// Parent WorkflowTask pointed by [WorkflowTaskDependent].([ParentId]) (FK_WorkflowTaskDependent_WorkflowTask)
         /// </summary>
-        public virtual Role Role { get; set; } // FK_RoleFeature_Role
+        public virtual WorkflowTask Parent { get; set; } // FK_WorkflowTaskDependent_WorkflowTask
 
-        public RoleFeature()
+        public WorkflowTaskDependent()
         {
             InitializePartial();
         }

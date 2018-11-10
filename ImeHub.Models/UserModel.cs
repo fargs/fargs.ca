@@ -71,9 +71,7 @@ namespace ImeHub.Models
                 ColorCode = a.Role.ColorCode,
                 Features = a.Role.RoleFeatures.Select(rf => new RoleModel.FeatureModel
                 {
-                    RoleFeatureId = rf.Id,
-                    IsActive = rf.IsActive,
-                    FeatureId = rf.FeatureId,
+                    FeatureId = rf.Feature.Id,
                     Name = rf.Feature.Name
                 })
             },

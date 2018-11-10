@@ -28,6 +28,7 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<Feature> Features { get; set; }
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; }
         public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; }
+        public System.Data.Entity.DbSet<PhysicianInviteAcceptanceStatu> PhysicianInviteAcceptanceStatus { get; set; }
         public System.Data.Entity.DbSet<Province> Provinces { get; set; }
         public System.Data.Entity.DbSet<Role> Roles { get; set; }
         public System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; }
@@ -36,8 +37,10 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; }
         public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; }
         public System.Data.Entity.DbSet<User> Users { get; set; }
+        public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; }
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; }
         public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; }
+        public System.Data.Entity.DbSet<WorkflowTaskDependent> WorkflowTaskDependents { get; set; }
 
         public FakeImeHubDbContext()
         {
@@ -53,16 +56,19 @@ namespace ImeHub.Data
             Features = new FakeDbSet<Feature>("Id");
             Physicians = new FakeDbSet<Physician>("Id");
             PhysicianInvites = new FakeDbSet<PhysicianInvite>("Id");
+            PhysicianInviteAcceptanceStatus = new FakeDbSet<PhysicianInviteAcceptanceStatu>("Id");
             Provinces = new FakeDbSet<Province>("Id");
             Roles = new FakeDbSet<Role>("Id");
-            RoleFeatures = new FakeDbSet<RoleFeature>("Id");
+            RoleFeatures = new FakeDbSet<RoleFeature>("RoleId", "FeatureId");
             Services = new FakeDbSet<Service>("Id");
             TeamMembers = new FakeDbSet<TeamMember>("Id");
             TimeZones = new FakeDbSet<TimeZone>("Id");
             TravelPrices = new FakeDbSet<TravelPrice>("Id");
             Users = new FakeDbSet<User>("Id");
+            UserRoles = new FakeDbSet<UserRole>("UserId", "RoleId");
             Workflows = new FakeDbSet<Workflow>("Id");
             WorkflowTasks = new FakeDbSet<WorkflowTask>("Id");
+            WorkflowTaskDependents = new FakeDbSet<WorkflowTaskDependent>("ParentId", "ChildId");
         }
 
         public int SaveChangesCount { get; private set; }

@@ -15,25 +15,25 @@
 namespace ImeHub.Data
 {
 
-    // RoleFeature
-    public partial class RoleFeature
+    // UserRole
+    public partial class UserRole
     {
+        public System.Guid UserId { get; set; } // UserId (Primary key)
         public System.Guid RoleId { get; set; } // RoleId (Primary key)
-        public System.Guid FeatureId { get; set; } // FeatureId (Primary key)
 
         // Foreign keys
 
         /// <summary>
-        /// Parent Feature pointed by [RoleFeature].([FeatureId]) (FK_RoleFeature_Feature)
+        /// Parent Role pointed by [UserRole].([RoleId]) (FK_UserRole_Role)
         /// </summary>
-        public virtual Feature Feature { get; set; } // FK_RoleFeature_Feature
+        public virtual Role Role { get; set; } // FK_UserRole_Role
 
         /// <summary>
-        /// Parent Role pointed by [RoleFeature].([RoleId]) (FK_RoleFeature_Role)
+        /// Parent User pointed by [UserRole].([UserId]) (FK_UserRole_User)
         /// </summary>
-        public virtual Role Role { get; set; } // FK_RoleFeature_Role
+        public virtual User User { get; set; } // FK_UserRole_User
 
-        public RoleFeature()
+        public UserRole()
         {
             InitializePartial();
         }

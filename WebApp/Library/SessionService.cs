@@ -1,4 +1,4 @@
-﻿using Orvosi.Data;
+﻿using ImeHub.Data;
 using Orvosi.Shared.Enums;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Principal;
 using System.Web;
 using WebApp.Library.Extensions;
-using WebApp.Models;
 using WebApp.ViewModels;
 
 namespace WebApp.Library
@@ -20,10 +19,10 @@ namespace WebApp.Library
         public Guid currentContextId { get; }
         public Guid roleId { get; }
 
-        private short[] authorizedFeatures;
-        private OrvosiDbContext db;
+        private string[] authorizedFeatures;
+        private ImeHubDbContext db;
 
-        public SessionService(OrvosiDbContext db, IPrincipal principal)
+        public SessionService(ImeHubDbContext db, IPrincipal principal)
         {
             this.db = db;
             identity = principal.Identity;
@@ -35,7 +34,7 @@ namespace WebApp.Library
             authorizedFeatures = identity.GetFeatures();
         }
 
-        public short[] AuthorizedFeatures
+        public string[] AuthorizedFeatures
         {
             get
             {
@@ -43,9 +42,9 @@ namespace WebApp.Library
                 {
                     var roleId = HttpContext.Current.User.Identity.GetRoleId();
                     if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
-                        authorizedFeatures = db.Features.Select(srf => srf.Id).ToArray();
+                        authorizedFeatures = db.Features.Select(srf => srf.Id.ToString()).ToArray();
                     else
-                        authorizedFeatures  = db.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
+                        authorizedFeatures  = identity.GetFeatures();
                 }
                 return authorizedFeatures;
             }

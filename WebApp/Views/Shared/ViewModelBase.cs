@@ -23,7 +23,7 @@ namespace WebApp.Views.Shared
         public Guid LoggedInRoleId { get; set; }
         public Guid LoggedInUserId { get; set; }
         public Guid? PhysicianId { get; set; }
-        public IEnumerable<short> AuthorizedFeatures { get; set; }
+        public IEnumerable<string> AuthorizedFeatures { get; set; }
         public DateTime Now { get; set; }
     }
 }

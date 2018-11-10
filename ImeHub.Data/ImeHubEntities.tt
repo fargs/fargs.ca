@@ -29,7 +29,7 @@
     Settings.DbContextInterfaceModifiers   = "public"; // "public partial";
     Settings.MigrationClassModifiers       = "internal sealed";
     Settings.ResultClassModifiers          = "public"; // "public partial";
-    Settings.UseMappingTables = true; // If true, mapping will be used and no mapping tables will be generated. If false, all tables will be generated.
+    Settings.UseMappingTables = false; // If true, mapping will be used and no mapping tables will be generated. If false, all tables will be generated.
     Settings.UsePascalCase = true;    // This will rename the generated C# tables & properties to use PascalCase. If false table & property names will be left alone.
     Settings.UseDataAnnotations = false; // If true, will add data annotations to the poco classes.
     Settings.UseDataAnnotationsWithFluent = false; // If true, then non-Entity Framework-specific DataAnnotations (like [Required] and [StringLength]) will be applied to Entities even if UseDataAnnotations is false.

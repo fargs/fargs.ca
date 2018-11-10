@@ -314,12 +314,6 @@ namespace ImeHub.Data
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(256);
             Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
             Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(50);
-            HasMany(t => t.Users_UserId).WithMany(t => t.Roles).Map(m =>
-            {
-                m.ToTable("UserRole", "dbo");
-                m.MapLeftKey("RoleId");
-                m.MapRightKey("UserId");
-            });
         }
     }
 
@@ -335,12 +329,10 @@ namespace ImeHub.Data
         public RoleFeatureConfiguration(string schema)
         {
             ToTable("RoleFeature", schema);
-            HasKey(x => x.Id);
+            HasKey(x => new { x.RoleId, x.FeatureId });
 
-            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired();
-            Property(x => x.FeatureId).HasColumnName(@"FeatureId").HasColumnType("uniqueidentifier").IsRequired();
-            Property(x => x.IsActive).HasColumnName(@"IsActive").HasColumnType("bit").IsRequired();
+            Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.FeatureId).HasColumnName(@"FeatureId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
 
             // Foreign keys
             HasRequired(a => a.Feature).WithMany(b => b.RoleFeatures).HasForeignKey(c => c.FeatureId).WillCascadeOnDelete(false); // FK_RoleFeature_Feature
@@ -487,7 +479,30 @@ namespace ImeHub.Data
             Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired();
 
             // Foreign keys
-            HasRequired(a => a.Role).WithMany(b => b.Users_RoleId).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_User_Role
+            HasRequired(a => a.Role).WithMany(b => b.Users).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_User_Role
+        }
+    }
+
+    // UserRole
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class UserRoleConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<UserRole>
+    {
+        public UserRoleConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public UserRoleConfiguration(string schema)
+        {
+            ToTable("UserRole", schema);
+            HasKey(x => new { x.UserId, x.RoleId });
+
+            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+
+            // Foreign keys
+            HasRequired(a => a.Role).WithMany(b => b.UserRoles).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_UserRole_Role
+            HasRequired(a => a.User).WithMany(b => b.UserRoles).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_UserRole_User
         }
     }
 
@@ -535,12 +550,29 @@ namespace ImeHub.Data
             Property(x => x.EffectiveDateDurationFromBaseline).HasColumnName(@"EffectiveDateDurationFromBaseline").HasColumnType("smallint").IsOptional();
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").HasColumnType("bit").IsRequired();
             Property(x => x.IsBillable).HasColumnName(@"IsBillable").HasColumnType("bit").IsRequired();
-            HasMany(t => t.WorkflowTasks_ParentId).WithMany(t => t.WorkflowTasks_ChildId).Map(m =>
-            {
-                m.ToTable("WorkflowTaskDependent", "dbo");
-                m.MapLeftKey("ChildId");
-                m.MapRightKey("ParentId");
-            });
+        }
+    }
+
+    // WorkflowTaskDependent
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class WorkflowTaskDependentConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<WorkflowTaskDependent>
+    {
+        public WorkflowTaskDependentConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public WorkflowTaskDependentConfiguration(string schema)
+        {
+            ToTable("WorkflowTaskDependent", schema);
+            HasKey(x => new { x.ParentId, x.ChildId });
+
+            Property(x => x.ParentId).HasColumnName(@"ParentId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.ChildId).HasColumnName(@"ChildId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+
+            // Foreign keys
+            HasRequired(a => a.Child).WithMany(b => b.WorkflowTaskDependents_ChildId).HasForeignKey(c => c.ChildId).WillCascadeOnDelete(false); // FK_WorkflowTaskDependent_Dependent
+            HasRequired(a => a.Parent).WithMany(b => b.WorkflowTaskDependents_ParentId).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_WorkflowTaskDependent_WorkflowTask
         }
     }
 

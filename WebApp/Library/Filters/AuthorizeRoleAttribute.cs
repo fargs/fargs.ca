@@ -21,8 +21,8 @@ namespace WebApp.Library.Filters
         /// This is an array of acceptable features to access a method. 
         /// If the user has any of the features they are allowed (to check that they have all of the features use multiple attributes)
         /// </summary>
-        public short Feature { get; set; } = 0; // nullable types are not allowed as attribute parameters ... default to 0
-        public short[] Features { get; set; } = null;
+        public string Feature { get; set; } = string.Empty; // nullable types are not allowed as attribute parameters ... default to 0
+        public string[] Features { get; set; } = null;
         public ActionResult UnauthorizedView() => new ViewResult() { ViewName = "~/Views/Shared/Unauthorized.cshtml" };
         public ActionResult UnauthorizedPartialView() => new PartialViewResult() { ViewName = "~/Views/Shared/Unauthorized.cshtml" };
         public ActionResult Unauthorized(System.Web.Mvc.AuthorizationContext filterContext)
@@ -60,7 +60,7 @@ namespace WebApp.Library.Filters
                 filterContext.Result = Unauthorized(filterContext);
             }
             // Where the Feature has been set on the Attribute controller action, use that to determine if the Role has access to that feature
-            else if (Feature != 0)
+            else if (string.IsNullOrEmpty(Feature))
             {
                 if (!roleFeatures.Contains(Feature))
                 {

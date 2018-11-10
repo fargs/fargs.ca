@@ -49,9 +49,8 @@ namespace WebApp.Models
                     .AsNoTracking()
                     .AsExpandable()
                     .Where(p => p.Id == this.RoleId)
-                    .Select(LookupModel<Guid>.FromRole)
-                    .AsEnumerable()
-                    .Select(LookupViewModel<Guid>.FromLookupModel);
+                    .Select(RoleModel.FromRole)
+                    .Single();
 
                 userIdentity.AddClaim(new Claim("Role", JsonConvert.SerializeObject(role)));
 
@@ -71,7 +70,7 @@ namespace WebApp.Models
                 if (RoleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
                     Features = db.Features.Select(srf => srf.Id).ToArray();
                 else
-                    Features = db.RoleFeatures.Where(srf => srf.RoleId == RoleId).Select(srf => srf.FeatureId).ToArray();
+                    Features = role.Features.Select(srf => srf.Id).ToArray();
 
                 userIdentity.AddClaim(new Claim("Features", Features.ToJson()));
 

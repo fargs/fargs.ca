@@ -1542,7 +1542,9 @@
     <Content Include="Areas\Calendar\Views\Calendar\ActionMenu.cshtml" />
     <Content Include="Areas\Calendar\Views\Calendar\DayView.cshtml" />
     <Content Include="Areas\Work\Views\web.config" />
-    <Content Include="Areas\Availability\Views\web.config" />
+    <Content Include="Areas\Availability\Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Areas\Work\Views\DaySheet\ServiceRequest\web.config" />
     <Content Include="Areas\Work\Views\DaySheet\ServiceRequest\TaskList\web.config" />
     <Content Include="Areas\Work\Views\DaySheet\ServiceRequest\InvoiceList\web.config" />

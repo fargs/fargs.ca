@@ -28,6 +28,7 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
         public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite
+        public System.Data.Entity.DbSet<PhysicianInviteAcceptanceStatu> PhysicianInviteAcceptanceStatus { get; set; } // PhysicianInviteAcceptanceStatus
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         public System.Data.Entity.DbSet<Role> Roles { get; set; } // Role
         public System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; } // RoleFeature
@@ -36,8 +37,10 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         public System.Data.Entity.DbSet<User> Users { get; set; } // User
+        public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; } // UserRole
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; } // Workflow
         public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; } // WorkflowTask
+        public System.Data.Entity.DbSet<WorkflowTaskDependent> WorkflowTaskDependents { get; set; } // WorkflowTaskDependent
 
         static ImeHubDbContext()
         {
@@ -95,6 +98,7 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new FeatureConfiguration());
             modelBuilder.Configurations.Add(new PhysicianConfiguration());
             modelBuilder.Configurations.Add(new PhysicianInviteConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianInviteAcceptanceStatuConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
             modelBuilder.Configurations.Add(new RoleConfiguration());
             modelBuilder.Configurations.Add(new RoleFeatureConfiguration());
@@ -103,8 +107,10 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new TimeZoneConfiguration());
             modelBuilder.Configurations.Add(new TravelPriceConfiguration());
             modelBuilder.Configurations.Add(new UserConfiguration());
+            modelBuilder.Configurations.Add(new UserRoleConfiguration());
             modelBuilder.Configurations.Add(new WorkflowConfiguration());
             modelBuilder.Configurations.Add(new WorkflowTaskConfiguration());
+            modelBuilder.Configurations.Add(new WorkflowTaskDependentConfiguration());
         }
 
         public static System.Data.Entity.DbModelBuilder CreateModel(System.Data.Entity.DbModelBuilder modelBuilder, string schema)
@@ -117,6 +123,7 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new FeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianInviteConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianInviteAcceptanceStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleFeatureConfiguration(schema));
@@ -125,8 +132,10 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new TimeZoneConfiguration(schema));
             modelBuilder.Configurations.Add(new TravelPriceConfiguration(schema));
             modelBuilder.Configurations.Add(new UserConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserRoleConfiguration(schema));
             modelBuilder.Configurations.Add(new WorkflowConfiguration(schema));
             modelBuilder.Configurations.Add(new WorkflowTaskConfiguration(schema));
+            modelBuilder.Configurations.Add(new WorkflowTaskDependentConfiguration(schema));
             return modelBuilder;
         }
     }

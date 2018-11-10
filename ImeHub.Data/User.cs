@@ -57,13 +57,13 @@ namespace ImeHub.Data
         /// </summary>
         public virtual System.Collections.Generic.ICollection<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite.FK_PhysicianInvite_User
         /// <summary>
-        /// Child Roles (Many-to-Many) mapped by table [UserRole]
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Role> Roles { get; set; } // Many to many mapping
-        /// <summary>
         /// Child TeamMembers where [TeamMember].[UserId] point to this entity (FK_TeamMember_User)
         /// </summary>
         public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_User
+        /// <summary>
+        /// Child UserRoles where [UserRole].[UserId] point to this entity (FK_UserRole_User)
+        /// </summary>
+        public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; } // UserRole.FK_UserRole_User
 
         // Foreign keys
 
@@ -80,7 +80,7 @@ namespace ImeHub.Data
             Physicians_OwnerId = new System.Collections.Generic.List<Physician>();
             PhysicianInvites = new System.Collections.Generic.List<PhysicianInvite>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
-            Roles = new System.Collections.Generic.List<Role>();
+            UserRoles = new System.Collections.Generic.List<UserRole>();
             InitializePartial();
         }
 

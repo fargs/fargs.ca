@@ -31,6 +31,9 @@ namespace Orvosi.Shared.Enums
         public static string AppTesterName = "App Tester";
         public static Guid ExternalAdmin = new Guid("D4AA9AC8-396D-486D-9FF1-A9E9D5A8FAB7");
         public static string ExternalAdminName = "External Admin";
+        public static Guid Manager = new Guid("5F8705D3-DFCD-4233-834D-C7DB1DFA99A8");
+        public static string ManagerName = "Manager";
+
     }
 
     public static class ActionStates

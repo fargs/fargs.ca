@@ -32,21 +32,21 @@ namespace ImeHub.Data
         // Reverse navigation
 
         /// <summary>
-        /// Child WorkflowTasks (Many-to-Many) mapped by table [WorkflowTaskDependent]
+        /// Child WorkflowTaskDependents where [WorkflowTaskDependent].[ChildId] point to this entity (FK_WorkflowTaskDependent_Dependent)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkflowTask> WorkflowTasks_ChildId { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<WorkflowTaskDependent> WorkflowTaskDependents_ChildId { get; set; } // WorkflowTaskDependent.FK_WorkflowTaskDependent_Dependent
         /// <summary>
-        /// Child WorkflowTasks (Many-to-Many) mapped by table [WorkflowTaskDependent]
+        /// Child WorkflowTaskDependents where [WorkflowTaskDependent].[ParentId] point to this entity (FK_WorkflowTaskDependent_WorkflowTask)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkflowTask> WorkflowTasks_ParentId { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<WorkflowTaskDependent> WorkflowTaskDependents_ParentId { get; set; } // WorkflowTaskDependent.FK_WorkflowTaskDependent_WorkflowTask
 
         public WorkflowTask()
         {
             IsBaselineDate = false;
             IsCriticalPath = false;
             IsBillable = false;
-            WorkflowTasks_ChildId = new System.Collections.Generic.List<WorkflowTask>();
-            WorkflowTasks_ParentId = new System.Collections.Generic.List<WorkflowTask>();
+            WorkflowTaskDependents_ChildId = new System.Collections.Generic.List<WorkflowTaskDependent>();
+            WorkflowTaskDependents_ParentId = new System.Collections.Generic.List<WorkflowTaskDependent>();
             InitializePartial();
         }
 

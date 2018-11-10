@@ -36,18 +36,18 @@ namespace ImeHub.Data
         /// <summary>
         /// Child Users where [User].[RoleId] point to this entity (FK_User_Role)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<User> Users_RoleId { get; set; } // User.FK_User_Role
+        public virtual System.Collections.Generic.ICollection<User> Users { get; set; } // User.FK_User_Role
         /// <summary>
-        /// Child Users (Many-to-Many) mapped by table [UserRole]
+        /// Child UserRoles where [UserRole].[RoleId] point to this entity (FK_UserRole_Role)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<User> Users_UserId { get; set; } // Many to many mapping
+        public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; } // UserRole.FK_UserRole_Role
 
         public Role()
         {
             RoleFeatures = new System.Collections.Generic.List<RoleFeature>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
-            Users_RoleId = new System.Collections.Generic.List<User>();
-            Users_UserId = new System.Collections.Generic.List<User>();
+            Users = new System.Collections.Generic.List<User>();
+            UserRoles = new System.Collections.Generic.List<UserRole>();
             InitializePartial();
         }
 

@@ -10,6 +10,7 @@ using System.Security.Principal;
 using System.Web;
 using WebApp.Models;
 using WebApp.ViewModels;
+using ImeHub.Models;
 
 namespace WebApp.Library.Extensions
 {
@@ -41,12 +42,12 @@ namespace WebApp.Library.Extensions
             return HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(obj.GetGuidUserId());
         }
 
-        public static short[] GetFeatures(this IIdentity obj)
+        public static string[] GetFeatures(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("Features");
             if (claim != null)
             {
-                return JsonConvert.DeserializeObject<short[]>(claim);
+                return JsonConvert.DeserializeObject<string[]>(claim);
             }
             return null;
         }
@@ -189,12 +190,12 @@ namespace WebApp.Library.Extensions
             }
             return claim;
         }
-        public static LookupViewModel<Guid> GetRole(this IIdentity identity)
+        public static RoleModel GetRole(this IIdentity identity)
         {
             var claim = identity.GetClaimsIdentity().FindFirstValue("Role");
             if (claim != null)
             {
-                return JsonConvert.DeserializeObject<IEnumerable<LookupViewModel<Guid>>>(claim).FirstOrDefault();
+                return JsonConvert.DeserializeObject<RoleModel>(claim);
             }
             return null;
         }

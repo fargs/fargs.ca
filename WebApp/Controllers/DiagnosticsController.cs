@@ -283,7 +283,7 @@ namespace WebApp.Controllers
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
-        [AuthorizeRole(Features = new short[2] { features.Accounting.CreateInvoice, features.Accounting.ViewInvoice })]
+        [AuthorizeRole(Features = new string[2] { features.Accounting.CreateInvoice, features.Accounting.ViewInvoice })]
         public HttpStatusCodeResult AuthorizationAttribute_WithCreateInvoiceAndReadInvoiceFeatures()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);

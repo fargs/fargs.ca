@@ -2,8 +2,11 @@
 using Orvosi.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using WebApp.Library;
 using WebApp.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
@@ -21,11 +24,15 @@ namespace WebApp.Areas.Companies.Views.Company
             {
                 ServiceId = serviceId;
                 var selectedServiceDto = ServiceV2Dto.FromServiceV2Entity.Invoke(db.ServiceV2.SingleOrDefault(s => s.Id == serviceId.Value));
-                SelectedService = new ServiceV2ViewModel(selectedServiceDto);
+                SelectedServiceName = selectedServiceDto.Name;
+                SelectedServicePrice = selectedServiceDto.Price;
+                SelectedServiceIsTravelRequired = selectedServiceDto.IsTravelRequired;
             }
             ViewData = new ViewDataModel(db, physicianId);
         }
-        public ServiceV2ViewModel SelectedService { get; set; }
+        public string SelectedServiceName { get; set; }
+        public decimal? SelectedServicePrice { get; set; }
+        public bool? SelectedServiceIsTravelRequired { get; set; }
         public Guid CompanyId { get; set; }
         public Guid? ServiceId { get; set; }
         public Guid? Id { get; set; }
@@ -34,7 +41,7 @@ namespace WebApp.Areas.Companies.Views.Company
         public bool? IsTravelRequired { get; set; }
 
         public ViewDataModel ViewData { get; private set; }
-        
+
         public void LoadViewData(OrvosiDbContext db, Guid physicianId)
         {
             ViewData = new ViewDataModel(db, physicianId);

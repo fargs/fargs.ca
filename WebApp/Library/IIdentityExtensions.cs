@@ -63,22 +63,20 @@ namespace WebApp.Library.Extensions
         public static Guid? GetPhysicianId(this IIdentity identity)
         {
             var claim = identity.GetClaimsIdentity().FindFirstValue("PhysicianId");
-            if (claim == null)
+            if (string.IsNullOrEmpty(claim) || claim == null)
             {
-                return Guid.Empty;
+                return null;
             }
             return new Guid(claim);
         }
         public static LookupViewModel<Guid> GetPhysician(this IIdentity identity)
         {
-            var physicians = identity.GetPhysicians();
-            var physicianId = identity.GetPhysicianId();
-
-            if (physicians == null)
+            var claim = identity.GetClaimsIdentity().FindFirstValue("Physician");
+            if (claim != null)
             {
-                throw new Exception("User does not belong to any teams");
+                return JsonConvert.DeserializeObject<IEnumerable<LookupViewModel<Guid>>>(claim).FirstOrDefault();
             }
-            return physicians.SingleOrDefault(p => p.Id == physicianId);
+            return null;
         }
 
         public static UserContextViewModel GetLoggedInUserContext(this IIdentity obj)
@@ -155,7 +153,15 @@ namespace WebApp.Library.Extensions
             }
             return bool.Parse(claim);
         }
-
+        public static string GetEmail(this IIdentity obj)
+        {
+            var claim = obj.GetClaimsIdentity().FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(claim))
+            {
+                return string.Empty;
+            }
+            return claim;
+        }
         public static string GetDisplayName(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("DisplayName");
@@ -165,26 +171,32 @@ namespace WebApp.Library.Extensions
             }
             return claim;
         }
-
-        public static string GetRoleName(this IIdentity obj)
+        public static string GetInitials(this IIdentity obj)
         {
-            var claim = obj.GetClaimsIdentity().FindFirstValue(ClaimTypes.Role);
+            var claim = obj.GetClaimsIdentity().FindFirstValue("Initials");
             if (string.IsNullOrEmpty(claim))
             {
                 return string.Empty;
             }
             return claim;
-
         }
-
-        public static List<Guid> GetRoles(this IIdentity obj)
+        public static string GetColorCode(this IIdentity obj)
         {
-            var roles = obj.GetClaimsIdentity().FindFirstValue("Roles");
-            if (roles == null)
+            var claim = obj.GetClaimsIdentity().FindFirstValue("ColorCode");
+            if (string.IsNullOrEmpty(claim))
             {
-                return new List<Guid>();
+                return string.Empty;
             }
-            return roles.Split('|').Select(s => Guid.Parse(s)).ToList();
+            return claim;
+        }
+        public static LookupViewModel<Guid> GetRole(this IIdentity identity)
+        {
+            var claim = identity.GetClaimsIdentity().FindFirstValue("Role");
+            if (claim != null)
+            {
+                return JsonConvert.DeserializeObject<IEnumerable<LookupViewModel<Guid>>>(claim).FirstOrDefault();
+            }
+            return null;
         }
 
         public static bool IOwnThis(this IIdentity identity, Guid ownerId)

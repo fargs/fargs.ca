@@ -14,7 +14,7 @@ using Features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class CompanyController : BaseController
+    public class CompanyController : Controller
     {
         OrvosiDbContext db = new OrvosiDbContext();
 

@@ -14,6 +14,13 @@ namespace WebApp.Views.Shared
         public string Code { get; set; }
         public string ColorCode { get; set; }
 
+        public static Func<ImeHub.Models.LookupModel<T>, LookupViewModel<T>> FromLookupModel = e => e == null ? null : new LookupViewModel<T>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
         public static Func<LookupDto<T>, LookupViewModel<T>> FromLookupDto = e => e == null ? null : new LookupViewModel<T>
         {
             Id = e.Id,

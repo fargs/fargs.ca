@@ -18,7 +18,7 @@ namespace WebApp.Views.Comment
         [Required]
         public byte CommentTypeId { get; set; }
         public bool IsPrivate { get; set; }
-        public ContactViewModel<Guid> Physician { get; set; }
+        public ContactViewModel Physician { get; set; }
         public List<Guid> AccessList { get; set; }
     }
 }

@@ -16,9 +16,6 @@
 
     var physicianId = User.Identity.GetPhysicianId();
     var physician = User.Identity.GetPhysician();
-    var physicians = User.Identity.GetPhysicians().ToList();
-    physicians.Remove(physician);
-
 
     var context = DependencyResolver.Current.GetService<OrvosiDbContext>();
 
@@ -64,25 +61,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+                <a class="navbar-brand" href="#">@physician.Name</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
-                        <li>
-                            <a data-toggle="dropdown" href="#">
-                                <i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@physicianId
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                @foreach (var p in physicians)
-                                {
-                                    <li>
-                                        <a tabindex="-1" href="~/Account/ChangeUserContextAsync/?physicianId=@p.Id">@p.Name</a>
-                                    </li>
-                                }
-                            </ul>
-                        </li>
                         if (features.Contains(Features.ServiceRequest.Search))
                         {
                             <li>
@@ -153,24 +137,6 @@
                                     {
                                         <li>@Html.ActionLink("Case Master List", "Index", "ServiceRequest", new { area = "" }, null)</li>
                                     }
-                                </ul>
-                            </li>
-                        }
-                        if (features.Contains(Features.SecurityAdmin.Section))
-                        {
-                            <li role="presentation" class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <i class="glyphicon glyphicon-cog"></i> <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = RoleCategories.Physician }, null)</li>
-                                    <li>@Html.ActionLink("Roles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
-                                    <li>@Html.ActionLink("Features", "", "Feature", new { area = "Admin" }, null)</li>
-                                    <li class="divider"></li>
-                                    <li><a href="http://orvosi-hangfire.azurewebsites.net/522b64d4-53c7-450f-85b1-a82191a33704">Hangfire</a></li>
-                                    <li><a onclick="updateAssessmentDayTaskStatuses()">Update Assessment Day Task Statuses</a></li>
-                                    <li><a onclick="updateTaskStatuses()">Update Task Statuses</a></li>
-                                    <li><a onclick="updateServiceRequestStatuses()">Update Service Request Statuses</a></li>
                                 </ul>
                             </li>
                         }

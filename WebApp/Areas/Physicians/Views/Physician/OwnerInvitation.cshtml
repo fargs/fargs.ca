@@ -1,0 +1,6 @@
+﻿@model PhysicianInviteViewModel
+
+<div>
+    @Model.ToName has <span class="label label-default">@Model.AcceptanceStatus</span> to the invitation from @Model.FromName on @Model.SentDate
+    (<a style="cursor:pointer;" onclick="ResendInvite('@Model.Id')">Resend</a>)
+</div>

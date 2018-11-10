@@ -8,7 +8,7 @@ using WebApp.Areas.Admin.ViewModels.PhysicianLocationAreasViewModels;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class PhysicianLocationAreaController : BaseController
+    public class PhysicianLocationAreaController : Controller
     {
         OrvosiDbContext db = new OrvosiDbContext();
 

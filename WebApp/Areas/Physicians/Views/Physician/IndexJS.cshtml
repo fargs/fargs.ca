@@ -1,0 +1,97 @@
+﻿<script type="text/javascript">
+
+    function navigateToPhysician(physicianId) {
+
+        let url = new URL(window.location);
+        url.searchParams.set('physicianId', physicianId);
+        history.pushState({}, "", url);
+
+        refreshPhysicianList(physicianId);
+        refreshPhysicianReadOnly(physicianId);
+    }
+
+    function showNewPhysicianForm() {
+        var url = '@Url.Content("~/Physicians/Physician/ShowNewPhysicianForm")';
+
+        $.get(url)
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveNewPhysicianForm(form) {
+        var url = '@Url.Content("~/Physicians/Physician/SaveNewPhysicianForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Physician added successfully");
+            refreshPhysicianList();
+            refreshPhysicianReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function showOwnerInvitationForm(physicianId) {
+        $.get('@Url.Content("~/Physicians/Physician/OwnerInvitationForm")', {
+            physicianId: physicianId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function saveOwnerInvitationForm(form) {
+        $.post('@Url.Content("~/Physicians/Physician/SaveOwnerInvitationForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Invite sent successfully");
+            refreshPhysicianList();
+            refreshPhysicianReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+    
+    function removePhysician(physicianId) {
+        var url = '@Url.Content("~/Physicians/Physician/Remove")';
+
+        $.post(url, {
+            physicianId: physicianId
+        })
+        .done(function () {
+            toastr.success("Physicians member removed successfully");
+            refreshPhysicianList();
+            refreshPhysicianReadOnly();
+        });
+    }
+    
+    // Refresh functions
+    function refreshPhysicianList() {
+        let url = '@Url.Content("~/Physicians/Physician/List")';
+        $.get(url)
+            .done(function (result) {
+                $('#physician-list-container').html(result);
+            });
+    }
+    function refreshPhysicianReadOnly() {
+
+        let url = new URL(window.location);
+        let physicianId = url.searchParams.get('physicianId');
+
+        $.get('@Url.Content("~/Physicians/Physician/ReadOnly")', {
+            physicianId: physicianId
+        })
+        .done(function (result) {
+            $('#physician-readonly-container').html(result);
+        });
+    }
+
+</script>

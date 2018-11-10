@@ -1,0 +1,21 @@
+﻿@using Features = Orvosi.Shared.Enums.Features;
+@model ListViewModel
+
+@functions{
+    string IsActive(Guid? selectedPhysicianId, Guid physicianId)
+    {
+        return selectedPhysicianId.HasValue && selectedPhysicianId.Value == physicianId ? "" : string.Empty;
+    }
+}
+<div style="margin-bottom: 15px;">
+    @if (Model.AuthorizedFeatures.Contains(Features.SysAdmin.Section))
+    {
+        <button class="btn btn-success" onclick="showNewPhysicianForm()">New Physician</button>
+    }
+</div>
+<div class="list-group">
+    @foreach (var physician in Model.Physicians)
+    {
+        <a style="cursor:pointer;" class="list-group-item @IsActive(Model.SelectedPhysicianId, physician.Id)" onclick="navigateToPhysician('@physician.Id')">@physician.CompanyName</a>
+    }
+</div>

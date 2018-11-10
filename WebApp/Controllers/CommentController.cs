@@ -52,7 +52,7 @@ namespace WebApp.Controllers
                     Message = dto.Message,
                     CommentTypeId = dto.CommentTypeId,
                     IsPrivate = dto.IsPrivate,
-                    Physician = ContactViewModel<Guid>.FromContactDto.Invoke(dto.Physician),
+                    Physician = ContactViewModel.FromContactDto.Invoke(dto.Physician),
                     AccessList = dto.AccessList.Select(a => a.Id).ToList()
                 };
             }
@@ -64,7 +64,7 @@ namespace WebApp.Controllers
                 {
                     ServiceRequestId = serviceRequestId,
                     CommentTypeId = commentTypeId.HasValue ? commentTypeId.Value : CommentTypes.Note,
-                    Physician = ContactViewModel<Guid>.FromContactDto.Invoke(contact),
+                    Physician = ContactViewModel.FromContactDto.Invoke(contact),
                     IsPrivate = true
                 };
 

@@ -9,10 +9,12 @@ using System.Linq;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using Orvosi.Shared.Enums;
 using System.Web.Mvc;
-using Orvosi.Data;
+using ImeHub.Data;
+using ImeHub.Models;
 using WebApp.Library.Extensions;
 using LinqKit;
 using WebApp.Views.Shared;
+using Newtonsoft.Json;
 
 namespace WebApp.Models
 {
@@ -28,62 +30,66 @@ namespace WebApp.Models
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // cache the default role
-            var defaultRole = userIdentity.Claims.First(c => c.Type == ClaimTypes.Role).Value;
 
-            var roleId = Roles.First().RoleId;
             // Add custom user claims here
             userIdentity.AddClaim(new Claim(nameof(DisplayName), this.DisplayName));
             userIdentity.AddClaim(new Claim(ClaimTypes.Email, this.Email));
             userIdentity.AddClaim(new Claim(nameof(Initials), this.Initials));
+            userIdentity.AddClaim(new Claim(nameof(ColorCode), this.ColorCode));
             userIdentity.AddClaim(new Claim(ClaimTypes.Sid, this.Id.ToString()));
-            userIdentity.AddClaim(new Claim("RoleId", roleId.ToString()));
-            userIdentity.AddClaim(new Claim(nameof(Roles), string.Join("|", Roles.Select(r => r.RoleId))));
+            userIdentity.AddClaim(new Claim(nameof(RoleId), this.RoleId.ToString()));
             userIdentity.AddClaim(new Claim(nameof(IsAppTester), this.IsAppTester.ToString()));
             userIdentity.AddClaim(new Claim(nameof(this.PhysicianId), this.PhysicianId.ToString()));
 
-            // ASP.NET Identity automatically creates ClaimTypes.Role for all the associated Roles. We only want to have one role at a time. Delete all except for the default.
-            var roles = userIdentity.FindAll(i => i.Type == ClaimTypes.Role).Where(r => r.Value != defaultRole);
-            foreach (var role in roles)
+            
+            using (var db = new ImeHubDbContext())
             {
-                userIdentity.RemoveClaim(role);
-            }
+                // set the physician
+                var role = db.Roles
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(p => p.Id == this.RoleId)
+                    .Select(LookupModel<Guid>.FromRole)
+                    .AsEnumerable()
+                    .Select(LookupViewModel<Guid>.FromLookupModel);
 
-            using (var db = new OrvosiDbContext())
-            {
-                if (roleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
+                userIdentity.AddClaim(new Claim("Role", JsonConvert.SerializeObject(role)));
+
+
+                // set the physician
+                var physician = db.Physicians
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(p => p.Id == this.PhysicianId)
+                    .Select(LookupModel<Guid>.FromPhysician)
+                    .AsEnumerable()
+                    .Select(LookupViewModel<Guid>.FromLookupModel);
+
+                userIdentity.AddClaim(new Claim("Physician", JsonConvert.SerializeObject(physician)));
+
+                // get features permissions
+                if (RoleId == AspNetRoles.SuperAdmin) // Features list is used to hide/show elements in the views so the entire list is needed.
                     Features = db.Features.Select(srf => srf.Id).ToArray();
                 else
-                    Features = db.AspNetRolesFeatures.Where(srf => srf.AspNetRolesId == roleId).Select(srf => srf.FeatureId).ToArray();
+                    Features = db.RoleFeatures.Where(srf => srf.RoleId == RoleId).Select(srf => srf.FeatureId).ToArray();
 
                 userIdentity.AddClaim(new Claim("Features", Features.ToJson()));
 
-
-                // set the physicians to the cookie
-                var userSelectListQuery = db.TeamMembers
-                    .AsNoTracking()
-                    .Where(tm => tm.UserId == Id)
-                    .Select(tm => tm.Physician)
-                    .Select(LookupDto<Guid>.FromPhysicianEntity.Expand())
-                    .AsEnumerable()
-                    .Select(LookupViewModel<Guid>.FromLookupDto);
-
-                userIdentity.AddClaim(new Claim("Physicians", userSelectListQuery.ToJson()));               
             }
 
             return userIdentity;
         }
         
-
-        public Nullable<short> CompanyId { get; set; }
-        public string CompanyName { get; set; }
-        public string EmployeeId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
         public string ColorCode { get; set; }
         public DateTime? LastActivationDate { get; set; }
         public bool IsTestRecord { get; set; }
+        public bool IsAppTester { get; set; }
+        public Guid? PhysicianId { get; set; }
+        public Guid RoleId { get; set; }
+
         public string DisplayName
         {
             get
@@ -110,16 +116,14 @@ namespace WebApp.Models
                     return $"{FirstName.ToUpper().First()}{LastName.ToUpper().First()}";
             }
         }
-        public short[] Features { get; set; }
+        public Guid[] Features { get; set; }
         public Guid[] Physicians { get; set; }
-        public bool IsAppTester { get; set; }
-        public Guid? PhysicianId { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserLogin, ApplicationUserRole, ApplicationUserClaim>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection")
+            : base("ImeHubDbContext")
         {
 
         }
@@ -133,6 +137,12 @@ namespace WebApp.Models
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>().ToTable("User");
+            modelBuilder.Entity<ApplicationUserRole>().ToTable("UserRole");
+            modelBuilder.Entity<ApplicationRole>().ToTable("Role");
+            modelBuilder.Entity<ApplicationUserLogin>().ToTable("UserLogin");
+            modelBuilder.Entity<ApplicationUserClaim>().ToTable("UserClaim");
         }
     }
 }

@@ -11,6 +11,7 @@ using Orvosi.Data;
 
 namespace WebApp.Areas.Admin.Controllers
 {
+    [Authorize(Roles="Super Admin")]
     public class PhysicianController : Controller
     {
         private OrvosiDbContext db = new OrvosiDbContext();

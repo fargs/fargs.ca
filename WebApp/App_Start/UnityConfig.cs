@@ -13,6 +13,7 @@ using System.Security.Claims;
 using WebApp.Library;
 using WebApp.Areas.Reports.Data;
 using Microsoft.AspNet.Identity.Owin;
+using ImeHub.Data;
 
 namespace WebApp
 {
@@ -32,7 +33,11 @@ namespace WebApp
 
             container.RegisterType<IPrincipal>(new InjectionFactory(c => HttpContext.Current.User));
 
+            container.RegisterType<IIdentity>(new InjectionFactory(c => HttpContext.Current.User.Identity));
+
             container.RegisterType<ReportsContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
+
+            container.RegisterType<ImeHubDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 
             container.RegisterType<OrvosiDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 

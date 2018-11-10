@@ -12,7 +12,7 @@ using Orvosi.Shared.Enums;
 using WebApp.Library.Extensions;
 using WebApp.ViewModels;
 using Orvosi.Data.Filters;
-using System.Data.Entity.Validation;
+using FluentValidation;
 using WebApp.Models;
 using LinqKit;
 using WebApp.Views.Comment;

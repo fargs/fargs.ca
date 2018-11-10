@@ -1,0 +1,22 @@
+﻿@using Features = Orvosi.Shared.Enums.Features
+@using WebApp.Library.Extensions
+@model IndexViewModel
+
+<div style="display:flex; align-items:stretch; padding-bottom: 10px;">
+    <div id="physician-list-container">
+        @Html.Partial("List", Model.List)
+    </div>
+    <div id="physician-readonly-container" style="display:flex;">
+        @if (Model.ReadOnly != null)
+        {
+            @Html.Partial("ReadOnly", Model.ReadOnly)
+        }
+    </div>
+</div>
+@Html.Partial("ModalContainer")
+@Html.Partial("ModalContainerSmall")
+
+@section Scripts{
+
+    @Html.Partial("IndexJS")
+}

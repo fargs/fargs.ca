@@ -35,18 +35,10 @@
     using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
+    }
 
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a data-toggle="dropdown" href="#">
-                    <i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dLabel">
-                    <li><a tabindex="-1" href="~/Manage">Manage Account</a></li>
-                </ul>
-            </li>
-            @if (isAppTester)
+    <ul class="nav navbar-nav navbar-right">
+        @*@if (isAppTester)
             {
                 <li>
                     <a data-toggle="dropdown" href="#">
@@ -62,36 +54,45 @@
                         }
                     </ul>
                 </li>
-                <li>
-                    @if (User.Identity.IsImpersonating())
-                    {
-                        <a href="~/Account/RevertImpersonation">Log Out As</a>
-                    }
-                    else
-                    {
-                        <a data-toggle="dropdown" href="#">
-                            Log in as
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @foreach (var user in ViewBag.UserSelectList)
-                            {
-                                <li>
-                                    <a tabindex="-1" href="~/Account/ImpersonateUser?userId=@user.Value">@user.Text</a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                </li>
             }
-            @*<form action="~/Account/ChangeRole/" method="get" class="navbar-form">
-                    <div class="form-group">
-                        @Html.DropDownList("RoleId", new SelectList(ViewBag.RoleSelectList, "Value", "Text", Model.RoleId), "-- Change your role --", new { @class = "form-control input-sm", onchange = "this.form.submit();" })
-                    </div>
-                </form>*@
-            <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
-        </ul>
-    }
+        *@
+
+        @*<li>
+                @if (User.Identity.IsImpersonating())
+                {
+                    <a href="~/Account/RevertImpersonation">Log Out As</a>
+                }
+                else
+                {
+                    <a data-toggle="dropdown" href="#">
+                        Log in as
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (var user in ViewBag.UserSelectList)
+                        {
+                            <li>
+                                <a tabindex="-1" href="~/Account/ImpersonateUser?userId=@user.Value">@user.Text</a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>*@
+
+        <li class="dropdown">
+            <a data-toggle="dropdown" href="#">
+                <i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;@Model.UserDisplayName
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dLabel">
+                <li><a href="~/Dashboard/Home">Dashboard</a></li>
+                <li><a tabindex="-1" href="~/Manage">Account</a></li>
+                <li class="divider"></li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="glyphicon glyphicon-log-out"></i>&nbsp;&nbsp;Log off</a></li>
+            </ul>
+        </li>
+    </ul>
+
 }
 else
 {

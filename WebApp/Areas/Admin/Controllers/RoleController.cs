@@ -14,7 +14,7 @@ using Features = Orvosi.Shared.Enums.Features;
 namespace WebApp.Areas.Admin.Controllers
 {
     [AuthorizeRole(Feature = Features.SecurityAdmin.RoleManagement)]
-    public class RoleController : BaseController
+    public class RoleController : Controller
     {
 
         private ApplicationSignInManager _signInManager;

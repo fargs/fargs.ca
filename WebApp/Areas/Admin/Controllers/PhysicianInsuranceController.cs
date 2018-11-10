@@ -12,7 +12,7 @@ using WebApp.Library.Extensions;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class PhysicianInsuranceController : BaseController
+    public class PhysicianInsuranceController : Controller
     {
         OrvosiDbContext db = new OrvosiDbContext();
 

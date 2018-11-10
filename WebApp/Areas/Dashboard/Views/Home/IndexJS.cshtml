@@ -1,0 +1,24 @@
+﻿<script type="text/javascript">
+    function showAcceptOwnershipForm(inviteId) {
+        $.get('@Url.Content("~/Dashboard/Home/AcceptOwnershipForm")', {
+            inviteId: inviteId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveAcceptOwnershipForm(form) {
+        $.post('@Url.Content("~/Dashboard/Home/AcceptOwnership")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Ownership accepted");
+            window.reload();
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+</script>

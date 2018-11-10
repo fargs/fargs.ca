@@ -1,0 +1,30 @@
+﻿@using Features = Orvosi.Shared.Enums.Features;
+@model ListViewModel
+
+<div class="list-group">
+    @if (Model.AsOwner != null)
+    {
+        <h2></h2>
+        <div class="list-group-item">
+            <a target="_blank" href="~/Account/ChangeUserContextAsync/?physicianId=@Model.AsOwner.Id"><span class="small">@Model.AsOwner.Name</span></a>
+        </div>
+    }
+    @if (Model.AsManager.Any())
+    {
+        foreach (var physician in Model.AsManager)
+        {
+            <div class="list-group-item">
+                <a target="_blank" href="~/Account/ChangeUserContextAsync/?physicianId=@physician.Id"><span class="small">@physician.Name</span></a>
+            </div>
+        }
+    }
+    @if (Model.AsTeamMember.Any())
+    {
+        foreach (var physician in Model.AsTeamMember)
+        {
+            <div class="list-group-item">
+                <a target="_blank" href="~/Account/ChangeUserContextAsync/?physicianId=@physician.Id"><span class="small">@physician.Name</span></a>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,113 @@
+﻿@using WebApp.Library.Extensions
+@using Features = Orvosi.Shared.Enums.Features
+@using Enums = Orvosi.Shared.Enums
+@{
+    var features = User.Identity.GetFeatures();
+    var displayName = User.Identity.GetDisplayName();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script src="https://use.fontawesome.com/3877822095.js"></script>
+    @Styles.Render("~/Bundles/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    <div class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="~/Dashboard/Home">Dashboard</a></li>
+                    @if (features.Contains(Features.SysAdmin.Section))
+                    {
+                        <li>@Html.ActionLink("Physicians", "", "Physician", new { area = "Physicians" }, null)</li>
+                    }
+                    @if (features.Contains(Features.SecurityAdmin.UserManagement))
+                    {
+                        <li>@Html.ActionLink("Users", "", "User", new { area = "Admin", parentId = Enums.RoleCategories.Physician }, null)</li>
+                    }
+                    @if (features.Contains(Features.SecurityAdmin.RoleManagement))
+                    {
+                        <li>@Html.ActionLink("Roles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
+                    }
+                    @if (features.Contains(Features.SecurityAdmin.FeatureManagement))
+                    {
+                        <li>@Html.ActionLink("Features", "", "Feature", new { area = "Admin" }, null)</li>
+                    }
+                </ul>
+                @Html.Action("_LoginPartial", "Account", new { area = "" })
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+    <footer class="sticky-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="copyright text-muted small pull-left">Orvosi Inc. &copy; @DateTime.Now.Year. All Rights Reserved</div>
+                    <div class="pull-right">
+                        <ul class="list-inline quicklinks small">
+                            <li>
+                                <a href="#">Privacy Policy</a>
+                            </li>
+                            <li>
+                                <a href="#">Terms of Use</a>
+                            </li>
+                            @*
+                                <li>
+                                    @SystemTime.Now()
+                                </li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @Html.Partial("ModalContainerForLoader");
+    <!--
+    To collect end-user usage analytics about your application,
+    insert the following script into each page you want to track.
+    Place this code immediately before the closing </head> tag,
+    and before any other scripts. Your first data will appear
+    automatically in just a few seconds.
+    -->
+
+    <script type="text/javascript">
+
+        function showLoader(message) {
+            $('#modal-container-for-loader').modal({ backdrop: 'static' });
+            $('.loading-text').html(message);
+        }
+
+        function hideLoader() {
+            $('#modal-container-for-loader').modal('hide');
+            $('.loading-text').html('Loading ...');
+        }
+
+        $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+            if (jqxhr.status === 403) {
+                toastr.error("Sorry, you do not have access to this feature.");
+            }
+            else {
+                toastr.error("Sorry, an unexpected error occurred.");
+            }
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

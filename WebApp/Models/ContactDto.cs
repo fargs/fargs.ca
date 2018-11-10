@@ -11,7 +11,7 @@ namespace WebApp.Models
     {
         public string Email { get; set; }
 
-        public static new Expression<Func<AspNetUser, ContactDto>> FromAspNetUserEntity = a => new ContactDto
+        public static new Expression<Func<AspNetUser, ContactDto>> FromAspNetUserEntity = a => a == null ? null : new ContactDto
         {
             Id = a.Id,
             FirstName = a.FirstName,

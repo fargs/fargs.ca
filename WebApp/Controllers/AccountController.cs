@@ -98,13 +98,13 @@ namespace WebApp.Controllers
         public ActionResult _LoginPartial()
         {
             var model = new LoginPartialViewModel();
-            var cp = (User.Identity as ClaimsIdentity);
-            model.IsAuthenticated = cp.IsAuthenticated;
+            var identity = User.Identity;
+            model.IsAuthenticated = identity.IsAuthenticated;
             if (model.IsAuthenticated)
             {
-                model.UserDisplayName = cp.FindFirst("DisplayName").Value;
-                model.RoleName = cp.FindFirst(ClaimTypes.Role).Value;
-                model.RoleId = cp.GetRoleId();
+                model.UserDisplayName = identity.GetDisplayName();
+                model.RoleName = identity.GetRole().Name;
+                model.RoleId = identity.GetRoleId();
                 //model.UserContext = cp.FindFirst("UserContext") != null ? new Guid(cp.FindFirst("UserContext").Value) : (Guid?)null;
             }
             return PartialView(model);
@@ -176,7 +176,6 @@ namespace WebApp.Controllers
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    CompanyName = model.CompanyName,
                     Title = model.IsPhysician == "on" ? "Dr." : string.Empty
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -444,7 +443,7 @@ namespace WebApp.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Work");
+            return RedirectToAction("Index", "Home");
         }
 
         //
@@ -488,7 +487,7 @@ namespace WebApp.Controllers
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
 
-            return Redirect(Request.UrlReferrer.ToString());
+            return Redirect("~/Home/Portal?physicianId=" + physicianId);
 
             //var identity = User.Identity.GetClaimsIdentity();
             //var userContextClaim = identity.FindFirst("UserContext");
@@ -609,7 +608,7 @@ namespace WebApp.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Work");
+            return RedirectToAction("Index", "Home");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult

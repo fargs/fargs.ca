@@ -11,7 +11,7 @@ using System.Data.Entity;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    public class PhysicianLicenceController : BaseController
+    public class PhysicianLicenceController : Controller
     {
         OrvosiDbContext db = new OrvosiDbContext();
 

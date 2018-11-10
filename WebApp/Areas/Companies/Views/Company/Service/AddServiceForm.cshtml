@@ -22,7 +22,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" name="Name" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : Model.ServiceId.HasValue ? Model.SelectedService.Name : string.Empty)" />
+                <input type="text" class="form-control" name="Name" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : Model.ServiceId.HasValue ? Model.SelectedServiceName : string.Empty)" />
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Price</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" name="Price" value="@(Model.Price.HasValue ? String.Format("{0:C2}", Model.Price.Value.ToString()) : Model.ServiceId.HasValue ? Model.SelectedService.Price : string.Empty)" />
+                <input type="text" class="form-control" name="Price" value="@(Model.Price.HasValue ? Model.Price.Value.ToString() : Model.ServiceId.HasValue ? Model.SelectedServicePrice.ToString() : string.Empty)" />
                 @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -39,7 +39,7 @@
             <label class="control-label col-md-2"></label>
             <div class="checkbox col-md-10">
                 <label>
-                    <input type="checkbox" name="IsTravelRequired" value="true" checked="@(Model.IsTravelRequired.HasValue ? Model.IsTravelRequired : Model.ServiceId.HasValue ? Model.SelectedService.IsTravelRequired  : false)" />
+                    <input type="checkbox" name="IsTravelRequired" value="true" checked="@(Model.IsTravelRequired.HasValue ? Model.IsTravelRequired : Model.ServiceId.HasValue ? Model.SelectedServiceIsTravelRequired  : false)" />
                     Is Travel Required
                  </label>
             </div>

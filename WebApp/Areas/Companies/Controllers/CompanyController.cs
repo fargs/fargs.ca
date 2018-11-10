@@ -111,10 +111,6 @@ namespace WebApp.Areas.Companies.Controllers
         [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
         public PartialViewResult ShowAddServiceForm(Guid companyId, Guid? selectedServiceId)
         {
-            if (!physicianId.HasValue)
-            {
-                throw new ArgumentNullException("PhysicianId is null");
-            }
             var formModel = new AddServiceFormModel(companyId, selectedServiceId, db, physicianId.Value);
 
             return PartialView("Service/AddServiceForm", formModel);
@@ -162,6 +158,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("CompanyForm", form);
             }
 
@@ -192,6 +189,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("CompanyForm", form);
             }
 
@@ -225,6 +223,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("AddressForm", form);
             }
 
@@ -257,6 +256,7 @@ namespace WebApp.Areas.Companies.Controllers
             if (!ModelState.IsValid)
             {
                 form.LoadViewData(db, physicianId.Value);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("Service/AddServiceForm", form);
             }
 
@@ -283,6 +283,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("NewTravelPriceForm", form);
             }
 
@@ -307,6 +308,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("EditTravelPriceForm", form);
             }
 
@@ -322,6 +324,7 @@ namespace WebApp.Areas.Companies.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return PartialView("EditCancellationPolicyForm", form);
             }
 

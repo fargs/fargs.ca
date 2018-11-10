@@ -15,7 +15,7 @@ namespace WebApp.Views.Comment
         public bool IsPrivate { get; set; }
         public byte CommentTypeId { get; set; }
         public LookupViewModel<byte> CommentType { get; set; }
-        public IEnumerable<ContactViewModel<Guid>> AccessList { get; set; }
+        public IEnumerable<ContactViewModel> AccessList { get; set; }
 
         public static Func<CommentDto, CommentViewModel> FromCommentDto = dto => dto == null ? null : new CommentViewModel
         {
@@ -27,7 +27,7 @@ namespace WebApp.Views.Comment
             IsPrivate = dto.IsPrivate,
             CommentTypeId = dto.CommentTypeId,
             CommentType = LookupViewModel<byte>.FromLookupDto.Invoke(dto.CommentType),
-            AccessList = dto.AccessList.AsQueryable().Select(ContactViewModel<Guid>.FromContactDto)
+            AccessList = dto.AccessList.AsQueryable().Select(ContactViewModel.FromContactDto)
         };
     }
 }

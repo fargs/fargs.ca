@@ -1,7 +1,7 @@
 ﻿@using WebApp.Library.Helpers
 @using WebApp.Library.Extensions
 @using Orvosi.Data
-@using Features = Orvosi.Shared.Enums.Features
+@using Features = ImeHub.Models.Enums.Features.PhysicianPortal
 @{ 
     Layout = "~/Views/Shared/_Layout.cshtml";
     var features = User.Identity.GetFeatures();
@@ -13,7 +13,7 @@
         {
             <li role="presentation" class="@Html.IsActive("DaySheet", "Index", "Work")"><a href="~/Work/DaySheet?@(Request.QueryString)">Day Sheet</a></li>
         }
-        @if (features.Contains(Features.Work.DueDates))
+        @if (features.Contains(Features.Work.Tasks))
         {
             <li role="presentation" class="@Html.IsActive("Tasks", "Index", "Work")"><a id="urgenttaskcount-container" href="~/Work/Tasks?@(Request.QueryString)">Tasks <i id="urgenttaskcount-container-icon"></i></a></li>
         }

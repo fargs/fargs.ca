@@ -31,7 +31,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<CompanyService> CompanyServices { get; set; } // CompanyService.FK_CompanyService_Service
 
         // Foreign keys
-        public virtual AspNetUser AspNetUser { get; set; } // FK_ServiceV2_AspNetUsers
+        public virtual PhysicianV2 PhysicianV2 { get; set; } // FK_ServiceV2_PhysicianV2
 
         public ServiceV2()
         {

@@ -36,7 +36,6 @@ namespace Orvosi.Data
         public virtual City City { get; set; } // FK_AddressV2_City
         public virtual CompanyV2 CompanyV2 { get; set; } // FK_AddressV2_CompanyV2
         public virtual Country Country { get; set; } // FK_AddressV2_Countries
-        public virtual Physician Physician { get; set; } // FK_AddressV2_Physician
         public virtual Province Province { get; set; } // FK_AddressV2_Provinces
         public virtual TimeZone TimeZone { get; set; } // FK_AddressV2_TimeZone
 

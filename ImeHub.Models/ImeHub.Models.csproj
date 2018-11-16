@@ -51,11 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Physicians.cs" />
+    <Compile Include="Enums\Features\Features.cs" />
     <Compile Include="Enums\AcceptanceStatus.cs" />
     <Compile Include="FeatureModel.cs" />
-    <Compile Include="Features\FeatureBase.cs" />
-    <Compile Include="Features\Work.cs" />
+    <Compile Include="Enums\Features\FeatureBase.cs" />
     <Compile Include="PhysicianModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="ContactModel.cs" />
@@ -63,9 +62,11 @@
     <Compile Include="PersonModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoleModel.cs" />
+    <Compile Include="Util\DbInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Enums\Features\features.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -74,8 +75,6 @@
       <Name>ImeHub.Data</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Util\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

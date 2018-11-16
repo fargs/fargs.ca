@@ -4,6 +4,7 @@ using Orvosi.Shared.Enums;
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -11,13 +12,15 @@ using WebApp.Areas.Physicians.Views.Physician;
 using WebApp.Areas.Shared;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
+using WebApp.Library.Helpers;
 using WebApp.Models;
 using WebApp.Views.Shared;
-using Features = Orvosi.Shared.Enums.Features;
 using Enums = ImeHub.Models.Enums;
+using Features = ImeHub.Models.Enums.Features.UserPortal;
 
 namespace WebApp.Areas.Physicians.Controllers
 {
+    [AuthorizeRole(Feature = Features.Physicians.Manage)]
     public class PhysicianController : Controller
     {
         private DateTime now;
@@ -30,7 +33,7 @@ namespace WebApp.Areas.Physicians.Controllers
             this.identity = principal.Identity;
             this.db = db;
         }
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
+
         public ActionResult Index(Guid? physicianId)
         {
             var list = new ListViewModel(physicianId, db, identity, now);
@@ -52,7 +55,6 @@ namespace WebApp.Areas.Physicians.Controllers
 
         #region Views
 
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public PartialViewResult List(Guid? physicianId)
         {
             var viewModel = new ListViewModel(physicianId, db, identity, now);
@@ -60,7 +62,6 @@ namespace WebApp.Areas.Physicians.Controllers
             return PartialView(viewModel);
         }
 
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public PartialViewResult ReadOnly(Guid physicianId)
         {
             var readOnly = new ReadOnlyViewModel(physicianId, db, identity, now);
@@ -68,7 +69,6 @@ namespace WebApp.Areas.Physicians.Controllers
             return PartialView(readOnly);
         }
 
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public PartialViewResult ShowNewPhysicianForm()
         {
             var formModel = new NewPhysicianFormModel();
@@ -77,7 +77,6 @@ namespace WebApp.Areas.Physicians.Controllers
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public async Task<ActionResult> SaveNewPhysicianForm(NewPhysicianFormModel form)
         {
             if (!ModelState.IsValid)
@@ -100,7 +99,6 @@ namespace WebApp.Areas.Physicians.Controllers
             });
         }
 
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public PartialViewResult OwnerInvitationForm(Guid physicianId)
         {
             var formModel = new OwnerInvitationFormModel(physicianId, identity);
@@ -109,7 +107,6 @@ namespace WebApp.Areas.Physicians.Controllers
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public async Task<ActionResult> SaveOwnerInvitationForm(OwnerInvitationFormModel form)
         {
             if (!ModelState.IsValid)
@@ -125,9 +122,13 @@ namespace WebApp.Areas.Physicians.Controllers
                 ToName = form.ToName,
                 FromEmail = form.FromEmail,
                 FromName = form.FromName,
-                AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotResponded
+                AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotResponded,
+                SentDate = now
             };
             db.PhysicianInvites.Add(invite);
+
+            SendOwnerInviteEmail(invite);
+
             await db.SaveChangesAsync();
 
             return Json(new
@@ -136,7 +137,6 @@ namespace WebApp.Areas.Physicians.Controllers
             });
         }
 
-        [AuthorizeRole(Feature = Features.SysAdmin.Section)]
         public PartialViewResult ShowDeleteConfirmation(Guid physicianId)
         {
             var formModel = new PhysicianFormModel(physicianId, db);
@@ -145,5 +145,20 @@ namespace WebApp.Areas.Physicians.Controllers
         }
 
         #endregion
+
+        private MailMessage SendOwnerInviteEmail(PhysicianInvite invite)
+        {
+            var message = new MailMessage();
+            message.To.Add(invite.ToEmail);
+            message.From = new MailAddress(invite.FromEmail);
+            message.Subject = string.Format("Invitation to ImeHub");
+            message.IsBodyHtml = true;
+            message.Bcc.Add("lesliefarago@gmail.com");
+
+            ViewData["BaseUrl"] = Url.Content("~"); //This is needed because the full address needs to be included in the email download link
+            message.Body = HtmlHelpers.RenderPartialViewToString(this, "OwnerInvitationNotification", invite);
+
+            return message;
+        }
     }
 }

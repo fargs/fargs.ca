@@ -29,6 +29,7 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<OTask> OTasks { get; set; } // Task.FK_Task_AspNetRoles
         public virtual System.Collections.Generic.ICollection<ServiceRequestResource> ServiceRequestResources { get; set; } // ServiceRequestResource.FK_ServiceRequestResource_AspNetRoles
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplateTask> ServiceRequestTemplateTasks { get; set; } // ServiceRequestTemplateTask.FK_ServiceRequestTemplateTask_AspNetRoles
+        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_Role
 
         // Foreign keys
         public virtual RoleCategory RoleCategory { get; set; } // FK_AspNetRoles_RoleCategory
@@ -42,6 +43,7 @@ namespace Orvosi.Data
             ServiceRequestResources = new System.Collections.Generic.List<ServiceRequestResource>();
             ServiceRequestTemplateTasks = new System.Collections.Generic.List<ServiceRequestTemplateTask>();
             OTasks = new System.Collections.Generic.List<OTask>();
+            TeamMembers = new System.Collections.Generic.List<TeamMember>();
             InitializePartial();
         }
 

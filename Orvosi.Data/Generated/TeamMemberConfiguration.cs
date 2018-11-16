@@ -33,8 +33,9 @@ namespace Orvosi.Data
             Property(x => x.RoleId).HasColumnName(@"RoleId").IsRequired().HasColumnType("uniqueidentifier");
 
             // Foreign keys
+            HasRequired(a => a.AspNetRole).WithMany(b => b.TeamMembers).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_TeamMember_Role
             HasRequired(a => a.AspNetUser).WithMany(b => b.TeamMembers).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_TeamMember_User
-            HasRequired(a => a.Physician).WithMany(b => b.TeamMembers).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_TeamMember_Physician
+            HasRequired(a => a.PhysicianV2).WithMany(b => b.TeamMembers).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_TeamMember_Physician
             InitializePartial();
         }
         partial void InitializePartial();

@@ -29,7 +29,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="~/Dashboard/Home">Dashboard</a></li>
-                    @if (features.Contains(Features.SysAdmin.Section))
+                    @if (features.Contains(ImeHub.Models.Enums.Features.UserPortal.Physicians.Manage))
                     {
                         <li>@Html.ActionLink("Physicians", "", "Physician", new { area = "Physicians" }, null)</li>
                     }
@@ -39,7 +39,7 @@
                     }
                     @if (features.Contains(Features.SecurityAdmin.RoleManagement))
                     {
-                        <li>@Html.ActionLink("Roles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>
                     }
                     @if (features.Contains(Features.SecurityAdmin.FeatureManagement))
                     {

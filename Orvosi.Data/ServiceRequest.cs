@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Orvosi.Data
 {
-    [FluentValidation.Attributes.Validator(typeof(ServiceRequestValidator))]
     public partial class ServiceRequest
     {
     }

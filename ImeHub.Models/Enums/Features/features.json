@@ -1,0 +1,21 @@
+{
+  "id": "db0599e8-d35e-4b89-8a75-a04fcb352496",
+  "name": "App",
+  "features": [
+    {
+      "id": "7c7796b2-3c02-4740-abeb-e39f20a72116",
+      "name": "User Portal"
+    },
+    {
+      "id": "d42eddfc-b903-499d-b778-c72a06b29aab",
+      "name": "Physician Portal",
+      "features": [
+        {
+          "id": "\"78914703-30eb-4215-99e9-7157a9667b40",
+          "name": "Work"
+        }
+      ]
+    }
+  ]
+}
+}

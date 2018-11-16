@@ -61,12 +61,14 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<PhysicianCompanyStatu> PhysicianCompanyStatus { get; set; } // PhysicianCompanyStatus
         public System.Data.Entity.DbSet<PhysicianCompanyView> PhysicianCompanyViews { get; set; } // PhysicianCompany
         public System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
+        public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite
         public System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         public System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
         public System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
         public System.Data.Entity.DbSet<PhysicianService> PhysicianServices { get; set; } // PhysicianService
         public System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         public System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
+        public System.Data.Entity.DbSet<PhysicianV2> PhysicianV2 { get; set; } // PhysicianV2
         public System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         public System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
@@ -196,12 +198,14 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianCompanyStatuConfiguration());
             modelBuilder.Configurations.Add(new PhysicianCompanyViewConfiguration());
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianInviteConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration());
             modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration());
             modelBuilder.Configurations.Add(new PhysicianServiceConfiguration());
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration());
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianV2Configuration());
             modelBuilder.Configurations.Add(new PriceConfiguration());
             modelBuilder.Configurations.Add(new ProfileConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
@@ -283,12 +287,14 @@ namespace Orvosi.Data
             modelBuilder.Configurations.Add(new PhysicianCompanyStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianCompanyViewConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianInsuranceConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianInviteConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLicenseConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianLocationAreaConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianServiceConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianServiceRequestTemplateConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianSpecialityConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianV2Configuration(schema));
             modelBuilder.Configurations.Add(new PriceConfiguration(schema));
             modelBuilder.Configurations.Add(new ProfileConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));

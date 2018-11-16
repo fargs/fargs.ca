@@ -6,7 +6,7 @@
     <div id="physician-list-container">
         @Html.Partial("List", Model.List)
     </div>
-    <div id="physician-readonly-container" style="display:flex;">
+    <div id="physician-readonly-container">
         @if (Model.ReadOnly != null)
         {
             @Html.Partial("ReadOnly", Model.ReadOnly)

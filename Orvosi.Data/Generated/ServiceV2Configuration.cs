@@ -38,7 +38,7 @@ namespace Orvosi.Data
             Property(x => x.IsTravelRequired).HasColumnName(@"IsTravelRequired").IsRequired().HasColumnType("bit");
 
             // Foreign keys
-            HasOptional(a => a.AspNetUser).WithMany(b => b.ServiceV2).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceV2_AspNetUsers
+            HasOptional(a => a.PhysicianV2).WithMany(b => b.ServiceV2).HasForeignKey(c => c.PhysicianId); // FK_ServiceV2_PhysicianV2
             InitializePartial();
         }
         partial void InitializePartial();

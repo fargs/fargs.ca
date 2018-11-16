@@ -1,0 +1,13 @@
+﻿<h2>Seed Database</h2>
+
+<button class="btn btn-primary" onclick="seedDatabase()">Seed Database</button>
+
+<script>
+    function seedDatabase() {
+        $.post('@Url.Content("~/SysTools/Home/SeedDatabase")')
+            .done(function (result) {
+                alert('successfully seeded.');
+            })
+            .fail(alert('failed.'));
+    }
+</script>

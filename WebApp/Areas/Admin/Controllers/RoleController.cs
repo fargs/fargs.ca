@@ -9,11 +9,11 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using WebApp.Areas.Admin.ViewModels.Role;
 using WebApp.Models;
 using WebApp.Library.Filters;
-using Features = Orvosi.Shared.Enums.Features;
+using Features = ImeHub.Models.Enums.Features;
 
 namespace WebApp.Areas.Admin.Controllers
 {
-    [AuthorizeRole(Feature = Features.SecurityAdmin.RoleManagement)]
+    [AuthorizeRole(Feature = Features.UserPortal.Roles.Manage)]
     public class RoleController : Controller
     {
 

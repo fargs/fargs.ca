@@ -37,11 +37,13 @@ namespace WebApp
 
             container.RegisterType<ReportsContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 
+            container.RegisterType<IImeHubDbContext, ImeHubDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
+
             container.RegisterType<ImeHubDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 
             container.RegisterType<OrvosiDbContext>(new HierarchicalLifetimeManager(), new InjectionConstructor());
 
-            container.RegisterType<SessionService>(new HierarchicalLifetimeManager(), new InjectionConstructor(typeof(OrvosiDbContext), typeof(IPrincipal)));
+            container.RegisterType<SessionService>(new HierarchicalLifetimeManager(), new InjectionConstructor(typeof(ImeHubDbContext), typeof(IPrincipal)));
 
             container.RegisterType<WorkService>(new HierarchicalLifetimeManager(), new InjectionConstructor(typeof(OrvosiDbContext), typeof(IPrincipal)));
 

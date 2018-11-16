@@ -1,5 +1,22 @@
 ﻿@model ReadOnlyViewModel
 
+<div style="margin-bottom: 15px;">
+    <div class="btn-group">
+        @if (!Model.OwnerId.HasValue)
+        {
+            if (Model.OwnerInvites.Any())
+            {
+                <button type="button" class="btn btn-primary" onclick="resendInvite('@Model.Id')">Resend</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Send Invitation to Physician</button>
+            }
+        }
+        <button type="button" class="btn btn-default" onclick="showEditPhysicianForm('@Model.Id')">Edit</button>
+        <button type="button" class="btn btn-default">Delete</button>
+    </div>
+</div>
 <div style="margin-left:20px;">
     <div id="physician-readonly-properties-container">
         @Html.Partial("Properties", Model)

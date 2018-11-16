@@ -64,8 +64,8 @@ namespace WebApp
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = ConfigurationManager.AppSettings["GoogleClientID"],
-                ClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"]
+                ClientId = ConfigurationManager.AppSettings["ImeHubGoogleClientID"],
+                ClientSecret = ConfigurationManager.AppSettings["ImeHubGoogleClientSecret"]
             });
         }
     }

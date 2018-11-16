@@ -36,9 +36,7 @@ namespace Orvosi.Data
         public string ColorCode { get; set; } // ColorCode (length: 10)
 
         // Reverse navigation
-        public virtual System.Collections.Generic.ICollection<AddressV2> AddressV2 { get; set; } // AddressV2.FK_AddressV2_Physician
         public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; } // AvailableDay.FK_AvailableDay_Physician
-        public virtual System.Collections.Generic.ICollection<CompanyV2> CompanyV2 { get; set; } // CompanyV2.FK_CompanyV2_Physician
         public virtual System.Collections.Generic.ICollection<PhysicianCompany> PhysicianCompanies { get; set; } // PhysicianCompany.FK_PhysicianCompany_Physician
         public virtual System.Collections.Generic.ICollection<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance.FK_PhysicianInsurance_Physician
         public virtual System.Collections.Generic.ICollection<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense.FK_PhysicianLicense_Physician
@@ -46,7 +44,6 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<PhysicianService> PhysicianServices { get; set; } // PhysicianService.FK_PhysicianService_Physician
         public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest.FK_ServiceRequest_Physician
         public virtual System.Collections.Generic.ICollection<ServiceRequestTemplate> ServiceRequestTemplates { get; set; } // ServiceRequestTemplate.FK_ServiceRequestTemplate_Physician
-        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_Physician
 
         // Foreign keys
         public virtual AspNetUser AspNetUser { get; set; } // FK_Physician_AspNetUsers
@@ -59,9 +56,7 @@ namespace Orvosi.Data
             CompanyName = "test";
             Code = "TT";
             ColorCode = "#123456";
-            AddressV2 = new System.Collections.Generic.List<AddressV2>();
             AvailableDays = new System.Collections.Generic.List<AvailableDay>();
-            CompanyV2 = new System.Collections.Generic.List<CompanyV2>();
             PhysicianCompanies = new System.Collections.Generic.List<PhysicianCompany>();
             PhysicianInsurances = new System.Collections.Generic.List<PhysicianInsurance>();
             PhysicianLicenses = new System.Collections.Generic.List<PhysicianLicense>();
@@ -69,7 +64,6 @@ namespace Orvosi.Data
             PhysicianServices = new System.Collections.Generic.List<PhysicianService>();
             ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             ServiceRequestTemplates = new System.Collections.Generic.List<ServiceRequestTemplate>();
-            TeamMembers = new System.Collections.Generic.List<TeamMember>();
             InitializePartial();
         }
 

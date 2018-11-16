@@ -6,19 +6,9 @@
 <h2>Users</h2>
 
 <p>
-    <a class="btn btn-success" href="~/Account/Register"><i class="glyphicon glyphicon-plus"></i></a>
+    <a class="btn btn-success" href="~/Account/Register"><i class="glyphicon glyphicon-plus"></i> New User</a>
 </p>
 
-<ul class="nav nav-tabs">
-    @Html.MenuLink("No Role", "Index", "User", "Admin", null)
-    @Html.MenuLink("Physicians", "Index", "User", "Admin", RoleCategories.Physician)
-    @Html.MenuLink("Company Admins", "Index", "User", "Admin", RoleCategories.Company)
-    @Html.MenuLink("Staff", "Index", "User", "Admin", RoleCategories.Staff)
-    @Html.MenuLink("Admin", "Index", "User", "Admin", RoleCategories.Admin)
-</ul>
-<div class="margin-top: 20px">
-    &nbsp;
-</div>
 @foreach (var item in Model.Users)
 {
     <div id="UserTableRows" class="row">

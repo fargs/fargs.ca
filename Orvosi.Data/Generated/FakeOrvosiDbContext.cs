@@ -61,12 +61,14 @@ namespace Orvosi.Data
         public System.Data.Entity.DbSet<PhysicianCompanyStatu> PhysicianCompanyStatus { get; set; }
         public System.Data.Entity.DbSet<PhysicianCompanyView> PhysicianCompanyViews { get; set; }
         public System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; }
+        public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; }
         public System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; }
         public System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; }
         public System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; }
         public System.Data.Entity.DbSet<PhysicianService> PhysicianServices { get; set; }
         public System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; }
         public System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; }
+        public System.Data.Entity.DbSet<PhysicianV2> PhysicianV2 { get; set; }
         public System.Data.Entity.DbSet<Price> Prices { get; set; }
         public System.Data.Entity.DbSet<Profile> Profiles { get; set; }
         public System.Data.Entity.DbSet<Province> Provinces { get; set; }
@@ -145,12 +147,14 @@ namespace Orvosi.Data
             PhysicianCompanyStatus = new FakeDbSet<PhysicianCompanyStatu>("Id");
             PhysicianCompanyViews = new FakeDbSet<PhysicianCompanyView>("PhysicianId", "CompanyId");
             PhysicianInsurances = new FakeDbSet<PhysicianInsurance>("Id");
+            PhysicianInvites = new FakeDbSet<PhysicianInvite>("Id");
             PhysicianLicenses = new FakeDbSet<PhysicianLicense>("Id");
             PhysicianLocations = new FakeDbSet<PhysicianLocation>("Id");
             PhysicianLocationAreas = new FakeDbSet<PhysicianLocationArea>("Id", "PhysicianId", "LocationId", "ModifiedDate", "ModifiedUser");
             PhysicianServices = new FakeDbSet<PhysicianService>("Id");
             PhysicianServiceRequestTemplates = new FakeDbSet<PhysicianServiceRequestTemplate>("PhysicianId", "ServiceRequestTemplateId");
             PhysicianSpecialities = new FakeDbSet<PhysicianSpeciality>("Id");
+            PhysicianV2 = new FakeDbSet<PhysicianV2>("Id");
             Prices = new FakeDbSet<Price>("Id");
             Profiles = new FakeDbSet<Profile>("Id", "ModifiedDate", "ModifiedUser", "IsTestRecord");
             Provinces = new FakeDbSet<Province>("Id");

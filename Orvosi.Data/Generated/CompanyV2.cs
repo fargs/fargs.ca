@@ -40,7 +40,7 @@ namespace Orvosi.Data
 
         // Foreign keys
         public virtual CompanyV2 CompanyV2_ParentId { get; set; } // FK_CompanyV2_ParentId
-        public virtual Physician Physician { get; set; } // FK_CompanyV2_Physician
+        public virtual PhysicianV2 PhysicianV2 { get; set; } // FK_CompanyV2_PhysicianV2
 
         public CompanyV2()
         {

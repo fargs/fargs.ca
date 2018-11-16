@@ -8,7 +8,7 @@
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable RedundantOverridenMember
 // ReSharper disable UseNameofExpression
-// TargetFrameworkVersion = 4.5
+// TargetFrameworkVersion = 4.7
 #pragma warning disable 1591    //  Ignore "Missing XML Comment" warning
 
 
@@ -31,8 +31,19 @@ namespace WebApp.Areas.Reports.Data
         public decimal? Total { get; set; } // Total
         public string BillingEmail { get; set; } // BillingEmail (Primary key) (length: 128)
         public string ItemDescription { get; set; } // ItemDescription (length: 256)
-        public bool IsDeleted { get; set; } // IsDeleted (Primary key)
+        public System.DateTime? CreatedDate { get; set; } // CreatedDate
         public System.DateTime? SentDate { get; set; } // SentDate
+        public bool IsDeleted { get; set; } // IsDeleted (Primary key)
+        public System.DateTime? DeletedDate { get; set; } // DeletedDate
+        public int? Id { get; set; } // Id
+        public string ClaimantName { get; set; } // ClaimantName (length: 128)
+        public string Service { get; set; } // Service (length: 128)
+        public string City { get; set; } // City (length: 128)
+        public string Province { get; set; } // Province (length: 100)
+        public bool? IsNoShow { get; set; } // IsNoShow
+        public bool? IsLateCancellation { get; set; } // IsLateCancellation
+        public string Intake { get; set; } // Intake (length: 257)
+        public string DocReviewer { get; set; } // DocReviewer (length: 257)
     }
 
 }

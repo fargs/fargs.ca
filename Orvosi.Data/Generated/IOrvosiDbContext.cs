@@ -58,12 +58,14 @@ namespace Orvosi.Data
         System.Data.Entity.DbSet<PhysicianCompanyStatu> PhysicianCompanyStatus { get; set; } // PhysicianCompanyStatus
         System.Data.Entity.DbSet<PhysicianCompanyView> PhysicianCompanyViews { get; set; } // PhysicianCompany
         System.Data.Entity.DbSet<PhysicianInsurance> PhysicianInsurances { get; set; } // PhysicianInsurance
+        System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite
         System.Data.Entity.DbSet<PhysicianLicense> PhysicianLicenses { get; set; } // PhysicianLicense
         System.Data.Entity.DbSet<PhysicianLocation> PhysicianLocations { get; set; } // PhysicianLocation
         System.Data.Entity.DbSet<PhysicianLocationArea> PhysicianLocationAreas { get; set; } // PhysicianLocationArea
         System.Data.Entity.DbSet<PhysicianService> PhysicianServices { get; set; } // PhysicianService
         System.Data.Entity.DbSet<PhysicianServiceRequestTemplate> PhysicianServiceRequestTemplates { get; set; } // Physician_ServiceRequestTemplate
         System.Data.Entity.DbSet<PhysicianSpeciality> PhysicianSpecialities { get; set; } // PhysicianSpeciality
+        System.Data.Entity.DbSet<PhysicianV2> PhysicianV2 { get; set; } // PhysicianV2
         System.Data.Entity.DbSet<Price> Prices { get; set; } // Price
         System.Data.Entity.DbSet<Profile> Profiles { get; set; } // Profile
         System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province

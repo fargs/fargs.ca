@@ -1,13 +1,4 @@
-﻿@using WebApp.Library
-@using Features = Orvosi.Shared.Enums.Features
-
-@{
-    var session = DependencyResolver.Current.GetService<SessionService>();
-    var features = session.AuthorizedFeatures;
-    var identity = session.identity;
-}
-
-<form action="~/Reports/Invoice/ForReconciliation">
+﻿<form action="~/Reports/Invoice/ForReconciliation">
     <div class="form-group">
         <button type="submit">Invoices For Reconciliation</button>
     </div>

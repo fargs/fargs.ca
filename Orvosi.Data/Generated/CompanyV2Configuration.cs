@@ -45,7 +45,7 @@ namespace Orvosi.Data
 
             // Foreign keys
             HasOptional(a => a.CompanyV2_ParentId).WithMany(b => b.CompanyV21).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_CompanyV2_ParentId
-            HasOptional(a => a.Physician).WithMany(b => b.CompanyV2).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_CompanyV2_Physician
+            HasOptional(a => a.PhysicianV2).WithMany(b => b.CompanyV2).HasForeignKey(c => c.PhysicianId); // FK_CompanyV2_PhysicianV2
             InitializePartial();
         }
         partial void InitializePartial();

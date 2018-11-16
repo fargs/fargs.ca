@@ -8,7 +8,7 @@
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable RedundantOverridenMember
 // ReSharper disable UseNameofExpression
-// TargetFrameworkVersion = 4.5
+// TargetFrameworkVersion = 4.7
 #pragma warning disable 1591    //  Ignore "Missing XML Comment" warning
 
 
@@ -41,8 +41,19 @@ namespace WebApp.Areas.Reports.Data
             Property(x => x.Total).HasColumnName(@"Total").HasColumnType("decimal").IsOptional().HasPrecision(10,2);
             Property(x => x.BillingEmail).HasColumnName(@"BillingEmail").HasColumnType("nvarchar").IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.ItemDescription).HasColumnName(@"ItemDescription").HasColumnType("nvarchar").IsOptional().HasMaxLength(256);
-            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").HasColumnType("bit").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.CreatedDate).HasColumnName(@"CreatedDate").HasColumnType("datetime").IsOptional();
             Property(x => x.SentDate).HasColumnName(@"SentDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").HasColumnType("bit").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.DeletedDate).HasColumnName(@"DeletedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("int").IsOptional();
+            Property(x => x.ClaimantName).HasColumnName(@"ClaimantName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Service).HasColumnName(@"Service").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.City).HasColumnName(@"City").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Province).HasColumnName(@"Province").HasColumnType("nvarchar").IsOptional().HasMaxLength(100);
+            Property(x => x.IsNoShow).HasColumnName(@"IsNoShow").HasColumnType("bit").IsOptional();
+            Property(x => x.IsLateCancellation).HasColumnName(@"IsLateCancellation").HasColumnType("bit").IsOptional();
+            Property(x => x.Intake).HasColumnName(@"Intake").HasColumnType("nvarchar").IsOptional().HasMaxLength(257);
+            Property(x => x.DocReviewer).HasColumnName(@"DocReviewer").HasColumnType("nvarchar").IsOptional().HasMaxLength(257);
         }
     }
 

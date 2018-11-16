@@ -1,10 +1,8 @@
 ﻿CREATE TABLE [dbo].[RoleFeatureHistory] (
-    [Id]           UNIQUEIDENTIFIER NOT NULL,
     [SysStartTime] DATETIME2 (0)    NOT NULL,
     [SysEndTime]   DATETIME2 (0)    NOT NULL,
     [RoleId]       UNIQUEIDENTIFIER NOT NULL,
-    [FeatureId]    UNIQUEIDENTIFIER NOT NULL,
-    [IsActive]     BIT              NOT NULL
+    [FeatureId]    UNIQUEIDENTIFIER NOT NULL
 );
 
 

@@ -36,7 +36,7 @@ namespace Orvosi.Data
 
             // Foreign keys
             HasOptional(a => a.ServiceV2).WithMany(b => b.CompanyServices).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_CompanyService_Service
-            HasRequired(a => a.CompanyV2).WithMany(b => b.CompanyServices).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_CompanyService_Company
+            HasRequired(a => a.CompanyV2).WithMany(b => b.CompanyServices).HasForeignKey(c => c.CompanyId); // FK_CompanyService_Company
             InitializePartial();
         }
         partial void InitializePartial();

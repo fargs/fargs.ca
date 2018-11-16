@@ -42,8 +42,7 @@ namespace Orvosi.Data
             Property(x => x.TimeZoneId).HasColumnName(@"TimeZoneId").IsRequired().HasColumnType("smallint");
 
             // Foreign keys
-            HasOptional(a => a.CompanyV2).WithMany(b => b.AddressV2).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_AddressV2_CompanyV2
-            HasOptional(a => a.Physician).WithMany(b => b.AddressV2).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_AddressV2_Physician
+            HasOptional(a => a.CompanyV2).WithMany(b => b.AddressV2).HasForeignKey(c => c.CompanyId); // FK_AddressV2_CompanyV2
             HasRequired(a => a.AddressType).WithMany(b => b.AddressV2).HasForeignKey(c => c.AddressTypeId).WillCascadeOnDelete(false); // FK_AddressV2_AddressType
             HasRequired(a => a.City).WithMany(b => b.AddressV2).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_AddressV2_City
             HasRequired(a => a.Country).WithMany(b => b.AddressV2).HasForeignKey(c => c.CountryId).WillCascadeOnDelete(false); // FK_AddressV2_Countries

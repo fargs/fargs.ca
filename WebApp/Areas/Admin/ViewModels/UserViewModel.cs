@@ -4,14 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ImeHub.Models;
 using Orvosi.Data;
 
 namespace WebApp.Areas.Admin.ViewModels
 {
     public class ListViewModel
     {
-        public List<AspNetRole> Roles { get; internal set; }
-        public List<ListViewItem> Users { get; set; }
+        public IEnumerable<AspNetRole> Roles { get; internal set; }
+        public IEnumerable<ListViewItem> Users { get; set; }
     }
 
     public class ListViewItem
@@ -47,7 +48,7 @@ namespace WebApp.Areas.Admin.ViewModels
 
     public class ProfileViewModel
     {
-        public Profile Profile { get; set; }
+        public UserModel Profile { get; set; }
     }
 
     public class CompaniesViewModel

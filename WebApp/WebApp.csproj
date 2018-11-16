@@ -570,6 +570,8 @@
     <Compile Include="Areas\Services\Views\Service\ListViewModel.cs" />
     <Compile Include="Areas\Services\Views\Service\ServiceForm.cs" />
     <Compile Include="Areas\Services\Views\Service\ServiceV2ViewModel.cs" />
+    <Compile Include="Areas\SysTools\Controllers\HomeController.cs" />
+    <Compile Include="Areas\SysTools\SysToolsAreaRegistration.cs" />
     <Compile Include="Areas\Team\Views\TeamMember\NewTeamMemberFormModel.cs" />
     <Compile Include="Areas\Team\Controllers\TeamMemberController.cs" />
     <Compile Include="Areas\Team\TeamAreaRegistration.cs" />
@@ -674,6 +676,10 @@
     <Content Include="Areas\Dashboard\Views\Home\TermsAndConditions.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\IndexJS.cshtml" />
     <Content Include="Areas\Physicians\Views\Physician\OwnerInvitation.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\Spec.md" />
+    <Content Include="Areas\SysTools\Views\web.config" />
+    <Content Include="Areas\SysTools\Views\Home\Index.cshtml" />
+    <Content Include="Areas\SysTools\Views\_ViewStart.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -736,7 +742,6 @@
     <Compile Include="Models\AddressV2Dto.cs" />
     <Compile Include="Models\CancellationPolicyDto.cs" />
     <Compile Include="Models\CompanyServiceDto.cs" />
-    <Compile Include="Models\PhysicianInviteDto.cs" />
     <Compile Include="Models\PhysicianDto.cs" />
     <Compile Include="Models\TeamMemberDto.cs" />
     <Compile Include="Models\CompanyV2Dto.cs" />
@@ -1801,6 +1806,8 @@
     <Content Include="Views\ServiceRequest\ScheduleDateRange.cshtml" />
     <Content Include="Areas\Companies\Views\Company\Address\AddressForm.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\OwnerInvitationNotification.cshtml" />
+    <Content Include="Views\Manage\_ViewStart.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1994,6 +2001,8 @@
     <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Areas\Services\Models\" />
     <Folder Include="Areas\Services\Views\Shared\" />
+    <Folder Include="Areas\SysTools\Models\" />
+    <Folder Include="Areas\SysTools\Views\Shared\" />
     <Folder Include="Areas\Team\Models\" />
     <Folder Include="Areas\Team\Views\Shared\" />
     <Folder Include="Areas\Work\Models\" />

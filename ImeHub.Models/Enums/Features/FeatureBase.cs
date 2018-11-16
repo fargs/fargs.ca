@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImeHub.Models.Features
+namespace ImeHub.Models.Enums.Features
 {
     public class FeatureBase
     {

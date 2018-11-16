@@ -1,17 +1,23 @@
 ﻿@model ReadOnlyViewModel
 
-<div style="margin-bottom: 15px;">
-    <div class="btn-group">
-        <button type="button" class="btn btn-default" onclick="showEditPhysicianForm('@Model.Id')">Edit</button>
-        <button type="button" class="btn btn-default">Delete</button>
-    </div>
-</div>
 <div>
     <form id="physician-readonly-form">
         <div class="form-group">
             <label class="control-label">Company Name</label>
             <div>
                 <p class="form-control-static">@Model.CompanyName</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Code</label>
+            <div>
+                <p class="form-control-static">@Model.Code</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Color</label>
+            <div>
+                <input type="color" id="ColorCode" name="ColorCode" disabled class="form-control" value="@Model.ColorCode" style="max-width:100px;" />
             </div>
         </div>
         <div class="form-group">
@@ -30,7 +36,7 @@
                 }
                 else
                 {
-                    <button type="button" onclick="showOwnerInvitationForm('@Model.Id')">Send Invitation to Physician</button>
+                    <p class="form-control-static text-muted text">Not set</p>
                 }
             </div>
         </div>
@@ -38,18 +44,6 @@
             <label class="control-label">Manager</label>
             <div>
                 <p class="form-control-static">@Model.Manager.Name</p>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label">Code</label>
-            <div>
-                <p class="form-control-static">@Model.Code</p>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label">Color</label>
-            <div>
-                <input type="color" id="ColorCode" name="ColorCode" disabled class="form-control" value="@Model.ColorCode" />
             </div>
         </div>
     </form>

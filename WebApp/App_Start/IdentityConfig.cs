@@ -76,11 +76,7 @@ namespace WebApp
 
         private static IIdentityMessageService GetEmailService()
         {
-            // not in debug mode and not local request => we are in production
-            if (ConfigurationManager.AppSettings["MailSystem"] == "SendGrid")
-            {
-                return new SendGridEmailService();
-            }
+            // TODO: Need to add in a mail provider here for production
             return new LocalEmailService();
         }
     }

@@ -34,7 +34,7 @@ namespace Orvosi.Data
 
             // Foreign keys
             HasRequired(a => a.City).WithMany(b => b.TravelPrices).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_TravelPrice_City
-            HasRequired(a => a.CompanyService).WithMany(b => b.TravelPrices).HasForeignKey(c => c.CompanyServiceId).WillCascadeOnDelete(false); // FK_TravelPrice_CompanyService
+            HasRequired(a => a.CompanyService).WithMany(b => b.TravelPrices).HasForeignKey(c => c.CompanyServiceId); // FK_TravelPrice_CompanyService
             InitializePartial();
         }
         partial void InitializePartial();

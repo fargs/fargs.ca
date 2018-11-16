@@ -60,6 +60,8 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource.FK_AvailableDayResource_AspNetUsers
         public virtual System.Collections.Generic.ICollection<Collaborator> CollaboratorUser { get; set; } // Collaborator.FK_Collaborator_AspNetUsers
         public virtual System.Collections.Generic.ICollection<Collaborator> User { get; set; } // Collaborator.FK_AspNetUsers_Collaborator
+        public virtual System.Collections.Generic.ICollection<PhysicianV2> Manager { get; set; } // PhysicianV2.FK_Physician_AspNetUsers_Manager
+        public virtual System.Collections.Generic.ICollection<PhysicianV2> Owner { get; set; } // PhysicianV2.FK_Physician_AspNetUsers_Owner
         public virtual System.Collections.Generic.ICollection<ServiceRequest> CaseCoordinator { get; set; } // ServiceRequest.FK_ServiceRequest_CaseCoordinator
         public virtual System.Collections.Generic.ICollection<ServiceRequest> DocumentReviewer { get; set; } // ServiceRequest.FK_ServiceRequest_DocumentReviewer
         public virtual System.Collections.Generic.ICollection<ServiceRequest> IntakeAssistant { get; set; } // ServiceRequest.FK_ServiceRequest_IntakeAssistant
@@ -71,7 +73,6 @@ namespace Orvosi.Data
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> AssignedTo { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> CompletedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers1
         public virtual System.Collections.Generic.ICollection<ServiceRequestTask> TaskStatusChangedBy { get; set; } // ServiceRequestTask.FK_ServiceRequestTask_AspNetUsers_TaskStatusChangedBy
-        public virtual System.Collections.Generic.ICollection<ServiceV2> ServiceV2 { get; set; } // ServiceV2.FK_ServiceV2_AspNetUsers
         public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_User
         public virtual System.Collections.Generic.ICollection<UserInbox> UserInboxes { get; set; } // UserInbox.FK_UserInbox_AspNetUsers
 
@@ -90,6 +91,8 @@ namespace Orvosi.Data
             AvailableDayResources = new System.Collections.Generic.List<AvailableDayResource>();
             CollaboratorUser = new System.Collections.Generic.List<Collaborator>();
             User = new System.Collections.Generic.List<Collaborator>();
+            Manager = new System.Collections.Generic.List<PhysicianV2>();
+            Owner = new System.Collections.Generic.List<PhysicianV2>();
             CaseCoordinator = new System.Collections.Generic.List<ServiceRequest>();
             DocumentReviewer = new System.Collections.Generic.List<ServiceRequest>();
             IntakeAssistant = new System.Collections.Generic.List<ServiceRequest>();
@@ -101,7 +104,6 @@ namespace Orvosi.Data
             AssignedTo = new System.Collections.Generic.List<ServiceRequestTask>();
             CompletedBy = new System.Collections.Generic.List<ServiceRequestTask>();
             TaskStatusChangedBy = new System.Collections.Generic.List<ServiceRequestTask>();
-            ServiceV2 = new System.Collections.Generic.List<ServiceV2>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
             UserInboxes = new System.Collections.Generic.List<UserInbox>();
             InitializePartial();

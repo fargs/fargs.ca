@@ -19,6 +19,8 @@ namespace WebApp
         public IEmailService service;
         private string _templateFolder;
         private string _logoPath;
+        private const string FromEmail = "support@imehub.com";
+        private const string BccEmail = "lesliefarago@gmail.com";
 
         public MessagingService(string templateFolder, string host)
         {
@@ -44,23 +46,17 @@ namespace WebApp
             return CreateService();
         }
 
-        public async Task<bool> SendActivationEmail(string email, string userName, string callbackUrl, Guid role)
+        public async Task<bool> SendActivationEmail(string email, string userName, string callbackUrl)
         {
             var message = new MailMessage();
             message.To.Add(email);
-            message.From = new MailAddress("support@orvosi.ca");
-            message.Subject = "Orvosi - Confidential Account Activation";
+            message.From = new MailAddress(FromEmail);
+            message.Subject = "ImeHub - Confidential Account Activation";
             message.IsBodyHtml = true;
-            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+            message.Bcc.Add(BccEmail);
 
-            var templatePath = string.Empty;
-            if (role == AspNetRoles.Physician)
-                templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
-            else if (role == AspNetRoles.Company)
-                templatePath = Path.Combine(_templateFolder, "CompanyAccountActivation.html");
-            else 
-                throw new System.Exception("Role activation not currently supported");
-
+            var templatePath = Path.Combine(_templateFolder, "PhysicianAccountActivation.html");
+            
             StreamReader sr = File.OpenText(templatePath);
             while (sr.Peek() >= 0)
             {
@@ -76,13 +72,12 @@ namespace WebApp
         {
             var message = new MailMessage();
             message.To.Add(email);
-            message.From = new MailAddress("support@orvosi.ca");
-            message.Subject = "Orvosi - Confidential Password Reset";
-            message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
-            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+            message.From = new MailAddress(FromEmail);
+            message.Subject = "ImeHub - Confidential Password Reset";
+            message.IsBodyHtml = true;
+            message.Bcc.Add(BccEmail);
 
             var templatePath = Path.Combine(_templateFolder, "ResetPassword.html");
-
 
             StreamReader sr = File.OpenText(templatePath);
             while (sr.Peek() >= 0)
@@ -101,8 +96,8 @@ namespace WebApp
             message.To.Add(invoice.CustomerEmail);
             message.From = new MailAddress(invoice.ServiceProviderEmail);
             message.Subject = string.Format("Invoice {0} - {1} - Payment Due {2}", invoice.InvoiceNumber, invoice.ServiceProviderName, invoice.DueDate.Value.ToOrvosiDateFormat());
-            message.IsBodyHtml = true;            //message.Bcc.Add(Config.NotificationBCC);
-            message.Bcc.Add("lfarago@orvosi.ca,afarago@orvosi.ca");
+            message.IsBodyHtml = true;
+            message.Bcc.Add(BccEmail);
 
             var templatePath = Path.Combine(_templateFolder, "Invoice.html");
 
@@ -124,8 +119,8 @@ namespace WebApp
             var message = new MailMessage();
 
             message.To.Add(email);
-            message.From = new MailAddress("support@orvosi.ca");
-            message.Subject = "Orvosi - Test Email";
+            message.From = new MailAddress(FromEmail);
+            message.Subject = "ImeHub - Test Email";
             message.IsBodyHtml = true;
             message.Body = "<h1>Hello World</h1>";
 
@@ -144,7 +139,7 @@ namespace WebApp
                 {
                     myMessage.AddTo(item.Address);
                 }
-                myMessage.From = new MailAddress("support@orvosi.ca", "Orvosi Support");
+                myMessage.From = new MailAddress(FromEmail);
                 myMessage.Subject = message.Subject;
                 myMessage.Html = message.Body;
 
@@ -213,7 +208,7 @@ namespace WebApp
             // Plug in your email service here to send an email.
             var myMessage = new SendGridMessage();
             myMessage.AddTo(message.Destination);
-            myMessage.From = new MailAddress("support@orvosi.ca", "Orvosi Support");
+            myMessage.From = new MailAddress("support@imehub.com");
             myMessage.Subject = message.Subject;
             //myMessage.Text = message.Body;
             myMessage.Html = message.Body;
@@ -250,7 +245,7 @@ namespace WebApp
                 Port = 25
             };
 
-            var @from = new MailAddress("security@orvosi.ca");
+            var @from = new MailAddress("support@imehub.com");
             var to = new MailAddress(message.Destination);
 
             var mail = new MailMessage(@from, to)

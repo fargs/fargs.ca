@@ -1,0 +1,58 @@
+﻿<script type="text/javascript">
+
+    function navigateToTeamMember(teamMemberId) {
+        refreshTeamMemberList(teamMemberId);
+        //refreshTeamMemberReadOnly(teamMemberId);
+    }
+
+    function showNewTeamMemberForm() {
+        var url = '@Url.Content("~/Team/TeamMember/ShowNewTeamMemberForm")';
+
+        $.get(url)
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveNewTeamMemberForm(form) {
+        var url = '@Url.Content("~/Team/TeamMember/SaveNewTeamMemberForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Team member added successfully");
+            refreshTeamMemberList(result.id);
+            //refreshTeamMemberReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+    
+    function removeTeamMember(teamMemberId) {
+        var url = '@Url.Content("~/Team/TeamMember/Remove")';
+
+        $.post(url, {
+            teamMemberId: teamMemberId
+        })
+        .done(function () {
+            toastr.success("Team member removed successfully");
+            refreshTeamMemberList();
+            //refreshTeamMemberReadOnly();
+        });
+    }
+    
+    // Refresh functions
+    function refreshTeamMemberList(teamMemberId) {
+        let url = '@Url.Content("~/Team/TeamMember/List")';
+        $.get(url, {
+            teamMemberId: teamMemberId
+        })
+            .done(function (result) {
+                $('#teammember-list-container').html(result);
+            });
+    }
+
+</script>

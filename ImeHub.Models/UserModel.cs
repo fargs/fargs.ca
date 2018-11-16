@@ -11,6 +11,10 @@ namespace ImeHub.Models
 {
     public class UserModel : ContactModel
     {
+        public bool EmailConfirmed { get; set; }
+        public Guid RoleId { get; set; }
+        public bool IsTestRecord { get; set; }
+        public string UserName { get; set; }
         public RoleModel Role { get; set; }
         public IEnumerable<PhysicianInviteModel> Invites { get; set; }
         public LookupModel<Guid> AsOwner { get; set; }

@@ -23,8 +23,9 @@ namespace Orvosi.Data
         public System.Guid RoleId { get; set; } // RoleId
 
         // Foreign keys
+        public virtual AspNetRole AspNetRole { get; set; } // FK_TeamMember_Role
         public virtual AspNetUser AspNetUser { get; set; } // FK_TeamMember_User
-        public virtual Physician Physician { get; set; } // FK_TeamMember_Physician
+        public virtual PhysicianV2 PhysicianV2 { get; set; } // FK_TeamMember_Physician
 
         public TeamMember()
         {

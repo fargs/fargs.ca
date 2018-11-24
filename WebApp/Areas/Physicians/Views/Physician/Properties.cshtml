@@ -1,4 +1,5 @@
-﻿@model ReadOnlyViewModel
+﻿@using Enums = ImeHub.Models.Enums
+@model ReadOnlyViewModel
 
 <div>
     <form id="physician-readonly-form">
@@ -23,20 +24,31 @@
         <div class="form-group">
             <label class="control-label">Owner</label>
             <div>
-                @if (Model.OwnerId.HasValue)
+                @if (Model.Owner == null)
                 {
-                    <p class="form-control-static">@Model.Owner.Name</p>
-                }
-                else if (Model.OwnerInvites.Any())
-                {
-                    foreach (var invite in Model.OwnerInvites)
-                    {
-                        @Html.Partial("OwnerInvitation", invite)
-                    }
+                    <p class="form-control-static text-muted text">Not set</p>
+
                 }
                 else
                 {
-                    <p class="form-control-static text-muted text">Not set</p>
+                    <div>
+                        @if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotSent)
+                        {
+                            <span>Invite was prepared but has <strong>not been sent</strong>.</span>
+                        }
+                        else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotResponded)
+                        {
+                            <span>Invite was sent to @Model.Owner.Email on @Model.Owner.AcceptanceStatusChangedDate and has <strong>not responded</strong>.</span>
+                        }
+                        else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.Rejected)
+                        {
+                            <span>Invite was sent to @Model.Owner.Email on @Model.Owner.AcceptanceStatusChangedDate</span>
+                        }
+                        else
+                        {
+                            <span>Invite was accepted by @Model.Owner.Email on @Model.Owner.AcceptanceStatusChangedDate</span>
+                        }
+                    </div>
                 }
             </div>
         </div>

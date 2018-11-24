@@ -27,8 +27,9 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<Country> Countries { get; set; }
         public System.Data.Entity.DbSet<Feature> Features { get; set; }
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; }
-        public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; }
-        public System.Data.Entity.DbSet<PhysicianInviteAcceptanceStatu> PhysicianInviteAcceptanceStatus { get; set; }
+        public System.Data.Entity.DbSet<PhysicianInviteLog> PhysicianInviteLogs { get; set; }
+        public System.Data.Entity.DbSet<PhysicianOwner> PhysicianOwners { get; set; }
+        public System.Data.Entity.DbSet<PhysicianOwnerAcceptanceStatu> PhysicianOwnerAcceptanceStatus { get; set; }
         public System.Data.Entity.DbSet<Province> Provinces { get; set; }
         public System.Data.Entity.DbSet<Role> Roles { get; set; }
         public System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; }
@@ -37,6 +38,8 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; }
         public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; }
         public System.Data.Entity.DbSet<User> Users { get; set; }
+        public System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; }
+        public System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; }
         public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; }
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; }
         public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; }
@@ -55,8 +58,9 @@ namespace ImeHub.Data
             Countries = new FakeDbSet<Country>("Id");
             Features = new FakeDbSet<Feature>("Id");
             Physicians = new FakeDbSet<Physician>("Id");
-            PhysicianInvites = new FakeDbSet<PhysicianInvite>("Id");
-            PhysicianInviteAcceptanceStatus = new FakeDbSet<PhysicianInviteAcceptanceStatu>("Id");
+            PhysicianInviteLogs = new FakeDbSet<PhysicianInviteLog>("Id");
+            PhysicianOwners = new FakeDbSet<PhysicianOwner>("PhysicianId");
+            PhysicianOwnerAcceptanceStatus = new FakeDbSet<PhysicianOwnerAcceptanceStatu>("Id");
             Provinces = new FakeDbSet<Province>("Id");
             Roles = new FakeDbSet<Role>("Id");
             RoleFeatures = new FakeDbSet<RoleFeature>("RoleId", "FeatureId");
@@ -65,6 +69,8 @@ namespace ImeHub.Data
             TimeZones = new FakeDbSet<TimeZone>("Id");
             TravelPrices = new FakeDbSet<TravelPrice>("Id");
             Users = new FakeDbSet<User>("Id");
+            UserClaims = new FakeDbSet<UserClaim>("Id");
+            UserLogins = new FakeDbSet<UserLogin>("LoginProvider", "ProviderKey", "UserId");
             UserRoles = new FakeDbSet<UserRole>("UserId", "RoleId");
             Workflows = new FakeDbSet<Workflow>("Id");
             WorkflowTasks = new FakeDbSet<WorkflowTask>("Id");

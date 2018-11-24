@@ -53,13 +53,21 @@ namespace ImeHub.Data
         /// </summary>
         public virtual System.Collections.Generic.ICollection<Physician> Physicians_OwnerId { get; set; } // Physician.FK_Physician_Owner
         /// <summary>
-        /// Child PhysicianInvites where [PhysicianInvite].[UserId] point to this entity (FK_PhysicianInvite_User)
+        /// Child PhysicianOwners where [PhysicianOwner].[UserId] point to this entity (FK_PhysicianOwner_User)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite.FK_PhysicianInvite_User
+        public virtual System.Collections.Generic.ICollection<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner.FK_PhysicianOwner_User
         /// <summary>
         /// Child TeamMembers where [TeamMember].[UserId] point to this entity (FK_TeamMember_User)
         /// </summary>
         public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_User
+        /// <summary>
+        /// Child UserClaims where [UserClaim].[UserId] point to this entity (FK_UserClaim_User)
+        /// </summary>
+        public virtual System.Collections.Generic.ICollection<UserClaim> UserClaims { get; set; } // UserClaim.FK_UserClaim_User
+        /// <summary>
+        /// Child UserLogins where [UserLogin].[UserId] point to this entity (FK_UserLogin_User)
+        /// </summary>
+        public virtual System.Collections.Generic.ICollection<UserLogin> UserLogins { get; set; } // UserLogin.FK_UserLogin_User
         /// <summary>
         /// Child UserRoles where [UserRole].[UserId] point to this entity (FK_UserRole_User)
         /// </summary>
@@ -78,8 +86,10 @@ namespace ImeHub.Data
             IsAppTester = false;
             Physicians_ManagerId = new System.Collections.Generic.List<Physician>();
             Physicians_OwnerId = new System.Collections.Generic.List<Physician>();
-            PhysicianInvites = new System.Collections.Generic.List<PhysicianInvite>();
+            PhysicianOwners = new System.Collections.Generic.List<PhysicianOwner>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
+            UserClaims = new System.Collections.Generic.List<UserClaim>();
+            UserLogins = new System.Collections.Generic.List<UserLogin>();
             UserRoles = new System.Collections.Generic.List<UserRole>();
             InitializePartial();
         }

@@ -14,6 +14,7 @@ using WebApp.Library;
 using WebApp.Areas.Reports.Data;
 using Microsoft.AspNet.Identity.Owin;
 using ImeHub.Data;
+using System.Configuration;
 
 namespace WebApp
 {
@@ -63,7 +64,10 @@ namespace WebApp
             container.RegisterType<IRoleStore<ApplicationRole, Guid>, RoleStore<ApplicationRole, Guid, ApplicationUserRole>>(
                 new InjectionConstructor(typeof(ApplicationDbContext)));
 
-            container.RegisterType<IEmailService, GoogleServices>(new HierarchicalLifetimeManager(), new InjectionConstructor());
+            container.RegisterType<IEmailService, GoogleServices>(new HierarchicalLifetimeManager(), new InjectionFactory(c =>
+            {
+                return new GoogleServices();
+            }));
 
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }

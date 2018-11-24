@@ -24,8 +24,9 @@ namespace ImeHub.Data
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
-        System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite
-        System.Data.Entity.DbSet<PhysicianInviteAcceptanceStatu> PhysicianInviteAcceptanceStatus { get; set; } // PhysicianInviteAcceptanceStatus
+        System.Data.Entity.DbSet<PhysicianInviteLog> PhysicianInviteLogs { get; set; } // PhysicianInviteLog
+        System.Data.Entity.DbSet<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner
+        System.Data.Entity.DbSet<PhysicianOwnerAcceptanceStatu> PhysicianOwnerAcceptanceStatus { get; set; } // PhysicianOwnerAcceptanceStatus
         System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         System.Data.Entity.DbSet<Role> Roles { get; set; } // Role
         System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; } // RoleFeature
@@ -34,6 +35,8 @@ namespace ImeHub.Data
         System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         System.Data.Entity.DbSet<User> Users { get; set; } // User
+        System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; } // UserClaim
+        System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; } // UserLogin
         System.Data.Entity.DbSet<UserRole> UserRoles { get; set; } // UserRole
         System.Data.Entity.DbSet<Workflow> Workflows { get; set; } // Workflow
         System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; } // WorkflowTask

@@ -30,6 +30,10 @@ namespace ImeHub.Data
         // Reverse navigation
 
         /// <summary>
+        /// Parent (One-to-One) Physician pointed by [PhysicianOwner].[PhysicianId] (FK_PhysicianOwner_Physician)
+        /// </summary>
+        public virtual PhysicianOwner PhysicianOwner { get; set; } // PhysicianOwner.FK_PhysicianOwner_Physician
+        /// <summary>
         /// Child Addresses where [Address].[PhysicianId] point to this entity (FK_Address_Physician)
         /// </summary>
         public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_Physician
@@ -38,9 +42,9 @@ namespace ImeHub.Data
         /// </summary>
         public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_Physician
         /// <summary>
-        /// Child PhysicianInvites where [PhysicianInvite].[PhysicianId] point to this entity (FK_PhysicianInvite_Physician)
+        /// Child PhysicianInviteLogs where [PhysicianInviteLog].[PhysicianId] point to this entity (FK_PhysicianInviteLog_Physician)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite.FK_PhysicianInvite_Physician
+        public virtual System.Collections.Generic.ICollection<PhysicianInviteLog> PhysicianInviteLogs { get; set; } // PhysicianInviteLog.FK_PhysicianInviteLog_Physician
         /// <summary>
         /// Child TeamMembers where [TeamMember].[PhysicianId] point to this entity (FK_TeamMember_Physician)
         /// </summary>
@@ -62,7 +66,7 @@ namespace ImeHub.Data
         {
             Addresses = new System.Collections.Generic.List<Address>();
             Companies = new System.Collections.Generic.List<Company>();
-            PhysicianInvites = new System.Collections.Generic.List<PhysicianInvite>();
+            PhysicianInviteLogs = new System.Collections.Generic.List<PhysicianInviteLog>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
             InitializePartial();
         }

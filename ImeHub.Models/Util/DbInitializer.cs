@@ -60,10 +60,10 @@ namespace ImeHub.Models.Database
 
 
             // ACCEPTANCE STATUS
-            db.PhysicianInviteAcceptanceStatus.AddOrUpdate(new PhysicianInviteAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Accepted, Name = "Accepted" });
-            db.PhysicianInviteAcceptanceStatus.AddOrUpdate(new PhysicianInviteAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotResponded, Name = "Not Responded" });
-            db.PhysicianInviteAcceptanceStatus.AddOrUpdate(new PhysicianInviteAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Rejected, Name = "Rejected" });
-            db.PhysicianInviteAcceptanceStatus.AddOrUpdate(new PhysicianInviteAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotSent, Name = "Not Sent" });
+            db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Accepted, Name = "Accepted" });
+            db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotResponded, Name = "Not Responded" });
+            db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Rejected, Name = "Rejected" });
+            db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotSent, Name = "Not Sent" });
 
             db.SaveChanges();
         }

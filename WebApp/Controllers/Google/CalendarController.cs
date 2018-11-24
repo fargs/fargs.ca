@@ -13,7 +13,7 @@ using WebApp.Library.Projections;
 using WebApp.Library.Filters;
 using Features = Orvosi.Shared.Enums.Features;
 
-namespace WebApp.Controllers.Google
+namespace WebApp.Controllers.GoogleConnection
 {
     public class CalendarController : Controller
     {        

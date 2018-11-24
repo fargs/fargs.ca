@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
 }
 
 <h2>Diagnostics</h2>
@@ -29,13 +30,13 @@
 </form>
 
 <h3>Google Calendar - Get Calendars</h3>
-<form method="post" action="~/Diagnostics/GetListOfGoogleCalendars" role="form">
+<form method="post" action="~/Diagnostics/GetListOfGoogleCalendarsAsync" role="form">
     <input type="email" name="email" placeholder="User Email Address" class="form-control" />
     <button type="submit" class="btn btn-primary">Get</button>
 </form>
 
 <h3>Google Calendar - Get Events</h3>
-<form method="post" action="~/Diagnostics/GetListOfEventsGoogleCalendar" role="form">
+<form method="post" action="~/Diagnostics/GetListOfEventsGoogleCalendarAsync" role="form">
     <input type="email" name="email" placeholder="User Email Address" class="form-control" />
     <input type="date" name="start" placeholder="Start Date" class="form-control" />
     <input type="date" name="end" placeholder="End Date" class="form-control" />

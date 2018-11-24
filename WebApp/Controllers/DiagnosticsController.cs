@@ -1,7 +1,12 @@
-﻿using Google.Apis.Calendar.v3;
+﻿using Google.Apis.Auth.OAuth2.Mvc;
+using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Gmail.v1;
+using Google.Apis.Services;
+using ImeHub.Data;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNet.Identity.Owin;
+using MimeKit;
 using Orvosi.Data;
 using Orvosi.Shared.Enums;
 using System;
@@ -9,12 +14,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
+using WebApp.Library.GoogleHelpers;
 using features = Orvosi.Shared.Enums.Features;
 
 namespace WebApp.Controllers
@@ -22,6 +30,13 @@ namespace WebApp.Controllers
     [AuthorizeRole()]
     public class DiagnosticsController : Controller
     {
+        private IImeHubDbContext db;
+        private IIdentity identity;
+        public DiagnosticsController(IImeHubDbContext db, IIdentity identity)
+        {
+            this.identity = identity;
+            this.db = db;
+        }
         public ViewResult Index()
         {
             return View();
@@ -106,38 +121,82 @@ namespace WebApp.Controllers
             return View();
 
         }
-        [HttpPost]
-        public JsonResult GetListOfGoogleCalendars(string email)
+        public async Task<ActionResult> GetListOfGoogleCalendarsAsync(string email, CancellationToken cancellationToken)
         {
-            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
-            CalendarList calendars = service.CalendarList.List().Execute();
-            var model = new
+            var user = db.Users.Single(u => u.Email == email);
+            var flow = new AppFlowMetadata(db, user.Id);
+            var app = new AuthorizationCodeMvcApp(this, flow);
+            var result = await app.AuthorizeAsync(cancellationToken);
+
+            if (result.Credential != null)
             {
-                data = calendars
-            };
-            return Json(model, JsonRequestBehavior.AllowGet);
+                var service = new CalendarService(new BaseClientService.Initializer
+                {
+                    HttpClientInitializer = result.Credential,
+                    ApplicationName = "ASP.NET MVC Sample"
+                });
+
+                // YOUR CODE SHOULD BE HERE..
+                // SAMPLE CODE:
+
+                var list = await service.CalendarList.List().ExecuteAsync();
+                ViewBag.Message = "CALENDAR COUNT IS: " + list.Items.Count();
+                return Json(list);
+            }
+            else
+            {
+                return new RedirectResult(result.RedirectUri);
+            }
+            //// get the users calendar provider
+            //var provider = "google";
+
+            //var service = provider == "google" ? new GoogleCalendarService(email, db)
+            //    //: provider == "microsoft" ? new MicrosoftCalendarService()
+            //    : null;
+
+            //var calendars = service.GetCalendars();
+            //var model = new
+            //{
+            //    data = calendars
+            //};
+            //return Json(model, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult GetListOfEventsGoogleCalendar(string email, DateTime start, DateTime end)
+        public async Task<ActionResult> GetListOfEventsGoogleCalendarAsync(string email, DateTime start, DateTime end, CancellationToken cancellationToken)
         {
-            var service = new WebApp.Library.GoogleServices().GetCalendarService(email);
+            var user = db.Users.Single(u => u.Email == email);
+            var flow = new AppFlowMetadata(db, user.Id);
+            var app = new AuthorizationCodeMvcApp(this, flow);
+            var result = await app.AuthorizeAsync(cancellationToken);
 
-            // Define parameters of request.
-            EventsResource.ListRequest request = service.Events.List("primary");
-            request.TimeMin = start;
-            request.TimeMax = end;
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            request.MaxResults = 10;
-            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
-
-            Console.WriteLine("Upcoming events:");
-            Events events = request.Execute();
-            var model = new
+            if (result.Credential != null)
             {
-                data = events
-            };
-            return Json(model, JsonRequestBehavior.AllowGet);
+                var service = new CalendarService(new BaseClientService.Initializer
+                {
+                    HttpClientInitializer = result.Credential,
+                    ApplicationName = "ASP.NET MVC Sample"
+                });
+
+                EventsResource.ListRequest request = service.Events.List("primary");
+                request.TimeMin = start;
+                request.TimeMax = end;
+                request.ShowDeleted = false;
+                request.SingleEvents = true;
+                request.MaxResults = 10;
+                request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+
+                Console.WriteLine("Upcoming events:");
+                Events events = request.Execute();
+                var model = new
+                {
+                    data = events
+                };
+                return Json(model);
+            }
+            else
+            {
+                return new RedirectResult(result.RedirectUri);
+            }
         }
 
         [HttpPost]
@@ -271,11 +330,38 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task SendEmailFrom(string from, string to)
+        public async Task<ActionResult> SendEmailFrom(string from, string to, CancellationToken cancellationToken)
         {
-            var message = BuildSendTestMailMessage(to, from, Request.GetBaseUrl());
-            var service = new GoogleServices();
-            await service.SendEmailAsync(message);
+            var user = db.Users.Single(u => u.Email == from);
+            var flow = new AppFlowMetadata(db, user.Id);
+            var app = new AuthorizationCodeMvcApp(this, flow);
+            var result = await app.AuthorizeAsync(cancellationToken);
+
+            if (result.Credential != null)
+            {
+                var service = new GmailService(new BaseClientService.Initializer
+                {
+                    HttpClientInitializer = result.Credential,
+                    ApplicationName = "ASP.NET MVC Sample"
+                });
+
+                var message = BuildSendTestMailMessage(to, from, Request.GetBaseUrl());
+                var mimeMessage = MimeMessage.CreateFromMailMessage(message);
+                var base64EncodedText = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(mimeMessage.ToString());
+                var googleMessage = new Google.Apis.Gmail.v1.Data.Message
+                {
+                    Raw = base64EncodedText
+                };
+
+                // Create the service.
+                var request = service.Users.Messages.Send(googleMessage, message.From.Address);
+                await request.ExecuteAsync();
+                return Json("Sent");
+            }
+            else
+            {
+                return new RedirectResult(result.RedirectUri);
+            }
         }
 
         [AuthorizeRole(Feature = features.Accounting.CreateInvoice)]

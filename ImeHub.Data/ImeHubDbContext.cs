@@ -27,8 +27,9 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         public System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
-        public System.Data.Entity.DbSet<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite
-        public System.Data.Entity.DbSet<PhysicianInviteAcceptanceStatu> PhysicianInviteAcceptanceStatus { get; set; } // PhysicianInviteAcceptanceStatus
+        public System.Data.Entity.DbSet<PhysicianInviteLog> PhysicianInviteLogs { get; set; } // PhysicianInviteLog
+        public System.Data.Entity.DbSet<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner
+        public System.Data.Entity.DbSet<PhysicianOwnerAcceptanceStatu> PhysicianOwnerAcceptanceStatus { get; set; } // PhysicianOwnerAcceptanceStatus
         public System.Data.Entity.DbSet<Province> Provinces { get; set; } // Province
         public System.Data.Entity.DbSet<Role> Roles { get; set; } // Role
         public System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; } // RoleFeature
@@ -37,6 +38,8 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         public System.Data.Entity.DbSet<User> Users { get; set; } // User
+        public System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; } // UserClaim
+        public System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; } // UserLogin
         public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; } // UserRole
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; } // Workflow
         public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; } // WorkflowTask
@@ -97,8 +100,9 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new CountryConfiguration());
             modelBuilder.Configurations.Add(new FeatureConfiguration());
             modelBuilder.Configurations.Add(new PhysicianConfiguration());
-            modelBuilder.Configurations.Add(new PhysicianInviteConfiguration());
-            modelBuilder.Configurations.Add(new PhysicianInviteAcceptanceStatuConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianInviteLogConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianOwnerConfiguration());
+            modelBuilder.Configurations.Add(new PhysicianOwnerAcceptanceStatuConfiguration());
             modelBuilder.Configurations.Add(new ProvinceConfiguration());
             modelBuilder.Configurations.Add(new RoleConfiguration());
             modelBuilder.Configurations.Add(new RoleFeatureConfiguration());
@@ -107,6 +111,8 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new TimeZoneConfiguration());
             modelBuilder.Configurations.Add(new TravelPriceConfiguration());
             modelBuilder.Configurations.Add(new UserConfiguration());
+            modelBuilder.Configurations.Add(new UserClaimConfiguration());
+            modelBuilder.Configurations.Add(new UserLoginConfiguration());
             modelBuilder.Configurations.Add(new UserRoleConfiguration());
             modelBuilder.Configurations.Add(new WorkflowConfiguration());
             modelBuilder.Configurations.Add(new WorkflowTaskConfiguration());
@@ -122,8 +128,9 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new CountryConfiguration(schema));
             modelBuilder.Configurations.Add(new FeatureConfiguration(schema));
             modelBuilder.Configurations.Add(new PhysicianConfiguration(schema));
-            modelBuilder.Configurations.Add(new PhysicianInviteConfiguration(schema));
-            modelBuilder.Configurations.Add(new PhysicianInviteAcceptanceStatuConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianInviteLogConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianOwnerConfiguration(schema));
+            modelBuilder.Configurations.Add(new PhysicianOwnerAcceptanceStatuConfiguration(schema));
             modelBuilder.Configurations.Add(new ProvinceConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleConfiguration(schema));
             modelBuilder.Configurations.Add(new RoleFeatureConfiguration(schema));
@@ -132,6 +139,8 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new TimeZoneConfiguration(schema));
             modelBuilder.Configurations.Add(new TravelPriceConfiguration(schema));
             modelBuilder.Configurations.Add(new UserConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserClaimConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserLoginConfiguration(schema));
             modelBuilder.Configurations.Add(new UserRoleConfiguration(schema));
             modelBuilder.Configurations.Add(new WorkflowConfiguration(schema));
             modelBuilder.Configurations.Add(new WorkflowTaskConfiguration(schema));

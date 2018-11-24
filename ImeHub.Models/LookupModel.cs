@@ -29,7 +29,7 @@ namespace ImeHub.Models
             ColorCode = e.ColorCode
         };
 
-        public static Expression<Func<Data.PhysicianInviteAcceptanceStatu, LookupModel<byte>>> FromPhysicianInviteAcceptanceStatus = e => e == null ? null : new LookupModel<byte>
+        public static Expression<Func<Data.PhysicianOwnerAcceptanceStatu, LookupModel<byte>>> FromPhysicianInviteAcceptanceStatus = e => e == null ? null : new LookupModel<byte>
         {
             Id = e.Id,
             Name = e.Name,

@@ -15,22 +15,22 @@
 namespace ImeHub.Data
 {
 
-    // PhysicianInviteAcceptanceStatus
-    public partial class PhysicianInviteAcceptanceStatu
+    // UserLogin
+    public partial class UserLogin
     {
-        public byte Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 50)
+        public string LoginProvider { get; set; } // LoginProvider (Primary key) (length: 128)
+        public string ProviderKey { get; set; } // ProviderKey (Primary key) (length: 128)
+        public System.Guid UserId { get; set; } // UserId (Primary key)
 
-        // Reverse navigation
+        // Foreign keys
 
         /// <summary>
-        /// Child PhysicianInvites where [PhysicianInvite].[AcceptanceStatusId] point to this entity (FK_PhysicianInvite_PhysicianInviteAcceptanceStatus)
+        /// Parent User pointed by [UserLogin].([UserId]) (FK_UserLogin_User)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianInvite> PhysicianInvites { get; set; } // PhysicianInvite.FK_PhysicianInvite_PhysicianInviteAcceptanceStatus
+        public virtual User User { get; set; } // FK_UserLogin_User
 
-        public PhysicianInviteAcceptanceStatu()
+        public UserLogin()
         {
-            PhysicianInvites = new System.Collections.Generic.List<PhysicianInvite>();
             InitializePartial();
         }
 

@@ -2,18 +2,21 @@
 using LinqKit;
 using Orvosi.Shared.Enums;
 using System;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebApp.Areas.Physicians.Views.Physician;
 using WebApp.Areas.Shared;
+using WebApp.Library;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
 using WebApp.Library.Helpers;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 using Enums = ImeHub.Models.Enums;
 using Features = ImeHub.Models.Enums.Features.UserPortal;
@@ -26,12 +29,14 @@ namespace WebApp.Areas.Physicians.Controllers
         private DateTime now;
         private IIdentity identity;
         private ImeHubDbContext db;
+        private IEmailService emailService;
 
-        public PhysicianController(ImeHubDbContext db, DateTime now, IPrincipal principal)
+        public PhysicianController(ImeHubDbContext db, IEmailService emailService, DateTime now, IPrincipal principal)
         {
             this.now = now;
             this.identity = principal.Identity;
             this.db = db;
+            this.emailService = emailService;
         }
 
         public ActionResult Index(Guid? physicianId)
@@ -90,6 +95,7 @@ namespace WebApp.Areas.Physicians.Controllers
                 CompanyName = form.CompanyName,
                 ManagerId = identity.GetGuidUserId()
             };
+
             db.Physicians.Add(physician);
             await db.SaveChangesAsync();
 
@@ -114,26 +120,21 @@ namespace WebApp.Areas.Physicians.Controllers
                 return PartialView("OwnerInvitationForm", form);
             }
 
-            var invite = new PhysicianInvite
+            var owner = new PhysicianOwner
             {
-                Id = Guid.NewGuid(),
                 PhysicianId = form.PhysicianId,
-                ToEmail = form.ToEmail,
-                ToName = form.ToName,
-                FromEmail = form.FromEmail,
-                FromName = form.FromName,
-                AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotResponded,
-                SentDate = now
+                Email = form.Email,
+                Name = form.Name,
+                AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotSent,
+                AcceptanceStatusChangedDate = now
             };
-            db.PhysicianInvites.Add(invite);
-
-            SendOwnerInviteEmail(invite);
+            db.PhysicianOwners.Add(owner);
 
             await db.SaveChangesAsync();
 
             return Json(new
             {
-                id = invite.Id
+                physicianId = owner.PhysicianId
             });
         }
 
@@ -144,16 +145,49 @@ namespace WebApp.Areas.Physicians.Controllers
             return PartialView("DeleteConfirmation", formModel);
         }
 
+        public async Task<ActionResult> SendOwnerInvitationEmail(Guid physicianId)
+        {
+            var physician = db.Physicians.AsNoTracking().AsExpandable().Select(PhysicianModel.FromPhysician)
+                .Where(p => p.Id == physicianId)
+                .Single();
+
+            if (physician.Owner.AcceptanceStatusId == (byte)Enums.AcceptanceStatus.Accepted || physician.Owner.AcceptanceStatusId == (byte)Enums.AcceptanceStatus.Rejected)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var viewModel = new PhysicianInviteViewModel(physician);
+            
+            var mailMessage = GetOwnerInviteEmail(viewModel);
+            
+            var accountProvider = new GoogleAuthentication(); // eventually I want to DI this into here
+            var accountProviderAuthResult = await accountProvider.AuthenticateOauthAsync(this, db, identity.GetGuidUserId(), new CancellationToken());
+            // if access token and refresh token are expired
+            if (accountProviderAuthResult.Credential == null) return Redirect(accountProviderAuthResult.RedirectUri);
+
+            var service = accountProvider.GetGmailService(accountProviderAuthResult.Credential);
+            await accountProvider.SendEmailAsync(service, mailMessage);
+            
+            var entity = db.PhysicianOwners
+                .Where(pi => pi.PhysicianId == physician.Id)
+                .Single();
+            entity.AcceptanceStatusChangedDate = now;
+            entity.AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotResponded;
+
+            await db.SaveChangesAsync();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
         #endregion
 
-        private MailMessage SendOwnerInviteEmail(PhysicianInvite invite)
+        private MailMessage GetOwnerInviteEmail(PhysicianInviteViewModel invite)
         {
             var message = new MailMessage();
-            message.To.Add(invite.ToEmail);
-            message.From = new MailAddress(invite.FromEmail);
+            message.To.Add(invite.To);
+            message.From = new MailAddress("lesliefarago@gmail.com");
             message.Subject = string.Format("Invitation to ImeHub");
             message.IsBodyHtml = true;
-            message.Bcc.Add("lesliefarago@gmail.com");
 
             ViewData["BaseUrl"] = Url.Content("~"); //This is needed because the full address needs to be included in the email download link
             message.Body = HtmlHelpers.RenderPartialViewToString(this, "OwnerInvitationNotification", invite);

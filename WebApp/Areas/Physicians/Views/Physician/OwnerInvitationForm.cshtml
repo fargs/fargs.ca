@@ -10,31 +10,17 @@
     <form id="physicianinvite-form">
         @Html.Hidden("PhysicianId", Model.PhysicianId)
         <div class="form-group">
-            <label class="control-label">From Email</label>
+            <label class="control-label">Email</label>
             <div>
-                @Html.TextBox("FromEmail", Model.FromEmail, new { @class = "form-control" })
-                @Html.ValidationMessage("FromEmail", "", new { @class = "text-danger" })
+                @Html.TextBox("Email", Model.Email, new { @class = "form-control" })
+                @Html.ValidationMessage("Email", "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label">From Display Name</label>
+            <label class="control-label">Name</label>
             <div>
-                @Html.TextBox("FromName", Model.FromName, new { @class = "form-control" })
-                @Html.ValidationMessage("FromName", "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label">To Email</label>
-            <div>
-                @Html.TextBox("ToEmail", Model.ToEmail, new { @class = "form-control" })
-                @Html.ValidationMessage("ToEmail", "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label">To Name</label>
-            <div>
-                @Html.TextBox("ToName", Model.ToName, new { @class = "form-control" })
-                @Html.ValidationMessage("ToName", "", new { @class = "text-danger" })
+                @Html.TextBox("Name", Model.Name, new { @class = "form-control" })
+                @Html.ValidationMessage("Name", "", new { @class = "text-danger" })
             </div>
         </div>
     </form>

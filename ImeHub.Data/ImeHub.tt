@@ -199,12 +199,6 @@
         if(t.NameHumanCase.ToLowerInvariant().EndsWith("history"))
             return false;
 
-		if (t.NameHumanCase.ToLowerInvariant().Equals("userlogin"))
-			return false;
-		
-		if (t.NameHumanCase.ToLowerInvariant().Equals("userclaim"))
-			return false;
-
         return true;
     };
 

@@ -52,9 +52,21 @@
         )
         .done(function (result) {
             $('#modal-container-sm').modal('toggle');
+            toastr.success("Owner successfully set");
+            refreshPhysicianReadOnly(result.physicianId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function sendOwnerInvitationEmail(physicianId) {
+        $.post('@Url.Content("~/Physicians/Physician/SendOwnerInvitationEmail")', {
+            physicianId: physicianId
+        })
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
             toastr.success("Invite sent successfully");
-            refreshPhysicianList();
-            refreshPhysicianReadOnly(result.id);
+            refreshPhysicianReadOnly(physicianId);
         }).error(function (result) {
             $('#modal-content-sm').html(result.responseText);
         });

@@ -16,7 +16,6 @@ namespace ImeHub.Models
         public bool IsTestRecord { get; set; }
         public string UserName { get; set; }
         public RoleModel Role { get; set; }
-        public IEnumerable<PhysicianInviteModel> Invites { get; set; }
         public LookupModel<Guid> AsOwner { get; set; }
         public IEnumerable<LookupModel<Guid>> AsManager { get; set; }
         public IEnumerable<LookupModel<Guid>> AsTeamMember { get; set; }
@@ -44,21 +43,6 @@ namespace ImeHub.Models
             }
         }
 
-        public class PhysicianInviteModel
-        {
-            public Guid Id { get; set; }
-            public Guid PhysicianId { get; set; } // PhysicianId
-            public LookupModel<Guid> Physician { get; set; }
-            public string ToName { get; set; }
-            public string ToEmail { get; set; }
-            public string FromName { get; set; }
-            public string FromEmail { get; set; }
-            public DateTime? SentDate { get; set; } // SentDate
-            public DateTime? LinkClickedDate { get; set; } // LinkClickedDate
-            public byte AcceptanceStatusId { get; set; }
-            public LookupModel<byte> AcceptanceStatus { get; set; }
-        }
-
         public static new Expression<Func<Data.User, UserModel>> FromUser = a => new UserModel
         {
             Id = a.Id,
@@ -79,20 +63,19 @@ namespace ImeHub.Models
                     Name = rf.Feature.Name
                 })
             },
-            Invites = a.PhysicianInvites.Select(pi => new PhysicianInviteModel
-            {
-                Id = pi.Id,
-                PhysicianId = pi.PhysicianId,
-                Physician = LookupModel<Guid>.FromPhysician.Invoke(pi.Physician),
-                ToName = pi.ToName,
-                ToEmail = pi.ToEmail,
-                FromName = pi.FromName,
-                FromEmail = pi.FromEmail,
-                SentDate = pi.SentDate,
-                LinkClickedDate = pi.LinkClickedDate,
-                AcceptanceStatusId = pi.AcceptanceStatusId,
-                AcceptanceStatus = LookupModel<byte>.FromPhysicianInviteAcceptanceStatus.Invoke(pi.PhysicianInviteAcceptanceStatu)
-            }),
+            //Invites = a.PhysicianOwners.Select(pi => new PhysicianInviteModel
+            //{
+            //    Id = pi.Id,
+            //    PhysicianId = pi.PhysicianId,
+            //    Physician = LookupModel<Guid>.FromPhysician.Invoke(pi.Physician),
+            //    ToName = pi.ToName,
+            //    ToEmail = pi.ToEmail,
+            //    FromName = pi.FromName,
+            //    FromEmail = pi.FromEmail,
+            //    LinkClickedDate = pi.LinkClickedDate,
+            //    AcceptanceStatus = LookupModel<byte>.FromPhysicianInviteAcceptanceStatus.Invoke(pi.PhysicianInviteAcceptanceStatu),
+            //    AcceptanceStatusChangedDate = pi.AcceptanceStatusChangedDate
+            //}),
             AsOwner = LookupModel<Guid>.FromPhysician.Invoke(a.Physicians_OwnerId.FirstOrDefault()),
             AsManager = a.Physicians_ManagerId.AsQueryable()
                 .Select(LookupModel<Guid>.FromPhysician.Expand()),

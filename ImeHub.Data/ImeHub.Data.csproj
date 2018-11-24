@@ -102,10 +102,13 @@
     <Compile Include="Physician.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="PhysicianInvite.cs">
+    <Compile Include="PhysicianInviteLog.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="PhysicianInviteAcceptanceStatu.cs">
+    <Compile Include="PhysicianOwner.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PhysicianOwnerAcceptanceStatu.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -131,6 +134,12 @@
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserClaim.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserLogin.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="UserRole.cs">

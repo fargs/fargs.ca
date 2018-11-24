@@ -2,11 +2,11 @@
 
 <h3>Welcome to ImeHub</h3>
 <p>
-    You have been invited to be the owner of @Model.PhysicianName
+    You have been invited to be the owner of @Model.Physician.CompanyName
 </p>
 <p>
-    To accept click the following link: @Url.Content("~/Physicians/Physician/AcceptOwnerInvite?inviteid=" + Model.Id.ToString())
+    To accept click the following link: @Url.Content("~/Physicians/Physician/AcceptOwnerInvite?physicianid=" + Model.PhysicianId.ToString())
 </p>
 
 Regards,
-@Model.FromName
+ImeHub

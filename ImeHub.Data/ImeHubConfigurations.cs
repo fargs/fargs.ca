@@ -220,54 +220,80 @@ namespace ImeHub.Data
         }
     }
 
-    // PhysicianInvite
+    // PhysicianInviteLog
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
-    public class PhysicianInviteConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PhysicianInvite>
+    public class PhysicianInviteLogConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PhysicianInviteLog>
     {
-        public PhysicianInviteConfiguration()
+        public PhysicianInviteLogConfiguration()
             : this("dbo")
         {
         }
 
-        public PhysicianInviteConfiguration(string schema)
+        public PhysicianInviteLogConfiguration(string schema)
         {
-            ToTable("PhysicianInvite", schema);
+            ToTable("PhysicianInviteLog", schema);
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
-            Property(x => x.ToEmail).HasColumnName(@"ToEmail").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.ToName).HasColumnName(@"ToName").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsOptional();
-            Property(x => x.SentDate).HasColumnName(@"SentDate").HasColumnType("datetime").IsOptional();
-            Property(x => x.LinkClickedDate).HasColumnName(@"LinkClickedDate").HasColumnType("datetime").IsOptional();
-            Property(x => x.FromEmail).HasColumnName(@"FromEmail").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.FromName).HasColumnName(@"FromName").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.AcceptanceStatusId).HasColumnName(@"AcceptanceStatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.To).HasColumnName(@"To").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Cc).HasColumnName(@"Cc").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Bcc).HasColumnName(@"Bcc").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.From).HasColumnName(@"From").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Subject).HasColumnName(@"Subject").HasColumnType("nvarchar").IsRequired().HasMaxLength(256);
+            Property(x => x.Body).HasColumnName(@"Body").HasColumnType("nvarchar(max)").IsRequired();
 
             // Foreign keys
-            HasOptional(a => a.User).WithMany(b => b.PhysicianInvites).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_PhysicianInvite_User
-            HasRequired(a => a.Physician).WithMany(b => b.PhysicianInvites).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_PhysicianInvite_Physician
-            HasRequired(a => a.PhysicianInviteAcceptanceStatu).WithMany(b => b.PhysicianInvites).HasForeignKey(c => c.AcceptanceStatusId).WillCascadeOnDelete(false); // FK_PhysicianInvite_PhysicianInviteAcceptanceStatus
+            HasRequired(a => a.Physician).WithMany(b => b.PhysicianInviteLogs).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_PhysicianInviteLog_Physician
         }
     }
 
-    // PhysicianInviteAcceptanceStatus
+    // PhysicianOwner
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
-    public class PhysicianInviteAcceptanceStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PhysicianInviteAcceptanceStatu>
+    public class PhysicianOwnerConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PhysicianOwner>
     {
-        public PhysicianInviteAcceptanceStatuConfiguration()
+        public PhysicianOwnerConfiguration()
             : this("dbo")
         {
         }
 
-        public PhysicianInviteAcceptanceStatuConfiguration(string schema)
+        public PhysicianOwnerConfiguration(string schema)
         {
-            ToTable("PhysicianInviteAcceptanceStatus", schema);
+            ToTable("PhysicianOwner", schema);
+            HasKey(x => x.PhysicianId);
+
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Email).HasColumnName(@"Email").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.AcceptanceStatusId).HasColumnName(@"AcceptanceStatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.AcceptanceStatusChangedDate).HasColumnName(@"AcceptanceStatusChangedDate").HasColumnType("datetime").IsRequired();
+
+            // Foreign keys
+            HasOptional(a => a.User).WithMany(b => b.PhysicianOwners).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_PhysicianOwner_User
+            HasRequired(a => a.Physician).WithOptional(b => b.PhysicianOwner).WillCascadeOnDelete(false); // FK_PhysicianOwner_Physician
+            HasRequired(a => a.PhysicianOwnerAcceptanceStatu).WithMany(b => b.PhysicianOwners).HasForeignKey(c => c.AcceptanceStatusId).WillCascadeOnDelete(false); // FK_PhysicianOwner_PhysicianOwnerAcceptanceStatus
+        }
+    }
+
+    // PhysicianOwnerAcceptanceStatus
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class PhysicianOwnerAcceptanceStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PhysicianOwnerAcceptanceStatu>
+    {
+        public PhysicianOwnerAcceptanceStatuConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public PhysicianOwnerAcceptanceStatuConfiguration(string schema)
+        {
+            ToTable("PhysicianOwnerAcceptanceStatus", schema);
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
         }
     }
 
@@ -480,6 +506,53 @@ namespace ImeHub.Data
 
             // Foreign keys
             HasRequired(a => a.Role).WithMany(b => b.Users).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_User_Role
+        }
+    }
+
+    // UserClaim
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class UserClaimConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<UserClaim>
+    {
+        public UserClaimConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public UserClaimConfiguration(string schema)
+        {
+            ToTable("UserClaim", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("int").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.ClaimType).HasColumnName(@"ClaimType").HasColumnType("nvarchar(max)").IsOptional();
+            Property(x => x.ClaimValue).HasColumnName(@"ClaimValue").HasColumnType("nvarchar(max)").IsOptional();
+
+            // Foreign keys
+            HasRequired(a => a.User).WithMany(b => b.UserClaims).HasForeignKey(c => c.UserId); // FK_UserClaim_User
+        }
+    }
+
+    // UserLogin
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class UserLoginConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<UserLogin>
+    {
+        public UserLoginConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public UserLoginConfiguration(string schema)
+        {
+            ToTable("UserLogin", schema);
+            HasKey(x => new { x.LoginProvider, x.ProviderKey, x.UserId });
+
+            Property(x => x.LoginProvider).HasColumnName(@"LoginProvider").HasColumnType("nvarchar").IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.ProviderKey).HasColumnName(@"ProviderKey").HasColumnType("nvarchar").IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+
+            // Foreign keys
+            HasRequired(a => a.User).WithMany(b => b.UserLogins).HasForeignKey(c => c.UserId); // FK_UserLogin_User
         }
     }
 

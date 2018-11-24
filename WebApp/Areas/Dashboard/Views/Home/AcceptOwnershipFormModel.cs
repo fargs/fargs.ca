@@ -8,11 +8,11 @@ namespace WebApp.Areas.Dashboard.Views.Home
         public AcceptOwnershipFormModel()
         {
         }
-        public AcceptOwnershipFormModel(Guid inviteId)
+        public AcceptOwnershipFormModel(Guid ownerId)
         {
-            InviteId = inviteId;
+            OwnerId = ownerId;
         }
         [Required]
-        public Guid InviteId { get; set; }
+        public Guid OwnerId { get; set; }
     }
 }

@@ -1,17 +1,31 @@
-﻿@model ReadOnlyViewModel
+﻿@using Enums = ImeHub.Models.Enums
+@model ReadOnlyViewModel
 
 <div style="margin-bottom: 15px;">
     <div class="btn-group">
-        @if (!Model.OwnerId.HasValue)
+        @if (Model.Owner != null)
         {
-            if (Model.OwnerInvites.Any())
+            if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotSent)
             {
-                <button type="button" class="btn btn-primary" onclick="resendInvite('@Model.Id')">Resend</button>
+                <a href="~/Physicians/Physician/SendOwnerInvitationEmail?physicianId=@Model.Id">Send Invite</a>
+                <button type="button" class="btn btn-primary" onclick="sendOwnerInvitationEmail('@Model.Id')">Send Invite</button>
+            }
+            else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotResponded)
+            {
+                <button type="button" class="btn btn-primary" onclick="sendOwnerInvitationEmail('@Model.Id')">ReSend Invite</button>
+            }
+            else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.Rejected)
+            {
+                <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Set Owner</button>
             }
             else
             {
-                <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Send Invitation to Physician</button>
+                <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Transfer Ownership</button>
             }
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Set Owner</button>
         }
         <button type="button" class="btn btn-default" onclick="showEditPhysicianForm('@Model.Id')">Edit</button>
         <button type="button" class="btn btn-default">Delete</button>

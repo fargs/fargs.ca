@@ -9,14 +9,22 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Services;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Threading.Tasks;
+using WebApp.Library.GoogleHelpers;
+using Google.Apis.Auth.OAuth2.Mvc;
+using ImeHub.Data;
+using System.Web.Mvc;
+using Google.Apis.Auth.OAuth2.Web;
+using Google.Apis.Gmail.v1;
+using MimeKit;
+using System.Net.Mail;
 
 namespace WebApp.Library
 {
-    class GoogleAuthentication
+    public class GoogleAuthentication
     {
 
-
+         
         /// <summary>
         /// Authenticate to Google Using Oauth2
         /// Documentation https://developers.google.com/accounts/docs/OAuth2
@@ -25,40 +33,12 @@ namespace WebApp.Library
         /// <param name="clientSecret">From Google Developer console https://console.developers.google.com</param>
         /// <param name="userName">A string used to identify a user.</param>
         /// <returns></returns>
-        public static CalendarService AuthenticateOauth(string clientId, string clientSecret, string userName)
+        public async Task<AuthorizationCodeWebApp.AuthResult> AuthenticateOauthAsync(Controller controller, IImeHubDbContext db, Guid userId, CancellationToken cancellationToken)
         {
 
-            string[] scopes = new string[] {
-                CalendarService.Scope.Calendar  ,  // Manage your calendars
-                CalendarService.Scope.CalendarReadonly    // View your Calendars
-            };
-
-            try
-            {
-                // here is where we Request the user to give us access, or use the Refresh Token that was previously stored in %AppData%
-                UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets { ClientId = clientId, ClientSecret = clientSecret }
-                                                                    , scopes
-                                                                    , userName
-                                                                    , CancellationToken.None
-                                                                    , new FileDataStore("WebApp.GoogleCalendar.Auth.Store")).Result;
-
-
-
-                CalendarService service = new CalendarService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "Calendar API Sample",
-                });
-                return service;
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine(ex.InnerException);
-                return null;
-
-            }
-
+            var flow = new AppFlowMetadata(db, userId);
+            var app = new AuthorizationCodeMvcApp(controller, flow);
+            return await app.AuthorizeAsync(cancellationToken);
         }
 
         /// <summary>
@@ -111,5 +91,27 @@ namespace WebApp.Library
             }
         }
 
+        public GmailService GetGmailService(ICredential credential)
+        {
+            var service = new GmailService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "ImeHub"
+            });
+            return service;
+        }
+        public async Task SendEmailAsync(GmailService service, MailMessage message)
+        {
+            var mimeMessage = MimeMessage.CreateFromMailMessage(message);
+            var base64EncodedText = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(mimeMessage.ToString());
+            var googleMessage = new Google.Apis.Gmail.v1.Data.Message
+            {
+                Raw = base64EncodedText
+            };
+
+            // Create the service.
+            var request = service.Users.Messages.Send(googleMessage, message.From.Address);
+            await request.ExecuteAsync();
+        }
     }
 }

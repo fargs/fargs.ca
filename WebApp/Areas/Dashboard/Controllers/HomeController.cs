@@ -44,14 +44,14 @@ namespace WebApp.Areas.Dashboard.Controllers
 
         public ActionResult AcceptOwnershipForm(Guid inviteId)
         {
-            var invite = db.PhysicianInvites.SingleOrDefault(pi => pi.Id == inviteId);
+            var invite = db.PhysicianOwners.SingleOrDefault(pi => pi.PhysicianId == inviteId);
             // check if invite exists
             if (invite == null)
             {
                 return Redirect("InvitationNotValid");
             }
             // check if invite is for the authenticated user
-            if (invite.ToEmail != User.Identity.GetEmail())
+            if (invite.Email != User.Identity.GetEmail())
             {
                 return Redirect("InvitationNotValid");
             }
@@ -63,19 +63,19 @@ namespace WebApp.Areas.Dashboard.Controllers
         [HttpPost]
         public async Task<ActionResult> AcceptOwnership(AcceptOwnershipFormModel form)
         {
-            var invite = db.PhysicianInvites.SingleOrDefault(pi => pi.Id == form.InviteId);
+            var owner = db.PhysicianOwners.SingleOrDefault(pi => pi.PhysicianId == form.OwnerId);
             // check if invite exists
-            if (invite == null)
+            if (owner == null)
             {
                 return Redirect("InvitationNotValid");
             }
             // check if invite is for the authenticated user
-            if (invite.ToEmail != User.Identity.GetEmail())
+            if (owner.Email != User.Identity.GetEmail())
             {
                 return Redirect("InvitationNotValid");
             }
 
-            var physician = db.Physicians.Single(p => p.Id == invite.PhysicianId);
+            var physician = db.Physicians.Single(p => p.Id == owner.PhysicianId);
             physician.OwnerId = User.Identity.GetGuidUserId();
 
             await db.SaveChangesAsync();

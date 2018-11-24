@@ -1,5 +1,21 @@
-﻿@model PhysicianInviteViewModel
+﻿@using Enums = ImeHub.Models.Enums;
+@model PhysicianInviteViewModel
 
-<div>
-    @Model.ToName has <span class="label label-default">@Model.AcceptanceStatus</span> to the invitation from @Model.FromName on @Model.SentDate
-</div>
+@*<div>
+    @if (Model.AcceptanceStatusId == Enums.AcceptanceStatus.NotSent)
+    {
+        <span>Invite was prepared but has <strong>not been sent</strong>.</span>
+    }
+    else if (Model.AcceptanceStatusId == Enums.AcceptanceStatus.NotResponded)
+    {
+        <span>Invite was sent to @Model.ToName on @Model.AcceptanceStatusChangedDate and has <strong>not responded</strong>.</span>
+    }
+    else if (Model.AcceptanceStatusId == Enums.AcceptanceStatus.Rejected)
+    {
+        <span>Invite was sent to @Model.ToName on @Model.AcceptanceStatusChangedDate.</span>
+    }
+    else
+    {
+        <span>Invite was accepted by @Model.ToName on @Model.AcceptanceStatusChangedDate.</span>
+    }
+</div>*@

@@ -26,26 +26,34 @@ namespace ImeHub.Models
         /// <summary>
         /// Parent User pointed by [Physician].([OwnerId]) (FK_Physician_Owner)
         /// </summary>
-        public virtual ContactModel Owner { get; set; } // FK_Physician_Owner
+        public virtual PhysicianOwnerModel Owner { get; set; } // FK_Physician_Owner
 
-        public virtual IEnumerable<PhysicianInviteModel> Invites { get; set; }
+        public virtual IEnumerable<PhysicianInviteLogModel> Invites { get; set; }
 
-        public class PhysicianInviteModel
+        public class PhysicianOwnerModel
+        {
+            public string Email { get; set; } // Email (length: 128)
+            public string Name { get; set; } // Name (length: 128)
+
+            public byte AcceptanceStatusId { get; set; } // AcceptanceStatusId
+            public DateTime AcceptanceStatusChangedDate { get; set; }
+            public virtual LookupModel<byte> AcceptanceStatus { get; set; }
+
+            public System.Guid? UserId { get; set; } // UserId
+            public virtual ContactModel User { get; set; } 
+        }
+        public class PhysicianInviteLogModel
         {
             public Guid Id { get; set; }
-            public Guid PhysicianId { get; set; } // PhysicianId
-            public LookupModel<Guid> Physician { get; set; }
-            public string ToName { get; set; }
-            public string ToEmail { get; set; }
-            public string FromName { get; set; }
-            public string FromEmail { get; set; }
-            public DateTime? SentDate { get; set; } // SentDate
-            public DateTime? LinkClickedDate { get; set; } // LinkClickedDate
-            public byte AcceptanceStatusId { get; set; }
-            public LookupModel<byte> AcceptanceStatus { get; set; }
+            public string To { get; set; }
+            public string Cc { get; set; }
+            public string Bcc { get; set; }
+            public string Subject { get; set; }
+            public string Body { get; set; }
+            public DateTime SentDate { get; set; }
         }
 
-        public static new Expression<Func<Data.Physician, PhysicianModel>> FromPhysician = a => a == null ? null : new PhysicianModel
+        public static Expression<Func<Data.Physician, PhysicianModel>> FromPhysician = a => a == null ? null : new PhysicianModel
         {
             Id = a.Id,
             CompanyName = a.CompanyName,
@@ -53,21 +61,30 @@ namespace ImeHub.Models
             ColorCode = a.ColorCode,
             ManagerId = a.ManagerId,
             Manager = ContactModel.FromUser.Invoke(a.Manager),
-            OwnerId = a.OwnerId,
-            Owner = ContactModel.FromUser.Invoke(a.Owner),
-            Invites = a.PhysicianInvites.Select(pi => new PhysicianInviteModel
+            Owner = a.PhysicianOwner == null ? null : new PhysicianModel.PhysicianOwnerModel()
+            {
+                Email = a.PhysicianOwner.Email,
+                Name = a.PhysicianOwner.Name,
+                AcceptanceStatusId = a.PhysicianOwner.AcceptanceStatusId,
+                AcceptanceStatusChangedDate = a.PhysicianOwner.AcceptanceStatusChangedDate,
+                AcceptanceStatus = new LookupModel<byte>
+                {
+                    Id = a.PhysicianOwner.PhysicianOwnerAcceptanceStatu.Id,
+                    Name = a.PhysicianOwner.PhysicianOwnerAcceptanceStatu.Name,
+                    Code = a.PhysicianOwner.PhysicianOwnerAcceptanceStatu.Code,
+                    ColorCode = a.PhysicianOwner.PhysicianOwnerAcceptanceStatu.ColorCode,
+                },
+                UserId = a.PhysicianOwner.UserId,
+                User = ContactModel.FromUser.Invoke(a.PhysicianOwner.User),
+            },
+            Invites = a.PhysicianInviteLogs.Select(pi => new PhysicianInviteLogModel
             {
                 Id = pi.Id,
-                PhysicianId = pi.PhysicianId,
-                Physician = LookupModel<Guid>.FromPhysician.Invoke(pi.Physician),
-                ToEmail = pi.ToEmail,
-                ToName = pi.ToName,
-                FromEmail = pi.FromEmail,
-                FromName = pi.FromName,
-                SentDate = pi.SentDate,
-                LinkClickedDate = pi.LinkClickedDate,
-                AcceptanceStatusId = pi.AcceptanceStatusId,
-                AcceptanceStatus = LookupModel<byte>.FromPhysicianInviteAcceptanceStatus.Invoke(pi.PhysicianInviteAcceptanceStatu)
+                To = pi.To,
+                Cc = pi.Cc,
+                Bcc = pi.Bcc,
+                Subject = pi.Subject,
+                Body = pi.Body
             })
         };
     }

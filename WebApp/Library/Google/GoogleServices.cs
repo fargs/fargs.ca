@@ -13,9 +13,87 @@ using System.Threading.Tasks;
 using Orvosi.Data;
 using MimeKit;
 using Microsoft.Owin.Security.DataHandler.Encoder;
+using System.Collections.Generic;
+using Google.Apis.Calendar.v3.Data;
+using System.Linq;
+using System.Threading;
+using ImeHub.Data;
+using System.Configuration;
+using System.Security.Principal;
 
 namespace WebApp.Library
 {
+    public interface ICalendar
+    {
+        string Id { get; }
+        string Name { get; }
+        string TimeZone { get; }
+    }
+    public interface ICalendarService
+    {
+        IEnumerable<ICalendar> GetCalendars();
+    }
+    public class GoogleCalendarService : ICalendarService
+    {
+        private string userName;
+        private IImeHubDbContext db;
+        private IIdentity identity;
+        private CalendarService service;
+        public GoogleCalendarService(string userName, IImeHubDbContext db, IIdentity identity)
+        {
+            this.identity = identity;
+            this.userName = userName;
+            this.db = db;
+
+            string[] scopes = new string[] {
+                CalendarService.Scope.Calendar,  // Manage your calendars
+                CalendarService.Scope.CalendarReadonly, // View your Calendars
+            };
+
+            // here is where we Request the user to give us access, or use the Refresh Token that was previously stored in %AppData%
+            UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                new ClientSecrets
+                {
+                    ClientId = ConfigurationManager.AppSettings["ImeHubGoogleClientID"],
+                    ClientSecret = ConfigurationManager.AppSettings["ImeHubGoogleClientSecret"]
+                },
+                scopes,
+                userName,
+                CancellationToken.None,
+                new GoogleDatabaseStore(db, identity.GetGuidUserId())).Result;
+                
+
+            var service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "ImeHub"
+            });
+
+            this.service = service;
+        }
+        
+        public IEnumerable<ICalendar> GetCalendars()
+        {
+            CalendarList calendars = service.CalendarList.List().Execute();
+            return calendars.Items.Select(c => new GoogleCalendar(c));
+        }
+
+        public class GoogleCalendar : ICalendar
+        {
+            private CalendarListEntry calendar;
+            public GoogleCalendar(CalendarListEntry calendar)
+            {
+                this.calendar = calendar;
+            }
+
+            public string Id => calendar.Id;
+
+            public string Name => calendar.Description;
+
+            public string TimeZone => calendar.TimeZone;
+        }
+    }
+
     public class GoogleServices : IEmailService
     {
         public CalendarService GetCalendarService(string userId)
@@ -63,8 +141,10 @@ namespace WebApp.Library
         {
             var mimeMessage = MimeMessage.CreateFromMailMessage(message);
             var base64EncodedText = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(mimeMessage.ToString());
-            var googleMessage = new Google.Apis.Gmail.v1.Data.Message();
-            googleMessage.Raw = base64EncodedText;
+            var googleMessage = new Google.Apis.Gmail.v1.Data.Message
+            {
+                Raw = base64EncodedText
+            };
 
             // Create the service.
             var gmail = GetGmailService(message.From.Address);

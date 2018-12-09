@@ -3,11 +3,15 @@
     [SysStartTime]                DATETIME2 (7)    NOT NULL,
     [SysEndTime]                  DATETIME2 (7)    NOT NULL,
     [Email]                       NVARCHAR (128)   NOT NULL,
-    [Name]                        NVARCHAR (128)   NOT NULL,
     [UserId]                      UNIQUEIDENTIFIER NULL,
     [AcceptanceStatusId]          TINYINT          NOT NULL,
-    [AcceptanceStatusChangedDate] DATETIME         NOT NULL
+    [AcceptanceStatusChangedDate] DATETIME         NOT NULL,
+    [Title]                       NVARCHAR (10)    NULL,
+    [FirstName]                   NVARCHAR (128)   NULL,
+    [LastName]                    NVARCHAR (128)   NULL
 );
+
+
 
 
 GO

@@ -19,6 +19,10 @@ namespace ImeHub.Models.Enums.Features.UserPortal
     {
         public const string Manage = "ce7c6e27-916a-4218-afd3-e833cd38c27d";
     }
+    public class Features
+    {
+        public const string Manage = "9f26152e-6ba3-4a87-811b-d77265c1248c";
+    }
 }
 
 namespace ImeHub.Models.Enums.Features.PhysicianPortal

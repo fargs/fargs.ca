@@ -1,0 +1,27 @@
+﻿@using Enums = ImeHub.Models.Enums
+@model WorkItemViewModel
+
+@if (Model.StatusId == WorkItemStatus.ToDo)
+{
+    <span class="label label-danger">To Do</span>
+}
+else if (Model.StatusId == WorkItemStatus.Waiting)
+{
+    <span class="label label-warning">Waiting</span>
+}
+else if (Model.StatusId == WorkItemStatus.Done)
+{
+    <i class="fa fa-check fa-lg" style="color: green;"></i>
+}
+else if (Model.StatusId == WorkItemStatus.Obsolete)
+{
+    <span class="label label-info">Cancelled</span>
+}
+else if (Model.StatusId == WorkItemStatus.OnHold)
+{
+    <span class="label label-info">On Hold</span>
+}
+else if (Model.StatusId == WorkItemStatus.Archive)
+{
+    <i class="fa fa-check fa-lg" style="color: #b4e6b4;"></i>
+}

@@ -1,0 +1,6 @@
+﻿@model TermsAndConditionsFormModel
+
+<form method="post" action="~/Physicians/Physician/TermsAndConditionsAsync">
+    @Html.HiddenFor(c => c.PhysicianId)
+    <button type="submit" class="btn btn-lg btn-success">Accept</button>
+</form>

@@ -16,11 +16,59 @@ using ImeHub.Data;
 using System.Web.Mvc;
 using Google.Apis.Auth.OAuth2.Web;
 using Google.Apis.Gmail.v1;
+using Google.Apis.Oauth2.v2;
 using MimeKit;
 using System.Net.Mail;
+using Google.Apis.Oauth2.v2.Data;
 
 namespace WebApp.Library
 {
+    public class GmailServiceWrapper : IEmailService
+    {
+        private GmailService service;
+        public GmailServiceWrapper(ICredential credential)
+        {
+            service = new GmailService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "ImeHub"
+            });
+        }
+        public async Task SendEmailAsync(MailMessage message)
+        {
+            var mimeMessage = MimeMessage.CreateFromMailMessage(message);
+            var base64EncodedText = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(mimeMessage.ToString());
+            var googleMessage = new Google.Apis.Gmail.v1.Data.Message
+            {
+                Raw = base64EncodedText
+            };
+
+            // Create the service.
+            var request = service.Users.Messages.Send(googleMessage, "me");
+            await request.ExecuteAsync();
+        }
+    }
+    public class GoogleOauthServiceWrapper
+    {
+        private Oauth2Service service;
+        public GoogleOauthServiceWrapper(ICredential credential)
+        {
+            service = new Google.Apis.Oauth2.v2.Oauth2Service(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "ImeHub"
+            });
+        }
+        public async Task<Userinfoplus> GetProfileAsync()
+        {
+            // Create the service.
+            var request = service.Userinfo.Get();
+            
+            var result = await request.ExecuteAsync();
+
+            return result;
+        }
+    }
     public class GoogleAuthentication
     {
 

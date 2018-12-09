@@ -8,6 +8,8 @@ using Owin;
 using WebApp.Models;
 using System.Configuration;
 using WebApp.Library.Extensions;
+using Google.Apis.Calendar.v3;
+using System.Security.Claims;
 
 namespace WebApp
 {
@@ -62,11 +64,31 @@ namespace WebApp
             //   appId: "",
             //   appSecret: "");
 
-            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            var googlePlusOptions = new GoogleOAuth2AuthenticationOptions
             {
                 ClientId = ConfigurationManager.AppSettings["ImeHubGoogleClientID"],
-                ClientSecret = ConfigurationManager.AppSettings["ImeHubGoogleClientSecret"]
-            });
+                ClientSecret = ConfigurationManager.AppSettings["ImeHubGoogleClientSecret"],
+                SignInAsAuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
+                Provider = new GoogleOAuth2AuthenticationProvider()
+                {
+                    OnAuthenticated = async ctx =>
+                    {
+                        ctx.Identity.AddClaim(new Claim("urn:tokens:googleplus:accesstoken", ctx.AccessToken));
+                    }
+                },
+            };
+            // default scopes
+            googlePlusOptions.Scope.Add("openid");
+            googlePlusOptions.Scope.Add("profile");
+            googlePlusOptions.Scope.Add("email");
+
+            // additional scopes
+            googlePlusOptions.Scope.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailCompose);
+            googlePlusOptions.Scope.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSend);
+            googlePlusOptions.Scope.Add(CalendarService.Scope.Calendar);
+            googlePlusOptions.Scope.Add(CalendarService.Scope.CalendarReadonly);
+
+            app.UseGoogleAuthentication(googlePlusOptions);
         }
     }
 }

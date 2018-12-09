@@ -41,9 +41,11 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; } // UserClaim
         public System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; } // UserLogin
         public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; } // UserRole
+        public System.Data.Entity.DbSet<UserSetupWorkflow> UserSetupWorkflows { get; set; } // UserSetupWorkflow
+        public System.Data.Entity.DbSet<UserSetupWorkItem> UserSetupWorkItems { get; set; } // UserSetupWorkItem
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; } // Workflow
-        public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; } // WorkflowTask
-        public System.Data.Entity.DbSet<WorkflowTaskDependent> WorkflowTaskDependents { get; set; } // WorkflowTaskDependent
+        public System.Data.Entity.DbSet<WorkItem> WorkItems { get; set; } // WorkItem
+        public System.Data.Entity.DbSet<WorkItemRelated> WorkItemRelateds { get; set; } // WorkItemRelated
 
         static ImeHubDbContext()
         {
@@ -114,9 +116,11 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new UserClaimConfiguration());
             modelBuilder.Configurations.Add(new UserLoginConfiguration());
             modelBuilder.Configurations.Add(new UserRoleConfiguration());
+            modelBuilder.Configurations.Add(new UserSetupWorkflowConfiguration());
+            modelBuilder.Configurations.Add(new UserSetupWorkItemConfiguration());
             modelBuilder.Configurations.Add(new WorkflowConfiguration());
-            modelBuilder.Configurations.Add(new WorkflowTaskConfiguration());
-            modelBuilder.Configurations.Add(new WorkflowTaskDependentConfiguration());
+            modelBuilder.Configurations.Add(new WorkItemConfiguration());
+            modelBuilder.Configurations.Add(new WorkItemRelatedConfiguration());
         }
 
         public static System.Data.Entity.DbModelBuilder CreateModel(System.Data.Entity.DbModelBuilder modelBuilder, string schema)
@@ -142,9 +146,11 @@ namespace ImeHub.Data
             modelBuilder.Configurations.Add(new UserClaimConfiguration(schema));
             modelBuilder.Configurations.Add(new UserLoginConfiguration(schema));
             modelBuilder.Configurations.Add(new UserRoleConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserSetupWorkflowConfiguration(schema));
+            modelBuilder.Configurations.Add(new UserSetupWorkItemConfiguration(schema));
             modelBuilder.Configurations.Add(new WorkflowConfiguration(schema));
-            modelBuilder.Configurations.Add(new WorkflowTaskConfiguration(schema));
-            modelBuilder.Configurations.Add(new WorkflowTaskDependentConfiguration(schema));
+            modelBuilder.Configurations.Add(new WorkItemConfiguration(schema));
+            modelBuilder.Configurations.Add(new WorkItemRelatedConfiguration(schema));
             return modelBuilder;
         }
     }

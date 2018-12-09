@@ -15,8 +15,8 @@
 namespace ImeHub.Data
 {
 
-    // WorkflowTaskDependent
-    public partial class WorkflowTaskDependent
+    // WorkItemRelated
+    public partial class WorkItemRelated
     {
         public System.Guid ParentId { get; set; } // ParentId (Primary key)
         public System.Guid ChildId { get; set; } // ChildId (Primary key)
@@ -24,16 +24,16 @@ namespace ImeHub.Data
         // Foreign keys
 
         /// <summary>
-        /// Parent WorkflowTask pointed by [WorkflowTaskDependent].([ChildId]) (FK_WorkflowTaskDependent_Dependent)
+        /// Parent WorkItem pointed by [WorkItemRelated].([ChildId]) (FK_WorkItemRelated_Dependent)
         /// </summary>
-        public virtual WorkflowTask Child { get; set; } // FK_WorkflowTaskDependent_Dependent
+        public virtual WorkItem Child { get; set; } // FK_WorkItemRelated_Dependent
 
         /// <summary>
-        /// Parent WorkflowTask pointed by [WorkflowTaskDependent].([ParentId]) (FK_WorkflowTaskDependent_WorkflowTask)
+        /// Parent WorkItem pointed by [WorkItemRelated].([ParentId]) (FK_WorkItemRelated_WorkItem)
         /// </summary>
-        public virtual WorkflowTask Parent { get; set; } // FK_WorkflowTaskDependent_WorkflowTask
+        public virtual WorkItem Parent { get; set; } // FK_WorkItemRelated_WorkItem
 
-        public WorkflowTaskDependent()
+        public WorkItemRelated()
         {
             InitializePartial();
         }

@@ -23,8 +23,7 @@ namespace ImeHub.Data
         public string To { get; set; } // To (length: 128)
         public string Cc { get; set; } // Cc (length: 128)
         public string Bcc { get; set; } // Bcc (length: 128)
-        public string From { get; set; } // From (length: 128)
-        public string Subject { get; set; } // Subject (length: 256)
+        public string Subject { get; set; } // Subject (length: 128)
         public string Body { get; set; } // Body
 
         // Foreign keys

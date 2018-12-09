@@ -1,0 +1,15 @@
+﻿@model AcceptOwnerInviteFormModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutAnonymous.cshtml";
+}
+
+<form method="post" action="~/Physicians/Invite/AcceptOwnerInvite">
+    @Html.HiddenFor(c => c.PhysicianId)
+    <div class="form-group">
+        <label>Confirm Email</label>
+        <input type="text" class="form-control" name="Email" value="@Model.Email" />
+        @Html.ValidationMessage("Email")
+    </div>
+    <button type="submit" class="btn btn-primary">Next</button>
+</form>

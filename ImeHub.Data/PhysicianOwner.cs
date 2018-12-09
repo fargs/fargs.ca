@@ -20,10 +20,12 @@ namespace ImeHub.Data
     {
         public System.Guid PhysicianId { get; set; } // PhysicianId (Primary key)
         public string Email { get; set; } // Email (length: 128)
-        public string Name { get; set; } // Name (length: 128)
         public System.Guid? UserId { get; set; } // UserId
         public byte AcceptanceStatusId { get; set; } // AcceptanceStatusId
         public System.DateTime AcceptanceStatusChangedDate { get; set; } // AcceptanceStatusChangedDate
+        public string Title { get; set; } // Title (length: 10)
+        public string FirstName { get; set; } // FirstName (length: 128)
+        public string LastName { get; set; } // LastName (length: 128)
 
         // Foreign keys
 

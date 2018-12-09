@@ -237,10 +237,9 @@ namespace ImeHub.Data
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
             Property(x => x.To).HasColumnName(@"To").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.Cc).HasColumnName(@"Cc").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.Bcc).HasColumnName(@"Bcc").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.From).HasColumnName(@"From").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.Subject).HasColumnName(@"Subject").HasColumnType("nvarchar").IsRequired().HasMaxLength(256);
+            Property(x => x.Cc).HasColumnName(@"Cc").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Bcc).HasColumnName(@"Bcc").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Subject).HasColumnName(@"Subject").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
             Property(x => x.Body).HasColumnName(@"Body").HasColumnType("nvarchar(max)").IsRequired();
 
             // Foreign keys
@@ -264,10 +263,12 @@ namespace ImeHub.Data
 
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Email).HasColumnName(@"Email").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
             Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsOptional();
             Property(x => x.AcceptanceStatusId).HasColumnName(@"AcceptanceStatusId").HasColumnType("tinyint").IsRequired();
             Property(x => x.AcceptanceStatusChangedDate).HasColumnName(@"AcceptanceStatusChangedDate").HasColumnType("datetime").IsRequired();
+            Property(x => x.Title).HasColumnName(@"Title").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.FirstName).HasColumnName(@"FirstName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.LastName).HasColumnName(@"LastName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
 
             // Foreign keys
             HasOptional(a => a.User).WithMany(b => b.PhysicianOwners).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_PhysicianOwner_User
@@ -503,6 +504,8 @@ namespace ImeHub.Data
             Property(x => x.IsAppTester).HasColumnName(@"IsAppTester").HasColumnType("bit").IsRequired();
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsOptional();
             Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.EmailProviderCredential).HasColumnName(@"EmailProviderCredential").HasColumnType("nvarchar(max)").IsOptional();
+            Property(x => x.EmailProvider).HasColumnName(@"EmailProvider").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
 
             // Foreign keys
             HasRequired(a => a.Role).WithMany(b => b.Users).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_User_Role
@@ -579,6 +582,67 @@ namespace ImeHub.Data
         }
     }
 
+    // UserSetupWorkflow
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class UserSetupWorkflowConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<UserSetupWorkflow>
+    {
+        public UserSetupWorkflowConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public UserSetupWorkflowConfiguration(string schema)
+        {
+            ToTable("UserSetupWorkflow", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.WorkflowId).HasColumnName(@"WorkflowId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.StatusId).HasColumnName(@"StatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.StatusChangedById).HasColumnName(@"StatusChangedById").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.StatusChangedDate).HasColumnName(@"StatusChangedDate").HasColumnType("datetime").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.User).WithOptional(b => b.UserSetupWorkflow); // FK_UserSetupWorkflow_User
+            HasRequired(a => a.StatusChangedBy).WithMany(b => b.UserSetupWorkflows).HasForeignKey(c => c.StatusChangedById).WillCascadeOnDelete(false); // FK_UserSetupWorkflow_StatusChangedBy_User
+        }
+    }
+
+    // UserSetupWorkItem
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class UserSetupWorkItemConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<UserSetupWorkItem>
+    {
+        public UserSetupWorkItemConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public UserSetupWorkItemConfiguration(string schema)
+        {
+            ToTable("UserSetupWorkItem", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.CreatedFromWorkItemId).HasColumnName(@"CreatedFromWorkItemId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Sequence).HasColumnName(@"Sequence").HasColumnType("smallint").IsRequired();
+            Property(x => x.UserSetupWorkflowId).HasColumnName(@"UserSetupWorkflowId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.ResponsibleRoleId).HasColumnName(@"ResponsibleRoleId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.StatusId).HasColumnName(@"StatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.StatusChangedById).HasColumnName(@"StatusChangedById").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.StatusChangedDate).HasColumnName(@"StatusChangedDate").HasColumnType("datetime").IsRequired();
+            Property(x => x.AssignedToId).HasColumnName(@"AssignedToId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.AssignedToChangedById).HasColumnName(@"AssignedToChangedById").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.AssignedToChangedDate).HasColumnName(@"AssignedToChangedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.DueDate).HasColumnName(@"DueDate").HasColumnType("datetime").IsOptional();
+
+            // Foreign keys
+            HasRequired(a => a.User).WithMany(b => b.UserSetupWorkItems).HasForeignKey(c => c.StatusChangedById).WillCascadeOnDelete(false); // FK_UserSetupWorkItem_StatusChangedBy_User
+            HasRequired(a => a.UserSetupWorkflow).WithMany(b => b.UserSetupWorkItems).HasForeignKey(c => c.UserSetupWorkflowId); // FK_UserSetupWorkItem_UserSetupWorkflow
+        }
+    }
+
     // Workflow
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
     public class WorkflowConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Workflow>
@@ -599,22 +663,21 @@ namespace ImeHub.Data
         }
     }
 
-    // WorkflowTask
+    // WorkItem
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
-    public class WorkflowTaskConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<WorkflowTask>
+    public class WorkItemConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<WorkItem>
     {
-        public WorkflowTaskConfiguration()
+        public WorkItemConfiguration()
             : this("dbo")
         {
         }
 
-        public WorkflowTaskConfiguration(string schema)
+        public WorkItemConfiguration(string schema)
         {
-            ToTable("WorkflowTask", schema);
+            ToTable("WorkItem", schema);
             HasKey(x => x.Id);
 
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.WorkflowId).HasColumnName(@"WorkflowId").HasColumnType("smallint").IsRequired();
             Property(x => x.Sequence).HasColumnName(@"Sequence").HasColumnType("smallint").IsRequired();
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
             Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsOptional();
@@ -623,29 +686,33 @@ namespace ImeHub.Data
             Property(x => x.EffectiveDateDurationFromBaseline).HasColumnName(@"EffectiveDateDurationFromBaseline").HasColumnType("smallint").IsOptional();
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").HasColumnType("bit").IsRequired();
             Property(x => x.IsBillable).HasColumnName(@"IsBillable").HasColumnType("bit").IsRequired();
+            Property(x => x.WorkflowId).HasColumnName(@"WorkflowId").HasColumnType("uniqueidentifier").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.Workflow).WithMany(b => b.WorkItems).HasForeignKey(c => c.WorkflowId); // FK_WorkItem_Workflow
         }
     }
 
-    // WorkflowTaskDependent
+    // WorkItemRelated
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
-    public class WorkflowTaskDependentConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<WorkflowTaskDependent>
+    public class WorkItemRelatedConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<WorkItemRelated>
     {
-        public WorkflowTaskDependentConfiguration()
+        public WorkItemRelatedConfiguration()
             : this("dbo")
         {
         }
 
-        public WorkflowTaskDependentConfiguration(string schema)
+        public WorkItemRelatedConfiguration(string schema)
         {
-            ToTable("WorkflowTaskDependent", schema);
+            ToTable("WorkItemRelated", schema);
             HasKey(x => new { x.ParentId, x.ChildId });
 
             Property(x => x.ParentId).HasColumnName(@"ParentId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.ChildId).HasColumnName(@"ChildId").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
 
             // Foreign keys
-            HasRequired(a => a.Child).WithMany(b => b.WorkflowTaskDependents_ChildId).HasForeignKey(c => c.ChildId).WillCascadeOnDelete(false); // FK_WorkflowTaskDependent_Dependent
-            HasRequired(a => a.Parent).WithMany(b => b.WorkflowTaskDependents_ParentId).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_WorkflowTaskDependent_WorkflowTask
+            HasRequired(a => a.Child).WithMany(b => b.WorkItemRelateds_ChildId).HasForeignKey(c => c.ChildId).WillCascadeOnDelete(false); // FK_WorkItemRelated_Dependent
+            HasRequired(a => a.Parent).WithMany(b => b.WorkItemRelateds_ParentId).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_WorkItemRelated_WorkItem
         }
     }
 

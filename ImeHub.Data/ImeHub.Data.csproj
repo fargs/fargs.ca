@@ -145,13 +145,19 @@
     <Compile Include="UserRole.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="UserSetupWorkflow.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserSetupWorkItem.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Workflow.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="WorkflowTask.cs">
+    <Compile Include="WorkItem.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="WorkflowTaskDependent.cs">
+    <Compile Include="WorkItemRelated.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
   </ItemGroup>

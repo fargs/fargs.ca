@@ -41,9 +41,11 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; }
         public System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; }
         public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; }
+        public System.Data.Entity.DbSet<UserSetupWorkflow> UserSetupWorkflows { get; set; }
+        public System.Data.Entity.DbSet<UserSetupWorkItem> UserSetupWorkItems { get; set; }
         public System.Data.Entity.DbSet<Workflow> Workflows { get; set; }
-        public System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; }
-        public System.Data.Entity.DbSet<WorkflowTaskDependent> WorkflowTaskDependents { get; set; }
+        public System.Data.Entity.DbSet<WorkItem> WorkItems { get; set; }
+        public System.Data.Entity.DbSet<WorkItemRelated> WorkItemRelateds { get; set; }
 
         public FakeImeHubDbContext()
         {
@@ -72,9 +74,11 @@ namespace ImeHub.Data
             UserClaims = new FakeDbSet<UserClaim>("Id");
             UserLogins = new FakeDbSet<UserLogin>("LoginProvider", "ProviderKey", "UserId");
             UserRoles = new FakeDbSet<UserRole>("UserId", "RoleId");
+            UserSetupWorkflows = new FakeDbSet<UserSetupWorkflow>("Id");
+            UserSetupWorkItems = new FakeDbSet<UserSetupWorkItem>("Id");
             Workflows = new FakeDbSet<Workflow>("Id");
-            WorkflowTasks = new FakeDbSet<WorkflowTask>("Id");
-            WorkflowTaskDependents = new FakeDbSet<WorkflowTaskDependent>("ParentId", "ChildId");
+            WorkItems = new FakeDbSet<WorkItem>("Id");
+            WorkItemRelateds = new FakeDbSet<WorkItemRelated>("ParentId", "ChildId");
         }
 
         public int SaveChangesCount { get; private set; }

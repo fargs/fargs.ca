@@ -41,6 +41,8 @@ namespace ImeHub.Data
         public bool IsAppTester { get; set; } // IsAppTester
         public System.Guid? PhysicianId { get; set; } // PhysicianId
         public System.Guid RoleId { get; set; } // RoleId
+        public string EmailProviderCredential { get; set; } // EmailProviderCredential
+        public string EmailProvider { get; set; } // EmailProvider (length: 128)
 
         // Reverse navigation
 
@@ -72,6 +74,18 @@ namespace ImeHub.Data
         /// Child UserRoles where [UserRole].[UserId] point to this entity (FK_UserRole_User)
         /// </summary>
         public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; } // UserRole.FK_UserRole_User
+        /// <summary>
+        /// Child UserSetupWorkflows where [UserSetupWorkflow].[StatusChangedById] point to this entity (FK_UserSetupWorkflow_StatusChangedBy_User)
+        /// </summary>
+        public virtual System.Collections.Generic.ICollection<UserSetupWorkflow> UserSetupWorkflows { get; set; } // UserSetupWorkflow.FK_UserSetupWorkflow_StatusChangedBy_User
+        /// <summary>
+        /// Child UserSetupWorkItems where [UserSetupWorkItem].[StatusChangedById] point to this entity (FK_UserSetupWorkItem_StatusChangedBy_User)
+        /// </summary>
+        public virtual System.Collections.Generic.ICollection<UserSetupWorkItem> UserSetupWorkItems { get; set; } // UserSetupWorkItem.FK_UserSetupWorkItem_StatusChangedBy_User
+        /// <summary>
+        /// Parent (One-to-One) User pointed by [UserSetupWorkflow].[Id] (FK_UserSetupWorkflow_User)
+        /// </summary>
+        public virtual UserSetupWorkflow UserSetupWorkflow { get; set; } // UserSetupWorkflow.FK_UserSetupWorkflow_User
 
         // Foreign keys
 
@@ -91,6 +105,8 @@ namespace ImeHub.Data
             UserClaims = new System.Collections.Generic.List<UserClaim>();
             UserLogins = new System.Collections.Generic.List<UserLogin>();
             UserRoles = new System.Collections.Generic.List<UserRole>();
+            UserSetupWorkflows = new System.Collections.Generic.List<UserSetupWorkflow>();
+            UserSetupWorkItems = new System.Collections.Generic.List<UserSetupWorkItem>();
             InitializePartial();
         }
 

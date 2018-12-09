@@ -15,11 +15,10 @@
 namespace ImeHub.Data
 {
 
-    // WorkflowTask
-    public partial class WorkflowTask
+    // WorkItem
+    public partial class WorkItem
     {
         public System.Guid Id { get; set; } // Id (Primary key)
-        public short WorkflowId { get; set; } // WorkflowId
         public short Sequence { get; set; } // Sequence
         public string Name { get; set; } // Name (length: 128)
         public System.Guid? RoleId { get; set; } // RoleId
@@ -28,25 +27,33 @@ namespace ImeHub.Data
         public short? EffectiveDateDurationFromBaseline { get; set; } // EffectiveDateDurationFromBaseline
         public bool IsCriticalPath { get; set; } // IsCriticalPath
         public bool IsBillable { get; set; } // IsBillable
+        public System.Guid WorkflowId { get; set; } // WorkflowId
 
         // Reverse navigation
 
         /// <summary>
-        /// Child WorkflowTaskDependents where [WorkflowTaskDependent].[ChildId] point to this entity (FK_WorkflowTaskDependent_Dependent)
+        /// Child WorkItemRelateds where [WorkItemRelated].[ChildId] point to this entity (FK_WorkItemRelated_Dependent)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkflowTaskDependent> WorkflowTaskDependents_ChildId { get; set; } // WorkflowTaskDependent.FK_WorkflowTaskDependent_Dependent
+        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ChildId { get; set; } // WorkItemRelated.FK_WorkItemRelated_Dependent
         /// <summary>
-        /// Child WorkflowTaskDependents where [WorkflowTaskDependent].[ParentId] point to this entity (FK_WorkflowTaskDependent_WorkflowTask)
+        /// Child WorkItemRelateds where [WorkItemRelated].[ParentId] point to this entity (FK_WorkItemRelated_WorkItem)
         /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkflowTaskDependent> WorkflowTaskDependents_ParentId { get; set; } // WorkflowTaskDependent.FK_WorkflowTaskDependent_WorkflowTask
+        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ParentId { get; set; } // WorkItemRelated.FK_WorkItemRelated_WorkItem
 
-        public WorkflowTask()
+        // Foreign keys
+
+        /// <summary>
+        /// Parent Workflow pointed by [WorkItem].([WorkflowId]) (FK_WorkItem_Workflow)
+        /// </summary>
+        public virtual Workflow Workflow { get; set; } // FK_WorkItem_Workflow
+
+        public WorkItem()
         {
             IsBaselineDate = false;
             IsCriticalPath = false;
             IsBillable = false;
-            WorkflowTaskDependents_ChildId = new System.Collections.Generic.List<WorkflowTaskDependent>();
-            WorkflowTaskDependents_ParentId = new System.Collections.Generic.List<WorkflowTaskDependent>();
+            WorkItemRelateds_ChildId = new System.Collections.Generic.List<WorkItemRelated>();
+            WorkItemRelateds_ParentId = new System.Collections.Generic.List<WorkItemRelated>();
             InitializePartial();
         }
 

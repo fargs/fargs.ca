@@ -20,10 +20,11 @@ namespace WebApp.Areas.Dashboard.Views.Home
             AsManager = model.AsManager
                 .Select(LookupViewModel<Guid>.FromLookupModel);
 
-            AsOwner = LookupViewModel<Guid>.FromLookupModel.Invoke(model.AsOwner);
+            AsOwner = model.AsOwner
+                .Select(LookupViewModel<Guid>.FromLookupModel);
         }
         public IEnumerable<LookupViewModel<Guid>> AsTeamMember { get; set; }
         public IEnumerable<LookupViewModel<Guid>> AsManager { get; set; }
-        public LookupViewModel<Guid> AsOwner { get; set; }
+        public IEnumerable<LookupViewModel<Guid>> AsOwner { get; set; }
     }
 }

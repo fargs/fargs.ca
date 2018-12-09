@@ -33,7 +33,10 @@ namespace ImeHub.Models
         public class PhysicianOwnerModel
         {
             public string Email { get; set; } // Email (length: 128)
-            public string Name { get; set; } // Name (length: 128)
+            public string Title { get; set; } // Name (length: 128)
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string DisplayName => $"{Title}{(string.IsNullOrEmpty(Title) ? "" : " ")}{FirstName} {LastName}";
 
             public byte AcceptanceStatusId { get; set; } // AcceptanceStatusId
             public DateTime AcceptanceStatusChangedDate { get; set; }
@@ -64,7 +67,9 @@ namespace ImeHub.Models
             Owner = a.PhysicianOwner == null ? null : new PhysicianModel.PhysicianOwnerModel()
             {
                 Email = a.PhysicianOwner.Email,
-                Name = a.PhysicianOwner.Name,
+                Title = a.PhysicianOwner.Title,
+                FirstName = a.PhysicianOwner.FirstName,
+                LastName = a.PhysicianOwner.LastName,
                 AcceptanceStatusId = a.PhysicianOwner.AcceptanceStatusId,
                 AcceptanceStatusChangedDate = a.PhysicianOwner.AcceptanceStatusChangedDate,
                 AcceptanceStatus = new LookupModel<byte>

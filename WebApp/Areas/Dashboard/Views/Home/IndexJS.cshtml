@@ -1,4 +1,14 @@
 ﻿<script type="text/javascript">
+
+    $(function () {
+
+        $.get('@Url.Content("~/Dashboard/Home/GetProfile")')
+        .done(function (result) {
+            $('#linked-profile').html(result);
+        });
+
+    })
+
     function showAcceptOwnershipForm(inviteId) {
         $.get('@Url.Content("~/Dashboard/Home/AcceptOwnershipForm")', {
             inviteId: inviteId
@@ -19,6 +29,15 @@
             window.reload();
         }).error(function (result) {
             $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function sendTestEmail() {
+        $.post('@Url.Content("~/Dashboard/Home/SendTestEmail")', {
+            to: $("#sendTestEmail_To").val()
+        })
+        .done(function (result) {
+            toastr.success("Test email sent successfully");
         });
     }
 </script>

@@ -54,7 +54,7 @@ namespace WebApp.Controllers
             }
             if (userModel.AsOwner != null)
             {
-                return RedirectToActionPermanent("ChangeUserContextAsync", "Account", new { physicianId = userModel.AsOwner.Id });
+                return RedirectToActionPermanent("ChangeUserContextAsync", "Account", new { physicianId = userModel.AsOwner.First().Id });
             }
 
             return NavigateToDashboard();

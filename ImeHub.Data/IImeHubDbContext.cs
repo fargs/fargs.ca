@@ -38,9 +38,11 @@ namespace ImeHub.Data
         System.Data.Entity.DbSet<UserClaim> UserClaims { get; set; } // UserClaim
         System.Data.Entity.DbSet<UserLogin> UserLogins { get; set; } // UserLogin
         System.Data.Entity.DbSet<UserRole> UserRoles { get; set; } // UserRole
+        System.Data.Entity.DbSet<UserSetupWorkflow> UserSetupWorkflows { get; set; } // UserSetupWorkflow
+        System.Data.Entity.DbSet<UserSetupWorkItem> UserSetupWorkItems { get; set; } // UserSetupWorkItem
         System.Data.Entity.DbSet<Workflow> Workflows { get; set; } // Workflow
-        System.Data.Entity.DbSet<WorkflowTask> WorkflowTasks { get; set; } // WorkflowTask
-        System.Data.Entity.DbSet<WorkflowTaskDependent> WorkflowTaskDependents { get; set; } // WorkflowTaskDependent
+        System.Data.Entity.DbSet<WorkItem> WorkItems { get; set; } // WorkItem
+        System.Data.Entity.DbSet<WorkItemRelated> WorkItemRelateds { get; set; } // WorkItemRelated
 
         int SaveChanges();
         System.Threading.Tasks.Task<int> SaveChangesAsync();

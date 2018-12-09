@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Data = ImeHub.Data;
 
@@ -15,10 +16,17 @@ namespace ImeHub.Models
         public Guid RoleId { get; set; }
         public bool IsTestRecord { get; set; }
         public string UserName { get; set; }
+        public string EmailProvider { get; set; }
+        public string EmailProviderCredential { get; set; }
         public RoleModel Role { get; set; }
-        public LookupModel<Guid> AsOwner { get; set; }
+        public IEnumerable<LookupModel<Guid>> AsOwner { get; set; }
         public IEnumerable<LookupModel<Guid>> AsManager { get; set; }
         public IEnumerable<LookupModel<Guid>> AsTeamMember { get; set; }
+        public UserSetupWorkflowModel Setup { get; set; }
+
+        #region Computed Properties
+        public bool IsEmailProviderSet => !string.IsNullOrEmpty(EmailProvider);
+        #endregion
 
         public partial class RoleModel
         {
@@ -51,6 +59,8 @@ namespace ImeHub.Models
             Title = a.Title,
             ColorCode = a.ColorCode,
             Email = a.Email,
+            EmailProvider = a.EmailProvider,
+            EmailProviderCredential = a.EmailProviderCredential,
             Role = new RoleModel
             {
                 Id = a.Role.Id,
@@ -63,20 +73,30 @@ namespace ImeHub.Models
                     Name = rf.Feature.Name
                 })
             },
-            //Invites = a.PhysicianOwners.Select(pi => new PhysicianInviteModel
+            //Setup = a.UserSetupWorkflow == null ? null : new UserSetupWorkflowModel
             //{
-            //    Id = pi.Id,
-            //    PhysicianId = pi.PhysicianId,
-            //    Physician = LookupModel<Guid>.FromPhysician.Invoke(pi.Physician),
-            //    ToName = pi.ToName,
-            //    ToEmail = pi.ToEmail,
-            //    FromName = pi.FromName,
-            //    FromEmail = pi.FromEmail,
-            //    LinkClickedDate = pi.LinkClickedDate,
-            //    AcceptanceStatus = LookupModel<byte>.FromPhysicianInviteAcceptanceStatus.Invoke(pi.PhysicianInviteAcceptanceStatu),
-            //    AcceptanceStatusChangedDate = pi.AcceptanceStatusChangedDate
-            //}),
-            AsOwner = LookupModel<Guid>.FromPhysician.Invoke(a.Physicians_OwnerId.FirstOrDefault()),
+            //    Id = a.UserSetupWorkflow.Id,
+            //    Name = a.UserSetupWorkflow.Name,
+
+            //    StatusId = (Enums.WorkflowStatus)a.UserSetupWorkflow.StatusId,
+            //    Status = StatusModel<Enums.WorkflowStatus>.FromUserSetupWorkflow.Invoke(a.UserSetupWorkflow),
+            //    WorkItems = a.UserSetupWorkflow.UserSetupWorkItems.Select(wi => new UserSetupWorkflowModel.UserSetupWorkItemModel
+            //    {
+            //        Id = wi.Id,
+            //        Name = wi.Name,
+            //        Sequence = wi.Sequence,
+            //        StatusId = (Enums.WorkItemStatus)wi.StatusId,
+            //        Status = StatusModel<Enums.WorkItemStatus>.FromUserSetupWorkItem.Invoke(wi),
+            //        AssignedToId = wi.AssignedToId,
+            //        AssignedToChangedById = wi.AssignedToChangedById,
+            //        AssignedToChangedDate = wi.AssignedToChangedDate,
+            //        ResponsibleRoleId = wi.ResponsibleRoleId,
+            //        DueDate = wi.DueDate
+            //    })
+            //},
+            AsOwner = a.PhysicianOwners.AsQueryable()
+                .Select(po => po.Physician)
+                .Select(LookupModel<Guid>.FromPhysician.Expand()),
             AsManager = a.Physicians_ManagerId.AsQueryable()
                 .Select(LookupModel<Guid>.FromPhysician.Expand()),
             AsTeamMember = a.TeamMembers.AsQueryable()

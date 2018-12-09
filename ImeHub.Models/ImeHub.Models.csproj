@@ -51,11 +51,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\Role.cs" />
+    <Compile Include="Enums\WorkItemStatus.cs" />
+    <Compile Include="Enums\WorkflowStatus.cs" />
     <Compile Include="Enums\Features\Features.cs" />
     <Compile Include="Enums\AcceptanceStatus.cs" />
     <Compile Include="FeatureModel.cs" />
     <Compile Include="Enums\Features\FeatureBase.cs" />
     <Compile Include="PhysicianModel.cs" />
+    <Compile Include="StatusModel.cs" />
+    <Compile Include="WorkflowModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="ContactModel.cs" />
     <Compile Include="LookupModel.cs" />

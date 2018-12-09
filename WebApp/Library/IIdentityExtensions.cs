@@ -51,7 +51,7 @@ namespace WebApp.Library.Extensions
             }
             return null;
         }
-
+        
         public static IEnumerable<LookupViewModel<Guid>> GetPhysicians(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("Physicians");

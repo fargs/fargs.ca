@@ -20,6 +20,7 @@ using ImeHub.Models;
 using WebApp.Views.Shared;
 using Enums = ImeHub.Models.Enums;
 using Features = ImeHub.Models.Enums.Features.UserPortal;
+using WebApp.Models;
 
 namespace WebApp.Areas.Physicians.Controllers
 {
@@ -48,7 +49,7 @@ namespace WebApp.Areas.Physicians.Controllers
             {
                 readOnly = new ReadOnlyViewModel(physicianId.Value, db, identity, now);
             }
-            
+
             var viewModel = new IndexViewModel(list, readOnly, identity, now);
 
             if (Request.IsAjaxRequest())
@@ -56,6 +57,27 @@ namespace WebApp.Areas.Physicians.Controllers
                 return PartialView(viewModel);
             }
             return View(viewModel);
+        }
+
+        public ActionResult TermsAndConditions(Guid physicianId)
+        {
+            var owner = db.PhysicianOwners.SingleOrDefault(p => p.PhysicianId == physicianId);
+
+            var formModel = new TermsAndConditionsFormModel(physicianId);
+            return View("TermsAndConditions", formModel);
+        }
+        [HttpPost]
+        public async Task<ActionResult> TermsAndConditionsAsync(TermsAndConditionsFormModel viewModel)
+        {
+            var owner = db.PhysicianOwners
+                .SingleOrDefault(u => u.PhysicianId == viewModel.PhysicianId);
+            owner.AcceptanceStatusId = (byte)Enums.AcceptanceStatus.Accepted;
+            owner.UserId = identity.GetGuidUserId();
+            owner.AcceptanceStatusChangedDate = now;
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home", new { area = "Dashboard" });
         }
 
         #region Views
@@ -124,7 +146,9 @@ namespace WebApp.Areas.Physicians.Controllers
             {
                 PhysicianId = form.PhysicianId,
                 Email = form.Email,
-                Name = form.Name,
+                Title = form.Title,
+                FirstName = form.FirstName,
+                LastName = form.LastName,
                 AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotSent,
                 AcceptanceStatusChangedDate = now
             };
@@ -157,17 +181,19 @@ namespace WebApp.Areas.Physicians.Controllers
             }
 
             var viewModel = new PhysicianInviteViewModel(physician);
-            
-            var mailMessage = GetOwnerInviteEmail(viewModel);
-            
-            var accountProvider = new GoogleAuthentication(); // eventually I want to DI this into here
-            var accountProviderAuthResult = await accountProvider.AuthenticateOauthAsync(this, db, identity.GetGuidUserId(), new CancellationToken());
-            // if access token and refresh token are expired
-            if (accountProviderAuthResult.Credential == null) return Redirect(accountProviderAuthResult.RedirectUri);
 
-            var service = accountProvider.GetGmailService(accountProviderAuthResult.Credential);
-            await accountProvider.SendEmailAsync(service, mailMessage);
-            
+            var mailMessage = BuildOwnerInviteEmail(viewModel);
+
+            //******* Google to Send Email *************
+            var emailProvider = new GoogleAuthentication(); // eventually I want to DI this into here
+            var emailProviderAuthResult = await emailProvider.AuthenticateOauthAsync(this, db, identity.GetGuidUserId(), new CancellationToken());
+            // if access token and refresh token are expired
+            if (emailProviderAuthResult.Credential == null) return Redirect(emailProviderAuthResult.RedirectUri);
+
+            var emailService = emailProvider.GetGmailService(emailProviderAuthResult.Credential);
+            await emailProvider.SendEmailAsync(emailService, mailMessage);
+            //******* Google to Send Email *************
+
             var entity = db.PhysicianOwners
                 .Where(pi => pi.PhysicianId == physician.Id)
                 .Single();
@@ -181,7 +207,7 @@ namespace WebApp.Areas.Physicians.Controllers
 
         #endregion
 
-        private MailMessage GetOwnerInviteEmail(PhysicianInviteViewModel invite)
+        private MailMessage BuildOwnerInviteEmail(PhysicianInviteViewModel invite)
         {
             var message = new MailMessage();
             message.To.Add(invite.To);

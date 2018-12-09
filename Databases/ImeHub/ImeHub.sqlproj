@@ -61,10 +61,6 @@
     <Folder Include="dbo\Tables\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\WorkflowTaskHistory.sql" />
-    <Build Include="dbo\Tables\WorkflowTaskDependentHistory.sql" />
-    <Build Include="dbo\Tables\WorkflowTaskDependent.sql" />
-    <Build Include="dbo\Tables\WorkflowTask.sql" />
     <Build Include="dbo\Tables\WorkflowHistory.sql" />
     <Build Include="dbo\Tables\Workflow.sql" />
     <Build Include="dbo\Tables\UserRoleHistory.sql" />
@@ -104,6 +100,14 @@
     <Build Include="dbo\Tables\PhysicianOwner.sql" />
     <Build Include="dbo\Tables\PhysicianInviteLogHistory.sql" />
     <Build Include="dbo\Tables\PhysicianInviteLog.sql" />
+    <Build Include="dbo\Tables\WorkItemRelatedHistory.sql" />
+    <Build Include="dbo\Tables\WorkItemRelated.sql" />
+    <Build Include="dbo\Tables\WorkItemHistory.sql" />
+    <Build Include="dbo\Tables\WorkItem.sql" />
+    <Build Include="dbo\Tables\UserSetupWorkItemHistory.sql" />
+    <Build Include="dbo\Tables\UserSetupWorkItem.sql" />
+    <Build Include="dbo\Tables\UserSetupWorkflowHistory.sql" />
+    <Build Include="dbo\Tables\UserSetupWorkflow.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo.User.data.sql" />

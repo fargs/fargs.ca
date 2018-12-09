@@ -1,5 +1,17 @@
-﻿@model IndexViewModel
+﻿@using Enums = ImeHub.Models.Enums
+@model IndexViewModel
 
+<h2>Account Setup</h2>
+<h4>Connect with your business email and calendar</h4>
+@if (Model.User.IsEmailProviderSet)
+{
+    <a href="~/Dashboard/Home/RevokeAccess">Revoke</a>
+    <div id="linked-profile"></div>
+}
+else
+{
+    <a href="~/Dashboard/Home/UseGmail">Use Gmail/GSuite</a>
+}
 <h2>Physician Portals</h2>
 @Html.Partial("List", Model.List)
 

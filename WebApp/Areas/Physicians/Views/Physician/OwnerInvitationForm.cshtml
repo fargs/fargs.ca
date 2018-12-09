@@ -17,10 +17,24 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label">Name</label>
+            <label class="control-label">Title</label>
             <div>
-                @Html.TextBox("Name", Model.Name, new { @class = "form-control" })
-                @Html.ValidationMessage("Name", "", new { @class = "text-danger" })
+                @Html.TextBox("Title", Model.Title, new { @class = "form-control" })
+                @Html.ValidationMessage("Title", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">FirstName</label>
+            <div>
+                @Html.TextBox("FirstName", Model.FirstName, new { @class = "form-control" })
+                @Html.ValidationMessage("FirstName", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">LastName</label>
+            <div>
+                @Html.TextBox("LastName", Model.LastName, new { @class = "form-control" })
+                @Html.ValidationMessage("LastName", "", new { @class = "text-danger" })
             </div>
         </div>
     </form>

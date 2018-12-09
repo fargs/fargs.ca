@@ -1,0 +1,16 @@
+﻿@using Enums = ImeHub.Models.Enums
+@model WorkflowViewModel
+
+
+@if (Model.StatusId == Enums.WorkflowStatus.Active)
+{
+    <span id='workflow-statuslabel-@Model.Id' class='label label-danger'>Active</span>
+}
+else if (Model.StatusId == Enums.WorkflowStatus.Done)
+{
+    <span id='workflow-statuslabel-@Model.Id' class='label label-warning'>Done</span>
+}
+else if (Model.StatusId == Enums.WorkflowStatus.Cancelled)
+{
+    <span id='workflow-statuslabel-@Model.Id' class='label label-info'>Cancelled</span>
+}

@@ -505,6 +505,7 @@
     <Compile Include="Areas\Companies\Views\Company\Service\ServiceV2ViewModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\Service\ServiceViewModel.cs" />
     <Compile Include="Areas\Dashboard\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Dashboard\Views\Home\ILinkedProfileViewModel.cs" />
     <Compile Include="Areas\Dashboard\DashboardAreaRegistration.cs" />
     <Compile Include="Areas\Dashboard\Views\Home\PendingInvitationListViewModel.cs" />
     <Compile Include="Areas\Dashboard\Views\Home\IndexViewModel.cs" />
@@ -520,10 +521,12 @@
     <Compile Include="Areas\Invoices\Views\Unsent\InvoiceViewModel.cs" />
     <Compile Include="Areas\Invoices\Views\Unsent\ServiceRequestViewModel.cs" />
     <Compile Include="Areas\Invoices\Views\Unsent\UnsentInvoiceViewModel.cs" />
+    <Compile Include="Areas\Physicians\Controllers\InviteController.cs" />
     <Compile Include="Areas\Physicians\Controllers\PhysicianController.cs" />
+    <Compile Include="Areas\Physicians\Views\Physician\TermsAndConditionsFormModel.cs" />
     <Compile Include="Areas\Physicians\PhysiciansAreaRegistration.cs" />
-    <Compile Include="Areas\Dashboard\Views\Home\AcceptOwnershipFormModel.cs" />
     <Compile Include="Areas\Dashboard\Views\Home\PhysicianInviteViewModel.cs" />
+    <Compile Include="Areas\Physicians\Views\Invite\AcceptOwnerInviteFormModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\OwnerInvitationFormModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\PhysicianFormModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\NewPhysicianFormModel.cs" />
@@ -532,6 +535,7 @@
     <Compile Include="Areas\Physicians\Views\Physician\IndexViewModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\ListViewModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\ReadOnlyViewModel.cs" />
+    <Compile Include="Areas\Physicians\Views\Invite\RegisterUserFormModel.cs" />
     <Compile Include="Areas\Reports\Controllers\HomeController.cs" />
     <Compile Include="Areas\Reports\Controllers\InvoiceController.cs" />
     <Compile Include="Areas\Reports\Data\FakeDbSet.cs">
@@ -668,15 +672,20 @@
     <Content Include="Areas\Dashboard\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\List.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\PhysicianInvite.cshtml" />
-    <Content Include="Areas\Dashboard\Views\Home\AcceptOwnershipForm.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\PendingInvitationList.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\TermsAndConditions.cshtml" />
     <Content Include="Areas\Dashboard\Views\Home\IndexJS.cshtml" />
-    <Content Include="Areas\Physicians\Views\Physician\OwnerInvitation.cshtml" />
     <Content Include="Areas\Physicians\Views\Physician\Spec.md" />
     <Content Include="Areas\SysTools\Views\web.config" />
     <Content Include="Areas\SysTools\Views\Home\Index.cshtml" />
     <Content Include="Areas\SysTools\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Dashboard\Views\Home\WorkflowStatusLabel.cshtml" />
+    <Content Include="Areas\Dashboard\Views\Home\WorkItemStatusLabel.cshtml" />
+    <Content Include="Areas\Dashboard\Views\Home\LinkedProfile.cshtml" />
+    <Content Include="Areas\Physicians\Views\Invite\AcceptOwnerInvite.cshtml" />
+    <Content Include="Areas\Physicians\Views\Invite\RegisterUser.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\TermsAndConditions.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\InvalidOwnerInvite.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -854,6 +863,7 @@
     <Compile Include="Views\ServiceRequestMessage\ServiceRequestMessageJSViewModel.cs" />
     <Compile Include="Views\Shared\CaseNotificationViewModel.cs" />
     <Compile Include="Views\Shared\ICaseNotificationViewModel.cs" />
+    <Compile Include="Views\Shared\StatusViewModel.cs" />
     <Compile Include="Views\Shared\PersonViewModel.cs" />
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceNotificationViewModel.cs" />
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceViewModel.cs" />
@@ -1977,6 +1987,7 @@
     <Content Include="Views\Teleconference\Web.config" />
     <Content Include="Views\Shared\Initials.cshtml" />
     <Content Include="Views\Shared\_LayoutUser.cshtml" />
+    <Content Include="Views\Shared\_LayoutAnonymous.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

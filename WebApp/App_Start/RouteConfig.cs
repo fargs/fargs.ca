@@ -36,6 +36,11 @@ namespace WebApp
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            routes.MapRoute(
+              "AcceptOwnerInvite", // Route name
+              "physicians/physician/acceptownerinvite/{physicianId}"
+            );
+
             routes.MapRoute(name: "signin-google", url: "signin-google", defaults: new { controller = "Account", action = "ExternalLoginCallback" });
         }
     }

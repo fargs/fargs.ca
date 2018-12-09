@@ -39,7 +39,7 @@
                     }
                     @if (features.Contains(Features.SecurityAdmin.RoleManagement))
                     {
-                        <li>@Html.ActionLink("Roles", "", "Role", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("Roles", "", "AspNetRoles", new { area = "Admin" }, null)</li>
                     }
                     @if (features.Contains(Features.SecurityAdmin.FeatureManagement))
                     {

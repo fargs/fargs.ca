@@ -29,8 +29,7 @@
         .done(function (result) {
             $('#modal-container').modal('toggle');
             toastr.success("Physician added successfully");
-            refreshPhysicianList();
-            refreshPhysicianReadOnly(result.id);
+            navigateToPhysician(result.id);
         }).error(function (result) {
             $('#modal-content').html(result.responseText);
         });
@@ -53,7 +52,7 @@
         .done(function (result) {
             $('#modal-container-sm').modal('toggle');
             toastr.success("Owner successfully set");
-            refreshPhysicianReadOnly(result.physicianId);
+            navigateToPhysician(result.physicianId);
         }).error(function (result) {
             $('#modal-content-sm').html(result.responseText);
         });
@@ -64,9 +63,8 @@
             physicianId: physicianId
         })
         .done(function (result) {
-            $('#modal-container-sm').modal('toggle');
             toastr.success("Invite sent successfully");
-            refreshPhysicianReadOnly(physicianId);
+            navigateToPhysician(physicianId);
         }).error(function (result) {
             $('#modal-content-sm').html(result.responseText);
         });

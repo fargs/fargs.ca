@@ -56,7 +56,7 @@ namespace WebApp.Areas.Physicians.Views.Physician
             Owner = physician.Owner == null ? null : new OwnerViewModel
             {
                 Email = physician.Owner.Email,
-                Name = physician.Owner.Name,
+                Name = physician.Owner.DisplayName,
                 AcceptanceStatusId = (Enums.AcceptanceStatus)physician.Owner.AcceptanceStatusId,
                 AcceptanceStatusChangedDate = physician.Owner.AcceptanceStatusChangedDate.ToOrvosiDateTimeFormat(),
                 AcceptanceStatus = new LookupViewModel<byte>

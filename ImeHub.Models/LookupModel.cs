@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using ImeHub.Data;
 
 namespace ImeHub.Models
 {
@@ -36,6 +37,5 @@ namespace ImeHub.Models
             Code = null,
             ColorCode = null
         };
-
     }
 }

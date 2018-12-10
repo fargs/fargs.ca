@@ -65,16 +65,16 @@ namespace WebApp.Controllers
                 ViewBag.errorMessage = "The e-mail address entered is incorrect.";
                 return View("Error");
             }
-            if (!await _userManager.IsEmailConfirmedAsync(user.Id))
-            {
+            //if (!await _userManager.IsEmailConfirmedAsync(user.Id))
+            //{
                 //string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
 
                 // Uncomment to debug locally  
                 //ViewBag.Link = callbackUrl;
 
-                ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
-                return View("Error");
-            }
+            //    ViewBag.errorMessage = "Your account is pending activation by our administrators. You should be receiving an activation email shortly.";
+            //    return View("Error");
+            //}
             
             var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)

@@ -1,13 +1,12 @@
-﻿using LinqKit;
-using Orvosi.Data;
-using Orvosi.Data.Filters;
+﻿using ImeHub.Data;
+using LinqKit;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Principal;
 using System.Web.Mvc;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Availability.Views.Home
@@ -17,21 +16,21 @@ namespace WebApp.Areas.Availability.Views.Home
         public AvailableDayResourceForm()
         {
         }
-        public AvailableDayResourceForm(OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        public AvailableDayResourceForm(ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             if (!PhysicianId.HasValue) throw new Exception("Physician context must be set.");
             ViewData = new ViewDataModel(db, PhysicianId.Value);
         }
         [Required]
-        public short AvailableDayId { get; set; }
+        public Guid AvailableDayId { get; set; }
         [Required]
         public Guid UserId { get; set; }
         public ViewDataModel ViewData { get; set; }
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
-            public ViewDataModel(OrvosiDbContext db, Guid physicianId)
+            private ImeHubDbContext db;
+            public ViewDataModel(ImeHubDbContext db, Guid physicianId)
             {
                 this.db = db;
                 TeamMembers = GetTeamMembersSelectList(physicianId);
@@ -40,15 +39,17 @@ namespace WebApp.Areas.Availability.Views.Home
 
             private List<SelectListItem> GetTeamMembersSelectList(Guid physicianId)
             {
-                var teamMembers = db.Collaborators
-                    .ForPhysician(physicianId)
-                    .Select(PersonDto.FromCollaboratorEntity.Expand())
+                var teamMembers = db.TeamMembers
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(tm => tm.PhysicianId == physicianId)
+                    .Select(TeamMemberModel.FromTeamMember)
                     .ToList();
 
                 return teamMembers
                     .Select(d => new SelectListItem
                     {
-                        Text = d.DisplayName,
+                        Text = d.User.DisplayName,
                         Value = d.Id.ToString()
                     })
                     .OrderBy(d => d.Text)

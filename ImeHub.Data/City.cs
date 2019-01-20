@@ -15,35 +15,27 @@
 namespace ImeHub.Data
 {
 
-    // City
     public partial class City
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 128)
-        public string Code { get; set; } // Code (length: 3)
-        public short ProvinceId { get; set; } // ProvinceId
+        public System.Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public short ProvinceId { get; set; }
+        public System.Guid PhysicianId { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; }
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; }
+        public virtual System.Collections.Generic.ICollection<TravelPrice> TravelPrices { get; set; }
 
-        /// <summary>
-        /// Child Addresses where [Address].[CityId] point to this entity (FK_Address_City)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_City
-        /// <summary>
-        /// Child TravelPrices where [TravelPrice].[CityId] point to this entity (FK_TravelPrice_City)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<TravelPrice> TravelPrices { get; set; } // TravelPrice.FK_TravelPrice_City
 
-        // Foreign keys
+        public virtual Physician Physician { get; set; }
 
-        /// <summary>
-        /// Parent Province pointed by [City].([ProvinceId]) (FK_City_Province)
-        /// </summary>
-        public virtual Province Province { get; set; } // FK_City_Province
+        public virtual Province Province { get; set; }
 
         public City()
         {
             Addresses = new System.Collections.Generic.List<Address>();
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
             TravelPrices = new System.Collections.Generic.List<TravelPrice>();
             InitializePartial();
         }

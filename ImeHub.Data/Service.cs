@@ -15,35 +15,29 @@
 namespace ImeHub.Data
 {
 
-    // Service
     public partial class Service
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid CompanyId { get; set; } // CompanyId
-        public string Name { get; set; } // Name (length: 128)
-        public string Description { get; set; } // Description (length: 2000)
-        public string Code { get; set; } // Code (length: 10)
-        public string ColorCode { get; set; } // ColorCode (length: 10)
-        public decimal Price { get; set; } // Price
-        public bool IsTravelRequired { get; set; } // IsTravelRequired
+        public System.Guid Id { get; set; }
+        public System.Guid CompanyId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Code { get; set; }
+        public string ColorCode { get; set; }
+        public decimal Price { get; set; }
+        public bool IsTravelRequired { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<CompanyService> CompanyServices { get; set; }
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; }
+        public virtual System.Collections.Generic.ICollection<TravelPrice> TravelPrices { get; set; }
 
-        /// <summary>
-        /// Child TravelPrices where [TravelPrice].[ServiceId] point to this entity (FK_TravelPrice_Service)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<TravelPrice> TravelPrices { get; set; } // TravelPrice.FK_TravelPrice_Service
 
-        // Foreign keys
-
-        /// <summary>
-        /// Parent Company pointed by [Service].([CompanyId]) (FK_Service_Company)
-        /// </summary>
-        public virtual Company Company { get; set; } // FK_Service_Company
+        public virtual Company Company { get; set; }
 
         public Service()
         {
             IsTravelRequired = false;
+            CompanyServices = new System.Collections.Generic.List<CompanyService>();
+            ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             TravelPrices = new System.Collections.Generic.List<TravelPrice>();
             InitializePartial();
         }

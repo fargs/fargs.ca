@@ -1,10 +1,10 @@
-﻿using Orvosi.Data;
-using Orvosi.Shared.Enums;
+﻿using ImeHub.Data;
+using ImeHub.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
@@ -14,9 +14,9 @@ namespace WebApp.Areas.Companies.Views.Company
         {
 
         }
-        public EditCancellationPolicyFormModel(Guid companyId, OrvosiDbContext db)
+        public EditCancellationPolicyFormModel(Guid companyId, ImeHubDbContext db)
         {
-            var company = db.CompanyV2.Single(c => c.Id == companyId);
+            var company = db.Companies.Single(c => c.Id == companyId);
             CompanyId = company.Id;
             NoShowRate = company.NoShowRate;
             NoShowRateFormat = (RateFormat)company.NoShowRateFormat;
@@ -24,7 +24,7 @@ namespace WebApp.Areas.Companies.Views.Company
             LateCancellationRateFormat = (RateFormat)company.LateCancellationRateFormat;
             LateCancellationPolicy = company.LateCancellationPolicy;
         }
-        public EditCancellationPolicyFormModel(CompanyV2Dto company)
+        public EditCancellationPolicyFormModel(CompanyModel company)
         {
             CompanyId = company.Id;
             NoShowRate = company.NoShowRate;

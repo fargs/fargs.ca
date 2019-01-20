@@ -15,28 +15,18 @@
 namespace ImeHub.Data
 {
 
-    // Province
     public partial class Province
     {
-        public short Id { get; set; } // Id (Primary key)
-        public short CountryId { get; set; } // CountryID
-        public string ProvinceName { get; set; } // ProvinceName (length: 100)
-        public string ProvinceCode { get; set; } // ProvinceCode (length: 50)
-        public byte? ProvinceTypeId { get; set; } // ProvinceTypeID
+        public short Id { get; set; }
+        public short CountryId { get; set; }
+        public string ProvinceName { get; set; }
+        public string ProvinceCode { get; set; }
+        public byte? ProvinceTypeId { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<City> Cities { get; set; }
 
-        /// <summary>
-        /// Child Cities where [City].[ProvinceId] point to this entity (FK_City_Province)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<City> Cities { get; set; } // City.FK_City_Province
 
-        // Foreign keys
-
-        /// <summary>
-        /// Parent Country pointed by [Province].([CountryId]) (FK_Province_Country)
-        /// </summary>
-        public virtual Country Country { get; set; } // FK_Province_Country
+        public virtual Country Country { get; set; }
 
         public Province()
         {

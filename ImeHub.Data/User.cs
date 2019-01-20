@@ -15,89 +15,54 @@
 namespace ImeHub.Data
 {
 
-    // User
     public partial class User
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Email { get; set; } // Email (length: 256)
-        public bool EmailConfirmed { get; set; } // EmailConfirmed
-        public string PasswordHash { get; set; } // PasswordHash
-        public string SecurityStamp { get; set; } // SecurityStamp
-        public string PhoneNumber { get; set; } // PhoneNumber (length: 128)
-        public bool PhoneNumberConfirmed { get; set; } // PhoneNumberConfirmed
-        public bool TwoFactorEnabled { get; set; } // TwoFactorEnabled
-        public System.DateTime? LockoutEndDateUtc { get; set; } // LockoutEndDateUtc
-        public bool LockoutEnabled { get; set; } // LockoutEnabled
-        public int AccessFailedCount { get; set; } // AccessFailedCount
-        public string UserName { get; set; } // UserName (length: 256)
-        public string Title { get; set; } // Title (length: 50)
-        public string FirstName { get; set; } // FirstName (length: 128)
-        public string LastName { get; set; } // LastName (length: 128)
-        public System.DateTime? LastActivationDate { get; set; } // LastActivationDate
-        public string LogoCssClass { get; set; } // LogoCssClass (length: 50)
-        public string ColorCode { get; set; } // ColorCode (length: 50)
-        public string Notes { get; set; } // Notes
-        public bool IsTestRecord { get; set; } // IsTestRecord
-        public bool IsAppTester { get; set; } // IsAppTester
-        public System.Guid? PhysicianId { get; set; } // PhysicianId
-        public System.Guid RoleId { get; set; } // RoleId
-        public string EmailProviderCredential { get; set; } // EmailProviderCredential
-        public string EmailProvider { get; set; } // EmailProvider (length: 128)
+        public System.Guid Id { get; set; }
+        public string Email { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public string PasswordHash { get; set; }
+        public string SecurityStamp { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
+        public bool TwoFactorEnabled { get; set; }
+        public System.DateTime? LockoutEndDateUtc { get; set; }
+        public bool LockoutEnabled { get; set; }
+        public int AccessFailedCount { get; set; }
+        public string UserName { get; set; }
+        public string Title { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public System.DateTime? LastActivationDate { get; set; }
+        public string LogoCssClass { get; set; }
+        public string ColorCode { get; set; }
+        public string Notes { get; set; }
+        public bool IsTestRecord { get; set; }
+        public bool IsAppTester { get; set; }
+        public System.Guid? PhysicianId { get; set; }
+        public System.Guid RoleId { get; set; }
+        public string EmailProviderCredential { get; set; }
+        public string EmailProvider { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<AvailableDayResource> AvailableDayResources { get; set; }
+        public virtual System.Collections.Generic.ICollection<Physician> Physicians_ManagerId { get; set; }
+        public virtual System.Collections.Generic.ICollection<Physician> Physicians_OwnerId { get; set; }
+        public virtual System.Collections.Generic.ICollection<PhysicianOwner> PhysicianOwners { get; set; }
+        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; }
+        public virtual System.Collections.Generic.ICollection<UserClaim> UserClaims { get; set; }
+        public virtual System.Collections.Generic.ICollection<UserLogin> UserLogins { get; set; }
+        public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; }
+        public virtual System.Collections.Generic.ICollection<UserSetupWorkflow> UserSetupWorkflows { get; set; }
+        public virtual System.Collections.Generic.ICollection<UserSetupWorkItem> UserSetupWorkItems { get; set; }
+        public virtual UserSetupWorkflow UserSetupWorkflow { get; set; }
 
-        /// <summary>
-        /// Child Physicians where [Physician].[ManagerId] point to this entity (FK_Physician_Manager)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Physician> Physicians_ManagerId { get; set; } // Physician.FK_Physician_Manager
-        /// <summary>
-        /// Child Physicians where [Physician].[OwnerId] point to this entity (FK_Physician_Owner)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Physician> Physicians_OwnerId { get; set; } // Physician.FK_Physician_Owner
-        /// <summary>
-        /// Child PhysicianOwners where [PhysicianOwner].[UserId] point to this entity (FK_PhysicianOwner_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner.FK_PhysicianOwner_User
-        /// <summary>
-        /// Child TeamMembers where [TeamMember].[UserId] point to this entity (FK_TeamMember_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_User
-        /// <summary>
-        /// Child UserClaims where [UserClaim].[UserId] point to this entity (FK_UserClaim_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserClaim> UserClaims { get; set; } // UserClaim.FK_UserClaim_User
-        /// <summary>
-        /// Child UserLogins where [UserLogin].[UserId] point to this entity (FK_UserLogin_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserLogin> UserLogins { get; set; } // UserLogin.FK_UserLogin_User
-        /// <summary>
-        /// Child UserRoles where [UserRole].[UserId] point to this entity (FK_UserRole_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; } // UserRole.FK_UserRole_User
-        /// <summary>
-        /// Child UserSetupWorkflows where [UserSetupWorkflow].[StatusChangedById] point to this entity (FK_UserSetupWorkflow_StatusChangedBy_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserSetupWorkflow> UserSetupWorkflows { get; set; } // UserSetupWorkflow.FK_UserSetupWorkflow_StatusChangedBy_User
-        /// <summary>
-        /// Child UserSetupWorkItems where [UserSetupWorkItem].[StatusChangedById] point to this entity (FK_UserSetupWorkItem_StatusChangedBy_User)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserSetupWorkItem> UserSetupWorkItems { get; set; } // UserSetupWorkItem.FK_UserSetupWorkItem_StatusChangedBy_User
-        /// <summary>
-        /// Parent (One-to-One) User pointed by [UserSetupWorkflow].[Id] (FK_UserSetupWorkflow_User)
-        /// </summary>
-        public virtual UserSetupWorkflow UserSetupWorkflow { get; set; } // UserSetupWorkflow.FK_UserSetupWorkflow_User
 
-        // Foreign keys
-
-        /// <summary>
-        /// Parent Role pointed by [User].([RoleId]) (FK_User_Role)
-        /// </summary>
-        public virtual Role Role { get; set; } // FK_User_Role
+        public virtual Role Role { get; set; }
 
         public User()
         {
             IsTestRecord = false;
             IsAppTester = false;
+            AvailableDayResources = new System.Collections.Generic.List<AvailableDayResource>();
             Physicians_ManagerId = new System.Collections.Generic.List<Physician>();
             Physicians_OwnerId = new System.Collections.Generic.List<Physician>();
             PhysicianOwners = new System.Collections.Generic.List<PhysicianOwner>();

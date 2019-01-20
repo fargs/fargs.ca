@@ -15,23 +15,18 @@
 namespace ImeHub.Data
 {
 
-    // PhysicianInviteLog
     public partial class PhysicianInviteLog
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid PhysicianId { get; set; } // PhysicianId
-        public string To { get; set; } // To (length: 128)
-        public string Cc { get; set; } // Cc (length: 128)
-        public string Bcc { get; set; } // Bcc (length: 128)
-        public string Subject { get; set; } // Subject (length: 128)
-        public string Body { get; set; } // Body
+        public System.Guid Id { get; set; }
+        public System.Guid PhysicianId { get; set; }
+        public string To { get; set; }
+        public string Cc { get; set; }
+        public string Bcc { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent Physician pointed by [PhysicianInviteLog].([PhysicianId]) (FK_PhysicianInviteLog_Physician)
-        /// </summary>
-        public virtual Physician Physician { get; set; } // FK_PhysicianInviteLog_Physician
+        public virtual Physician Physician { get; set; }
 
         public PhysicianInviteLog()
         {

@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Price</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" name="Price" value="@(Model.Price.HasValue ? Model.Price.Value.ToString() : Model.ServiceId.HasValue ? Model.SelectedServicePrice.ToString() : string.Empty)" />
+                <input type="text" class="form-control" name="Price" value="@(Model.Price.ToString())" />
                 @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
             </div>
         </div>

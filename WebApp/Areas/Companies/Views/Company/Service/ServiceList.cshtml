@@ -13,17 +13,9 @@
         <div class="list-group-item">
             <div>
                 <span>@service.Name</span>
-                @if (service.ServiceId.HasValue && service.Service.Name != service.Name)
-                {
-                    <span class="small text-muted">(@service.Service.Name)</span>
-                }
             </div>
             <div>
                 <span>@service.Price</span>
-                @if (service.ServiceId.HasValue && service.Service.Price != service.Price)
-                {
-                    <span class="small text-muted">(@service.Service.Price)</span>
-                }
             </div>
             @if (service.IsTravelRequired)
             {

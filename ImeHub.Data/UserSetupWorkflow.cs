@@ -15,34 +15,21 @@
 namespace ImeHub.Data
 {
 
-    // UserSetupWorkflow
     public partial class UserSetupWorkflow
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 128)
-        public System.Guid? WorkflowId { get; set; } // WorkflowId
-        public byte StatusId { get; set; } // StatusId
-        public System.Guid StatusChangedById { get; set; } // StatusChangedById
-        public System.DateTime StatusChangedDate { get; set; } // StatusChangedDate
+        public System.Guid Id { get; set; }
+        public string Name { get; set; }
+        public System.Guid? WorkflowId { get; set; }
+        public byte StatusId { get; set; }
+        public System.Guid StatusChangedById { get; set; }
+        public System.DateTime StatusChangedDate { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<UserSetupWorkItem> UserSetupWorkItems { get; set; }
 
-        /// <summary>
-        /// Child UserSetupWorkItems where [UserSetupWorkItem].[UserSetupWorkflowId] point to this entity (FK_UserSetupWorkItem_UserSetupWorkflow)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<UserSetupWorkItem> UserSetupWorkItems { get; set; } // UserSetupWorkItem.FK_UserSetupWorkItem_UserSetupWorkflow
 
-        // Foreign keys
+        public virtual User User { get; set; }
 
-        /// <summary>
-        /// Parent User pointed by [UserSetupWorkflow].([Id]) (FK_UserSetupWorkflow_User)
-        /// </summary>
-        public virtual User User { get; set; } // FK_UserSetupWorkflow_User
-
-        /// <summary>
-        /// Parent User pointed by [UserSetupWorkflow].([StatusChangedById]) (FK_UserSetupWorkflow_StatusChangedBy_User)
-        /// </summary>
-        public virtual User StatusChangedBy { get; set; } // FK_UserSetupWorkflow_StatusChangedBy_User
+        public virtual User StatusChangedBy { get; set; }
 
         public UserSetupWorkflow()
         {

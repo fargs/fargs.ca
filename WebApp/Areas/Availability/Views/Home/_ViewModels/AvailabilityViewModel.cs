@@ -1,32 +1,33 @@
 ﻿using FluentDateTime;
 using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Availability.Views.Home
 {
     public class AvailabilityViewModel : ViewModelBase
     {
-        public AvailabilityViewModel(DateTime selectedDate, OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        public AvailabilityViewModel(DateTime selectedDate, ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             Calendar = CultureInfo.CurrentCulture.Calendar;
-            AvailableDays = new List<AvailableDayViewModel>();
             Month = selectedDate.FirstDayOfMonth();
             MonthName = Month.ToString("MMMM yyyy");
             var nextMonth = Month.AddMonths(1);
             var availableDays = db.AvailableDays
+                .AsNoTracking()
+                .AsExpandable()
                 .Where(c => c.PhysicianId == PhysicianId)
                 .Where(c => c.Day >= Month && c.Day < nextMonth)
-                .Select(AvailableDayDto.FromAvailableDayEntity.Expand())
+                .Select(AvailableDayModel.FromAvailableDayEntity.Expand())
                 .ToList();
 
-            AvailableDays = availableDays.AsQueryable().Select(AvailableDayViewModel.FromAvailableDayDto);
+                AvailableDays = availableDays.Select(AvailableDayViewModel.FromAvailableDayDto);
         }
 
         public DateTime Month { get; set; }

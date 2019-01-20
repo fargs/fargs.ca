@@ -30,6 +30,8 @@ namespace ImeHub.Models
 
         public virtual IEnumerable<PhysicianInviteLogModel> Invites { get; set; }
 
+        public virtual IEnumerable<AddressModel> Addresses { get; set; }
+
         public class PhysicianOwnerModel
         {
             public string Email { get; set; } // Email (length: 128)
@@ -90,7 +92,8 @@ namespace ImeHub.Models
                 Bcc = pi.Bcc,
                 Subject = pi.Subject,
                 Body = pi.Body
-            })
+            }),
+            Addresses = a.Addresses.AsQueryable().Select(AddressModel.FromAddress)
         };
     }
 }

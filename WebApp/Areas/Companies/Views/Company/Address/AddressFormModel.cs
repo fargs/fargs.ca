@@ -1,6 +1,6 @@
 ﻿using LinqKit;
-using Orvosi.Data;
-using Orvosi.Shared.Enums;
+using ImeHub.Data;
+using Enums = ImeHub.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Companies.Views.Company
@@ -18,10 +18,10 @@ namespace WebApp.Areas.Companies.Views.Company
         public AddressFormModel()
         {
         }
-        public AddressFormModel(AddressV2Dto address, Guid physicianId, OrvosiDbContext db)
+        public AddressFormModel(AddressModel address, Guid physicianId, ImeHubDbContext db)
         {
             Id = address.Id;
-            AddressTypeId = address.AddressTypeId;
+            AddressTypeId = (byte)Enums.AddressType.CompanyAssessmentOffice;
             CompanyId = address.CompanyId.Value;
             Name = address.Name;
             Attention = address.Attention;
@@ -32,15 +32,17 @@ namespace WebApp.Areas.Companies.Views.Company
             ProvinceId = address.ProvinceId;
             CountryId = address.CountryId;
             TimeZoneId = address.TimeZoneId;
+            IsBillingAddress = address.IsBillingAddress;
             ViewData = new ViewDataModel(db, physicianId);
         }
-        public AddressFormModel(Guid companyId, Guid physicianId, OrvosiDbContext db)
+        public AddressFormModel(Guid companyId, Guid physicianId, ImeHubDbContext db)
         {
             CompanyId = companyId;
-            AddressTypeId = 4;
-            CountryId = 124;
+            AddressTypeId = (byte)Enums.AddressType.CompanyAssessmentOffice;
+            CountryId = 1;
             ProvinceId = 9;
             TimeZoneId = 1;
+            IsBillingAddress = true;
             ViewData = new ViewDataModel(db, physicianId);
         }
         public Guid? Id { get; set; }
@@ -52,16 +54,25 @@ namespace WebApp.Areas.Companies.Views.Company
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string PostalCode { get; set; }
-        public short CityId { get; set; }
+        public Guid CityId { get; set; }
+        public string City { get; set; }
         public short ProvinceId { get; set; }
         public short TimeZoneId { get; set; }
         public int CountryId { get; set; }
+        public bool IsBillingAddress { get; set; }
+        public string IsBillingAddressChecked
+        {
+            get
+            {
+                return IsBillingAddress ? "checked" : "";
+            }
+        }
 
         public ViewDataModel ViewData { get; set; }
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
+            private ImeHubDbContext db;
 
             public IEnumerable<SelectListItem> Countries { get; }
             public IEnumerable<SelectListItem> Provinces { get; }
@@ -69,7 +80,7 @@ namespace WebApp.Areas.Companies.Views.Company
             public IEnumerable<SelectListItem> AddressTypes { get; }
             public IEnumerable<SelectListItem> TimeZones { get; }
 
-            public ViewDataModel(OrvosiDbContext db, Guid physicianId)
+            public ViewDataModel(ImeHubDbContext db, Guid physicianId)
             {
                 this.db = db;
                 Countries = GetCountrySelectList();
@@ -125,7 +136,6 @@ namespace WebApp.Areas.Companies.Views.Company
             private IEnumerable<SelectListItem> GetCountrySelectList()
             {
                 return db.Countries
-                    .Where(c => c.Id == 124) // Canada
                     .Select(c => new SelectListItem()
                     {
                         Text = c.Name,
@@ -138,7 +148,6 @@ namespace WebApp.Areas.Companies.Views.Company
             private IEnumerable<SelectListItem> GetProvinceSelectList()
             {
                 return db.Provinces
-                    .Where(c => c.CountryId == 124) // Canada
                     .Select(c => new SelectListItem()
                     {
                         Text = c.ProvinceName,

@@ -1,0 +1,34 @@
+﻿@model WorkItemFormModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Work Item
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="workflow-workitem-form" class="form-horizontal">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="WorkflowId" value="@Model.WorkflowId" />
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-10">
+                @*@Html.DropDownListFor(model => model.NameId, new SelectList(Model.ViewData.Cities, "Value", "Text"), string.Empty, new { @class = "form-control" })*@
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Responsible Role</label>
+            <div class="col-sm-9">
+                @Html.DropDownList("ResponsibleRoleId", new SelectList(Model.ViewData.Roles, "Value", "Text", "Group.Name", Model.ResponsibleRoleId), new { @class = "form-control" })
+                @Html.ValidationMessage("ResponsibleRoleId", "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="submit" onclick="@(Model.Id.HasValue ? "saveEditWorkItemForm" : "saveNewWorkItemForm")('@Model.WorkflowId', $('#workflow-workitem-form'))" class="btn btn-primary">Save</button>
+</div>

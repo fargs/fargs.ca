@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
 using WebApp.Views.Shared;
 using System.Web.Mvc;
-using Orvosi.Data;
+using ImeHub.Data;
 using System.Security.Principal;
 using System;
 using System.Linq;
-using WebApp.Models;
+using ImeHub.Models;
 using LinqKit;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
     public class ListViewModel : ViewModelBase
     {
-        public ListViewModel(Guid? companyId, OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        public ListViewModel(Guid? companyId, ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             if (!PhysicianId.HasValue)
             {
                 throw new ArgumentNullException("PhysicianId is null");
             }
-            var companies = db.CompanyV2
+            var companies = db.Companies
+                .AsNoTracking()
+                .AsExpandable()
                 .Where(pc => pc.PhysicianId == PhysicianId)
-                .Select(CompanyV2Dto.FromCompanyV2Entity.Expand())
+                .Select(CompanyModel.FromCompany)
                 .ToList();
 
-            Companies = companies.Select(s => new CompanyV2ViewModel(s));
+            Companies = companies.Select(s => new CompanyViewModel(s));
             CompanyCount = Companies.Count();
             if (companyId.HasValue)
             {
@@ -31,9 +33,9 @@ namespace WebApp.Areas.Companies.Views.Company
                 SelectedCompany = Companies.Single(c => c.Id == companyId.Value);
             }
         }
-        public IEnumerable<CompanyV2ViewModel> Companies { get; set; }
+        public IEnumerable<CompanyViewModel> Companies { get; set; }
         public int CompanyCount { get; set; }
         public Guid? SelectedCompanyId { get; private set; }
-        public CompanyV2ViewModel SelectedCompany { get; private set; }
+        public CompanyViewModel SelectedCompany { get; private set; }
     }
 }

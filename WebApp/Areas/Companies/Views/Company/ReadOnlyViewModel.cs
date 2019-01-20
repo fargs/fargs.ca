@@ -1,5 +1,5 @@
 ﻿using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Companies.Views.Company
@@ -20,12 +20,12 @@ namespace WebApp.Areas.Companies.Views.Company
         {
             PhysicianId = PhysicianId;
         }
-        public ReadOnlyViewModel(Guid companyId, OrvosiDbContext db, IIdentity identity, DateTime now) : this(identity, now)
+        public ReadOnlyViewModel(Guid companyId, ImeHubDbContext db, IIdentity identity, DateTime now) : this(identity, now)
         {
-            var company = db.CompanyV2
+            var company = db.Companies
                 .AsNoTracking()
                 .AsExpandable()
-                .Select(CompanyV2Dto.FromCompanyV2Entity)
+                .Select(CompanyModel.FromCompany)
                 .SingleOrDefault(s => s.Id == companyId);
             
             CompanyId = companyId;

@@ -51,6 +51,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressModel.cs" />
+    <Compile Include="AvailableDayModel.cs" />
+    <Compile Include="AvailableDayResourceDto.cs" />
+    <Compile Include="AvailableSlotModel.cs" />
+    <Compile Include="CancellationPolicyModel.cs" />
+    <Compile Include="CaseModel.cs" />
+    <Compile Include="CompanyModel.cs" />
+    <Compile Include="CompanyServiceModel.cs" />
+    <Compile Include="CityModel.cs" />
+    <Compile Include="Enums\AddressType.cs" />
+    <Compile Include="Enums\CancellationStatus.cs" />
+    <Compile Include="Enums\InviteStatus.cs" />
+    <Compile Include="Enums\RateFormat.cs" />
+    <Compile Include="Enums\CaseStatus.cs" />
+    <Compile Include="Enums\ServiceRequestStatus.cs" />
+    <Compile Include="Extensions\Case.cs" />
+    <Compile Include="Extensions\DateTime.cs" />
+    <Compile Include="ServiceModel.cs" />
+    <Compile Include="ServiceRequestModel.cs" />
+    <Compile Include="TeamMemberInviteModel.cs" />
+    <Compile Include="TeamMemberModel.cs" />
     <Compile Include="Enums\Role.cs" />
     <Compile Include="Enums\WorkItemStatus.cs" />
     <Compile Include="Enums\WorkflowStatus.cs" />
@@ -60,6 +81,8 @@
     <Compile Include="Enums\Features\FeatureBase.cs" />
     <Compile Include="PhysicianModel.cs" />
     <Compile Include="StatusModel.cs" />
+    <Compile Include="TeamRoleModel.cs" />
+    <Compile Include="TravelPriceModel.cs" />
     <Compile Include="WorkflowModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="ContactModel.cs" />
@@ -68,6 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoleModel.cs" />
     <Compile Include="Util\DbInitializer.cs" />
+    <Compile Include="WorkManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

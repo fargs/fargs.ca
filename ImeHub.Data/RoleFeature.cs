@@ -15,23 +15,15 @@
 namespace ImeHub.Data
 {
 
-    // RoleFeature
     public partial class RoleFeature
     {
-        public System.Guid RoleId { get; set; } // RoleId (Primary key)
-        public System.Guid FeatureId { get; set; } // FeatureId (Primary key)
+        public System.Guid RoleId { get; set; }
+        public System.Guid FeatureId { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent Feature pointed by [RoleFeature].([FeatureId]) (FK_RoleFeature_Feature)
-        /// </summary>
-        public virtual Feature Feature { get; set; } // FK_RoleFeature_Feature
+        public virtual Feature Feature { get; set; }
 
-        /// <summary>
-        /// Parent Role pointed by [RoleFeature].([RoleId]) (FK_RoleFeature_Role)
-        /// </summary>
-        public virtual Role Role { get; set; } // FK_RoleFeature_Role
+        public virtual Role Role { get; set; }
 
         public RoleFeature()
         {

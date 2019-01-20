@@ -3,8 +3,10 @@
     [SysStartTime] DATETIME2 (7)    NOT NULL,
     [SysEndTime]   DATETIME2 (7)    NOT NULL,
     [Name]         NVARCHAR (128)   NOT NULL,
-    [PhysicianId]  UNIQUEIDENTIFIER NULL
+    [PhysicianId]  UNIQUEIDENTIFIER NOT NULL
 );
+
+
 
 
 GO

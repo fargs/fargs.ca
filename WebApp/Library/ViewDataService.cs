@@ -1,4 +1,5 @@
-﻿using LinqKit;
+﻿using ImeHub.Data;
+using LinqKit;
 using Orvosi.Data;
 using Orvosi.Data.Filters;
 using Orvosi.Shared.Enums;
@@ -18,6 +19,7 @@ namespace WebApp.Library
     public class ViewDataService
     {
         IOrvosiDbContext dbContext;
+        ImeHubDbContext db;
         IIdentity identity;
         Guid userId;
 
@@ -26,6 +28,7 @@ namespace WebApp.Library
             this.dbContext = db;
             this.identity = principal.Identity;
             this.userId = identity.GetGuidUserId();
+            this.db = new ImeHubDbContext();
         }
 
         public LookupViewModel<Guid> GetPhysician(int serviceRequestId)
@@ -406,30 +409,13 @@ namespace WebApp.Library
             });
         }
 
-        public AvailableDayDto GetPhysicianAvailableDay(Guid physicianId, DateTime day)
+        public WebApp.Models.AvailableDayDto GetPhysicianAvailableDay(Guid physicianId, DateTime day)
         {
-            return dbContext.AvailableDays
-                .Where(c => c.PhysicianId == physicianId && c.Day == day)
-                .Select(AvailableDayDto.FromAvailableDayEntityForReschedule.Expand())
-                .SingleOrDefault();
+            throw new NotImplementedException();
         }
-        public ViewModelSelectList<AvailableSlotViewModel, short?> GetPhysicianAvailableSlotSelectList(Guid physicianId, DateTime day, short? selectedItemId)
+        public ViewModelSelectList<WebApp.ViewModels.AvailableSlotViewModel, short?> GetPhysicianAvailableSlotSelectList(Guid physicianId, DateTime day, short? selectedItemId)
         {
-            var dto = dbContext.AvailableDays
-                .Where(c => c.PhysicianId == physicianId && c.Day == day)
-                .Select(AvailableDayDto.FromAvailableDayEntityForReschedule.Expand())
-                .SingleOrDefault();
-
-            var result = new ViewModelSelectList<AvailableSlotViewModel, short?>();
-            if (dto == null)
-            {
-                return result;
-            }
-
-            result.Items = dto.AvailableSlots.AsQueryable().Select(AvailableSlotViewModel.FromAvailableSlotDto.Expand()).ToList();
-            result.SelectedItemId = selectedItemId;
-
-            return result;
+            throw new NotImplementedException();
         }
 
         public IEnumerable<LookupViewModel<Guid>> GetRequiredRoles(IEnumerable<TaskDto> tasks)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Views.Shared
 {
@@ -23,13 +23,12 @@ namespace WebApp.Views.Shared
             ColorCode = model.ColorCode;
         }
 
-        public static new Expression<Func<PersonDto, PersonViewModel>> FromPersonDto = e => e == null ? null : new PersonViewModel
+        public static Expression<Func<PersonModel, PersonViewModel>> FromPersonModel = e => e == null ? null : new PersonViewModel
         {
             Id = e.Id,
             Name = e.DisplayName,
             Code = e.Initials,
-            ColorCode = e.ColorCode,
-            Role = LookupViewModel<Guid>.FromLookupDto.Invoke(e.Role)
+            ColorCode = e.ColorCode
         };
     }
 }

@@ -15,25 +15,17 @@
 namespace ImeHub.Data
 {
 
-    // TravelPrice
     public partial class TravelPrice
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid ServiceId { get; set; } // ServiceId
-        public decimal Price { get; set; } // Price
-        public System.Guid CityId { get; set; } // CityId
+        public System.Guid Id { get; set; }
+        public System.Guid ServiceId { get; set; }
+        public decimal Price { get; set; }
+        public System.Guid CityId { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent City pointed by [TravelPrice].([CityId]) (FK_TravelPrice_City)
-        /// </summary>
-        public virtual City City { get; set; } // FK_TravelPrice_City
+        public virtual City City { get; set; }
 
-        /// <summary>
-        /// Parent Service pointed by [TravelPrice].([ServiceId]) (FK_TravelPrice_Service)
-        /// </summary>
-        public virtual Service Service { get; set; } // FK_TravelPrice_Service
+        public virtual Service Service { get; set; }
 
         public TravelPrice()
         {

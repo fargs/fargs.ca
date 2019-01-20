@@ -1,0 +1,258 @@
+﻿<script type="text/javascript">
+
+    function navigateToWorkflow(workflowId) {
+        refreshWorkflowList(workflowId);
+        refreshWorkflowReadOnly(workflowId);
+    }
+
+    function showNewWorkflowForm() {
+        var url = '@Url.Content("~/Workflows/Workflow/ShowNewWorkflowForm")';
+
+        $.get(url)
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showEditWorkflowForm(workflowId) {
+        var url = '@Url.Content("~/Workflows/Workflow/ShowEditWorkflowForm")';
+
+        $.get(url, {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showDeleteWorkflowConfirmation(workflowId) {
+        var url = '@Url.Content("~/Workflows/Workflow/ShowDeleteWorkflowConfirmation")';
+
+        $.get(url, {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showNewWorkItemForm(workflowId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowNewWorkItemForm")', {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+
+    function showAddServiceForm(workflowId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowAddServiceForm")', {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function serviceTemplateChanged(workflowId) {
+        var selectedServiceId = $('#workflow-addservice-form-serviceid').val();
+        $.get('@Url.Content("~/Workflows/Workflow/ShowAddServiceForm")', {
+            workflowId: workflowId,
+            selectedServiceId: selectedServiceId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+        });
+    }
+
+    function showEditServiceForm(workflowId, workflowServiceId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowEditServiceForm")', {
+            workflowId: workflowId,
+            workflowSeviceId: workflowSeviceId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function showEditTravelPriceForm(workflowId, travelPriceId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowEditTravelPriceForm")', {
+            workflowId: workflowId,
+            travelPriceId: travelPriceId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+    function showNewTravelPriceForm(workflowId, workflowServiceId, cityId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowNewTravelPriceForm")', {
+            workflowId: workflowId,
+            workflowServiceId: workflowServiceId,
+            cityId: cityId
+        })
+        .done(function (result) {
+            $('#modal-content-sm').html(result);
+            $('#modal-container-sm').modal('toggle');
+        });
+    }
+    function showEditCancellationPolicyForm(workflowId) {
+        $.get('@Url.Content("~/Workflows/Workflow/ShowEditCancellationPolicyForm")', {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveNewWorkflowForm(form) {
+        var url = '@Url.Content("~/Workflows/Workflow/SaveNewWorkflowForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Workflow added successfully");
+            refreshWorkflowList(result.id);
+            refreshWorkflowReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function saveEditWorkflowForm(form) {
+        var url = '@Url.Content("~/Workflows/Workflow/SaveEditWorkflowForm")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Workflow added successfully");
+            refreshWorkflowReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    function removeWorkflow(workflowId) {
+        var url = '@Url.Content("~/Workflows/Workflow/Remove")';
+
+        $.post(url, {
+            workflowId: workflowId
+        })
+        .done(function () {
+            toastr.success("Workflow removed successfully");
+            refreshWorkflowList();
+            refreshWorkflowReadOnly();
+        });
+    }
+
+    // Address API
+    function saveNewWorkItemForm(workflowId, form) {
+
+        $.post('@Url.Content("~/Workflows/Workflow/SaveNewWorkItemForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Work Item added successfully");
+            refreshWorkflowList(workflowId);
+            refreshWorkflowReadOnly(workflowId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    // Service API
+    function saveAddServiceForm(workflowId, form) {
+
+        $.post('@Url.Content("~/Workflows/Workflow/SaveAddServiceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Address added successfully");
+            refreshWorkflowList(workflowId);
+            refreshWorkflowReadOnly(workflowId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    // Travel Price API
+    function saveNewTravelPriceForm(workflowId, form) {
+
+        $.post('@Url.Content("~/Workflows/Workflow/SaveNewTravelPriceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Price override added successfully");
+            refreshWorkflowList(workflowId);
+            refreshWorkflowReadOnly(workflowId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+    function saveEditTravelPriceForm(workflowId, form) {
+
+        $.post('@Url.Content("~/Workflows/Workflow/SaveEditTravelPriceForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container-sm').modal('toggle');
+            toastr.success("Price override updated successfully");
+            refreshWorkflowReadOnly(workflowId);
+        }).error(function (result) {
+            $('#modal-content-sm').html(result.responseText);
+        });
+    }
+
+    // Cancellation Policy API
+    function saveEditCancellationPolicyForm(workflowId, form) {
+
+        $.post('@Url.Content("~/Workflows/Workflow/SaveEditCancellationPolicyForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Cancellation policy updated successfully");
+            refreshWorkflowReadOnly(workflowId);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function refreshWorkflowList(workflowId) {
+        let url = '@Url.Content("~/Workflows/Workflow/List")';
+        $.get(url, {
+            workflowId: workflowId
+        })
+            .done(function (result) {
+                $('#workflow-list-container').html(result);
+            });
+    }
+    function refreshWorkflowReadOnly(workflowId) {
+
+        let url = new URL(window.location);
+        url.searchParams.set('workflowId', workflowId);
+        history.pushState({}, "", url);
+
+        $.get('@Url.Content("~/Workflows/Workflow/ReadOnly")', {
+            workflowId: workflowId
+        })
+        .done(function (result) {
+            $('#workflow-readonly-container').html(result);
+        });
+    }
+
+</script>

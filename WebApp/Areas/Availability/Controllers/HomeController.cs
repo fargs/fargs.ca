@@ -1,5 +1,4 @@
-﻿using Orvosi.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -8,16 +7,17 @@ using System.Web.Mvc;
 using WebApp.Areas.Shared;
 using WebApp.Areas.Availability.Views.Home;
 using WebApp.Library.Filters;
-using Features = Orvosi.Shared.Enums.Features;
+using ImeHub.Data;
+using Features = ImeHub.Models.Enums.Features.PhysicianPortal;
 
 namespace WebApp.Areas.Availability.Controllers
 {
     public class HomeController : BaseController
     {
         private DateTime _selectedDate;
-        private OrvosiDbContext db;
+        private ImeHubDbContext db;
 
-        public HomeController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        public HomeController(ImeHubDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
         {
             this.db = db;
         }

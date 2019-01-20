@@ -41,6 +41,21 @@ namespace ImeHub.Models.Database
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Work.Schedule), Name = "Schedule" });
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Work.Additionals), Name = "Additionals" });
 
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Availability.AvailabilitySection), Name = "Availability" });
+
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Team.TeamSection), Name = "Team" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Team.Create), Name = "Create" });
+
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Companies.Section), Name = "Companies" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Companies.Create), Name = "Create" });
+
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Invoices.Section), Name = "Invoices" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Invoices.Manage), Name = "Manage" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Invoices.Cancel), Name = "Cancel" });
+
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Workflows.Section), Name = "Workflows" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Workflows.Manage), Name = "Manage" });
+
             // SUPER ADMIN HAS ACCESS TO ALL FEATURES
 
             // MANAGER FEATURES
@@ -49,13 +64,72 @@ namespace ImeHub.Models.Database
 
             // PHYSICIAN FEATURES
             db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.WorkSection) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.DaySheet) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Tasks) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Schedule) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Additionals) });
 
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Availability.AvailabilitySection) });
+
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Team.TeamSection) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Team.Create) });
+
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Companies.Section) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Companies.Create) });
+
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Invoices.Section) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Invoices.Manage) });
+
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Workflows.Section) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Workflows.Manage) });
+
+            // Service Request Status
+            db.ServiceRequestStatus.AddOrUpdate(new ServiceRequestStatu { Id = (byte)Enums.ServiceRequestStatus.Active, Name = "Active" });
+            db.ServiceRequestStatus.AddOrUpdate(new ServiceRequestStatu { Id = (byte)Enums.ServiceRequestStatus.Closed, Name = "Closed" });
+            db.ServiceRequestStatus.AddOrUpdate(new ServiceRequestStatu { Id = (byte)Enums.ServiceRequestStatus.OnHold, Name = "On Hold" });
 
             // ACCEPTANCE STATUS
             db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Accepted, Name = "Accepted" });
             db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotResponded, Name = "Not Responded" });
             db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.Rejected, Name = "Rejected" });
             db.PhysicianOwnerAcceptanceStatus.AddOrUpdate(new PhysicianOwnerAcceptanceStatu { Id = (byte)Enums.AcceptanceStatus.NotSent, Name = "Not Sent" });
+
+            // Invite Status
+            db.InviteStatus.AddOrUpdate(new InviteStatu { Id = (byte)Enums.InviteStatus.Accepted, Name = "Accepted" });
+            db.InviteStatus.AddOrUpdate(new InviteStatu { Id = (byte)Enums.InviteStatus.NotResponded, Name = "Not Responded" });
+            db.InviteStatus.AddOrUpdate(new InviteStatu { Id = (byte)Enums.InviteStatus.Rejected, Name = "Rejected" });
+            db.InviteStatus.AddOrUpdate(new InviteStatu { Id = (byte)Enums.InviteStatus.NotSent, Name = "Not Sent" });
+
+            // Cancellation Status
+            db.CancellationStatus.AddOrUpdate(new CancellationStatu { Id = (byte)Enums.CancellationStatus.Cancellation, Name = "Cancellation" });
+            db.CancellationStatus.AddOrUpdate(new CancellationStatu { Id = (byte)Enums.CancellationStatus.LateCancellation, Name = "Late Cancellation" });
+            db.CancellationStatus.AddOrUpdate(new CancellationStatu { Id = (byte)Enums.CancellationStatus.NoShow, Name = "No Show" });
+            db.CancellationStatus.AddOrUpdate(new CancellationStatu { Id = (byte)Enums.CancellationStatus.NotCancelled, Name = "Not Cancelled" });
+
+            // Address Types
+            db.AddressTypes.AddOrUpdate(new AddressType { Id = (byte)Enums.AddressType.CompanyAssessmentOffice, Name = "Company Assessment Office" });
+            db.AddressTypes.AddOrUpdate(new AddressType { Id = (byte)Enums.AddressType.PhysicianClinic, Name = "Physician Clinic" });
+            db.AddressTypes.AddOrUpdate(new AddressType { Id = (byte)Enums.AddressType.PrimaryOffice, Name = "Primary Office" });
+            db.AddressTypes.AddOrUpdate(new AddressType { Id = (byte)Enums.AddressType.Billing, Name = "Billing" });
+
+            // Countries
+            db.Countries.AddOrUpdate(new Country { Id = 1, Name = "Canada", Iso3DigitCountry = 124, Iso2CountryCode = "CA", Iso3CountryCode = "CAN" });
+
+            // Provinces
+            db.Provinces.AddOrUpdate(new Province { Id = 1, ProvinceName = "Alberta", ProvinceCode = "AB", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 2, ProvinceName = "British Columbia", ProvinceCode = "BC", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 3, ProvinceName = "Manitoba", ProvinceCode = "MB", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 4, ProvinceName = "New Brunswick", ProvinceCode = "NB", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 5, ProvinceName = "Newfoundland and Labrador", ProvinceCode = "NL", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 6, ProvinceName = "Northwest Territories", ProvinceCode = "NT", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 7, ProvinceName = "Nova Scotia", ProvinceCode = "NS", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 8, ProvinceName = "Nunavut", ProvinceCode = "NU", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 9, ProvinceName = "Ontario", ProvinceCode = "ON", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 10, ProvinceName = "Prince Edward Island", ProvinceCode = "PE", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 11, ProvinceName = "Québec", ProvinceCode = "QB", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 12, ProvinceName = "Saskatchewan", ProvinceCode = "SK", CountryId = 1 });
+            db.Provinces.AddOrUpdate(new Province { Id = 13, ProvinceName = "Yukon", ProvinceCode = "YT", CountryId = 1 });
+
         }
     }
 }

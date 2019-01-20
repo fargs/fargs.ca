@@ -15,20 +15,14 @@
 namespace ImeHub.Data
 {
 
-    // TimeZone
     public partial class TimeZone
     {
-        public short Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 50)
-        public string Iana { get; set; } // IANA (length: 50)
-        public string Iso { get; set; } // ISO (length: 50)
+        public short Id { get; set; }
+        public string Name { get; set; }
+        public string Iana { get; set; }
+        public string Iso { get; set; }
 
-        // Reverse navigation
-
-        /// <summary>
-        /// Child Addresses where [Address].[TimeZoneId] point to this entity (FK_Address_TimeZone)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_TimeZone
+        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; }
 
         public TimeZone()
         {

@@ -15,19 +15,14 @@
 namespace ImeHub.Data
 {
 
-    // UserLogin
     public partial class UserLogin
     {
-        public string LoginProvider { get; set; } // LoginProvider (Primary key) (length: 128)
-        public string ProviderKey { get; set; } // ProviderKey (Primary key) (length: 128)
-        public System.Guid UserId { get; set; } // UserId (Primary key)
+        public string LoginProvider { get; set; }
+        public string ProviderKey { get; set; }
+        public System.Guid UserId { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent User pointed by [UserLogin].([UserId]) (FK_UserLogin_User)
-        /// </summary>
-        public virtual User User { get; set; } // FK_UserLogin_User
+        public virtual User User { get; set; }
 
         public UserLogin()
         {

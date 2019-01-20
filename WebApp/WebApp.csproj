@@ -192,6 +192,12 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
       <Private>True</Private>
@@ -309,6 +315,9 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -321,6 +330,9 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.OData, Version=5.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.3.1\lib\net45\System.Web.Http.OData.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
@@ -473,6 +485,9 @@
     <Compile Include="Areas\Availability\Views\Home\_ViewModels\CalendarNavigationViewModel.cs" />
     <Compile Include="Areas\Availability\Views\Home\_ViewModels\IndexViewModel.cs" />
     <Compile Include="Areas\Availability\Views\Home\_ViewModels\PersonViewModel.cs" />
+    <Compile Include="Areas\Availability\Views\Shared\AddressViewModel.cs" />
+    <Compile Include="Areas\Availability\Views\Shared\CompanyViewModel.cs" />
+    <Compile Include="Areas\Availability\Views\Shared\PhysicianViewModel.cs" />
     <Compile Include="Areas\BaseController.cs" />
     <Compile Include="Areas\Calendar\CalendarAreaRegistration.cs" />
     <Compile Include="Areas\Calendar\CalendarService.cs" />
@@ -498,11 +513,10 @@
     <Compile Include="Areas\Companies\Views\Company\ReadOnlyViewModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\ListViewModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\CompanyForm.cs" />
-    <Compile Include="Areas\Companies\Views\Company\CompanyV2ViewModel.cs" />
+    <Compile Include="Areas\Companies\Views\Company\CompanyViewModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\Service\AddServiceFormModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\Service\ServiceFormModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\Service\ServiceListViewModel.cs" />
-    <Compile Include="Areas\Companies\Views\Company\Service\ServiceV2ViewModel.cs" />
     <Compile Include="Areas\Companies\Views\Company\Service\ServiceViewModel.cs" />
     <Compile Include="Areas\Dashboard\Controllers\HomeController.cs" />
     <Compile Include="Areas\Dashboard\Views\Home\ILinkedProfileViewModel.cs" />
@@ -523,6 +537,9 @@
     <Compile Include="Areas\Invoices\Views\Unsent\UnsentInvoiceViewModel.cs" />
     <Compile Include="Areas\Physicians\Controllers\InviteController.cs" />
     <Compile Include="Areas\Physicians\Controllers\PhysicianController.cs" />
+    <Compile Include="Areas\Physicians\Views\Physician\Address\AddressFormModel.cs" />
+    <Compile Include="Areas\Physicians\Views\Physician\Address\AddressListViewModel.cs" />
+    <Compile Include="Areas\Physicians\Views\Physician\Address\AddressViewModel.cs" />
     <Compile Include="Areas\Physicians\Views\Physician\TermsAndConditionsFormModel.cs" />
     <Compile Include="Areas\Physicians\PhysiciansAreaRegistration.cs" />
     <Compile Include="Areas\Dashboard\Views\Home\PhysicianInviteViewModel.cs" />
@@ -573,12 +590,27 @@
     <Compile Include="Areas\Services\Views\Service\ServiceV2ViewModel.cs" />
     <Compile Include="Areas\SysTools\Controllers\HomeController.cs" />
     <Compile Include="Areas\SysTools\SysToolsAreaRegistration.cs" />
-    <Compile Include="Areas\Team\Views\TeamMember\NewTeamMemberFormModel.cs" />
+    <Compile Include="Areas\Team\Controllers\TeamRoleController.cs" />
+    <Compile Include="Areas\Team\Views\TeamMember\InviteTeamMemberFormModel.cs" />
     <Compile Include="Areas\Team\Controllers\TeamMemberController.cs" />
     <Compile Include="Areas\Team\TeamAreaRegistration.cs" />
     <Compile Include="Areas\Team\Views\TeamMember\IndexViewModel.cs" />
     <Compile Include="Areas\Team\Views\TeamMember\ListViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamMember\TeamMemberInvitationNotificationViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamMember\TeamMemberInviteViewModel.cs" />
     <Compile Include="Areas\Team\Views\TeamMember\TeamMemberViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamRole\IndexViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamRole\ListViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamRole\TeamRoleViewModel.cs" />
+    <Compile Include="Areas\Team\Views\TeamRole\TeamRoleForm.cs" />
+    <Compile Include="Areas\Workflows\Controllers\WorkflowController.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemFormModel.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemViewModel.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\ReadOnlyViewModel.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\WorkflowForm.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\IndexViewModel.cs" />
+    <Compile Include="Areas\Workflows\Views\Workflow\ListViewModel.cs" />
+    <Compile Include="Areas\Workflows\WorkflowsAreaRegistration.cs" />
     <Compile Include="Areas\Work\Controllers\AdditionalsController.cs" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalsViewModel.cs" />
     <Compile Include="Areas\Work\Controllers\ScheduleController.cs" />
@@ -652,7 +684,7 @@
     <Content Include="Areas\Team\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Team\Views\TeamMember\IndexJS.cshtml" />
     <Content Include="Areas\Team\Views\TeamMember\List.cshtml" />
-    <Content Include="Areas\Team\Views\TeamMember\NewTeamMemberForm.cshtml" />
+    <Content Include="Areas\Team\Views\TeamMember\InviteTeamMemberForm.cshtml" />
     <Content Include="Areas\Admin\Views\Physician\Index.cshtml" />
     <Content Include="Areas\Physicians\Views\web.config" />
     <Content Include="Areas\Physicians\Views\Physician\Index.cshtml" />
@@ -686,6 +718,23 @@
     <Content Include="Areas\Physicians\Views\Invite\RegisterUser.cshtml" />
     <Content Include="Areas\Physicians\Views\Physician\TermsAndConditions.cshtml" />
     <Content Include="Areas\Physicians\Views\Physician\InvalidOwnerInvite.cshtml" />
+    <Content Include="Areas\Team\Views\TeamMember\TeamMemberInvitationNotification.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\Address\AddressForm.cshtml" />
+    <Content Include="Areas\Physicians\Views\Physician\Address\AddressList.cshtml" />
+    <Content Include="Areas\Workflows\Views\web.config" />
+    <Content Include="Areas\Workflows\Views\Workflow\Index.cshtml" />
+    <Content Include="Areas\Workflows\Views\Workflow\IndexJS.cshtml" />
+    <Content Include="Areas\Workflows\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Workflows\Views\Workflow\List.cshtml" />
+    <Content Include="Areas\Workflows\Views\Workflow\WorkflowForm.cshtml" />
+    <Content Include="Areas\Workflows\Views\Workflow\ReadOnly.cshtml" />
+    <Content Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemForm.cshtml" />
+    <Content Include="Areas\Team\Views\TeamRole\List.cshtml" />
+    <Content Include="Areas\Team\Views\TeamRole\Index.cshtml" />
+    <Content Include="Areas\Team\Views\TeamRole\IndexJS.cshtml" />
+    <Content Include="Areas\Team\Views\TeamRole\TeamRoleForm.cshtml" />
+    <Content Include="Areas\Team\Views\TeamRole\web.config" />
+    <Content Include="Areas\Team\Views\TeamMember\web.config" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -707,7 +756,6 @@
     <Compile Include="Areas\Work\WorkAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AccountingController.cs" />
-    <Compile Include="Controllers\AvailabilityController.cs" />
     <Compile Include="Controllers\BoxController.cs" />
     <Compile Include="Controllers\BoxTokenManagerController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
@@ -734,6 +782,7 @@
     <Compile Include="Controllers\ServiceRequestTemplateTaskController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="ErrorHandler\AiHandleErrorAttribute.cs" />
+    <Compile Include="FormModels\BookingForm.cs" />
     <Compile Include="FormModels\ChangeClaimantForm.cs" />
     <Compile Include="FormModels\ChangeCompanyForm.cs" />
     <Compile Include="FormModels\ChangeAddressForm.cs" />
@@ -741,14 +790,15 @@
     <Compile Include="FormModels\EditTaskDependenciesForm.cs" />
     <Compile Include="FormModels\EditTaskForm.cs" />
     <Compile Include="FormModels\NewTaskForm.cs" />
-    <Compile Include="FormModels\AvailableDayAddressForm.cs" />
-    <Compile Include="FormModels\AvailableDayCompanyForm.cs" />
-    <Compile Include="FormModels\BookingForm.cs" />
+    <Compile Include="Areas\Availability\Views\Availability\_ViewModels\BookingForm.cs" />
     <Compile Include="FormModels\CancellationForm.cs" />
     <Compile Include="Library\CurrencyValidator.cs" />
     <Compile Include="Library\Google\AppFlowMetadata.cs" />
     <Compile Include="Library\Google\GoogleDatabaseStore.cs" />
     <Compile Include="Models\AddressV2Dto.cs" />
+    <Compile Include="Models\AvailableDayDto.cs" />
+    <Compile Include="Models\AvailableDayResourceDto.cs" />
+    <Compile Include="Models\AvailableSlotDto.cs" />
     <Compile Include="Models\CancellationPolicyDto.cs" />
     <Compile Include="Models\CompanyServiceDto.cs" />
     <Compile Include="Models\PhysicianDto.cs" />
@@ -757,11 +807,13 @@
     <Compile Include="Models\ServiceV2Dto.cs" />
     <Compile Include="Models\ServiceCatalogueDto.cs" />
     <Compile Include="Models\TravelPriceDto.cs" />
+    <Compile Include="ViewModels\AvailableDayResourceViewModel.cs" />
+    <Compile Include="ViewModels\AvailableDayViewModel.cs" />
+    <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
     <Compile Include="Views\Comment\CommentForm.cs" />
     <Compile Include="FormModels\NoShowForm.cs" />
     <Compile Include="FormModels\PickupTasksAssignedToRoleForm.cs" />
     <Compile Include="FormModels\RequiredResourcesForm.cs" />
-    <Compile Include="FormModels\AvailableDayResourceForm.cs" />
     <Compile Include="FormModels\ResourceForm.cs" />
     <Compile Include="FormModels\RescheduleForm.cs" />
     <Compile Include="FormModels\ServiceCatalogueForm.cs" />
@@ -805,9 +857,6 @@
     <Compile Include="Library\WorkService.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddressDto.cs" />
-    <Compile Include="Models\AvailableDayDto.cs" />
-    <Compile Include="Models\AvailableDayResourceDto.cs" />
-    <Compile Include="Models\AvailableSlotDto.cs" />
     <Compile Include="Models\BoxModels.cs" />
     <Compile Include="Models\CommentDto.cs" />
     <Compile Include="Models\CustomerDto.cs" />
@@ -855,7 +904,6 @@
     <Compile Include="ViewDataModels\CaseLinkArgs.cs" />
     <Compile Include="ViewDataModels\Common\ViewTarget.cs" />
     <Compile Include="Views\Address\AddressViewModel.cs" />
-    <Compile Include="ViewModels\AvailabilityViewModels.cs" />
     <Compile Include="ViewModels\BulkUpdateDueDateForm.cs" />
     <Compile Include="FormModels\BulkUpdateDueDateFormModel.cs" />
     <Compile Include="Views\Comment\CommentListViewModel.cs" />
@@ -870,9 +918,6 @@
     <Compile Include="Views\Teleconference\_ViewModels\TeleconferenceListViewModel.cs" />
     <Compile Include="ViewModels\ServiceRequestTaskViewModels\BulkUpdateDueDateViewModel.cs" />
     <Compile Include="ViewModels\ViewModelSelectList.cs" />
-    <Compile Include="ViewModels\AvailableSlotViewModel.cs" />
-    <Compile Include="ViewModels\AvailableDayResourceViewModel.cs" />
-    <Compile Include="ViewModels\AvailableDayViewModel.cs" />
     <Compile Include="ViewModels\BoxViewModels.cs" />
     <Compile Include="ViewModels\CalendarViewModels\DayViewModel.cs" />
     <Compile Include="Views\Cancellation\_ViewModels\CancellationViewModel.cs" />
@@ -1774,8 +1819,8 @@
     <Content Include="Views\Availability\_AvailableDayResourceForm.cshtml" />
     <Content Include="Views\Availability\_AvailableDayResourceList.cshtml" />
     <Content Include="Views\Availability\_DeleteAvailableDayResourceModalForm.cshtml" />
-    <Content Include="Views\ServiceRequest\BookingJS.cshtml" />
-    <Content Include="Views\ServiceRequest\Booking.cshtml" />
+    <Content Include="Areas\Availability\Views\Availability\BookingJS.cshtml" />
+    <Content Include="Areas\Availability\Views\Availability\Booking.cshtml" />
     <Content Include="Views\Shared\ModalContainerForLoader.cshtml" />
     <Content Include="Views\Resources\_ActionMenu.cshtml" />
     <Content Include="Views\ServiceRequestTask\_PickupTasksAssignedToRoleModalForm.cshtml" />
@@ -1988,6 +2033,7 @@
     <Content Include="Views\Shared\Initials.cshtml" />
     <Content Include="Views\Shared\_LayoutUser.cshtml" />
     <Content Include="Views\Shared\_LayoutAnonymous.cshtml" />
+    <Content Include="Views\Shared\_LayoutPhysician.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1997,7 +2043,6 @@
     <Folder Include="Areas\Admin\Views\Box\" />
     <Folder Include="Areas\Admin\Views\UserRole\" />
     <Folder Include="Areas\Availability\Models\" />
-    <Folder Include="Areas\Availability\Views\Shared\" />
     <Folder Include="Areas\Calendar\Models\" />
     <Folder Include="Areas\Calendar\Views\Shared\" />
     <Folder Include="Areas\Calendar\Views\Shell\" />
@@ -2016,6 +2061,8 @@
     <Folder Include="Areas\SysTools\Views\Shared\" />
     <Folder Include="Areas\Team\Models\" />
     <Folder Include="Areas\Team\Views\Shared\" />
+    <Folder Include="Areas\Workflows\Models\" />
+    <Folder Include="Areas\Workflows\Views\Shared\" />
     <Folder Include="Areas\Work\Models\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Views\AuthCallback\" />

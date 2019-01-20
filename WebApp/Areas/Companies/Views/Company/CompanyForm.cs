@@ -1,5 +1,5 @@
 ﻿using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.ViewModels;
 using WebApp.Views.Shared;
 
@@ -21,9 +21,9 @@ namespace WebApp.Areas.Companies.Views.Company
         {
             PhysicianId = physicianId;
         }
-        public CompanyForm(Guid companyId, Guid physicianId, OrvosiDbContext db) : this(physicianId)
+        public CompanyForm(Guid companyId, Guid physicianId, ImeHubDbContext db) : this(physicianId)
         {
-            var company = db.CompanyV2
+            var company = db.Companies
                 .Single(s => s.Id == companyId);
 
             CompanyId = companyId;

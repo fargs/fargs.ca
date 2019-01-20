@@ -15,37 +15,24 @@
 namespace ImeHub.Data
 {
 
-    // WorkItem
     public partial class WorkItem
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public short Sequence { get; set; } // Sequence
-        public string Name { get; set; } // Name (length: 128)
-        public System.Guid? RoleId { get; set; } // RoleId
-        public bool IsBaselineDate { get; set; } // IsBaselineDate
-        public short? DueDateDurationFromBaseline { get; set; } // DueDateDurationFromBaseline
-        public short? EffectiveDateDurationFromBaseline { get; set; } // EffectiveDateDurationFromBaseline
-        public bool IsCriticalPath { get; set; } // IsCriticalPath
-        public bool IsBillable { get; set; } // IsBillable
-        public System.Guid WorkflowId { get; set; } // WorkflowId
+        public System.Guid Id { get; set; }
+        public short Sequence { get; set; }
+        public string Name { get; set; }
+        public System.Guid? RoleId { get; set; }
+        public bool IsBaselineDate { get; set; }
+        public short? DueDateDurationFromBaseline { get; set; }
+        public short? EffectiveDateDurationFromBaseline { get; set; }
+        public bool IsCriticalPath { get; set; }
+        public bool IsBillable { get; set; }
+        public System.Guid WorkflowId { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ChildId { get; set; }
+        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ParentId { get; set; }
 
-        /// <summary>
-        /// Child WorkItemRelateds where [WorkItemRelated].[ChildId] point to this entity (FK_WorkItemRelated_Dependent)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ChildId { get; set; } // WorkItemRelated.FK_WorkItemRelated_Dependent
-        /// <summary>
-        /// Child WorkItemRelateds where [WorkItemRelated].[ParentId] point to this entity (FK_WorkItemRelated_WorkItem)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ParentId { get; set; } // WorkItemRelated.FK_WorkItemRelated_WorkItem
 
-        // Foreign keys
-
-        /// <summary>
-        /// Parent Workflow pointed by [WorkItem].([WorkflowId]) (FK_WorkItem_Workflow)
-        /// </summary>
-        public virtual Workflow Workflow { get; set; } // FK_WorkItem_Workflow
+        public virtual Workflow Workflow { get; set; }
 
         public WorkItem()
         {

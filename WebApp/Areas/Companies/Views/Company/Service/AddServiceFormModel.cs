@@ -1,5 +1,5 @@
 ﻿using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using WebApp.Library;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
@@ -16,14 +16,14 @@ namespace WebApp.Areas.Companies.Views.Company
         public AddServiceFormModel()
         {
         }
-        public AddServiceFormModel(Guid companyId, Guid? serviceId, OrvosiDbContext db, Guid physicianId)
+        public AddServiceFormModel(Guid companyId, Guid? serviceId, ImeHubDbContext db, Guid physicianId)
         {
 
             CompanyId = companyId;
             if (serviceId.HasValue)
             {
                 ServiceId = serviceId;
-                var selectedServiceDto = ServiceV2Dto.FromServiceV2Entity.Invoke(db.ServiceV2.SingleOrDefault(s => s.Id == serviceId.Value));
+                var selectedServiceDto = ServiceModel.FromServiceEntity.Invoke(db.Services.SingleOrDefault(s => s.Id == serviceId.Value));
                 SelectedServiceName = selectedServiceDto.Name;
                 SelectedServicePrice = selectedServiceDto.Price;
                 SelectedServiceIsTravelRequired = selectedServiceDto.IsTravelRequired;
@@ -37,24 +37,24 @@ namespace WebApp.Areas.Companies.Views.Company
         public Guid? ServiceId { get; set; }
         public Guid? Id { get; set; }
         public string Name { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
         public bool? IsTravelRequired { get; set; }
 
         public ViewDataModel ViewData { get; private set; }
 
-        public void LoadViewData(OrvosiDbContext db, Guid physicianId)
+        public void LoadViewData(ImeHubDbContext db, Guid physicianId)
         {
             ViewData = new ViewDataModel(db, physicianId);
         }
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
+            private ImeHubDbContext db;
             private Guid physicianId;
 
             public IEnumerable<SelectListItem> Services { get; }
 
-            public ViewDataModel(OrvosiDbContext db, Guid physicianId)
+            public ViewDataModel(ImeHubDbContext db, Guid physicianId)
             {
                 this.db = db;
                 this.physicianId = physicianId;
@@ -63,14 +63,22 @@ namespace WebApp.Areas.Companies.Views.Company
 
             private IEnumerable<SelectListItem> GetServiceSelectList()
             {
-                return db.ServiceV2
+                return db.Companies
+                    .AsNoTracking()
+                    .AsExpandable()
                     .Where(s => s.PhysicianId == physicianId)
-                    .Select(ServiceV2Dto.FromServiceV2Entity.Expand())
+                    .SelectMany(c => c.Services, (c, s) => new
+                    {
+                        s.Name,
+                        s.IsTravelRequired,
+                        s.Price
+                    })
+                    .Distinct()
                     .AsEnumerable()
                     .Select(c => new SelectListItem()
                     {
                         Text = $"{c.Name} ({String.Format("{0:C2}", c.Price.ToString())})",
-                        Value = c.Id.ToString()
+                        Value = c.Name
                     })
                     .OrderBy(c => c.Text)
                     .ToList();

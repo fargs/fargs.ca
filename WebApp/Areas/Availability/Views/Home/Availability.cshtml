@@ -1,6 +1,6 @@
 ﻿@model AvailabilityViewModel
 <h2>@Model.MonthName</h2>
-@if (Model.AvailableDays.Count() <= 0)
+@if (!Model.AvailableDays.Any())
 {
     <div>No available days</div>
 }

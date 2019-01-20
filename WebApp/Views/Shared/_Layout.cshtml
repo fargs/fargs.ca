@@ -90,6 +90,7 @@
                                 </ul>
                             </li>
                         }
+
                         if (features.Contains(Features.Availability.AvailabilitySection))
                         {
                             <li>@Html.ActionLink("Availability", "Index", "Home", new { area = "Availability" }, null)</li>
@@ -102,6 +103,11 @@
                         {
                             <li>@Html.ActionLink("Invoices", "Index", "Unsent", new { area = "Invoices" }, null)</li>
                         }
+                        if (features.Contains(Features.Collaborator.CollaboratorSection))
+                        {
+                            <li>@Html.ActionLink("Team", "Index", "TeamMember", new { area = "Team" }, null)</li>
+                        }
+                        
                         if (features.Contains(Features.Admin.Section))
                         {
                             <li role="presentation" class="dropdown">
@@ -109,10 +115,6 @@
                                     Admin <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    @if (features.Contains(Features.Collaborator.CollaboratorSection))
-                                    {
-                                        <li>@Html.ActionLink("Team", "Index", "Collaborator", new { area = "" }, null)</li>
-                                    }
                                     @if (features.Contains(Features.Admin.ViewCompanies))
                                     {
                                         <li>@Html.ActionLink("Companies", "Index", "Company", new { area = "Companies" }, null)</li>

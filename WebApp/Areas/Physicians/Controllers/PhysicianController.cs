@@ -21,6 +21,7 @@ using WebApp.Views.Shared;
 using Enums = ImeHub.Models.Enums;
 using Features = ImeHub.Models.Enums.Features.UserPortal;
 using WebApp.Models;
+using WebApp.Areas.Physicians.Views.Physician.Address;
 
 namespace WebApp.Areas.Physicians.Controllers
 {
@@ -75,6 +76,27 @@ namespace WebApp.Areas.Physicians.Controllers
             owner.UserId = identity.GetGuidUserId();
             owner.AcceptanceStatusChangedDate = now;
 
+            var teamRole = new TeamRole
+            {
+                Id = Guid.NewGuid(),
+                PhysicianId = owner.PhysicianId,
+                Name = "Physician"
+            };
+
+            db.TeamRoles.Add(teamRole);
+
+            await db.SaveChangesAsync();
+
+            var teamMember = new TeamMember
+            {
+                Id = Guid.NewGuid(),
+                PhysicianId = owner.PhysicianId,
+                RoleId = teamRole.Id,
+                UserId = owner.UserId.Value
+            };
+
+            db.TeamMembers.Add(teamMember);
+
             await db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home", new { area = "Dashboard" });
@@ -119,6 +141,7 @@ namespace WebApp.Areas.Physicians.Controllers
             };
 
             db.Physicians.Add(physician);
+
             await db.SaveChangesAsync();
 
             return Json(new
@@ -152,6 +175,7 @@ namespace WebApp.Areas.Physicians.Controllers
                 AcceptanceStatusId = (byte)Enums.AcceptanceStatus.NotSent,
                 AcceptanceStatusChangedDate = now
             };
+
             db.PhysicianOwners.Add(owner);
 
             await db.SaveChangesAsync();
@@ -220,5 +244,69 @@ namespace WebApp.Areas.Physicians.Controllers
 
             return message;
         }
+
+        [AuthorizeRole(Feature = Features.Physicians.Manage)]
+        public PartialViewResult ShowNewAddressForm(Guid physicianId)
+        {
+            var formModel = new AddressFormModel(physicianId, db);
+
+            return PartialView("Address/AddressForm", formModel);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Physicians.Manage)]
+        public async Task<ActionResult> SaveNewAddressForm(AddressFormModel form)
+        {
+            if (!ModelState.IsValid)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                form.ViewData = new AddressFormModel.ViewDataModel(db, form.PhysicianId);
+                return PartialView("Address/AddressForm", form);
+            }
+
+            Guid cityId = Guid.NewGuid();
+
+            // use the existing city if found, otherwise create a new city and use the Id.
+            var city = db.Cities.FirstOrDefault(c => c.Name == form.City && c.ProvinceId == form.ProvinceId);
+            if (city == null)
+            {
+                city = new City
+                {
+                    Id = cityId,
+                    Name = form.City,
+                    ProvinceId = form.ProvinceId,
+                    PhysicianId = form.PhysicianId
+                };
+                db.Cities.Add(city);
+            }
+            else
+            {
+                cityId = city.Id;
+            }
+
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                PhysicianId = form.PhysicianId,
+                Name = form.Name,
+                CityId = cityId,
+                PostalCode = form.PostalCode,
+                TimeZoneId = form.TimeZoneId,
+                Address1 = form.Address1,
+                Address2 = form.Address2,
+                AddressTypeId = (byte)Enums.AddressType.CompanyAssessmentOffice,
+                IsBillingAddress = form.IsBillingAddress
+            };
+            db.Addresses.Add(address);
+
+
+            await db.SaveChangesAsync();
+
+            return Json(new
+            {
+                id = address.Id
+            });
+        }
+
     }
 }

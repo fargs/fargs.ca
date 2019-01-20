@@ -1,6 +1,6 @@
 ﻿using LinqKit;
-using Orvosi.Data;
-using Orvosi.Shared.Enums;
+using ImeHub.Data;
+using Enums = ImeHub.Models.Enums;
 using System;
 using System.Linq;
 using System.Net;
@@ -10,21 +10,21 @@ using System.Web.Mvc;
 using WebApp.Areas.Companies.Views.Company;
 using WebApp.Areas.Shared;
 using WebApp.Library.Filters;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
-using Features = Orvosi.Shared.Enums.Features;
+using Features = ImeHub.Models.Enums.Features.PhysicianPortal;
 
 namespace WebApp.Areas.Companies.Controllers
 {
     public class CompanyController : BaseController
     {
-        private OrvosiDbContext db;
+        private ImeHubDbContext db;
 
-        public CompanyController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        public CompanyController(ImeHubDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
         {
             this.db = db;
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Search)]
+        [AuthorizeRole(Feature = Features.Companies.Search)]
         public ViewResult Index(Guid? companyId)
         {
             var list = new ListViewModel(companyId, db, identity, now);
@@ -34,7 +34,7 @@ namespace WebApp.Areas.Companies.Controllers
             {
                 readOnly = new ReadOnlyViewModel(companyId.Value, db, identity, now);
             }
-            
+
             var viewModel = new IndexViewModel(list, readOnly, identity, now);
 
             return View(viewModel);
@@ -42,7 +42,7 @@ namespace WebApp.Areas.Companies.Controllers
 
         #region Views
 
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Search)]
+        [AuthorizeRole(Feature = Features.Companies.Search)]
         public PartialViewResult List(Guid? companyId)
         {
             var viewModel = new ListViewModel(companyId, db, identity, now);
@@ -50,21 +50,21 @@ namespace WebApp.Areas.Companies.Controllers
             return PartialView(viewModel);
         }
 
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Search)]
+        [AuthorizeRole(Feature = Features.Companies.Search)]
         public PartialViewResult ReadOnly(Guid companyId)
         {
             var readOnly = new ReadOnlyViewModel(companyId, db, identity, now);
 
             return PartialView(readOnly);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Search)]
+        [AuthorizeRole(Feature = Features.Companies.Search)]
         public PartialViewResult ReadOnlyMenu(Guid companyId)
         {
             var readOnly = new ReadOnlyViewModel(companyId, db, identity, now);
 
             return PartialView(readOnly);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowNewCompanyForm()
         {
             if (!physicianId.HasValue)
@@ -75,7 +75,7 @@ namespace WebApp.Areas.Companies.Controllers
 
             return PartialView("CompanyForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowEditCompanyForm(Guid companyId)
         {
             if (!physicianId.HasValue)
@@ -86,7 +86,7 @@ namespace WebApp.Areas.Companies.Controllers
 
             return PartialView("CompanyForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowDeleteCompanyConfirmation(Guid companyId)
         {
             if (!physicianId.HasValue)
@@ -97,7 +97,7 @@ namespace WebApp.Areas.Companies.Controllers
 
             return PartialView("DeleteCompanyConfirmation", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowNewAddressForm(Guid companyId)
         {
             if (!physicianId.HasValue)
@@ -108,14 +108,14 @@ namespace WebApp.Areas.Companies.Controllers
 
             return PartialView("Address/AddressForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowAddServiceForm(Guid companyId, Guid? selectedServiceId)
         {
             var formModel = new AddServiceFormModel(companyId, selectedServiceId, db, physicianId.Value);
 
             return PartialView("Service/AddServiceForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowEditServiceForm(Guid companyId, Guid companyServiceId)
         {
             if (!physicianId.HasValue)
@@ -127,21 +127,21 @@ namespace WebApp.Areas.Companies.Controllers
             return PartialView("Service/ServiceForm", formModel);
         }
 
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
-        public PartialViewResult ShowNewTravelPriceForm(Guid companyId, Guid companyServiceId, short cityId)
+        [AuthorizeRole(Feature = Features.Companies.Create)]
+        public PartialViewResult ShowNewTravelPriceForm(Guid companyId, Guid companyServiceId, Guid cityId)
         {
             var formModel = new TravelPriceFormModel(companyId, companyServiceId, cityId);
 
             return PartialView("Pricing/NewTravelPriceForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowEditTravelPriceForm(Guid companyId, Guid travelPriceId)
         {
             var formModel = new EditTravelPriceFormModel(companyId, travelPriceId, db);
 
             return PartialView("Pricing/EditTravelPriceForm", formModel);
         }
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public PartialViewResult ShowEditCancellationPolicyForm(Guid companyId)
         {
             var formModel = new EditCancellationPolicyFormModel(companyId, db);
@@ -153,7 +153,7 @@ namespace WebApp.Areas.Companies.Controllers
         #region API
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveNewCompanyForm(CompanyForm form)
         {
             if (!ModelState.IsValid)
@@ -162,7 +162,7 @@ namespace WebApp.Areas.Companies.Controllers
                 return PartialView("CompanyForm", form);
             }
 
-            var company = new CompanyV2
+            var company = new Company
             {
                 Id = Guid.NewGuid(),
                 PhysicianId = form.PhysicianId,
@@ -174,7 +174,7 @@ namespace WebApp.Areas.Companies.Controllers
                 ReportsEmail = form.ReportsEmail,
                 PhoneNumber = form.PhoneNumber
             };
-            db.CompanyV2.Add(company);
+            db.Companies.Add(company);
             await db.SaveChangesAsync();
 
             return Json(new
@@ -184,7 +184,7 @@ namespace WebApp.Areas.Companies.Controllers
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveEditCompanyForm(CompanyForm form)
         {
             if (!ModelState.IsValid)
@@ -193,7 +193,7 @@ namespace WebApp.Areas.Companies.Controllers
                 return PartialView("CompanyForm", form);
             }
 
-            var company = db.CompanyV2.Single(s => s.Id == form.CompanyId);
+            var company = db.Companies.Single(s => s.Id == form.CompanyId);
             company.Name = form.Name;
             company.Description = form.Description;
             company.Code = form.Code;
@@ -208,39 +208,62 @@ namespace WebApp.Areas.Companies.Controllers
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public ActionResult Remove(Guid companyId)
         {
-            var entity = db.CompanyV2.Single(c => c.Id == companyId);
-            db.CompanyV2.Remove(entity);
+            var entity = db.Companies.Single(c => c.Id == companyId);
+            db.Companies.Remove(entity);
             db.SaveChanges();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveNewAddressForm(AddressFormModel form)
         {
             if (!ModelState.IsValid)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return PartialView("AddressForm", form);
+                form.ViewData = new AddressFormModel.ViewDataModel(db, physicianId.Value);
+                return PartialView("Address/AddressForm", form);
             }
 
-            var address = new AddressV2
+            Guid cityId = Guid.NewGuid();
+
+            // use the existing city if found, otherwise create a new city and use the Id.
+            var city = db.Cities.FirstOrDefault(c => c.Name == form.City && c.ProvinceId == form.ProvinceId);
+            if (city == null)
+            {
+                city = new City
+                {
+                    Id = cityId,
+                    Name = form.City,
+                    ProvinceId = form.ProvinceId,
+                    PhysicianId = physicianId.Value
+                };
+                db.Cities.Add(city);
+            }
+            else
+            {
+                cityId = city.Id;
+            }
+
+            var address = new Address
             {
                 Id = Guid.NewGuid(),
                 CompanyId = form.CompanyId,
                 Name = form.Name,
-                ProvinceId = form.ProvinceId,
-                CityId = form.CityId,
+                CityId = cityId,
                 PostalCode = form.PostalCode,
                 TimeZoneId = form.TimeZoneId,
                 Address1 = form.Address1,
                 Address2 = form.Address2,
-                AddressTypeId = form.AddressTypeId
+                AddressTypeId = (byte)Enums.AddressType.CompanyAssessmentOffice,
+                IsBillingAddress = form.IsBillingAddress
             };
-            db.AddressV2.Add(address);
+            db.Addresses.Add(address);
+
+
             await db.SaveChangesAsync();
 
             return Json(new
@@ -250,7 +273,7 @@ namespace WebApp.Areas.Companies.Controllers
         }
 
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveAddServiceForm(AddServiceFormModel form)
         {
             if (!ModelState.IsValid)
@@ -260,16 +283,15 @@ namespace WebApp.Areas.Companies.Controllers
                 return PartialView("Service/AddServiceForm", form);
             }
 
-            var service = new CompanyService
+            var service = new Service
             {
                 Id = Guid.NewGuid(),
                 CompanyId = form.CompanyId,
-                ServiceId = form.ServiceId,
                 Name = form.Name,
                 Price = form.Price,
                 IsTravelRequired = form.IsTravelRequired.GetValueOrDefault(false)
             };
-            db.CompanyServices.Add(service);
+            db.Services.Add(service);
             await db.SaveChangesAsync();
 
             return Json(new
@@ -278,7 +300,7 @@ namespace WebApp.Areas.Companies.Controllers
             });
         }
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveNewTravelPriceForm(TravelPriceFormModel form)
         {
             if (!ModelState.IsValid)
@@ -290,7 +312,7 @@ namespace WebApp.Areas.Companies.Controllers
             var travelPrice = new TravelPrice
             {
                 Id = Guid.NewGuid(),
-                CompanyServiceId = form.CompanyServiceId,
+                ServiceId = form.ServiceId,
                 CityId = form.CityId,
                 Price = form.Price
             };
@@ -303,7 +325,7 @@ namespace WebApp.Areas.Companies.Controllers
             });
         }
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveEditTravelPriceForm(EditTravelPriceFormModel form)
         {
             if (!ModelState.IsValid)
@@ -319,7 +341,7 @@ namespace WebApp.Areas.Companies.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         [HttpPost]
-        [AuthorizeRole(Feature = Features.PhysicianCompany.Create)]
+        [AuthorizeRole(Feature = Features.Companies.Create)]
         public async Task<ActionResult> SaveEditCancellationPolicyForm(EditCancellationPolicyFormModel form)
         {
             if (!ModelState.IsValid)
@@ -328,7 +350,7 @@ namespace WebApp.Areas.Companies.Controllers
                 return PartialView("EditCancellationPolicyForm", form);
             }
 
-            var company = db.CompanyV2.Single(tp => tp.Id == form.CompanyId);
+            var company = db.Companies.Single(tp => tp.Id == form.CompanyId);
             company.NoShowRate = form.NoShowRate;
             company.NoShowRateFormat = (byte)form.NoShowRateFormat;
             company.LateCancellationRate = form.LateCancellationRate;

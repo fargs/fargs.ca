@@ -1,0 +1,16 @@
+﻿@model AddressListViewModel
+
+<div class="btn-group" style="margin-bottom: 15px;">
+    <button type="button" class="btn btn-default" onclick="showNewAddressForm('@Model.PhysicianId')">New Address</button>
+</div>
+<div class="list-group">
+    @foreach (var address in Model.Addresses)
+    {
+        <address class="list-group-item">
+            <h5>@address.AddressType</h5>
+            @address.Address1<br />
+            @address.CityName, @address.ProvinceName @address.CountryName<br />
+            @address.PostalCode
+        </address>
+    }
+</div>

@@ -1,5 +1,5 @@
 ﻿using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
-using WebApp.Models;
-using WebApp.ViewModels;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Availability.Views.Home
@@ -19,22 +18,22 @@ namespace WebApp.Areas.Availability.Views.Home
         public AvailableDayCompanyForm()
         {
         }
-        public AvailableDayCompanyForm(OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        public AvailableDayCompanyForm(ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             if (!PhysicianId.HasValue) throw new Exception("Physician context must be set.");
             ViewData = new ViewDataModel(db, PhysicianId.Value);   
         }
         [Required]
-        public short AvailableDayId { get; set; }
-        public short? CompanyId { get; set; }
+        public Guid AvailableDayId { get; set; }
+        public Guid? CompanyId { get; set; }
 
         public ViewDataModel ViewData { get; set; }
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
+            private ImeHubDbContext db;
             private Guid physicianId;
-            public ViewDataModel(OrvosiDbContext db, Guid physicianId)
+            public ViewDataModel(ImeHubDbContext db, Guid physicianId)
             {
                 this.db = db;
                 this.physicianId = physicianId;
@@ -44,10 +43,11 @@ namespace WebApp.Areas.Availability.Views.Home
 
             private List<SelectListItem> GetPhysicianCompanySelectList()
             {
-                var companies = db.PhysicianCompanies
+                var companies = db.Companies
+                    .AsNoTracking()
+                    .AsExpandable()
                     .Where(p => p.PhysicianId == physicianId)
-                    .Select(c => c.Company)
-                    .Select(LookupDto<short>.FromCompanyEntity.Expand())
+                    .Select(CompanyModel.FromCompany)
                     .ToList();
 
                 return companies

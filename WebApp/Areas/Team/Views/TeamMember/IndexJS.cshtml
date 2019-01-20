@@ -6,7 +6,7 @@
     }
 
     function showNewTeamMemberForm() {
-        var url = '@Url.Content("~/Team/TeamMember/ShowNewTeamMemberForm")';
+        var url = '@Url.Content("~/Team/TeamMember/ShowInviteTeamMemberForm")';
 
         $.get(url)
         .done(function (result) {
@@ -16,7 +16,7 @@
     }
 
     function saveNewTeamMemberForm(form) {
-        var url = '@Url.Content("~/Team/TeamMember/SaveNewTeamMemberForm")';
+        var url = '@Url.Content("~/Team/TeamMember/SaveInviteTeamMemberForm")';
 
         $.post(url,
             form.serialize()
@@ -41,6 +41,23 @@
             toastr.success("Team member removed successfully");
             refreshTeamMemberList();
             //refreshTeamMemberReadOnly();
+        });
+    }
+
+    // Invites
+    function sendTeamMemberInvite(form) {
+        var url = '@Url.Content("~/Team/TeamMember/SendInvite")';
+
+        $.post(url,
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Team member added successfully");
+            refreshTeamMemberList(result.id);
+            //refreshTeamMemberReadOnly(result.id);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
         });
     }
     

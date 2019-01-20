@@ -22,7 +22,7 @@ namespace ImeHub.Models
         public IEnumerable<LookupModel<Guid>> AsOwner { get; set; }
         public IEnumerable<LookupModel<Guid>> AsManager { get; set; }
         public IEnumerable<LookupModel<Guid>> AsTeamMember { get; set; }
-        public UserSetupWorkflowModel Setup { get; set; }
+        public WorkflowModel Setup { get; set; }
 
         #region Computed Properties
         public bool IsEmailProviderSet => !string.IsNullOrEmpty(EmailProvider);

@@ -178,9 +178,9 @@ namespace ImeHub.Models.Enums.Features.PhysicianPortal
 
     
 
-    public class Collaborator
+    public class Team
     {
-        public const string CollaboratorSection = "05970a2b-6295-40bc-9512-aa49828250c5";
+        public const string TeamSection = "05970a2b-6295-40bc-9512-aa49828250c5";
         public const string Create = "4153abe9-31f6-4187-aac6-a858c7563943";
         public const string ViewList = "7a25c09e-ea4e-4a46-b88c-e08c97fe4e21";
         public const string Search = "389a860a-177f-4d41-b3ba-bea4f6df9dd2";
@@ -190,8 +190,7 @@ namespace ImeHub.Models.Enums.Features.PhysicianPortal
     {
         public const string DashboardSection = "65755683-4f89-41c9-b07a-a780070a6369";
     }
-
-    public class PhysicianCompany
+    public class Companies
     {
         public const string Section = "619f01cb-8c86-48a1-8a54-e65e9e84967e";
         public const string Create = "2ca149a0-4785-4039-9b0c-e481727ee14f";
@@ -199,6 +198,17 @@ namespace ImeHub.Models.Enums.Features.PhysicianPortal
 
     }
 
+    public class Invoices
+    {
+        public const string Section = "d5a60956-08af-4a6b-a02d-e1fc1c574dcd";
+        public const string Manage = "1af71517-d1a0-4001-b6ea-e9748aa112df";
+        public const string Cancel = "ecba34d2-10c5-4a86-bb29-9eec71819194";
+    }
+    public class Workflows
+    {
+        public const string Section = "688136a1-5a3c-425c-bba1-7f91661a726a";
+        public const string Manage = "c46bb42e-2959-4727-8f03-18143ab47ae8";
+    }
     public class Reports
     {
         public const string View = "2cad1f58-0e74-4fc4-8e83-7eda889f0d9d";

@@ -15,18 +15,12 @@
 namespace ImeHub.Data
 {
 
-    // AddressType
     public partial class AddressType
     {
-        public byte Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 50)
+        public byte Id { get; set; }
+        public string Name { get; set; }
 
-        // Reverse navigation
-
-        /// <summary>
-        /// Child Addresses where [Address].[AddressTypeID] point to this entity (FK_Address_AddressType)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_AddressType
+        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; }
 
         public AddressType()
         {

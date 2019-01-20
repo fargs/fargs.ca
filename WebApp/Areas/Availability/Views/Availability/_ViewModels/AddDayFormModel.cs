@@ -1,6 +1,6 @@
 ﻿using FluentDateTime;
 using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,10 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using WebApp.Library.Extensions;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
-using Enums = Orvosi.Shared.Enums;
+using Enums = ImeHub.Models.Enums;
+using WebApp.Areas.Availability.Views.Shared;
 
 namespace WebApp.Areas.Availability.Views.Home
 {
@@ -20,35 +21,34 @@ namespace WebApp.Areas.Availability.Views.Home
         {
 
         }
-        public AddDayFormModel(OrvosiDbContext db, IIdentity identity, DateTime now) : base(identity, now)
+        public AddDayFormModel(ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
         {
             if (!PhysicianId.HasValue) throw new Exception("Physician context must be set.");
         }
-        public AddDayFormModel(DateTime selectedDate, OrvosiDbContext db, IIdentity identity, DateTime now) : this(db, identity, now)
+        public AddDayFormModel(DateTime selectedDate, ImeHubDbContext db, IIdentity identity, DateTime now) : this(db, identity, now)
         {
             if (!PhysicianId.HasValue) throw new Exception("Physician context must be set.");
             ViewData = new ViewDataModel(selectedDate, db, PhysicianId.Value, now);
         }
 
-        public short? CompanyId { get; set; }
-        public int? LocationId { get; set; }
-        public bool IsPrebook { get; set; } = false;
+        public Guid? CompanyId { get; set; }
+        public Guid? AddressId { get; set; }
 
         public ViewDataModel ViewData { get; set; }
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
+            private ImeHubDbContext db;
             private Guid physicianId;
-            public ViewDataModel(DateTime selectedDate, OrvosiDbContext db, Guid physicianId, DateTime now)
+            public ViewDataModel(DateTime selectedDate, ImeHubDbContext db, Guid physicianId, DateTime now)
             {
                 this.db = db;
                 SelectedMonth = selectedDate.ToOrvosiDateFormat();
                 LastDayOfMonth = selectedDate.LastDayOfMonth().ToOrvosiDateFormat();
 
                 this.physicianId = physicianId;
-                var physician = PersonDto.FromAspNetUserEntity.Invoke(db.AspNetUsers.Single(a => a.Id == physicianId));
-                Physician = LookupViewModel<Guid>.FromPersonDto(physician);
+                var physician = PhysicianModel.FromPhysician.Invoke(db.Physicians.Single(a => a.Id == physicianId));
+                Physician = new PhysicianViewModel(physician);
 
                 var availableDays = db.AvailableDays.Where(c => c.PhysicianId == physicianId).ToList();
                 var arr = availableDays.Select(c => string.Format("'{0}'", c.Day.ToString("yyyy-MM-dd"))).ToArray();
@@ -57,7 +57,7 @@ namespace WebApp.Areas.Availability.Views.Home
                 Companies = GetPhysicianCompanySelectList();
                 Addresses = GetPhysicianAddressSelectList();
             }
-            public LookupViewModel<Guid> Physician { get; set; }
+            public PhysicianViewModel Physician { get; set; }
             public string SelectedMonth { get; set; }
             public string LastDayOfMonth { get; }
             public MvcHtmlString AvailableDaysCSV { get; set; }
@@ -66,10 +66,11 @@ namespace WebApp.Areas.Availability.Views.Home
 
             private List<SelectListItem> GetPhysicianCompanySelectList()
             {
-                var companies = db.PhysicianCompanies
+                var companies = db.Companies
+                    .AsNoTracking()
+                    .AsExpandable()
                     .Where(p => p.PhysicianId == physicianId)
-                    .Select(c => c.Company)
-                    .Select(LookupDto<short>.FromCompanyEntity.Expand())
+                    .Select(CompanyModel.FromCompany)
                     .ToList();
 
                 return companies
@@ -83,62 +84,44 @@ namespace WebApp.Areas.Availability.Views.Home
             }
             private IEnumerable<SelectListItem> GetPhysicianAddressSelectList()
             {
-                var physician = db.AspNetUsers
-                    .Where(a => a.Id == physicianId)
-                    .Select(PersonDto.FromAspNetUserEntity.Expand())
+
+                var physicianAddresses = db.Addresses
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(a => a.PhysicianId == physicianId)
+                    .Select(AddressModel.FromAddress)
                     .ToList()
-                    .Select(LookupViewModel<Guid>.FromPersonDto);
+                    .Select(AddressViewModel.FromAddressModel);
 
-                var companies = db.PhysicianCompanies
-                    .Where(p => p.PhysicianId == physicianId)
-                    .Select(c => new LookupDto<Guid>
-                    {
-                        Id = c.Company.ObjectGuid.Value,
-                        Name = c.Company.Name
-                    })
+                var companyIds = db.Companies
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(c => c.PhysicianId == physicianId)
+                    .Select(c => c.Id)
+                    .ToArray();
+
+                var companyAddresses = db.Addresses
+                    .AsNoTracking()
+                    .AsExpandable()
+                    .Where(a => a.CompanyId.HasValue)
+                    .Where(p => companyIds.Contains(p.CompanyId.Value))
+                    .Select(AddressModel.FromAddress)
                     .ToList()
-                    .Select(LookupViewModel<Guid>.FromLookupDto);
+                    .Select(AddressViewModel.FromAddressModel);
 
-                var entities = physician.Concat(companies);
-                var ownerIds = entities.Select(e => e.Id).ToArray();
-
-                var addresses = db.Addresses
-                    .Where(a => a.OwnerGuid.HasValue)
-                    .Where(a => ownerIds.Contains(a.OwnerGuid.Value))
-                    .Where(a => a.AddressTypeId != Enums.AddressTypes.BillingAddress)
-                    .Select(AddressDto.FromAddressEntity.Expand())
-                    .ToList();
-
-                // join with addresses to get the owners
-                var addressesWithOwners = addresses
-                    .Join(entities,
-                        a => a.OwnerGuid.Value,
-                        e => e.Id,
-                        (a, e) => new
-                        {
-                            Address = a,
-                            Owner = e
-                        });
-
-                var query = addressesWithOwners
+                var addresses = physicianAddresses.Concat(companyAddresses);
+                
+                var list = addresses
                     .Select(d => new SelectListItem
                     {
-                        Text = $"{d.Address.Name} - {d.Address.City}, {d.Address.Address1}",
-                        Value = d.Address.Id.ToString(),
-                        Group = new SelectListGroup { Name = d.Owner == null ? string.Empty : d.Owner.Name }
+                        Text = $"{d.Name} - {d.City}, {d.Address1}",
+                        Value = d.Id.ToString(),
+                        Group = new SelectListGroup { Name = d.Owner }
                     })
                     .OrderBy(d => d.Group.Name)
                     .ThenBy(d => d.Text);
 
-                var noOwners = query
-                    .Where(d => string.IsNullOrEmpty(d.Group.Name))
-                    .OrderBy(d => d.Text);
-                var owners = query
-                    .Where(d => !string.IsNullOrEmpty(d.Group.Name))
-                    .OrderBy(d => d.Group.Name)
-                    .ThenBy(d => d.Text);
-
-                return owners.Concat(noOwners);
+                return list;
             }
         }
     }

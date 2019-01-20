@@ -1,9 +1,9 @@
-﻿using Orvosi.Data;
+﻿using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
@@ -13,15 +13,15 @@ namespace WebApp.Areas.Companies.Views.Company
         {
 
         }
-        public TravelPriceFormModel(Guid companyId, Guid companyServiceId, short cityId)
+        public TravelPriceFormModel(Guid companyId, Guid serviceId, Guid cityId)
         {
             CompanyId = companyId;
-            CompanyServiceId = companyServiceId;
+            ServiceId = serviceId;
             CityId = cityId;
         }
         public Guid CompanyId { get; set; }
-        public short CityId { get; set; }
-        public Guid CompanyServiceId { get; set; }
+        public Guid CityId { get; set; }
+        public Guid ServiceId { get; set; }
         public decimal Price { get; set; }
     }
 
@@ -31,7 +31,7 @@ namespace WebApp.Areas.Companies.Views.Company
         {
 
         }
-        public EditTravelPriceFormModel(Guid companyId, Guid travelPriceId, OrvosiDbContext db)
+        public EditTravelPriceFormModel(Guid companyId, Guid travelPriceId, ImeHubDbContext db)
         {
             Id = travelPriceId;
             CompanyId = companyId;

@@ -19,10 +19,19 @@ namespace ImeHub.Data
     {
         System.Data.Entity.DbSet<Address> Addresses { get; set; } // Address
         System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; } // AddressType
+        System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; } // AvailableDay
+        System.Data.Entity.DbSet<AvailableDayResource> AvailableDayResources { get; set; } // AvailableDayResource
+        System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; } // AvailableSlot
+        System.Data.Entity.DbSet<CancellationStatu> CancellationStatus { get; set; } // CancellationStatus
+        System.Data.Entity.DbSet<Case> Cases { get; set; } // Case
+        System.Data.Entity.DbSet<CaseStatu> CaseStatus { get; set; } // CaseStatus
         System.Data.Entity.DbSet<City> Cities { get; set; } // City
         System.Data.Entity.DbSet<Company> Companies { get; set; } // Company
+        System.Data.Entity.DbSet<CompanyService> CompanyServices { get; set; } // CompanyService
         System.Data.Entity.DbSet<Country> Countries { get; set; } // Country
         System.Data.Entity.DbSet<Feature> Features { get; set; } // Feature
+        System.Data.Entity.DbSet<InviteStatu> InviteStatus { get; set; } // InviteStatus
+        System.Data.Entity.DbSet<MedicolegalType> MedicolegalTypes { get; set; } // MedicolegalType
         System.Data.Entity.DbSet<Physician> Physicians { get; set; } // Physician
         System.Data.Entity.DbSet<PhysicianInviteLog> PhysicianInviteLogs { get; set; } // PhysicianInviteLog
         System.Data.Entity.DbSet<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner
@@ -31,7 +40,11 @@ namespace ImeHub.Data
         System.Data.Entity.DbSet<Role> Roles { get; set; } // Role
         System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; } // RoleFeature
         System.Data.Entity.DbSet<Service> Services { get; set; } // Service
+        System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; } // ServiceRequest
+        System.Data.Entity.DbSet<ServiceRequestStatu> ServiceRequestStatus { get; set; } // ServiceRequestStatus
         System.Data.Entity.DbSet<TeamMember> TeamMembers { get; set; } // TeamMember
+        System.Data.Entity.DbSet<TeamMemberInvite> TeamMemberInvites { get; set; } // TeamMemberInvite
+        System.Data.Entity.DbSet<TeamRole> TeamRoles { get; set; } // TeamRole
         System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; } // TimeZone
         System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; } // TravelPrice
         System.Data.Entity.DbSet<User> Users { get; set; } // User

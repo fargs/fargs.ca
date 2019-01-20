@@ -15,34 +15,26 @@
 namespace ImeHub.Data
 {
 
-    // UserSetupWorkItem
     public partial class UserSetupWorkItem
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid? CreatedFromWorkItemId { get; set; } // CreatedFromWorkItemId
-        public string Name { get; set; } // Name (length: 128)
-        public short Sequence { get; set; } // Sequence
-        public System.Guid UserSetupWorkflowId { get; set; } // UserSetupWorkflowId
-        public System.Guid? ResponsibleRoleId { get; set; } // ResponsibleRoleId
-        public byte StatusId { get; set; } // StatusId
-        public System.Guid StatusChangedById { get; set; } // StatusChangedById
-        public System.DateTime StatusChangedDate { get; set; } // StatusChangedDate
-        public System.Guid? AssignedToId { get; set; } // AssignedToId
-        public System.Guid? AssignedToChangedById { get; set; } // AssignedToChangedById
-        public System.DateTime? AssignedToChangedDate { get; set; } // AssignedToChangedDate
-        public System.DateTime? DueDate { get; set; } // DueDate
+        public System.Guid Id { get; set; }
+        public System.Guid? CreatedFromWorkItemId { get; set; }
+        public string Name { get; set; }
+        public short Sequence { get; set; }
+        public System.Guid UserSetupWorkflowId { get; set; }
+        public System.Guid? ResponsibleRoleId { get; set; }
+        public byte StatusId { get; set; }
+        public System.Guid StatusChangedById { get; set; }
+        public System.DateTime StatusChangedDate { get; set; }
+        public System.Guid? AssignedToId { get; set; }
+        public System.Guid? AssignedToChangedById { get; set; }
+        public System.DateTime? AssignedToChangedDate { get; set; }
+        public System.DateTime? DueDate { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent User pointed by [UserSetupWorkItem].([StatusChangedById]) (FK_UserSetupWorkItem_StatusChangedBy_User)
-        /// </summary>
-        public virtual User User { get; set; } // FK_UserSetupWorkItem_StatusChangedBy_User
+        public virtual User User { get; set; }
 
-        /// <summary>
-        /// Parent UserSetupWorkflow pointed by [UserSetupWorkItem].([UserSetupWorkflowId]) (FK_UserSetupWorkItem_UserSetupWorkflow)
-        /// </summary>
-        public virtual UserSetupWorkflow UserSetupWorkflow { get; set; } // FK_UserSetupWorkItem_UserSetupWorkflow
+        public virtual UserSetupWorkflow UserSetupWorkflow { get; set; }
 
         public UserSetupWorkItem()
         {

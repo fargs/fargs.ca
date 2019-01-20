@@ -15,20 +15,14 @@
 namespace ImeHub.Data
 {
 
-    // PhysicianOwnerAcceptanceStatus
     public partial class PhysicianOwnerAcceptanceStatu
     {
-        public byte Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 50)
-        public string Code { get; set; } // Code (length: 10)
-        public string ColorCode { get; set; } // ColorCode (length: 10)
+        public byte Id { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string ColorCode { get; set; }
 
-        // Reverse navigation
-
-        /// <summary>
-        /// Child PhysicianOwners where [PhysicianOwner].[AcceptanceStatusId] point to this entity (FK_PhysicianOwner_PhysicianOwnerAcceptanceStatus)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianOwner> PhysicianOwners { get; set; } // PhysicianOwner.FK_PhysicianOwner_PhysicianOwnerAcceptanceStatus
+        public virtual System.Collections.Generic.ICollection<PhysicianOwner> PhysicianOwners { get; set; }
 
         public PhysicianOwnerAcceptanceStatu()
         {

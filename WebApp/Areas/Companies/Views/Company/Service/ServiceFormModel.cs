@@ -1,6 +1,6 @@
 ﻿using LinqKit;
-using Orvosi.Data;
-using Orvosi.Shared.Enums;
+using ImeHub.Data;
+using ImeHub.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Companies.Views.Company
@@ -18,35 +18,31 @@ namespace WebApp.Areas.Companies.Views.Company
         public ServiceFormModel()
         {
         }
-        public ServiceFormModel(CompanyServiceDto service, OrvosiDbContext db)
+        public ServiceFormModel(ServiceModel service, ImeHubDbContext db)
         {
             SetProperties(service);
         }
 
-        private void SetProperties(CompanyServiceDto service)
+        private void SetProperties(ServiceModel service)
         {
             Id = service.Id;
             CompanyId = service.CompanyId;
-            ServiceId = service.ServiceId;
-            Service = new ServiceV2ViewModel(service.Service);
             Name = service.Name;
             Price = service.Price;
         }
 
-        public ServiceFormModel(Guid companyId, OrvosiDbContext db)
+        public ServiceFormModel(Guid companyId, ImeHubDbContext db)
         {
             CompanyId = companyId;
         }
-        public ServiceFormModel(Guid companyId, Guid companyServiceId, OrvosiDbContext db)
+        public ServiceFormModel(Guid companyId, Guid serviceId, ImeHubDbContext db)
         {
-            var entity = db.CompanyServices.Single(cs => cs.Id == companyServiceId);
-            var service = CompanyServiceDto.FromCompanyServiceEntity.Invoke(entity);
+            var entity = db.Services.Single(cs => cs.Id == serviceId);
+            var service = ServiceModel.FromServiceEntity.Invoke(entity);
             SetProperties(service);
         }
         public Guid? Id { get; set; }
         public Guid CompanyId { get; set; }
-        public Guid? ServiceId { get; set; }
-        public ServiceV2ViewModel Service { get; set; }
         public string Name { get; private set; }
         public decimal Price { get; set; }
     }

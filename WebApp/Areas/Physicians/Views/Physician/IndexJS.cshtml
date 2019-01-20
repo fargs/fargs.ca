@@ -82,6 +82,31 @@
             refreshPhysicianReadOnly();
         });
     }
+
+    // Address API
+    function showNewAddressForm(physicianId) {
+        $.get('@Url.Content("~/Physicians/Physician/ShowNewAddressForm")', {
+            physicianId: physicianId
+        })
+        .done(function (result) {
+            $('#modal-content').html(result);
+            $('#modal-container').modal('toggle');
+        });
+    }
+
+    function saveNewAddressForm(form) {
+
+        $.post('@Url.Content("~/Physicians/Physician/SaveNewAddressForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-container').modal('toggle');
+            toastr.success("Address added successfully");
+            refreshPhysicianReadOnly();
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
     
     // Refresh functions
     function refreshPhysicianList() {

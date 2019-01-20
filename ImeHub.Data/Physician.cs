@@ -15,59 +15,48 @@
 namespace ImeHub.Data
 {
 
-    // Physician
     public partial class Physician
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string CompanyName { get; set; } // CompanyName (length: 250)
-        public string Code { get; set; } // Code (length: 10)
-        public string ColorCode { get; set; } // ColorCode (length: 10)
-        public System.Guid? OwnerId { get; set; } // OwnerId
-        public System.Guid ManagerId { get; set; } // ManagerId
-        public short? PrimaryAddressId { get; set; } // PrimaryAddressId
-        public string Designations { get; set; } // Designations (length: 128)
+        public System.Guid Id { get; set; }
+        public string CompanyName { get; set; }
+        public string Code { get; set; }
+        public string ColorCode { get; set; }
+        public System.Guid? OwnerId { get; set; }
+        public System.Guid ManagerId { get; set; }
+        public short? PrimaryAddressId { get; set; }
+        public string Designations { get; set; }
 
-        // Reverse navigation
+        public virtual PhysicianOwner PhysicianOwner { get; set; }
+        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; }
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; }
+        public virtual System.Collections.Generic.ICollection<Case> Cases { get; set; }
+        public virtual System.Collections.Generic.ICollection<City> Cities { get; set; }
+        public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; }
+        public virtual System.Collections.Generic.ICollection<PhysicianInviteLog> PhysicianInviteLogs { get; set; }
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; }
+        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; }
+        public virtual System.Collections.Generic.ICollection<TeamMemberInvite> TeamMemberInvites { get; set; }
+        public virtual System.Collections.Generic.ICollection<TeamRole> TeamRoles { get; set; }
+        public virtual System.Collections.Generic.ICollection<Workflow> Workflows { get; set; }
 
-        /// <summary>
-        /// Parent (One-to-One) Physician pointed by [PhysicianOwner].[PhysicianId] (FK_PhysicianOwner_Physician)
-        /// </summary>
-        public virtual PhysicianOwner PhysicianOwner { get; set; } // PhysicianOwner.FK_PhysicianOwner_Physician
-        /// <summary>
-        /// Child Addresses where [Address].[PhysicianId] point to this entity (FK_Address_Physician)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; } // Address.FK_Address_Physician
-        /// <summary>
-        /// Child Companies where [Company].[PhysicianId] point to this entity (FK_Company_Physician)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_Physician
-        /// <summary>
-        /// Child PhysicianInviteLogs where [PhysicianInviteLog].[PhysicianId] point to this entity (FK_PhysicianInviteLog_Physician)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<PhysicianInviteLog> PhysicianInviteLogs { get; set; } // PhysicianInviteLog.FK_PhysicianInviteLog_Physician
-        /// <summary>
-        /// Child TeamMembers where [TeamMember].[PhysicianId] point to this entity (FK_TeamMember_Physician)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; } // TeamMember.FK_TeamMember_Physician
 
-        // Foreign keys
+        public virtual User Manager { get; set; }
 
-        /// <summary>
-        /// Parent User pointed by [Physician].([ManagerId]) (FK_Physician_Manager)
-        /// </summary>
-        public virtual User Manager { get; set; } // FK_Physician_Manager
-
-        /// <summary>
-        /// Parent User pointed by [Physician].([OwnerId]) (FK_Physician_Owner)
-        /// </summary>
-        public virtual User Owner { get; set; } // FK_Physician_Owner
+        public virtual User Owner { get; set; }
 
         public Physician()
         {
             Addresses = new System.Collections.Generic.List<Address>();
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
+            Cases = new System.Collections.Generic.List<Case>();
+            Cities = new System.Collections.Generic.List<City>();
             Companies = new System.Collections.Generic.List<Company>();
             PhysicianInviteLogs = new System.Collections.Generic.List<PhysicianInviteLog>();
+            ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
+            TeamMemberInvites = new System.Collections.Generic.List<TeamMemberInvite>();
+            TeamRoles = new System.Collections.Generic.List<TeamRole>();
+            Workflows = new System.Collections.Generic.List<Workflow>();
             InitializePartial();
         }
 

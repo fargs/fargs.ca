@@ -13,6 +13,7 @@ using WebApp.Views.Shared;
 using ImeHub.Models;
 using Enums = ImeHub.Models.Enums;
 using WebApp.Library.Extensions;
+using WebApp.Areas.Physicians.Views.Physician.Address;
 
 namespace WebApp.Areas.Physicians.Views.Physician
 {
@@ -43,6 +44,7 @@ namespace WebApp.Areas.Physicians.Views.Physician
         public OwnerViewModel Owner { get; set; }
         public IEnumerable<PhysicianInviteViewModel> OwnerInvites { get; set; }
         public ContactViewModel Manager { get; set; }
+        public AddressListViewModel AddressList { get; set; }
 
         private void SetProperties(PhysicianModel physician)
         {
@@ -70,6 +72,7 @@ namespace WebApp.Areas.Physicians.Views.Physician
                 User = physician.Owner.UserId.HasValue ? new ContactViewModel(physician.Owner.User) : null
             };
             Manager = physician.Manager == null ? null : new ContactViewModel(physician.Manager);
+            AddressList = new AddressListViewModel(physician);
         }
 
         public class OwnerViewModel

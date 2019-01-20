@@ -22,10 +22,19 @@ namespace ImeHub.Data
     {
         public System.Data.Entity.DbSet<Address> Addresses { get; set; }
         public System.Data.Entity.DbSet<AddressType> AddressTypes { get; set; }
+        public System.Data.Entity.DbSet<AvailableDay> AvailableDays { get; set; }
+        public System.Data.Entity.DbSet<AvailableDayResource> AvailableDayResources { get; set; }
+        public System.Data.Entity.DbSet<AvailableSlot> AvailableSlots { get; set; }
+        public System.Data.Entity.DbSet<CancellationStatu> CancellationStatus { get; set; }
+        public System.Data.Entity.DbSet<Case> Cases { get; set; }
+        public System.Data.Entity.DbSet<CaseStatu> CaseStatus { get; set; }
         public System.Data.Entity.DbSet<City> Cities { get; set; }
         public System.Data.Entity.DbSet<Company> Companies { get; set; }
+        public System.Data.Entity.DbSet<CompanyService> CompanyServices { get; set; }
         public System.Data.Entity.DbSet<Country> Countries { get; set; }
         public System.Data.Entity.DbSet<Feature> Features { get; set; }
+        public System.Data.Entity.DbSet<InviteStatu> InviteStatus { get; set; }
+        public System.Data.Entity.DbSet<MedicolegalType> MedicolegalTypes { get; set; }
         public System.Data.Entity.DbSet<Physician> Physicians { get; set; }
         public System.Data.Entity.DbSet<PhysicianInviteLog> PhysicianInviteLogs { get; set; }
         public System.Data.Entity.DbSet<PhysicianOwner> PhysicianOwners { get; set; }
@@ -34,7 +43,11 @@ namespace ImeHub.Data
         public System.Data.Entity.DbSet<Role> Roles { get; set; }
         public System.Data.Entity.DbSet<RoleFeature> RoleFeatures { get; set; }
         public System.Data.Entity.DbSet<Service> Services { get; set; }
+        public System.Data.Entity.DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public System.Data.Entity.DbSet<ServiceRequestStatu> ServiceRequestStatus { get; set; }
         public System.Data.Entity.DbSet<TeamMember> TeamMembers { get; set; }
+        public System.Data.Entity.DbSet<TeamMemberInvite> TeamMemberInvites { get; set; }
+        public System.Data.Entity.DbSet<TeamRole> TeamRoles { get; set; }
         public System.Data.Entity.DbSet<TimeZone> TimeZones { get; set; }
         public System.Data.Entity.DbSet<TravelPrice> TravelPrices { get; set; }
         public System.Data.Entity.DbSet<User> Users { get; set; }
@@ -55,10 +68,19 @@ namespace ImeHub.Data
 
             Addresses = new FakeDbSet<Address>("Id");
             AddressTypes = new FakeDbSet<AddressType>("Id");
+            AvailableDays = new FakeDbSet<AvailableDay>("Id");
+            AvailableDayResources = new FakeDbSet<AvailableDayResource>("Id");
+            AvailableSlots = new FakeDbSet<AvailableSlot>("Id");
+            CancellationStatus = new FakeDbSet<CancellationStatu>("Id");
+            Cases = new FakeDbSet<Case>("Id");
+            CaseStatus = new FakeDbSet<CaseStatu>("Id");
             Cities = new FakeDbSet<City>("Id");
             Companies = new FakeDbSet<Company>("Id");
+            CompanyServices = new FakeDbSet<CompanyService>("Id");
             Countries = new FakeDbSet<Country>("Id");
             Features = new FakeDbSet<Feature>("Id");
+            InviteStatus = new FakeDbSet<InviteStatu>("Id");
+            MedicolegalTypes = new FakeDbSet<MedicolegalType>("Id");
             Physicians = new FakeDbSet<Physician>("Id");
             PhysicianInviteLogs = new FakeDbSet<PhysicianInviteLog>("Id");
             PhysicianOwners = new FakeDbSet<PhysicianOwner>("PhysicianId");
@@ -67,7 +89,11 @@ namespace ImeHub.Data
             Roles = new FakeDbSet<Role>("Id");
             RoleFeatures = new FakeDbSet<RoleFeature>("RoleId", "FeatureId");
             Services = new FakeDbSet<Service>("Id");
+            ServiceRequests = new FakeDbSet<ServiceRequest>("Id");
+            ServiceRequestStatus = new FakeDbSet<ServiceRequestStatu>("Id");
             TeamMembers = new FakeDbSet<TeamMember>("Id");
+            TeamMemberInvites = new FakeDbSet<TeamMemberInvite>("Id");
+            TeamRoles = new FakeDbSet<TeamRole>("Id");
             TimeZones = new FakeDbSet<TimeZone>("Id");
             TravelPrices = new FakeDbSet<TravelPrice>("Id");
             Users = new FakeDbSet<User>("Id");

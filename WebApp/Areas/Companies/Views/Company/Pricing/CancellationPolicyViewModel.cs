@@ -1,15 +1,15 @@
-﻿using Orvosi.Shared.Enums;
+﻿using ImeHub.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
     public class CancellationPolicyViewModel
     {
-        public CancellationPolicyViewModel(CancellationPolicyDto policy)
+        public CancellationPolicyViewModel(CancellationPolicyModel policy)
         {
             CompanyId = policy.CompanyId;
             NoShowRate = policy.NoShowRateFormat == RateFormat.Amount ? policy.NoShowRate.ToString("C2") : String.Format("{0}%", policy.NoShowRate.ToString());
@@ -18,7 +18,7 @@ namespace WebApp.Areas.Companies.Views.Company
             LateCancellationRateFormat = policy.LateCancellationRateFormat;
             LateCancellationPolicy = policy.LateCancellationPolicy;
         }
-        public CancellationPolicyViewModel(CompanyV2Dto company)
+        public CancellationPolicyViewModel(CompanyModel company)
         {
             CompanyId = company.Id;
             NoShowRate = company.NoShowRateFormat == RateFormat.Amount ? company.NoShowRate.ToString("C2") : String.Format("{0}%", company.NoShowRate.ToString());

@@ -1,12 +1,10 @@
-﻿using LinqKit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
-using WebApp.Models;
-using WebApp.Views.Address;
-using WebApp.Views.Shared;
+using ImeHub.Models;
+using WebApp.Areas.Availability.Views.Shared;
 
 namespace WebApp.Areas.Availability.Views.Home
 {
@@ -17,10 +15,10 @@ namespace WebApp.Areas.Availability.Views.Home
             AvailableSlots = new List<AvailableSlotViewModel>();
             Resources = new List<AvailableDayResourceViewModel>();
         }
-        public short Id { get; set; }
-        public LookupViewModel<Guid> Physician { get; set; }
+        public Guid Id { get; set; }
+        public PhysicianViewModel Physician { get; set; }
         public DateTime Day { get; set; }
-        public LookupViewModel<short> Company { get; set; }
+        public CompanyViewModel Company { get; set; }
         public AddressViewModel Address { get; set; }
         public IEnumerable<AvailableSlotViewModel> AvailableSlots { get; set; }
         public IEnumerable<AvailableDayResourceViewModel> Resources { get; set; }
@@ -29,30 +27,30 @@ namespace WebApp.Areas.Availability.Views.Home
         public bool AreNoSlotsFilled { get; set; }
         public bool HasSlots { get; set; }
 
-        public static Expression<Func<AvailableDayDto, AvailableDayViewModel>> FromAvailableDayDto = e => e == null ? null : new AvailableDayViewModel
+        public static Func<AvailableDayModel, AvailableDayViewModel> FromAvailableDayDto = e => e == null ? null : new AvailableDayViewModel
         {
             Id = e.Id,
-            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
+            Physician = new PhysicianViewModel(e.Physician),
             Day = e.Day,
-            Company = LookupViewModel<short>.FromCompanyDtoExpr.Invoke(e.Company),
-            Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
+            Company = new CompanyViewModel(e.Company),
+            Address = AddressViewModel.FromAddressModel(e.Address),
             AreAllSlotsFilled = e.AreAllSlotsFilled,
             AreSomeSlotsFilled = e.AreSomeSlotsFilled,
             AreNoSlotsFilled = e.AreNoSlotsFilled,
             HasSlots = e.HasSlots,
-            AvailableSlots = e.AvailableSlots.AsQueryable().Select(AvailableSlotViewModel.FromAvailableSlotDto.Expand()),
-            Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand())
+            AvailableSlots = e.AvailableSlots.AsQueryable().Select(AvailableSlotViewModel.FromAvailableSlotModel),
+            Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceModel)
         };
 
         // Exclude AvailableSlots
-        public static Expression<Func<AvailableDayDto, AvailableDayViewModel>> FromAvailableDayDtoForBooking = e => e == null ? null : new AvailableDayViewModel
+        public static Expression<Func<AvailableDayModel, AvailableDayViewModel>> FromAvailableDayModelForBooking = e => e == null ? null : new AvailableDayViewModel
         {
             Id = e.Id,
-            Physician = LookupViewModel<Guid>.FromPersonDtoExpr.Invoke(e.Physician),
+            Physician = new PhysicianViewModel(e.Physician),
             Day = e.Day,
-            Company = LookupViewModel<short>.FromCompanyDtoExpr.Invoke(e.Company),
-            Address = AddressViewModel.FromAddressDtoExpr.Invoke(e.Address),
-            Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand())
+            Company = new CompanyViewModel(e.Company),
+            Address = AddressViewModel.FromAddressModel(e.Address),
+            Resources = e.Resources.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceModel)
         };
     }
 }

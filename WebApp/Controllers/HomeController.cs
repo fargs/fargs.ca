@@ -52,7 +52,7 @@ namespace WebApp.Controllers
             {
                 return NavigateToPortal(physicianId.Value);
             }
-            if (userModel.AsOwner != null)
+            if (userModel.AsOwner.Any())
             {
                 return RedirectToActionPermanent("ChangeUserContextAsync", "Account", new { physicianId = userModel.AsOwner.First().Id });
             }

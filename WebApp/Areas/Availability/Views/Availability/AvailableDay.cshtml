@@ -73,7 +73,7 @@
 <div class="col-md-8" style="padding:15px 15px">
     @if (!day.AvailableSlots.Any())
     {
-        <button type="button" class="btn btn-success" onclick="showAddSlotsForm(@day.Id)">Add Slots</button>
+        <button type="button" class="btn btn-success" onclick="showAddSlotsForm('@day.Id')">Add Slots</button>
     }
     else
     {

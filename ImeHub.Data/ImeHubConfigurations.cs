@@ -57,8 +57,10 @@ namespace ImeHub.Data
             Property(x => x.CityId).HasColumnName(@"CityId").HasColumnType("uniqueidentifier").IsRequired();
             Property(x => x.PostalCode).HasColumnName(@"PostalCode").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
             Property(x => x.TimeZoneId).HasColumnName(@"TimeZoneId").HasColumnType("smallint").IsRequired();
+            Property(x => x.IsBillingAddress).HasColumnName(@"IsBillingAddress").HasColumnType("bit").IsRequired();
 
             // Foreign keys
+            HasOptional(a => a.Company).WithMany(b => b.Addresses).HasForeignKey(c => c.CompanyId); // FK_Address_Company
             HasOptional(a => a.Physician).WithMany(b => b.Addresses).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_Address_Physician
             HasRequired(a => a.AddressType).WithMany(b => b.Addresses).HasForeignKey(c => c.AddressTypeId).WillCascadeOnDelete(false); // FK_Address_AddressType
             HasRequired(a => a.City).WithMany(b => b.Addresses).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_Address_City
@@ -85,6 +87,159 @@ namespace ImeHub.Data
         }
     }
 
+    // AvailableDay
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class AvailableDayConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<AvailableDay>
+    {
+        public AvailableDayConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public AvailableDayConfiguration(string schema)
+        {
+            ToTable("AvailableDay", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.Day).HasColumnName(@"Day").HasColumnType("date").IsRequired();
+            Property(x => x.CompanyId).HasColumnName(@"CompanyId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.AddressId).HasColumnName(@"AddressId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.CityId).HasColumnName(@"CityId").HasColumnType("uniqueidentifier").IsOptional();
+
+            // Foreign keys
+            HasOptional(a => a.Address).WithMany(b => b.AvailableDays).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_AvailableDay_Address
+            HasOptional(a => a.City).WithMany(b => b.AvailableDays).HasForeignKey(c => c.CityId).WillCascadeOnDelete(false); // FK_AvailableDay_City
+            HasOptional(a => a.Company).WithMany(b => b.AvailableDays).HasForeignKey(c => c.CompanyId).WillCascadeOnDelete(false); // FK_AvailableDay_Company
+            HasRequired(a => a.Physician).WithMany(b => b.AvailableDays).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_AvailableDay_Physician
+        }
+    }
+
+    // AvailableDayResource
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class AvailableDayResourceConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<AvailableDayResource>
+    {
+        public AvailableDayResourceConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public AvailableDayResourceConfiguration(string schema)
+        {
+            ToTable("AvailableDayResource", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.AvailableDayId).HasColumnName(@"AvailableDayId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.AvailableDay).WithMany(b => b.AvailableDayResources).HasForeignKey(c => c.AvailableDayId); // FK_AvailableDayResource_AvailableDay
+            HasRequired(a => a.User).WithMany(b => b.AvailableDayResources).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_AvailableDayResource_User
+        }
+    }
+
+    // AvailableSlot
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class AvailableSlotConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<AvailableSlot>
+    {
+        public AvailableSlotConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public AvailableSlotConfiguration(string schema)
+        {
+            ToTable("AvailableSlot", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.AvailableDayId).HasColumnName(@"AvailableDayId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.StartTime).HasColumnName(@"StartTime").HasColumnType("time").IsRequired();
+            Property(x => x.EndTime).HasColumnName(@"EndTime").HasColumnType("time").IsOptional();
+            Property(x => x.Duration).HasColumnName(@"Duration").HasColumnType("smallint").IsOptional();
+
+            // Foreign keys
+            HasRequired(a => a.AvailableDay).WithMany(b => b.AvailableSlots).HasForeignKey(c => c.AvailableDayId); // FK_AvailableDay_AvailableSlot
+        }
+    }
+
+    // CancellationStatus
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class CancellationStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<CancellationStatu>
+    {
+        public CancellationStatuConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public CancellationStatuConfiguration(string schema)
+        {
+            ToTable("CancellationStatus", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+        }
+    }
+
+    // Case
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class CaseConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Case>
+    {
+        public CaseConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public CaseConfiguration(string schema)
+        {
+            ToTable("Case", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.CaseNumber).HasColumnName(@"CaseNumber").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
+            Property(x => x.AlternateKey).HasColumnName(@"AlternateKey").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.ClaimantName).HasColumnName(@"ClaimantName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.StatusId).HasColumnName(@"StatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.StatusChangedById).HasColumnName(@"StatusChangedById").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.StatusChangedDate).HasColumnName(@"StatusChangedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.FolderUrl).HasColumnName(@"FolderUrl").HasColumnType("nvarchar").IsOptional().HasMaxLength(256);
+            Property(x => x.MedicolegalTypeId).HasColumnName(@"MedicolegalTypeId").HasColumnType("tinyint").IsOptional();
+            Property(x => x.ReferralSource).HasColumnName(@"ReferralSource").HasColumnType("nvarchar").IsOptional().HasMaxLength(200);
+
+            // Foreign keys
+            HasOptional(a => a.MedicolegalType).WithMany(b => b.Cases).HasForeignKey(c => c.MedicolegalTypeId).WillCascadeOnDelete(false); // FK_Case_MedicolegalType
+            HasRequired(a => a.CaseStatu).WithMany(b => b.Cases).HasForeignKey(c => c.StatusId).WillCascadeOnDelete(false); // FK_Case_CaseStatus
+            HasRequired(a => a.Physician).WithMany(b => b.Cases).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_Case_Physician
+        }
+    }
+
+    // CaseStatus
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class CaseStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<CaseStatu>
+    {
+        public CaseStatuConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public CaseStatuConfiguration(string schema)
+        {
+            ToTable("CaseStatus", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+        }
+    }
+
     // City
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
     public class CityConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<City>
@@ -103,8 +258,10 @@ namespace ImeHub.Data
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
             Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(3);
             Property(x => x.ProvinceId).HasColumnName(@"ProvinceId").HasColumnType("smallint").IsRequired();
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
 
             // Foreign keys
+            HasRequired(a => a.Physician).WithMany(b => b.Cities).HasForeignKey(c => c.PhysicianId); // FK_City_Physician
             HasRequired(a => a.Province).WithMany(b => b.Cities).HasForeignKey(c => c.ProvinceId).WillCascadeOnDelete(false); // FK_City_Province
         }
     }
@@ -142,6 +299,32 @@ namespace ImeHub.Data
             // Foreign keys
             HasOptional(a => a.Parent).WithMany(b => b.Companies).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_Company_ParentId
             HasOptional(a => a.Physician).WithMany(b => b.Companies).HasForeignKey(c => c.PhysicianId); // FK_Company_Physician
+        }
+    }
+
+    // CompanyService
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class CompanyServiceConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<CompanyService>
+    {
+        public CompanyServiceConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public CompanyServiceConfiguration(string schema)
+        {
+            ToTable("CompanyService", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.ServiceId).HasColumnName(@"ServiceId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.Price).HasColumnName(@"Price").HasColumnType("decimal").IsOptional().HasPrecision(18,2);
+            Property(x => x.CompanyId).HasColumnName(@"CompanyId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(250);
+            Property(x => x.IsTravelRequired).HasColumnName(@"IsTravelRequired").HasColumnType("bit").IsRequired();
+
+            // Foreign keys
+            HasOptional(a => a.Service).WithMany(b => b.CompanyServices).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_CompanyService_Service
         }
     }
 
@@ -188,6 +371,48 @@ namespace ImeHub.Data
 
             // Foreign keys
             HasOptional(a => a.Parent).WithMany(b => b.Features).HasForeignKey(c => c.ParentId).WillCascadeOnDelete(false); // FK_Feature_Parent
+        }
+    }
+
+    // InviteStatus
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class InviteStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<InviteStatu>
+    {
+        public InviteStatuConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public InviteStatuConfiguration(string schema)
+        {
+            ToTable("InviteStatus", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+        }
+    }
+
+    // MedicolegalType
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class MedicolegalTypeConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<MedicolegalType>
+    {
+        public MedicolegalTypeConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public MedicolegalTypeConfiguration(string schema)
+        {
+            ToTable("MedicolegalType", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsRequired().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nchar").IsRequired().IsFixedLength().HasMaxLength(10);
         }
     }
 
@@ -312,7 +537,7 @@ namespace ImeHub.Data
             ToTable("Province", schema);
             HasKey(x => x.Id);
 
-            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("smallint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("smallint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.CountryId).HasColumnName(@"CountryID").HasColumnType("smallint").IsRequired();
             Property(x => x.ProvinceName).HasColumnName(@"ProvinceName").HasColumnType("nvarchar").IsOptional().HasMaxLength(100);
             Property(x => x.ProvinceCode).HasColumnName(@"ProvinceCode").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
@@ -395,6 +620,79 @@ namespace ImeHub.Data
         }
     }
 
+    // ServiceRequest
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class ServiceRequestConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ServiceRequest>
+    {
+        public ServiceRequestConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public ServiceRequestConfiguration(string schema)
+        {
+            ToTable("ServiceRequest", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.CaseNumber).HasColumnName(@"CaseNumber").HasColumnType("nvarchar").IsRequired().HasMaxLength(50);
+            Property(x => x.AlternateKey).HasColumnName(@"AlternateKey").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.ClaimantName).HasColumnName(@"ClaimantName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Title).HasColumnName(@"Title").HasColumnType("nvarchar").IsOptional().HasMaxLength(256);
+            Property(x => x.RequestedDate).HasColumnName(@"RequestedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.RequestedBy).HasColumnName(@"RequestedBy").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.StatusId).HasColumnName(@"StatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.StatusChangedById).HasColumnName(@"StatusChangedById").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.StatusChangedDate).HasColumnName(@"StatusChangedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.ServiceId).HasColumnName(@"ServiceId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.FolderUrl).HasColumnName(@"FolderUrl").HasColumnType("nvarchar").IsOptional().HasMaxLength(256);
+            Property(x => x.DueDate).HasColumnName(@"DueDate").HasColumnType("date").IsOptional();
+            Property(x => x.AvailableSlotId).HasColumnName(@"AvailableSlotId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.AppointmentDate).HasColumnName(@"AppointmentDate").HasColumnType("date").IsOptional();
+            Property(x => x.StartTime).HasColumnName(@"StartTime").HasColumnType("time").IsOptional();
+            Property(x => x.EndTime).HasColumnName(@"EndTime").HasColumnType("time").IsOptional();
+            Property(x => x.AddressId).HasColumnName(@"AddressId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.CancellationStatusId).HasColumnName(@"CancellationStatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.CancellationStatusChangedDate).HasColumnName(@"CancellationStatusChangedDate").HasColumnType("datetime").IsOptional();
+            Property(x => x.CancellationStatusChangedById).HasColumnName(@"CancellationStatusChangedById").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.HasErrors).HasColumnName(@"HasErrors").HasColumnType("bit").IsRequired();
+            Property(x => x.HasWarnings).HasColumnName(@"HasWarnings").HasColumnType("bit").IsRequired();
+            Property(x => x.MedicolegalTypeId).HasColumnName(@"MedicolegalTypeId").HasColumnType("tinyint").IsOptional();
+            Property(x => x.ReferralSource).HasColumnName(@"ReferralSource").HasColumnType("nvarchar").IsOptional().HasMaxLength(200);
+
+            // Foreign keys
+            HasOptional(a => a.Address).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AddressId).WillCascadeOnDelete(false); // FK_ServiceRequest_Address
+            HasOptional(a => a.AvailableSlot).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.AvailableSlotId).WillCascadeOnDelete(false); // FK_ServiceRequest_AvailableSlot
+            HasOptional(a => a.MedicolegalType).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.MedicolegalTypeId).WillCascadeOnDelete(false); // FK_ServiceRequest_MedicolegalType
+            HasRequired(a => a.CancellationStatu).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.CancellationStatusId).WillCascadeOnDelete(false); // FK_ServiceRequest_CancellationStatus
+            HasRequired(a => a.Physician).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_ServiceRequest_Physician
+            HasRequired(a => a.Service).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.ServiceId).WillCascadeOnDelete(false); // FK_ServiceRequest_Service
+            HasRequired(a => a.ServiceRequestStatu).WithMany(b => b.ServiceRequests).HasForeignKey(c => c.StatusId).WillCascadeOnDelete(false); // FK_ServiceRequest_ServiceRequestStatus
+        }
+    }
+
+    // ServiceRequestStatus
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class ServiceRequestStatuConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ServiceRequestStatu>
+    {
+        public ServiceRequestStatuConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public ServiceRequestStatuConfiguration(string schema)
+        {
+            ToTable("ServiceRequestStatus", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("tinyint").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+        }
+    }
+
     // TeamMember
     [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
     public class TeamMemberConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TeamMember>
@@ -413,11 +711,74 @@ namespace ImeHub.Data
             Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
             Property(x => x.UserId).HasColumnName(@"UserId").HasColumnType("uniqueidentifier").IsRequired();
             Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.TeamMemberInviteId).HasColumnName(@"TeamMemberInviteId").HasColumnType("uniqueidentifier").IsOptional();
 
             // Foreign keys
+            HasOptional(a => a.TeamMemberInvite).WithMany(b => b.TeamMembers).HasForeignKey(c => c.TeamMemberInviteId).WillCascadeOnDelete(false); // FK_TeamMember_TeamMemberInvite
             HasRequired(a => a.Physician).WithMany(b => b.TeamMembers).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_TeamMember_Physician
-            HasRequired(a => a.Role).WithMany(b => b.TeamMembers).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_TeamMember_Role
+            HasRequired(a => a.TeamRole).WithMany(b => b.TeamMembers).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_TeamMember_Role
             HasRequired(a => a.User).WithMany(b => b.TeamMembers).HasForeignKey(c => c.UserId).WillCascadeOnDelete(false); // FK_TeamMember_User
+        }
+    }
+
+    // TeamMemberInvite
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class TeamMemberInviteConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TeamMemberInvite>
+    {
+        public TeamMemberInviteConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public TeamMemberInviteConfiguration(string schema)
+        {
+            ToTable("TeamMemberInvite", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.To).HasColumnName(@"To").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Cc).HasColumnName(@"Cc").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Bcc).HasColumnName(@"Bcc").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.Subject).HasColumnName(@"Subject").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
+            Property(x => x.Body).HasColumnName(@"Body").HasColumnType("nvarchar(max)").IsRequired();
+            Property(x => x.InviteStatusId).HasColumnName(@"InviteStatusId").HasColumnType("tinyint").IsRequired();
+            Property(x => x.InviteStatusChangedDate).HasColumnName(@"InviteStatusChangedDate").HasColumnType("datetime").IsRequired();
+            Property(x => x.InviteStatusChangedBy).HasColumnName(@"InviteStatusChangedBy").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.Title).HasColumnName(@"Title").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.FirstName).HasColumnName(@"FirstName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.LastName).HasColumnName(@"LastName").HasColumnType("nvarchar").IsOptional().HasMaxLength(128);
+            Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.InviteStatu).WithMany(b => b.TeamMemberInvites).HasForeignKey(c => c.InviteStatusId).WillCascadeOnDelete(false); // FK_TeamMemberInviteStatus_InviteStatus
+            HasRequired(a => a.Physician).WithMany(b => b.TeamMemberInvites).HasForeignKey(c => c.PhysicianId); // FK_TeamMemberInvite_Physician
+            HasRequired(a => a.Role).WithMany(b => b.TeamMemberInvites).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false); // FK_TeamMemberInvite_Role
+        }
+    }
+
+    // TeamRole
+    [System.CodeDom.Compiler.GeneratedCode("EF.Reverse.POCO.Generator", "2.37.2.0")]
+    public class TeamRoleConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TeamRole>
+    {
+        public TeamRoleConfiguration()
+            : this("dbo")
+        {
+        }
+
+        public TeamRoleConfiguration(string schema)
+        {
+            ToTable("TeamRole", schema);
+            HasKey(x => x.Id);
+
+            Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(256);
+            Property(x => x.Code).HasColumnName(@"Code").HasColumnType("nvarchar").IsOptional().HasMaxLength(10);
+            Property(x => x.ColorCode).HasColumnName(@"ColorCode").HasColumnType("nvarchar").IsOptional().HasMaxLength(50);
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.Physician).WithMany(b => b.TeamRoles).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_TeamRole_Physician
         }
     }
 
@@ -659,7 +1020,10 @@ namespace ImeHub.Data
 
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsOptional();
+            Property(x => x.PhysicianId).HasColumnName(@"PhysicianId").HasColumnType("uniqueidentifier").IsRequired();
+
+            // Foreign keys
+            HasRequired(a => a.Physician).WithMany(b => b.Workflows).HasForeignKey(c => c.PhysicianId).WillCascadeOnDelete(false); // FK_Workflow_Physician
         }
     }
 

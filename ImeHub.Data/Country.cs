@@ -15,21 +15,15 @@
 namespace ImeHub.Data
 {
 
-    // Country
     public partial class Country
     {
-        public short Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 100)
-        public short Iso3DigitCountry { get; set; } // ISO3DigitCountry
-        public string Iso2CountryCode { get; set; } // ISO2CountryCode (length: 2)
-        public string Iso3CountryCode { get; set; } // ISO3CountryCode (length: 3)
+        public short Id { get; set; }
+        public string Name { get; set; }
+        public short Iso3DigitCountry { get; set; }
+        public string Iso2CountryCode { get; set; }
+        public string Iso3CountryCode { get; set; }
 
-        // Reverse navigation
-
-        /// <summary>
-        /// Child Provinces where [Province].[CountryID] point to this entity (FK_Province_Country)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Province> Provinces { get; set; } // Province.FK_Province_Country
+        public virtual System.Collections.Generic.ICollection<Province> Provinces { get; set; }
 
         public Country()
         {

@@ -15,23 +15,15 @@
 namespace ImeHub.Data
 {
 
-    // WorkItemRelated
     public partial class WorkItemRelated
     {
-        public System.Guid ParentId { get; set; } // ParentId (Primary key)
-        public System.Guid ChildId { get; set; } // ChildId (Primary key)
+        public System.Guid ParentId { get; set; }
+        public System.Guid ChildId { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent WorkItem pointed by [WorkItemRelated].([ChildId]) (FK_WorkItemRelated_Dependent)
-        /// </summary>
-        public virtual WorkItem Child { get; set; } // FK_WorkItemRelated_Dependent
+        public virtual WorkItem Child { get; set; }
 
-        /// <summary>
-        /// Parent WorkItem pointed by [WorkItemRelated].([ParentId]) (FK_WorkItemRelated_WorkItem)
-        /// </summary>
-        public virtual WorkItem Parent { get; set; } // FK_WorkItemRelated_WorkItem
+        public virtual WorkItem Parent { get; set; }
 
         public WorkItemRelated()
         {

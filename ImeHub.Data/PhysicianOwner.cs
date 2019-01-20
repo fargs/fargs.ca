@@ -15,34 +15,23 @@
 namespace ImeHub.Data
 {
 
-    // PhysicianOwner
     public partial class PhysicianOwner
     {
-        public System.Guid PhysicianId { get; set; } // PhysicianId (Primary key)
-        public string Email { get; set; } // Email (length: 128)
-        public System.Guid? UserId { get; set; } // UserId
-        public byte AcceptanceStatusId { get; set; } // AcceptanceStatusId
-        public System.DateTime AcceptanceStatusChangedDate { get; set; } // AcceptanceStatusChangedDate
-        public string Title { get; set; } // Title (length: 10)
-        public string FirstName { get; set; } // FirstName (length: 128)
-        public string LastName { get; set; } // LastName (length: 128)
+        public System.Guid PhysicianId { get; set; }
+        public string Email { get; set; }
+        public System.Guid? UserId { get; set; }
+        public byte AcceptanceStatusId { get; set; }
+        public System.DateTime AcceptanceStatusChangedDate { get; set; }
+        public string Title { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent Physician pointed by [PhysicianOwner].([PhysicianId]) (FK_PhysicianOwner_Physician)
-        /// </summary>
-        public virtual Physician Physician { get; set; } // FK_PhysicianOwner_Physician
+        public virtual Physician Physician { get; set; }
 
-        /// <summary>
-        /// Parent PhysicianOwnerAcceptanceStatu pointed by [PhysicianOwner].([AcceptanceStatusId]) (FK_PhysicianOwner_PhysicianOwnerAcceptanceStatus)
-        /// </summary>
-        public virtual PhysicianOwnerAcceptanceStatu PhysicianOwnerAcceptanceStatu { get; set; } // FK_PhysicianOwner_PhysicianOwnerAcceptanceStatus
+        public virtual PhysicianOwnerAcceptanceStatu PhysicianOwnerAcceptanceStatu { get; set; }
 
-        /// <summary>
-        /// Parent User pointed by [PhysicianOwner].([UserId]) (FK_PhysicianOwner_User)
-        /// </summary>
-        public virtual User User { get; set; } // FK_PhysicianOwner_User
+        public virtual User User { get; set; }
 
         public PhysicianOwner()
         {

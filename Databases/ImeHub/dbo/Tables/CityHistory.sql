@@ -4,8 +4,11 @@
     [SysEndTime]   DATETIME2 (7)    NOT NULL,
     [Name]         NVARCHAR (128)   NULL,
     [Code]         NVARCHAR (3)     NULL,
-    [ProvinceId]   SMALLINT         NOT NULL
+    [ProvinceId]   SMALLINT         NOT NULL,
+    [PhysicianId]  UNIQUEIDENTIFIER NOT NULL
 );
+
+
 
 
 GO

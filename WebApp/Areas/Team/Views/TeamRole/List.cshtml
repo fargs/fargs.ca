@@ -1,0 +1,25 @@
+﻿@using Enums = ImeHub.Models.Enums
+@model ListViewModel
+
+
+@functions{
+    string IsActive(Guid? selectedTeamRoleId, Guid teamRoleId)
+    {
+        return selectedTeamRoleId.HasValue && selectedTeamRoleId.Value == teamRoleId ? "active" : string.Empty;
+    }
+}
+<div style="margin-bottom: 15px;">
+    @if (Model.AuthorizedFeatures.Contains(Features.Team.Create))
+    {
+        <a class="btn btn-default" href="~/Team/TeamMember">Back To Team</a>
+        <button class="btn btn-success" onclick="showNewTeamRoleForm()">New Team Role</button>
+    }
+</div>
+<h3>Roles</h3>
+
+<div id="teammember-container" class="list-group">
+    @foreach (var teamRole in Model.TeamRoles)
+    {
+        <a style="cursor:pointer;" onclick="navigateToTeamRole('@teamRole.Id')" class="list-group-item @IsActive(Model.SelectedTeamRoleId, teamRole.Id)">@teamRole.Name</a>
+    }
+</div>

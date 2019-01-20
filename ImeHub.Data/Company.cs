@@ -15,50 +15,38 @@
 namespace ImeHub.Data
 {
 
-    // Company
     public partial class Company
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 128)
-        public string Description { get; set; } // Description
-        public string Code { get; set; } // Code (length: 10)
-        public string ColorCode { get; set; } // ColorCode (length: 10)
-        public System.Guid? PhysicianId { get; set; } // PhysicianId
-        public string BillingEmail { get; set; } // BillingEmail (length: 100)
-        public string ReportsEmail { get; set; } // ReportsEmail (length: 100)
-        public string PhoneNumber { get; set; } // PhoneNumber (length: 100)
-        public System.Guid? ParentId { get; set; } // ParentId
-        public int NoShowRate { get; set; } // NoShowRate
-        public int LateCancellationRate { get; set; } // LateCancellationRate
-        public int LateCancellationPolicy { get; set; } // LateCancellationPolicy
-        public byte LateCancellationRateFormat { get; set; } // LateCancellationRateFormat
-        public byte NoShowRateFormat { get; set; } // NoShowRateFormat
+        public System.Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Code { get; set; }
+        public string ColorCode { get; set; }
+        public System.Guid? PhysicianId { get; set; }
+        public string BillingEmail { get; set; }
+        public string ReportsEmail { get; set; }
+        public string PhoneNumber { get; set; }
+        public System.Guid? ParentId { get; set; }
+        public int NoShowRate { get; set; }
+        public int LateCancellationRate { get; set; }
+        public int LateCancellationPolicy { get; set; }
+        public byte LateCancellationRateFormat { get; set; }
+        public byte NoShowRateFormat { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<Address> Addresses { get; set; }
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; }
+        public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; }
+        public virtual System.Collections.Generic.ICollection<Service> Services { get; set; }
 
-        /// <summary>
-        /// Child Companies where [Company].[ParentId] point to this entity (FK_Company_ParentId)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Company> Companies { get; set; } // Company.FK_Company_ParentId
-        /// <summary>
-        /// Child Services where [Service].[CompanyId] point to this entity (FK_Service_Company)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Service> Services { get; set; } // Service.FK_Service_Company
 
-        // Foreign keys
+        public virtual Company Parent { get; set; }
 
-        /// <summary>
-        /// Parent Company pointed by [Company].([ParentId]) (FK_Company_ParentId)
-        /// </summary>
-        public virtual Company Parent { get; set; } // FK_Company_ParentId
-
-        /// <summary>
-        /// Parent Physician pointed by [Company].([PhysicianId]) (FK_Company_Physician)
-        /// </summary>
-        public virtual Physician Physician { get; set; } // FK_Company_Physician
+        public virtual Physician Physician { get; set; }
 
         public Company()
         {
+            Addresses = new System.Collections.Generic.List<Address>();
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
             Companies = new System.Collections.Generic.List<Company>();
             Services = new System.Collections.Generic.List<Service>();
             InitializePartial();

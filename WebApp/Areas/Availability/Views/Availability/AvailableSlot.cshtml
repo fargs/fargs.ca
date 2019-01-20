@@ -17,7 +17,7 @@
 else
 {
     <div style="display:inline-flex" class="bg-info">
-        <button type="button" onclick="showBookingForm(@slot.Id)" class="btn btn-link pull-left" style="padding: 0 0 0 0;color:green;"><i class="glyphicon glyphicon-plus"></i></button>
+        <button type="button" onclick="showBookingForm('@slot.Id')" class="btn btn-link pull-left" style="padding: 0 0 0 0;color:green;"><i class="glyphicon glyphicon-plus"></i></button>
         &nbsp;
         <div class="pull-left">
             <strong>@slot.StartTime.ToString(@"hh\:mm") (@slot.Duration)</strong>
@@ -25,7 +25,7 @@ else
         @if (!slot.ServiceRequests.Any())
         {
             <span>&nbsp;</span>
-            <button type="button" onclick="cancelSlot(@slot.Id)" class="btn btn-link pull-left" style="padding: 0 0 0 0;"><i class="fa fa-remove fa-lg text-danger"></i></button>
+            <button type="button" onclick="cancelSlot('@slot.Id')" class="btn btn-link pull-left" style="padding: 0 0 0 0;"><i class="fa fa-remove fa-lg text-danger"></i></button>
         }
     </div>
     foreach (var sr in slot.ServiceRequests)

@@ -27,7 +27,7 @@ namespace WebApp
                 var intializer = new DbInitializer(db);
                 intializer.SeedDatabase();
 
-                db.Users.AddOrUpdate(new User { Id = superAdminUserId, UserName = "lesliefarago", Email = "lesliefarago@gmail.com", EmailConfirmed = true, FirstName = "Leslie", LastName = "Farago", ColorCode = "#0B0B61", RoleId = Enums.Role.SuperAdmin });
+                db.Users.AddOrUpdate(u => u.Id, new User { Id = superAdminUserId, UserName = "lesliefarago", Email = "lesliefarago@gmail.com", EmailConfirmed = true, FirstName = "Leslie", LastName = "Farago", ColorCode = "#0B0B61", RoleId = Enums.Role.SuperAdmin });
 
                 await db.SaveChangesAsync();
             }

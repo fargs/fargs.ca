@@ -14,7 +14,15 @@ namespace ImeHub.Models
         public string Code { get; set; }
         public string ColorCode { get; set; }
 
-        public static Expression<Func<Data.Role, LookupModel<Guid>>> FromRole = e => e == null ? null : new LookupModel<Guid>
+        public static Expression<Func<Data.AddressType, LookupModel<byte>>> FromAddressType = e => e == null ? null : new LookupModel<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = null,
+            ColorCode = null
+        };
+
+        public static Expression<Func<Data.TeamRole, LookupModel<Guid>>> FromTeamRole = e => e == null ? null : new LookupModel<Guid>
         {
             Id = e.Id,
             Name = e.Name,
@@ -30,12 +38,28 @@ namespace ImeHub.Models
             ColorCode = e.ColorCode
         };
 
+        public static Expression<Func<Data.Company, LookupModel<Guid>>> FromCompany = e => e == null ? null : new LookupModel<Guid>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
+        };
+
         public static Expression<Func<Data.PhysicianOwnerAcceptanceStatu, LookupModel<byte>>> FromPhysicianInviteAcceptanceStatus = e => e == null ? null : new LookupModel<byte>
         {
             Id = e.Id,
             Name = e.Name,
             Code = null,
             ColorCode = null
+        };
+
+        public static Expression<Func<Data.InviteStatu, LookupModel<byte>>> FromInviteStatus = e => e == null ? null : new LookupModel<byte>
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Code = e.Code,
+            ColorCode = e.ColorCode
         };
     }
 }

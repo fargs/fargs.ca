@@ -1,5 +1,6 @@
-﻿using LinqKit;
-using Orvosi.Data;
+﻿using ImeHub.Data;
+using ImeHub.Models;
+using LinqKit;
 using System;
 using System.Data.Entity;
 using System.Linq;
@@ -11,17 +12,17 @@ using WebApp.Areas.Availability.Views.Home;
 using WebApp.Areas.Shared;
 using WebApp.Library.Extensions;
 using WebApp.Library.Filters;
-using WebApp.Models;
-using Features = Orvosi.Shared.Enums.Features;
+using Features = ImeHub.Models.Enums.Features.PhysicianPortal;
+using Enums = ImeHub.Models.Enums;
 
 namespace WebApp.Areas.Availability.Controllers
 {
     public class AvailabilityController : BaseController
     {
-        private OrvosiDbContext db;
+        private ImeHubDbContext db;
         private DateTime _selectedDate;
 
-        public AvailabilityController(OrvosiDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
+        public AvailabilityController(ImeHubDbContext db, DateTime now, IPrincipal principal) : base(now, principal)
         {
             if (!physicianId.HasValue)
                 throw new PhysicianNullException();
@@ -48,13 +49,13 @@ namespace WebApp.Areas.Availability.Controllers
                 var dates = Request.Form["AvailableDays"].Split(',');
                 foreach (var item in dates)
                 {
-                    var day = new Orvosi.Data.AvailableDay()
+                    var day = new AvailableDay()
                     {
+                        Id = Guid.NewGuid(),
                         Day = DateTime.Parse(item),
                         PhysicianId = form.PhysicianId.Value,
                         CompanyId = form.CompanyId,
-                        LocationId = form.LocationId,
-                        IsPrebook = form.IsPrebook
+                        AddressId = form.AddressId
                     };
                     db.AvailableDays.Add(day);
                 }
@@ -67,7 +68,7 @@ namespace WebApp.Areas.Availability.Controllers
         [HttpGet]
         [ChildActionOnlyOrAjax]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public PartialViewResult ShowAddSlotsForm(short availableDayId)
+        public PartialViewResult ShowAddSlotsForm(Guid availableDayId)
         {
             var viewModel = new AddSlotsFormModel();
 
@@ -87,8 +88,9 @@ namespace WebApp.Areas.Availability.Controllers
             {
                 var startTime = firstStartTime.Add(new TimeSpan(0, form.Duration * i, 0));
                 var endTime = startTime.Add(new TimeSpan(0, form.Duration, 0));
-                var slot = new Orvosi.Data.AvailableSlot()
+                var slot = new AvailableSlot()
                 {
+                    Id = Guid.NewGuid(),
                     AvailableDayId = form.AvailableDayId,
                     StartTime = startTime,
                     EndTime = endTime,
@@ -102,14 +104,14 @@ namespace WebApp.Areas.Availability.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<RedirectResult> CancelDay(int id)
+        public async Task<RedirectResult> CancelDay(Guid id)
         {
             var day = await db.AvailableDays.FirstAsync(c => c.Id == id);
 
-            if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
-            {
-                ModelState.AddModelError("", "Slots have already been booked.");
-            }
+            //if (day.AvailableSlots.Any(a => a.ServiceRequests.Any()))
+            //{
+            //    ModelState.AddModelError("", "Slots have already been booked.");
+            //}
             db.AvailableDays.Remove(day);
             await db.SaveChangesAsync();
             return Redirect(Request.UrlReferrer.ToString());
@@ -117,14 +119,14 @@ namespace WebApp.Areas.Availability.Controllers
 
         [HttpPost]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<JsonResult> CancelSlot(int availableSlotId)
+        public async Task<JsonResult> CancelSlot(Guid availableSlotId)
         {
             var slot = await db.AvailableSlots.FirstAsync(c => c.Id == availableSlotId);
 
-            if (slot.ServiceRequests.Any())
-            {
-                ModelState.AddModelError("", "Slot has already been booked.");
-            }
+            //if (slot.ServiceRequests.Any())
+            //{
+            //    ModelState.AddModelError("", "Slot has already been booked.");
+            //}
             db.AvailableSlots.Remove(slot);
             await db.SaveChangesAsync();
             return Json(new { availableDayId = slot.AvailableDayId });
@@ -132,7 +134,7 @@ namespace WebApp.Areas.Availability.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public ActionResult ShowNewAvailableDayResourceForm(short availableDayId)
+        public ActionResult ShowNewAvailableDayResourceForm(Guid availableDayId)
         {
             var form = new AvailableDayResourceForm(db, identity, now);
             form.AvailableDayId = availableDayId;
@@ -150,11 +152,7 @@ namespace WebApp.Areas.Availability.Controllers
                 item.Id = Guid.NewGuid();
                 item.AvailableDayId = form.AvailableDayId;
                 item.UserId = form.UserId;
-                item.CreatedUser = User.Identity.GetGuidUserId().ToString();
-                item.CreatedDate = SystemTime.Now();
-                item.ModifiedUser = User.Identity.GetGuidUserId().ToString();
-                item.ModifiedDate = SystemTime.Now();
-
+                
                 db.AvailableDayResources.Add(item);
                 await db.SaveChangesAsync();
                 return Json(item);
@@ -165,7 +163,7 @@ namespace WebApp.Areas.Availability.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> ShowDeleteAvailableDayResourceForm(Guid resourceId)
+        public ActionResult ShowDeleteAvailableDayResourceForm(Guid resourceId)
         {
             return PartialView("_DeleteAvailableDayResourceModalForm", resourceId);
         }
@@ -187,14 +185,16 @@ namespace WebApp.Areas.Availability.Controllers
         }
 
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> AvailableDayResourceList(short availableDayId)
+        public async Task<ActionResult> AvailableDayResourceList(Guid availableDayId)
         {
             var dto = db.AvailableDayResources
+                .AsNoTracking()
+                .AsExpandable()
                 .Where(adr => adr.AvailableDayId == availableDayId)
-                .Select(AvailableDayResourceDto.FromAvailableDayResourceEntity.Expand())
+                .Select(AvailableDayResourceModel.FromAvailableDayResource)
                 .ToList();
 
-            var viewModel = dto.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceDto.Expand());
+            var viewModel = dto.AsQueryable().Select(AvailableDayResourceViewModel.FromAvailableDayResourceModel);
 
             return PartialView("_AvailableDayResourceList", viewModel);
         }
@@ -214,28 +214,27 @@ namespace WebApp.Areas.Availability.Controllers
                 new
                 {
                     Day = ad.Day,
-                    IsPrebook = ad.IsPrebook,
                     CompanyId = ad.CompanyId,
                     CompanyName = ad.Company == null ? string.Empty : ad.Company.Name,
-                    LocationId = ad.LocationId,
-                    LocationName = ad.Address == null ? string.Empty : ad.Address.Name,
-                    LocationOwner = ad.Address == null ? null : ad.Address.OwnerGuid,
+                    AddressId = ad.AddressId,
+                    AddressName = ad.Address == null ? string.Empty : ad.Address.Name,
+                    AddressOwner = ad.Address == null ? null : (ad.Address.PhysicianId ?? ad.Address.CompanyId),
                     Slots = ad.AvailableSlots
                         .OrderBy(s => s.StartTime)
                         .Select(s => new
                         {
                             Id = s.Id,
                             StartTime = s.StartTime.ToShortTimeSafe(),
-                            Duration = s.Duration,
-                            Title = (s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any() ? s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).FirstOrDefault().ClaimantName + " - " + s.ServiceRequests.FirstOrDefault().Id.ToString() : string.Empty),
-                            IsAvailable = !s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()
+                            Duration = s.Duration
+                            //Title = (s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any() ? s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).FirstOrDefault().ClaimantName + " - " + s.ServiceRequests.FirstOrDefault().Id.ToString() : string.Empty),
+                            //IsAvailable = !s.ServiceRequests.Where(sr => !sr.CancelledDate.HasValue).Any()
                         })
                 }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> ShowAvailableDayCompanyForm(short availableDayId)
+        public async Task<ActionResult> ShowAvailableDayCompanyForm(Guid availableDayId)
         {
             var ad = await db.AvailableDays.FindAsync(availableDayId);
             var form = new AvailableDayCompanyForm(db, identity, now) { AvailableDayId = availableDayId, CompanyId = ad.CompanyId };
@@ -250,9 +249,7 @@ namespace WebApp.Areas.Availability.Controllers
             {
                 var ad = await db.AvailableDays.FindAsync(form.AvailableDayId);
                 ad.CompanyId = form.CompanyId;
-                ad.ModifiedDate = now;
-                ad.ModifiedUser = loggedInUserId.ToString();
-
+                
                 await db.SaveChangesAsync();
 
                 return Json(new
@@ -265,10 +262,10 @@ namespace WebApp.Areas.Availability.Controllers
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.Manage)]
-        public async Task<ActionResult> ShowAvailableDayAddressForm(short availableDayId)
+        public async Task<ActionResult> ShowAvailableDayAddressForm(Guid availableDayId)
         {
             var ad = await db.AvailableDays.FindAsync(availableDayId);
-            var form = new AvailableDayAddressForm(db, identity, now) { AvailableDayId = availableDayId, AddressId = ad.LocationId, PhysicianId = ad.PhysicianId };
+            var form = new AvailableDayAddressForm(db, identity, now) { AvailableDayId = availableDayId, AddressId = ad.AddressId, PhysicianId = ad.PhysicianId };
             return PartialView("_AvailableDayAddressModalForm", form);
         }
 
@@ -279,10 +276,8 @@ namespace WebApp.Areas.Availability.Controllers
             if (ModelState.IsValid)
             {
                 var ad = await db.AvailableDays.FindAsync(form.AvailableDayId);
-                ad.LocationId = form.AddressId;
-                ad.ModifiedDate = now;
-                ad.ModifiedUser = loggedInUserId.ToString();
-
+                ad.AddressId = form.AddressId;
+                
                 await db.SaveChangesAsync();
 
                 return Json(new
@@ -292,5 +287,126 @@ namespace WebApp.Areas.Availability.Controllers
             }
             return PartialView("_AvailableDayAddressModalForm", form);
         }
+
+        [HttpGet]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        public async Task<ActionResult> ShowBookingForm(Guid availableSlotId)
+        {
+            var form = new BookingForm(availableSlotId, db, identity, now);
+
+            return PartialView("Booking", form);
+        }
+
+        [HttpPost]
+        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        public async Task<ActionResult> BookAssessment(BookingForm form)
+        {
+            if (!ModelState.IsValid)
+            {
+                form.ViewData = new BookingForm.ViewDataModel(form.AvailableSlotId, db, physicianId.Value, form.CompanyId, now);
+                return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
+            }
+
+            var id = await BookAppointment(form);
+            return Json(new
+            {
+                serviceRequestId = id
+            });
+
+        }
+
+        public async Task<ActionResult> BookAppointment(BookingForm form)
+        {
+            var userId = loggedInUserId;
+            
+            var slot = await db.AvailableSlots.FindAsync(form.AvailableSlotId);
+
+            var sr = new ServiceRequest();
+            sr.Id = Guid.NewGuid();
+            sr.CaseNumber = db.Cases.GetNextCaseNumber(physicianId.Value);
+            sr.StatusId = (byte)Enums.ServiceRequestStatus.Active;
+            sr.StatusChangedById = userId;
+            sr.StatusChangedDate = now;
+            sr.RequestedDate = now;
+            sr.ServiceId = form.ServiceId;
+            sr.PhysicianId = physicianId.Value;
+            sr.AddressId = form.AddressId;
+            sr.AppointmentDate = form.AppointmentDate;
+            sr.AvailableSlotId = form.AvailableSlotId;
+            sr.StartTime = slot.StartTime;
+            sr.EndTime = slot.EndTime;
+            sr.DueDate = form.DueDate;
+            sr.AlternateKey = form.CompanyReferenceId;
+            sr.ClaimantName = form.ClaimantName;
+            sr.ReferralSource = form.ReferralSource;
+            sr.CancellationStatusId = (byte)Enums.CancellationStatus.NotCancelled;
+            sr.CancellationStatusChangedById = userId;
+            sr.CancellationStatusChangedDate = now;
+
+            //// clone the workflow template tasks
+            //var requestTemplate = await db.Workflows.FindAsync(sr.WorkflowId);
+            //foreach (var template in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted().Select(ServiceRequestTemplateTaskDto.FromEntity.Expand()))
+            //{
+            //    var st = new Orvosi.Data.ServiceRequestTask();
+            //    st.Guidance = null;
+            //    st.ObjectGuid = Guid.NewGuid();
+            //    st.ResponsibleRoleId = template.ResponsibleRoleId;
+            //    st.Sequence = template.Sequence;
+            //    st.ShortName = template.ShortName;
+            //    st.TaskId = template.TaskId;
+            //    st.TaskName = template.TaskName;
+            //    st.ModifiedDate = now;
+            //    st.ModifiedUser = userId.ToString();
+            //    st.CreatedDate = now;
+            //    st.CreatedUser = userId.ToString();
+            //    // Assign tasks to physician and case coordinator to start
+            //    st.AssignedTo = (template.ResponsibleRoleId == AspNetRoles.CaseCoordinator ? sr.CaseCoordinatorId : (template.ResponsibleRoleId == AspNetRoles.Physician ? sr.PhysicianId as Nullable<Guid> : null));
+            //    st.ServiceRequestTemplateTaskId = template.Id;
+            //    st.TaskType = template.DueDateType;
+            //    st.Workload = null;
+            //    st.DueDateDurationFromBaseline = template.DueDateDurationFromBaseline;
+            //    st.DueDate = GetTaskDueDate(sr.AppointmentDate, sr.DueDate, template);
+            //    st.TaskStatusId = TaskStatuses.ToDo;
+            //    st.TaskStatusChangedBy = userId;
+            //    st.TaskStatusChangedDate = now;
+            //    st.IsCriticalPath = template.IsCriticalPath;
+            //    st.EffectiveDateDurationFromBaseline = template.EffectiveDateDurationFromBaseline;
+            //    st.EffectiveDate = GetEffectiveDate(sr.AppointmentDate, template);
+
+            //    sr.ServiceRequestTasks.Add(st);
+            //}
+
+            //sr.UpdateIsClosed();
+            db.ServiceRequests.Add(sr);
+
+            //await db.SaveChangesAsync();
+
+            //// Clone the task dependencies
+            //foreach (var taskTemplate in requestTemplate.ServiceRequestTemplateTasks.AsQueryable().AreNotDeleted())
+            //{
+            //    foreach (var dependentTemplate in taskTemplate.Child)
+            //    {
+            //        var task = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == taskTemplate.Id);
+            //        var dependent = sr.ServiceRequestTasks.First(srt => srt.ServiceRequestTemplateTaskId == dependentTemplate.Id);
+            //        task.Child.Add(dependent);
+            //    }
+            //}
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+            //await UpdateDependentTaskStatuses(sr.Id);
+            //await UpdateServiceRequestStatus(sr.Id);
+
+            return Json(sr.Id);
+        }
+
     }
 }

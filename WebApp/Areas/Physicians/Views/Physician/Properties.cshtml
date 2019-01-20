@@ -2,6 +2,37 @@
 @model ReadOnlyViewModel
 
 <div>
+    <div style="margin-bottom: 15px;">
+        <div class="btn-group">
+            @if (Model.Owner != null)
+            {
+                if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotSent)
+                {
+                    <a href="~/Physicians/Physician/SendOwnerInvitationEmail?physicianId=@Model.Id">Send Invite</a>
+                    <button type="button" class="btn btn-primary" onclick="sendOwnerInvitationEmail('@Model.Id')">Send Invite</button>
+                }
+                else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotResponded)
+                {
+                    <button type="button" class="btn btn-primary" onclick="sendOwnerInvitationEmail('@Model.Id')">ReSend Invite</button>
+                }
+                else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.Rejected)
+                {
+                    <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Set Owner</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Transfer Ownership</button>
+                }
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary" onclick="showOwnerInvitationForm('@Model.Id')">Set Owner</button>
+            }
+            <button type="button" class="btn btn-default" onclick="showEditPhysicianForm('@Model.Id')">Edit</button>
+            <button type="button" class="btn btn-default">Delete</button>
+        </div>
+    </div>
+
     <form id="physician-readonly-form">
         <div class="form-group">
             <label class="control-label">Company Name</label>

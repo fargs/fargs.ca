@@ -15,30 +15,22 @@
 namespace ImeHub.Data
 {
 
-    // TeamMember
     public partial class TeamMember
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid PhysicianId { get; set; } // PhysicianId
-        public System.Guid UserId { get; set; } // UserId
-        public System.Guid RoleId { get; set; } // RoleId
+        public System.Guid Id { get; set; }
+        public System.Guid PhysicianId { get; set; }
+        public System.Guid UserId { get; set; }
+        public System.Guid RoleId { get; set; }
+        public System.Guid? TeamMemberInviteId { get; set; }
 
-        // Foreign keys
 
-        /// <summary>
-        /// Parent Physician pointed by [TeamMember].([PhysicianId]) (FK_TeamMember_Physician)
-        /// </summary>
-        public virtual Physician Physician { get; set; } // FK_TeamMember_Physician
+        public virtual Physician Physician { get; set; }
 
-        /// <summary>
-        /// Parent Role pointed by [TeamMember].([RoleId]) (FK_TeamMember_Role)
-        /// </summary>
-        public virtual Role Role { get; set; } // FK_TeamMember_Role
+        public virtual TeamMemberInvite TeamMemberInvite { get; set; }
 
-        /// <summary>
-        /// Parent User pointed by [TeamMember].([UserId]) (FK_TeamMember_User)
-        /// </summary>
-        public virtual User User { get; set; } // FK_TeamMember_User
+        public virtual TeamRole TeamRole { get; set; }
+
+        public virtual User User { get; set; }
 
         public TeamMember()
         {

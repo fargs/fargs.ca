@@ -55,10 +55,31 @@
     <Compile Include="AddressType.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="AvailableDay.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvailableDayResource.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvailableSlot.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CancellationStatu.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Case.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CaseStatu.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="City.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Company.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CompanyService.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Country.cs">
@@ -99,6 +120,12 @@
     </Compile>
     <Compile Include="Interfaces\ILookupEntity.cs" />
     <Compile Include="Interfaces\IPersonEntity.cs" />
+    <Compile Include="InviteStatu.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MedicolegalType.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Physician.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
@@ -124,7 +151,19 @@
     <Compile Include="Service.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="ServiceRequest.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceRequestStatu.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="TeamMember.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TeamMemberInvite.cs">
+      <DependentUpon>ImeHubEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TeamRole.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="TimeZone.cs">

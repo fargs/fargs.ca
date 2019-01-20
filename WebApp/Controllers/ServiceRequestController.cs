@@ -708,36 +708,36 @@ namespace WebApp.Controllers
             return Availability();
         }
 
-        [HttpGet]
-        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
-        public async Task<ActionResult> ShowBookingForm(int availableSlotId)
-        {
-            var dto = await db.AvailableSlots
-                .Where(a => a.Id == availableSlotId)
-                .Select(m.AvailableSlotDto.FromAvailableSlotEntityForBooking.Expand())
-                .SingleAsync();
+        //[HttpGet]
+        //[AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        //public async Task<ActionResult> ShowBookingForm(int availableSlotId)
+        //{
+        //    var dto = await db.AvailableSlots
+        //        .Where(a => a.Id == availableSlotId)
+        //        .Select(m.AvailableSlotModel.FromAvailableSlotEntityForBooking.Expand())
+        //        .SingleAsync();
 
-            var form = BookingForm.FromAvailableSlotDto.Invoke(dto);
+        //    var form = BookingForm.FromAvailableSlotDto.Invoke(dto);
 
-            form.DueDate = form.AvailableSlotViewModel.AvailableDay.Day.AddDays(3);
+        //    form.DueDate = form.AvailableSlotViewModel.AvailableDay.Day.AddDays(3);
 
-            return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
-        }
+        //    return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
+        //}
 
-        [HttpPost]
-        [AuthorizeRole(Feature = Features.Availability.BookAssessment)]
-        public async Task<ActionResult> BookAssessment(BookingForm form)
-        {
-            if (ModelState.IsValid)
-            {
-                var id = await service.BookAssessment(form);
-                return Json(new
-                {
-                    serviceRequestId = id
-                });
-            }
-            return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
-        }
+        //[HttpPost]
+        //[AuthorizeRole(Feature = Features.Availability.BookAssessment)]
+        //public async Task<ActionResult> BookAssessment(BookingForm form)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var id = await service.BookAssessment(form);
+        //        return Json(new
+        //        {
+        //            serviceRequestId = id
+        //        });
+        //    }
+        //    return PartialView("~/Views/ServiceRequest/Booking.cshtml", form);
+        //}
 
         [HttpGet]
         [AuthorizeRole(Feature = Features.Availability.BookAssessment)]

@@ -19,7 +19,7 @@ namespace WebApp.Areas.Availability.Views.Home
         public AddSlotsFormModel()
         {
         }
-        public short AvailableDayId { get; set; }
+        public Guid AvailableDayId { get; set; }
         public short StartHour { get; set; }
         public short StartMinute { get; set; }
         public short Duration { get; set; }

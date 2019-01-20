@@ -1,16 +1,16 @@
 ﻿using LinqKit;
-using Orvosi.Data;
+using ImeHub.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
     public class PricingMatrixViewModel
     {
-        public PricingMatrixViewModel(OrvosiDbContext db, CompanyV2Dto company, Guid physicianId)
+        public PricingMatrixViewModel(ImeHubDbContext db, CompanyModel company, Guid physicianId)
         {
             CompanyId = company.Id.ToString();
             CancellationPolicy = new CancellationPolicyViewModel(company);
@@ -29,13 +29,13 @@ namespace WebApp.Areas.Companies.Views.Company
 
         public class ViewDataModel
         {
-            private OrvosiDbContext db;
-            private CompanyV2Dto company;
+            private ImeHubDbContext db;
+            private CompanyModel company;
             private Guid physicianId;
 
-            public IEnumerable<CityDto> Cities { get; }
+            public IEnumerable<CityModel> Cities { get; }
 
-            public ViewDataModel(OrvosiDbContext db, CompanyV2Dto company, Guid physicianId)
+            public ViewDataModel(ImeHubDbContext db, CompanyModel company, Guid physicianId)
             {
                 this.db = db;
                 this.company = company;
@@ -43,12 +43,14 @@ namespace WebApp.Areas.Companies.Views.Company
                 Cities = GetCities();
             }
 
-            private IEnumerable<CityDto> GetCities()
+            private IEnumerable<CityModel> GetCities()
             {
                 var cities = company.Addresses.Select(c => c.CityId).Distinct().ToArray();
                 return db.Cities
+                    .AsNoTracking()
+                    .AsExpandable()
                     .Where(c => cities.Contains(c.Id))
-                    .Select(CityDto.FromCityEntity.Expand())
+                    .Select(CityModel.FromCity)
                     .OrderBy(c => c.Name)
                     .ToList();
             }

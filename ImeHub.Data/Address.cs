@@ -15,45 +15,40 @@
 namespace ImeHub.Data
 {
 
-    // Address
     public partial class Address
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public System.Guid? PhysicianId { get; set; } // PhysicianId
-        public System.Guid? CompanyId { get; set; } // CompanyId
-        public byte AddressTypeId { get; set; } // AddressTypeID
-        public string Name { get; set; } // Name (length: 256)
-        public string Attention { get; set; } // Attention (length: 255)
-        public string Address1 { get; set; } // Address1 (length: 255)
-        public string Address2 { get; set; } // Address2 (length: 255)
-        public System.Guid CityId { get; set; } // CityId
-        public string PostalCode { get; set; } // PostalCode (length: 50)
-        public short TimeZoneId { get; set; } // TimeZoneId
+        public System.Guid Id { get; set; }
+        public System.Guid? PhysicianId { get; set; }
+        public System.Guid? CompanyId { get; set; }
+        public byte AddressTypeId { get; set; }
+        public string Name { get; set; }
+        public string Attention { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public System.Guid CityId { get; set; }
+        public string PostalCode { get; set; }
+        public short TimeZoneId { get; set; }
+        public bool IsBillingAddress { get; set; }
 
-        // Foreign keys
+        public virtual System.Collections.Generic.ICollection<AvailableDay> AvailableDays { get; set; }
+        public virtual System.Collections.Generic.ICollection<ServiceRequest> ServiceRequests { get; set; }
 
-        /// <summary>
-        /// Parent AddressType pointed by [Address].([AddressTypeId]) (FK_Address_AddressType)
-        /// </summary>
-        public virtual AddressType AddressType { get; set; } // FK_Address_AddressType
 
-        /// <summary>
-        /// Parent City pointed by [Address].([CityId]) (FK_Address_City)
-        /// </summary>
-        public virtual City City { get; set; } // FK_Address_City
+        public virtual AddressType AddressType { get; set; }
 
-        /// <summary>
-        /// Parent Physician pointed by [Address].([PhysicianId]) (FK_Address_Physician)
-        /// </summary>
-        public virtual Physician Physician { get; set; } // FK_Address_Physician
+        public virtual City City { get; set; }
 
-        /// <summary>
-        /// Parent TimeZone pointed by [Address].([TimeZoneId]) (FK_Address_TimeZone)
-        /// </summary>
-        public virtual TimeZone TimeZone { get; set; } // FK_Address_TimeZone
+        public virtual Company Company { get; set; }
+
+        public virtual Physician Physician { get; set; }
+
+        public virtual TimeZone TimeZone { get; set; }
 
         public Address()
         {
+            IsBillingAddress = false;
+            AvailableDays = new System.Collections.Generic.List<AvailableDay>();
+            ServiceRequests = new System.Collections.Generic.List<ServiceRequest>();
             InitializePartial();
         }
 

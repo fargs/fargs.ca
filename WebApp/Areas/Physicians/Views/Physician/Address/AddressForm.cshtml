@@ -1,0 +1,103 @@
+﻿@model AddressFormModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">
+        Address
+    </h4>
+</div>
+<div class="modal-body">
+    <form id="physician-address-form" class="form-horizontal">
+        <input type="hidden" name="Id" value="@Model.Id.ToString()" />
+        <input type="hidden" name="PhysicianId" value="@Model.PhysicianId.ToString()" />
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Country</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.CountryId, new SelectList(Model.ViewData.Countries, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Province</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ProvinceId, new SelectList(Model.ViewData.Provinces, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProvinceId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">City</label>
+            <div class="col-md-10">
+                @*@Html.DropDownListFor(model => model.CityId, new SelectList(Model.ViewData.Cities, "Value", "Text"), string.Empty, new { @class = "form-control" })*@
+                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Postal Code</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PostalCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Address1, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Address2, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Time Zone</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.TimeZoneId, new SelectList(Model.ViewData.TimeZones, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TimeZoneId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Is Billing Address</label>
+            <div class="col-md-10">
+                <span class="checkbox" style="margin-top:0px; margin-bottom:0px;">
+                    <label>
+                        <input id="address-checkbox-@Model.Id" type="checkbox"
+                               name="IsBillingAddress"
+                               value="@Model.IsBillingAddress"
+                               @Model.IsBillingAddressChecked>
+                    </label>
+                </span>
+            </div>
+            @*<label class="control-label col-md-2">Address Type</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.AddressTypeId, new SelectList(Model.ViewData.AddressTypes, "Value", "Text"), string.Empty, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+            </div>*@
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="submit" onclick="@(Model.Id.HasValue ? "saveEditAddressForm" : "saveNewAddressForm")($('#physician-address-form'))" class="btn btn-primary">Save</button>
+</div>

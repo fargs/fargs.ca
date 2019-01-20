@@ -1,0 +1,12 @@
+﻿@model TeamMemberInvitationNotificationViewModel
+
+<h3>Hi @Model.Invitee</h3>
+<p>
+    You have been invited work as a @Model.RoleName with the @Model.PhysicianCompanyName team.
+</p>
+<p>
+    To accept, click the following link: @Url.Action("AcceptInvite", "TeamMember", new { area = "Team", id = Model.InviteId }, Request.Url.Scheme )
+</p>
+
+Regards,
+@Model.PhysicianOwnerName

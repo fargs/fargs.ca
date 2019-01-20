@@ -108,6 +108,27 @@
     <Build Include="dbo\Tables\UserSetupWorkItem.sql" />
     <Build Include="dbo\Tables\UserSetupWorkflowHistory.sql" />
     <Build Include="dbo\Tables\UserSetupWorkflow.sql" />
+    <Build Include="dbo\Tables\InviteStatus.sql" />
+    <Build Include="dbo\Tables\TeamMemberInviteHistory.sql" />
+    <Build Include="dbo\Tables\TeamMemberInvite.sql" />
+    <Build Include="dbo\Tables\TeamRoleHistory.sql" />
+    <Build Include="dbo\Tables\TeamRole.sql" />
+    <Build Include="dbo\Tables\ServiceRequestStatus.sql" />
+    <Build Include="dbo\Tables\ServiceRequestHistory.sql" />
+    <Build Include="dbo\Tables\ServiceRequest.sql" />
+    <Build Include="dbo\Tables\MedicolegalType.sql" />
+    <Build Include="dbo\Tables\CompanyServiceHistory.sql" />
+    <Build Include="dbo\Tables\CompanyService.sql" />
+    <Build Include="dbo\Tables\CaseStatus.sql" />
+    <Build Include="dbo\Tables\CaseHistory.sql" />
+    <Build Include="dbo\Tables\Case.sql" />
+    <Build Include="dbo\Tables\CancellationStatus.sql" />
+    <Build Include="dbo\Tables\AvailableSlotHistory.sql" />
+    <Build Include="dbo\Tables\AvailableSlot.sql" />
+    <Build Include="dbo\Tables\AvailableDayResourceHistory.sql" />
+    <Build Include="dbo\Tables\AvailableDayResource.sql" />
+    <Build Include="dbo\Tables\AvailableDayHistory.sql" />
+    <Build Include="dbo\Tables\AvailableDay.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo.User.data.sql" />

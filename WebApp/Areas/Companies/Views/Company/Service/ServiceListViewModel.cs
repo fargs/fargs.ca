@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Companies.Views.Company
 {
     public class ServiceListViewModel
     {
-        public ServiceListViewModel(CompanyV2Dto company)
+        public ServiceListViewModel(CompanyModel company)
         {
             CompanyId = company.Id;
             Services = company.Services.Where(s => !s.IsTravelRequired).Select(s => new ServiceViewModel(s));

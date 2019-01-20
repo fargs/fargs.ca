@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Linq.Expressions;
-using WebApp.Models;
+using ImeHub.Models;
 using WebApp.Views.Shared;
 
 namespace WebApp.Areas.Team.Views.TeamMember
 {
-    public class TeamMemberViewModel : ContactViewModel
+    public class TeamMemberViewModel
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
         public Guid PhysicianId { get; set; }
         public LookupViewModel<Guid> Role { get; set; }
         public TeamMemberViewModel()
         {
-
         }
-        public static Func<TeamMemberDto, TeamMemberViewModel> FromTeamMemberDto = c => new TeamMemberViewModel
+        public static Func<TeamMemberModel, TeamMemberViewModel> FromTeamMember = c => new TeamMemberViewModel
         {
             Id = c.Id,
-            Name = c.DisplayName,
-            Code = c.Initials,
-            ColorCode = c.ColorCode,
-            Email = c.Email,
+            Name = c.User.DisplayName,
             PhysicianId = c.PhysicianId,
-            Role = LookupViewModel<Guid>.FromLookupDto(c.Role)
+            Role = LookupViewModel<Guid>.FromLookupModel(c.Role)
         };
     }
 }

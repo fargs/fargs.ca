@@ -59,7 +59,7 @@ namespace WebApp.Areas.Dashboard.Views.Home
 
     public class WorkflowViewModel : LookupViewModel<Guid>
     {
-        public WorkflowViewModel(UserSetupWorkflowModel workflow)
+        public WorkflowViewModel(WorkflowModel workflow)
         {
             Id = workflow.Id;
             Name = workflow.Name;
@@ -75,7 +75,7 @@ namespace WebApp.Areas.Dashboard.Views.Home
 
     public class WorkItemViewModel : LookupViewModel<Guid>
     {
-        public WorkItemViewModel(UserSetupWorkflowModel.UserSetupWorkItemModel workItem)
+        public WorkItemViewModel(WorkflowModel.WorkItemModel workItem)
         {
             Id = workItem.Id;
             Name = workItem.Name;

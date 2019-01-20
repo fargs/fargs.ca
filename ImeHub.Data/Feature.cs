@@ -15,31 +15,18 @@
 namespace ImeHub.Data
 {
 
-    // Feature
     public partial class Feature
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 255)
-        public System.Guid? ParentId { get; set; } // ParentID
-        public bool IsActive { get; set; } // IsActive
+        public System.Guid Id { get; set; }
+        public string Name { get; set; }
+        public System.Guid? ParentId { get; set; }
+        public bool IsActive { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<Feature> Features { get; set; }
+        public virtual System.Collections.Generic.ICollection<RoleFeature> RoleFeatures { get; set; }
 
-        /// <summary>
-        /// Child Features where [Feature].[ParentID] point to this entity (FK_Feature_Parent)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<Feature> Features { get; set; } // Feature.FK_Feature_Parent
-        /// <summary>
-        /// Child RoleFeatures where [RoleFeature].[FeatureId] point to this entity (FK_RoleFeature_Feature)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<RoleFeature> RoleFeatures { get; set; } // RoleFeature.FK_RoleFeature_Feature
 
-        // Foreign keys
-
-        /// <summary>
-        /// Parent Feature pointed by [Feature].([ParentId]) (FK_Feature_Parent)
-        /// </summary>
-        public virtual Feature Parent { get; set; } // FK_Feature_Parent
+        public virtual Feature Parent { get; set; }
 
         public Feature()
         {

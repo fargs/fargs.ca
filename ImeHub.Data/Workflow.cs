@@ -15,19 +15,16 @@
 namespace ImeHub.Data
 {
 
-    // Workflow
     public partial class Workflow
     {
-        public System.Guid Id { get; set; } // Id (Primary key)
-        public string Name { get; set; } // Name (length: 128)
-        public System.Guid? PhysicianId { get; set; } // PhysicianId
+        public System.Guid Id { get; set; }
+        public string Name { get; set; }
+        public System.Guid PhysicianId { get; set; }
 
-        // Reverse navigation
+        public virtual System.Collections.Generic.ICollection<WorkItem> WorkItems { get; set; }
 
-        /// <summary>
-        /// Child WorkItems where [WorkItem].[WorkflowId] point to this entity (FK_WorkItem_Workflow)
-        /// </summary>
-        public virtual System.Collections.Generic.ICollection<WorkItem> WorkItems { get; set; } // WorkItem.FK_WorkItem_Workflow
+
+        public virtual Physician Physician { get; set; }
 
         public Workflow()
         {

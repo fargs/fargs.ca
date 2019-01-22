@@ -24,12 +24,12 @@ namespace ImeHub.Models
 
         public IEnumerable<Guid> ServiceRequestIds { get
             {
-                return ServiceRequests.Where(sr => sr.CancellationStatus != Enums.CancellationStatus.Cancellation).Select(sr => sr.Id);
+                return ServiceRequests.Where(sr => sr.CancellationStatusId != Enums.CancellationStatus.Cancellation).Select(sr => sr.Id);
             }
         }
         public bool IsAvailable(IEnumerable<ServiceRequestModel> serviceRequests)
         {
-            return !serviceRequests.Any() || serviceRequests.All(sr => sr.CancellationStatus == Enums.CancellationStatus.Cancellation); // this includes cancelled and late cancelled
+            return !serviceRequests.Any() || serviceRequests.All(sr => sr.CancellationStatusId == Enums.CancellationStatus.Cancellation); // this includes cancelled and late cancelled
         }
         public string DisplayName(IEnumerable<ServiceRequestModel> serviceRequests, TimeSpan startTime)
         {
@@ -40,7 +40,7 @@ namespace ImeHub.Models
             }
             else
             {
-                return text + " - " + serviceRequests.Where(sr => sr.CancellationStatus != Enums.CancellationStatus.Cancellation).FirstOrDefault().ClaimantName + " - " + serviceRequests.FirstOrDefault().Id.ToString();
+                return text + " - " + serviceRequests.Where(sr => sr.CancellationStatusId != Enums.CancellationStatus.Cancellation).FirstOrDefault().ClaimantName + " - " + serviceRequests.FirstOrDefault().Id.ToString();
             }
         }
 
@@ -49,8 +49,8 @@ namespace ImeHub.Models
             Id = e.Id,
             StartTime = e.StartTime,
             EndTime = e.EndTime,
-            Duration = e.Duration
-            //ServiceRequests = e.ServiceRequests.AsQueryable().Select(ServiceRequestModel.FromEntityForAvailability.Expand())
+            Duration = e.Duration,
+            ServiceRequests = e.ServiceRequests.AsQueryable().Select(ServiceRequestModel.FromServiceRequestForAvailability)
         };
 
         public static Expression<Func<AvailableSlot, AvailableSlotModel>> FromAvailableSlotForReschedule = e => e == null ? null : new AvailableSlotModel
@@ -80,7 +80,7 @@ namespace ImeHub.Models
             {
                 Id = sr.Id,
                 ClaimantName = sr.ClaimantName,
-                CancellationStatus = (Enums.CancellationStatus)sr.CancellationStatusId,
+                CancellationStatusId = (Enums.CancellationStatus)sr.CancellationStatusId,
                 StatusId = (Enums.ServiceRequestStatus)sr.StatusId
             })
         };
@@ -96,7 +96,7 @@ namespace ImeHub.Models
             {
                 Id = sr.Id,
                 ClaimantName = sr.ClaimantName,
-                CancellationStatus = (Enums.CancellationStatus)sr.CancellationStatusId,
+                CancellationStatusId = (Enums.CancellationStatus)sr.CancellationStatusId,
                 StatusId = (Enums.ServiceRequestStatus)sr.StatusId
             }),
             AvailableDay = AvailableDayModel.FromAvailableDayEntityForBooking.Invoke(e.AvailableDay)

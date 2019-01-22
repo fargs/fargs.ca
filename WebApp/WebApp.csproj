@@ -735,6 +735,7 @@
     <Content Include="Areas\Team\Views\TeamRole\TeamRoleForm.cshtml" />
     <Content Include="Areas\Team\Views\TeamRole\web.config" />
     <Content Include="Areas\Team\Views\TeamMember\web.config" />
+    <Content Include="Areas\Availability\Views\Home\CancellationStatus.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />

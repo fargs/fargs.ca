@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using WebApp.Views.Shared;
+using Enums = ImeHub.Models.Enums;
 
 namespace WebApp.Areas.Availability.Views.Home
 {
@@ -38,7 +40,14 @@ namespace WebApp.Areas.Availability.Views.Home
             {
                 ServiceRequestId = sr.Id,
                 ClaimantName = sr.ClaimantName,
-                CancellationStatusId = sr.CancellationStatus
+                CancellationStatusId = sr.CancellationStatusId,
+                CancellationStatus = new LookupViewModel<Enums.CancellationStatus>
+                {
+                    Id = sr.CancellationStatusId,
+                    Name = sr.CancellationStatus.Name,
+                    Code = sr.CancellationStatus.Code,
+                    ColorCode = sr.CancellationStatus.ColorCode
+                }
             })
         };
 

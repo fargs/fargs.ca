@@ -29,7 +29,7 @@ namespace WebApp.Areas.Availability.Views.Home
         public bool HasAppointment { get; set; }
         public bool HasReportDeliverable { get; set; }
         public Enums.CancellationStatus CancellationStatusId { get; set; }
-        public CancellationStatusViewModel CancellationStatus { get; set; }
+        public LookupViewModel<Enums.CancellationStatus> CancellationStatus { get; set; }
         public byte ServiceRequestStatusId { get; set; }
         public LookupViewModel<short> ServiceRequestStatus { get; set; }
         public LookupViewModel<short> NextTaskStatusForUser { get; set; }
@@ -43,7 +43,7 @@ namespace WebApp.Areas.Availability.Views.Home
         {
             ServiceRequestId = dto.Id,
             ClaimantName = dto.ClaimantName,
-            CancellationStatusId =  dto.CancellationStatus
+            CancellationStatusId =  dto.CancellationStatusId
             //AppointmentDate = dto.AppointmentDate.Value,
             //AppointmentDateFormatted = dto.AppointmentDate.ToOrvosiDateFormat(),
             //StartTime = dto.StartTime.ToShortTimeSafe(),

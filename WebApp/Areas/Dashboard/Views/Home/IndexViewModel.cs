@@ -15,7 +15,6 @@ namespace WebApp.Areas.Dashboard.Views.Home
     public class IndexViewModel : ViewModelBase
     {
         public UserViewModel User { get; set; }
-        public WorkflowViewModel UserSetupWorkflow { get; set; }
         public ListViewModel List { get; set; }
 
         public IndexViewModel(ImeHubDbContext db, IIdentity identity, DateTime now) : base(identity, now)
@@ -43,7 +42,6 @@ namespace WebApp.Areas.Dashboard.Views.Home
                 EmailProviderCredential = user.EmailProviderCredential,
                 IsEmailProviderSet = user.IsEmailProviderSet
             };
-            //UserSetupWorkflow = new WorkflowViewModel(user.Setup);
             List = new ListViewModel(user);
         }
         
@@ -55,34 +53,5 @@ namespace WebApp.Areas.Dashboard.Views.Home
             public string EmailProviderCredential { get; set; }
             public bool IsEmailProviderSet { get; set; }
         }
-    }
-
-    public class WorkflowViewModel : LookupViewModel<Guid>
-    {
-        public WorkflowViewModel(WorkflowModel workflow)
-        {
-            Id = workflow.Id;
-            Name = workflow.Name;
-            StatusId = workflow.StatusId;
-            Status = StatusViewModel<Enums.WorkflowStatus>.FromStatusModel(workflow.Status);
-            WorkItems = workflow.WorkItems.Select(wi => new WorkItemViewModel(wi));
-        }
-
-        public Enums.WorkflowStatus StatusId { get; set; }
-        public StatusViewModel<Enums.WorkflowStatus> Status { get; set; }
-        public IEnumerable<WorkItemViewModel> WorkItems { get; set; }
-    }
-
-    public class WorkItemViewModel : LookupViewModel<Guid>
-    {
-        public WorkItemViewModel(WorkflowModel.WorkItemModel workItem)
-        {
-            Id = workItem.Id;
-            Name = workItem.Name;
-            StatusId = workItem.StatusId;
-            Status = StatusViewModel<Enums.WorkItemStatus>.FromStatusModel(workItem.Status);
-        }
-        public Enums.WorkItemStatus StatusId { get; set; }
-        public StatusViewModel<Enums.WorkItemStatus> Status { get; set; }
     }
 }

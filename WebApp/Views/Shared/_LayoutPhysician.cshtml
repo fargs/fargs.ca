@@ -51,6 +51,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/bootstrap")
+    @Html.Partial("ApplicationInsightsSnippet", System.Web.Configuration.WebConfigurationManager.AppSettings["iKey"]);
 </head>
 <body>
     <div class="navbar navbar-default">
@@ -90,10 +91,6 @@
                                 </ul>
                             </li>
                         }
-                        if (features.Contains(Features.Companies.Section))
-                        {
-                            <li>@Html.ActionLink("Companies", "Index", "Company", new { area = "Companies" }, null)</li>
-                        }
                         if (features.Contains(Features.Availability.AvailabilitySection))
                         {
                             <li>@Html.ActionLink("Availability", "Index", "Home", new { area = "Availability" }, null)</li>
@@ -105,6 +102,11 @@
                         if (features.Contains(Features.Invoices.Section))
                         {
                             <li>@Html.ActionLink("Invoices", "Index", "Unsent", new { area = "Invoices" }, null)</li>
+                        }
+
+                        if (features.Contains(Features.Companies.Section))
+                        {
+                            <li>@Html.ActionLink("Companies", "Index", "Company", new { area = "Companies" }, null)</li>
                         }
                         if (features.Contains(Features.Team.TeamSection))
                         {
@@ -193,7 +195,6 @@
     automatically in just a few seconds.
     -->
 
-    @Scripts.Render("~/bundles/signalr")
     @Scripts.Render("~/bundles/markdown")
 
     <script src="~/MVCGridHandler.axd/script.js"></script>

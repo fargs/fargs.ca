@@ -9,7 +9,7 @@
         @foreach (var sr in slot.ServiceRequests)
         {
             <div>
-                <a href="~/ServiceRequest/Details/@sr.ServiceRequestId" target="_blank">@sr.ServiceRequestId</a>  @Html.Partial("CancellationStatus", sr.CancellationStatus)
+                <a href="~/ServiceRequests/Assessment/Details/@sr.ServiceRequestId" target="_blank">@sr.ServiceRequestId</a>  @Html.Partial("CancellationStatus", sr.CancellationStatus)
             </div>
         }
     </div>
@@ -31,7 +31,7 @@ else
     foreach (var sr in slot.ServiceRequests)
     {
         <div>
-            <a href="~/ServiceRequest/Details/@sr.ServiceRequestId" target="_blank">@sr.ServiceRequestId</a>  @Html.Partial("CancellationStatus", sr.CancellationStatus)
+            <a href="~/ServiceRequests/Assessment/Details/@sr.ServiceRequestId" target="_blank">@sr.ServiceRequestId</a>  @Html.Partial("CancellationStatus", sr.CancellationStatus)
         </div>
     }
 }

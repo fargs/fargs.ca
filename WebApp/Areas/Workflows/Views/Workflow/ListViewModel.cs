@@ -35,12 +35,12 @@ namespace WebApp.Areas.Workflows.Views.Workflow
             if (workflowId.HasValue)
             {
                 SelectedWorkflowId = workflowId;
-                SelectedWorkflow = new ReadOnlyViewModel(workflowId.Value, db, identity, now);
+                SelectedWorkflow = new WorkflowViewModel(workflowId.Value, db, identity, now);
             }
         }
         public IEnumerable<LookupViewModel<Guid>> Workflows { get; set; }
         public int WorkflowCount { get; set; }
         public Guid? SelectedWorkflowId { get; private set; }
-        public ReadOnlyViewModel SelectedWorkflow { get; private set; }
+        public WorkflowViewModel SelectedWorkflow { get; private set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImeHub.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,6 +10,17 @@ namespace WebApp.Views.Shared
 {
     public class LookupViewModel<T>
     {
+        public LookupViewModel()
+        {
+
+        }
+        public LookupViewModel(ILookupModel<T> lookup)
+        {
+            Id = lookup.Id;
+            Name = lookup.Name;
+            Code = lookup.Code;
+            ColorCode = lookup.ColorCode;
+        }
         public T Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }

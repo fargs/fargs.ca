@@ -17,11 +17,11 @@ namespace WebApp.Areas.Dashboard.Views.Home
             AsTeamMember = model.AsTeamMember
                 .Select(LookupViewModel<Guid>.FromLookupModel);
 
-            AsManager = model.AsManager
-                .Select(LookupViewModel<Guid>.FromLookupModel);
+            //AsManager = model.AsManager
+            //    .Select(LookupViewModel<Guid>.FromLookupModel);
 
-            AsOwner = model.AsOwner
-                .Select(LookupViewModel<Guid>.FromLookupModel);
+            //AsOwner = model.AsOwner
+            //    .Select(LookupViewModel<Guid>.FromLookupModel);
         }
         public IEnumerable<LookupViewModel<Guid>> AsTeamMember { get; set; }
         public IEnumerable<LookupViewModel<Guid>> AsManager { get; set; }

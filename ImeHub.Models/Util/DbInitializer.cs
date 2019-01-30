@@ -130,6 +130,17 @@ namespace ImeHub.Models.Database
             db.Provinces.AddOrUpdate(new Province { Id = 12, ProvinceName = "Saskatchewan", ProvinceCode = "SK", CountryId = 1 });
             db.Provinces.AddOrUpdate(new Province { Id = 13, ProvinceName = "Yukon", ProvinceCode = "YT", CountryId = 1 });
 
+            // Time Zones
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 1, Name = "Eastern Standard Time", Iana = "America/Toronto", Iso = "Canada/Eastern" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 2, Name = "Pacific Standard Time", Iana = "America/Vancouver", Iso = "Canada/Pacific" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 3, Name = "Atlantic Standard Time", Iana = "America/Halifax", Iso = "Canada/Atlantic" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 4, Name = "Central Standard Time", Iana = "America/Winnipeg", Iso = "Canada/Central" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 5, Name = "Central Standard Time", Iana = "America/Regina", Iso = "Canada/East-Saskatchewan" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 6, Name = "Mountain Standard Time", Iana = "America/Edmonton", Iso = "Canada/Mountain" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 7, Name = "Newfoundland and Labrador Standard Time", Iana = "America/St_Johns", Iso = "Canada/Newfoundland" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 8, Name = "Central Standard Time", Iana = "America/Regina", Iso = "Canada/Saskatchewan" });
+            db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 9, Name = "Pacific Standard Time", Iana = "America/Whitehorse", Iso = "Canada/Yukon" });
+
         }
     }
 }

@@ -7,7 +7,7 @@
     @foreach (var address in Model.Addresses)
     {
         <address class="list-group-item">
-            <h5>@address.AddressType</h5>
+            @address.Name<br />
             @address.Address1<br />
             @address.CityName, @address.ProvinceName @address.CountryName<br />
             @address.PostalCode

@@ -68,6 +68,7 @@
     <Compile Include="Enums\ServiceRequestStatus.cs" />
     <Compile Include="Extensions\Case.cs" />
     <Compile Include="Extensions\DateTime.cs" />
+    <Compile Include="ILookupModel.cs" />
     <Compile Include="ServiceModel.cs" />
     <Compile Include="ServiceRequestModel.cs" />
     <Compile Include="TeamMemberInviteModel.cs" />

@@ -8,7 +8,6 @@
             {
                 if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotSent)
                 {
-                    <a href="~/Physicians/Physician/SendOwnerInvitationEmail?physicianId=@Model.Id">Send Invite</a>
                     <button type="button" class="btn btn-primary" onclick="sendOwnerInvitationEmail('@Model.Id')">Send Invite</button>
                 }
                 else if (Model.Owner.AcceptanceStatusId == Enums.AcceptanceStatus.NotResponded)

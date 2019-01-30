@@ -27,10 +27,10 @@ namespace WebApp.Areas.Workflows.Controllers
         {
             var list = new ListViewModel(workflowId, db, identity, now);
 
-            ReadOnlyViewModel readOnly = null;
+            WorkflowViewModel readOnly = null;
             if (workflowId.HasValue)
             {
-                readOnly = new ReadOnlyViewModel(workflowId.Value, db, identity, now);
+                readOnly = new WorkflowViewModel(workflowId.Value, db, identity, now);
             }
 
             var viewModel = new IndexViewModel(list, readOnly, identity, now);
@@ -59,21 +59,10 @@ namespace WebApp.Areas.Workflows.Controllers
             return PartialView("WorkflowForm", formModel);
         }
 
-        [AuthorizeRole(Feature = Features.Workflows.Manage)]
-        public PartialViewResult ShowNewWorkItemForm(Guid workflowId)
-        {
-            if (!physicianId.HasValue)
-            {
-                throw new ArgumentNullException("PhysicianId is null");
-            }
-            var formModel = new WorkItemFormModel(workflowId, physicianId.Value, db);
-
-            return PartialView("WorkItem/WorkItemForm", formModel);
-        }
         [AuthorizeRole(Feature = Features.Workflows.Section)]
         public PartialViewResult ReadOnly(Guid workflowId)
         {
-            var readOnly = new ReadOnlyViewModel(workflowId, db, identity, now);
+            var readOnly = new WorkflowViewModel(workflowId, db, identity, now);
 
             return PartialView(readOnly);
         }
@@ -118,32 +107,6 @@ namespace WebApp.Areas.Workflows.Controllers
             await db.SaveChangesAsync();
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        [HttpPost]
-        [AuthorizeRole(Feature = Features.Workflows.Manage)]
-        public async Task<ActionResult> SaveNewWorkItemForm(WorkItemFormModel form)
-        {
-            if (!ModelState.IsValid)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return PartialView("WorkItem/WorkItemForm", form);
-            }
-
-            var workItem = new WorkItem
-            {
-                Id = Guid.NewGuid(),
-                WorkflowId = form.WorkflowId,
-                Name = form.Name
-            };
-            db.WorkItems.Add(workItem);
-            await db.SaveChangesAsync();
-
-            return Json(new
-            {
-                id = workItem.Id,
-                workflowId = workItem.WorkflowId
-            });
         }
 
     }

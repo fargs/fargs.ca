@@ -43,6 +43,20 @@ namespace ImeHub.Models
                 ColorCode = sr.CancellationStatu.ColorCode
             }
         };
+
+        public static Expression<Func<ServiceRequest, ServiceRequestModel>> FromServiceRequest = sr => sr == null ? null : new ServiceRequestModel
+        {
+            Id = sr.Id,
+            ClaimantName = sr.ClaimantName,
+            CancellationStatusId = (Enums.CancellationStatus)sr.CancellationStatusId,
+            CancellationStatus = new LookupModel<byte>
+            {
+                Id = sr.CancellationStatu.Id,
+                Name = sr.CancellationStatu.Name,
+                Code = sr.CancellationStatu.Code,
+                ColorCode = sr.CancellationStatu.ColorCode
+            }
+        };
     }
 
 }

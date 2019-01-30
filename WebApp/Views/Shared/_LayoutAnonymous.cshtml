@@ -11,6 +11,7 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Html.Partial("ApplicationInsightsSnippet", System.Web.Configuration.WebConfigurationManager.AppSettings["iKey"]);
 </head>
 <body>
     <div class="navbar navbar-default">

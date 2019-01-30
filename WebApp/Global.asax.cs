@@ -19,6 +19,7 @@ namespace WebApp
     {
         protected void Application_Start()
         {
+            TelemetryConfiguration.Active.InstrumentationKey = WebConfigurationManager.AppSettings["iKey"];
             AreaRegistration.RegisterAllAreas();
             UnityConfig.RegisterComponents();
             GlobalConfiguration.Configure(WebApiConfig.Register);

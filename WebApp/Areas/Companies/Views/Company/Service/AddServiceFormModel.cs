@@ -37,7 +37,7 @@ namespace WebApp.Areas.Companies.Views.Company
         public Guid? ServiceId { get; set; }
         public Guid? Id { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }
+        public string Price { get; set; }
         public bool? IsTravelRequired { get; set; }
 
         public ViewDataModel ViewData { get; private set; }

@@ -13,13 +13,13 @@ namespace WebApp.Areas.Workflows.Views.Workflow
         {
 
         }
-        public IndexViewModel(ListViewModel list, ReadOnlyViewModel readOnly, IIdentity identity, DateTime now) : base(identity, now)
+        public IndexViewModel(ListViewModel list, WorkflowViewModel readOnly, IIdentity identity, DateTime now) : base(identity, now)
         {
             List = list;
             ReadOnly = readOnly;
         }
         public ListViewModel List { get; set; }
-        public ReadOnlyViewModel ReadOnly { get; set; }
+        public WorkflowViewModel ReadOnly { get; set; }
 
     }
 }

@@ -12,14 +12,6 @@
         <input type="hidden" name="CompanyId" value="@Model.CompanyId.ToString()" />
 
         <div class="form-group">
-            <label class="control-label col-md-2">Template</label>
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.ServiceId, new SelectList(Model.ViewData.Services, "Value", "Text", Model.ServiceId), "None", new { @class = "form-control", id = "company-addservice-form-serviceid", onChange = "serviceTemplateChanged('" + Model.CompanyId + "')" })
-                @Html.ValidationMessageFor(model => model.ServiceId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-10">
                 <input type="text" class="form-control" name="Name" value="@(!string.IsNullOrEmpty(Model.Name) ? Model.Name : Model.ServiceId.HasValue ? Model.SelectedServiceName : string.Empty)" />
@@ -30,7 +22,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Price</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" name="Price" value="@(Model.Price.ToString())" />
+                <input type="text" class="form-control" name="Price" value="@(Model.Price)" />
                 @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
             </div>
         </div>

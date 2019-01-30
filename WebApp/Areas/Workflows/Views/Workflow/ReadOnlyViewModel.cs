@@ -14,14 +14,14 @@ using Enums = ImeHub.Models.Enums;
 
 namespace WebApp.Areas.Workflows.Views.Workflow
 {
-    public class ReadOnlyViewModel : ViewModelBase
+    public class WorkflowViewModel : ViewModelBase
     {
-        public ReadOnlyViewModel() { }
-        public ReadOnlyViewModel(IIdentity identity, DateTime now) : base(identity, now)
+        public WorkflowViewModel() { }
+        public WorkflowViewModel(IIdentity identity, DateTime now) : base(identity, now)
         {
             PhysicianId = PhysicianId;
         }
-        public ReadOnlyViewModel(Guid workflowId, ImeHubDbContext db, IIdentity identity, DateTime now) : this(identity, now)
+        public WorkflowViewModel(Guid workflowId, ImeHubDbContext db, IIdentity identity, DateTime now) : this(identity, now)
         {
             var workflow = db.Workflows
                 .AsNoTracking()
@@ -31,7 +31,7 @@ namespace WebApp.Areas.Workflows.Views.Workflow
             
             WorkflowId = workflowId;
             Name = workflow.Name;
-            WorkItems = workflow.WorkItems.Select(wi => new ReadOnlyViewModel.WorkItemViewModel(wi));
+            WorkItems = workflow.WorkItems.Select(wi => new WorkflowViewModel.WorkItemViewModel(wi));
         }
 
         public Guid? WorkflowId { get; set; }
@@ -51,12 +51,19 @@ namespace WebApp.Areas.Workflows.Views.Workflow
                 WorkflowId = workItem.WorkflowId;
                 Sequence = workItem.Sequence;
                 Name = workItem.Name;
+                ResponsibleRoleId = workItem.ResponsibleRoleId;
+                ResponsibleRole = new LookupViewModel<Guid>(workItem.ResponsibleRole);
+                Dependencies = workItem.Dependencies.Select(d => new WorkflowViewModel.WorkItemViewModel.WorkItemDependentViewModel
+                {
+                    Id = d.Id,
+                    Name = d.Name
+                });
             }
             public Guid WorkflowId { get; set; }
             public short Sequence { get; set; }
             public DateTime? DueDate { get; set; }
             public Guid? ResponsibleRoleId { get; set; }
-            public RoleModel ResponsibleRole { get; set; }
+            public LookupViewModel<Guid> ResponsibleRole { get; set; }
             
             public IEnumerable<WorkItemDependentViewModel> Dependencies { get; set; }
 

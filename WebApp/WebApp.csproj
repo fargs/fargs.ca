@@ -24,12 +24,12 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
-    <ApplicationInsightsResourceId>/subscriptions/e1582cf3-065c-460f-99d1-a5e9620c7ec1/resourcegroups/orvosi-canada-webapp/providers/microsoft.insights/components/orvosi</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/dda60743-a5ee-4b67-b253-53ba97bcb271/resourcegroups/imehub-dev/providers/microsoft.insights/components/imehub-dev</ApplicationInsightsResourceId>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/e1582cf3-065c-460f-99d1-a5e9620c7ec1/resourceGroups/orvosi-canada-webapp/providers/microsoft.insights/components/orvosi</ApplicationInsightsAnnotationResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/dda60743-a5ee-4b67-b253-53ba97bcb271/resourceGroups/imehub-dev/providers/microsoft.insights/components/imehub-dev</ApplicationInsightsAnnotationResourceId>
     <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -582,6 +582,11 @@
       <DependentUpon>Orvosi.tt</DependentUpon>
     </Compile>
     <Compile Include="Areas\Reports\ReportsAreaRegistration.cs" />
+    <Compile Include="Areas\ServiceRequests\Controllers\AddendumController.cs" />
+    <Compile Include="Areas\ServiceRequests\Controllers\AssessmentController.cs" />
+    <Compile Include="Areas\ServiceRequests\Controllers\TeleconferenceController.cs" />
+    <Compile Include="Areas\ServiceRequests\ServiceRequestsAreaRegistration.cs" />
+    <Compile Include="Areas\ServiceRequests\Views\Assessment\DetailsViewModel.cs" />
     <Compile Include="Areas\Services\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Services\ServicesAreaRegistration.cs" />
     <Compile Include="Areas\Companies\Views\Company\Pricing\CancellationPolicyViewModel.cs" />
@@ -604,8 +609,9 @@
     <Compile Include="Areas\Team\Views\TeamRole\TeamRoleViewModel.cs" />
     <Compile Include="Areas\Team\Views\TeamRole\TeamRoleForm.cs" />
     <Compile Include="Areas\Workflows\Controllers\WorkflowController.cs" />
-    <Compile Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemFormModel.cs" />
-    <Compile Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemViewModel.cs" />
+    <Compile Include="Areas\Workflows\Controllers\WorkItemController.cs" />
+    <Compile Include="Areas\Workflows\Views\WorkItem\WorkItemFormModel.cs" />
+    <Compile Include="Areas\Workflows\Views\WorkItem\WorkItemViewModel.cs" />
     <Compile Include="Areas\Workflows\Views\Workflow\ReadOnlyViewModel.cs" />
     <Compile Include="Areas\Workflows\Views\Workflow\WorkflowForm.cs" />
     <Compile Include="Areas\Workflows\Views\Workflow\IndexViewModel.cs" />
@@ -728,7 +734,7 @@
     <Content Include="Areas\Workflows\Views\Workflow\List.cshtml" />
     <Content Include="Areas\Workflows\Views\Workflow\WorkflowForm.cshtml" />
     <Content Include="Areas\Workflows\Views\Workflow\ReadOnly.cshtml" />
-    <Content Include="Areas\Workflows\Views\Workflow\WorkItem\WorkItemForm.cshtml" />
+    <Content Include="Areas\Workflows\Views\WorkItem\WorkItemForm.cshtml" />
     <Content Include="Areas\Team\Views\TeamRole\List.cshtml" />
     <Content Include="Areas\Team\Views\TeamRole\Index.cshtml" />
     <Content Include="Areas\Team\Views\TeamRole\IndexJS.cshtml" />
@@ -736,6 +742,11 @@
     <Content Include="Areas\Team\Views\TeamRole\web.config" />
     <Content Include="Areas\Team\Views\TeamMember\web.config" />
     <Content Include="Areas\Availability\Views\Home\CancellationStatus.cshtml" />
+    <Content Include="Areas\Workflows\Views\Shared\LookupColorAndCode.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\web.config" />
+    <Content Include="Areas\ServiceRequests\Views\Assessment\Details.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\Assessment\DetailsJS.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -1864,6 +1875,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Areas\Physicians\Views\Physician\OwnerInvitationNotification.cshtml" />
     <Content Include="Views\Manage\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\ApplicationInsightsSnippet.cshtml" />
     <None Include="Views\Shared\NotificationTemplates\TestEmail.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1994,7 +2006,6 @@
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
     <Content Include="Views\Shared\DocumentHeader.cshtml" />
     <Content Include="Views\Shared\DocumentFooter.cshtml" />
-    <Content Include="Views\Shared\_UserInitials.cshtml" />
     <Content Include="Views\Shared\_Initials.cshtml" />
     <Content Include="Views\Shared\_InvoiceActionMenu.cshtml" />
     <Content Include="Views\Shared\_ServiceStatusLabel.cshtml" />
@@ -2056,6 +2067,10 @@
     <Folder Include="Areas\Physicians\Views\Shared\" />
     <Folder Include="Areas\Reports\Models\" />
     <Folder Include="Areas\Reports\Views\Shared\" />
+    <Folder Include="Areas\ServiceRequests\Models\" />
+    <Folder Include="Areas\ServiceRequests\Views\Addendum\" />
+    <Folder Include="Areas\ServiceRequests\Views\Shared\" />
+    <Folder Include="Areas\ServiceRequests\Views\Teleconference\" />
     <Folder Include="Areas\Services\Models\" />
     <Folder Include="Areas\Services\Views\Shared\" />
     <Folder Include="Areas\SysTools\Models\" />
@@ -2063,8 +2078,8 @@
     <Folder Include="Areas\Team\Models\" />
     <Folder Include="Areas\Team\Views\Shared\" />
     <Folder Include="Areas\Workflows\Models\" />
-    <Folder Include="Areas\Workflows\Views\Shared\" />
     <Folder Include="Areas\Work\Models\" />
+    <Folder Include="Areas\Work\Views\Assessment\" />
     <Folder Include="Content\bootstrap-custom\mixins\" />
     <Folder Include="Views\AuthCallback\" />
     <Folder Include="Views\Base\" />

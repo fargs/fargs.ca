@@ -283,12 +283,15 @@ namespace WebApp.Areas.Companies.Controllers
                 return PartialView("Service/AddServiceForm", form);
             }
 
+            decimal convertedPrice;
+            if (!decimal.TryParse(form.Price, out convertedPrice)) ModelState.AddModelError("Price", "Price must be a valid decimal value");
+
             var service = new Service
             {
                 Id = Guid.NewGuid(),
                 CompanyId = form.CompanyId,
                 Name = form.Name,
-                Price = form.Price,
+                Price = convertedPrice,
                 IsTravelRequired = form.IsTravelRequired.GetValueOrDefault(false)
             };
             db.Services.Add(service);

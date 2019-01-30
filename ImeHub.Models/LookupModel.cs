@@ -7,7 +7,7 @@ using ImeHub.Data;
 
 namespace ImeHub.Models
 {
-    public partial class LookupModel<T>
+    public partial class LookupModel<T> : ILookupModel<T>
     {
         public T Id { get; set; }
         public string Name { get; set; }

@@ -24,6 +24,7 @@ namespace ImeHub.Data
         public System.Guid PhysicianId { get; set; }
 
         public virtual System.Collections.Generic.ICollection<TeamMember> TeamMembers { get; set; }
+        public virtual System.Collections.Generic.ICollection<WorkItem> WorkItems { get; set; }
 
 
         public virtual Physician Physician { get; set; }
@@ -31,6 +32,7 @@ namespace ImeHub.Data
         public TeamRole()
         {
             TeamMembers = new System.Collections.Generic.List<TeamMember>();
+            WorkItems = new System.Collections.Generic.List<WorkItem>();
             InitializePartial();
         }
 

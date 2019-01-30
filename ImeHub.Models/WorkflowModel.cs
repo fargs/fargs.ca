@@ -27,23 +27,28 @@ namespace ImeHub.Models
             }
             public Guid WorkflowId { get; set; }
             public short Sequence { get; set; }
-            public Enums.WorkItemStatus StatusId { get; set; }
-            public StatusModel<Enums.WorkItemStatus> Status { get; set; }
-            public DateTime? DueDate { get; set; }
-            public Guid? AssignedToId { get; set; }
-            public PersonModel AssignedTo { get; set; }
-            public Guid? AssignedToChangedById { get; set; }
-            public DateTime? AssignedToChangedDate { get; set; }
-            public Guid? ResponsibleRoleId { get; set; }
-            public RoleModel ResponsibleRole { get; set; }
+
+            //public Enums.WorkItemStatus StatusId { get; set; }
+            //public StatusModel<Enums.WorkItemStatus> Status { get; set; }
+            //public DateTime? DueDate { get; set; }
+            //public Guid? AssignedToId { get; set; }
+            //public PersonModel AssignedTo { get; set; }
+            //public Guid? AssignedToChangedById { get; set; }
+            //public DateTime? AssignedToChangedDate { get; set; }
+
+            public Guid ResponsibleRoleId { get; set; }
+            public LookupModel<Guid> ResponsibleRole { get; set; }
 
             public IEnumerable<WorkItemDependentModel> Dependencies { get; set; }
 
             public class WorkItemDependentModel
             {
                 public Guid Id { get; set; }
-                public DateTime? CompletedDate { get; set; }
-                public bool IsObsolete { get; set; }
+                public Guid ParentId { get; set; }
+                public string Name { get; set; }
+                public short Sequence { get; set; }
+                public Guid ResponsibleRoleId { get; set; }
+                public LookupModel<Guid> ResponsibleRole { get; set; }
             }
         }
 
@@ -58,7 +63,17 @@ namespace ImeHub.Models
                 Id = wi.Id,
                 Name = wi.Name,
                 Sequence = wi.Sequence,
-                ResponsibleRoleId = wi.RoleId
+                ResponsibleRoleId = wi.TeamRoleId,
+                ResponsibleRole = LookupModel<Guid>.FromTeamRole.Invoke(wi.TeamRole),
+                Dependencies = wi.WorkItemRelateds_ParentId.Select(d => new WorkItemModel.WorkItemDependentModel
+                {
+                    Id = d.Child.Id,
+                    ParentId = d.ParentId,
+                    Name = d.Child.Name,
+                    Sequence = d.Child.Sequence,
+                    ResponsibleRoleId = d.Child.TeamRoleId,
+                    ResponsibleRole = LookupModel<Guid>.FromTeamRole.Invoke(d.Child.TeamRole),
+                })
             })
         };
     }

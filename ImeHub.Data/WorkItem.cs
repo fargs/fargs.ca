@@ -20,17 +20,19 @@ namespace ImeHub.Data
         public System.Guid Id { get; set; }
         public short Sequence { get; set; }
         public string Name { get; set; }
-        public System.Guid? RoleId { get; set; }
         public bool IsBaselineDate { get; set; }
         public short? DueDateDurationFromBaseline { get; set; }
         public short? EffectiveDateDurationFromBaseline { get; set; }
         public bool IsCriticalPath { get; set; }
         public bool IsBillable { get; set; }
         public System.Guid WorkflowId { get; set; }
+        public System.Guid TeamRoleId { get; set; }
 
         public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ChildId { get; set; }
         public virtual System.Collections.Generic.ICollection<WorkItemRelated> WorkItemRelateds_ParentId { get; set; }
 
+
+        public virtual TeamRole TeamRole { get; set; }
 
         public virtual Workflow Workflow { get; set; }
 

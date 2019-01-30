@@ -2,7 +2,7 @@
 @model ListViewModel
 
 <div class="list-group">
-    @if (Model.AsOwner.Any())
+    @*@if (Model.AsOwner.Any())
     {
         <h4 class="text-muted">OWNER</h4>
         foreach (var physician in Model.AsOwner)
@@ -21,10 +21,9 @@
                 <a target="_blank" href="~/Account/ChangeUserContextAsync/?physicianId=@physician.Id"><span class="small">@physician.Name</span></a>
             </div>
         }
-    }
+    }*@
     @if (Model.AsTeamMember.Any())
     {
-        <h2 class="text-muted">TEAM MEMBER</h2>
         foreach (var physician in Model.AsTeamMember)
         {
             <div class="list-group-item">

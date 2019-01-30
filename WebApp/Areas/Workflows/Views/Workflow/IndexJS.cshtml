@@ -40,17 +40,7 @@
     }
 
     function showNewWorkItemForm(workflowId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowNewWorkItemForm")', {
-            workflowId: workflowId
-        })
-        .done(function (result) {
-            $('#modal-content-sm').html(result);
-            $('#modal-container-sm').modal('toggle');
-        });
-    }
-
-    function showAddServiceForm(workflowId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowAddServiceForm")', {
+        $.get('@Url.Content("~/Workflows/WorkItem/Create")', {
             workflowId: workflowId
         })
         .done(function (result) {
@@ -58,60 +48,7 @@
             $('#modal-container').modal('toggle');
         });
     }
-
-    function serviceTemplateChanged(workflowId) {
-        var selectedServiceId = $('#workflow-addservice-form-serviceid').val();
-        $.get('@Url.Content("~/Workflows/Workflow/ShowAddServiceForm")', {
-            workflowId: workflowId,
-            selectedServiceId: selectedServiceId
-        })
-        .done(function (result) {
-            $('#modal-content').html(result);
-        });
-    }
-
-    function showEditServiceForm(workflowId, workflowServiceId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowEditServiceForm")', {
-            workflowId: workflowId,
-            workflowSeviceId: workflowSeviceId
-        })
-        .done(function (result) {
-            $('#modal-content').html(result);
-            $('#modal-container').modal('toggle');
-        });
-    }
-
-    function showEditTravelPriceForm(workflowId, travelPriceId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowEditTravelPriceForm")', {
-            workflowId: workflowId,
-            travelPriceId: travelPriceId
-        })
-        .done(function (result) {
-            $('#modal-content-sm').html(result);
-            $('#modal-container-sm').modal('toggle');
-        });
-    }
-    function showNewTravelPriceForm(workflowId, workflowServiceId, cityId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowNewTravelPriceForm")', {
-            workflowId: workflowId,
-            workflowServiceId: workflowServiceId,
-            cityId: cityId
-        })
-        .done(function (result) {
-            $('#modal-content-sm').html(result);
-            $('#modal-container-sm').modal('toggle');
-        });
-    }
-    function showEditCancellationPolicyForm(workflowId) {
-        $.get('@Url.Content("~/Workflows/Workflow/ShowEditCancellationPolicyForm")', {
-            workflowId: workflowId
-        })
-        .done(function (result) {
-            $('#modal-content').html(result);
-            $('#modal-container').modal('toggle');
-        });
-    }
-
+    
     function saveNewWorkflowForm(form) {
         var url = '@Url.Content("~/Workflows/Workflow/SaveNewWorkflowForm")';
 
@@ -156,82 +93,21 @@
         });
     }
 
-    // Address API
     function saveNewWorkItemForm(workflowId, form) {
 
-        $.post('@Url.Content("~/Workflows/Workflow/SaveNewWorkItemForm")',
+        $.post('@Url.Content("~/Workflows/WorkItem/Create")',
             form.serialize()
         )
         .done(function (result) {
-            $('#modal-container-sm').modal('toggle');
+            $('#modal-container').modal('toggle');
             toastr.success("Work Item added successfully");
             refreshWorkflowList(workflowId);
             refreshWorkflowReadOnly(workflowId);
         }).error(function (result) {
-            $('#modal-content-sm').html(result.responseText);
-        });
-    }
-
-    // Service API
-    function saveAddServiceForm(workflowId, form) {
-
-        $.post('@Url.Content("~/Workflows/Workflow/SaveAddServiceForm")',
-            form.serialize()
-        )
-        .done(function (result) {
-            $('#modal-container').modal('toggle');
-            toastr.success("Address added successfully");
-            refreshWorkflowList(workflowId);
-            refreshWorkflowReadOnly(workflowId);
-        }).error(function (result) {
             $('#modal-content').html(result.responseText);
         });
     }
-
-    // Travel Price API
-    function saveNewTravelPriceForm(workflowId, form) {
-
-        $.post('@Url.Content("~/Workflows/Workflow/SaveNewTravelPriceForm")',
-            form.serialize()
-        )
-        .done(function (result) {
-            $('#modal-container-sm').modal('toggle');
-            toastr.success("Price override added successfully");
-            refreshWorkflowList(workflowId);
-            refreshWorkflowReadOnly(workflowId);
-        }).error(function (result) {
-            $('#modal-content-sm').html(result.responseText);
-        });
-    }
-    function saveEditTravelPriceForm(workflowId, form) {
-
-        $.post('@Url.Content("~/Workflows/Workflow/SaveEditTravelPriceForm")',
-            form.serialize()
-        )
-        .done(function (result) {
-            $('#modal-container-sm').modal('toggle');
-            toastr.success("Price override updated successfully");
-            refreshWorkflowReadOnly(workflowId);
-        }).error(function (result) {
-            $('#modal-content-sm').html(result.responseText);
-        });
-    }
-
-    // Cancellation Policy API
-    function saveEditCancellationPolicyForm(workflowId, form) {
-
-        $.post('@Url.Content("~/Workflows/Workflow/SaveEditCancellationPolicyForm")',
-            form.serialize()
-        )
-        .done(function (result) {
-            $('#modal-container').modal('toggle');
-            toastr.success("Cancellation policy updated successfully");
-            refreshWorkflowReadOnly(workflowId);
-        }).error(function (result) {
-            $('#modal-content').html(result.responseText);
-        });
-    }
-
+    
     function refreshWorkflowList(workflowId) {
         let url = '@Url.Content("~/Workflows/Workflow/List")';
         $.get(url, {

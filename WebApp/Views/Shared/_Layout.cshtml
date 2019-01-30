@@ -51,6 +51,8 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/bootstrap")
+
+    @Html.Partial("ApplicationInsightsSnippet", System.Web.Configuration.WebConfigurationManager.AppSettings["iKey"]);
 </head>
 <body>
     <div class="navbar navbar-default">
@@ -187,7 +189,6 @@
     automatically in just a few seconds.
     -->
 
-    @Scripts.Render("~/bundles/signalr")
     @Scripts.Render("~/bundles/markdown")
 
     <script src="~/MVCGridHandler.axd/script.js"></script>

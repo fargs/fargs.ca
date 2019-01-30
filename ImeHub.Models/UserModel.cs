@@ -94,11 +94,11 @@ namespace ImeHub.Models
             //        DueDate = wi.DueDate
             //    })
             //},
-            AsOwner = a.PhysicianOwners.AsQueryable()
-                .Select(po => po.Physician)
-                .Select(LookupModel<Guid>.FromPhysician.Expand()),
-            AsManager = a.Physicians_ManagerId.AsQueryable()
-                .Select(LookupModel<Guid>.FromPhysician.Expand()),
+            //AsOwner = a.PhysicianOwners.AsQueryable()
+            //    .Select(po => po.Physician)
+            //    .Select(LookupModel<Guid>.FromPhysician.Expand()),
+            //AsManager = a.Physicians_ManagerId.AsQueryable()
+            //    .Select(LookupModel<Guid>.FromPhysician.Expand()),
             AsTeamMember = a.TeamMembers.AsQueryable()
                 .Select(tm => tm.Physician)
                 .Select(LookupModel<Guid>.FromPhysician.Expand())

@@ -1044,15 +1044,16 @@ namespace ImeHub.Data
             Property(x => x.Id).HasColumnName(@"Id").HasColumnType("uniqueidentifier").IsRequired().HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             Property(x => x.Sequence).HasColumnName(@"Sequence").HasColumnType("smallint").IsRequired();
             Property(x => x.Name).HasColumnName(@"Name").HasColumnType("nvarchar").IsRequired().HasMaxLength(128);
-            Property(x => x.RoleId).HasColumnName(@"RoleId").HasColumnType("uniqueidentifier").IsOptional();
             Property(x => x.IsBaselineDate).HasColumnName(@"IsBaselineDate").HasColumnType("bit").IsRequired();
             Property(x => x.DueDateDurationFromBaseline).HasColumnName(@"DueDateDurationFromBaseline").HasColumnType("smallint").IsOptional();
             Property(x => x.EffectiveDateDurationFromBaseline).HasColumnName(@"EffectiveDateDurationFromBaseline").HasColumnType("smallint").IsOptional();
             Property(x => x.IsCriticalPath).HasColumnName(@"IsCriticalPath").HasColumnType("bit").IsRequired();
             Property(x => x.IsBillable).HasColumnName(@"IsBillable").HasColumnType("bit").IsRequired();
             Property(x => x.WorkflowId).HasColumnName(@"WorkflowId").HasColumnType("uniqueidentifier").IsRequired();
+            Property(x => x.TeamRoleId).HasColumnName(@"TeamRoleId").HasColumnType("uniqueidentifier").IsRequired();
 
             // Foreign keys
+            HasRequired(a => a.TeamRole).WithMany(b => b.WorkItems).HasForeignKey(c => c.TeamRoleId).WillCascadeOnDelete(false); // FK_WorkItem_TeamRole
             HasRequired(a => a.Workflow).WithMany(b => b.WorkItems).HasForeignKey(c => c.WorkflowId); // FK_WorkItem_Workflow
         }
     }

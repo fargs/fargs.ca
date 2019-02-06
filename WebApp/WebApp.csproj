@@ -747,6 +747,8 @@
     <Content Include="Areas\ServiceRequests\Views\Assessment\Details.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\_ViewStart.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\Assessment\DetailsJS.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\Shared\CancellationStatus.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\Shared\Status.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -2069,7 +2071,6 @@
     <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Areas\ServiceRequests\Models\" />
     <Folder Include="Areas\ServiceRequests\Views\Addendum\" />
-    <Folder Include="Areas\ServiceRequests\Views\Shared\" />
     <Folder Include="Areas\ServiceRequests\Views\Teleconference\" />
     <Folder Include="Areas\Services\Models\" />
     <Folder Include="Areas\Services\Views\Shared\" />

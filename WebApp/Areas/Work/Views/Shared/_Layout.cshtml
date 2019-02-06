@@ -7,7 +7,7 @@
     var features = User.Identity.GetFeatures();
 }
 
-<div style="display:flex;">
+
     <ul class="nav nav-tabs">
         @if (features.Contains(Features.Work.DaySheet))
         {
@@ -26,10 +26,6 @@
             <li role="presentation" class="@Html.IsActive("Additionals", "Index", "Work")"><a id="additionalcount-container" href="~/Work/Additionals?@(Request.QueryString)">Additionals <i id="additionalcount-container-icon"></i></a></li>
         }
     </ul>
-    <div style="margin-left:auto;">
-        <a title="Secure Docs" href="https://www.securedocs.ca/Login.aspx" target="_blank" class="pull-right"><img alt="Secure Docs" src="~/Content/images/SendDocumentsSecurely.jpg" /></a>
-    </div>
-</div>
 <section class="tab-content">
     <div role="tabpanel" class="tab-pane active panel-body">
         @RenderBody()

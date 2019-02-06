@@ -98,6 +98,7 @@
     <None Include="App.config" />
     <None Include="Enums\Features\features.json" />
     <None Include="packages.config" />
+    <None Include="ServiceRequestModel.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImeHub.Data\ImeHub.Data.csproj">

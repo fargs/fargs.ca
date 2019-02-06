@@ -1,0 +1,13 @@
+﻿@model LookupViewModel<Enums.CancellationStatus>
+@if (Model.Id == Enums.CancellationStatus.NoShow)
+{
+    <span class="label label-danger">No Show</span>
+}
+else if (Model.Id == Enums.CancellationStatus.LateCancellation)
+{
+    <span class="label label-warning">Late Cancel</span>
+}
+else if (Model.Id == Enums.CancellationStatus.Cancellation)
+{
+    <span class="label label-info">Cancelled</span>
+}

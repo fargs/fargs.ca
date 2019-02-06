@@ -20,6 +20,7 @@ namespace WebApp.Areas.Availability.Views.Home
         {
         }
         public Guid ServiceRequestId { get; set; }
+        public string CaseNumber { get; set; }
         public string ClaimantName { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string AppointmentDateFormatted { get; set; }

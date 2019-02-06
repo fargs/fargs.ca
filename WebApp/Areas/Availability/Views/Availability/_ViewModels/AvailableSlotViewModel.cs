@@ -39,6 +39,7 @@ namespace WebApp.Areas.Availability.Views.Home
             ServiceRequests = e.ServiceRequests.Select(sr => new AppointmentViewModel
             {
                 ServiceRequestId = sr.Id,
+                CaseNumber = sr.CaseNumber,
                 ClaimantName = sr.ClaimantName,
                 CancellationStatusId = sr.CancellationStatusId,
                 CancellationStatus = new LookupViewModel<Enums.CancellationStatus>

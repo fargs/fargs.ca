@@ -1,0 +1,128 @@
+{
+  "id": "209ae7fc-18f2-4f53-9842-fe4a10dbad37",
+  "version": "2.0",
+  "name": "ImeHub.UITests",
+  "url": "https://localhost:44302",
+  "tests": [{
+    "id": "fc18e05b-cb88-413e-9d43-46cfb4b717a3",
+    "name": "NavigateToPhysicianPortal",
+    "commands": [{
+      "id": "77e0f957-c132-4459-9b67-c83787733597",
+      "comment": "",
+      "command": "open",
+      "target": "/Dashboard/Home",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d74f5018-d208-41b4-9626-5081e2116bbb",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1708x920",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "521756ad-1064-403c-9566-939113a84e4e",
+      "comment": "",
+      "command": "click",
+      "target": "css=a > .small",
+      "targets": [
+        ["css=a > .small", "css:finder"],
+        ["css=span.small", "css"],
+        ["xpath=//div/a/span", "xpath:position"]
+      ],
+      "value": "",
+      "opensWindow": true,
+      "windowHandleName": "win6372",
+      "windowTimeout": 2000
+    }, {
+      "id": "70c487e5-6c1b-4409-a7b2-ac96c8bd2227",
+      "comment": "",
+      "command": "selectWindow",
+      "target": "handle=${win6372}",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "575d8c5e-645e-4523-aa5b-3eaa19030c98",
+    "name": "LoginAsSuperAdmin",
+    "commands": [{
+      "id": "131c26c6-99fe-4555-a30e-d949eac20d54",
+      "comment": "",
+      "command": "open",
+      "target": "/Account/Login?ReturnUrl=%2F",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "10fc95fb-ef48-4495-8f73-dedee3047cc1",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1708x920",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b2f3b3fc-2f39-4717-aca6-36339d559aeb",
+      "comment": "",
+      "command": "click",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["css=#Email", "css"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "146d745c-f173-4059-9b4b-101f6274b683",
+      "comment": "",
+      "command": "type",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["css=#Email", "css"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "lesliefarago@gmail.com"
+    }, {
+      "id": "8513e0d6-8a74-443a-b778-60d0030a1a7d",
+      "comment": "",
+      "command": "type",
+      "target": "id=Password",
+      "targets": [
+        ["id=Password", "id"],
+        ["name=Password", "name"],
+        ["css=#Password", "css:finder"],
+        ["css=#Password", "css"],
+        ["xpath=//input[@id='Password']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "P@ssword1"
+    }, {
+      "id": "67e8a191-85c6-4744-9ac9-a25c5abb1d4f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["css=input.btn.btn-primary", "css"],
+        ["xpath=//input[@value='Log in']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "4e5eb441-301f-4167-8c8b-d3847c0715d1",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["fc18e05b-cb88-413e-9d43-46cfb4b717a3"]
+  }],
+  "urls": ["https://localhost:44302/"],
+  "plugins": []
+}

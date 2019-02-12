@@ -31,17 +31,14 @@ namespace WebApp.Library.Extensions
             Guid.TryParse(identity.GetUserId(), out result);
             return result;
         }
-
         public static ClaimsIdentity GetClaimsIdentity(this IIdentity obj)
         {
             return obj as ClaimsIdentity;
         }
-
         public static ApplicationUser GetApplicationUser(this IIdentity obj)
         {
             return HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(obj.GetGuidUserId());
         }
-
         public static string[] GetFeatures(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("Features");
@@ -51,7 +48,6 @@ namespace WebApp.Library.Extensions
             }
             return null;
         }
-        
         public static IEnumerable<LookupViewModel<Guid>> GetPhysicians(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("Physicians");
@@ -79,7 +75,6 @@ namespace WebApp.Library.Extensions
             }
             return null;
         }
-
         public static UserContextViewModel GetLoggedInUserContext(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");
@@ -93,7 +88,6 @@ namespace WebApp.Library.Extensions
             }
             return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
         }
-
         public static UserContextViewModel GetUserContext(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("UserContext");
@@ -107,7 +101,6 @@ namespace WebApp.Library.Extensions
             }
             return JsonConvert.DeserializeObject<UserContextViewModel>(claim);
         }
-
         public static Guid GetRoleId(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("RoleId");
@@ -118,12 +111,10 @@ namespace WebApp.Library.Extensions
             return new Guid(claim);
 
         }
-
         public static bool IsImpersonating(this IIdentity identity)
         {
             return identity.GetClaimsIdentity().HasClaim("UserImpersonation", "true");
         }
-
         public static Guid GetOriginalUserId(this IIdentity identity)
         {
             var claim = identity.GetClaimsIdentity().FindFirstValue("OriginalUserId");
@@ -134,7 +125,6 @@ namespace WebApp.Library.Extensions
             return new Guid(claim);
 
         }
-
         public static bool GetIsAppTester(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("IsAppTester");
@@ -144,7 +134,6 @@ namespace WebApp.Library.Extensions
             }
             return bool.Parse(claim);
         }
-
         public static bool GetOriginalIsAppTester(this IIdentity obj)
         {
             var claim = obj.GetClaimsIdentity().FindFirstValue("OriginalIsAppTester");
@@ -199,7 +188,6 @@ namespace WebApp.Library.Extensions
             }
             return null;
         }
-
         public static bool IOwnThis(this IIdentity identity, Guid ownerId)
         {
             return identity.GetGuidUserId() == ownerId;

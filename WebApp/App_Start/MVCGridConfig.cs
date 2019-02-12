@@ -3,7 +3,6 @@
 namespace WebApp
 {
     using System;
-    using System.ArrayExtensions;
     using System.Linq;
     using System.Web.Mvc;
     using Library.Extensions;

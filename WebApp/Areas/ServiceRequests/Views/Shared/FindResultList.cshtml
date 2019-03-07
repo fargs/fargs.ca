@@ -1,0 +1,10 @@
+﻿@model FindResultList
+
+<div>
+    @foreach (var claimant in Model.Claimants)
+    {
+    <div>
+        @($"{claimant.ClaimantName} ({claimant.CompanyName})")
+    </div>
+    }
+</div>

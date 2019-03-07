@@ -27,9 +27,20 @@ namespace WebApp
                 var intializer = new DbInitializer(db);
                 intializer.SeedDatabase();
 
-                db.Users.AddOrUpdate(u => u.Id, new User { Id = superAdminUserId, UserName = "lesliefarago", Email = "lesliefarago@gmail.com", EmailConfirmed = true, FirstName = "Leslie", LastName = "Farago", ColorCode = "#0B0B61", RoleId = Enums.Role.SuperAdmin });
+                db.Users.Add(new User { Id = superAdminUserId, UserName = "lesliefarago", Email = "lesliefarago@gmail.com", EmailConfirmed = true, FirstName = "Leslie", LastName = "Farago", ColorCode = "#0B0B61", RoleId = Enums.Role.SuperAdmin });
 
-                await db.SaveChangesAsync();
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (System.Data.Entity.Infrastructure.DbUpdateException ex) when ((ex.InnerException.InnerException as System.Data.SqlClient.SqlException)?.Number == 2627)
+                {
+                    // Do Nothing
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
 
             var context = Models.ApplicationDbContext.Create();

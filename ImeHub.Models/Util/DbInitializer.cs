@@ -41,6 +41,9 @@ namespace ImeHub.Models.Database
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Work.Schedule), Name = "Schedule" });
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Work.Additionals), Name = "Additionals" });
 
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.ServiceRequest.Search), Name = "Search" });
+            db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.ServiceRequest.SubmitRequest), Name = "Create" });
+
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Availability.AvailabilitySection), Name = "Availability" });
 
             db.Features.AddOrUpdate(new Feature { Id = new Guid(Features.PhysicianPortal.Team.TeamSection), Name = "Team" });
@@ -68,6 +71,9 @@ namespace ImeHub.Models.Database
             db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Tasks) });
             db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Schedule) });
             db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Work.Additionals) });
+
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.ServiceRequest.Search) });
+            db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.ServiceRequest.SubmitRequest) });
 
             db.RoleFeatures.AddOrUpdate(new RoleFeature { RoleId = Enums.Role.Physician, FeatureId = new Guid(Features.PhysicianPortal.Availability.AvailabilitySection) });
 

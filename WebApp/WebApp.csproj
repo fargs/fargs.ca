@@ -580,9 +580,12 @@
     <Compile Include="Areas\Reports\ReportsAreaRegistration.cs" />
     <Compile Include="Areas\ServiceRequests\Controllers\AddendumController.cs" />
     <Compile Include="Areas\ServiceRequests\Controllers\AssessmentController.cs" />
+    <Compile Include="Areas\ServiceRequests\Controllers\ServiceRequestController.cs" />
     <Compile Include="Areas\ServiceRequests\Controllers\TeleconferenceController.cs" />
     <Compile Include="Areas\ServiceRequests\ServiceRequestsAreaRegistration.cs" />
     <Compile Include="Areas\ServiceRequests\Views\Assessment\DetailsViewModel.cs" />
+    <Compile Include="Areas\ServiceRequests\Views\Shared\FindResultList.cs" />
+    <Compile Include="Areas\ServiceRequests\Views\ServiceRequest\ServiceRequestForm.cs" />
     <Compile Include="Areas\Services\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Services\ServicesAreaRegistration.cs" />
     <Compile Include="Areas\Companies\Views\Company\Pricing\CancellationPolicyViewModel.cs" />
@@ -739,13 +742,18 @@
     <Content Include="Areas\Team\Views\TeamMember\web.config" />
     <Content Include="Areas\Availability\Views\Home\CancellationStatus.cshtml" />
     <Content Include="Areas\Workflows\Views\Shared\LookupColorAndCode.cshtml" />
-    <Content Include="Areas\ServiceRequests\Views\web.config" />
+    <Content Include="Areas\ServiceRequests\Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Areas\ServiceRequests\Views\Assessment\Details.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\_ViewStart.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\Assessment\DetailsJS.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\Shared\CancellationStatus.cshtml" />
     <Content Include="Areas\ServiceRequests\Views\Shared\Status.cshtml" />
     <Content Include="Areas\Availability\ReadMe.md" />
+    <Content Include="Areas\ServiceRequests\Views\ServiceRequest\ServiceRequestForm.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\Shared\FindResultList.cshtml" />
+    <Content Include="Areas\ServiceRequests\Views\ServiceRequest\ServiceRequestJS.cshtml" />
     <None Include="Areas\Work\Views\Schedule\ScheduleJS.cshtml" />
     <Compile Include="Areas\Work\Views\Additionals\AdditionalViewModel.cs" />
     <Compile Include="Areas\Work\Views\Additionals\IndexViewModel.cs" />
@@ -2057,6 +2065,7 @@
     <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Areas\ServiceRequests\Models\" />
     <Folder Include="Areas\ServiceRequests\Views\Addendum\" />
+    <Folder Include="Areas\ServiceRequests\Views\Shared\FormElements\" />
     <Folder Include="Areas\ServiceRequests\Views\Teleconference\" />
     <Folder Include="Areas\Services\Models\" />
     <Folder Include="Areas\Services\Views\Shared\" />

@@ -1,0 +1,57 @@
+﻿<script type="text/javascript">
+
+    function showServiceRequestForm() {
+        var url = '@Url.Content("~/ServiceRequests/ServiceRequest/ShowForm")';
+
+        $.get(url)
+            .done(function (result) {
+                $('#modal-content').html(result);
+                $('#modal-container').modal('toggle');
+            });
+    }
+
+    function refreshServiceRequestForm(form) {
+        $.post('@Url.Content("~/ServiceRequests/ServiceRequest/RefreshForm")',
+            form.serialize()
+        )
+        .done(function (result) {
+            $('#modal-content').html(result);
+        }).error(function (result) {
+            $('#modal-content').html(result.responseText);
+        });
+    }
+
+    function showServiceRequestFormCaseList() {
+        $('#servicerequestform-servicerequestid-modalform').modal('toggle');
+    }
+
+    function validateServiceRequestForm(form) {
+
+        $.post('@Url.Content("~/ServiceRequests/ServiceRequest/ValidateForm")',
+            form.serialize()
+        )
+            .done(function (result) {
+                if (serviceRequestFormCaseList.items.length != 0) {
+                    showServiceRequestFormCaseList();
+                }
+                else {
+                    saveServiceRequestForm(form);
+                }
+            }).error(function (result) {
+                $('#modal-content').html(result.responseText);
+            });
+    }
+
+    function saveServiceRequestForm(form) {
+        $('#servicerequestform-servicerequestid-modalform').modal('toggle');
+        $.post('@Url.Content("~/ServiceRequests/ServiceRequest/SaveForm")',
+            form.serialize()
+        )
+            .done(function (result) {
+                $('#modal-content').html(result);
+            }).error(function (result) {
+                $('#modal-content').html(result.responseText);
+            });
+    }
+
+</script>

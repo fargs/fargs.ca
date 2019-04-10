@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orvosi.Data", "Orvosi.Data\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orvosi.Shared", "Orvosi.Shared\Orvosi.Shared.csproj", "{CBBCA8F3-B69A-474C-9D17-90A433C5A3F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orvosi.Hangfire", "Orvosi.Hangfire\Orvosi.Hangfire.csproj", "{E187DAE1-9BF0-466A-A072-6605FDEFB650}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Tests", "WebApp.Tests\WebApp.Tests.csproj", "{B5EEB714-80E6-4D2F-ACD6-1BC5198E4F45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImeHub.Data", "ImeHub.Data\ImeHub.Data.csproj", "{8F48A6A0-4A41-4C3C-BB5E-9B105DB075B3}"
@@ -54,10 +52,6 @@ Global
 		{CBBCA8F3-B69A-474C-9D17-90A433C5A3F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBBCA8F3-B69A-474C-9D17-90A433C5A3F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBBCA8F3-B69A-474C-9D17-90A433C5A3F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E187DAE1-9BF0-466A-A072-6605FDEFB650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E187DAE1-9BF0-466A-A072-6605FDEFB650}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E187DAE1-9BF0-466A-A072-6605FDEFB650}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E187DAE1-9BF0-466A-A072-6605FDEFB650}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5EEB714-80E6-4D2F-ACD6-1BC5198E4F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5EEB714-80E6-4D2F-ACD6-1BC5198E4F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5EEB714-80E6-4D2F-ACD6-1BC5198E4F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -85,7 +79,7 @@ Global
 		{8560ABB1-7B37-432A-9CCA-029EACC6E5D8} = {681AF567-05F4-409D-B31E-64AB12FFCB42}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		LessCompiler = 6b72176d-e6d3-4caf-9bc0-e281700840a9
 		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
+		LessCompiler = 6b72176d-e6d3-4caf-9bc0-e281700840a9
 	EndGlobalSection
 EndGlobal

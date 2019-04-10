@@ -131,7 +131,6 @@
     <Build Include="dbo\Tables\AvailableDay.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dbo.User.data.sql" />
     <None Include="localhost.publish.xml" />
   </ItemGroup>
 </Project>

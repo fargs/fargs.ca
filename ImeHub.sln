@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{681AF567-05F4-409D-B31E-64AB12FFCB42}"
 EndProject
@@ -28,6 +28,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImeHub.Models", "ImeHub.Models\ImeHub.Models.csproj", "{66CFBB74-7A88-4CDA-97B5-B7E399DED48D}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ImeHub", "Databases\ImeHub\ImeHub.sqlproj", "{8560ABB1-7B37-432A-9CCA-029EACC6E5D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{384CCDD3-708E-467B-9A6A-090A31D15F13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImeHub.Blazor", "Clients\ImeHub.Blazor\ImeHub.Blazor.csproj", "{CC9AA030-AE04-4616-8824-9BE9CFA5E106}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImeHub.Data.Tests", "ImeHub.Data.Tests\ImeHub.Data.Tests.csproj", "{9EDB3FA6-2076-4C83-A5E1-58DCFEE5DA84}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImeHub.Web", "Clients\ImeHub.Web\ImeHub.Web.csproj", "{04E048C6-74B1-48B0-91E5-8D6A1C5A327B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +78,18 @@ Global
 		{8560ABB1-7B37-432A-9CCA-029EACC6E5D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8560ABB1-7B37-432A-9CCA-029EACC6E5D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8560ABB1-7B37-432A-9CCA-029EACC6E5D8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{CC9AA030-AE04-4616-8824-9BE9CFA5E106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC9AA030-AE04-4616-8824-9BE9CFA5E106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC9AA030-AE04-4616-8824-9BE9CFA5E106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC9AA030-AE04-4616-8824-9BE9CFA5E106}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EDB3FA6-2076-4C83-A5E1-58DCFEE5DA84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDB3FA6-2076-4C83-A5E1-58DCFEE5DA84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDB3FA6-2076-4C83-A5E1-58DCFEE5DA84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDB3FA6-2076-4C83-A5E1-58DCFEE5DA84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04E048C6-74B1-48B0-91E5-8D6A1C5A327B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04E048C6-74B1-48B0-91E5-8D6A1C5A327B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04E048C6-74B1-48B0-91E5-8D6A1C5A327B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04E048C6-74B1-48B0-91E5-8D6A1C5A327B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,9 +97,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7C4289B0-5D9B-48A5-B8EB-7B1EAC6088A3} = {681AF567-05F4-409D-B31E-64AB12FFCB42}
 		{8560ABB1-7B37-432A-9CCA-029EACC6E5D8} = {681AF567-05F4-409D-B31E-64AB12FFCB42}
+		{CC9AA030-AE04-4616-8824-9BE9CFA5E106} = {384CCDD3-708E-467B-9A6A-090A31D15F13}
+		{04E048C6-74B1-48B0-91E5-8D6A1C5A327B} = {384CCDD3-708E-467B-9A6A-090A31D15F13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
 		LessCompiler = 6b72176d-e6d3-4caf-9bc0-e281700840a9
+		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
 	EndGlobalSection
 EndGlobal

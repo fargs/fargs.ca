@@ -148,5 +148,10 @@ namespace ImeHub.Models.Database
             db.TimeZones.AddOrUpdate(new ImeHub.Data.TimeZone { Id = 9, Name = "Pacific Standard Time", Iana = "America/Whitehorse", Iso = "Canada/Yukon" });
 
         }
+
+        public void ResetHanSoloData()
+        {
+
+        }
     }
 }

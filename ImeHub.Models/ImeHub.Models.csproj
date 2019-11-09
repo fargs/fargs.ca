@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="AddressModel.cs" />
     <Compile Include="AvailableDayModel.cs" />
-    <Compile Include="AvailableDayResourceDto.cs" />
+    <Compile Include="AvailableDayResourceModel.cs" />
     <Compile Include="AvailableSlotModel.cs" />
     <Compile Include="CancellationPolicyModel.cs" />
     <Compile Include="CaseModel.cs" />
@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Enums\Features\features.json" />
     <None Include="packages.config" />
     <None Include="ServiceRequestModel.md" />

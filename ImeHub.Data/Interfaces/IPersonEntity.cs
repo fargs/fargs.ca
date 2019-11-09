@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImeHub.Data.Interfaces;
 
-namespace ImeHub.Data.Interfaces
+namespace ImeHub.Data
 {
 
     public interface IPerson
@@ -20,7 +19,7 @@ namespace ImeHub.Data.Interfaces
 
 namespace ImeHub.Data
 {
-    public partial class User : Interfaces.IPerson
+    public partial class User : IPerson
     {
     }
 }

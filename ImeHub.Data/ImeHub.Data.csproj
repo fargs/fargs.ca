@@ -85,6 +85,7 @@
     <Compile Include="Country.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Enums\Role.cs" />
     <Compile Include="FakeDbSet.cs">
       <DependentUpon>ImeHub.tt</DependentUpon>
     </Compile>
@@ -118,6 +119,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\ISecurable.cs" />
+    <Compile Include="Interfaces\IAuditable.cs" />
+    <Compile Include="Interfaces\ISoftDeletable.cs" />
     <Compile Include="Interfaces\ILookupEntity.cs" />
     <Compile Include="Interfaces\IPersonEntity.cs" />
     <Compile Include="InviteStatu.cs">
@@ -126,6 +130,8 @@
     <Compile Include="MedicolegalType.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Filters\ServiceRequestFilters.cs" />
+    <Compile Include="Partials\ServiceRequest.cs" />
     <Compile Include="Physician.cs">
       <DependentUpon>ImeHubEntities.tt</DependentUpon>
     </Compile>

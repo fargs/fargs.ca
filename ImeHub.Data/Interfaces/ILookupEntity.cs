@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImeHub.Data.Interfaces
+namespace ImeHub.Data
 {
     public interface ILookupEntity<T>
     {
@@ -16,7 +16,7 @@ namespace ImeHub.Data.Interfaces
 }
 namespace ImeHub.Data
 {
-    public partial class Role : Interfaces.ILookupEntity<Guid>
+    public partial class Role : ILookupEntity<Guid>
     {
     }
 }

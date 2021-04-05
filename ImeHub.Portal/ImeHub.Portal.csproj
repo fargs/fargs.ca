@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
     <Exec Command="npx postcss $(ProjectDir)obj\$(ConfigurationName)\net5.0\scopedcss\bundle\$(ProjectName).styles.css -r" />
     <Exec Command="npm run buildcss" />
   </Target>

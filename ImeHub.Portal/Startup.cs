@@ -38,10 +38,16 @@ namespace ImeHub.Portal
 
             services.Configure<FileSystemOptions>(_config.GetSection(FileSystemOptions.SectionName));
 
+#if DEBUG
             services.AddDbContext<ApplicationDbContext>(options =>
                             options.UseSqlServer(
                                 _config.GetConnectionString("OrvosiDbContext"))
                             .EnableSensitiveDataLogging());
+#else
+            services.AddDbContext<ApplicationDbContext>(options =>
+                            options.UseSqlServer(
+                                _config.GetConnectionString("OrvosiDbContext"));
+#endif
             //#if DEBUG
             //            services.AddDbContextFactory<ApplicationDbContext>(options =>
             //                options.UseSqlServer(

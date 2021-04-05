@@ -36,6 +36,7 @@ namespace ImeHub.Portal
             services.AddOptions<FileSystemOptions>()
                 .Bind(_config.GetSection(FileSystemOptions.SectionName));
 
+
             services.Configure<FileSystemOptions>(_config.GetSection(FileSystemOptions.SectionName));
 
 #if DEBUG

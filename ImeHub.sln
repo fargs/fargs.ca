@@ -10,12 +10,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImeHub.Portal", "ImeHub.Portal\ImeHub.Portal.csproj", "{E09AE576-8EEE-486C-9387-21D4FF9DB295}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E09AE576-8EEE-486C-9387-21D4FF9DB295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E09AE576-8EEE-486C-9387-21D4FF9DB295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E09AE576-8EEE-486C-9387-21D4FF9DB295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E09AE576-8EEE-486C-9387-21D4FF9DB295}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
 		LessCompiler = 6b72176d-e6d3-4caf-9bc0-e281700840a9
+		SolutionGuid = {24FAE15F-643A-4669-A30A-EF9666231223}
 	EndGlobalSection
 EndGlobal

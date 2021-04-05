@@ -1,6 +1,0 @@
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (1, N'Waiting', 2, 3, NULL)
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (2, N'ToDo', 3, 1, NULL)
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (3, N'Done', 4, 5, NULL)
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (4, N'Cancelled', 5, 4, NULL)
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (5, N'OnHold', 1, 2, NULL)
-INSERT INTO [dbo].[TaskStatus] ([Id], [Name], [DependentPrecedence], [ServiceRequestPrecedence], [ColorCode]) VALUES (6, N'Archive', 6, 6, NULL)

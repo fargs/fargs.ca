@@ -1,1 +1,0 @@
-INSERT INTO [dbo].[Country] ([Id], [Name], [ISO3DigitCountry], [ISO2CountryCode], [ISO3CountryCode], [ModifiedDate], [ModifiedUser]) VALUES (124, N'Canada', 124, N'CA', N'CAN', N'2015-12-08 14:42:00', N'DESKTOP-PJSAQN9\faragol')

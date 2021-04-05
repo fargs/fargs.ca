@@ -1,6 +1,0 @@
-﻿@model WebApp.Views.Comment.CommentListViewModel
-
-@foreach (var comment in Model.Comments.OrderByDescending(c => c.PostedDate))
-{
-    @Html.Partial("~/Views/Comment/_Comment.cshtml", comment)
-}

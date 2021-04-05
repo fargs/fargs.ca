@@ -1,8 +1,0 @@
-﻿CREATE TABLE [dbo].[TimeZone] (
-    [Id]   SMALLINT      NOT NULL,
-    [Name] NVARCHAR (50) NOT NULL,
-    [IANA] NVARCHAR (50) NULL,
-    [ISO]  NVARCHAR (50) NULL,
-    CONSTRAINT [PK_TimeZone] PRIMARY KEY CLUSTERED ([Id] ASC)
-);
-

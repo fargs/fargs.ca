@@ -1,4 +1,0 @@
-﻿CREATE TYPE [dbo].[SelectedStatusIdsTVP] AS TABLE (
-    [Id] TINYINT NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC));
-

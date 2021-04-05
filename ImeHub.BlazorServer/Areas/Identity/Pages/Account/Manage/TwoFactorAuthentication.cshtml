@@ -1,0 +1,62 @@
+﻿@page
+
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Two-factor authentication (2FA)";
+}
+@attribute [Authorize(Roles = "Disabled")]
+<partial name="_StatusMessage" for="StatusMessage" />
+
+@if (Model.Is2faEnabled)
+{
+    if (Model.RecoveryCodesLeft == 0)
+    {
+        <div class="alert text-red-100 bg-red-600 rounded px-2 py-2 px-2 py-4 mb-2">
+            <strong>You have no recovery codes left.</strong>
+            <p>You must <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
+        </div>
+    }
+    else if (Model.RecoveryCodesLeft == 1)
+    {
+        <div class="alert text-red-100 bg-red-600 rounded px-2 py-2 px-2 py-4 mb-2">
+            <strong>You have 1 recovery code left.</strong>
+            <p>You can <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+        </div>
+    }
+    else if (Model.RecoveryCodesLeft <= 3)
+    {
+        <div class="alert text-yellow-100 bg-yellow-600 rounded px-2 py-2 px-2 py-4 mb-2">
+            <strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong>
+            <p>You should <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+        </div>
+    }
+
+    if (Model.IsMachineRemembered)
+    {
+        <form method="post" class="inline-block">
+            <button type="submit" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Forget this browser
+            </button>
+        </form>
+    }
+    <a asp-page="./Disable2fa" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Disable 2FA</a>
+    <a asp-page="./GenerateRecoveryCodes" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Reset recovery codes</a>
+}
+
+@if (!Model.HasAuthenticator)
+{
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add authenticator app</a>
+}
+else
+{
+    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Setup authenticator app
+    </a>
+    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="mt-4 bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Reset authenticator app
+    </a>
+}
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

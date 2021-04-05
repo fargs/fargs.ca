@@ -1,0 +1,50 @@
+﻿@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Manage Email";
+}
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<form method="post">
+    <div class="shadow sm:rounded-md sm:overflow-hidden">
+        <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Email
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Your email is used to authenticate you. If changed you will need to confirm your email.
+                </p>
+            </div>
+            <div class="">
+                <label asp-for="Email" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="Email" class="mt-1 py-2 bg-white sm:text-sm" disabled />
+                @if (Model.IsEmailConfirmed)
+                {
+                    <div class="mt-1 text-gray-500 text-sm">
+                        <svg class="inline-block text-green-600 group-hover:text-green-600 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="inline-block align-middle">
+                            confirmed on TODO: EMAIL CONFIRMED DATE
+                        </span>
+                    </div>
+                }
+                else
+                {
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4">Send verification email</button>
+                }
+            </div>
+            <div class="">
+                <label asp-for="Input.NewEmail" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="Input.NewEmail" class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" aria-required="true" />
+            </div>
+            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Change email</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

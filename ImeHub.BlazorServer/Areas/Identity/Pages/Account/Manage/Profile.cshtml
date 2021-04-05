@@ -1,0 +1,58 @@
+﻿@page
+@model ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<form method="post">
+    <div class="shadow sm:rounded-md sm:overflow-hidden">
+        <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Personal Information
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Use a permanent address where you can receive mail.
+                </p>
+            </div>
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-2 sm:col-span-1">
+                    <label asp-for="Input.Title" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Input.Title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="col-span-4 sm:col-span-2">
+                    <label asp-for="Input.FirstName" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Input.FirstName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="col-span-4 sm:col-span-2">
+                    <label asp-for="Input.LastName" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Input.LastName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label asp-for="Input.ColorCode" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Input.ColorCode" type="color" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label asp-for="Username" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input asp-for="Username" disabled class="mt-1 block w-full py-2 sm:text-sm">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label asp-for="Input.PhoneNumber" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Input.PhoneNumber" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

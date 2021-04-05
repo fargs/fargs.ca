@@ -40,7 +40,7 @@ namespace ImeHub.Portal
 
             services.AddDbContext<ApplicationDbContext>(options =>
                             options.UseSqlServer(
-                                _config.GetConnectionString("DefaultConnection"))
+                                _config.GetConnectionString("OrvosiDbContext"))
                             .EnableSensitiveDataLogging());
             //#if DEBUG
             //            services.AddDbContextFactory<ApplicationDbContext>(options =>

@@ -25,10 +25,10 @@ namespace ImeHub.Portal.Library.Security
 			var identity = (ClaimsIdentity)principal.Identity;
 
 			var claims = new List<Claim>();
-			
-			claims.Add(new Claim(AuthorizationClaimTypes.DisplayName, user.DisplayName));
-			claims.Add(new Claim(AuthorizationClaimTypes.Initials, user.Initials));
-			claims.Add(new Claim(AuthorizationClaimTypes.ColorCode, user.ColorCode));
+
+            if (user.DisplayName != null) claims.Add(new Claim(AuthorizationClaimTypes.DisplayName, user.DisplayName));
+			if (user.Initials != null) claims.Add(new Claim(AuthorizationClaimTypes.Initials, user.Initials));
+			if (user.ColorCode != null) claims.Add(new Claim(AuthorizationClaimTypes.ColorCode, user.ColorCode));
 
 			identity.AddClaims(claims);
 			return principal;

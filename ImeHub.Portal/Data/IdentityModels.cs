@@ -28,26 +28,40 @@ namespace ImeHub.Portal.Data
         {
             get
             {
-                string s;
-                if (string.IsNullOrEmpty(this.Title))
+                if (string.IsNullOrWhiteSpace(Title) && string.IsNullOrWhiteSpace(FirstName) && string.IsNullOrWhiteSpace(LastName))
                 {
-                    s = string.Format("{0} {1}", this.FirstName, this.LastName);
+                    return null;
+                }
+                else if (string.IsNullOrWhiteSpace(this.Title))
+                {
+                    return string.Format("{0} {1}", this.FirstName, this.LastName);
                 }
                 else
                 {
-                    s = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
+                    return string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
                 }
-                return s;
             }
         }
         public string Initials
         {
             get
             {
-                if (string.IsNullOrEmpty(FirstName))
-                    return "Unassigned";
-                else
+                if (!string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+                {
                     return $"{FirstName.ToUpper().First()}{LastName.ToUpper().First()}";
+                }
+                else if (!string.IsNullOrWhiteSpace(FirstName))
+                {
+                    return $"{FirstName.ToUpper().First()}";
+                }
+                else if (!string.IsNullOrWhiteSpace(LastName))
+                {
+                    return $"{LastName.ToUpper().First()}";
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
     }

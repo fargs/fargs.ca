@@ -40,9 +40,7 @@ namespace ImeHub.Portal.Pages.Invoices
             {
                 var links = await _dbContext.InvoiceDownloadLinks
                     // Link is not expired
-                    .Where(link => link.ExpiryDate.HasValue && _dateTime.UtcNow() > link.ExpiryDate)
-                    // Has attempts left
-                    .Where(link => link.AllowedAttempts > link.InvoiceDownloads.Count())
+                    .Where(link => link.ExpiryDate.HasValue && _dateTime.UtcNow() < link.ExpiryDate)
                     .Select(link => new ListItem
                     {
                         ObjectGuid = link.ObjectGuid,

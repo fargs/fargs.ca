@@ -55,7 +55,7 @@
                             }
                             else
                             {
-                                @if (PendingDownloadListItems.Count() == 0)
+                                if (PendingDownloadListItems.Count() == 0)
                                 {
                                     <tr>
                                         <td colspan="4" class="h-20">
@@ -140,16 +140,35 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @if (IsLoading)
                             {
-                                <tr>
-                                    <td colspan="4">Loading</td>
+                                <tr class="h-20">
+                                    <td class="px-6 py-4">
+                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                             else
                             {
-                                @if (PendingDownloadListItems.Count() == 0)
+                                if (RecentlyDownloadedListItems.Count() == 0)
                                 {
                                     <tr>
-                                        <td colspan="4" class="h-20">
+                                        <td colspan="5" class="h-20">
                                             <div class="flex place-content-center px-6 py-4 text-2xl">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="fill-current text-green-600 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />

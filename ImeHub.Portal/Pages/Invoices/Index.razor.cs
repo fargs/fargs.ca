@@ -25,16 +25,15 @@ namespace ImeHub.Portal.Pages.Invoices
 {
     public partial class Index
     {
-        [Inject] private ApplicationDbContext _dbContext { get; init; }
-        [Inject] private IConfiguration _configuration { get; init; }
-        [Inject] private FileSystemFactory _fileSystemFactory { get; init; }
-        [Inject] private ILogger<Index> _logger { get; init; }
-        [Inject] private NavigationManager _navigationManager { get; init; }
-        [Inject] private IJSRuntime jsRuntime { get; init; }
-        [Inject] private IDateTime _dateTime { get; init; }
-        [Inject] private IRazorToStringViewRenderer _razor { get; init; }
-        [Inject] private IHtmlToPdf _htmlToPdf { get; init; }
-        [Inject] private IHttpContextAccessor _httpContextAccessor { get; init; }
+        [Inject] private ApplicationDbContext _dbContext { get; set; }
+        [Inject] private IConfiguration _configuration { get; set; }
+        [Inject] private FileSystemFactory _fileSystemFactory { get; set; }
+        [Inject] private ILogger<Index> _logger { get; set; }
+        [Inject] private NavigationManager _navigationManager { get; set; }
+        [Inject] private IDateTime _dateTime { get; set; }
+        [Inject] private IRazorToStringViewRenderer _razor { get; set; }
+        [Inject] private IHtmlToPdf _htmlToPdf { get; set; }
+        [Inject] private IHttpContextAccessor _httpContextAccessor { get; set; }
         [Inject] private IToastService _toastService { get; set; }
 
         [CascadingParameter]

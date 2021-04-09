@@ -3,8 +3,6 @@ on:
   push:
     branches:
     - main
-    paths:
-      - ImeHub.Portal/**
 env:
   AZURE_WEBAPP_NAME: imehub-portal
   AZURE_WEBAPP_PACKAGE_PATH: ImeHub.Portal/publish

@@ -7,7 +7,7 @@ env:
   AZURE_WEBAPP_NAME: imehub-portal
   AZURE_WEBAPP_PACKAGE_PATH: ImeHub.Portal/publish
   AZURE_WEBAPP_PUBLISH_PROFILE: ${{secrets.imehub_portal_9ff5}}
-  CONFIGURATION: Release
+  CONFIGURATION: Debug
   DOTNET_CORE_VERSION: 5.0.x
   WORKING_DIRECTORY: ImeHub.Portal
 jobs:
@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Clean
-      run: dotnet clean ./ImeHub.sln --configuration Release && dotnet nuget locals all --clear
+      run: dotnet clean ./ImeHub.sln --configuration Debug && dotnet nuget locals all --clear
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build

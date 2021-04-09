@@ -6,9 +6,9 @@ using System.IO;
 
 namespace ImeHub.Portal.Services.FileSystem
 {
-    public interface IFileSystemProvider
+    public interface IFileSystem
     {
-        string RootPath { get; init; }
-        FileStream DownloadFile();
+        Task<byte[]> DownloadFileAsync(string fileId);
+        Task UploadFileAsync(byte[] source, string destination);
     }
 }

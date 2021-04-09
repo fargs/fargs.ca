@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace ImeHub.Portal.Services.FileSystem
 {
-    public class FileSystemOptions
+    public enum FileSystemProvider
     {
-        public const string SectionName = "FileSystem";
-        public string RootPath { get; set; }
+        Local, AzureBlobStorage, BoxEnterprise
     }
 }

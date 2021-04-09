@@ -7,6 +7,10 @@ namespace ImeHub.Portal.Data.Invoices
 {
     public partial class InvoiceDownloadLink
     {
+        public InvoiceDownloadLink()
+        {
+            InvoiceDownloads = new List<InvoiceDownload>();
+        }
         public int Id { get; set; }
         public Guid ObjectGuid { get; set; }
         public int InvoiceId { get; set; }

@@ -11,8 +11,9 @@ namespace ImeHub.Portal.Data
             : base(options)
         {
         }
+        public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceDownloadLink> InvoiceDownloadLinks { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +27,7 @@ namespace ImeHub.Portal.Data
             modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaim", identitySchema);
             modelBuilder.Entity<ApplicationUserToken>().ToTable("UserToken", identitySchema);
 
+            modelBuilder.Entity<Invoice>().ToTable(nameof(Invoice));
             modelBuilder.Entity<InvoiceDownloadLink>().ToTable(nameof(InvoiceDownloadLink));
         }
     }

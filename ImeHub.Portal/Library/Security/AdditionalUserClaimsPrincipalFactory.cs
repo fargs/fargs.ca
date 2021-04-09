@@ -26,6 +26,8 @@ namespace ImeHub.Portal.Library.Security
 
 			var claims = new List<Claim>();
 
+			claims.Add(new Claim(AuthorizationClaimTypes.UserId, user.Id.ToString()));
+
             if (user.DisplayName != null) claims.Add(new Claim(AuthorizationClaimTypes.DisplayName, user.DisplayName));
 			if (user.Initials != null) claims.Add(new Claim(AuthorizationClaimTypes.Initials, user.Initials));
 			if (user.ColorCode != null) claims.Add(new Claim(AuthorizationClaimTypes.ColorCode, user.ColorCode));

@@ -7,16 +7,23 @@ using System.Threading.Tasks;
 
 namespace ImeHub.Portal.Services.FileSystem
 {
-    public class LocalFileSystem : IFileSystemProvider
+    public class LocalFileSystem : IFileSystem
     {
         public string RootPath { get; init; }
-        public LocalFileSystem(IOptions<FileSystemOptions> options)
+        public LocalFileSystem(IOptions<LocalFileSystemOptions> options) : this(options.Value) { }
+        public LocalFileSystem(LocalFileSystemOptions options)
         {
-            RootPath = options.Value.RootPath;
+            RootPath = options.RootPath;
         }
-        public FileStream DownloadFile()
+        public async Task<byte[]> DownloadFileAsync(string fileId)
         {
-            throw new NotImplementedException();
+            var file = await File.ReadAllBytesAsync(Path.Join(RootPath, "invoices", fileId));
+
+            return file;
+        }
+        public async Task UploadFileAsync(byte[] source, string destination)
+        {
+            await File.WriteAllBytesAsync(destination, source);
         }
     }
 }

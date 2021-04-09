@@ -1,8 +1,14 @@
 @inherits LayoutComponentBase
 @using ImeHub.Portal.Components.Layout
 @using ImeHub.Portal.Components.App.Branding
+@using TailBlazor.Toast.Configuration
 
-<!-- This example requires Tailwind CSS v2.0+ -->
+<TailBlazorToasts 
+    Timeout="10" 
+    Position="ToastPosition.TopRight"
+    IconStyle="TailBlazor.HeroIcons.IconStyle.Outline"
+    SuccessIcon="TailBlazor.HeroIcons.HeroIcon.Check"  />
+
 <div>
     <nav class="bg-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

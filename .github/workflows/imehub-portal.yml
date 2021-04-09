@@ -21,6 +21,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Clean
+      run: dotnet clean ./ImeHub.sln --configuration Release && dotnet nuget locals all --clear
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build

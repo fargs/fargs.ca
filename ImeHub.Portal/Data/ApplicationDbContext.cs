@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ImeHub.Portal.Data.Company;
 
 namespace ImeHub.Portal.Data
 {
@@ -11,6 +14,7 @@ namespace ImeHub.Portal.Data
             : base(options)
         {
         }
+        public DbSet<CompanyAccess> CompanyAccesses { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceDownloadLink> InvoiceDownloadLinks { get; set; }
 
@@ -27,6 +31,7 @@ namespace ImeHub.Portal.Data
             modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaim", identitySchema);
             modelBuilder.Entity<ApplicationUserToken>().ToTable("UserToken", identitySchema);
 
+            modelBuilder.Entity<CompanyAccess>().ToTable(nameof(CompanyAccess));
             modelBuilder.Entity<Invoice>().ToTable(nameof(Invoice));
             modelBuilder.Entity<InvoiceDownloadLink>().ToTable(nameof(InvoiceDownloadLink));
         }

@@ -5,8 +5,10 @@ using ImeHub.Portal.Library.Security;
 using ImeHub.Portal.Services.DateTimeService;
 using ImeHub.Portal.Services.FileSystem;
 using ImeHub.Portal.Services.HtmlToPdf;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -24,28 +26,41 @@ namespace ImeHub.Portal.Pages.Invoices
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly FileSystemFactory _fileSystemFactory;
         private readonly IDateTime _dateTime;
         private readonly IRazorToStringViewRenderer _razor;
         private readonly IHtmlToPdf _htmlToPdf;
-        private readonly ClaimsPrincipal _claimsPrincipal;
+        private readonly ClaimsPrincipal _user;
 
-        public DownloadModel(ApplicationDbContext dbContext, IConfiguration configuration, FileSystemFactory fileSystemFactory, IDateTime dateTime, IRazorToStringViewRenderer razor, IHtmlToPdf htmlToPdf, IHttpContextAccessor httpContextAccessor)
+        public DownloadModel(ApplicationDbContext dbContext, IConfiguration configuration, IAuthorizationService authorizationService, UserManager<ApplicationUser> userManager, FileSystemFactory fileSystemFactory, IDateTime dateTime, IRazorToStringViewRenderer razor, IHtmlToPdf htmlToPdf, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _configuration = configuration;
+            _authorizationService = authorizationService;
+            _userManager = userManager;
             _fileSystemFactory = fileSystemFactory;
             _dateTime = dateTime;
             _razor = razor;
             _htmlToPdf = htmlToPdf;
-            _claimsPrincipal = httpContextAccessor.HttpContext.User;
+            _user = httpContextAccessor.HttpContext.User;
         }
 
         public async Task<IActionResult> OnGet(Guid id)
         {
+            var userId = _user.UserId();
+
+            var companyIdsAccessList = await _dbContext.CompanyAccesses
+                .Where(c => c.UserId == userId)
+                .Select(c => c.CompanyRole.Company.ObjectGuid)
+                .ToArrayAsync();
+
             var link = await _dbContext.InvoiceDownloadLinks
                 .Include(idl => idl.Invoice)
-                .SingleOrDefaultAsync(c => c.ObjectGuid == id);
+                .Where(idl => companyIdsAccessList.Contains(idl.Invoice.CustomerGuid))
+                .Where(idl => idl.ObjectGuid == id)
+                .SingleOrDefaultAsync();
 
             // Check if the link exists and they have access (we don't tell them it exists)
             if (link == null)
@@ -54,7 +69,7 @@ namespace ImeHub.Portal.Pages.Invoices
             }
 
             // Check if the link has expired
-            if (_dateTime.Now > link.ExpiryDate)
+                if (_dateTime.Now > link.ExpiryDate)
             {
                 return RedirectToActionPermanent("Invoices/DownloadLinkExpired");
             }

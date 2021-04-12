@@ -14,10 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ImeHub.Portal.Library.Security;
 
 namespace ImeHub.Portal.Areas.Identity.Pages.Account
 {
-    //[AllowAnonymous]
+    [Authorize(AuthorizationPolicies.SystemAdminOnly)]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

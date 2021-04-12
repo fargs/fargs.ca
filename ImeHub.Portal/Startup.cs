@@ -84,14 +84,23 @@ namespace ImeHub.Portal
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>,
                 AdditionalUserClaimsPrincipalFactory>();
 
+            // SECURITY SETUP
             services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                   .RequireAuthenticatedUser()
                   .Build();
+
+                var isSystemAdminPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .AddRequirements(new IsSystemAdminRequirement())
+                    .Build();
+                
+                options.AddPolicy(AuthorizationPolicies.SystemAdminOnly, isSystemAdminPolicy);
             });
 
-            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
+            services.AddScoped<AuthenticationStateProvider, 
+                RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
@@ -102,7 +111,7 @@ namespace ImeHub.Portal
 
             // File Systems
             services.AddSingleton<FileSystemFactory>();
-            
+
             services.AddHttpClient();
             services.AddTransient<IHtmlToPdf, Html2PdfRocket>();
 
@@ -114,7 +123,6 @@ namespace ImeHub.Portal
             {
                 mvcBuilder.AddRazorRuntimeCompilation();
             }
-            services.AddRazorToString(config => config.ViewsPath = "Pages/Invoices/InvoiceTemplates");
 
             services.AddServerSideBlazor();
 

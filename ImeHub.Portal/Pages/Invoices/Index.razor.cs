@@ -41,6 +41,7 @@ namespace ImeHub.Portal.Pages.Invoices
 
         ClaimsPrincipal _user { get; set; }
         bool IsLoading { get; set; }
+        Guid[] CompanyIdsAccessList { get; set; }
         IEnumerable<ListItemGrouping> PendingDownloadListItems { get; set; }
         IEnumerable<ListItemGrouping> RecentlyDownloadedListItems { get; set; }
 
@@ -74,27 +75,36 @@ namespace ImeHub.Portal.Pages.Invoices
 
         private async Task LoadFromDatabase()
         {
-            var links = await _dbContext.InvoiceDownloadLinks
-                                // Link is not expired
-                                .Where(link => link.ExpiryDate.HasValue && _dateTime.Now < link.ExpiryDate)
-                                .Select(link => new ListItem
-                                {
-                                    ObjectGuid = link.ObjectGuid,
-                                    AllowedAttempts = link.AllowedAttempts,
-                                    ActualDownloads = link.InvoiceDownloads.Count(),
-                                    ExpiryDate = link.ExpiryDate.Value,
-                                    GroupingKey = new ListItemGrouping_Key
-                                    {
-                                        InvoiceGuid = link.Invoice.ObjectGuid,
-                                        ServiceProviderName = link.Invoice.ServiceProviderName,
-                                        InvoiceNumber = link.Invoice.InvoiceNumber,
-                                        InvoiceDate = link.Invoice.InvoiceDate,
-                                        LastDownloadDate = link.Invoice.DownloadDate
-                                    }
+            var userId = _user.UserId();
 
-                                })
-                                .OrderByDescending(link => link.ExpiryDate)
-                                .ToListAsync();
+            CompanyIdsAccessList = await _dbContext.CompanyAccesses
+                .Where(c => c.UserId == userId)
+                .Select(c => c.CompanyRole.Company.ObjectGuid)
+                .ToArrayAsync();
+
+            var links = await _dbContext.InvoiceDownloadLinks
+                // Only include invoices where the user belongs to the company on the invoice
+                .Where(idl => CompanyIdsAccessList.Contains(idl.Invoice.CustomerGuid))
+                // Link is not expired
+                .Where(link => link.ExpiryDate.HasValue && _dateTime.Now < link.ExpiryDate)
+                .Select(link => new ListItem
+                {
+                    ObjectGuid = link.ObjectGuid,
+                    AllowedAttempts = link.AllowedAttempts,
+                    ActualDownloads = link.InvoiceDownloads.Count(),
+                    ExpiryDate = link.ExpiryDate.Value,
+                    GroupingKey = new ListItemGrouping_Key
+                    {
+                        InvoiceGuid = link.Invoice.ObjectGuid,
+                        ServiceProviderName = link.Invoice.ServiceProviderName,
+                        InvoiceNumber = link.Invoice.InvoiceNumber,
+                        InvoiceDate = link.Invoice.InvoiceDate,
+                        LastDownloadDate = link.Invoice.DownloadDate
+                    }
+
+                })
+                .OrderByDescending(link => link.ExpiryDate)
+                .ToListAsync();
 
             PendingDownloadListItems = links
                 // Not download yet
@@ -125,7 +135,10 @@ namespace ImeHub.Portal.Pages.Invoices
 
         public async Task DownloadInvoice(Guid objectGuid)
         {
+
             var link = await _dbContext.InvoiceDownloadLinks
+                // Only include invoices where the user belongs to the company on the invoice
+                .Where(idl => CompanyIdsAccessList.Contains(idl.Invoice.CustomerGuid))
                 .SingleOrDefaultAsync(c => c.ObjectGuid == objectGuid);
 
             // Check if the link exists and they have access (we don't tell them it exists)
@@ -173,7 +186,7 @@ namespace ImeHub.Portal.Pages.Invoices
                 var download = new InvoiceDownload()
                 {
                     DownloadDate = _dateTime.Now,
-                    DownloadedBy = _user.UserId(),
+                    DownloadedBy = _user.UserId().ToString(),
                     EmailSentTo = null
                 };
                 link.InvoiceDownloads.Add(download);

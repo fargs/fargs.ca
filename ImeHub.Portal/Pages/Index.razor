@@ -1,8 +1,9 @@
-@page "/"
-@using ImeHub.Portal.Components.Layout
+﻿@page "/"
+@inject NavigationManager NavManager
 
-<Header>Dashboard</Header>
-
-<Main>
-    Welcome to your new app.
-</Main>
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        NavManager.NavigateTo("/invoices");   
+    }
+}

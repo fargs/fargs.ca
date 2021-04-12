@@ -1,8 +1,15 @@
 @page "/invoices"
 @using ImeHub.Portal.Components.App.Invoices
 @using Microsoft.EntityFrameworkCore
-
-<Header></Header>
+<div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 md:flex md:items-center md:justify-between">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                Invoices
+            </h2>
+        </div>
+    </div>
+</div>
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="pb-5 border-b border-gray-200">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -91,7 +98,7 @@
                                                     Download
                                                 </button>
                                                 <div class="text-sm">
-                                                    @ExpiryColumn(daysToExpiry)
+                                                    @ExpiryColumn(daysToExpiry, true)
                                                 </div>
                                             }
                                         </td>
@@ -205,7 +212,7 @@
                                                 </button>
                                                 <div class="text-sm text-gray-300">
 
-                                                    @ExpiryColumn(daysToExpiry)
+                                                    @ExpiryColumn(daysToExpiry, false)
                                                     <div class="text-sm text-gray-400">
                                                         @if (listItem.ActualDownloads == 1)
                                                         {
@@ -235,15 +242,26 @@
 </div>
 
 @code {
-    public RenderFragment ExpiryColumn(int daysToExpiry)
+    public RenderFragment ExpiryColumn(int daysToExpiry, bool emphasizeExpiresToday)
     {
         if (daysToExpiry == 0)
         {
-            return
+            if (emphasizeExpiresToday)
+            {
+                return
     @<span class="text-red-600">
         Expires today
     </span>
     ;
+            }
+            else
+            {
+                return
+    @<span class="text-gray-600">
+        Expires today
+    </span>
+    ;
+            }
         }
         else if (daysToExpiry == 1)
         {

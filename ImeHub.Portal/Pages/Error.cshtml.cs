@@ -27,11 +27,6 @@ namespace ImeHub.Portal.Pages
 
         public void OnGet()
         {
-            var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            if (exceptionHandlerPathFeature?.Error is SelectedTenantIdNullException)
-            {
-                ErrorMessage = "You must select a tenant.";
-            }
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }

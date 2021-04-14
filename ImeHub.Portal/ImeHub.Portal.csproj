@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="randomColorSharped.NetStandard" Version="1.0.2" />
+    <PackageReference Include="SendGrid" Version="9.22.0" />
     <PackageReference Include="Sharp.RazorToString" Version="3.0.0" />
     <PackageReference Include="TailBlazor.Toast" Version="1.1.1" />
     <PackageReference Include="TimeZoneConverter" Version="3.4.0" />
@@ -29,6 +30,8 @@
 
   <ItemGroup>
     <Folder Include="Components\App\Identity\" />
+    <Folder Include="Pages\Admin\" />
+    <Folder Include="Services\Identity\" />
   </ItemGroup>
 
   <ItemGroup>

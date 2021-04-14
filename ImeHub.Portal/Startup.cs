@@ -2,6 +2,7 @@ using ImeHub.Portal.Areas.Identity;
 using ImeHub.Portal.Data;
 using ImeHub.Portal.Library;
 using ImeHub.Portal.Library.Security;
+using ImeHub.Portal.Services.Email;
 using ImeHub.Portal.Services.DateTimeService;
 using ImeHub.Portal.Services.FileSystem;
 using ImeHub.Portal.Services.HtmlToPdf;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -118,6 +120,7 @@ namespace ImeHub.Portal
             services.AddTransient<IDateTime, SystemDateTime>();
 
             services.AddControllersWithViews();
+
             var mvcBuilder = services.AddRazorPages();
             if (_env.IsDevelopment())
             {
@@ -127,6 +130,17 @@ namespace ImeHub.Portal
             services.AddServerSideBlazor();
 
             services.AddTailBlazorToast();
+
+            if (!_env.IsDevelopment())
+            {
+                services.Configure<LocalhostOptions>(_config.GetSection(LocalhostOptions.SectionName));
+                services.AddTransient<IEmailSender, Localhost>();
+            }
+            else
+            {
+                services.Configure<SendGridOptions>(_config.GetSection(SendGridOptions.SectionName));
+                services.AddTransient<IEmailSender, Services.Email.SendGrid>();
+            }
 
             services.AddDatabaseDeveloperPageExceptionFilter();
         }

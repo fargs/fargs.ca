@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Components\App\Identity\" />
-    <Folder Include="Pages\Admin\" />
+    <Folder Include="Data\Users\" />
     <Folder Include="Services\Identity\" />
   </ItemGroup>
 

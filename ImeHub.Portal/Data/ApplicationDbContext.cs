@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ImeHub.Portal.Data.Company;
+using ImeHub.Portal.Data.Companies;
 
 namespace ImeHub.Portal.Data
 {
@@ -14,7 +14,10 @@ namespace ImeHub.Portal.Data
             : base(options)
         {
         }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<CompanyRole> CompanyRoles { get; set; }
         public DbSet<CompanyAccess> CompanyAccesses { get; set; }
+        public DbSet<CompanyUserInvitation> CompanyUserInvitations { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceDownloadLink> InvoiceDownloadLinks { get; set; }
 
@@ -31,7 +34,10 @@ namespace ImeHub.Portal.Data
             modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaim", identitySchema);
             modelBuilder.Entity<ApplicationUserToken>().ToTable("UserToken", identitySchema);
 
+            modelBuilder.Entity<Company>().ToTable(nameof(Company));
+            modelBuilder.Entity<CompanyRole>().ToTable(nameof(CompanyRole));
             modelBuilder.Entity<CompanyAccess>().ToTable(nameof(CompanyAccess));
+            modelBuilder.Entity<CompanyUserInvitation>().ToTable(nameof(CompanyUserInvitation));
             modelBuilder.Entity<Invoice>().ToTable(nameof(Invoice));
             modelBuilder.Entity<InvoiceDownloadLink>().ToTable(nameof(InvoiceDownloadLink));
         }

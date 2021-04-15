@@ -49,30 +49,31 @@ namespace ImeHub.Portal
             services.Configure<Html2PdfRocketOptions>(_config.GetSection(Html2PdfRocketOptions.SectionName));
 
 
+//#if DEBUG
+//            services.AddDbContext<ApplicationDbContext>(options =>
+//                            options.UseSqlServer(
+//                                _config.GetConnectionString("OrvosiDbContext"))
+//                            .EnableSensitiveDataLogging());
+//#else
+//            services.AddDbContext<ApplicationDbContext>(options =>
+//                            options.UseSqlServer(
+//                                _config.GetConnectionString("OrvosiDbContext")));
+//#endif
 #if DEBUG
-            services.AddDbContext<ApplicationDbContext>(options =>
-                            options.UseSqlServer(
-                                _config.GetConnectionString("OrvosiDbContext"))
-                            .EnableSensitiveDataLogging());
+            services.AddDbContextFactory<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    _config.GetConnectionString("OrvosiDbContext"))
+                .EnableSensitiveDataLogging());
 #else
-            services.AddDbContext<ApplicationDbContext>(options =>
-                            options.UseSqlServer(
-                                _config.GetConnectionString("OrvosiDbContext")));
+            services.AddDbContextFactory<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    _config.GetConnectionString("OrvosiDbContext")));
 #endif
-            //#if DEBUG
-            //            services.AddDbContextFactory<ApplicationDbContext>(options =>
-            //                options.UseSqlServer(
-            //                    _config.GetConnectionString("DefaultConnection"))
-            //                .EnableSensitiveDataLogging());
-            //#else
-            //            services.AddDbContextFactory<ApplicationDbContext>(options =>
-            //                options.UseSqlServer(
-            //                    _config.GetConnectionString("DefaultConnection")));
-            //#endif
 
-            //services.AddScoped<ApplicationDbContext>(p =>
-            //    p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>()
-            //    .CreateDbContext());
+            // this is needed because the Razor Pages components (asp.net identity) injects this directly.
+            services.AddScoped<ApplicationDbContext>(p =>
+                p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>()
+                .CreateDbContext());
 
             services.AddDefaultIdentity<ApplicationUser>(options =>
             {

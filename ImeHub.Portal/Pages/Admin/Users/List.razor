@@ -1,0 +1,24 @@
+﻿@page "/admin/users"
+
+<NavLink href="@Routes.New">New Invite</NavLink>
+<table>
+    @foreach (var invitation in invitations)
+    {
+        <tr>
+            <td>
+                @invitation.Name (@invitation.Email)
+            </td>
+        </tr>
+    }
+</table>
+
+@using Data.Companies
+@inject ApplicationDbContext dbContext
+@code {
+    IEnumerable<CompanyUserInvitation> invitations { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        invitations = dbContext.CompanyUserInvitations;
+    }
+}

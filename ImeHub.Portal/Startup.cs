@@ -22,6 +22,8 @@ using Microsoft.Extensions.Logging;
 using Sharp.RazorToString;
 using System.Net.Http;
 using TailBlazor.Toast;
+using ImeHub.Portal.Services.Email.CompanyUserInvitation;
+using ImeHub.Portal.Services.Email.CompanyUserRegistrationInvitation;
 
 namespace ImeHub.Portal
 {
@@ -132,15 +134,21 @@ namespace ImeHub.Portal
 
             services.AddTailBlazorToast();
 
-            if (!_env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 services.Configure<LocalhostOptions>(_config.GetSection(LocalhostOptions.SectionName));
                 services.AddTransient<IEmailSender, Localhost>();
+                services.AddTransient<IEmailService, Localhost>();
+                services.AddTransient<ICompanyUserInvitationEmailService, CompanyUserInvitationLocalhostEmailService>();
+                services.AddTransient<ICompanyUserRegistrationInvitationEmailService, CompanyUserRegistrationInvitationLocalhostEmailService>();
             }
             else
             {
                 services.Configure<SendGridOptions>(_config.GetSection(SendGridOptions.SectionName));
                 services.AddTransient<IEmailSender, Services.Email.SendGrid>();
+                services.AddTransient<IEmailService, Services.Email.SendGrid>();
+                services.AddTransient<ICompanyUserInvitationEmailService, CompanyUserInvitationSendGridEmailService>();
+                services.AddTransient<ICompanyUserRegistrationInvitationEmailService, CompanyUserRegistrationInvitationSendGridEmailService>();
             }
 
             services.AddDatabaseDeveloperPageExceptionFilter();

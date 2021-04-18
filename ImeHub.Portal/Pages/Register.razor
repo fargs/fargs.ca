@@ -1,0 +1,120 @@
+﻿@page "/register/{Id}"
+@using System.ComponentModel.DataAnnotations
+@using ImeHub.Portal.Services.DateTimeService
+@using ImeHub.Portal.Services.Email.ConfirmEmail
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.EntityFrameworkCore
+@using ImeHub.Portal.Data.Companies
+@using Microsoft.Extensions.Logging
+@using System.Text
+@using System.Text.Encodings.Web
+
+@implements IDisposable
+
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject NavigationManager navigationManager
+@inject UserManager<ApplicationUser> userManager
+@inject SignInManager<ApplicationUser> signInManager
+@inject IConfirmEmailEmailService confirmEmail
+@inject IDateTime dateTime
+@inject ILogger<Register> logger
+@inject IToastService toastService
+
+<EditForm OnValidSubmit="HandleValidSubmit">
+    <InputText @bind-Value="Input.Email"></InputText>
+    <InputText @bind-Value="Input.Password"></InputText>
+    <InputText @bind-Value="Input.ConfirmPassword"></InputText>
+    <input type="hidden" name="Input.InviteCode" value="@Input.InviteCode" />
+    <InputText @bind-Value="Input.ConfirmInviteCode"></InputText>
+</EditForm>
+
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    ApplicationDbContext dbContext { get; set; }
+
+    public CompanyUserInvitation Invitation { get; set;}
+    public ApplicationUser AppUser { get; set;}
+
+    public InputModel Input { get; set; }
+    
+    protected async override Task OnInitializedAsync()
+    {
+        dbContext = dbContextFactory.CreateDbContext();
+
+        Invitation = await dbContext.CompanyUserInvitations
+            .Where(c => c.ObjectGuid == Id)
+            .SingleOrDefaultAsync();
+
+        if (Invitation == null)
+        {
+            navigationManager.NavigateTo("/NotFound");
+        }
+
+        AppUser = await userManager.FindByEmailAsync(Invitation.Email);
+
+        await base.OnInitializedAsync();
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        AppUser = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+        var result = await userManager.CreateAsync(AppUser, Input.Password);
+
+        if (!result.Succeeded)
+        {
+            logger.LogInformation("The user was not created.");
+            toastService.ShowError("An error occurred with your registration.");
+            return;
+        }
+
+        logger.LogInformation("User created a new account with password.");
+
+        //var code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
+        //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        //var callbackUrl = navigationManager.ToAbsoluteUri($"Identity/Account/ConfirmEmail?UserId={AppUser.Id}&Code={code}");
+        //await confirmEmail.SendEmailAsync(Input.Email, new ConfirmEmailTemplateData { Name = AppUser.DisplayName, ConfirmEmailUrl = callbackUrl.ToString() });
+        
+        Invitation.AcceptedDate = dateTime.UtcNow;
+        Invitation.UserId = AppUser.Id;
+
+        await dbContext.SaveChangesAsync();
+
+        await signInManager.SignInAsync(AppUser, isPersistent: false);
+
+        navigationManager.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        dbContext.Dispose();
+    }
+
+    public class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string InviteCode { get; set; }
+
+        [Display(Name = "Invitation Code")]
+        [Compare("InviteCode", ErrorMessage = "Invitation code is invalid.")]
+        public string ConfirmInviteCode { get; set; }
+    }
+}

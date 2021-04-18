@@ -6,31 +6,23 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace ImeHub.Portal.Services.Email
+namespace ImeHub.Portal.Services.Email.ConfirmEmail
 {
-    public class Localhost : IEmailService
+    public class ConfirmEmailLocalhostEmailService : IConfirmEmailEmailService
     {
         public const string Host = "localhost";
         public LocalhostOptions Options { get; set; }
-        public Localhost(IOptions<LocalhostOptions> optionsAccessor)
+        public ConfirmEmailLocalhostEmailService(IOptions<LocalhostOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
         }
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, ConfirmEmailTemplateData templateData)
         {
+            var subject = "IME HUB - Confirm your email";
+            var message = $"Hi {templateData.Name}, Confirm your email by <a href=\"{templateData.ConfirmEmailUrl}\">clicking this link</a>.";
             var mailMessage = new MailMessage(Options.FromAddress, email, subject, message);
 
             await Execute(mailMessage);
-        }
-
-        public async Task SendEmailAsync(MailMessage message)
-        {
-            await Execute(message);
-        }
-
-        public async Task SendEmailAsync(string templateId, object templateData)
-        {
-            throw new NotImplementedException();
         }
 
         private async Task Execute(MailMessage mailMessage)

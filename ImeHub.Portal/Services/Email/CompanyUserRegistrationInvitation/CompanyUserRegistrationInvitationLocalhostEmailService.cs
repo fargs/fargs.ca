@@ -6,31 +6,23 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace ImeHub.Portal.Services.Email
+namespace ImeHub.Portal.Services.Email.CompanyUserRegistrationInvitation
 {
-    public class Localhost : IEmailService
+    public class CompanyUserRegistrationInvitationLocalhostEmailService : ICompanyUserRegistrationInvitationEmailService
     {
         public const string Host = "localhost";
         public LocalhostOptions Options { get; set; }
-        public Localhost(IOptions<LocalhostOptions> optionsAccessor)
+        public CompanyUserRegistrationInvitationLocalhostEmailService(IOptions<LocalhostOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
         }
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, CompanyUserRegistrationInvitationTemplateData templateData)
         {
+            var subject = "Invitation to IME HUB";
+            var message = $"Hi {templateData.Name}, {templateData.CompanyName} has invited you to IME HUB. Click {templateData.InviteUrl} and enter your invite code {templateData.InviteCode}. Welcome!";
             var mailMessage = new MailMessage(Options.FromAddress, email, subject, message);
 
             await Execute(mailMessage);
-        }
-
-        public async Task SendEmailAsync(MailMessage message)
-        {
-            await Execute(message);
-        }
-
-        public async Task SendEmailAsync(string templateId, object templateData)
-        {
-            throw new NotImplementedException();
         }
 
         private async Task Execute(MailMessage mailMessage)

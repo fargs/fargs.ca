@@ -31,6 +31,7 @@
   <ItemGroup>
     <Folder Include="Components\App\Identity\" />
     <Folder Include="Data\Users\" />
+    <Folder Include="Pages\Admin\Users\" />
     <Folder Include="Services\Identity\" />
   </ItemGroup>
 

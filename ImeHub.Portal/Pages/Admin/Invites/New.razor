@@ -1,0 +1,180 @@
+﻿@page "/admin/invites/n"
+
+@using ImeHub.Portal.Data.Companies
+@using ImeHub.Portal.Services.DateTimeService
+@using ImeHub.Portal.Services.Email
+@using ImeHub.Portal.Services.Email.CompanyUserInvitation
+@using ImeHub.Portal.Services.Email.CompanyUserRegistrationInvitation
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using ImeHub.Portal.Library
+@using ImeHub.Portal.Pages.Admin.Invites.Templates
+@using System.Net.Mail
+
+@implements IDisposable
+
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject IToastService toastService
+@inject NavigationManager navManager
+@inject UserManager<ApplicationUser> userManager
+@inject IDateTime dateTime
+@inject IRazorToStringViewRenderer razor
+@inject ICompanyUserInvitationEmailService companyUserInvitation
+@inject ICompanyUserRegistrationInvitationEmailService companyUserRegistrationInvitation
+
+@if (Companies != null)
+{
+    <EditForm Model="@InputModel" OnValidSubmit="@HandleValidSubmit" class="p-3">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mt-3">
+            <InputText @bind-Value="@InputModel.Name" id="name" class="" placeholder="Given and surname"></InputText>
+        </div>
+        <div class="mt-3">
+            <InputText @bind-Value="@InputModel.Email" id="email" class="" placeholder="Email" aria-describedby="email-help"></InputText>
+        </div>
+        <div class="mt-3">
+            <InputSelect @bind-Value="InputModel.CompanyId">
+                <option value=@(0)></option>
+                @foreach (var company in Companies)
+                {
+                <option value="@company.Id">@company.Name</option>
+                }
+        </InputSelect>
+    </div>
+
+    @if (InputModel.CompanyId == default)
+        {
+            InputModel.CompanyName = default;
+            InputModel.CompanyRoleId = default;
+        }
+        else
+        {
+            InputModel.CompanyName = Companies.Single(c => c.Id == InputModel.CompanyId).Name;
+
+            using var _dbContext = dbContextFactory.CreateDbContext();
+            CompanyRoles = _dbContext.CompanyRoles.Where(cr => cr.Company.Id == InputModel.CompanyId).ToList();
+
+            if (!CompanyRoles.Any(cr => cr.Id == InputModel.CompanyRoleId))
+            {
+                InputModel.CompanyRoleId = default;
+            }
+
+            <div class="mt-3">
+                <InputSelect @bind-Value="InputModel.CompanyRoleId">
+                    <option value=@(0)></option>
+                    @foreach (var companyRole in CompanyRoles)
+                    {
+                        <option value="@companyRole.Id">@companyRole.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        }
+        <button type="submit" class="">Submit</button>
+    </EditForm>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected CompanyUserInvitation InputModel { get; set; }
+
+    bool IsCustomized { get; set; }
+    protected string Body { get; set; }
+
+    private ApplicationDbContext dbContext { get; set; }
+    private bool Loading { get; set; } = true;
+
+    IEnumerable<Company> Companies { get; set; }
+    IEnumerable<CompanyRole> CompanyRoles { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var user = (await authenticationStateTask).User;
+
+        InputModel = new()
+        {
+            ObjectGuid = Guid.NewGuid(),
+            ExpiryDate = dateTime.Now.AddDays(14),
+            InvitedDate = dateTime.Now,
+            InvitedBy = user.UserId()
+        };
+
+        dbContext = dbContextFactory.CreateDbContext();
+
+        Companies = await dbContext.Companies.OrderBy(c => c.Name).ToListAsync();
+
+        Loading = false;
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        // This is the url to include in the template. 
+        var inviteUri = navManager.ToAbsoluteUri("/");
+
+        var random = new Random(2915);
+        InputModel.InviteCode = random.Next(111111, 999999).ToString();
+        
+        var appUser = await userManager.FindByEmailAsync(InputModel.Email);
+        if (appUser == null)
+        {
+            inviteUri = navManager.ToAbsoluteUri($"/register/{InputModel.ObjectGuid}");
+        }
+        else 
+        {
+            InputModel.UserId = appUser.Id;
+        }
+        dbContext.Add(InputModel);        
+
+        try
+        {
+            await dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        catch (DbUpdateException ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+
+        if (appUser == null)
+        {
+            CompanyUserRegistrationInvitationTemplateData templateData = new()
+            {
+                Name = InputModel.Name,
+                CompanyName = InputModel.CompanyName,
+                InviteUrl = inviteUri.ToString(),
+                InviteCode = InputModel.InviteCode
+            };
+            await companyUserRegistrationInvitation.SendEmailAsync(InputModel.Email, templateData);    
+        }
+        else
+        {
+            CompanyUserInvitationTemplateData templateData = new()
+            {
+                Name = InputModel.Name,
+                CompanyName = InputModel.CompanyName,
+                InviteUrl = inviteUri.ToString()
+            };
+            await companyUserInvitation.SendEmailAsync(InputModel.Email, templateData);    
+        }
+        
+
+        toastService.ShowSuccess($"{InputModel.Name} was saved successfully.");
+
+        navManager.NavigateTo(Routes.List);
+    }
+
+    public void Dispose()
+    {
+        dbContext.Dispose();
+    }
+}

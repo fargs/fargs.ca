@@ -1,4 +1,4 @@
-﻿@page "/admin/users"
+﻿@page "/admin/invites"
 
 <NavLink href="@Routes.New">New Invite</NavLink>
 <table>
@@ -7,6 +7,9 @@
         <tr>
             <td>
                 @invitation.Name (@invitation.Email)
+            </td>
+            <td>
+                
             </td>
         </tr>
     }
@@ -21,4 +24,6 @@
         await base.OnInitializedAsync();
         invitations = dbContext.CompanyUserInvitations;
     }
+
+
 }

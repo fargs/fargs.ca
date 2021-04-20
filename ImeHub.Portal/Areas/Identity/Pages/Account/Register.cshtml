@@ -4,51 +4,60 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Input.Title"></label>
-                <input asp-for="Input.Title" class="form-control" aria-required="true" />
-                <span asp-validation-for="Input.Title" class="text-danger"></span>
+@section Heading {
+    Register to accept your invite
+}
+        <form class="mt-8 space-y-6" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="All" class=""></div>
+            <div class="mt-3">
+                <div class="grid grid-cols-6 gap-6">
+                    <div class="col-span-4 sm:col-span-3">
+                        <label asp-for="Input.FirstName" class="block text-sm font-medium text-gray-700"></label>
+                        <div class="mt-1">
+                            <input asp-for="Input.FirstName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <span asp-validation-for="Input.FirstName" class="mt-2 text-sm text-red-600"></span>
+                    </div>
+                    <div class="col-span-4 sm:col-span-3">
+                        <label asp-for="Input.LastName" class="block text-sm font-medium text-gray-700"></label>
+                        <div class="mt-1">
+                            <input asp-for="Input.LastName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <span asp-validation-for="Input.LastName" class="mt-2 text-sm text-red-600"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.FirstName"></label>
-                <input asp-for="Input.FirstName" class="form-control" aria-required="true" />
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            <div class="mt-3">
+                <label asp-for="Input.Email" class="block text-sm font-medium text-gray-700"></label>
+                <div class="mt-1">
+                    <input asp-for="Input.Email" readonly class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" aria-required="true" />
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.LastName"></label>
-                <input asp-for="Input.LastName" class="form-control" aria-required="true" />
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Email"></label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            <div class="mt-3">
                 <input type="hidden" asp-for="Input.InvitationId" />
-                <label asp-for="Input.ConfirmInviteCode"></label>
-                <input asp-for="Input.ConfirmInviteCode" class="form-control" aria-required="true" />
-                <span asp-validation-for="Input.ConfirmInviteCode" class="text-danger"></span>
+                <label asp-for="Input.ConfirmInviteCode" class="block text-sm font-medium text-gray-700"></label>
+                <div class="mt-1">
+                    <input asp-for="Input.ConfirmInviteCode" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" aria-required="true" />
+                </div>
+                <span asp-validation-for="Input.ConfirmInviteCode" class="mt-2 text-sm text-red-600"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.Password"></label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            <div class="mt-3">
+                <label asp-for="Input.Password" class="block text-sm font-medium text-gray-700"></label>
+                <div class="mt-1">
+                    <input asp-for="Input.Password" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" aria-required="true" />
+                </div>
+                <span asp-validation-for="Input.Password" class="mt-2 text-sm text-red-600"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.ConfirmPassword"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            <div class="mt-3">
+                <label asp-for="Input.ConfirmPassword" class="block text-sm font-medium text-gray-700"></label>
+                <div class="mt-1">
+                    <input asp-for="Input.ConfirmPassword" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" autocomplete="new-password" aria-required="true" />
+                </div>
+                <span asp-validation-for="Input.ConfirmPassword" class="mt-2 text-sm text-red-600"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Register
+            </button>
         </form>
     </div>
 </div>

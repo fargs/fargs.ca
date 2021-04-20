@@ -70,7 +70,6 @@ namespace ImeHub.Portal.Areas.Identity.Pages.Account
             [Display(Name = "Surname")]
             public string LastName { get; set; }
 
-            [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -110,6 +109,7 @@ namespace ImeHub.Portal.Areas.Identity.Pages.Account
                 FirstName = invitation.FirstName,
                 LastName = invitation.LastName,
                 Email = invitation.Email,
+                ConfirmInviteCode = invitation.InviteCode,
                 InvitationId = invitation.ObjectGuid
             };
 

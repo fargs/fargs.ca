@@ -13,13 +13,14 @@
             <button @onclick="() => isOpen = false" tabindex="-1" class="fixed inset-0 h-full w-full cursor-default"></button>
             <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
 
-                <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                    @context.User.DisplayName()
-                </div>
-
-                <hr />
-
-                <a href="Identity/Account/Manage/Profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Account</a>
+                <a href="Identity/Account/Manage/Profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                    <div>
+                        @context.User.DisplayName()
+                    </div>
+                    <div class="text-gray-400 text-sm">
+                        @context.User.Email()
+                    </div>
+                </a>
 
                 <hr />
 

@@ -8,6 +8,8 @@ namespace ImeHub.Portal.Library.Security
     {
         public static Guid UserId(this ClaimsPrincipal obj)
             => new Guid(obj.FindFirstValue(AuthorizationClaimTypes.UserId));
+        public static string Email(this ClaimsPrincipal obj)
+            => obj.FindFirstValue(ClaimTypes.Email);
         public static string DisplayName(this ClaimsPrincipal obj)
             => obj.FindFirstValue(AuthorizationClaimTypes.DisplayName) ?? string.Empty;
         public static string Initials(this ClaimsPrincipal obj)

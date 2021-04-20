@@ -1,29 +1,120 @@
 ﻿@page "/admin/invites"
 
-<NavLink href="@Routes.New">New Invite</NavLink>
-<table>
-    @foreach (var invitation in invitations)
-    {
-        <tr>
-            <td>
-                @invitation.DisplayName (@invitation.Email)
-            </td>
-            <td>
-                
-            </td>
-        </tr>
-    }
-</table>
+<div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+  <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
+    <div class="ml-4 mt-2">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Company Invites
+      </h3>
+    </div>
+    <div class="ml-4 mt-2 flex-shrink-0">
+        <NavLink href="@Routes.New" class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">New Invite</NavLink>
+    </div>
+  </div>
+</div>
+
+<!-- This example requires Tailwind CSS v2.0+ -->
+<div class="flex flex-col">
+  <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accepted On</th>
+                <th scope="col" class="relative px-6 py-3">
+                    <span class="sr-only">Resend Invite</span>
+                </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @foreach (var invitation in invitations)
+            {
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        @invitation.DisplayName
+                        <div class="mt-1 text-sm text-gray-300">
+                        @invitation.Email
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        @invitation.CompanyName
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        @(invitation.AcceptedDate.HasValue ? invitation.AcceptedDate.Value.ToLongDateString() : " -- ")
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <button @onclick="() => ResendInvite(invitation.ObjectGuid)" class="text-indigo-600 hover:text-indigo-900">Resend Invite</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+@implements IDisposable
 
 @using Data.Companies
-@inject ApplicationDbContext dbContext
+@using Microsoft.EntityFrameworkCore
+@using Services.Email.CompanyUserInvitation
+@using Services.Email.CompanyUserRegistrationInvitation
+
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject NavigationManager navManager
+@inject ICompanyUserInvitationEmailService companyUserInvitation
+@inject ICompanyUserRegistrationInvitationEmailService companyUserRegistrationInvitation
+
 @code {
     IEnumerable<CompanyUserInvitation> invitations { get; set; }
+        ApplicationDbContext dbContext {get;set;}
     protected async override Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        dbContext = dbContextFactory.CreateDbContext();
+
         invitations = dbContext.CompanyUserInvitations;
     }
 
+    async Task ResendInvite(Guid invitationId)
+    {
+        var invitation = dbContext.CompanyUserInvitations
+            .Where(i => i.ObjectGuid == invitationId)
+            .SingleOrDefault();
+
+        if (!invitation.UserId.HasValue)
+        {
+            var inviteUri = navManager.ToAbsoluteUri($"{AnonymousRoutes.RegisterBase}{invitation.ObjectGuid}");
+            CompanyUserRegistrationInvitationTemplateData templateData = new()
+            {
+                Name = invitation.DisplayName,
+                CompanyName = invitation.CompanyName,
+                InviteUrl = inviteUri.ToString(),
+                InviteCode = invitation.InviteCode
+            };
+            await companyUserRegistrationInvitation.SendEmailAsync(invitation.Email, templateData);    
+        }
+        else
+        {
+            var inviteUri = navManager.ToAbsoluteUri($"{RootRoutes.AcceptBase}{invitation.ObjectGuid}");
+            CompanyUserInvitationTemplateData templateData = new()
+            {
+                Name = invitation.DisplayName,
+                CompanyName = invitation.CompanyName,
+                InviteUrl = inviteUri.ToString()
+            };
+            await companyUserInvitation.SendEmailAsync(invitation.Email, templateData);    
+        }
+    }
+
+    public void Dispose()
+    {
+        dbContext?.Dispose();
+    }
 
 }

@@ -1,0 +1,11 @@
+@inherits LayoutComponentBase
+@layout MainLayout
+
+<AuthorizeView Policy="@AuthorizationPolicies.SystemAdminOnly">
+    <Authorized>
+        @Body
+    </Authorized>
+    <NotAuthorized>
+        <NotFound></NotFound>
+    </NotAuthorized>
+</AuthorizeView>

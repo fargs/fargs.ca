@@ -28,11 +28,6 @@ namespace ImeHub.Portal.Services.Email
             await Execute(message);
         }
 
-        public async Task SendEmailAsync(string templateId, object templateData)
-        {
-            throw new NotImplementedException();
-        }
-
         private async Task Execute(MailMessage mailMessage)
         {
             // Plug in your email service here to send an email.

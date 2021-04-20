@@ -8,7 +8,6 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using ImeHub.Portal.Library
-@using ImeHub.Portal.Pages.Admin.Invites.Templates
 @using System.Net.Mail
 
 @implements IDisposable
@@ -24,17 +23,23 @@
 
 @if (Companies != null)
 {
-    <EditForm Model="@InputModel" OnValidSubmit="@HandleValidSubmit" class="p-3">
+    <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit" class="p-3">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="mt-3">
-            <InputText @bind-Value="@InputModel.Name" id="name" class="" placeholder="Given and surname"></InputText>
+            <InputText @bind-Value="@Input.Title" placeholder="Given and surname"></InputText>
         </div>
         <div class="mt-3">
-            <InputText @bind-Value="@InputModel.Email" id="email" class="" placeholder="Email" aria-describedby="email-help"></InputText>
+            <InputText @bind-Value="@Input.FirstName" placeholder="Given and surname"></InputText>
         </div>
         <div class="mt-3">
-            <InputSelect @bind-Value="InputModel.CompanyId">
+            <InputText @bind-Value="@Input.LastName" placeholder="Given and surname"></InputText>
+        </div>
+        <div class="mt-3">
+            <InputText @bind-Value="@Input.Email" placeholder="Email" aria-describedby="email-help"></InputText>
+        </div>
+        <div class="mt-3">
+            <InputSelect @bind-Value="Input.CompanyId">
                 <option value=@(0)></option>
                 @foreach (var company in Companies)
                 {
@@ -43,25 +48,25 @@
         </InputSelect>
     </div>
 
-    @if (InputModel.CompanyId == default)
+    @if (Input.CompanyId == default)
         {
-            InputModel.CompanyName = default;
-            InputModel.CompanyRoleId = default;
+            Input.CompanyName = default;
+            Input.CompanyRoleId = default;
         }
         else
         {
-            InputModel.CompanyName = Companies.Single(c => c.Id == InputModel.CompanyId).Name;
+            Input.CompanyName = Companies.Single(c => c.Id == Input.CompanyId).Name;
 
             using var _dbContext = dbContextFactory.CreateDbContext();
-            CompanyRoles = _dbContext.CompanyRoles.Where(cr => cr.Company.Id == InputModel.CompanyId).ToList();
+            CompanyRoles = _dbContext.CompanyRoles.Where(cr => cr.Company.Id == Input.CompanyId).ToList();
 
-            if (!CompanyRoles.Any(cr => cr.Id == InputModel.CompanyRoleId))
+            if (!CompanyRoles.Any(cr => cr.Id == Input.CompanyRoleId))
             {
-                InputModel.CompanyRoleId = default;
+                Input.CompanyRoleId = default;
             }
 
             <div class="mt-3">
-                <InputSelect @bind-Value="InputModel.CompanyRoleId">
+                <InputSelect @bind-Value="Input.CompanyRoleId">
                     <option value=@(0)></option>
                     @foreach (var companyRole in CompanyRoles)
                     {
@@ -78,13 +83,12 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    protected CompanyUserInvitation InputModel { get; set; }
+    protected CompanyUserInvitation Input { get; set; }
 
     bool IsCustomized { get; set; }
     protected string Body { get; set; }
 
     private ApplicationDbContext dbContext { get; set; }
-    private bool Loading { get; set; } = true;
 
     IEnumerable<Company> Companies { get; set; }
     IEnumerable<CompanyRole> CompanyRoles { get; set; }
@@ -93,7 +97,7 @@
     {
         var user = (await authenticationStateTask).User;
 
-        InputModel = new()
+        Input = new()
         {
             ObjectGuid = Guid.NewGuid(),
             ExpiryDate = dateTime.Now.AddDays(14),
@@ -105,28 +109,20 @@
 
         Companies = await dbContext.Companies.OrderBy(c => c.Name).ToListAsync();
 
-        Loading = false;
         await base.OnInitializedAsync();
     }
 
     protected async Task HandleValidSubmit()
-    {
-        // This is the url to include in the template. 
-        var inviteUri = navManager.ToAbsoluteUri("/");
-
-        var random = new Random(2915);
-        InputModel.InviteCode = random.Next(111111, 999999).ToString();
+    {        
+        var random = new Random();
+        Input.InviteCode = random.Next(111111, 999999).ToString();
         
-        var appUser = await userManager.FindByEmailAsync(InputModel.Email);
-        if (appUser == null)
+        var appUser = await userManager.FindByEmailAsync(Input.Email);
+        if (appUser != null)
         {
-            inviteUri = navManager.ToAbsoluteUri($"/register/{InputModel.ObjectGuid}");
+            Input.UserId = appUser.Id;
         }
-        else 
-        {
-            InputModel.UserId = appUser.Id;
-        }
-        dbContext.Add(InputModel);        
+        dbContext.Add(Input);        
 
         try
         {
@@ -147,28 +143,29 @@
 
         if (appUser == null)
         {
+            var inviteUri = navManager.ToAbsoluteUri($"{AnonymousRoutes.RegisterBase}{Input.ObjectGuid}");
             CompanyUserRegistrationInvitationTemplateData templateData = new()
             {
-                Name = InputModel.Name,
-                CompanyName = InputModel.CompanyName,
+                Name = Input.DisplayName,
+                CompanyName = Input.CompanyName,
                 InviteUrl = inviteUri.ToString(),
-                InviteCode = InputModel.InviteCode
+                InviteCode = Input.InviteCode
             };
-            await companyUserRegistrationInvitation.SendEmailAsync(InputModel.Email, templateData);    
+            await companyUserRegistrationInvitation.SendEmailAsync(Input.Email, templateData);    
         }
         else
         {
+            var inviteUri = navManager.ToAbsoluteUri($"{RootRoutes.AcceptBase}{Input.ObjectGuid}");
             CompanyUserInvitationTemplateData templateData = new()
             {
-                Name = InputModel.Name,
-                CompanyName = InputModel.CompanyName,
+                Name = Input.DisplayName,
+                CompanyName = Input.CompanyName,
                 InviteUrl = inviteUri.ToString()
             };
-            await companyUserInvitation.SendEmailAsync(InputModel.Email, templateData);    
+            await companyUserInvitation.SendEmailAsync(Input.Email, templateData);    
         }
-        
 
-        toastService.ShowSuccess($"{InputModel.Name} was saved successfully.");
+        toastService.ShowSuccess($"{Input.DisplayName} was saved successfully.");
 
         navManager.NavigateTo(Routes.List);
     }

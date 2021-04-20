@@ -15,27 +15,36 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using ImeHub.Portal.Library.Security;
+using Microsoft.EntityFrameworkCore;
+using ImeHub.Portal.Services.DateTimeService;
+using ImeHub.Portal.Data.Companies;
 
 namespace ImeHub.Portal.Areas.Identity.Pages.Account
 {
-    [Authorize(AuthorizationPolicies.SystemAdminOnly)]
+    [AllowAnonymous]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IDateTime _dateTime;
 
         public RegisterModel(
+            ApplicationDbContext dbContext,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IDateTime dateTime)
         {
+            _dbContext = dbContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _dateTime = dateTime;
         }
 
         [BindProperty]
@@ -47,6 +56,20 @@ namespace ImeHub.Portal.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [StringLength(10)]
+            [Display(Name = "Title")]
+            public string Title { get; set; }
+
+            [Required]
+            [StringLength(128)]
+            [Display(Name = "Given Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [StringLength(128)]
+            [Display(Name = "Surname")]
+            public string LastName { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -62,55 +85,94 @@ namespace ImeHub.Portal.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Display(Name = "Invitation Id")]
+            public Guid InvitationId { get; set; }
+
+            [Display(Name = "Invitation Code")]
+            public string ConfirmInviteCode { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(Guid invitationId, string returnUrl = null)
         {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            var invitation = await _dbContext.CompanyUserInvitations
+                .Where(c => c.ObjectGuid == invitationId)
+                .SingleOrDefaultAsync();
+
+            if (invitation == null)
+            {
+                return Redirect(AnonymousRoutes.NotFound);
+            }
+
+            Input = new InputModel
+            {
+                Title = invitation.Title,
+                FirstName = invitation.FirstName,
+                LastName = invitation.LastName,
+                Email = invitation.Email,
+                InvitationId = invitation.ObjectGuid
+            };
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+                return Page();
+            }
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+            var invitation = await _dbContext.CompanyUserInvitations
+                .Where(c => c.ObjectGuid == Input.InvitationId)
+                .SingleOrDefaultAsync();
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            if (invitation.InviteCode != Input.ConfirmInviteCode)
+            {
+                ModelState.AddModelError(nameof(Input.ConfirmInviteCode), "Invitation code is not valid");
+                return Page();
+            }
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
-                }
+            var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+            var result = await _userManager.CreateAsync(user, Input.Password);
+
+            if (!result.Succeeded)
+            {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                _logger.LogInformation("The user was not created.");
+                return Page();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            _logger.LogInformation("User created a new account with password.");
+
+            user.Title = Input.Title;
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+
+            var companyRole = await _dbContext.CompanyRoles
+                .Where(c => c.Id == invitation.CompanyRoleId)
+                .SingleAsync();
+
+            var companyAccess = new CompanyAccess()
+            {
+                CompanyRole = companyRole,
+                ObjectGuid = Guid.NewGuid(),
+                UserId = user.Id,
+                ModifiedBy = user.Id
+            };
+
+            _dbContext.CompanyAccesses.Add(companyAccess);
+
+            invitation.UserId = user.Id;
+            invitation.AcceptedDate = _dateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return LocalRedirect(returnUrl ??= "~/");
         }
     }
 }

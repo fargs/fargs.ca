@@ -20,21 +20,6 @@
             <div class="">
                 <label asp-for="Email" class="block text-sm font-medium text-gray-700"></label>
                 <input asp-for="Email" class="mt-1 py-2 bg-white sm:text-sm" disabled />
-                @if (Model.IsEmailConfirmed)
-                {
-                    <div class="mt-1 text-gray-500 text-sm">
-                        <svg class="inline-block text-green-600 group-hover:text-green-600 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span class="inline-block align-middle">
-                            confirmed on TODO: EMAIL CONFIRMED DATE
-                        </span>
-                    </div>
-                }
-                else
-                {
-                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4">Send verification email</button>
-                }
             </div>
             <div class="">
                 <label asp-for="Input.NewEmail" class="block text-sm font-medium text-gray-700"></label>

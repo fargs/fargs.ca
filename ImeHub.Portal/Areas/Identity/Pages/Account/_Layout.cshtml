@@ -7,18 +7,18 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>IME HUB</title>
+    <link rel="icon" href="/favicon.svg">
     <link href="~/css/app.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="min-h-screen flex justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
-                <h1 class="h-8 w-auto text-center font-mono text-3xl text-indigo-600 tracking-widest font-black" alt="IME HUB">IME HUB</h1>
-                <h2 class="mt-6 text-center text-2xl font-bold text-gray-900">
+                <img class="h-8 w-auto mx-auto" src="/assets/logo_light/Original.svg" alt="IME Hub">
+                <h2 class="mt-6 text-center text-2xl text-gray-900">
                     @RenderSection("Heading", required: false)
                 </h2>
             </div>
-
             @RenderBody()
         </div>
     </div>

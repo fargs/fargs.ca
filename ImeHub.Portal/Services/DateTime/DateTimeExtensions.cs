@@ -17,7 +17,7 @@ namespace ImeHub.Portal.Extensions
         }
         public static DateTime ToTimeZoneIana(this DateTime time, string timeZoneIana)
         {
-            if (string.IsNullOrEmpty(timeZoneIana)) throw new Exception($"Event on {time.ToOrvosiDateTimeFormat()} does not have a timezone set.");
+            if (string.IsNullOrEmpty(timeZoneIana)) throw new Exception($"Event on {time.ToIsoDateAndTimeFormat()} does not have a timezone set.");
 
             //TODO: This mapping info is already in the Timezone table. Needs to be loaded in and cached
             var timeZone = TimeZoneConverter.TZConvert.IanaToWindows(timeZoneIana);
@@ -59,37 +59,21 @@ namespace ImeHub.Portal.Extensions
         {
             return value.ToString("yyyy-MM-dd");
         }
-        public static string ToOrvosiDateFormat(this DateTime? value)
+        public static string ToIsoDate(this DateTime? value)
         {
-            return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : string.Empty;
+            return value.HasValue ? value.ToIsoDate() : string.Empty;
         }
-        public static string ToOrvosiDateShortFormat(this DateTime value)
+        public static string ToMonthDayFormat(this DateTime value)
         {
             return value.ToString("MMM dd");
         }
-        public static string ToOrvosiDateTimeFormat(this DateTime value)
+        public static string ToIsoDateAndTimeFormat(this DateTime value)
         {
             return value.ToString("yyyy-MM-dd hh:mm tt");
         }
-        public static string ToOrvosiDateTimeShortFormat(this DateTime value)
+        public static string ToMonthDayAndTimeFormat(this DateTime value)
         {
             return value.ToString("MMM dd hh:mm tt");
-        }
-        public static string ToOrvosiDateTimeFormat(this DateTime value, TimeSpan startTime)
-        {
-            return value.AddTicks(startTime.Ticks + 1).ToOrvosiDateTimeFormat();
-        }
-        public static string ToOrvosiDateTimeFormat(this DateTime? value)
-        {
-            return value.HasValue ? value.Value.ToOrvosiDateTimeFormat() : string.Empty;
-        }
-        public static string ToOrvosiDateTimeFormat(this DateTime? value, TimeSpan startTime)
-        {
-            return value.HasValue ? value.Value.ToOrvosiDateTimeFormat(startTime) : string.Empty;
-        }
-        public static string ToOrvosiLongDateFormat(this DateTime value)
-        {
-            return value.ToString("ddd dd, MMM");
         }
         public static int GetRestOfWeek(this DateTime obj)
         {

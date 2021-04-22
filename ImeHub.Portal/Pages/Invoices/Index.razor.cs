@@ -23,9 +23,9 @@ using TailBlazor.Toast.Services;
 
 namespace ImeHub.Portal.Pages.Invoices
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
-        [Inject] private ApplicationDbContext _dbContext { get; set; }
+        [Inject] private IDbContextFactory<ApplicationDbContext> _dbContextFactory { get; set; }
         [Inject] private IConfiguration _configuration { get; set; }
         [Inject] private FileSystemFactory _fileSystemFactory { get; set; }
         [Inject] private ILogger<Index> _logger { get; set; }
@@ -37,8 +37,9 @@ namespace ImeHub.Portal.Pages.Invoices
         [Inject] private IToastService _toastService { get; set; }
 
         [CascadingParameter]
-        public AuthenticationState AuthState { get; set; }
+        public Task<AuthenticationState> _authState { get; set; }
 
+        ApplicationDbContext _dbContext { get; set; }
         ClaimsPrincipal _user { get; set; }
         bool IsLoading { get; set; }
         Guid[] CompanyIdsAccessList { get; set; }
@@ -47,7 +48,7 @@ namespace ImeHub.Portal.Pages.Invoices
 
         protected override async Task OnInitializedAsync()
         {
-            _user = _httpContextAccessor.HttpContext.User;
+            _user = (await _authState).User;
 
             _logger.LogInformation("Invoices Initialized handler started");
 
@@ -61,6 +62,7 @@ namespace ImeHub.Portal.Pages.Invoices
 
             try
             {
+                _dbContext = _dbContextFactory.CreateDbContext();
                 await LoadFromDatabase();
 
                 _logger.LogInformation($"Invoices retreived: {PendingDownloadListItems.Count()}");
@@ -76,6 +78,8 @@ namespace ImeHub.Portal.Pages.Invoices
         private async Task LoadFromDatabase()
         {
             var userId = _user.UserId();
+            var userIdString = userId.ToString();
+            var email = _user.Email();
 
             CompanyIdsAccessList = await _dbContext.CompanyAccesses
                 .Where(c => c.UserId == userId)
@@ -93,6 +97,13 @@ namespace ImeHub.Portal.Pages.Invoices
                     AllowedAttempts = link.AllowedAttempts,
                     ActualDownloads = link.InvoiceDownloads.Count(),
                     ExpiryDate = link.ExpiryDate.Value,
+                    DownloadInvoiceForm = new DownloadInvoiceForm 
+                    {
+                        InvoiceObjectGuid = link.Invoice.ObjectGuid,
+                        DownloadLinkGuid = link.ObjectGuid,
+                        DownloadedBy = userIdString,
+                        Email = email
+                    },
                     GroupingKey = new ListItemGrouping_Key
                     {
                         InvoiceGuid = link.Invoice.ObjectGuid,
@@ -165,11 +176,11 @@ namespace ImeHub.Portal.Pages.Invoices
             // If the PDF has already been generated, then return the file
             if (invoice.FileSystemProvider == null)
             {
-                var viewModel = new Shared.InvoiceTemplates.StandardModel
+                var viewModel = new Shared.InvoiceTemplates.DefaultModel
                 {
                     Invoice = invoice
                 };
-                var content = await _razor.RenderAsync("InvoiceTemplates/_Standard", viewModel);
+                var content = await _razor.RenderAsync("InvoiceTemplates/_Default", viewModel);
                 var file = await _htmlToPdf.GenerateAsync(content);
 
                 invoice.FileSystemProvider = Enum.GetName(FileSystemProvider.AzureBlobStorage);
@@ -235,6 +246,7 @@ namespace ImeHub.Portal.Pages.Invoices
             public int AllowedAttempts { get; set; }
             public int ActualDownloads { get; set; }
             public DateTime ExpiryDate { get; set; }
+            public DownloadInvoiceForm DownloadInvoiceForm { get; set; }
             public ListItemGrouping_Key GroupingKey { get; set; }
         }
         class ListItemGrouping
@@ -242,6 +254,19 @@ namespace ImeHub.Portal.Pages.Invoices
             public ListItemGrouping_Key Key { get; set; }
             public DateTime EarliestExpiryDate { get; set; }
             public IEnumerable<ListItem> ListItems { get; set; }
+        }
+
+        public class DownloadInvoiceForm
+        {
+            public Guid InvoiceObjectGuid { get; set; }
+            public Guid? DownloadLinkGuid { get; set; }
+            public string Email { get; set; }
+            public string DownloadedBy { get; set; }
+        }
+
+        public void Dispose()
+        {
+            _dbContext?.Dispose();
         }
     }
 }

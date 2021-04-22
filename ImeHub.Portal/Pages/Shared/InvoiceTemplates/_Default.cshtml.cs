@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ImeHub.Portal.Pages.Shared.InvoiceTemplates
 {
-    public class StandardModel : PageModel
+    public class DefaultModel : PageModel
     {
         public Invoice Invoice { get; set; }
     }

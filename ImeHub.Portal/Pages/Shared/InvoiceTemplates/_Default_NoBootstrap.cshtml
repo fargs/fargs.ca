@@ -1,4 +1,5 @@
-﻿@model ImeHub.Portal.Pages.Shared.InvoiceTemplates.StandardModel
+﻿@model ImeHub.Portal.Pages.Shared.InvoiceTemplates.DefaultNoBootstrap
+@using ImeHub.Portal.Extensions
 @{
     Layout = "";
 }
@@ -82,7 +83,7 @@
                     </tr>
                     <tr>
                         <td style="font-weight: 600;border: none;">Invoice Date</td>
-                        <td style="border: none; text-align: right; padding-left:20px;">@Model.Invoice.InvoiceDate.ToLongDateString()</td>
+                        <td style="border: none; text-align: right; padding-left:20px;">@Model.Invoice.InvoiceDate.ToIsoDate()</td>
                     </tr>
                     <tr>
                         <td style="font-weight: 600;border: none;">Payment Terms</td>

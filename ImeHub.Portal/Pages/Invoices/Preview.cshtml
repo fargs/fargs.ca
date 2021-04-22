@@ -1,7 +1,8 @@
 ﻿@page "/invoices/preview/{id}"
 @model ImeHub.Portal.Pages.Invoices.PreviewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@{
-}
 
-<partial name="InvoiceTemplates/_Standard" model="Model.StandardModel"></partial>
+@{
+    Layout = "";
+}
+<partial name="InvoiceTemplates/_Default" model="Model.DefaultModel"></partial>

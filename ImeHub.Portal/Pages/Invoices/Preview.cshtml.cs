@@ -16,7 +16,7 @@ namespace ImeHub.Portal.Pages.Invoices
         private readonly ApplicationDbContext _dbContext;
         private readonly IDateTime _dateTime;
 
-        public StandardModel StandardModel { get; set; }
+        public DefaultModel DefaultModel { get; set; }
 
         public PreviewModel(ApplicationDbContext dbContext, IDateTime dateTime)
         {
@@ -49,10 +49,10 @@ namespace ImeHub.Portal.Pages.Invoices
                 return NotFound();
             }
 
-            var standardModel = new StandardModel();
-            standardModel.Invoice = invoice;
+            var defaultModel = new DefaultModel();
+            defaultModel.Invoice = invoice;
 
-            StandardModel = standardModel;
+            DefaultModel = defaultModel;
 
             return Page();
         }

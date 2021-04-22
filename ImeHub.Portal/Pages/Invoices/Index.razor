@@ -1,246 +1,289 @@
 @page "/invoices"
 @using ImeHub.Portal.Components.App.Invoices
 @using Microsoft.EntityFrameworkCore
-<div class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 md:flex md:items-center md:justify-between">
-        <div class="flex-1 min-w-0">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                Invoices
-            </h2>
-        </div>
-    </div>
-</div>
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="pb-5 border-b border-gray-200">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Pending Download
-        </h3>
-    </div>
-
-    <div class="flex flex-col">
-        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Assessor
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Invoice Number
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Invoice Date
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-right">
-                                    Download Links
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @if (IsLoading)
-                            {
-                                <tr class="h-20">
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                if (PendingDownloadListItems.Count() == 0)
-                                {
-                                    <tr>
-                                        <td colspan="4" class="h-20">
-                                            <div class="flex place-content-center px-6 py-4 text-2xl">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="fill-current text-green-600 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                                </svg>
-                                                <span class="ml-3 text-sm font-medium text-gray-900">
-                                                    All invoices have been downloaded
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                                foreach (var grouping in PendingDownloadListItems)
-                                {
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            @grouping.Key.ServiceProviderName
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @grouping.Key.InvoiceNumber
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @grouping.Key.InvoiceDate.ToLongDateString()
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            @foreach (var listItem in grouping.ListItems)
-                                            {
-                                                var daysToExpiry = (listItem.ExpiryDate - _dateTime.Now).Days;
-
-                                                <button class="text-indigo-600 hover:text-indigo-900" @onclick="() => DownloadInvoice(listItem.ObjectGuid)">
-                                                    Download
-                                                </button>
-                                                <div class="text-sm">
-                                                    @ExpiryColumn(daysToExpiry, true)
-                                                </div>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
+<AuthorizeView>
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 md:flex md:items-center md:justify-between">
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                    Invoices
+                </h2>
             </div>
         </div>
     </div>
-</div>
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="pb-5 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Pending Download
+            </h3>
+        </div>
 
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="pb-5 border-b border-gray-200">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Recently Downloaded
-        </h3>
-    </div>
-
-    <div class="flex flex-col">
-        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Assessor
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Invoice Number
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Invoice Date
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Last Download Date
-                                </th>
-                                <th scope="col" class="relative px-6 py-3 text-right">
-                                    Download Links
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @if (IsLoading)
-                            {
-                                <tr class="h-20">
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
-                                        </div>
-                                    </td>
+        <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Assessor
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Invoice Number
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Invoice Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right">
+                                        Download Links
+                                    </th>
                                 </tr>
-                            }
-                            else
-                            {
-                                if (RecentlyDownloadedListItems.Count() == 0)
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @if (IsLoading)
                                 {
-                                    <tr>
-                                        <td colspan="5" class="h-20">
-                                            <div class="flex place-content-center px-6 py-4 text-2xl">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="fill-current text-green-600 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                                </svg>
-                                                <span class="ml-3 text-sm font-medium text-gray-900">
-                                                    Nothing has been downloaded recently
-                                                </span>
+                                    <tr class="h-20">
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
                                             </div>
                                         </td>
                                     </tr>
                                 }
-                                foreach (var grouping in RecentlyDownloadedListItems)
+                                else
                                 {
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            @grouping.Key.ServiceProviderName
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @grouping.Key.InvoiceNumber
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @grouping.Key.InvoiceDate.ToLongDateString()
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @grouping.Key.LastDownloadDate.Value.ToLongDateString()
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            @foreach (var listItem in grouping.ListItems)
-                                            {
-                                                var daysToExpiry = (listItem.ExpiryDate - _dateTime.Now).Days;
-
-                                                <button class="text-indigo-600 hover:text-indigo-900" @onclick="() => DownloadInvoice(listItem.ObjectGuid)">
-                                                    Download
-                                                </button>
-                                                <div class="text-sm text-gray-300">
-
-                                                    @ExpiryColumn(daysToExpiry, false)
-                                                    <div class="text-sm text-gray-400">
-                                                        @if (listItem.ActualDownloads == 1)
-                                                        {
-                                                            <span>
-                                                                Downloaded once
-                                                            </span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span>
-                                                                Downloaded @listItem.ActualDownloads times
-                                                            </span>
-                                                        }
+                                    if (PendingDownloadListItems.Count() == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="h-20">
+                                                <div class="flex place-content-center px-6 py-4 text-2xl">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="fill-current text-green-600 h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span class="ml-3 text-sm font-medium text-gray-900">
+                                                        All invoices have been downloaded
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    foreach (var grouping in PendingDownloadListItems)
+                                    {
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                @grouping.Key.ServiceProviderName
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @grouping.Key.InvoiceNumber
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @grouping.Key.InvoiceDate.ToLongDateString()
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <AuthorizeView Context="PreviewInvoiceLink"
+                                            Policy="@ImeHub.Portal.Library.Security.AuthorizationPolicies.SystemAdminOnly">
+                                                    @{
+                                                        var previewLink =
+                    $"invoices/preview/{grouping.ListItems.First().ObjectGuid}";
+                                                    }
+                                                    <div>
+                                                        <NavLink href="@previewLink" Match="NavLinkMatch.All"
+                                                    class="text-indigo-600 hover:text-indigo-900">
+                                                            Preview
+                                                        </NavLink>
                                                     </div>
-                                                </div>
-                                            }
-                                        </td>
-                                    </tr>
+                                                </AuthorizeView>
+                                                @foreach (var listItem in grouping.ListItems)
+                                                {
+                                                    var daysToExpiry = (listItem.ExpiryDate - _dateTime.Now).Days;
+
+                                                    <button class="text-indigo-600 hover:text-indigo-900 mt-2"
+                                            @onclick="() => DownloadInvoice(listItem.ObjectGuid)">
+                                                        Download
+                                                    </button>
+
+                                                    <div class="text-sm">
+                                                        @ExpiryColumn(daysToExpiry, true)
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
                                 }
-                            }
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="pb-5 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Recently Downloaded
+            </h3>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Assessor
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Invoice Number
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Invoice Date
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Last Download Date
+                                    </th>
+                                    <th scope="col" class="relative px-6 py-3 text-right">
+                                        Download Links
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @if (IsLoading)
+                                {
+                                    <tr class="h-20">
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-auto">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="animate-pulse h-4 bg-light-blue-400 rounded w-100">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    if (RecentlyDownloadedListItems.Count() == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="h-20">
+                                                <div class="flex place-content-center px-6 py-4 text-2xl">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="fill-current text-green-600 h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span class="ml-3 text-sm font-medium text-gray-900">
+                                                        Nothing has been downloaded recently
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    foreach (var grouping in RecentlyDownloadedListItems)
+                                    {
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                @grouping.Key.ServiceProviderName
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @grouping.Key.InvoiceNumber
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @grouping.Key.InvoiceDate.ToLongDateString()
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                @grouping.Key.LastDownloadDate.Value.ToLongDateString()
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                @foreach (var listItem in grouping.ListItems)
+                                                {
+                                                    var daysToExpiry = (listItem.ExpiryDate - _dateTime.Now).Days;
+                                                    <AuthorizeView Context="PreviewInvoiceLink"
+                                            Policy="@ImeHub.Portal.Library.Security.AuthorizationPolicies.SystemAdminOnly">
+                                                        @{
+                                                            var previewLink = $"invoices/preview/{grouping.ListItems.First().ObjectGuid}";
+                                                        }
+                                                        <div>
+                                                            <NavLink href="@previewLink" Match="NavLinkMatch.All"
+                                                    class="text-indigo-600 hover:text-indigo-900">
+                                                                Preview
+                                                            </NavLink>
+                                                        </div>
+                                                    </AuthorizeView>
+                                                    <button class="text-indigo-600 hover:text-indigo-900"
+                                            @onclick="() => DownloadInvoice(listItem.ObjectGuid)">
+                                                        Download
+                                                    </button>
+                                                    <div class="text-sm text-gray-300">
+
+                                                        @ExpiryColumn(daysToExpiry, false)
+                                                        <div class="text-sm text-gray-400">
+                                                            @if (listItem.ActualDownloads == 1)
+                                                            {
+                                                                <span>
+                                                                    Downloaded once
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>
+                                                                    Downloaded @listItem.ActualDownloads times
+                                                                </span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</AuthorizeView>
 @code {
     public RenderFragment ExpiryColumn(int daysToExpiry, bool emphasizeExpiresToday)
     {

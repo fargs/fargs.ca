@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>FARGS</title>
+    <link rel="icon" href="/favicon.svg">
+    <link href="~/css/app.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="min-h-screen flex justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <img class="h-20 w-auto mx-auto" src="/assets/logo/Original.svg" alt="IME Hub">
+                <h2 class="mt-6 text-center text-2xl text-gray-900">
+                    @RenderSection("Heading", required: false)
+                </h2>
+            </div>
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/Identity/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/Identity/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Identity/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

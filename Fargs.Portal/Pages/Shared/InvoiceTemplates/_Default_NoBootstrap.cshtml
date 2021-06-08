@@ -1,0 +1,170 @@
+﻿@model Fargs.Portal.Pages.Shared.InvoiceTemplates.DefaultNoBootstrap
+@using Fargs.Portal.Extensions
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <style>
+        
+
+        table
+        th,
+        td {
+            border: none;
+        }
+
+        #details-table {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        #details-table
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 6px;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
+
+    <table style="width:100%; border:none;">
+        <tr>
+            <td style="font-size: 24px; border:none;">@Model.Invoice.ServiceProviderName</td>
+        <td style="margin-left:auto; text-align: right; border:none;">
+            <div>
+                <div style="font-size:14px;">@Model.Invoice.ServiceProviderAddress1</div>
+                <div style="font-size:14px;">@Model.Invoice.ServiceProviderAddress2</div>
+                <div style="font-size:14px;">@(string.Format("{0}, {1} {2}", Model.Invoice.ServiceProviderCity, Model.Invoice.ServiceProviderProvince, Model.Invoice.ServiceProviderCountry))</div>
+                <div style="font-size:14px;">@Model.Invoice.ServiceProviderPostalCode</div>
+            </div>
+            <div><strong>E: </strong>@Model.Invoice.ServiceProviderEmail</div>
+            <div><strong>GST/HST: </strong>@Model.Invoice.ServiceProviderHstNumber</div>
+        </td>
+        </tr>
+    </table>
+    <hr style="margin-top:20px;" />
+    <table id="header-table" width="100%" style="margin-top:20px">
+        <tr>
+            <td style="border: none;">
+                <div style="font-size: 14px;">
+                    <strong>Bill To:</strong>
+                    <h1>@Model.Invoice.CustomerName</h1>
+                    <div>@Model.Invoice.CustomerAddress1</div>
+                    <div>@Model.Invoice.CustomerAddress2</div>
+                    <div>@(string.Format("{0}, {1} {2}", Model.Invoice.CustomerCity, Model.Invoice.CustomerProvince, Model.Invoice.CustomerCountry))</div>
+                    <div>@Model.Invoice.CustomerPostalCode</div>
+                    <div>@Model.Invoice.CustomerEmail</div>
+                </div>
+            </td>
+            <td style="border: none;" align="right">
+                <h1 style="text-align: right; color: darkred;">
+                    <strong>INVOICE</strong>
+                </h1>
+                <table style="border: none;">
+                    <tr>
+                        <td style="font-weight: 600;border: none;">Invoice Number</td>
+                        <td style="border: none; text-align: right; padding-left:20px;">@Model.Invoice.InvoiceNumber</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;border: none;">Invoice Date</td>
+                        <td style="border: none; text-align: right; padding-left:20px;">@Model.Invoice.InvoiceDate.ToIsoDate()</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;border: none;">Payment Terms</td>
+                        <td style="border: none; text-align: right; padding-left:20px;">NET @Model.Invoice.Terms Days</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div style="display:flex; margin-top: 20px;">
+
+        <div style="margin-left:auto;">
+        </div>
+    </div>
+    <table id="details-table" style="width:100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th style="text-align: left;">Description</th>
+                <th style="text-align: right;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Invoice.InvoiceDetails)
+            {
+                <tr>
+                    <td>
+                        <div style="white-space: pre-line;">
+                            @Html.Raw(item.Description)
+                        </div>
+                        @if (!string.IsNullOrEmpty(item.DiscountDescription))
+                        {
+                            <div style="padding-top: 6px; font-size:small; color:darkred;">
+                                <strong>
+                                    @item.DiscountDescription
+                                </strong>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Invoice.InvoiceDetails.First().AdditionalNotes))
+                        {
+                            <div style="padding-top: 6px; font-size:small;">
+                                <div style="font-style: italic;">Additional Notes:</div>
+                                <div>Some additional notes</div>
+                            </div>
+                        }
+                    </td>
+                    <td style="text-align: right;">
+                        @item.Total.Value.ToString("C2")
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    Sub-Total
+                </td>
+                <td style="text-align: right;">
+                    @Model.Invoice.SubTotal.Value.ToString("C2")
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Tax (@Model.Invoice.TaxRateHst.Value.ToString("0%"))
+                </td>
+                <td style="text-align: right;">
+                    @Model.Invoice.Hst.Value.ToString("C2")
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr style="font-weight: 600; font-size: x-large;">
+                <td>
+                    <strong>Total</strong>
+                </td>
+                <td style="text-align: right;">
+                    <strong>@Model.Invoice.Total.Value.ToString("C2")</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <div style="text-align: center; margin-top: 40px; padding: 15px; background-color: rgb(219, 219, 219);">
+        All cheques payable to @Model.Invoice.ServiceProviderName. Thank you for your referral.
+    </div>
+</body>
+
+</html>

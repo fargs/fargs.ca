@@ -1,0 +1,22 @@
+﻿@page
+@model Fargs.Portal.Areas.Identity.Pages.Account.Manage.ClaimsModel
+
+<h1>
+    @User.DisplayName()
+</h1>
+<h3>
+    @User.UserId()
+</h3>
+@foreach (var claim in User.Claims)
+{
+    <table>
+        <tr>
+            <td>
+                @claim.Type
+            </td>
+            <td>
+                @claim.Value
+            </td>
+        </tr>
+    </table>
+}

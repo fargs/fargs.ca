@@ -204,7 +204,7 @@ FakesAssemblies/
 /Auth
 *.dacpac
 App_Data/
-/Orvosi.Aurelia
-/Orvosi.Web
+/Fargs.Aurelia
+/Fargs.Web
 *.jfm
 /WebApp/Content/images/Screenshots/receipt.txt

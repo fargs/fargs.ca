@@ -1,0 +1,73 @@
+﻿@page "/moneyout/bills"
+
+@using Fargs.Portal.Data.ServiceConnections
+@using Intuit.Ipp.Core
+@using Intuit.Ipp.Data
+@using Intuit.Ipp.QueryFilter
+@using Intuit.Ipp.Security
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Options
+@using System.Text.Json
+@using Fargs.Portal.Services.Accounting
+@using Intuit.Ipp.OAuth2PlatformClient
+
+@inject NavigationManager navigationManager
+@inject IOptions<QuickbooksOptions> quickbooksOptions
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+
+<h3>Bills</h3>
+
+<h4>Step 1:</h4>
+<div>
+	Upload your excel file
+</div>
+
+<h4>Step 2:</h4>
+<div>
+	Review the uploaded data after it has been transformed to match the Quickbooks Create bill request message
+</div>
+
+<h4>Step 3:</h4>
+
+<div>
+	Complete the batch upload of bills to Quickbooks.
+</div>
+
+<button @onclick="CreateBills">Create Bills</button>
+
+@foreach(var bill in bills)
+{
+	<div>@bill.Balance</div>
+}
+
+<h4>Step 4:</h4>
+
+<div>
+	Retrieve the created records from Quickbooks and join them to the source records to verify the data integration was complete and accurate.
+</div>
+
+@code {
+	[CascadingParameter] Task<AuthenticationState> _authState { get; set; }
+
+	IEnumerable<Bill> bills { get; set; } = new List<Bill>();
+
+	protected async void CreateBills()
+	{
+		var claimsPrincipal = (await _authState).User;
+		var userId = claimsPrincipal.UserId();
+
+		var dbContext = dbContextFactory.CreateDbContext();
+		var quickbooksConnection = await dbContext.QuickbooksConnections.SingleOrDefaultAsync(u => u.UserId == userId);
+
+		OAuth2RequestValidator requestValidator = new(quickbooksConnection.AccessToken);
+		var serviceContext = new ServiceContext(quickbooksConnection.RealmId, IntuitServicesType.QBO, requestValidator);
+		
+		serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+		serviceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/"; //This is sandbox Url. Change to Prod Url if you are using production
+
+		QueryService<Bill> querySvc = new QueryService<Bill>(serviceContext);
+
+		bills = querySvc.ExecuteIdsQuery("Select * from Bill startposition 1 maxresults 5");
+	}
+}

@@ -5,6 +5,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Fargs.Portal.Data.Companies;
+using Fargs.Portal.Data.ServiceConnections;
 
 namespace Fargs.Portal.Data
 {
@@ -20,6 +21,7 @@ namespace Fargs.Portal.Data
         public DbSet<CompanyUserInvitation> CompanyUserInvitations { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceDownloadLink> InvoiceDownloadLinks { get; set; }
+        public DbSet<QuickbooksConnection> QuickbooksConnections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +35,9 @@ namespace Fargs.Portal.Data
             modelBuilder.Entity<ApplicationUserClaim>().ToTable("UserClaim", identitySchema);
             modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaim", identitySchema);
             modelBuilder.Entity<ApplicationUserToken>().ToTable("UserToken", identitySchema);
+
+            var serviceConnectionSchema = "ServiceConnection";
+            modelBuilder.Entity<ApplicationUserToken>().ToTable(nameof(QuickbooksConnection), serviceConnectionSchema);
 
             modelBuilder.Entity<Company>().ToTable(nameof(Company));
             modelBuilder.Entity<CompanyRole>().ToTable(nameof(CompanyRole));

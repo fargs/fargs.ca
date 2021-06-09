@@ -1,0 +1,146 @@
+﻿@page "/serviceconnections/quickbooks"
+
+@using Fargs.Portal.Data.ServiceConnections
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Options
+@using Fargs.Portal.Services.Accounting
+@using Intuit.Ipp.OAuth2PlatformClient
+
+@inject NavigationManager navigationManager
+@inject IOptions<QuickbooksOptions> quickbooksOptions
+@inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+
+<h3>Quickbooks Connection</h3>
+
+<h4>Step 1: Authorization Code</h4>
+
+<button type="submit" @onclick="GetAuthorizationCode">Get Authorization Code</button>
+
+@if (AccessToken is null && Code is not null)
+{
+	<div>
+		Authorization Code: @Code
+	</div>
+	<div>
+		Realm Id: @RealmId
+	</div>
+
+	<h2>Step 2:</h2>
+
+	<button type="submit" @onclick="GetAccessTokenAsync">Get Access Token</button>
+}
+
+@if	(AccessToken is not null)
+{
+	<div>
+		Access Token: @AccessToken
+	</div>
+	<div>
+		Refresh Token: @RefreshToken
+	</div>
+
+	<h2>Step 3:</h2>	
+
+	<button type="submit" @onclick="RefreshAccessTokenAsync">Refresh Access Token</button>
+
+}
+@code {
+
+	[CascadingParameter] Task<AuthenticationState> _authState { get; set; }
+
+	string Code { get; set; }
+	string RealmId { get; set; }
+	string? AccessToken { get; set; }
+	string? RefreshToken { get; set; }
+
+	OAuth2Client oauth2Client;
+	Guid userId;
+
+	// Cross site request forgery token required by the quickbooks API
+	private string csrfToken = Guid.NewGuid().ToString();
+
+	protected async override Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		var options = quickbooksOptions.Value;
+		oauth2Client = new OAuth2Client(options.ClientId, options.ClientSecret, options.RedirectUri, options.Environment);
+
+		var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+		if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var _code))
+        {
+            Code = _code;
+        }
+		if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("realmid", out var _realmId))
+        {
+            RealmId = _realmId;
+        }
+
+		var claimsPrincipal = (await _authState).User;
+		userId = claimsPrincipal.UserId();
+
+		var dbContext = dbContextFactory.CreateDbContext();
+		var quickbooksConnection = await dbContext.QuickbooksConnections.SingleOrDefaultAsync(u => u.UserId == userId);
+
+		if (quickbooksConnection is not null)
+		{
+			RealmId = quickbooksConnection.RealmId;
+			AccessToken = quickbooksConnection.AccessToken;
+			RefreshToken = quickbooksConnection.RefreshToken;
+		}
+	}
+
+	protected void GetAuthorizationCode()
+	{
+		var scopes = new List<OidcScopes> { OidcScopes.Accounting };
+		var authorizationUrl = oauth2Client.GetAuthorizationURL(scopes, csrfToken);
+		navigationManager.NavigateTo(authorizationUrl);
+	}
+
+	protected async Task GetAccessTokenAsync()
+	{
+		var tokenResponse = await oauth2Client.GetBearerTokenAsync(Code);
+		AccessToken = tokenResponse.AccessToken;
+		RefreshToken = tokenResponse.RefreshToken;	
+		
+		var dbContext = dbContextFactory.CreateDbContext();
+		QuickbooksConnection quickbooksConnection = await dbContext.QuickbooksConnections.SingleOrDefaultAsync(u => u.UserId == userId);
+
+		if (quickbooksConnection is null)
+		{
+			quickbooksConnection = new QuickbooksConnection()
+			{
+				Id = Guid.NewGuid(),
+				UserId = userId,
+				RealmId = RealmId,
+				AccessToken = AccessToken,
+				RefreshToken = RefreshToken,
+				Scopes = OidcScopes.Accounting.ToString()
+			};
+
+			dbContext.QuickbooksConnections.Add(quickbooksConnection);
+		}
+		else
+		{
+			quickbooksConnection.AccessToken = AccessToken;
+			quickbooksConnection.RefreshToken = RefreshToken;
+		}
+		await dbContext.SaveChangesAsync();
+	}
+
+	protected async Task RefreshAccessTokenAsync()
+	{
+		var tokenResponse = await oauth2Client.RefreshTokenAsync(RefreshToken);
+		AccessToken = tokenResponse.AccessToken;
+		RefreshToken = tokenResponse.RefreshToken;
+
+		var dbContext = dbContextFactory.CreateDbContext();
+		var quickbooksConnection = await dbContext.QuickbooksConnections.SingleOrDefaultAsync(u => u.UserId == userId);
+
+		quickbooksConnection.AccessToken = AccessToken;
+		quickbooksConnection.RefreshToken = RefreshToken;
+
+		await dbContext.SaveChangesAsync();
+	}
+}

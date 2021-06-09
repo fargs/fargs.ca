@@ -24,6 +24,7 @@ using System.Net.Http;
 using TailBlazor.Toast;
 using Fargs.Portal.Services.Email.CompanyUserInvitation;
 using Fargs.Portal.Services.Email.CompanyUserRegistrationInvitation;
+using Fargs.Portal.Services.Accounting;
 
 namespace Fargs.Portal
 {
@@ -50,17 +51,21 @@ namespace Fargs.Portal
                 .Bind(_config.GetSection(Html2PdfRocketOptions.SectionName));
             services.Configure<Html2PdfRocketOptions>(_config.GetSection(Html2PdfRocketOptions.SectionName));
 
+            services.AddOptions<QuickbooksOptions>()
+                .Bind(_config.GetSection(QuickbooksOptions.SectionName));
+            services.Configure<QuickbooksOptions>(_config.GetSection(QuickbooksOptions.SectionName));
 
-//#if DEBUG
-//            services.AddDbContext<ApplicationDbContext>(options =>
-//                            options.UseSqlServer(
-//                                _config.GetConnectionString("FargsDbContext"))
-//                            .EnableSensitiveDataLogging());
-//#else
-//            services.AddDbContext<ApplicationDbContext>(options =>
-//                            options.UseSqlServer(
-//                                _config.GetConnectionString("FargsDbContext")));
-//#endif
+
+            //#if DEBUG
+            //            services.AddDbContext<ApplicationDbContext>(options =>
+            //                            options.UseSqlServer(
+            //                                _config.GetConnectionString("FargsDbContext"))
+            //                            .EnableSensitiveDataLogging());
+            //#else
+            //            services.AddDbContext<ApplicationDbContext>(options =>
+            //                            options.UseSqlServer(
+            //                                _config.GetConnectionString("FargsDbContext")));
+            //#endif
 #if DEBUG
             services.AddDbContextFactory<ApplicationDbContext>(options =>
                 options.UseSqlServer(

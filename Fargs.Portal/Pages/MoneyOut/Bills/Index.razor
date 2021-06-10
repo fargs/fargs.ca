@@ -1,8 +1,11 @@
 ﻿@page "/moneyout/bills"
 
+@using ClosedXML.Excel
+@using DocumentFormat.OpenXml.Packaging
+@using DocumentFormat.OpenXml.Spreadsheet
 @using Fargs.Portal.Data.ServiceConnections
+@using Fargs.Portal.Services.FileSystem
 @using Intuit.Ipp.Core
-@using Intuit.Ipp.Data
 @using Intuit.Ipp.QueryFilter
 @using Intuit.Ipp.Security
 @using Microsoft.EntityFrameworkCore
@@ -11,46 +14,159 @@
 @using System.Text.Json
 @using Fargs.Portal.Services.Accounting
 @using Intuit.Ipp.OAuth2PlatformClient
+@using System.IO
 
 @inject NavigationManager navigationManager
 @inject IOptions<QuickbooksOptions> quickbooksOptions
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
+@inject FileSystemFactory fileSystemFactory
+@inject IOptions<LocalFileSystemOptions> localFileSystemOptions
 
 <h3>Bills</h3>
 
 <h4>Step 1:</h4>
 <div>
 	Upload your excel file
+	<InputFile OnChange="@LoadFiles"></InputFile>
 </div>
 
+@if (isLoading)
+{
+	<p>Uploading...</p>
+}
+else
+{
+	<ul>
+		@foreach (var file in loadedFiles)
+		{
+		 <li>
+		  <ul>
+		   <li>Name: @file.Name</li>
+		   <li>Last modified: @file.LastModified.ToString()</li>
+		   <li>Size (bytes): @file.Size</li>
+		   <li>Content type: @file.ContentType</li>
+		  </ul>
+		 </li>
+		}
+	</ul>
+	<table>
+		@foreach (Intuit.Ipp.Data.Bill bill in bills)
+		{
+		 <tr>
+		  <td>
+					@bill.Memo
+		  </td>
+		  <td>
+					@bill.Balance
+		  </td>
+		  <td>@bill.DueDate</td>
+		 </tr>
+		}
+	</table>
+}
 <h4>Step 2:</h4>
 <div>
-	Review the uploaded data after it has been transformed to match the Quickbooks Create bill request message
+ Review the uploaded data after it has been transformed to match the Quickbooks Create bill request message
 </div>
 
 <h4>Step 3:</h4>
 
 <div>
-	Complete the batch upload of bills to Quickbooks.
+ Complete the batch upload of bills to Quickbooks.
 </div>
 
 <button @onclick="CreateBills">Create Bills</button>
 
-@foreach(var bill in bills)
+<h2>Bills for Quickbooks</h2>
+@if (isLoading)
 {
-	<div>@bill.Balance</div>
+	<div>Loading ...</div>
+}
+else
+{
+	foreach (var bill in bills)
+	{
+		<div>@bill.Balance</div>
+	}
 }
 
 <h4>Step 4:</h4>
 
 <div>
-	Retrieve the created records from Quickbooks and join them to the source records to verify the data integration was complete and accurate.
+ Retrieve the created records from Quickbooks and join them to the source records to verify the data integration was complete and accurate.
 </div>
 
 @code {
 	[CascadingParameter] Task<AuthenticationState> _authState { get; set; }
 
-	IEnumerable<Bill> bills { get; set; } = new List<Bill>();
+	// Source
+	private List<IBrowserFile> loadedFiles = new();
+	private long maxFileSize = 1024 * 15;
+	private int maxAllowedFiles = 3;
+	private bool isLoading = false;
+
+	// Transformation
+	IEnumerable<Intuit.Ipp.Data.Bill> bills { get; set; } = new List<Intuit.Ipp.Data.Bill>();
+
+	// Destination
+
+
+	private async Task LoadFiles(InputFileChangeEventArgs e)
+	{
+		isLoading = true;
+		loadedFiles.Clear();
+
+		foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+		{
+			loadedFiles.Add(file);
+
+			var options = localFileSystemOptions.Value;
+			var trustedFileNameForFileStorage = Path.GetRandomFileName();
+			var path = Path.Combine(options.RootPath,
+					file.Name);
+
+			using (FileStream fs = new(path, FileMode.Create))
+			{
+				await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+			}
+
+			// Open file as read-only.
+			var wb = new XLWorkbook(path);
+			var ws = wb.Worksheet("Bills");
+
+			// Look for the first row used
+			var firstRowUsed = ws.FirstRowUsed();
+
+			// Narrow down the row so that it only includes the used part
+			var firstBillRow = firstRowUsed.RowUsed();
+
+			// First possible address of the company table:
+			var firstPossibleAddress = firstBillRow.FirstCell().Address;
+			// Last possible address of the company table:
+			var lastPossibleAddress = ws.LastCellUsed().Address;
+
+			// Get a range with the remainder of the worksheet data (the range used)
+			var billsRange = ws.Range(firstPossibleAddress, lastPossibleAddress).RangeUsed();
+
+			// Treat the range as a table (to be able to use the column names)
+			var billsTable = billsRange.AsTable();
+
+			// Get the list of company names
+			bills = billsTable.DataRange.Rows()
+					.Select(billRow => new Intuit.Ipp.Data.Bill()
+					{
+						Memo = billRow.Cell(1).Value.ToString(),
+						Balance = int.Parse(billRow.Cell(2).Value.ToString()),
+						DueDate = DateTime.Parse(billRow.Cell(3).Value.ToString())
+					})
+					.ToList();
+
+		}
+
+		isLoading = false;
+
+		StateHasChanged();
+	}
 
 	protected async void CreateBills()
 	{
@@ -62,12 +178,18 @@
 
 		OAuth2RequestValidator requestValidator = new(quickbooksConnection.AccessToken);
 		var serviceContext = new ServiceContext(quickbooksConnection.RealmId, IntuitServicesType.QBO, requestValidator);
-		
+
 		serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 		serviceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/"; //This is sandbox Url. Change to Prod Url if you are using production
 
-		QueryService<Bill> querySvc = new QueryService<Bill>(serviceContext);
+		var querySvc = new QueryService<Intuit.Ipp.Data.Bill>(serviceContext);
+
+		isLoading = true;
 
 		bills = querySvc.ExecuteIdsQuery("Select * from Bill startposition 1 maxresults 5");
+
+		isLoading = false;
+
+		StateHasChanged();
 	}
 }

@@ -10,16 +10,67 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fargs.Portal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210609040054_QuickbooksConnection")]
-    partial class QuickbooksConnection
+    [Migration("20210611161852_QuickbooksIntegration")]
+    partial class QuickbooksIntegration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Fargs.Portal.Data.Aginzo.HarvestExport", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Client")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InvoiceType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ItemAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ItemDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ItemDiscount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ItemQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ItemTax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ItemTax2")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ItemType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ItemUnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Project")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HarvestExport", "Aginzo");
+                });
 
             modelBuilder.Entity("Fargs.Portal.Data.ApplicationRole", b =>
                 {
@@ -229,7 +280,7 @@ namespace Fargs.Portal.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("QuickbooksConnection", "ServiceConnection");
+                    b.ToTable("UserToken", "Identity");
                 });
 
             modelBuilder.Entity("Fargs.Portal.Data.Companies.Company", b =>
@@ -646,7 +697,7 @@ namespace Fargs.Portal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuickbooksConnections");
+                    b.ToTable("QuickbooksConnection", "ServiceConnection");
                 });
 
             modelBuilder.Entity("Fargs.Portal.Data.ApplicationRoleClaim", b =>

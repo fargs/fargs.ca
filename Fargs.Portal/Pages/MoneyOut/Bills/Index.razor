@@ -3,6 +3,7 @@
 @using ClosedXML.Excel
 @using DocumentFormat.OpenXml.Packaging
 @using DocumentFormat.OpenXml.Spreadsheet
+@using Fargs.Portal.Data.Aginzo
 @using Fargs.Portal.Data.ServiceConnections
 @using Fargs.Portal.Services.FileSystem
 @using Intuit.Ipp.Core
@@ -21,6 +22,22 @@
 @inject IDbContextFactory<ApplicationDbContext> dbContextFactory
 @inject FileSystemFactory fileSystemFactory
 @inject IOptions<LocalFileSystemOptions> localFileSystemOptions
+
+<h3>Vendors</h3>
+<button @onclick="GetQuickbooksVendors">Get Vendors from Quickbooks</button>
+
+@if (isLoading)
+{
+	<div>Loading ...</div>
+}
+else
+{
+	foreach (var vendor in qbVendors)
+	{
+		<div>@vendor.CompanyName</div>
+	}
+}
+
 
 <h3>Bills</h3>
 
@@ -50,16 +67,21 @@ else
 		}
 	</ul>
 	<table>
-		@foreach (Intuit.Ipp.Data.Bill bill in bills)
+		<tr>
+	  <td>InvoiceId</td>
+	  <td>Source</td>
+	  <td>Project</td>
+  </tr>
+		@foreach (var source in sourceHarvestExport)
 		{
 		 <tr>
 		  <td>
-					@bill.Memo
+					@source.InvoiceId
 		  </td>
 		  <td>
-					@bill.Balance
+					@source.Client
 		  </td>
-		  <td>@bill.DueDate</td>
+		  <td>@source.Project</td>
 		 </tr>
 		}
 	</table>
@@ -84,7 +106,7 @@ else
 }
 else
 {
-	foreach (var bill in bills)
+	foreach (var bill in destinationBills)
 	{
 		<div>@bill.Balance</div>
 	}
@@ -101,15 +123,41 @@ else
 
 	// Source
 	private List<IBrowserFile> loadedFiles = new();
-	private long maxFileSize = 1024 * 15;
+	private long maxFileSize = 4000000;
 	private int maxAllowedFiles = 3;
 	private bool isLoading = false;
 
 	// Transformation
-	IEnumerable<Intuit.Ipp.Data.Bill> bills { get; set; } = new List<Intuit.Ipp.Data.Bill>();
+	IEnumerable<HarvestExport> sourceHarvestExport { get; set; } = new List<HarvestExport>();
+	IEnumerable<Intuit.Ipp.Data.Bill> destinationBills { get; set; } = new List<Intuit.Ipp.Data.Bill>();
 
 	// Destination
+	IEnumerable<Intuit.Ipp.Data.Vendor> qbVendors { get; set; } = new List<Intuit.Ipp.Data.Vendor>();
 
+	private async Task GetQuickbooksVendors()
+	{
+		var claimsPrincipal = (await _authState).User;
+		var userId = claimsPrincipal.UserId();
+
+		var dbContext = dbContextFactory.CreateDbContext();
+		var quickbooksConnection = await dbContext.QuickbooksConnections.SingleOrDefaultAsync(u => u.UserId == userId);
+
+		OAuth2RequestValidator requestValidator = new(quickbooksConnection.AccessToken);
+		var serviceContext = new ServiceContext(quickbooksConnection.RealmId, IntuitServicesType.QBO, requestValidator);
+
+		serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+		serviceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/"; //This is sandbox Url. Change to Prod Url if you are using production
+
+		var querySvc = new QueryService<Intuit.Ipp.Data.Vendor>(serviceContext);
+
+		isLoading = true;
+
+		qbVendors = querySvc.ExecuteIdsQuery("Select * from Vendor");
+
+		isLoading = false;
+
+		StateHasChanged();
+	}
 
 	private async Task LoadFiles(InputFileChangeEventArgs e)
 	{
@@ -132,7 +180,7 @@ else
 
 			// Open file as read-only.
 			var wb = new XLWorkbook(path);
-			var ws = wb.Worksheet("Bills");
+			var ws = wb.Worksheet("Harvest Export Values Only");
 
 			// Look for the first row used
 			var firstRowUsed = ws.FirstRowUsed();
@@ -152,15 +200,60 @@ else
 			var billsTable = billsRange.AsTable();
 
 			// Get the list of company names
-			bills = billsTable.DataRange.Rows()
-					.Select(billRow => new Intuit.Ipp.Data.Bill()
+			sourceHarvestExport = billsTable.DataRange.Rows()
+					.Select(s => new HarvestExport()
 					{
-						Memo = billRow.Cell(1).Value.ToString(),
-						Balance = int.Parse(billRow.Cell(2).Value.ToString()),
-						DueDate = DateTime.Parse(billRow.Cell(3).Value.ToString())
+						InvoiceId = int.Parse(s.Cell("A").GetString()),
+						Client = s.Cell("B").GetString(),
+						Project = s.Cell("C").GetString(),
+						ItemType = s.Cell("D").GetString(),
+						ItemDescription = s.Cell("E").GetString(),
+						ItemQuantity = decimal.Parse(s.Cell("F").GetString()),
+						ItemUnitPrice = decimal.Parse(s.Cell("G").GetString()),
+						ItemAmount = decimal.Parse(s.Cell("H").GetString()),
+						ItemDiscount = decimal.Parse(s.Cell("I").GetString()),
+						ItemTax = decimal.Parse(s.Cell("J").GetString()),
+						ItemTax2 = decimal.Parse(s.Cell("K").GetString()),
+						Currency = s.Cell("L").GetString(),
+						InvoiceType = s.Cell("M").GetString(),
+						QB_Terms = s.Cell("N").GetString(),
+						QB_BillDate = s.Cell("O").GetString(),
+						QB_BillNo = int.Parse(s.Cell("P").GetString()),
+						QB_Description = s.Cell("Q").GetString(),
+						ItemType2 = s.Cell("R").GetString(),
+						HarvestConsultant = s.Cell("T").GetString(),
+						QB_Vendor = s.Cell("U").GetString(),
+						QB_Account = s.Cell("S").GetString(),
+						PayAmount = decimal.Parse(s.Cell("V").GetString()),
+						SalesLead_1 = s.Cell("W").GetString(),
+						SL1_QB_Vendor = s.Cell("X").GetString(),
+						SL1_QB_Account = s.Cell("Y").GetString(),
+						SL1_Percent = decimal.Parse(s.Cell("Z").GetString()),
+						SL1_Amount = decimal.Parse(s.Cell("AA").GetString()),
+						SalesSupport_1 = s.Cell("AB").GetString(),
+						SS1_QB_Vendor = s.Cell("AC").GetString(),
+						SS1_QB_Account = s.Cell("AD").GetString(),
+						SS1_Percent = decimal.Parse(s.Cell("AE").GetString()),
+						SS1_Amount = decimal.Parse(s.Cell("AF").GetString()),
+						SalesLead_2 = s.Cell("AG").GetString(),
+						SL2_QB_Vendor = s.Cell("AH").GetString(),
+						SL2_QB_Account = s.Cell("AI").GetString(),
+						SL2_Percent = decimal.Parse(s.Cell("AJ").GetString()),
+						SL2_Amount = decimal.Parse(s.Cell("AK").GetString()),
+						SalesSupport_2 = s.Cell("AL").GetString(),
+						SS2_QB_Vendor = s.Cell("AM").GetString(),
+						SS2_QB_Account = s.Cell("AN").GetString(),
+						SS2_Percent = decimal.Parse(s.Cell("AO").GetString()),
+						SS2_Amount = decimal.Parse(s.Cell("AP").GetString())
 					})
 					.ToList();
 
+
+
+			var dbContext = dbContextFactory.CreateDbContext();
+			dbContext.HarvestExports.AddRange(sourceHarvestExport);
+
+			await dbContext.SaveChangesAsync();
 		}
 
 		isLoading = false;
@@ -186,7 +279,7 @@ else
 
 		isLoading = true;
 
-		bills = querySvc.ExecuteIdsQuery("Select * from Bill startposition 1 maxresults 5");
+		destinationBills = querySvc.ExecuteIdsQuery("Select * from Bill startposition 1 maxresults 5");
 
 		isLoading = false;
 

@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Fargs.Portal.Data.Companies;
 using Fargs.Portal.Data.ServiceConnections;
+using Fargs.Portal.Data.Aginzo;
 
 namespace Fargs.Portal.Data
 {
@@ -22,6 +23,7 @@ namespace Fargs.Portal.Data
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceDownloadLink> InvoiceDownloadLinks { get; set; }
         public DbSet<QuickbooksConnection> QuickbooksConnections { get; set; }
+        public DbSet<HarvestExport> HarvestExports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,7 +39,28 @@ namespace Fargs.Portal.Data
             modelBuilder.Entity<ApplicationUserToken>().ToTable("UserToken", identitySchema);
 
             var serviceConnectionSchema = "ServiceConnection";
-            modelBuilder.Entity<ApplicationUserToken>().ToTable(nameof(QuickbooksConnection), serviceConnectionSchema);
+            modelBuilder.Entity<QuickbooksConnection>().ToTable(nameof(QuickbooksConnection), serviceConnectionSchema);
+
+            var aginzoSchema = "Aginzo";
+            modelBuilder.Entity<HarvestExport>(builder =>
+            {
+                builder.ToTable(nameof(HarvestExport), aginzoSchema);
+                builder.Property(i => i.ItemQuantity).HasPrecision(10, 2);
+                builder.Property(i => i.ItemUnitPrice).HasPrecision(10, 2);
+                builder.Property(i => i.ItemAmount).HasPrecision(10, 2);
+                builder.Property(i => i.ItemDiscount).HasPrecision(10, 2);
+                builder.Property(i => i.ItemTax).HasPrecision(10, 2);
+                builder.Property(i => i.ItemTax2).HasPrecision(10, 2);
+                builder.Property(i => i.PayAmount).HasPrecision(10, 2);
+                builder.Property(i => i.SL1_Percent).HasPrecision(10, 4);
+                builder.Property(i => i.SL1_Amount).HasPrecision(10, 4);
+                builder.Property(i => i.SS1_Percent).HasPrecision(10, 4);
+                builder.Property(i => i.SS1_Amount).HasPrecision(10, 4);
+                builder.Property(i => i.SL2_Percent).HasPrecision(10, 4);
+                builder.Property(i => i.SL2_Amount).HasPrecision(10, 4);
+                builder.Property(i => i.SS2_Percent).HasPrecision(10, 4);
+                builder.Property(i => i.SS2_Amount).HasPrecision(10, 4);
+            });
 
             modelBuilder.Entity<Company>().ToTable(nameof(Company));
             modelBuilder.Entity<CompanyRole>().ToTable(nameof(CompanyRole));

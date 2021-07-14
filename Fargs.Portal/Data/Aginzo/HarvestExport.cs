@@ -51,7 +51,5 @@ namespace Fargs.Portal.Data.Aginzo
         public decimal SS2_Percent { get; set; }
         public decimal SS2_Amount { get; set; }
 
-
-
     }
 }
